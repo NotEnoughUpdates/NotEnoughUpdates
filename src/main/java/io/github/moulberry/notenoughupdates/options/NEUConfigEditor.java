@@ -637,8 +637,7 @@ public class NEUConfigEditor extends GuiElement {
                         mouseY >= y + 6 && mouseY <= y + 23) {
                     try {
                         Desktop.getDesktop().browse(new URI(socialsLink[socialIndex]));
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
                     return true;
                 }
             }

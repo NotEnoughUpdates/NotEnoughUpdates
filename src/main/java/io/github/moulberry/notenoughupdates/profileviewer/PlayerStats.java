@@ -521,8 +521,7 @@ public class PlayerStats {
                             String key = entryBoost.getKey().toLowerCase();
                             try {
                                 stats.addStat(key, entryBoost.getValue());
-                            } catch (Exception ignored) {
-                            }
+                            } catch (Exception ignored) {}
                         }
 
                     }
@@ -531,8 +530,7 @@ public class PlayerStats {
                             String key = entryBoost.getKey().toLowerCase();
                             try {
                                 stats.scale(key, entryBoost.getValue());
-                            } catch (Exception ignored) {
-                            }
+                            } catch (Exception ignored) {}
                         }
                     }
                 }

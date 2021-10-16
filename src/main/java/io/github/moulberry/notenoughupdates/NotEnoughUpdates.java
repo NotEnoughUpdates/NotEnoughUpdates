@@ -197,29 +197,23 @@ public class NotEnoughUpdates {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8))) {
                 writer.write(gson.toJson(config));
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         try {
             ItemCustomizeManager.saveCustomization(new File(neuDir, "itemCustomization.json"));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         try {
             StorageManager.getInstance().saveConfig(new File(neuDir, "storageItems.json"));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         try {
             FairySouls.save(new File(neuDir, "collected_fairy_souls.json"), gson);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         try {
             PetInfoOverlay.saveConfig(new File(neuDir, "petCache.json"));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         try {
             SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     /**

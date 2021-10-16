@@ -307,8 +307,7 @@ public class CapeManager {
             String uuid = player.getUniqueID().toString().replace("-", "");
             try {
                 playerMap.put(uuid, player);
-            } catch (IllegalArgumentException ignored) {
-            }
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

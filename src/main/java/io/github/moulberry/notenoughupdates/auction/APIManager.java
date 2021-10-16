@@ -344,8 +344,7 @@ public class APIManager {
             try {
                 int page = pagesToDownload.pop();
                 getPageFromAPI(page);
-            } catch (NoSuchElementException ignored) {
-            } //Weird race condition?
+            } catch (NoSuchElementException ignored) {} //Weird race condition?
         }
     }
 
@@ -428,9 +427,9 @@ public class APIManager {
         } catch (Exception ignored) {}
     }
 
-//    String[] rarityArr = new String[] {
-//       "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME",
-//    };
+    //String[] rarityArr = new String[] {
+    //   "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME",
+    //};
 
     public int checkItemType(String lore, boolean contains, String... typeMatches) {
         String[] split = lore.split("\n");

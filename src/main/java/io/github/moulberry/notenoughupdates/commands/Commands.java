@@ -932,8 +932,7 @@ public class Commands {
 
                         NotEnoughUpdates.INSTANCE.colourMap[x][y] = new Color(entry.getValue().getAsInt(), true);
                     }
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
 
             if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {

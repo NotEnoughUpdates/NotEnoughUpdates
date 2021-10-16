@@ -2235,8 +2235,7 @@ public class NEUEventListener {
                         if (cost.length() > 0) {
                             chestCost = Integer.parseInt(cost.toString());
                         }
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
 
                     String missingItem = null;
                     int totalValue = 0;
