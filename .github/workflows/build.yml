@@ -2,13 +2,13 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, nopo ]
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
       - '.gitignore'
   pull_request:
-    branches: [ master ]
+    branches: [ master, nopo ]
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
