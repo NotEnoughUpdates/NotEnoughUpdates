@@ -185,7 +185,7 @@ public class GuiItemCustomize extends GuiScreen {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
         GlStateManager.color(1, 1, 1, 1);
-        int helpX = xCenter+textFieldRename.getWidth()/2-10;
+        int helpX = xCenter+textFieldRename.getWidth()/2-5;
         Utils.drawTexturedRect(helpX, yTop, 20, 20, GL11.GL_LINEAR);
 
         if(mouseX >= helpX && mouseX <= helpX+20 && mouseY >= yTop && mouseY <= yTop+20) {

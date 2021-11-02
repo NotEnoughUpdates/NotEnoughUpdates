@@ -32,6 +32,7 @@ public class GuiTextures {
     public static final ResourceLocation item_mask = new ResourceLocation("notenoughupdates:item_mask.png");
     public static final ResourceLocation item_haschild = new ResourceLocation("notenoughupdates:item_haschild.png");
     public static final ResourceLocation button_tex = new ResourceLocation("notenoughupdates:button.png");
+    public static final ResourceLocation button_fsr = new ResourceLocation("notenoughupdates:FSR_do_not_texture_this_please.png");
 
     public static final ResourceLocation setting_border = new ResourceLocation("notenoughupdates:setting_border.png");
 

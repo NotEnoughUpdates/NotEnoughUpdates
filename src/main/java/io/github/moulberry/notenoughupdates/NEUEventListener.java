@@ -204,7 +204,10 @@ public class NEUEventListener {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getMinecraft().currentScreen == null || !(Minecraft.getMinecraft().currentScreen instanceof GuiChat)) {
+        if (Minecraft.getMinecraft().currentScreen != null && (Minecraft.getMinecraft().currentScreen instanceof GuiChat
+                || Minecraft.getMinecraft().currentScreen instanceof GuiEditSign || Minecraft.getMinecraft().currentScreen instanceof GuiScreenBook)) {
+            Keyboard.enableRepeatEvents(true);
+        } else {
             Keyboard.enableRepeatEvents(false);
         }
         if (event.phase != TickEvent.Phase.START) return;
@@ -240,7 +243,7 @@ public class NEUEventListener {
             inventoryLoadedTicks = 3;
         }
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1) && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4) && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD9)) {
+        if ((Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1) && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4) && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD9))) {
             ChatComponentText component = new ChatComponentText("\u00a7cYou are permanently banned from this server!");
             component.appendText("\n");
             component.appendText("\n\u00a77Reason: \u00a7rSuspicious account activity/Other");
@@ -793,13 +796,17 @@ public class NEUEventListener {
 
     private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
-        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
+        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
             if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
                 String username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
-
-                chatComponent.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/pv " + username, "" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD + username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " + EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + " profile viewer."));
-                return chatComponent;
-            }
+                if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
+                    chatComponent.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/pv " + username, "" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD + username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " + EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + " profile viewer."));
+                    return chatComponent;
+                } else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
+                    chatComponent.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/ah " + username, "" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD + username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"));
+                    return chatComponent;
+                }
+            } // wanted to add this for guild but guild uses uuid :sad:
         }
         return chatComponent;
     }

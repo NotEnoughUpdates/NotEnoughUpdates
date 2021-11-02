@@ -94,7 +94,7 @@ public class FairySouls {
     }
 
     public static void tick() {
-        if (!enabled) return;
+        if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
 
         if (Minecraft.getMinecraft().theWorld == null) {
             currentSoulList = null;
@@ -161,7 +161,7 @@ public class FairySouls {
 
     @SubscribeEvent
     public void onRenderLast(RenderWorldLastEvent event) {
-        if (!enabled) return;
+        if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
 
         String location = SBInfo.getInstance().getLocation();
         if (location == null) return;
@@ -204,12 +204,12 @@ public class FairySouls {
                 case "on":
                 case "enable":
                     print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
-                    enabled = true;
+                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = true;
                     return;
                 case "off":
                 case "disable":
                     print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
-                    enabled = false;
+                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = false;
                     return;
                 case "clear": {
                     String location = SBInfo.getInstance().getLocation();

@@ -3,7 +3,7 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.*;
-import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,9 +23,9 @@ public class SkillOverlays {
                     "For the overlays to show you need a \u00A7bmathematical hoe\u00A77 or an axe with \u00A7bcultivating\u00A77 " +
                     "enchant for farming, a pickaxe with \u00A7bcompact\u00A77 for mining or a rod with \u00A7bexpertise\u00A77"
     )
-    @ConfigEditorButton(
+    @ConfigEditorFSR(
     runnableId = 12,
-    buttonText = "Info"
+    buttonText = ""
     )
     @ConfigAccordionId(id = 2)
     public boolean skillInfo = false;
@@ -58,10 +58,13 @@ public class SkillOverlays {
                     "\u00a7bRemaining XP: \u00a7e3,265",
                     "\u00a7bXP/h: \u00a7e238,129",
                     "\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52",
-                    "\u00a7bETA: \u00a7e13h12m"}
+                    "\u00a7bETA: \u00a7e13h12m",
+                    "\u00a7bPitch: \u00a7e69.42\u00a7l\u1D52",
+                    "\u00a7bCultivating: \u00a7e10,137,945/20,000,000",
+                    "\u00a7bCoins/m \u00a7e57,432"}
     )
     @ConfigAccordionId(id = 0)
-    public List<Integer> farmingText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 7, 6));
+    public List<Integer> farmingText = new ArrayList<>(Arrays.asList(0, 9, 10, 1, 2, 3, 4, 5, 7, 6));
 
     @Expose
     @ConfigOption(
@@ -114,10 +117,11 @@ public class SkillOverlays {
                     "\u00a7bRemaining XP: \u00a7e3,265",
                     "\u00a7bXP/h: \u00a7e238,129",
                     "\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52",
-                    "\u00a7bETA: \u00a7e13h12m"}
+                    "\u00a7bETA: \u00a7e13h12m",
+                    "\u00a7bCompact Progress: \u00a7e137,945/150,000"}
     )
     @ConfigAccordionId(id = 1)
-    public List<Integer> miningText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 7));
+    public List<Integer> miningText = new ArrayList<>(Arrays.asList(0, 8, 1, 2, 3, 4, 5, 7));
 
     @Expose
     @ConfigOption(
@@ -164,17 +168,19 @@ public class SkillOverlays {
                     "\u00a7rHold a fishing rod with expertise enchantment while gaining fishing xp to show the overlay"
     )
     @ConfigEditorDraggableList(
-            exampleText = {"\u00a7bCatches: \u00a7e547,860",
+            exampleText = {"\u00a7bExpertise: \u00a7e7,945/10,000",
                     //"\u00a7bCatches/m: \u00a7e38.29",
-                    "\u00a7bFish: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
+                    "\u00a7bFishing: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
                     "\u00a7bCurrent XP: \u00a7e6,734",
                     "\u00a7bRemaining XP: \u00a7e3,265",
                     "\u00a7bXP/h: \u00a7e238,129",
                     //"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52",
-                    "\u00a7bETA: \u00a7e13h12m"}
+                    "\u00a7bETA: \u00a7e13h12m",
+                    //"\u00a7bExpertise Progress: \u00a7e7,945/10,000",
+                    "\u00a7bTimer: \u00a7e1m15s"}
     )
     @ConfigAccordionId(id = 3)
-    public List<Integer> fishingText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
+    public List<Integer> fishingText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
 
     @Expose
     @ConfigOption(
@@ -198,4 +204,27 @@ public class SkillOverlays {
     )
     @ConfigAccordionId(id = 3)
     public int fishingStyle = 0;
+
+    @Expose
+    @ConfigOption(
+            name = "Toggle Fishing timer",
+            desc = "Start or stop the timer on the fishing overlay\n" +
+                    "Also can plays a ding customizable below"
+    )
+    @ConfigEditorKeybind(defaultKey = Keyboard.KEY_END)
+    @ConfigAccordionId(id = 3)
+    public int fishKey = Keyboard.KEY_END;
+
+    @Expose
+    @ConfigOption(
+            name = "Fishing Timer Alert",
+            desc = "Change the amount of time (seconds) until the timer dings"
+    )
+    @ConfigEditorSlider(
+            minValue = 0,
+            maxValue = 600,
+            minStep = 20
+    )
+    @ConfigAccordionId(id = 3)
+    public int customFishTimer = 300;
 }

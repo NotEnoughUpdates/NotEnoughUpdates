@@ -692,6 +692,7 @@ public class ProfileViewer {
             float experience_skill_fishing = Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_fishing"), 0);
             float experience_skill_alchemy = Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_alchemy"), 0);
             float experience_skill_runecrafting = Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_runecrafting"), 0);
+            float experience_skill_hotm = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
 
             float experience_skill_catacombs = Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.experience"), 0);
 
@@ -721,6 +722,7 @@ public class ProfileViewer {
             skillInfo.addProperty("experience_skill_fishing", experience_skill_fishing);
             skillInfo.addProperty("experience_skill_alchemy", experience_skill_alchemy);
             skillInfo.addProperty("experience_skill_runecrafting", experience_skill_runecrafting);
+            skillInfo.addProperty("experience_skill_hotm", experience_skill_hotm);
 
             skillInfo.addProperty("experience_skill_catacombs", experience_skill_catacombs);
 
@@ -741,9 +743,9 @@ public class ProfileViewer {
             Level level_skill_combat = getLevel(levelingArray, experience_skill_combat, getCap(leveling, "combat"), false);
             Level level_skill_fishing = getLevel(levelingArray, experience_skill_fishing, getCap(leveling, "fishing"), false);
             Level level_skill_alchemy = getLevel(levelingArray, experience_skill_alchemy, getCap(leveling, "alchemy"), false);
+            Level level_skill_hotm = getLevel(levelingArray, experience_skill_hotm, getCap(leveling, "HOTM"), false);
             Level level_skill_runecrafting = getLevel(Utils.getElement(leveling, "runecrafting_xp").getAsJsonArray(),
                     experience_skill_runecrafting, getCap(leveling, "runecrafting"), false);
-
             Level level_skill_catacombs = getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
                     experience_skill_catacombs, getCap(leveling, "catacombs"), false);
 

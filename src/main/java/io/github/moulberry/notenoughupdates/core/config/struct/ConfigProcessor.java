@@ -115,6 +115,10 @@ public class ConfigProcessor {
                             ConfigEditorButton configEditorAnnotation = optionField.getAnnotation(ConfigEditorButton.class);
                             editor = new GuiOptionEditorButton(option, configEditorAnnotation.runnableId(), configEditorAnnotation.buttonText(), config);
                         }
+                        if (optionField.isAnnotationPresent(ConfigEditorFSR.class)) {
+                            ConfigEditorFSR configEditorAnnotation = optionField.getAnnotation(ConfigEditorFSR.class);
+                            editor = new GuiOptionEditorFSR(option, configEditorAnnotation.runnableId(), configEditorAnnotation.buttonText(), config);
+                        }
                         if (optionType.isAssignableFrom(boolean.class) &&
                                 optionField.isAnnotationPresent(ConfigEditorBoolean.class)) {
                             editor = new GuiOptionEditorBoolean(option);

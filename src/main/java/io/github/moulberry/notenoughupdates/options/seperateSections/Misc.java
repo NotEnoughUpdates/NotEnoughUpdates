@@ -28,6 +28,45 @@ public class Misc {
     @ConfigEditorBoolean
     public boolean streamerMode = false;
 
+    @ConfigOption(
+            name = "Fairy Soul Waypoints",
+            desc = ""
+    )
+    @ConfigEditorAccordion(id = 0)
+    public boolean fariySoulAccordion = false;
+    @Expose
+    @ConfigOption(
+            name = "Fairy Souls Finder",
+            desc = "Shows waypoints to fairy souls (/neusouls)"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 0)
+    public boolean fariySoul = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Clear Fairy Souls",
+            desc = "Clears waypoints to fairy souls (/neusouls clear)"
+    )
+    @ConfigEditorButton(
+            runnableId = 16,
+            buttonText = "Clear"
+    )
+    @ConfigAccordionId(id = 0)
+    public boolean fariySoulClear = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Unclear Fairy Souls",
+            desc = "Shows all waypoints to fairy souls (/neusouls unclear)"
+    )
+    @ConfigEditorButton(
+            runnableId = 17,
+            buttonText = "Unclear"
+    )
+    @ConfigAccordionId(id = 0)
+    public boolean fariySoulUnclear = false;
+
     @Expose
     @ConfigOption(
             name = "GUI Click Sounds",
@@ -39,16 +78,18 @@ public class Misc {
     @Expose
     @ConfigOption(
             name = "Replace Chat Social Options",
-            desc = "Replace Hypixel's chat social options with NEU's profile viewer."
+            desc = "Replace Hypixel's chat social options with NEU's profile viewer or with /ah"
     )
-    @ConfigEditorBoolean
-    public boolean replaceSocialOptions = true;
+    @ConfigEditorDropdown(
+            values = {"Off", "/pv", "/ah"}
+    )
+    public int replaceSocialOptions1 = 1;
 
     @Expose
     @ConfigOption(
             name = "Damage Indicator Style",
             desc = "Change the style of Skyblock damage indicators to be easier to read\n" +
-                    "\u00A7cSome old animations mods breaks this feature"
+                    "\u00A7cSome old animations mods break this feature"
     )
     @ConfigEditorDropdown(
             values = {"Off", "Commas", "Shortened"}

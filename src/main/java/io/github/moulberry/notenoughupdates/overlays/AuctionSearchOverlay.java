@@ -202,7 +202,34 @@ public class AuctionSearchOverlay {
 
     }
 
+    private static final ExecutorService searchES = Executors.newSingleThreadExecutor();
+    private static final AtomicInteger searchId = new AtomicInteger(0);
+
+    private static String getItemIdAtIndex(int i) {
+        if (!autocompletedItems.isEmpty()) {
+            if ((i > autocompletedItems.size() - 1) || i < 0 || i > 4) {
+                return "";
+            }
+            String searchString = autocompletedItems.toArray()[i].toString();
+            JsonObject repoObject = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(searchString);
+            String displayname = repoObject.get("displayname").getAsString();
+            if (displayname.contains("Enchanted Book")) {
+                String lore = repoObject.get("lore").getAsJsonArray().get(0).getAsString();
+                String name = lore.substring(0, lore.lastIndexOf(" "));
+                return Utils.cleanColour(name);
+            } else {
+                return Utils.cleanColour(displayname);
+            }
+        } else {
+            return null;
+        }
+    }
+
     public static void close() {
+        if (tabCompleted) {
+            tabCompletionIndex = -1;
+            tabCompleted = false;
+        }
         if (NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) {
             search();
         } else {
@@ -277,27 +304,44 @@ public class AuctionSearchOverlay {
         }
     }
 
-    private static final ExecutorService searchES = Executors.newSingleThreadExecutor();
-    private static final AtomicInteger searchId = new AtomicInteger(0);
-
-    private static String getItemIdAtIndex(int i) {
-        if (!autocompletedItems.isEmpty()) {
-            if ((i > autocompletedItems.size() - 1) || i < 0 || i > 4) {
-                return "";
-            }
-            String searchString = autocompletedItems.toArray()[i].toString();
-            JsonObject repoObject = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(searchString);
-            String displayname = repoObject.get("displayname").getAsString();
-            if (displayname.contains("Enchanted Book")) {
-                String lore = repoObject.get("lore").getAsJsonArray().get(0).getAsString();
-                String name = lore.substring(0, lore.lastIndexOf(" "));
-                return Utils.cleanColour(name);
+    private static boolean updateTabCompletedSearch(int key) {
+        String id;
+        if (key == Keyboard.KEY_DOWN || key == Keyboard.KEY_TAB) {
+            id = getItemIdAtIndex(tabCompletionIndex + 1);
+            if (id == null) {
+                textField.setFocus(true);
+                textField.setText(searchString);
+                tabCompleted = false;
+                tabCompletionIndex = -1;
+                return true;
+            } else if (id.equals("")) {
+                tabCompletionIndex = 0;
+                return true;
             } else {
-                return Utils.cleanColour(displayname);
+                searchString = id;
+                tabCompletionIndex += 1;
+                return true;
             }
-        } else {
-            return null;
+        } else if (key == Keyboard.KEY_UP) {
+            id = getItemIdAtIndex(tabCompletionIndex - 1);
+            if (id == null) {
+                textField.setFocus(true);
+                textField.setText(searchString);
+                tabCompleted = false;
+                tabCompletionIndex = -1;
+                return true;
+            } else if (id.equals("")) {
+                if (autocompletedItems.size() > 4) tabCompletionIndex = 4;
+                else tabCompletionIndex = autocompletedItems.size() - 1;
+                tabCompletionIndex = autocompletedItems.size() - 1;
+                return true;
+            } else {
+                searchString = id;
+                tabCompletionIndex -= 1;
+                return true;
+            }
         }
+        return false;
     }
 
     public static void search() {
@@ -352,67 +396,47 @@ public class AuctionSearchOverlay {
     }
 
     public static void keyEvent() {
+        boolean ignoreKey = false;
+
         if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
             searchStringExtra = "";
             close();
             if (NotEnoughUpdates.INSTANCE.config.ahTweaks.escFullClose) {
                 Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
             }
+            return;
         } else if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
             searchStringExtra = "";
             close();
+            return;
         } else if (Keyboard.getEventKey() == Keyboard.KEY_TAB) {
             //autocomplete to first item in the list
-            tabCompleted = true;
-            String id = getItemIdAtIndex(0);
-            if (id == null) {
-                tabCompleted = false;
-                textField.setFocus(true);
-                textField.setText(searchString);
-            } else {
-                tabCompletionIndex = 0;
-                searchString = id;
-            }
-        } else if (Keyboard.getEventKeyState()) {
-            if (tabCompleted) {
-                String id;
-                switch (Keyboard.getEventKey()) {
-                    case Keyboard.KEY_DOWN:
-                        id = getItemIdAtIndex(tabCompletionIndex + 1);
-                        if (id == null) {
-                            textField.setFocus(true);
-                            textField.setText(searchString);
-                            tabCompleted = false;
-                            tabCompletionIndex = -1;
-                        } else if (id.equals("")) {
-                            //At the end of the autocompletion List, do nothing
-                            return;
-                        } else {
-                            searchString = id;
-                            tabCompletionIndex += 1;
-                            return;
-                        }
-                        break;
-                    case Keyboard.KEY_UP:
-                        id = getItemIdAtIndex(tabCompletionIndex - 1);
-                        if (id == null) {
-                            textField.setFocus(true);
-                            textField.setText(searchString);
-                            tabCompleted = false;
-                            tabCompletionIndex = -1;
-                        } else if (id.equals("")) {
-                            //At the end of the autocompletion List, do nothing
-                            return;
-                        } else {
-                            searchString = id;
-                            tabCompletionIndex -= 1;
-                            return;
-                        }
-                        break;
-                    default:
-                        tabCompletionIndex = -1;
-                        tabCompleted = false;
+            if (!tabCompleted) {
+                tabCompleted = true;
+                ignoreKey = true;
+                String id = getItemIdAtIndex(0);
+                if (id == null) {
+                    tabCompleted = false;
+                    textField.setFocus(true);
+                    textField.setText(searchString);
+                } else {
+                    tabCompletionIndex = 0;
+                    searchString = id;
                 }
+            }
+        }
+
+        if (Keyboard.getEventKeyState()) {
+            if (tabCompleted) {
+                if (!ignoreKey) {
+                    boolean success = updateTabCompletedSearch(Keyboard.getEventKey());
+                    if (success) return;
+                    textField.setFocus(true);
+                    textField.setText(searchString);
+                    tabCompleted = false;
+                    tabCompletionIndex = -1;
+                } else return;
+
             }
             textField.setFocus(true);
             textField.setText(searchString);

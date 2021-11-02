@@ -127,6 +127,11 @@ public class NEUItemEditor extends GuiScreen {
         }));
         rightOptions.add(new GuiElementButton("Add enchant glint", Color.ORANGE.getRGB(), () -> nbttag.setTag("ench", new NBTTagList())));
 
+        rightOptions.add(new GuiElementButton("Remove timestamp/uuid", Color.RED.getRGB(), () -> {
+            nbttag.getCompoundTag("ExtraAttributes").removeTag("uuid");
+            nbttag.getCompoundTag("ExtraAttributes").removeTag("timestamp");
+        }));
+
         resetScrollToTop();
     }
 

@@ -29,6 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -1146,6 +1147,9 @@ public class StorageOverlay extends GuiElement {
                 case 7:
                     vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 1 : 0;
                     break;
+                case 8:
+                    vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint ? 1 : 0;
+                    break;
             }
 
             Utils.drawTexturedRect(buttonX, buttonY, 16, 16, minU, maxU, (vIndex * 16) / 256f, (vIndex * 16 + 16) / 256f, GL11.GL_NEAREST);
@@ -1230,6 +1234,21 @@ public class StorageOverlay extends GuiElement {
                                 NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus ? 0 : 1,
                                 "On",
                                 "Off"
+                        );
+                        break;
+                    case 8:
+                        tooltipToDisplay = createTooltip(
+                                "Show Enchant Glint",
+                                NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint ? 0 : 1,
+                                "On",
+                                "Off"
+                        );
+                        break;
+                    case 9:
+                        tooltipToDisplay = createTooltip(
+                                "Open Full Settings",
+                                0,
+                                "Click To Open"
                         );
                         break;
                 }
@@ -1741,6 +1760,13 @@ public class StorageOverlay extends GuiElement {
                     NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus =
                             !NotEnoughUpdates.INSTANCE.config.storageGUI.searchBarAutofocus;
                     break;
+                case 8:
+                    NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint =
+                            !NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint;
+                    break;
+                case 9:
+                    ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neu storage gui");
+                    break;
             }
             dirty = true;
         }
@@ -1963,7 +1989,9 @@ public class StorageOverlay extends GuiElement {
     private void renderEnchOverlay(Set<Vector2f> locations) {
         float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
         float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
-        Minecraft.getMinecraft().getTextureManager().bindTexture(RES_ITEM_GLINT);
+        if (NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(RES_ITEM_GLINT);
+        }
 
         GL11.glPushMatrix();
         for (Vector2f loc : locations) {

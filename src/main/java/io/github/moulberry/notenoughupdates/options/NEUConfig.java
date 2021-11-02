@@ -95,6 +95,12 @@ public class NEUConfig extends Config {
                 return;
             case 14:
                 editOverlay(activeConfigCategory, OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
+                return;
+            case 16:
+                ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls clear");
+                return;
+            case 17:
+                ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls unclear");
         }
     }
 
@@ -104,6 +110,13 @@ public class NEUConfig extends Config {
             desc = "Miscellaneous options which don't fit into any other category"
     )
     public Misc misc = new Misc();
+
+    @Expose
+    @Category(
+            name = "GUI Locations",
+            desc = "Edit the GUI locations of everything here"
+    )
+    public LocationEdit locationedit = new LocationEdit();
 
     @Expose
     @Category(
@@ -251,6 +264,7 @@ public class NEUConfig extends Config {
             desc = "Accessory Bag Overlay"
     )
     public AccessoryBag accessoryBag = new AccessoryBag();
+
 
     @Expose
     @Category(

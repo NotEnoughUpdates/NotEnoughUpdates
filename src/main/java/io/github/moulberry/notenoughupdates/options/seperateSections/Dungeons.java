@@ -15,9 +15,9 @@ public class Dungeons {
             name = "\u00A7cWarning",
             desc = "If you are on Entrance, Floor 1 or Master 1 the map wont work properly"
     )
-    @ConfigEditorButton(
+    @ConfigEditorFSR(
             runnableId = 12,
-            buttonText = "Info"
+            buttonText = ""
     )
     @ConfigAccordionId(id = 0)
     public boolean dungeonF1Warning = false;
@@ -117,9 +117,9 @@ public class Dungeons {
             desc = "You need Fast Render and Antialiasing off for these settings to work\n" +
                     "You can find these in your video settings"
     )
-    @ConfigEditorButton(
+    @ConfigEditorFSR(
             runnableId = 12,
-            buttonText = "Info"
+            buttonText = ""
     )
     @ConfigAccordionId(id = 2)
     public boolean dungeonBlockWarning = false;

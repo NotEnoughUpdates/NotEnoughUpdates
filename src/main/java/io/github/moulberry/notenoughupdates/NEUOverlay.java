@@ -1308,6 +1308,10 @@ public class NEUOverlay extends Gui {
                 case "ironm00n":
                     searchedItems.add(CustomItems.IRONM00N);
                     break;
+                case "nopo":
+                case "nopothegamer":
+                    searchedItems.add(CustomItems.NOPO);
+                    break;
             }
 
             this.searchedItems = searchedItems;

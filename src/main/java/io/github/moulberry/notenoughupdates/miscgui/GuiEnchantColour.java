@@ -10,9 +10,11 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -30,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
 
 public class GuiEnchantColour extends GuiScreen {
 
@@ -183,6 +187,56 @@ public class GuiEnchantColour extends GuiScreen {
             yIndex++;
         }
         renderSideBar(mouseX, mouseY, partialTicks);
+        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        List<String> tooltipToDisplay = null;
+        GlStateManager.color(1, 1, 1, 1);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(help);
+        Utils.drawTexturedRect(guiLeft + xSize + 3, guiTopSidebar - 18, 16, 16, GL11.GL_NEAREST);
+
+        if (mouseX >= guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 19) {
+            if (mouseY >= guiTopSidebar - 18 && mouseY <= guiTopSidebar - 2) {
+                tooltipToDisplay = Lists.newArrayList(
+                EnumChatFormatting.AQUA+"NEUEC Colouring Guide",
+                        EnumChatFormatting.GREEN+"",
+                        EnumChatFormatting.GREEN+"How to use the GUI",
+                        EnumChatFormatting.YELLOW+"Type the name of the enchant you want to colour in the left box",
+                        EnumChatFormatting.YELLOW+"Change the comparison: ",
+                        EnumChatFormatting.RED+"> "+EnumChatFormatting.YELLOW+"greater than a level ",
+                        EnumChatFormatting.RED+"= "+EnumChatFormatting.YELLOW+"equals the level ",
+                        EnumChatFormatting.RED+"< "+EnumChatFormatting.YELLOW+"less than a level",
+                        EnumChatFormatting.YELLOW+"Put the level of enchant you want to color in the middle box",
+                        EnumChatFormatting.YELLOW+"Put the color code you want to use here",
+                        EnumChatFormatting.GREEN+"",
+                        EnumChatFormatting.GREEN+"Available colour codes:",
+                        Utils.chromaString("z = Chroma"),
+                        EnumChatFormatting.DARK_BLUE+"1 = Dark Blue",
+                        EnumChatFormatting.DARK_GREEN+"2 = Dark Green",
+                        EnumChatFormatting.DARK_AQUA+"3 = Dark Aqua",
+                        EnumChatFormatting.DARK_RED+"4 = Dark Red",
+                        EnumChatFormatting.DARK_PURPLE+"5 = Dark Purple",
+                        EnumChatFormatting.GOLD+"6 = Gold",
+                        EnumChatFormatting.GRAY+"7 = Gray",
+                        EnumChatFormatting.DARK_GRAY+"8 = Dark Gray",
+                        EnumChatFormatting.BLUE+"9 = Blue",
+                        EnumChatFormatting.GREEN+"a = Green",
+                        EnumChatFormatting.AQUA+"b = Aqua",
+                        EnumChatFormatting.RED+"c = Red",
+                        EnumChatFormatting.LIGHT_PURPLE+"d = Purple",
+                        EnumChatFormatting.YELLOW+"e = Yellow",
+                        EnumChatFormatting.WHITE+"f = White",
+                        "\u00A7ZZ = SBA Chroma"+EnumChatFormatting.RESET+EnumChatFormatting.GRAY+" (Requires SBA)",
+                        "",
+                        EnumChatFormatting.GREEN+"Available formatting:",
+                        EnumChatFormatting.GRAY+""+EnumChatFormatting.BOLD+"B = "+EnumChatFormatting.BOLD+"Bold",
+                        EnumChatFormatting.GRAY+""+EnumChatFormatting.STRIKETHROUGH+"S"+EnumChatFormatting.RESET+EnumChatFormatting.GRAY+" = "+EnumChatFormatting.STRIKETHROUGH+"Strikethrough",
+                        EnumChatFormatting.GRAY+""+EnumChatFormatting.UNDERLINE+"U"+EnumChatFormatting.RESET+EnumChatFormatting.GRAY+" = "+EnumChatFormatting.UNDERLINE+"Underline",
+                        EnumChatFormatting.GRAY+""+EnumChatFormatting.ITALIC+"I"+EnumChatFormatting.RESET+EnumChatFormatting.GRAY+" = "+EnumChatFormatting.ITALIC+"Italic"
+                );
+                Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                tooltipToDisplay = null;
+            }
+        }
+
     }
 
     private void renderSideBar(int mouseX, int mouseY, float partialTicks) {

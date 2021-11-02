@@ -1034,6 +1034,14 @@ public class Utils {
         return prim.getAsFloat();
     }
 
+    public static int getElementAsInt(JsonElement element, int def) {
+        if (element == null) return def;
+        if (!element.isJsonPrimitive()) return def;
+        JsonPrimitive prim = element.getAsJsonPrimitive();
+        if (!prim.isNumber()) return def;
+        return prim.getAsInt();
+    }
+
     public static String getElementAsString(JsonElement element, String def) {
         if (element == null) return def;
         if (!element.isJsonPrimitive()) return def;

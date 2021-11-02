@@ -70,6 +70,12 @@ public class CustomItems {
             "Your life has been a lie,",
             "the moon is made out of iron."
     );
+    public static JsonObject NOPO = create(
+            "nopo",
+            "writable_book",
+            "Nopo",
+            "We do a lil Chatting"
+    );
 
     /**
      * SHAAAAAAAAAAAAAAAAAAME
