@@ -70,10 +70,15 @@ public class FairySouls {
                         String profileName = SBInfo.getInstance().currentProfile;
                         if (profileName == null) {
                             if (loadedFoundSouls.containsKey(unknownProfile)) {
-                                loadedFoundSouls.get(unknownProfile);
+                                loadedFoundSouls.get(unknownProfile).put(location, found);
                             }
                         } else {
-                            loadedFoundSouls.get(profileName).remove(location);
+                            profileName = profileName.toLowerCase();
+                            if (!loadedFoundSouls.containsKey(profileName)) {
+                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
+                                loadedFoundSouls.put(profileName, profileData);
+                            }
+                            loadedFoundSouls.get(profileName).put(location, found);
                         }
                         print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as found");
                     }
@@ -90,6 +95,11 @@ public class FairySouls {
                                 loadedFoundSouls.get(unknownProfile).remove(location);
                             }
                         } else {
+                            profileName = profileName.toLowerCase();
+                            if (!loadedFoundSouls.containsKey(profileName)) {
+                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
+                                loadedFoundSouls.put(profileName, profileData);
+                            }
                             loadedFoundSouls.get(profileName).remove(location);
                         }
                         print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as not found");
