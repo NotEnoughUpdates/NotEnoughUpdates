@@ -33,7 +33,6 @@ public class FairySouls {
     private static List<BlockPos> currentSoulListClose = null;
     private static HashMap<String, HashMap<String, Set<Integer>>> loadedFoundSouls = new HashMap<>();
 
-    private static boolean enabled = false;
     private static final SimpleCommand.ProcessCommandRunnable fairysoulRunnable = new SimpleCommand.ProcessCommandRunnable() {
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
@@ -50,12 +49,12 @@ public class FairySouls {
                 case "on":
                 case "enable":
                     print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
-                    enabled = true;
+                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = true;
                     return;
                 case "off":
                 case "disable":
                     print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
-                    enabled = false;
+                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = false;
                     return;
                 case "clear": {
                     String location = SBInfo.getInstance().getLocation();
@@ -205,7 +204,7 @@ public class FairySouls {
     }
 
     public static void tick() {
-        if (!enabled) return;
+        if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
 
         if (Minecraft.getMinecraft().theWorld == null) {
             currentSoulList = null;
@@ -327,7 +326,7 @@ public class FairySouls {
 
     @SubscribeEvent
     public void onRenderLast(RenderWorldLastEvent event) {
-        if (!enabled) return;
+        if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
 
         String location = SBInfo.getInstance().getLocation();
         if (location == null) return;
