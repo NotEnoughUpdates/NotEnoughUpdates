@@ -28,6 +28,7 @@ public class FarmingOverlay extends TextOverlay {
     private String cultivatingTierAmount = "1";
     private int Farming = -1;
     private int Alch = -1;
+    private int Foraging = -1;
     private double Coins = -1;
     private float cropsPerSecondLast = 0;
     private float cropsPerSecond = 0;
@@ -84,7 +85,6 @@ public class FarmingOverlay extends TextOverlay {
                 NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 
                 if(ea.hasKey("mined_crops", 99)) {
-                    //TODO make cult show separate gui option
                     counter = ea.getInteger("mined_crops");
                     cultivating = ea.getInteger("farmed_cultivating");
                     counterQueue.add(0, counter);
@@ -156,10 +156,17 @@ public class FarmingOverlay extends TextOverlay {
             skillType = "Alchemy";
             Farming = 0;
             Alch = 1;
+            Foraging = 0;
+        } else if (internalname != null && internalname.startsWith("TREECAPITATOR_AXE") || (internalname != null && internalname.startsWith("JUNGLE_AXE"))) {
+            skillType = "Foraging";
+            Farming = 0;
+            Alch = 0;
+            Foraging = 1;
         } else {
             skillType = "Farming";
             Farming = 1;
             Alch = 0;
+            Foraging = 0;
         }
 
         if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS") || (internalname != null && internalname.equals("COCO_CHOPPER"))) {
@@ -167,7 +174,8 @@ public class FarmingOverlay extends TextOverlay {
         } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO") || (internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT"))
                 || (internalname != null && internalname.equals("CACTUS_KNIFE")) || (internalname != null && internalname.startsWith("THEORETICAL_HOE_WHEAT"))) {
             Coins = 1;
-        } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE") || (internalname != null && internalname.equals("TREECAPITATOR_AXE"))) {
+        } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE") || (internalname != null && internalname.equals("TREECAPITATOR_AXE"))
+                || (internalname != null && internalname.equals("JUNGLE_AXE")) ) {
             Coins = 2;
         } else if ((internalname != null && internalname.equals("PUMPKIN_DICER")) || (internalname != null && internalname.equals("FUNGI_CUTTER"))) {
             Coins = 4;
@@ -266,11 +274,11 @@ public class FarmingOverlay extends TextOverlay {
 
             if (counter >= 0) {
                 if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
-                    lineMap.put(1, EnumChatFormatting.AQUA + "Crops/m: " + EnumChatFormatting.YELLOW + "N/A");
+                    lineMap.put(1, EnumChatFormatting.AQUA + (Foraging==1 ? "Logs/m: " : "Crops/m: ") + EnumChatFormatting.YELLOW + "N/A");
                 } else {
                     float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
 
-                    lineMap.put(1, EnumChatFormatting.AQUA + "Crops/m: " + EnumChatFormatting.YELLOW +
+                    lineMap.put(1, EnumChatFormatting.AQUA + (Foraging==1 ? "Logs/m: " : "Crops/m: ")  + EnumChatFormatting.YELLOW +
                             String.format("%,.2f", cpsInterp * 60));
                 }
             }
@@ -306,7 +314,7 @@ public class FarmingOverlay extends TextOverlay {
             }
 
             if (skillInfo != null && skillInfo.level < 60) {
-                StringBuilder levelStr = new StringBuilder(EnumChatFormatting.AQUA + skillType.substring(0, 4) + ": ");
+                StringBuilder levelStr = new StringBuilder(EnumChatFormatting.AQUA + skillType + ": ");
 
                 levelStr.append(EnumChatFormatting.YELLOW)
                         .append(skillInfo.level)
@@ -367,7 +375,9 @@ public class FarmingOverlay extends TextOverlay {
                 }
 
                 if (Alch == 0) {
-                    lineMap.put(2, EnumChatFormatting.AQUA + "Farm: " + EnumChatFormatting.YELLOW + "60 " + EnumChatFormatting.RED + "(Maxed)");
+                    lineMap.put(2, EnumChatFormatting.AQUA + "Farming: " + EnumChatFormatting.YELLOW + "60 " + EnumChatFormatting.RED + "(Maxed)");
+                } else if (Foraging == 1) {
+                    lineMap.put(2, EnumChatFormatting.AQUA + "Foraging: " + EnumChatFormatting.YELLOW + "50 " + EnumChatFormatting.RED + "(Maxed)");
                 } else {
                     lineMap.put(2, EnumChatFormatting.AQUA + "Alch: " + EnumChatFormatting.YELLOW + "50 " + EnumChatFormatting.RED + "(Maxed)");
                 }
