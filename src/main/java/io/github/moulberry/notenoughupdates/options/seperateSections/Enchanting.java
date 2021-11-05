@@ -69,14 +69,14 @@ public class Enchanting {
     @ConfigAccordionId(id = 0)
     public boolean enableEnchantingSolvers = true;
 
-    /*@Expose
+    @Expose
         @ConfigOption(
                 name = "Prevent Misclicks",
                 desc = "Prevent accidentally failing the Chronomatron and Ultrasequencer experiments"
         )
         @ConfigEditorBoolean
         @ConfigAccordionId(id = 0)
-        public boolean preventMisclicks = true;*/
+        public boolean preventMisclicks = true;
 
     @Expose
     @ConfigOption(
