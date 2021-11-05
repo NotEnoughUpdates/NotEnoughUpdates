@@ -2881,7 +2881,8 @@ public class GuiProfileViewer extends GuiScreen {
         float moulStat = (float) ((Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)) * 0.051);
         double moleperkstat = (double) moul / 20 - 0.55 + 50;
         double moleperkstat2 = (double) Math.round(moleperkstat * 100) / 100;
-        float output = (float) (moleperkstat2 % 1) * 100;
+
+        float output = Math.round((float) (moleperkstat2 % 1) * 100);
         if (output == 0) {
             output = 100;
         }
