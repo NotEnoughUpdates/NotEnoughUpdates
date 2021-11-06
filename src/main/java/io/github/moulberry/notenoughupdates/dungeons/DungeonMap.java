@@ -507,7 +507,7 @@ public class DungeonMap {
                     GlStateManager.translate(centerX - mapSizeX / 2, centerY - mapSizeY / 2, 100);
                 }
 
-                if (NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur > 0.1) {
+                if (NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur > 0.1 && NotEnoughUpdates.INSTANCE.config.dungeonMap.dmEnable) {
                     GlStateManager.translate(-centerX + mapSizeX / 2, -centerY + mapSizeY / 2, 0);
                     BackgroundBlur.renderBlurredBackground(NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur,
                             scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(),
