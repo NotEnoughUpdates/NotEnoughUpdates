@@ -133,4 +133,12 @@ public class Misc {
     @ConfigEditorBoolean
     public boolean disableSkullRetexturing = false;
 
+    @Expose
+    @ConfigOption(
+            name = "Disable NPC retexturing",
+            desc = "Disables the NPC retexturing."
+    )
+    @ConfigEditorBoolean
+    public boolean disableNPCRetexturing = false;
+
 }
