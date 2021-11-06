@@ -915,7 +915,7 @@ public class CustomAH extends Gui {
                 256 - (scrollClicked ? 12 : 24), 0, 12, 15);
 
         if (!NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.enableNeuAuctionHouse) {
-            Utils.drawStringCentered(EnumChatFormatting.RED + "NEUAH is DISABLED! Enable in /neusettings.",
+            Utils.drawStringCentered(EnumChatFormatting.RED + "NEUAH is DISABLED! Enable in /neu.",
                     Minecraft.getMinecraft().fontRendererObj, guiLeft + getXSize() / 2, guiTop + getYSize() / 2 - 5, true, 0);
         }
 

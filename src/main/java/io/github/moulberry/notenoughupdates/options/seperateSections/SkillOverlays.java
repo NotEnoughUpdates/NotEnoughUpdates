@@ -72,7 +72,7 @@ public class SkillOverlays {
             desc = "Change the position of the Farming overlay"
     )
     @ConfigEditorButton(
-            runnableId = 14,
+            runnableId = 3,
             buttonText = "Edit"
     )
     @ConfigAccordionId(id = 0)

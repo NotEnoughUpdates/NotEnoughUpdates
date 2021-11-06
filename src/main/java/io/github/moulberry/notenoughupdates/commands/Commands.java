@@ -95,6 +95,7 @@ public class Commands {
         ClientCommandHandler.instance.registerCommand(new FairySouls.FairySoulsCommandAlt());
         ClientCommandHandler.instance.registerCommand(neuHelp);
         ClientCommandHandler.instance.registerCommand(neuFeatures);
+        ClientCommandHandler.instance.registerCommand(neuRepoMode);
     }
 
     SimpleCommand.ProcessCommandRunnable collectionLogRun = new SimpleCommand.ProcessCommandRunnable() {
@@ -333,6 +334,14 @@ public class Commands {
     SimpleCommand resetRepoCommand = new SimpleCommand("neuresetrepo", new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
             NotEnoughUpdates.INSTANCE.manager.resetRepo();
+        }
+    });
+
+    SimpleCommand neuRepoMode = new SimpleCommand("neurepomode", new SimpleCommand.ProcessCommandRunnable() {
+        public void processCommand(ICommandSender sender, String[] args) {
+            NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev;
+            NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing = !NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing;
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Toggled NEU repo dev mode."));
         }
     });
 

@@ -32,7 +32,6 @@ public class EnchantingSolvers {
     }
 
     private static final NBTTagCompound enchTag = new NBTTagCompound();
-
     static {
         enchTag.setTag("ench", new NBTTagList());
     }
@@ -309,19 +308,19 @@ public class EnchantingSolvers {
 
                         if (chronomatronReplayIndex < chronomatronOrder.size()) {
                             String chronomatronCurrent = chronomatronOrder.get(chronomatronReplayIndex);
-                            /*if(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks ||
+                            if(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks ||
                                     chronomatronCurrent.equals(displayName)) {
                                 chronomatronReplayIndex++;
                                 Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
                                         2, mode, Minecraft.getMinecraft().thePlayer);
                                 millisLastClick = currentTime;
-                            }*/
-                            if (chronomatronCurrent.equals(displayName)) {
+                            }
+                            /*if (chronomatronCurrent.equals(displayName)) {
                                 chronomatronReplayIndex++;
                             }
                             Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
                                     2, mode, Minecraft.getMinecraft().thePlayer);
-                            millisLastClick = currentTime;
+                            millisLastClick = currentTime;*/
                         }
                         return true;
                     }
@@ -338,22 +337,22 @@ public class EnchantingSolvers {
                             return true;
                         }
                         long currentTime = System.currentTimeMillis();
-                        /*if(currentTime - millisLastClick > 150 &&
+                        if(currentTime - millisLastClick > 150 &&
                                 (!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks ||
                                 current.containerIndex == slotId)) {
                             ultrasequencerReplayIndex++;
                             Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
                                     2, mode, Minecraft.getMinecraft().thePlayer);
                             millisLastClick = currentTime;
-                        }*/
-                        if (currentTime - millisLastClick > 150) {
+                        }
+                        /*if (currentTime - millisLastClick > 150) {
                             if (current.containerIndex == slotId) {
                                 ultrasequencerReplayIndex++;
                             }
                             Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
                                     2, mode, Minecraft.getMinecraft().thePlayer);
                             millisLastClick = currentTime;
-                        }
+                        }*/
                         return true;
                     } else {
                         return true;
@@ -527,6 +526,7 @@ public class EnchantingSolvers {
             }
         }
     }
+
 
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
