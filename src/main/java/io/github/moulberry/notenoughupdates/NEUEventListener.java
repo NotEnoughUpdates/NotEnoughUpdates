@@ -838,6 +838,8 @@ public class NEUEventListener {
             NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = unformatted.substring("Your new API key is ".length());
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
                     "[NEU] API Key automatically configured"));
+        } else if (unformatted.startsWith("[NEU] API Key automatically configured")) {
+            NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.substring(0, 36);
         }
         if (e.message.getFormattedText().equals(EnumChatFormatting.RESET.toString() +
                 EnumChatFormatting.RED + "You haven't unlocked this recipe!" + EnumChatFormatting.RESET)) {
