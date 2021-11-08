@@ -2006,22 +2006,24 @@ public class NEUEventListener {
                                         missing.add(enchId);
                                     }
                                 }
-                                newTooltip.add("");
-                                StringBuilder currentLine = new StringBuilder(EnumChatFormatting.RED + "Missing: " + EnumChatFormatting.GRAY);
-                                for (int i = 0; i < missing.size(); i++) {
-                                    String enchName = WordUtils.capitalizeFully(missing.get(i).replace("_", " "));
-                                    if (currentLine.length() != 0 && (Utils.cleanColour(currentLine.toString()).length() + enchName.length()) > 40) {
+                                if (!missing.isEmpty()) {
+                                    newTooltip.add("");
+                                    StringBuilder currentLine = new StringBuilder(EnumChatFormatting.RED + "Missing: " + EnumChatFormatting.GRAY);
+                                    for (int i = 0; i < missing.size(); i++) {
+                                        String enchName = WordUtils.capitalizeFully(missing.get(i).replace("_", " "));
+                                        if (currentLine.length() != 0 && (Utils.cleanColour(currentLine.toString()).length() + enchName.length()) > 40) {
+                                            newTooltip.add(currentLine.toString());
+                                            currentLine = new StringBuilder();
+                                        }
+                                        if (currentLine.length() != 0 && i != 0) {
+                                            currentLine.append(", ").append(enchName);
+                                        } else {
+                                            currentLine.append(EnumChatFormatting.GRAY).append(enchName);
+                                        }
+                                    }
+                                    if (currentLine.length() != 0) {
                                         newTooltip.add(currentLine.toString());
-                                        currentLine = new StringBuilder();
                                     }
-                                    if (currentLine.length() != 0 && i != 0) {
-                                        currentLine.append(", ").append(enchName);
-                                    } else {
-                                        currentLine.append(EnumChatFormatting.GRAY).append(enchName);
-                                    }
-                                }
-                                if (currentLine.length() != 0) {
-                                    newTooltip.add(currentLine.toString());
                                 }
                             }
                             passedEnchants = true;
