@@ -195,6 +195,7 @@ public class MiningOverlay extends TextOverlay {
         overlayStrings = null;
         NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 
+
         /*if(Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
             ContainerChest container = (ContainerChest) chest.inventorySlots;
@@ -287,17 +288,17 @@ public class MiningOverlay extends TextOverlay {
                     continue;
                 }
 
-                if (name.matches("\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?")) {
+                if (name.matches("\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?") && hidden != null) {
                     commissions = false;
                     forges = true;
                     continue;
-                } else if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET)) {
+                } else if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET)&& hidden != null) {
                     commissions = true;
                     forges = false;
                     continue;
                 }
                 String clean = StringUtils.cleanColour(name);
-                if (forges && clean.startsWith(" ")) {
+                if (forges && clean.startsWith(" ")&& hidden != null) {
 
                     char firstChar = clean.trim().charAt(0);
                     if (firstChar < '0' || firstChar > '9') {
@@ -349,7 +350,7 @@ public class MiningOverlay extends TextOverlay {
                         }
                         forgeInt++;
                     }
-                } else if (commissions && clean.startsWith(" ")) {
+                } else if (commissions && clean.startsWith(" ") && hidden != null) {
                     String[] split = clean.trim().split(": ");
                     if (split.length == 2) {
                         if (split[1].endsWith("%")) {
@@ -419,7 +420,7 @@ public class MiningOverlay extends TextOverlay {
             } else {
                 pickaxeCooldown = DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
             }
-
+            
             for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
                 switch (index) {
                     case 0:
@@ -432,7 +433,9 @@ public class MiningOverlay extends TextOverlay {
                         overlayStrings.add(gemstonePowder);
                         break;
                     case 3:
-                        overlayStrings.addAll(getForgeStrings(hidden.forgeItems));
+                        if(hidden != null) {
+                            overlayStrings.addAll(getForgeStrings(hidden.forgeItems));
+                        }
                         break;
                     case 4:
                         //overlayStrings.addAll(forgeStringsEmpty); break;
