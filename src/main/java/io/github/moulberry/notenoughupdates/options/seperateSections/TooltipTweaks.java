@@ -52,7 +52,7 @@ public class TooltipTweaks {
     )
     @ConfigEditorBoolean
     @ConfigAccordionId(id = 0)
-    public boolean shortNumberFormatPrices = true;
+    public boolean shortNumberFormatPrices = false;
 
     @Expose
     @ConfigOption(
