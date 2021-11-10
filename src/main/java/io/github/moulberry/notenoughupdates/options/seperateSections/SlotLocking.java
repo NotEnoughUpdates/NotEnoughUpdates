@@ -11,7 +11,7 @@ public class SlotLocking {
             desc = "Make sure you have SBA's locked slots off before you turn NEU's on"
     )
     @ConfigEditorFSR(
-            runnableId = 0
+            runnableId = 12
     )
     public boolean slotLockWarning = false;
 
