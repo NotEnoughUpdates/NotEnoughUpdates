@@ -37,14 +37,14 @@ public class OverlayManager {
                 "\u00a73Fetchur: \u00a7e3h38m",
                 "\u00a73Commissions: \u00a7e3h38m",
                 "\u00a73Experiments: \u00a7e3h38m");
-        textOverlays.add(timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {
+        textOverlays.add(timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.todoOverlay.todoPosition, () -> {
             List<String> strings = new ArrayList<>();
-            for (int i : NotEnoughUpdates.INSTANCE.config.miscOverlays.todoText2) {
+            for (int i : NotEnoughUpdates.INSTANCE.config.todoOverlay.todoText2) {
                 if (i >= 0 && i < todoDummy.size()) strings.add(todoDummy.get(i));
             }
             return strings;
         }, () -> {
-            int style = NotEnoughUpdates.INSTANCE.config.miscOverlays.todoStyle;
+            int style = NotEnoughUpdates.INSTANCE.config.todoOverlay.todoStyle;
             if (style >= 0 && style < TextOverlayStyle.values().length) {
                 return TextOverlayStyle.values()[style];
             }

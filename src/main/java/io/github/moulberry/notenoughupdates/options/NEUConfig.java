@@ -67,7 +67,7 @@ public class NEUConfig extends Config {
                 editOverlay(activeConfigCategory, OverlayManager.petInfoOverlay, petOverlay.petInfoPosition);
                 return;
             case 5:
-                editOverlay(activeConfigCategory, OverlayManager.timersOverlay, miscOverlays.todoPosition);
+                editOverlay(activeConfigCategory, OverlayManager.timersOverlay, todoOverlay.todoPosition);
                 return;
             case 6:
                 NotEnoughUpdates.INSTANCE.openGui = new NEUOverlayPlacements();
@@ -179,7 +179,7 @@ public class NEUConfig extends Config {
             name = "Todo Overlay",
             desc = "Todo Overlay"
     )
-    public MiscOverlays miscOverlays = new MiscOverlays();
+    public TodoOverlay todoOverlay = new TodoOverlay();
 
     @Expose
     @Category(
