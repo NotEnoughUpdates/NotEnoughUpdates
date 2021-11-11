@@ -1,5 +1,6 @@
 package io.github.moulberry.notenoughupdates.overlays;
 
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
@@ -169,9 +170,34 @@ public class FarmingOverlay extends TextOverlay {
             Foraging = 0;
         }
 
-        if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS") || (internalname != null && internalname.equals("COCO_CHOPPER"))) {
-            Coins = 3;
-        } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO") || (internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT"))
+        if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice) {
+            if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS") || (internalname != null && internalname.equals("COCO_CHOPPER"))) {
+                Coins = 3;
+            } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO") || (internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT"))
+                    || (internalname != null && internalname.equals("CACTUS_KNIFE")) || (internalname != null && internalname.startsWith("THEORETICAL_HOE_WHEAT"))) {
+                Coins = 1;
+            } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE") || (internalname != null && internalname.equals("TREECAPITATOR_AXE"))
+                    || (internalname != null && internalname.equals("JUNGLE_AXE"))) {
+                Coins = 2;
+            } else if ((internalname != null && internalname.equals("PUMPKIN_DICER")) || (internalname != null && internalname.equals("FUNGI_CUTTER"))) {
+                Coins = 4;
+            } else if ((internalname != null && internalname.equals("MELON_DICER"))) {
+                Coins = 0.5;
+            } else {
+                Coins = 0;
+            }
+        }
+        if (NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice) {
+            if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS")) {
+                JsonObject wart = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_NETHER_STALK");
+                if (wart != null) {
+                    if (wart.has("curr_sell")) {
+                        Coins = (int) wart.get("curr_sell").getAsFloat();
+                    }
+                }
+            }
+        }
+            /*else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO") || (internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT"))
                 || (internalname != null && internalname.equals("CACTUS_KNIFE")) || (internalname != null && internalname.startsWith("THEORETICAL_HOE_WHEAT"))) {
             Coins = 1;
         } else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE") || (internalname != null && internalname.equals("TREECAPITATOR_AXE"))
@@ -184,7 +210,7 @@ public class FarmingOverlay extends TextOverlay {
         }
         else {
             Coins = 0;
-        }
+        }*/
 
         skillInfoLast = skillInfo;
         skillInfo = XPInformation.getInstance().getSkillInfo(skillType);

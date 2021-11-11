@@ -68,6 +68,15 @@ public class SkillOverlays {
 
     @Expose
     @ConfigOption(
+            name = "Use BZ Price For Coins/m",
+            desc = "Uses the bazzar price instead of NPC price for coins/m"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 0)
+    public boolean useBZPrice = true;
+
+    @Expose
+    @ConfigOption(
             name = "Farming Position",
             desc = "Change the position of the Farming overlay"
     )
