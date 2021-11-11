@@ -142,7 +142,7 @@ public class EnchantingSolvers {
                                         return retStack;
                                     }
                                 } else {
-                                    if (chronomatronReplayIndex + 1 < chronomatronOrder.size()) {
+                                    if (chronomatronReplayIndex + 1 < chronomatronOrder.size() && NotEnoughUpdates.INSTANCE.config.enchantingSolvers.showNextClick) {
                                         String chronomatronNext = chronomatronOrder.get(chronomatronReplayIndex + 1);
                                         if (chronomatronNext.equals(displayName)) {
                                             ItemStack retStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, stack.getItemDamage());

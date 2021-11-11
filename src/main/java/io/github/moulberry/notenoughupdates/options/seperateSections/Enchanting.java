@@ -98,6 +98,15 @@ public class Enchanting {
 
     @Expose
     @ConfigOption(
+            name = "Show Next Click In Chronomatron",
+            desc = "Shows what block you need to click next in Chronomatron"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 0)
+    public boolean showNextClick = true;
+
+    @Expose
+    @ConfigOption(
             name = "Ultrasequencer Next",
             desc = "Set the colour of the glass pane shown behind the element in the ultrasequencer which is next"
     )
