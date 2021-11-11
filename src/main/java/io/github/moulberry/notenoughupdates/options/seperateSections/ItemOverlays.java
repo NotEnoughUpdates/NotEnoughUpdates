@@ -315,7 +315,7 @@ public class ItemOverlays {
             desc = ""
     )
     @ConfigEditorAccordion(id = 6)
-    public boolean FarmingAccordion = false;
+    public boolean farmingAccordion = false;
 
     @Expose
     @ConfigOption(
