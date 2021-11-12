@@ -251,7 +251,7 @@ public class FarmingOverlay extends TextOverlay {
                 JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_CACTUS_GREEN");
                 if (crop != null) {
                     if (crop.has("curr_sell")) {
-                        Coins = crop.get("curr_sell").getAsFloat() / 1296;
+                        Coins = crop.get("curr_sell").getAsFloat() / 160;
                     }
                 }
             }
