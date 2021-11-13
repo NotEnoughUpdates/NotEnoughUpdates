@@ -148,7 +148,7 @@ public class AuctionSearchOverlay {
         int num = 0;
         synchronized (autocompletedItems) {
             String[] autoCompletedItemsArray = autocompletedItems.toArray(new String[0]);
-            for (int i = 0; i < autocompletedItems.size(); i++) {
+            for (int i = 0; i < autoCompletedItemsArray.size(); i++) {
                 String str = autoCompletedItemsArray[i];
                 JsonObject obj = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(str);
                 if (obj != null) {
