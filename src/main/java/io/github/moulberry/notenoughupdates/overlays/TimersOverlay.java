@@ -130,18 +130,18 @@ public class TimersOverlay extends TextOverlay {
                             new ItemStack(Blocks.pumpkin, 1, 0),
                             new ItemStack(Items.flint_and_steel, 1, 0),
                             new ItemStack(Blocks.quartz_ore, 50, 0),
-                            new ItemStack(Items.ender_pearl, 16, 0)
+                            //new ItemStack(Items.ender_pearl, 16, 0)
                     };
                 }
                 long currentTime = System.currentTimeMillis();
 
                 ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
 
-                long fetchurIndex = ((currentTimeEST.getDayOfMonth() + 1) % 13) - 1;
+                long fetchurIndex = ((currentTimeEST.getDayOfMonth() + 1) % 12) - 1;
                 //Added because disabled fetchur and enabled it again but it was showing the wrong item
                 //Lets see if this stays correct
 
-                if (fetchurIndex < 0) fetchurIndex += 13;
+                if (fetchurIndex < 0) fetchurIndex += 12;
 
                 icon = FETCHUR_ICONS[(int) fetchurIndex];
                 break;
