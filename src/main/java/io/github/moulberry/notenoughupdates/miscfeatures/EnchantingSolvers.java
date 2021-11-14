@@ -308,7 +308,7 @@ public class EnchantingSolvers {
 
                         if (chronomatronReplayIndex < chronomatronOrder.size()) {
                             String chronomatronCurrent = chronomatronOrder.get(chronomatronReplayIndex);
-                            if(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks ||
+                            if(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
                                     chronomatronCurrent.equals(displayName)) {
                                 chronomatronReplayIndex++;
                                 Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
@@ -338,7 +338,7 @@ public class EnchantingSolvers {
                         }
                         long currentTime = System.currentTimeMillis();
                         if(currentTime - millisLastClick > 150 &&
-                                (!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks ||
+                                (!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
                                 current.containerIndex == slotId)) {
                             ultrasequencerReplayIndex++;
                             Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,

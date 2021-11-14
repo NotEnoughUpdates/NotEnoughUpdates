@@ -76,7 +76,7 @@ public class Enchanting {
         )
         @ConfigEditorBoolean
         @ConfigAccordionId(id = 0)
-        public boolean preventMisclicks = true;
+        public boolean preventMisclicks1 = false;
 
     @Expose
     @ConfigOption(
