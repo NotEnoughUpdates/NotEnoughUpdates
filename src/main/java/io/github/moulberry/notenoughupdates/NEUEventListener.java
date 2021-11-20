@@ -68,6 +68,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.RNGMeter;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.dungeon_chest_worth;
 
 public class NEUEventListener {
@@ -171,6 +172,7 @@ public class NEUEventListener {
     private static boolean showNotificationOverInv = false;
 
     private static final Pattern BAD_ITEM_REGEX = Pattern.compile("x[0-9]{1,2}$");
+    private static final Pattern SLAYER_XP = Pattern.compile("   (Spider|Zombie|Wolf|Enderman) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
 
     /**
      * 1)Will send the cached message from #sendChatMessage when at least 200ms has passed since the last message.
@@ -830,6 +832,7 @@ public class NEUEventListener {
 
         String r = null;
         String unformatted = Utils.cleanColour(e.message.getUnformattedText());
+        Matcher matcher = SLAYER_XP.matcher(unformatted);
         if (unformatted.startsWith("You are playing on profile: ")) {
             neu.manager.setCurrentProfile(unformatted.substring("You are playing on profile: ".length()).split(" ")[0].trim());
         } else if (unformatted.startsWith("Your profile was changed to: ")) {//Your profile was changed to:
@@ -846,6 +849,19 @@ public class NEUEventListener {
         } else if (e.message.getFormattedText().startsWith(EnumChatFormatting.RESET.toString() +
                 EnumChatFormatting.RED + "Invalid recipe ")) {
             r = "";
+        } else if (unformatted.equals("  NICE! SLAYER BOSS SLAIN!")) {
+            SlayerOverlay.isSlain = true;
+        } else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
+            SlayerOverlay.isSlain = false;
+            SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
+        } else if (unformatted.startsWith("   RNGesus Meter:")) {
+            RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
+        } else if (matcher.matches()) {
+            //matcher.group(1);
+            SlayerOverlay.slayerLVL = matcher.group(2);
+            SlayerOverlay.slayerXp = matcher.group(3);
+        } else if (unformatted.startsWith("Sending to server")) {
+            SlayerOverlay.slayerQuest = false;
         }
         if (e.message.getFormattedText().contains(EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {
             if (NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBid != null &&

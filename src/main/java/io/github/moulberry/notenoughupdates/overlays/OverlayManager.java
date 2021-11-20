@@ -19,6 +19,7 @@ public class OverlayManager {
     public static TimersOverlay timersOverlay;
     public static BonemerangOverlay bonemerangOverlay;
     public static CrystalHollowOverlay crystalHollowOverlay;
+    public static SlayerOverlay slayerOverlay;
     public static final List<TextOverlay> textOverlays = new ArrayList<>();
 
     static {
@@ -210,6 +211,21 @@ public class OverlayManager {
             }
             return TextOverlayStyle.BACKGROUND;
         });
+        List<String> slayerDummy = Lists.newArrayList("Slayer one",
+                "Slayer two");
+        slayerOverlay = new SlayerOverlay(NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerPosition, () -> {
+            List<String> strings = new ArrayList<>();
+            for (int i : NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerText) {
+                if (i >= 0 && i < slayerDummy.size()) strings.add(slayerDummy.get(i));
+            }
+            return strings;
+        }, () -> {
+            int style = NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerStyle;
+            if (style >= 0 && style < TextOverlayStyle.values().length) {
+                return TextOverlayStyle.values()[style];
+            }
+            return TextOverlayStyle.BACKGROUND;
+        });
 
         textOverlays.add(miningOverlay);
         textOverlays.add(farmingOverlay);
@@ -218,6 +234,7 @@ public class OverlayManager {
         textOverlays.add(petInfoOverlay);
         textOverlays.add(bonemerangOverlay);
         textOverlays.add(crystalHollowOverlay);
+        textOverlays.add(slayerOverlay);
     }
 
 }

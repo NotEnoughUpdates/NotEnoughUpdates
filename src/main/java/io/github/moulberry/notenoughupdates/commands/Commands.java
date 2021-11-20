@@ -716,7 +716,7 @@ public class Commands {
             "Ok, this is actually the last message, use the command again and you'll crash I promise"};
     private int devFailIndex = 0;
 
-    private static final List<String> devTestUsers = new ArrayList<>(Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio"));
+    private static final List<String> devTestUsers = new ArrayList<>(Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo"));
     SimpleCommand devTestCommand = new SimpleCommand("neudevtest", new SimpleCommand.ProcessCommandRunnable() {
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
@@ -765,6 +765,11 @@ public class Commands {
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("saveconfig")) {
                 NotEnoughUpdates.INSTANCE.saveConfig();
+                return;
+            }
+            if (args.length == 1 && args[0].equalsIgnoreCase("searchmode")) {
+                NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA + "I would never search"));
                 return;
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("center")) {

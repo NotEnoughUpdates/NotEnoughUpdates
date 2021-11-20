@@ -101,6 +101,10 @@ public class NEUConfig extends Config {
                 return;
             case 17:
                 ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls unclear");
+                return;
+            case 18:
+                editOverlay(activeConfigCategory, OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
+
         }
     }
 
@@ -180,6 +184,13 @@ public class NEUConfig extends Config {
             desc = "Todo Overlay"
     )
     public MiscOverlays miscOverlays = new MiscOverlays();
+
+    @Expose
+    @Category(
+            name = "Slayer Overlay",
+            desc = "Slayer Overlay"
+    )
+    public SlayerOverlay slayerOverlay = new SlayerOverlay();
 
     @Expose
     @Category(
