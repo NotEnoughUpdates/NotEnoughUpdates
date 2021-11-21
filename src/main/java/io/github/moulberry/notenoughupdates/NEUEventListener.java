@@ -68,7 +68,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.RNGMeter;
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.*;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.dungeon_chest_worth;
 
 public class NEUEventListener {
@@ -853,14 +853,23 @@ public class NEUEventListener {
             SlayerOverlay.isSlain = true;
         } else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
             SlayerOverlay.isSlain = false;
-            SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
+            if (timeSinceLastBoss == 0) {
+                SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
+            } else {
+                timeSinceLastBoss2 = timeSinceLastBoss;
+                timeSinceLastBoss = System.currentTimeMillis();
+            }
         } else if (unformatted.startsWith("   RNGesus Meter:")) {
             RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
         } else if (matcher.matches()) {
             //matcher.group(1);
             SlayerOverlay.slayerLVL = matcher.group(2);
-            SlayerOverlay.slayerXp = matcher.group(3);
-        } else if (unformatted.startsWith("Sending to server")) {
+            if (!SlayerOverlay.slayerLVL.equals("9")) {
+                SlayerOverlay.slayerXp = matcher.group(3);
+            } else {
+                slayerXp = "maxed";
+            }
+        } else if (unformatted.startsWith("Sending to server") || (unformatted.startsWith("Your Slayer Quest has been cancelled!"))) {
             SlayerOverlay.slayerQuest = false;
         }
         if (e.message.getFormattedText().contains(EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {

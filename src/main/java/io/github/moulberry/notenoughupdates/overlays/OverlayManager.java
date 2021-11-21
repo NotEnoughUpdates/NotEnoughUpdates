@@ -211,8 +211,13 @@ public class OverlayManager {
             }
             return TextOverlayStyle.BACKGROUND;
         });
-        List<String> slayerDummy = Lists.newArrayList("Slayer one",
-                "Slayer two");
+        List<String> slayerDummy = Lists.newArrayList("\u00a7eSlayer: \u00a74Sven",
+                "\u00a7eRNG Meter: \u00a75100%",
+                "\u00a7eLvl: \u00a7d7",
+                "\u00a7eKill time: \u00a7c1:30",
+                "\u00a7eXP: \u00a7d75,450/100,000",
+                "\u00a7eBosses till next Lvl: \u00a7d17",
+                "\u00a7eAverage kill time: \u00a7c3:20");
         slayerOverlay = new SlayerOverlay(NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerPosition, () -> {
             List<String> strings = new ArrayList<>();
             for (int i : NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerText) {

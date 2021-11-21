@@ -198,6 +198,19 @@ public class SBInfo {
                 if (lines.contains("Slayer Quest")) {
                     SlayerOverlay.slayerQuest = true;
                 }
+                if (SlayerOverlay.slayerQuest) {
+                    if (line.contains(" I")) {
+                        SlayerOverlay.slayerTier = 1;
+                    } if (line.contains(" II")) {
+                        SlayerOverlay.slayerTier = 2;
+                    } if (line.contains(" III")) {
+                        SlayerOverlay.slayerTier = 3;
+                    } if (line.contains(" IV")) {
+                        SlayerOverlay.slayerTier = 4;
+                    } if (line.contains(" V")) {
+                        SlayerOverlay.slayerTier = 5;
+                    }
+                }
             }
 
             if (lines.size() >= 5) {
