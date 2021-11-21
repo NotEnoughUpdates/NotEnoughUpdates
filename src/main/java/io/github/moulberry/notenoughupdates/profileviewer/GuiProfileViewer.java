@@ -3553,7 +3553,7 @@ public class GuiProfileViewer extends GuiScreen {
                             "§7Level " + quickForge + EnumChatFormatting.DARK_GRAY + "/20",
                             "",
                             "§7Decreases the time it takes to",
-                            "§7forge by §a" + quickForgeStat + "%§7."
+                            "§7forge by §a" + (quickForgeStat < 20 ? quickForgeStat : 30) + "%§7."
                     );
                     Utils.drawHoveringText(quickForgeTooltip, mouseX, mouseY, width, height, -1, fr);
                     quickForgeTooltip = null;
