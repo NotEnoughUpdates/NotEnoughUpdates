@@ -43,7 +43,7 @@ public class NPCRetexturing implements IResourceManagerReloadListener {
     public Skin getSkin(AbstractClientPlayer player) {
         if (gettingSkin) return null;
 
-        if (player.getUniqueID().version() == 4) return null;
+        if (player.getUniqueID().version() == 4 && !NotEnoughUpdates.INSTANCE.config.hidden.npcRetextureOnSelf) return null;
 
         if (skinOverrideCache.containsKey(player)) {
             return skinOverrideCache.get(player);

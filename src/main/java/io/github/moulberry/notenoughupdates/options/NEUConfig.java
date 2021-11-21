@@ -342,6 +342,10 @@ public class NEUConfig extends Config {
         @Expose
         public boolean disableBrokenCapes = false;
 
+        //Ery wanted to texture himself because its ery
+        @Expose
+        public boolean npcRetextureOnSelf = false;
+
     }
 
     public static ArrayList<String> createDefaultEnchantColours() {
