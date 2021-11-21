@@ -96,6 +96,7 @@ public class NEUOverlay extends Gui {
     //Various constants used for GUI structure
     private final int searchBarYOffset = 10;
     private final int searchBarPadding = 2;
+    private long lastSearchMode = 0;
 
     private float oldWidthMult = 0;
 
@@ -197,6 +198,7 @@ public class NEUOverlay extends Gui {
                     } else {
                         if (System.currentTimeMillis() - millisLastLeftClick < 300) {
                             searchMode = !searchMode;
+                            lastSearchMode = System.currentTimeMillis();
                             if (searchMode && NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus) {
                                 NEUEventListener.displayNotification(Lists.newArrayList(
                                         "\u00a7eSearch Highlight",
@@ -2041,6 +2043,10 @@ public class NEUOverlay extends Gui {
         GlStateManager.disableLighting();
 
         Utils.pushGuiScale(-1);
+
+        if (System.currentTimeMillis() - lastSearchMode > 120000) {
+            searchMode = false;
+        }
     }
 
     /**
