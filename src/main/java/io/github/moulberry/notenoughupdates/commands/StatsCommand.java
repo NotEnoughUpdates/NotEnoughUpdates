@@ -34,12 +34,18 @@ public class StatsCommand extends ClientCommandBase {
         super("neustats");
     }
 
+    private static int activeModCount = Loader.instance().getActiveModList().size();
+
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length > 0) {
             switch (args[0].toLowerCase(Locale.ROOT)) {
                 case "modlist":
-                    clipboardAndSendMessage(createModList(new DiscordMarkdownBuilder()).toString());
+                    if (activeModCount > 15) {
+                        clipboardAndSendMessage(createModList(new DiscordMarkdownBuilder()).toString());
+                    } else {
+                        clipboardAndSendMessage(createStats());
+                    }
                     break;
                 case "dump":
                     modPrefixedMessage(EnumChatFormatting.GREEN + "This will upload a dump of the java classes your game has loaded how big they are and how many there are. This can take a few seconds as it is uploading to HasteBin.");
@@ -95,7 +101,6 @@ public class StatsCommand extends ClientCommandBase {
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long currentMemory = totalMemory - freeMemory;
-        int activeModCount = Loader.instance().getActiveModList().size();
 
         builder.category("System Stats");
         builder.append("OS", System.getProperty("os.name"));
