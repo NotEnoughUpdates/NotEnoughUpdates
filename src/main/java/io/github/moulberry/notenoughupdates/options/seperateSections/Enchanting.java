@@ -20,7 +20,7 @@ public class Enchanting {
     @ConfigAccordionId(id = 1)
     public boolean enableTableGUI = true;
 
-    @Expose
+    /*@Expose
     @ConfigOption(
             name = "Incompatible Enchants",
             desc = "How to display enchants that are incompatible with your current item, eg. Smite on a sword with Sharpness"
@@ -29,7 +29,7 @@ public class Enchanting {
             values = {"Highlight", "Hide"}
     )
     @ConfigAccordionId(id = 1)
-    public int incompatibleEnchants = 0;
+    public int incompatibleEnchants = 0;*/
 
     @Expose
     @ConfigOption(
