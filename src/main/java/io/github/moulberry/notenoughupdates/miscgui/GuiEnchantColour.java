@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -25,6 +27,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -84,6 +87,9 @@ public class GuiEnchantColour extends GuiScreen {
         }
         return enchantNamesPretty;
     }
+
+    private ItemStack maxedBook;
+    private int maxedBookFound =0;
 
     private List<String> getEnchantColours() {
         return NotEnoughUpdates.INSTANCE.config.hidden.enchantColours;
@@ -192,8 +198,31 @@ public class GuiEnchantColour extends GuiScreen {
         GlStateManager.color(1, 1, 1, 1);
         Minecraft.getMinecraft().getTextureManager().bindTexture(help);
         Utils.drawTexturedRect(guiLeft + xSize + 3, guiTopSidebar - 18, 16, 16, GL11.GL_NEAREST);
+        //TODO: Actually line the things up and other stuff
+        if(maxedBookFound == 0){
+            try {
+                maxedBook = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MAXED_ENCHANT_BOOK"));
+                maxedBookFound = 1;
+                //TODO: Actually write something to catch any errors
+                //like for example when the json file does not exist cause repo errors
+
+            } catch(Exception ignored){
+                maxedBookFound = 2;
+            }
+        }
+        if (maxedBookFound == 1){
+            Utils.drawItemStack(maxedBook, guiLeft + xSize +3, guiTop - 34);
+        }
+
+
+
 
         if (mouseX >= guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 19) {
+            if(mouseY >= guiTopSidebar - 34 && mouseY <= guiTopSidebar - 18){
+                tooltipToDisplay = maxedBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                tooltipToDisplay = null;
+            }
             if (mouseY >= guiTopSidebar - 18 && mouseY <= guiTopSidebar - 2) {
                 tooltipToDisplay = Lists.newArrayList(
                 EnumChatFormatting.AQUA+"NEUEC Colouring Guide",
