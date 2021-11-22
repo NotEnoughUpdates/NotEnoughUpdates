@@ -74,6 +74,15 @@ public class Toolbar {
 
     @Expose
     @ConfigOption(
+            name = "Auto turnoff search mode",
+            desc = "Turns off the inventory search mode after 2 minutes"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 0)
+    public boolean autoTurnOffSearchMode = true;
+
+    @Expose
+    @ConfigOption(
             name = "Show Quick Commands",
             desc = "Show QuickCommands\u2122 in the NEU toolbar"
     )
