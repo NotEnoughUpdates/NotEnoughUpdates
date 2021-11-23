@@ -586,9 +586,9 @@ public class GuiCustomEnchant extends Gui {
         Utils.drawTexturedRect(guiLeft + 295, guiTop + 147, 16, 16,
                 0, 16 / 512f, 387 / 512f, (387 + 16) / 512f, GL11.GL_NEAREST);
         //Incompatible Settings Button
-        float incompatibleMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants * 16 / 512f;
+        /*float incompatibleMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants * 16 / 512f;
         Utils.drawTexturedRect(guiLeft + 295 + 18, guiTop + 147, 16, 16,
-                incompatibleMinU, incompatibleMinU + 16 / 512f, 403 / 512f, (403 + 16) / 512f, GL11.GL_NEAREST);
+                incompatibleMinU, incompatibleMinU + 16 / 512f, 403 / 512f, (403 + 16) / 512f, GL11.GL_NEAREST);*/
         //Sorting Settings Button
         float sortingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting * 16 / 512f;
         Utils.drawTexturedRect(guiLeft + 295, guiTop + 147 + 18, 16, 16,
