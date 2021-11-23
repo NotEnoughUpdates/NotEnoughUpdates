@@ -14,6 +14,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -84,6 +85,9 @@ public class GuiEnchantColour extends GuiScreen {
         }
         return enchantNamesPretty;
     }
+
+    private ItemStack maxedBook;
+    private int maxedBookFound =0;
 
     private List<String> getEnchantColours() {
         return NotEnoughUpdates.INSTANCE.config.hidden.enchantColours;
@@ -192,8 +196,32 @@ public class GuiEnchantColour extends GuiScreen {
         GlStateManager.color(1, 1, 1, 1);
         Minecraft.getMinecraft().getTextureManager().bindTexture(help);
         Utils.drawTexturedRect(guiLeft + xSize + 3, guiTopSidebar - 18, 16, 16, GL11.GL_NEAREST);
+        if(maxedBookFound == 0){
+            try {
+                if (NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+                        NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MAXED_ENCHANT_BOOK")).hasDisplayName()) {
+                    maxedBook = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MAXED_ENCHANT_BOOK"));
+                    maxedBookFound = 1;
+                } else {
+                    maxedBookFound = 2;
+                }
+                //TODO: Actually write something to catch any errors
+                //like for example when the json file does not exist cause repo errors
+
+            } catch(Exception ignored){
+                maxedBookFound = 2;
+            }
+        }
+        if (maxedBookFound == 1){
+            Utils.drawItemStack(maxedBook, guiLeft + xSize +3, guiTopSidebar - 34);
+        }
 
         if (mouseX >= guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 19) {
+            if(mouseY >= guiTopSidebar - 34 && mouseY <= guiTopSidebar - 18 && maxedBookFound == 1){
+                tooltipToDisplay = maxedBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                tooltipToDisplay = null;
+            }
             if (mouseY >= guiTopSidebar - 18 && mouseY <= guiTopSidebar - 2) {
                 tooltipToDisplay = Lists.newArrayList(
                 EnumChatFormatting.AQUA+"NEUEC Colouring Guide",
