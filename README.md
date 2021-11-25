@@ -26,10 +26,10 @@
     <a href="https://discord.gg/moulberry" target="_blank">
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
-    <!-- patreon -->
-    <a href="https://www.patreon.com/moulberry" target="_blank">
-        <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dmoulberry%26type%3Dpatrons&logoColor=FFFFFF&color=informational" alt="patreon">
-    </a>
+    <!-- downloads -->
+    <a href="https://github.com/Moulberry/NotEnoughUpdates" target="_blank">
+        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=lines&color=informational&logo=GitHub" alt="downloads">
+  </a>
 </p>
 
 NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel Skyblock.
@@ -76,4 +76,4 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 - A custom enchanting table GUI.
 - Slot Locking
 - Fishing Particle customization & alerts.
-- And much, much, more.
+- And [much, much, more.](https://gist.github.com/jani270/d33e249d40b0333b87ba5c5e70fca398)
