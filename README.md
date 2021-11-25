@@ -29,7 +29,7 @@
     <!-- downloads -->
     <a href="https://github.com/Moulberry/NotEnoughUpdates" target="_blank">
         <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=lines&color=informational&logo=GitHub" alt="downloads">
-  </a>
+    </a>
 </p>
 
 NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel Skyblock.
