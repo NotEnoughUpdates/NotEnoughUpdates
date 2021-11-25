@@ -716,6 +716,14 @@ public class NEUManager {
                     break;
                 }
             }
+            if ("RUNE".equals(internalname)) {
+                NBTTagCompound rune = ea.getCompoundTag("runes");
+
+                for (String runename : rune.getKeySet()) {
+                    internalname = runename.toUpperCase() + "_RUNE" + ";" + rune.getInteger(runename);
+                    break;
+                }
+            }
         }
 
         return internalname;
