@@ -871,6 +871,7 @@ public class NEUEventListener {
             }
         } else if (unformatted.startsWith("Sending to server") || (unformatted.startsWith("Your Slayer Quest has been cancelled!"))) {
             SlayerOverlay.slayerQuest = false;
+            SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
         }
         if (e.message.getFormattedText().contains(EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {
             if (NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBid != null &&

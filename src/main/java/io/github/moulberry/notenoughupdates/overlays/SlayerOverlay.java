@@ -32,6 +32,7 @@ public class SlayerOverlay extends TextOverlay {
     public static int slayerTier = 0;
     private static int xpPerBoss = 0;
     private static int bossesUntilNextLevel = 0;
+    public static long unloadOverlayTimer = -1;
 
     public SlayerOverlay(Position position, Supplier<List<String>> dummyStrings, Supplier<TextOverlayStyle> styleSupplier) {
         super(position, dummyStrings, styleSupplier);

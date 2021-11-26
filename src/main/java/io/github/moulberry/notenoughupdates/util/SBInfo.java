@@ -195,7 +195,8 @@ public class SBInfo {
                 } else if (line.contains("Voidgloom Seraph")) {
                     slayer = "Enderman";
                 }
-                if (lines.contains("Slayer Quest")) {
+                if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
+                        lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
                     SlayerOverlay.slayerQuest = true;
                 }
                 if (SlayerOverlay.slayerQuest) {
