@@ -282,9 +282,16 @@ public class MiningOverlay extends TextOverlay {
                 if (name.contains("Mithril Powder:")) {
                     mithrilPowder = DARK_AQUA + Utils.trimIgnoreColour(name).replaceAll("\u00a7[f|F|r]", "");
                     continue;
+                } else if (mithrilPowder == null) {
+                    mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
+                    continue;
                 }
+
                 if (name.contains("Gemstone Powder:")) {
                     gemstonePowder = DARK_AQUA + Utils.trimIgnoreColour(name).replaceAll("\u00a7[f|F|r]", "");
+                    continue;
+                } else if (gemstonePowder == null) {
+                    gemstonePowder = RED + "Please enable player list info in your skyblock settings";
                     continue;
                 }
 
