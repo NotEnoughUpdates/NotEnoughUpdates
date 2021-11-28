@@ -206,7 +206,6 @@ public class APIManager {
             updateBazaar();
         }
         if (currentTime - lastLowestBinUpdate > 2 * 60 * 1000) {
-            lastLowestBinUpdate = currentTime;
             updateLowestBin();
         }
     }
@@ -251,6 +250,9 @@ public class APIManager {
             if (lowestBins == null) {
                 lowestBins = new JsonObject();
             }
+            if (!jsonObject.entrySet().isEmpty()) {
+                lastLowestBinUpdate = System.currentTimeMillis();
+            }
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 lowestBins.add(entry.getKey(), entry.getValue());
             }
@@ -292,6 +294,10 @@ public class APIManager {
                 }
             }
         }
+    }
+
+    public long getLastLowestBinUpdateTime() {
+        return lastLowestBinUpdate;
     }
 
     private final ExecutorService es = Executors.newSingleThreadExecutor();
