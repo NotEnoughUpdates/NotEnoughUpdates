@@ -310,13 +310,39 @@ public class ItemOverlays {
     @ConfigAccordionId(id = 5)
     public boolean alwaysShowCrystal = false;
 
+    @ConfigOption(
+            name = "Farming Overlays",
+            desc = ""
+    )
+    @ConfigEditorAccordion(id = 6)
+    public boolean farmingAccordion = false;
+
     @Expose
     @ConfigOption(
             name = "Enable Prismapump Overlay",
             desc = "Show a block overlay for the effected blocks of prismapump's ability."
     )
     @ConfigEditorBoolean
+    @ConfigAccordionId(id = 6)
     public boolean enablePrismapumpOverlay = true;
+
+    @Expose
+    @ConfigOption(
+            name = "Enable Hoe Of Tilling Overlay",
+            desc = "Show a block overlay for the effected blocks of the hoe of tilling's ability."
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 6)
+    public boolean enableHoeOverlay = true;
+
+    @Expose
+    @ConfigOption(
+            name = "Enable Dirt Wand Overlay",
+            desc = "Show a block overlay for the effected blocks of dirt wand's ability."
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 6)
+    public boolean enableDirtWandOverlay = true;
 
     @Expose
     @ConfigOption(

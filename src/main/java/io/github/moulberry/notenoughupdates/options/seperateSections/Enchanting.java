@@ -69,14 +69,14 @@ public class Enchanting {
     @ConfigAccordionId(id = 0)
     public boolean enableEnchantingSolvers = true;
 
-    /*@Expose
+    @Expose
         @ConfigOption(
                 name = "Prevent Misclicks",
                 desc = "Prevent accidentally failing the Chronomatron and Ultrasequencer experiments"
         )
         @ConfigEditorBoolean
         @ConfigAccordionId(id = 0)
-        public boolean preventMisclicks = true;*/
+        public boolean preventMisclicks1 = false;
 
     @Expose
     @ConfigOption(
@@ -95,6 +95,15 @@ public class Enchanting {
     @ConfigEditorBoolean
     @ConfigAccordionId(id = 0)
     public boolean seqNumbers = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Show Next Click In Chronomatron",
+            desc = "Shows what block you need to click next in Chronomatron"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 0)
+    public boolean showNextClick = true;
 
     @Expose
     @ConfigOption(

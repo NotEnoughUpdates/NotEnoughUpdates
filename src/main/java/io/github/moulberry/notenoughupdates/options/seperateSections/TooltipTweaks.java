@@ -47,6 +47,15 @@ public class TooltipTweaks {
 
     @Expose
     @ConfigOption(
+            name = "Use Short Number Format",
+            desc = "Use Short Numbers (5.1m) instead of 5,130,302"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 0)
+    public boolean shortNumberFormatPrices = false;
+
+    @Expose
+    @ConfigOption(
             name = "Price Info (Inv)",
             desc = "Show price information for items in your inventory"
     )

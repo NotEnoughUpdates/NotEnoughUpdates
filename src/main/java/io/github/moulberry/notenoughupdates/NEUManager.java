@@ -1219,7 +1219,7 @@ public class NEUManager {
 
         HashMap<String, String> replacements = new HashMap<>();
         if (level < 1) {
-            if (Constants.PETS.has("custom_pet_leveling") && Constants.PETS.getAsJsonObject("custom_pet_leveling").has(petname) && Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petname).has("max_level")) {
+            if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") && Constants.PETS.getAsJsonObject("custom_pet_leveling").has(petname) && Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petname).has("max_level")) {
                 int maxLvl = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petname).get("max_level").getAsInt();
                 replacements.put("LVL", "1\u27A1" + maxLvl);
             } else {

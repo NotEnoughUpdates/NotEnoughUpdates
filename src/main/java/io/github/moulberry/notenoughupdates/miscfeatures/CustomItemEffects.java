@@ -784,7 +784,7 @@ public class CustomItemEffects {
                             }
                         }
                     }
-                } else if (heldInternal.equals("INFINIDIRT_WAND") && event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                } else if (heldInternal.equals("INFINIDIRT_WAND") && event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && NotEnoughUpdates.INSTANCE.config.itemOverlays.enableDirtWandOverlay) {
                     BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
                     IBlockState hoverState = Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos().offset(event.target.sideHit, 1));
                     if (hoverState.getBlock() == Blocks.air) {
@@ -889,7 +889,7 @@ public class CustomItemEffects {
                     GlStateManager.depthMask(true);
                     GlStateManager.enableTexture2D();
                     GlStateManager.disableBlend();
-                } else if ((heldInternal.equals("HOE_OF_GREAT_TILLING") || heldInternal.equals("HOE_OF_GREATER_TILLING") && onPrivateIsland) &&
+                } else if ((heldInternal.equals("HOE_OF_GREAT_TILLING") || heldInternal.equals("HOE_OF_GREATER_TILLING") && NotEnoughUpdates.INSTANCE.config.itemOverlays.enableHoeOverlay && onPrivateIsland) &&
                         event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                     BlockPos target = event.target.getBlockPos();
                     IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);

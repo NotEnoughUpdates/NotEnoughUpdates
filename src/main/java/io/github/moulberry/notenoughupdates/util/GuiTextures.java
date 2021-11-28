@@ -25,7 +25,7 @@ public class GuiTextures {
 
     public static final ResourceLocation DISCORD = new ResourceLocation("notenoughupdates:social/discord.png");
     public static final ResourceLocation GITHUB = new ResourceLocation("notenoughupdates:social/github.png");
-    public static final ResourceLocation PATREON = new ResourceLocation("notenoughupdates:social/patreon.png");
+    public static final ResourceLocation TWITCH = new ResourceLocation("notenoughupdates:social/twitch.png");
     public static final ResourceLocation TWITTER = new ResourceLocation("notenoughupdates:social/twitter.png");
     public static final ResourceLocation YOUTUBE = new ResourceLocation("notenoughupdates:social/youtube.png");
 

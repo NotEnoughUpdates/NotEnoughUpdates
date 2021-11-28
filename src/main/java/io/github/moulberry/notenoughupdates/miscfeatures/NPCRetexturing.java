@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.IResourceManager;
@@ -52,7 +53,7 @@ public class NPCRetexturing implements IResourceManagerReloadListener {
         ResourceLocation loc = player.getLocationSkin();
         gettingSkin = false;
 
-        if (skinMap.containsKey(loc.getResourcePath())) {
+        if (skinMap.containsKey(loc.getResourcePath()) && !NotEnoughUpdates.INSTANCE.config.misc.disableNPCRetexturing) {
             Skin skin = skinMap.get(loc.getResourcePath());
             skinOverrideCache.put(player, skin);
             return skin;

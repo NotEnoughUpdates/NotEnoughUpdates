@@ -233,7 +233,7 @@ public class FishingSkillOverlay extends TextOverlay { //Im sure there is a much
                 lineMap.put(0, EnumChatFormatting.AQUA+"Expertise Kills: "+EnumChatFormatting.YELLOW+format.format(counterInterp));
             }*/
 
-            //TODO make this not be interp
+
             /*if(expertise >= 0) {
                 if(fishedPerSecondLast == fishedPerSecond && fishedPerSecond <= 0) {
                     lineMap.put(7, EnumChatFormatting.AQUA+"Catches/m: "+EnumChatFormatting.YELLOW + "N/A");

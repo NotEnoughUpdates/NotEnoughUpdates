@@ -1,13 +1,20 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.annotations.*;
 import org.lwjgl.input.Keyboard;
 
 public class SlotLocking {
+    @Expose
+    @ConfigOption(
+            name = "\u00A7cWarning",
+            desc = "Make sure you have SBA's locked slots off before you turn NEU's on"
+    )
+    @ConfigEditorFSR(
+            runnableId = 12
+    )
+    public boolean slotLockWarning = false;
+
     @Expose
     @ConfigOption(
             name = "Enable Slot Locking",

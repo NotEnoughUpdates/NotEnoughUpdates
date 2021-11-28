@@ -507,7 +507,7 @@ public class DungeonMap {
                     GlStateManager.translate(centerX - mapSizeX / 2, centerY - mapSizeY / 2, 100);
                 }
 
-                if (NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur > 0.1) {
+                if (NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur > 0.1 && NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur < 100 && NotEnoughUpdates.INSTANCE.config.dungeonMap.dmEnable) {
                     GlStateManager.translate(-centerX + mapSizeX / 2, -centerY + mapSizeY / 2, 0);
                     BackgroundBlur.renderBlurredBackground(NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur,
                             scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(),
@@ -518,7 +518,7 @@ public class DungeonMap {
 
                 GlStateManager.translate(mapCenterX, mapCenterY, 10);
 
-                if (!useFb || NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur > 0.1) {
+                if (!useFb || NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur > 0.1 && NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur < 100) {
                     GlStateManager.enableBlend();
                     GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 }
@@ -1050,7 +1050,7 @@ public class DungeonMap {
                 String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
                 line = Utils.cleanColour(line);
 
-                if (line.contains("(F1)") || line.contains("(E)") || line.contains("(M1)")) {
+                if (line.contains("(F1)") || line.contains("(E0)") || line.contains("(M1)")) {
                     isFloorOne = true;
                     break;
                 }

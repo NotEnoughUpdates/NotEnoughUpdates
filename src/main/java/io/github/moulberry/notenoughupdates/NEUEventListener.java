@@ -838,6 +838,7 @@ public class NEUEventListener {
             NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = unformatted.substring("Your new API key is ".length());
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
                     "[NEU] API Key automatically configured"));
+            NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.substring(0, 36);
         }
         if (e.message.getFormattedText().equals(EnumChatFormatting.RESET.toString() +
                 EnumChatFormatting.RED + "You haven't unlocked this recipe!" + EnumChatFormatting.RESET)) {
@@ -2005,22 +2006,24 @@ public class NEUEventListener {
                                         missing.add(enchId);
                                     }
                                 }
-                                newTooltip.add("");
-                                StringBuilder currentLine = new StringBuilder(EnumChatFormatting.RED + "Missing: " + EnumChatFormatting.GRAY);
-                                for (int i = 0; i < missing.size(); i++) {
-                                    String enchName = WordUtils.capitalizeFully(missing.get(i).replace("_", " "));
-                                    if (currentLine.length() != 0 && (Utils.cleanColour(currentLine.toString()).length() + enchName.length()) > 40) {
+                                if (!missing.isEmpty()) {
+                                    newTooltip.add("");
+                                    StringBuilder currentLine = new StringBuilder(EnumChatFormatting.RED + "Missing: " + EnumChatFormatting.GRAY);
+                                    for (int i = 0; i < missing.size(); i++) {
+                                        String enchName = WordUtils.capitalizeFully(missing.get(i).replace("_", " "));
+                                        if (currentLine.length() != 0 && (Utils.cleanColour(currentLine.toString()).length() + enchName.length()) > 40) {
+                                            newTooltip.add(currentLine.toString());
+                                            currentLine = new StringBuilder();
+                                        }
+                                        if (currentLine.length() != 0 && i != 0) {
+                                            currentLine.append(", ").append(enchName);
+                                        } else {
+                                            currentLine.append(EnumChatFormatting.GRAY).append(enchName);
+                                        }
+                                    }
+                                    if (currentLine.length() != 0) {
                                         newTooltip.add(currentLine.toString());
-                                        currentLine = new StringBuilder();
                                     }
-                                    if (currentLine.length() != 0 && i != 0) {
-                                        currentLine.append(", ").append(enchName);
-                                    } else {
-                                        currentLine.append(EnumChatFormatting.GRAY).append(enchName);
-                                    }
-                                }
-                                if (currentLine.length() != 0) {
-                                    newTooltip.add(currentLine.toString());
                                 }
                             }
                             passedEnchants = true;
