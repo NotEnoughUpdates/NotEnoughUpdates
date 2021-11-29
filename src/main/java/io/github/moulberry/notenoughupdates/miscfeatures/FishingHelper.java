@@ -355,8 +355,13 @@ public class FishingHelper {
                                                 Minecraft.getMinecraft().thePlayer.fishEntity != null &&
                                                 Minecraft.getMinecraft().thePlayer.fishEntity.getEntityId() == hookEntityId &&
                                                 chain.particleNum > 3) {
-
-                                            if (newDistance <= 0.2f + 0.1f * pingDelayTicks && NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
+                                            float lavaOffset = 0.1f;
+                                            if (particleType == EnumParticleTypes.SMOKE_NORMAL) {
+                                                lavaOffset = 0.03f;
+                                            } else if (particleType == EnumParticleTypes.WATER_WAKE) {
+                                                lavaOffset = 0.1f;
+                                            }
+                                            if (newDistance <= 0.2f + lavaOffset * pingDelayTicks && NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
                                                 if (NotEnoughUpdates.INSTANCE.config.fishing.incomingFishHookedSounds &&
                                                         hookedWarningStateTicks <= 0) {
                                                     float vol = NotEnoughUpdates.INSTANCE.config.fishing.incomingFishHookedSoundsVol / 100f;

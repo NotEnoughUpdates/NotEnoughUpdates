@@ -214,6 +214,9 @@ public class NEUOverlay extends Gui {
                         }
                         textField.setCursorPosition(getClickedIndex(mouseX, mouseY));
                         millisLastLeftClick = System.currentTimeMillis();
+                        if (searchMode) {
+                            lastSearchMode = System.currentTimeMillis();
+                        }
                     }
                 }
             }
