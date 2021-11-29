@@ -207,7 +207,7 @@ public class NEUOverlay extends Gui {
                                         "\u00a77This allows you easily find items as the item will stand out.",
                                         "\u00a77To toggle this please double click on the search bar in your inventory.",
                                         "\u00a77",
-                                        "\u00a77Press X on your keyboard to close this notifcation"), true, true);
+                                        "\u00a77Press X on your keyboard to close this notification"), true, true);
                                 NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = false;
 
                             }
