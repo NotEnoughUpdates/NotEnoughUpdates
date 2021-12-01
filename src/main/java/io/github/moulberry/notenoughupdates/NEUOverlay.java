@@ -2047,7 +2047,8 @@ public class NEUOverlay extends Gui {
 
         Utils.pushGuiScale(-1);
 
-        if (System.currentTimeMillis() - lastSearchMode > 120000 && NotEnoughUpdates.INSTANCE.config.toolbar.autoTurnOffSearchMode) {
+        if (System.currentTimeMillis() - lastSearchMode > 120000 && NotEnoughUpdates.INSTANCE.config.toolbar.autoTurnOffSearchMode
+                || !NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
             searchMode = false;
         }
     }
