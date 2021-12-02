@@ -764,6 +764,9 @@ public class PetInfoOverlay extends TextOverlay {
                                             foundDespawn = true;
                                             break;
                                         }
+                                        if (line.equals("\u00a77\u00a77Selected pet: \u00a7cNone")){
+                                            clearPet();
+                                        }
                                     }
                                     if (!foundDespawn && config.selectedPet == petIndex && currentTime - lastPetSelect > 500) {
                                         clearPet();
@@ -1143,6 +1146,8 @@ public class PetInfoOverlay extends TextOverlay {
                 } else if (chatMessage.toLowerCase().startsWith("you despawned your")) {
                     clearPet();
                 } else if (chatMessage.toLowerCase().contains("switching to profile")) {
+                    clearPet();
+                } else if (chatMessage.toLowerCase().contains("transferring you to a new island...")) {
                     clearPet();
                 }
             }
