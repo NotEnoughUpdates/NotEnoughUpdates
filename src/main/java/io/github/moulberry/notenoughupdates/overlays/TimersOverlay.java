@@ -398,12 +398,10 @@ public class TimersOverlay extends TextOverlay {
         }
 
         long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000;
-        long experimentReset = (currentTime - 18000000) / 86400000 * 86400000 + 86400000;
 
         long fetchurComplete = hidden.fetchurCompleted;
 
         long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
-        long timeDiffMidnightNowExp = experimentReset + 86400000 - currentTime;
 
         //Fetchur Display
         if (fetchurComplete < midnightReset) {
@@ -438,19 +436,19 @@ public class TimersOverlay extends TextOverlay {
         }
 
         //Experiment Display
-        if (hidden.experimentsCompleted < experimentReset) {
+        if (hidden.experimentsCompleted < midnightReset) {
             map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!");
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
-                (hidden.experimentsCompleted < (experimentReset - TimeEnums.HALFANHOUR.time))) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(timeDiffMidnightNowExp));
+                (hidden.experimentsCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(timeDiffMidnightNow));
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.SOON.ordinal() &&
-                (hidden.experimentsCompleted < (experimentReset - TimeEnums.HOUR.time))) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(timeDiffMidnightNowExp));
+                (hidden.experimentsCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(timeDiffMidnightNow));
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
-                (hidden.experimentsCompleted < (experimentReset - (TimeEnums.HOUR.time * 3)))) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(timeDiffMidnightNowExp));
+                (hidden.experimentsCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(timeDiffMidnightNow));
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(timeDiffMidnightNowExp));
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(timeDiffMidnightNow));
         }
 
         overlayStrings = new ArrayList<>();
