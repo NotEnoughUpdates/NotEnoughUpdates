@@ -34,12 +34,21 @@ public class ItemPriceInformation {
         int lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
         APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalname);
 
-        boolean auctionItem = lowestBin > 0 || lowestBinAvg > 0 || auctionInfo != null;
+        boolean auctionItem = lowestBin > 0 || lowestBinAvg > 0;
+        boolean auctionInfoErrored = auctionInfo == null;
+        if (auctionItem) {
+            long currentTime = System.currentTimeMillis();
+            long lastUpdate = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLastLowestBinUpdateTime();
+            //check if info is older than 10 minutes
+            if (currentTime - lastUpdate > 600 * 1000) {
+                tooltip.add(EnumChatFormatting.RED + "[NEU] Price info is outdated by more than 10 minutes.\nIt will updated again as soon as the server can be reached again.");
+            }
+        }
+
         boolean bazaarItem = bazaarInfo != null;
 
         NumberFormat format = NumberFormat.getInstance(Locale.US);
         boolean shortNumber = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.shortNumberFormatPrices;
-
         if (bazaarItem) {
             List<Integer> lines = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.priceInfoBaz;
 
@@ -139,7 +148,7 @@ public class ItemPriceInformation {
                                 added = true;
                             }
                             tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Lowest BIN: " +
-                                    EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && lowestBin > 1000 ? Utils.shortNumberFormat(lowestBin, 0) : format.format(lowestBin)) + " coins");
+                                    EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(lowestBin) + " coins");
                         }
                         break;
                     case 1:
@@ -152,7 +161,7 @@ public class ItemPriceInformation {
                             if (auctionInfo.has("clean_price")) {
                                 tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Price (Clean): " + EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
                                         (shortNumber && auctionInfo.get("clean_price").getAsFloat() > 1000 ? Utils.shortNumberFormat(auctionInfo.get("clean_price").getAsFloat(), 0) : format.format((int) auctionInfo.get("clean_price").getAsFloat())
-                                         + " coins"));
+                                                + " coins"));
                             } else {
                                 int auctionPrice = (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
                                 tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Price: " + EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
@@ -246,6 +255,9 @@ public class ItemPriceInformation {
             }
 
             return added;
+        } else if (auctionInfoErrored) {
+            tooltip.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] Can't find price info! Please be patient.");
+            return true;
         }
 
         return false;
