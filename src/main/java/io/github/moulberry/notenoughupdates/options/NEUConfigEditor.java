@@ -41,14 +41,14 @@ public class NEUConfigEditor extends GuiElement {
             GITHUB,
             TWITTER,
             YOUTUBE,
-            PATREON
+            TWITCH
     };
     private static final String[] socialsLink = new String[]{
             "https://discord.gg/moulberry",
             "https://github.com/Moulberry/NotEnoughUpdates",
             "https://twitter.com/moulberry/",
             "https://www.youtube.com/channel/UCPh-OKmRSS3IQi9p6YppLcw",
-            "https://patreon.com/moulberry"
+            "https://www.twitch.tv/moulberry2"
     };
 
     private static final ResourceLocation SEARCH_ICON = new ResourceLocation("notenoughupdates:core/search.png");
