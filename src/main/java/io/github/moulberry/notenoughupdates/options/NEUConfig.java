@@ -104,6 +104,9 @@ public class NEUConfig extends Config {
                 return;
             case 18:
                 editOverlay(activeConfigCategory, OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
+                return;
+            case 19:
+                editOverlay(activeConfigCategory, OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
 
         }
     }

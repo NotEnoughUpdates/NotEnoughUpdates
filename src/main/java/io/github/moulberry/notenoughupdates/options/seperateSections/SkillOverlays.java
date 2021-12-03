@@ -236,4 +236,81 @@ public class SkillOverlays {
     )
     @ConfigAccordionId(id = 3)
     public int customFishTimer = 300;
+
+    @ConfigOption(
+            name = "Combat",
+            desc = ""
+    )
+    @ConfigEditorAccordion(id = 4)
+    public boolean combatAccordion = false;
+
+    @Expose
+    @ConfigOption(
+            name = "\u00A7cWarning",
+            desc = "The combat display will only show if you have a Book of Stats on the item you are using"
+    )
+    @ConfigEditorFSR(
+            runnableId = 12,
+            buttonText = ""
+    )
+    @ConfigAccordionId(id = 4)
+    public boolean combatInfo = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Enable Combat Overlay",
+            desc = "Show an overlay while Combat with useful information"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 4)
+    public boolean combatSkillOverlay = true;
+
+    @Expose
+    @ConfigOption(
+            name = "Combat Text",
+            desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
+                    "\u00a7rHold an item with Book of Stats to show the display"
+    )
+    @ConfigEditorDraggableList(
+            exampleText = {"\u00a7bKills: \u00a7e547,860",
+                    "\u00a7bCombat: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
+                    "\u00a7bCurrent XP: \u00a7e6,734",
+                    "\u00a7bRemaining XP: \u00a7e3,265",
+                    "\u00a7bXP/h: \u00a7e238,129",
+                    "\u00a7bETA: \u00a7e13h12m"}
+    )
+    @ConfigAccordionId(id = 4)
+    public List<Integer> combatText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
+
+    @Expose
+    @ConfigOption(
+            name = "Combat Position",
+            desc = "Change the position of the Combat overlay"
+    )
+    @ConfigEditorButton(
+            runnableId = 19,
+            buttonText = "Edit"
+    )
+    @ConfigAccordionId(id = 4)
+    public Position combatPosition = new Position(10, 200);
+
+    @Expose
+    @ConfigOption(
+            name = "Combat Style",
+            desc = "Change the style of the Combat overlay"
+    )
+    @ConfigEditorDropdown(
+            values = {"Background", "No Shadow", "Shadow", "Full Shadow"}
+    )
+    @ConfigAccordionId(id = 4)
+    public int combatStyle = 0;
+
+    @Expose
+    @ConfigOption(
+            name = "Always show combat overlay",
+            desc = "Shows combat overlay even if you dont have Book of Stats"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 4)
+    public boolean alwaysShowCombatOverlay = false;
 }
