@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.auction;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -50,6 +51,7 @@ public class APIManager {
 
     public TreeMap<String, HashMap<Integer, HashSet<String>>> extrasToAucIdMap = new TreeMap<>();
 
+    private boolean didFirstUpdate = false;
     private long lastAuctionUpdate = 0;
     private long lastShortAuctionUpdate = 0;
     private long lastCustomAHSearch = 0;
@@ -255,6 +257,10 @@ public class APIManager {
             }
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 lowestBins.add(entry.getKey(), entry.getValue());
+            }
+            if (!didFirstUpdate) {
+                ItemPriceInformation.updateAuctionableItemsList();
+                didFirstUpdate = true;
             }
         }, () -> {});
     }

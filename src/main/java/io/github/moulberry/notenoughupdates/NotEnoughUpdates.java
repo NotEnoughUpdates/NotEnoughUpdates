@@ -127,6 +127,7 @@ public class NotEnoughUpdates {
         FairySouls.load(new File(neuDir, "collected_fairy_souls.json"), gson);
         PetInfoOverlay.loadConfig(new File(neuDir, "petCache.json"));
         SlotLocking.getInstance().loadConfig(new File(neuDir, "slotLocking.json"));
+        ItemPriceInformation.init(new File(neuDir, "auctionable_items.json"), gson);
 
         if (config == null) {
             config = new NEUConfig();
