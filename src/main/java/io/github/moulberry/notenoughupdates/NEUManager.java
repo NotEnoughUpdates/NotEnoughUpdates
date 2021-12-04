@@ -708,11 +708,19 @@ public class NEUManager {
                     }
                 }
             }
-            if ("ENCHANTED_BOOK".equals(internalname)) {
+            if ("ENCHANTED_BOOK".equals(internalname) && ea.hasKey("enchantments", 10)) {
                 NBTTagCompound enchants = ea.getCompoundTag("enchantments");
 
                 for (String enchname : enchants.getKeySet()) {
                     internalname = enchname.toUpperCase() + ";" + enchants.getInteger(enchname);
+                    break;
+                }
+            }
+            if ("RUNE".equals(internalname) && ea.hasKey("runes", 10)) {
+                NBTTagCompound rune = ea.getCompoundTag("runes");
+
+                for (String runename : rune.getKeySet()) {
+                    internalname = runename.toUpperCase() + "_RUNE" + ";" + rune.getInteger(runename);
                     break;
                 }
             }
