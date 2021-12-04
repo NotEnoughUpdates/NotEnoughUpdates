@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
-import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
@@ -15,13 +14,14 @@ import org.lwjgl.input.Keyboard;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 public class ItemPriceInformation {
     private static File file;
-    private static Set<String> auctionableItems = null;
+    private static HashSet<String> auctionableItems = null;
     private static Gson gson;
 
     public static boolean addToTooltip(List<String> tooltip, String internalname, ItemStack stack) {
@@ -33,7 +33,7 @@ public class ItemPriceInformation {
         gson = neuGson;
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
-                auctionableItems = gson.fromJson(reader, Set.class);
+                auctionableItems = gson.fromJson(reader, HashSet.class);
             } catch (Exception ignored) {}
         }
     }
@@ -41,7 +41,7 @@ public class ItemPriceInformation {
     public static void updateAuctionableItemsList() {
         Set<String> items = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfoKeySet();
         if (!items.isEmpty()) {
-            auctionableItems = items;
+            auctionableItems = (HashSet<String>) items;
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
                 //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
