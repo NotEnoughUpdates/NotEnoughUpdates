@@ -201,7 +201,7 @@ public class GuiProfileViewer extends GuiScreen {
                         0, 100 / 200f, 0, 20 / 185f, GL11.GL_NEAREST);
                 Utils.drawStringCenteredScaledMaxWidth(profileId, Minecraft.getMinecraft().fontRendererObj, guiLeft + 50,
                         guiTop + sizeY + 3 + 10, true, 90, new Color(63, 224, 208, 255).getRGB());
-                //ironmoon icon
+                //ironman icon
                 if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("ironman")) {
                     GlStateManager.color(1, 1, 1, 1);
                     Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);

@@ -205,8 +205,6 @@ public class GuiEnchantColour extends GuiScreen {
                 } else {
                     maxedBookFound = 2;
                 }
-                //TODO: Actually write something to catch any errors
-                //like for example when the json file does not exist cause repo errors
 
             } catch(Exception ignored){
                 maxedBookFound = 2;
