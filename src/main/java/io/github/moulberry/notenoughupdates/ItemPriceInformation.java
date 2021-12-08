@@ -290,14 +290,14 @@ public class ItemPriceInformation {
 
             return added;
         } else if (auctionInfoErrored) {
-            String message = EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] Can't find price info! Please be patient.";
+            String message = EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] API is down";
             if (auctionableItems != null && !auctionableItems.isEmpty()) {
                 if (auctionableItems.contains(internalname)) {
                     tooltip.add(message);
                     return true;
                 }
             } else {
-                tooltip.add(message + "\n(It is not known if this item even has price info)");
+                tooltip.add(message + " and no item data is cached");
                 return true;
             }
         }
