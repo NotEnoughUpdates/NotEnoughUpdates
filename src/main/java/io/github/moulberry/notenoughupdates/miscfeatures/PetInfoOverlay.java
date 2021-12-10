@@ -1143,11 +1143,8 @@ public class PetInfoOverlay extends TextOverlay {
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
                                 EnumChatFormatting.RED + " try revisiting all pages of /pets."));
                     }
-                } else if (chatMessage.toLowerCase().startsWith("you despawned your")) {
-                    clearPet();
-                } else if (chatMessage.toLowerCase().contains("switching to profile")) {
-                    clearPet();
-                } else if (chatMessage.toLowerCase().contains("transferring you to a new island...")) {
+                } else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains("switching to profile"))
+                        || (chatMessage.toLowerCase().contains("transferring you to a new island..."))) {
                     clearPet();
                 }
             }
