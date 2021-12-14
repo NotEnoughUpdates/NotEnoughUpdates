@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
@@ -1024,32 +1025,34 @@ public class NEUManager {
     /**
      * Downloads a web file, appending some HTML attributes that makes wikia give us the raw wiki syntax.
      */
-    public File getWebFile(String url) {
-        File f = new File(configLocation, "tmp/" + Base64.getEncoder().encodeToString(url.getBytes()) + ".html");
-        if (f.exists()) {
-            return f;
-        }
-
-        try {
-            f.getParentFile().mkdirs();
-            f.createNewFile();
-            f.deleteOnExit();
-        } catch (IOException e) {
-            return null;
-        }
-        try (BufferedInputStream inStream = new BufferedInputStream(new URL(url + "?action=raw&templates=expand").openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(f)) {
-            byte[] dataBuffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inStream.read(dataBuffer, 0, 1024)) != -1) {
-                fileOutputStream.write(dataBuffer, 0, bytesRead);
+    public CompletableFuture<File> getWebFile(String url) {
+        return CompletableFuture.supplyAsync(() -> {
+            File f = new File(configLocation, "tmp/" + Base64.getEncoder().encodeToString(url.getBytes()) + ".html");
+            if (f.exists()) {
+                return f;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
 
-        return f;
+            try {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+                f.deleteOnExit();
+            } catch (IOException e) {
+                return null;
+            }
+            try (BufferedInputStream inStream = new BufferedInputStream(new URL(url + "?action=raw&templates=expand").openStream());
+                 FileOutputStream fileOutputStream = new FileOutputStream(f)) {
+                byte[] dataBuffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inStream.read(dataBuffer, 0, 1024)) != -1) {
+                    fileOutputStream.write(dataBuffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            return f;
+        });
     }
 
     /**
