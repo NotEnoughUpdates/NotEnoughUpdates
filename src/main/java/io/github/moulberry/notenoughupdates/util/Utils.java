@@ -7,6 +7,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -28,6 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.BufferUtils;
@@ -44,8 +46,8 @@ import java.lang.reflect.Method;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1356,4 +1358,11 @@ public class Utils {
         return endsIn;
     }
 
+    public static boolean sendCloseScreenPacket() {
+        EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+        if (thePlayer.openContainer == null) return false;
+        thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(
+                thePlayer.openContainer.windowId));
+        return true;
+    }
 }
