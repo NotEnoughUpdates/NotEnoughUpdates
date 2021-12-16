@@ -397,12 +397,20 @@ public class NEUManager {
 
     public void registerNeuRecipe(NeuRecipe recipe) {
         recipes.add(recipe);
-        for (String output : recipe.getOutputs()) {
-            recipesMap.computeIfAbsent(output, ignored -> new HashSet<>()).add(recipe);
+        for (Ingredient output : recipe.getOutputs()) {
+            recipesMap.computeIfAbsent(output.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
         }
         for (Ingredient input : recipe.getIngredients()) {
             usagesMap.computeIfAbsent(input.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
         }
+    }
+
+    public Set<NeuRecipe> getRecipesFor(String internalName) {
+        return recipesMap.get(internalName);
+    }
+
+    public Set<NeuRecipe> getUsagesFor(String internalName) {
+        return usagesMap.get(internalName);
     }
 
     /**

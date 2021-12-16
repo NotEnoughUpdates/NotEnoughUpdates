@@ -10,7 +10,7 @@ import java.util.Set;
 public interface NeuRecipe {
     Set<Ingredient> getIngredients();
 
-    Set<String> getOutputs();
+    Set<Ingredient> getOutputs();
 
     List<RecipeSlot> getSlots();
 

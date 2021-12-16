@@ -21,15 +21,15 @@ public class CraftingRecipe implements NeuRecipe {
 
     private final NEUManager manager;
     private final Ingredient[] inputs;
-    private final JsonObject output;
-    private final ItemStack outputItem;
+    private final String extraText;
+    private final Ingredient outputIngredient;
     private List<RecipeSlot> slots;
 
-    public CraftingRecipe(NEUManager manager, Ingredient[] inputs, JsonObject output) {
+    public CraftingRecipe(NEUManager manager, Ingredient[] inputs, Ingredient output, String extra) {
         this.manager = manager;
         this.inputs = inputs;
-        this.output = output;
-        this.outputItem = manager.jsonToStack(output);
+        this.outputIngredient = output;
+        this.extraText = extra;
         if (inputs.length != 9)
             throw new IllegalArgumentException("Cannot construct crafting recipe with non standard crafting grid size");
     }
@@ -42,8 +42,16 @@ public class CraftingRecipe implements NeuRecipe {
     }
 
     @Override
-    public Set<String> getOutputs() {
-        return Collections.singleton(manager.getInternalNameForItem(outputItem));
+    public Set<Ingredient> getOutputs() {
+        return Collections.singleton(getOutput());
+    }
+
+    public Ingredient getOutput() {
+        return outputIngredient;
+    }
+
+    public Ingredient[] getInputs() {
+        return inputs;
     }
 
     @Override
@@ -59,14 +67,12 @@ public class CraftingRecipe implements NeuRecipe {
                 slots.add(new RecipeSlot(30 + x * GuiItemRecipe.SLOT_SPACING, 17 + y * GuiItemRecipe.SLOT_SPACING, item));
             }
         }
-        slots.add(new RecipeSlot(124, 35, outputItem));
+        slots.add(new RecipeSlot(124, 35, outputIngredient.getItemStack()));
         return slots;
     }
 
     public String getCraftText() {
-        if (output.has("crafttext"))
-            return output.get("crafttext").getAsString();
-        return null;
+        return extraText;
     }
 
     @Override
@@ -79,7 +85,7 @@ public class CraftingRecipe implements NeuRecipe {
                     gui.guiLeft + EXTRA_STRING_X, gui.guiTop + EXTRA_STRING_Y, false, 75, 0x404040);
     }
 
-    public static CraftingRecipe parseCraftingRecipe(NEUManager manager, JsonObject recipe, JsonObject output) {
+    public static CraftingRecipe parseCraftingRecipe(NEUManager manager, JsonObject recipe, JsonObject outputItem) {
         Ingredient[] craftMatrix = new Ingredient[9];
 
         String[] x = {"1", "2", "3"};
@@ -91,6 +97,15 @@ public class CraftingRecipe implements NeuRecipe {
             if (item == null || item.isEmpty()) continue;
             craftMatrix[i] = new Ingredient(manager, item);
         }
-        return new CraftingRecipe(manager, craftMatrix, output);
+        int resultCount = 1;
+        if (recipe.has("count"))
+            resultCount = recipe.get("count").getAsInt();
+        String extra = null;
+        if (outputItem.has("crafttext"))
+            extra = outputItem.get("crafttext").getAsString();
+        if (recipe.has("crafttext"))
+            extra = recipe.get("crafttext").getAsString();
+        String outputItemId = outputItem.get("internalname").getAsString();
+        return new CraftingRecipe(manager, craftMatrix, new Ingredient(manager, outputItemId, resultCount), extra);
     }
 }

@@ -19,15 +19,13 @@ public class ForgeRecipe implements NeuRecipe {
 
     private final NEUManager manager;
     private final List<Ingredient> inputs;
-    private final JsonObject output;
-    private final ItemStack outputItem;
+    private final Ingredient output;
     private List<RecipeSlot> slots;
 
-    public ForgeRecipe(NEUManager manager, List<Ingredient> inputs, JsonObject output) {
+    public ForgeRecipe(NEUManager manager, List<Ingredient> inputs, Ingredient output) {
         this.manager = manager;
         this.inputs = inputs;
         this.output = output;
-        this.outputItem = manager.jsonToStack(output);
     }
 
     @Override
@@ -36,8 +34,8 @@ public class ForgeRecipe implements NeuRecipe {
     }
 
     @Override
-    public Set<String> getOutputs() {
-        return Collections.singleton(manager.getInternalNameForItem(outputItem));
+    public Set<Ingredient> getOutputs() {
+        return Collections.singleton(output);
     }
 
     @Override
@@ -52,7 +50,7 @@ public class ForgeRecipe implements NeuRecipe {
             int y = i / 3;
             slots.add(new RecipeSlot(30 + x * GuiItemRecipe.SLOT_SPACING, 17 + y * GuiItemRecipe.SLOT_SPACING, itemStack));
         }
-        slots.add(new RecipeSlot(124, 35, outputItem));
+        slots.add(new RecipeSlot(124, 35, output.getItemStack()));
         return slots;
     }
 
@@ -68,6 +66,11 @@ public class ForgeRecipe implements NeuRecipe {
             String ingredientString = element.getAsString();
             ingredients.add(new Ingredient(manager, ingredientString));
         }
-        return new ForgeRecipe(manager, ingredients, output);
+        String internalItemId = output.get("internalname").getAsString();
+        int resultCount = 1;
+        if (recipe.has("count")) {
+            resultCount = recipe.get("count").getAsInt();
+        }
+        return new ForgeRecipe(manager, ingredients, new Ingredient(manager, internalItemId, resultCount));
     }
 }

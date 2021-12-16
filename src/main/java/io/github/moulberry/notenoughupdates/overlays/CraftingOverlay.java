@@ -56,34 +56,6 @@ public class CraftingOverlay {
         }
     }
 
-    public static void updateItem(JsonObject item) {
-        items = new ItemStack[9];
-        text = null;
-        String[] x = {"1", "2", "3"};
-        String[] y = {"A", "B", "C"};
-        for (int i = 0; i < 9; i++) {
-            String name = y[i / 3] + x[i % 3];
-            String itemS = item.getAsJsonObject("recipe").get(name).getAsString();
-            if (itemS != null && !itemS.equals("")) {
-                int count = 1;
-                if (itemS.split(":").length == 2) {
-                    count = Integer.parseInt(itemS.split(":")[1]);
-                    itemS = itemS.split(":")[0];
-                }
-                JsonObject craft = manager.getItemInformation().get(itemS);
-                if (craft != null) {
-                    ItemStack stack = manager.jsonToStack(craft);
-                    stack.stackSize = count;
-                    items[i] = stack;
-                }
-            }
-        }
-        if (item.has("crafttext")) {
-            text = item.get("crafttext").getAsString();
-        }
-        shouldRender = true;
-    }
-
     public static void keyInput() {
         if (!Keyboard.getEventKeyState() || Keyboard.getEventKey() != Keyboard.KEY_U && Keyboard.getEventKey() != Keyboard.KEY_R)
             return;
