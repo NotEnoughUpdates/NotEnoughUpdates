@@ -12,6 +12,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.seperateSections.*;
+import io.github.moulberry.notenoughupdates.overlays.CustomArmour;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -243,6 +244,13 @@ public class NEUConfig extends Config {
             desc = "Improved SB Menus"
     )
     public ImprovedSBMenu improvedSBMenu = new ImprovedSBMenu();
+
+    @Expose
+    @Category(
+            name = "Custom Armour Hud",
+            desc = "Custom Armour Hud"
+    )
+    public CustomArmour customArmour = new CustomArmour();
 
     @Expose
     @Category(

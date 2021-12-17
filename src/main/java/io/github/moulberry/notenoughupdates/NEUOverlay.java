@@ -26,8 +26,10 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -73,6 +75,12 @@ public class NEUOverlay extends Gui {
     private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation("notenoughupdates:supersecretassets/bald.png");
     private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
     private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
+
+    private static final ResourceLocation ARMOR_DISPLAY = new ResourceLocation("notenoughupdates:armordisplay/armordisplay.png");
+    private static final ResourceLocation ARMOR_DISPLAY_GREY = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_grey.png");
+    private static final ResourceLocation ARMOR_DISPLAY_DARK = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_phq_dark.png");
+    private static final ResourceLocation ARMOR_DISPLAY_FSR = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_fsr.png");
+    private static final ResourceLocation ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_transparent.png");
 
     private final NEUManager manager;
 
@@ -1694,6 +1702,71 @@ public class NEUOverlay extends Gui {
             GlStateManager.color(1, 1, 1, 1);
             Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
             GlStateManager.bindTexture(0);
+        }
+        if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+            GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+            if (guiScreen instanceof GuiInventory) {
+                ItemStack slot1;
+                ItemStack slot2;
+                ItemStack slot3;
+                ItemStack slot4;
+                slot1 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_HELMET"));
+                slot2 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_CHESTPLATE"));
+                slot3 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_LEGGINGS"));
+                slot4 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_BOOTS"));
+                List<String> tooltipToDisplay = null;
+                if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 0) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY);
+                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 1) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_GREY);
+                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 2) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_DARK);
+                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 3) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT);
+                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 4) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_FSR);
+                }
+
+                GlStateManager.color(1, 1, 1, 1);
+                GL11.glTranslatef(0, 0, 100);
+
+                Utils.drawTexturedRect((float) ((width - 224.1) / 2f), (float) ((height + 60.9) / 2f - 114), 31, 86, GL11.GL_NEAREST);
+                GlStateManager.bindTexture(0);
+
+                Utils.drawItemStack(slot1, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105));
+                Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18);
+                Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36);
+                Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54);
+
+                if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+                    //top slot
+                    if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
+                        tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                        tooltipToDisplay = null;
+                        GL11.glTranslatef(0, 0, -100);
+                    }
+                    if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
+                        tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                        tooltipToDisplay = null;
+                        GL11.glTranslatef(0, 0, -100);
+                    }
+                    if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
+                        tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                        tooltipToDisplay = null;
+                        GL11.glTranslatef(0, 0, -100);
+                    }
+                    if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
+                        tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                        tooltipToDisplay = null;
+                        GL11.glTranslatef(0, 0, -100);
+                    }
+                }
+                GL11.glTranslatef(0, 0, -100);
+            }
         }
 
         SunTzu.setEnabled(textField.getText().toLowerCase().startsWith("potato"));
