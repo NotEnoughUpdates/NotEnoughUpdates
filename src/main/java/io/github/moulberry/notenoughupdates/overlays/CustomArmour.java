@@ -9,7 +9,7 @@ public class CustomArmour {
 
     @Expose
     @ConfigOption(
-            name = "Enables The Custom Amour Hud",
+            name = "Enables Custom Amour Hud",
             desc = "Shows an overlay in your inventory showing your 4 extra armour slots"
     )
     @ConfigEditorBoolean

@@ -1703,7 +1703,7 @@ public class NEUOverlay extends Gui {
             Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
             GlStateManager.bindTexture(0);
         }
-        if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+        if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect) {
             GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
             if (guiScreen instanceof GuiInventory) {
                 ItemStack slot1;
@@ -1717,13 +1717,17 @@ public class NEUOverlay extends Gui {
                 List<String> tooltipToDisplay = null;
                 if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 0) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY);
-                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 1) {
+                }
+                if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 1) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_GREY);
-                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 2) {
+                }
+                if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 2) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_DARK);
-                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 3) {
+                }
+                if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 3) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT);
-                } if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 4) {
+                }
+                if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 4) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_FSR);
                 }
 
