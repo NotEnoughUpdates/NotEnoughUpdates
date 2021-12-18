@@ -67,6 +67,8 @@ public class NEUManager {
 
     private static String GIT_COMMITS_URL;
 
+    // TODO: private final Map<String, NeuItem>
+
     private final Set<NeuRecipe> recipes = new HashSet<>();
     private final HashMap<String, Set<NeuRecipe>> recipesMap = new HashMap<>();
     private final HashMap<String, Set<NeuRecipe>> usagesMap = new HashMap<>();

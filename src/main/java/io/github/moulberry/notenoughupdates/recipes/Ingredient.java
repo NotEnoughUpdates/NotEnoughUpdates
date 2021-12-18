@@ -5,6 +5,11 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class Ingredient {
 
     public static final String SKYBLOCK_COIN = "SKYBLOCK_COIN";
@@ -38,6 +43,14 @@ public class Ingredient {
         this.count = coinValue;
     }
 
+    public static Set<Ingredient> mergeIngredients(Iterable<Ingredient> ingredients) {
+        Map<String, Ingredient> newIngredients = new HashMap<>();
+        for (Ingredient i : ingredients) {
+            newIngredients.merge(i.getInternalItemId(), i, (a, b) -> new Ingredient(i.manager, i.internalItemId, a.count + b.count));
+        }
+        return new HashSet<>(newIngredients.values());
+    }
+
     public static Ingredient coinIngredient(NEUManager manager, int coins) {
         return new Ingredient(manager, coins);
     }
@@ -58,7 +71,7 @@ public class Ingredient {
         if (itemStack != null) return itemStack;
         if(isCoins()) {
             itemStack = new ItemStack(Items.gold_nugget);
-            itemStack.setStackDisplayName("\u00A7r\u00A76" +getCount() + " Coins");
+            itemStack.setStackDisplayName("\u00A7r\u00A76" + getCount() + " Coins");
             return itemStack;
         }
         JsonObject itemInfo = manager.getItemInformation().get(internalItemId);
@@ -67,4 +80,7 @@ public class Ingredient {
         return itemStack;
     }
 
+    public String serialize() {
+        return internalItemId + ":" + count;
+    }
 }

@@ -16,6 +16,8 @@ public interface NeuRecipe {
 
     void drawExtraInfo(GuiItemRecipe gui);
 
+    JsonObject serialize();
+
     static NeuRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject output) {
         if (recipe.has("type")) {
             switch (recipe.get("type").getAsString().intern()) {

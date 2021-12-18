@@ -54,6 +54,7 @@ public class CraftingRecipe implements NeuRecipe {
         return inputs;
     }
 
+
     @Override
     public List<RecipeSlot> getSlots() {
         if (slots != null) return slots;
@@ -85,6 +86,25 @@ public class CraftingRecipe implements NeuRecipe {
                     gui.guiLeft + EXTRA_STRING_X, gui.guiTop + EXTRA_STRING_Y, false, 75, 0x404040);
     }
 
+    @Override
+    public JsonObject serialize() {
+        JsonObject object = new JsonObject();
+        object.addProperty("type", "crafting");
+        object.addProperty("count", outputIngredient.getCount());
+        object.addProperty("overrideOutputId", outputIngredient.getInternalItemId());
+        for (int i = 0; i < 9; i++) {
+            Ingredient ingredient = inputs[i];
+            if (ingredient == null) continue;
+            String[] x = {"1", "2", "3"};
+            String[] y = {"A", "B", "C"};
+            String name = x[i / 3] + y[i % 3];
+            object.addProperty(name, ingredient.serialize());
+        }
+        if(extraText != null)
+            object.addProperty("crafttext", extraText);
+        return object;
+    }
+
     public static CraftingRecipe parseCraftingRecipe(NEUManager manager, JsonObject recipe, JsonObject outputItem) {
         Ingredient[] craftMatrix = new Ingredient[9];
 
@@ -106,6 +126,8 @@ public class CraftingRecipe implements NeuRecipe {
         if (recipe.has("crafttext"))
             extra = recipe.get("crafttext").getAsString();
         String outputItemId = outputItem.get("internalname").getAsString();
+        if (recipe.has("overrideOutputId"))
+            outputItemId = recipe.get("overrideOutputId").getAsString();
         return new CraftingRecipe(manager, craftMatrix, new Ingredient(manager, outputItemId, resultCount), extra);
     }
 }
