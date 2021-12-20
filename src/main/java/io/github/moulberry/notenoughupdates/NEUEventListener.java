@@ -1076,9 +1076,15 @@ public class NEUEventListener {
                     if (button.anchorBottom) {
                         y += ySize;
                     }
+                    //System.out.println("x = " + x + " y = " + y + " guiTop = " + guiTop + " guiLeft = " + guiLeft + " xSize = " + xSize);
                     if (AccessoryBagOverlay.isInAccessoryBag()) {
                         if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
                             x += 80 + 28;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingArmorHud()) {
+                        if (x == 213 && y > guiTop && y < guiTop + 84) {
+                            x -= 25;
                         }
                     }
 
@@ -1192,6 +1198,11 @@ public class NEUEventListener {
                     if (AccessoryBagOverlay.isInAccessoryBag()) {
                         if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
                             x += 80 + 28;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingArmorHud()) {
+                        if (x == 213 && y > guiTop && y < guiTop + 84) {
+                            x -= 25;
                         }
                     }
 
@@ -1548,6 +1559,11 @@ public class NEUEventListener {
                     if (AccessoryBagOverlay.isInAccessoryBag()) {
                         if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
                             x += 80 + 28;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingArmorHud()) {
+                        if (x == 213 && y > guiTop && y < guiTop + 84) {
+                            x -= 25;
                         }
                     }
 

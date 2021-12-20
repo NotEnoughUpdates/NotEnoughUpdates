@@ -84,6 +84,7 @@ public class NEUOverlay extends Gui {
     private static final ResourceLocation ARMOR_DISPLAY_DARK = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_phq_dark.png");
     private static final ResourceLocation ARMOR_DISPLAY_FSR = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_fsr.png");
     private static final ResourceLocation ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_transparent.png");
+    private static boolean renderingArmorHud;
 
     private final NEUManager manager;
 
@@ -1676,9 +1677,6 @@ public class NEUOverlay extends Gui {
     int guiScaleLast = 0;
     private boolean showVanillaLast = false;
 
-    /**
-     * Renders the search bar, quick commands, item selection (right) and item info (left) gui elements.
-     */
     public int wardrobePage = -1;
     public int getWardrobePage () {
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -1795,14 +1793,13 @@ public class NEUOverlay extends Gui {
                     }
                 }
             }
-            System.out.println(selectedArmor);
         return selectedArmor;
         }
 
 
     public ItemStack getFirstWardrobe() {
         if (isInWardrobe()) {
-                if (getChestSlotsAsItemStack(getEquippedArmor() - 4) != null) {
+                if (getChestSlotsAsItemStack(getEquippedArmor() - 4) != null && getEquippedArmor() != 9) {
                     return getChestSlotsAsItemStack(getEquippedArmor() - 4);
                 } else return null;
         } else return null;
@@ -1810,7 +1807,7 @@ public class NEUOverlay extends Gui {
 
     public ItemStack getSecondWardrobe() {
         if (isInWardrobe()) {
-            if (getChestSlotsAsItemStack(getEquippedArmor() - 3) != null && getEquippedArmor() != -1) {
+            if (getChestSlotsAsItemStack(getEquippedArmor() - 3) != null && getEquippedArmor() != 9) {
                 return getChestSlotsAsItemStack(getEquippedArmor() - 3);
             } else return null;
         } else return null;
@@ -1818,7 +1815,7 @@ public class NEUOverlay extends Gui {
 
     public ItemStack getThirdWardrobe() {
         if (isInWardrobe()) {
-            if (getChestSlotsAsItemStack(getEquippedArmor() - 2) != null && getEquippedArmor() != -1) {
+            if (getChestSlotsAsItemStack(getEquippedArmor() - 2) != null && getEquippedArmor() != 9) {
                 return getChestSlotsAsItemStack(getEquippedArmor() - 2);
             } else return null;
         } else return null;
@@ -1826,7 +1823,7 @@ public class NEUOverlay extends Gui {
 
     public ItemStack getFourthWardrobe() {
         if (isInWardrobe()) {
-        if (getChestSlotsAsItemStack(getEquippedArmor() - 1) != null && getEquippedArmor() != -1) {
+        if (getChestSlotsAsItemStack(getEquippedArmor() - 1) != null && getEquippedArmor() != 9) {
             return getChestSlotsAsItemStack(getEquippedArmor() - 1);
         } else return null;
     } else return null;
@@ -1836,10 +1833,17 @@ public class NEUOverlay extends Gui {
     public ItemStack slot2 = null;
     public ItemStack slot3 = null;
     public ItemStack slot4 = null;
+    public static boolean isRenderingArmorHud() {
+        return renderingArmorHud;
+    }
+    /**
+     * Renders the search bar, quick commands, item selection (right), item info (left) and armor hud gui elements.
+     */
     public void render(boolean hoverInv) {
         if (disabled) {
             return;
         }
+        renderingArmorHud = false;
         GlStateManager.enableDepth();
 
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -1872,6 +1876,7 @@ public class NEUOverlay extends Gui {
                slot4 = getFourthWardrobe();
            }
             if (guiScreen instanceof GuiInventory) {
+                renderingArmorHud = true;
                 selectedArmor = 9;
 
                 List<String> tooltipToDisplay = null;
@@ -1893,7 +1898,6 @@ public class NEUOverlay extends Gui {
 
                 GlStateManager.color(1, 1, 1, 1);
                 GL11.glTranslatef(0, 0, 80);
-
                 Utils.drawTexturedRect((float) ((width - 224.1) / 2f), (float) ((height + 60.9) / 2f - 114), 31, 86, GL11.GL_NEAREST);
                 GlStateManager.bindTexture(0);
 
