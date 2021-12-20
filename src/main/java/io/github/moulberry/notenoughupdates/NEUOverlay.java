@@ -28,6 +28,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.*;
@@ -41,6 +42,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -1676,6 +1679,163 @@ public class NEUOverlay extends Gui {
     /**
      * Renders the search bar, quick commands, item selection (right) and item info (left) gui elements.
      */
+    public int wardrobePage = -1;
+    public int getWardrobePage () {
+        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+            GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+            ContainerChest container = (ContainerChest) chest.inventorySlots;
+            IInventory lower = container.getLowerChestInventory();
+            String containerName = lower.getDisplayName().getUnformattedText();
+            if (containerName.contains("Wardrobe (1/")) {
+                wardrobePage = 1;
+            } else
+            if (containerName.contains("Wardrobe (2/")) {
+                wardrobePage = 2;
+            } else
+            if (containerName.contains("Wardrobe (3/")) {
+                wardrobePage = 3;
+            } else
+            if (containerName.contains("Wardrobe (4/")) {
+                wardrobePage = 4;
+            } else wardrobePage = -1;
+
+        }
+        return wardrobePage;
+    }
+    public boolean wardrobeOpen = false;
+    public boolean isInWardrobe() {
+        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+            GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+            ContainerChest container = (ContainerChest) chest.inventorySlots;
+            IInventory lower = container.getLowerChestInventory();
+            String containerName = lower.getDisplayName().getUnformattedText();
+            if (containerName.contains("Wardrobe")) {
+                wardrobeOpen = true;
+            } else wardrobeOpen = false;
+        }
+        return wardrobeOpen;
+    }
+    public ItemStack getChestSlotsAsItemStack(int slot) {
+        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+            GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+            return chest.inventorySlots.getSlot(slot).getStack();
+        } else {
+            return null;
+        }
+    }
+    public int selectedArmor = 9;
+    public int getEquippedArmor() {
+            if (isInWardrobe()) {
+                ItemStack nullTest1 = getChestSlotsAsItemStack(8);
+                ItemStack nullTest2 = getChestSlotsAsItemStack(17);
+                ItemStack nullTest3 = getChestSlotsAsItemStack(26);
+                ItemStack nullTest4 = getChestSlotsAsItemStack(35);
+                ItemStack nullTest5 = getChestSlotsAsItemStack(44);
+                if (nullTest1 != null || nullTest2 != null || nullTest3 != null || nullTest4 != null || nullTest5 != null) {
+                    selectedArmor = 9;
+                }
+                if (getWardrobePage() == 1) {
+                    for (int i = 8; i < 54; i = i + 9) {
+                        ItemStack stack1 = getChestSlotsAsItemStack(i);
+                        if (stack1 != null) {
+                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
+                            for (String line : lore1) {
+                                //System.out.println(line);
+                                if (line.contains("to unequip this armor")) {
+                                    selectedArmor = i;
+                                    //break;
+                                }
+                            }
+                        }
+                    }
+                } if (getWardrobePage() == 2 && selectedArmor == 9) {
+                    for (int i = 8; i < 54; i = i + 9) {
+                        ItemStack stack1 = getChestSlotsAsItemStack(i);
+                        if (stack1 != null) {
+                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
+                            for (String line : lore1) {
+                                //System.out.println(line);
+                                if (line.contains("to unequip this armor")) {
+                                    selectedArmor = i;
+                                    //break;
+                                }
+                            }
+                        }
+                    }
+                } if (getWardrobePage() == 3 && selectedArmor == 9) {
+                    for (int i = 8; i < 54; i = i + 9) {
+                        ItemStack stack1 = getChestSlotsAsItemStack(i);
+                        if (stack1 != null) {
+                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
+                            for (String line : lore1) {
+                                //System.out.println(line);
+                                if (line.contains("to unequip this armor")) {
+                                    selectedArmor = i;
+                                    //break;
+                                }
+                            }
+                        }
+                    }
+                } if (getWardrobePage() == 4 && selectedArmor == 9) {
+                    for (int i = 8; i < 54; i = i + 9) {
+                        ItemStack stack1 = getChestSlotsAsItemStack(i);
+                        if (stack1 != null) {
+                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
+                            for (String line : lore1) {
+                                //System.out.println(line);
+                                if (line.contains("to unequip this armor")) {
+                                    selectedArmor = i;
+                                    //break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println(selectedArmor);
+        return selectedArmor;
+        }
+
+
+    public ItemStack getFirstWardrobe() {
+        if (isInWardrobe()) {
+                if (getChestSlotsAsItemStack(getEquippedArmor() - 4) != null) {
+                    return getChestSlotsAsItemStack(getEquippedArmor() - 4);
+                } else return null;
+        } else return null;
+    }
+
+    public ItemStack getSecondWardrobe() {
+        if (isInWardrobe()) {
+            if (getChestSlotsAsItemStack(getEquippedArmor() - 3) != null && getEquippedArmor() != -1) {
+                return getChestSlotsAsItemStack(getEquippedArmor() - 3);
+            } else return null;
+        } else return null;
+    }
+
+    public ItemStack getThirdWardrobe() {
+        if (isInWardrobe()) {
+            if (getChestSlotsAsItemStack(getEquippedArmor() - 2) != null && getEquippedArmor() != -1) {
+                return getChestSlotsAsItemStack(getEquippedArmor() - 2);
+            } else return null;
+        } else return null;
+    }
+
+    public ItemStack getFourthWardrobe() {
+        if (isInWardrobe()) {
+        if (getChestSlotsAsItemStack(getEquippedArmor() - 1) != null && getEquippedArmor() != -1) {
+            return getChestSlotsAsItemStack(getEquippedArmor() - 1);
+        } else return null;
+    } else return null;
+}
+
+    public ItemStack slot1 = null;
+    public ItemStack slot2 = null;
+    public ItemStack slot3 = null;
+    public ItemStack slot4 = null;
     public void render(boolean hoverInv) {
         if (disabled) {
             return;
@@ -1705,15 +1865,15 @@ public class NEUOverlay extends Gui {
         }
         if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect) {
             GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+           if (getFourthWardrobe() != null) {
+               slot1 = getFirstWardrobe();
+               slot2 = getSecondWardrobe();
+               slot3 = getThirdWardrobe();
+               slot4 = getFourthWardrobe();
+           }
             if (guiScreen instanceof GuiInventory) {
-                ItemStack slot1;
-                ItemStack slot2;
-                ItemStack slot3;
-                ItemStack slot4;
-                slot1 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_HELMET"));
-                slot2 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_CHESTPLATE"));
-                slot3 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_LEGGINGS"));
-                slot4 = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ADAPTIVE_BOOTS"));
+                selectedArmor = 9;
+
                 List<String> tooltipToDisplay = null;
                 if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 0) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY);
@@ -1732,7 +1892,7 @@ public class NEUOverlay extends Gui {
                 }
 
                 GlStateManager.color(1, 1, 1, 1);
-                GL11.glTranslatef(0, 0, 100);
+                GL11.glTranslatef(0, 0, 80);
 
                 Utils.drawTexturedRect((float) ((width - 224.1) / 2f), (float) ((height + 60.9) / 2f - 114), 31, 86, GL11.GL_NEAREST);
                 GlStateManager.bindTexture(0);
@@ -1741,35 +1901,36 @@ public class NEUOverlay extends Gui {
                 Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18);
                 Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36);
                 Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54);
-
-                if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-                    //top slot
-                    if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
-                        tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-                        tooltipToDisplay = null;
-                        GL11.glTranslatef(0, 0, -100);
+                if (slot1 != null) {
+                    if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+                        //top slot
+                        if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
+                            tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                            tooltipToDisplay = null;
+                            GL11.glTranslatef(0, 0, -80);
+                        }
+                        if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
+                            tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                            tooltipToDisplay = null;
+                            GL11.glTranslatef(0, 0, -80);
+                        }
+                        if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
+                            tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                            tooltipToDisplay = null;
+                            GL11.glTranslatef(0, 0, -80);
+                        }
+                        if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
+                            tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                            tooltipToDisplay = null;
+                            GL11.glTranslatef(0, 0, -80);
+                        }
                     }
-                    if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
-                        tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-                        tooltipToDisplay = null;
-                        GL11.glTranslatef(0, 0, -100);
-                    }
-                    if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
-                        tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-                        tooltipToDisplay = null;
-                        GL11.glTranslatef(0, 0, -100);
-                    }
-                    if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
-                        tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-                        Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-                        tooltipToDisplay = null;
-                        GL11.glTranslatef(0, 0, -100);
-                    }
+                    GL11.glTranslatef(0, 0, -80);
                 }
-                GL11.glTranslatef(0, 0, -100);
             }
         }
 
