@@ -1202,7 +1202,7 @@ public class NEUEventListener {
                         }
                     }
                     if (NEUOverlay.isRenderingArmorHud()) {
-                        if (x == 213 && y > guiTop && y < guiTop + 84) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
                             x -= 25;
                         }
                     }
@@ -1563,7 +1563,7 @@ public class NEUEventListener {
                         }
                     }
                     if (NEUOverlay.isRenderingArmorHud()) {
-                        if (x == 213 && y > guiTop && y < guiTop + 84) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
                             x -= 25;
                         }
                     }
