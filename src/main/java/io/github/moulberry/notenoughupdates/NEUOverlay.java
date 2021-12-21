@@ -84,6 +84,7 @@ public class NEUOverlay extends Gui {
     private static final ResourceLocation ARMOR_DISPLAY_DARK = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_phq_dark.png");
     private static final ResourceLocation ARMOR_DISPLAY_FSR = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_fsr.png");
     private static final ResourceLocation ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_transparent.png");
+    private static final ResourceLocation QUESTION_MARK = new ResourceLocation("notenoughupdates:pv_unknown.png");
     private static boolean renderingArmorHud;
 
     private final NEUManager manager;
@@ -1677,32 +1678,8 @@ public class NEUOverlay extends Gui {
     int guiScaleLast = 0;
     private boolean showVanillaLast = false;
 
-    public int wardrobePage = -1;
-    public int getWardrobePage () {
-        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-        if (guiScreen instanceof GuiChest) {
-            GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-            ContainerChest container = (ContainerChest) chest.inventorySlots;
-            IInventory lower = container.getLowerChestInventory();
-            String containerName = lower.getDisplayName().getUnformattedText();
-            if (containerName.contains("Wardrobe (1/")) {
-                wardrobePage = 1;
-            } else
-            if (containerName.contains("Wardrobe (2/")) {
-                wardrobePage = 2;
-            } else
-            if (containerName.contains("Wardrobe (3/")) {
-                wardrobePage = 3;
-            } else
-            if (containerName.contains("Wardrobe (4/")) {
-                wardrobePage = 4;
-            } else wardrobePage = -1;
-
-        }
-        return wardrobePage;
-    }
-    public boolean wardrobeOpen = false;
-    public boolean isInWardrobe() {
+    private boolean wardrobeOpen = false;
+    private boolean isInWardrobe() {
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (guiScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
@@ -1713,9 +1690,32 @@ public class NEUOverlay extends Gui {
                 wardrobeOpen = true;
             } else wardrobeOpen = false;
         }
+        if (guiScreen instanceof GuiInventory) {
+            wardrobeOpen = false;
+        }
         return wardrobeOpen;
     }
-    public ItemStack getChestSlotsAsItemStack(int slot) {
+    private int wardrobePage = -1;
+    private int getWardrobePage () {
+        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+            if (isInWardrobe()) {
+                GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+                ContainerChest container = (ContainerChest) chest.inventorySlots;
+                IInventory lower = container.getLowerChestInventory();
+                String containerName = lower.getDisplayName().getUnformattedText();
+                try {
+                    wardrobePage = Integer.parseInt(containerName.substring(10, 11));
+                } catch (NumberFormatException e) {
+                    System.out.println(containerName.charAt(10));
+                    System.out.println("Did hypixel change the wardrobe string?");
+                    wardrobePage = -1;
+                }
+            } else wardrobePage = -1;
+        }
+        return wardrobePage;
+    }
+    private ItemStack getChestSlotsAsItemStack(int slot) {
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (guiScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
@@ -1724,8 +1724,8 @@ public class NEUOverlay extends Gui {
             return null;
         }
     }
-    public int selectedArmor = 9;
-    public int getEquippedArmor() {
+    private int selectedArmor = 9;
+    private int getEquippedArmor() {
             if (isInWardrobe()) {
                 ItemStack nullTest1 = getChestSlotsAsItemStack(8);
                 ItemStack nullTest2 = getChestSlotsAsItemStack(17);
@@ -1735,58 +1735,20 @@ public class NEUOverlay extends Gui {
                 if (nullTest1 != null || nullTest2 != null || nullTest3 != null || nullTest4 != null || nullTest5 != null) {
                     selectedArmor = 9;
                 }
-                if (getWardrobePage() == 1) {
-                    for (int i = 8; i < 54; i = i + 9) {
-                        ItemStack stack1 = getChestSlotsAsItemStack(i);
-                        if (stack1 != null) {
-                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
-                            for (String line : lore1) {
-                                //System.out.println(line);
-                                if (line.contains("to unequip this armor")) {
-                                    selectedArmor = i;
-                                    //break;
-                                }
-                            }
-                        }
-                    }
-                } if (getWardrobePage() == 2 && selectedArmor == 9) {
-                    for (int i = 8; i < 54; i = i + 9) {
-                        ItemStack stack1 = getChestSlotsAsItemStack(i);
-                        if (stack1 != null) {
-                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
-                            for (String line : lore1) {
-                                //System.out.println(line);
-                                if (line.contains("to unequip this armor")) {
-                                    selectedArmor = i;
-                                    //break;
-                                }
-                            }
-                        }
-                    }
-                } if (getWardrobePage() == 3 && selectedArmor == 9) {
-                    for (int i = 8; i < 54; i = i + 9) {
-                        ItemStack stack1 = getChestSlotsAsItemStack(i);
-                        if (stack1 != null) {
-                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
-                            for (String line : lore1) {
-                                //System.out.println(line);
-                                if (line.contains("to unequip this armor")) {
-                                    selectedArmor = i;
-                                    //break;
-                                }
-                            }
-                        }
-                    }
-                } if (getWardrobePage() == 4 && selectedArmor == 9) {
-                    for (int i = 8; i < 54; i = i + 9) {
-                        ItemStack stack1 = getChestSlotsAsItemStack(i);
-                        if (stack1 != null) {
-                            String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
-                            for (String line : lore1) {
-                                //System.out.println(line);
-                                if (line.contains("to unequip this armor")) {
-                                    selectedArmor = i;
-                                    //break;
+                for (int ii = 1; ii < 5; ii++) {
+                    if (ii == 1 || selectedArmor == 9) {
+                        if (getWardrobePage() == ii) {
+                            for (int i = 8; i < 54; i += 9) {
+                                ItemStack stack1 = getChestSlotsAsItemStack(i);
+                                if (stack1 != null) {
+                                    String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
+                                    for (String line : lore1) {
+                                        //System.out.println(line);
+                                        if (line.contains("to unequip this armor")) {
+                                            selectedArmor = i;
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1796,38 +1758,13 @@ public class NEUOverlay extends Gui {
         return selectedArmor;
         }
 
-
-    public ItemStack getFirstWardrobe() {
-        if (isInWardrobe()) {
-                if (getChestSlotsAsItemStack(getEquippedArmor() - 4) != null && getEquippedArmor() != 9) {
-                    return getChestSlotsAsItemStack(getEquippedArmor() - 4);
+    private ItemStack getWardrobeSlot(int armourSlot) {
+            if (isInWardrobe()) {
+                if (getChestSlotsAsItemStack(getEquippedArmor() - armourSlot) != null && getEquippedArmor() != 9) {
+                    return getChestSlotsAsItemStack(getEquippedArmor() - armourSlot);
                 } else return null;
-        } else return null;
-    }
-
-    public ItemStack getSecondWardrobe() {
-        if (isInWardrobe()) {
-            if (getChestSlotsAsItemStack(getEquippedArmor() - 3) != null && getEquippedArmor() != 9) {
-                return getChestSlotsAsItemStack(getEquippedArmor() - 3);
             } else return null;
-        } else return null;
-    }
-
-    public ItemStack getThirdWardrobe() {
-        if (isInWardrobe()) {
-            if (getChestSlotsAsItemStack(getEquippedArmor() - 2) != null && getEquippedArmor() != 9) {
-                return getChestSlotsAsItemStack(getEquippedArmor() - 2);
-            } else return null;
-        } else return null;
-    }
-
-    public ItemStack getFourthWardrobe() {
-        if (isInWardrobe()) {
-        if (getChestSlotsAsItemStack(getEquippedArmor() - 1) != null && getEquippedArmor() != 9) {
-            return getChestSlotsAsItemStack(getEquippedArmor() - 1);
-        } else return null;
-    } else return null;
-}
+        }
 
     public ItemStack slot1 = null;
     public ItemStack slot2 = null;
@@ -1869,11 +1806,11 @@ public class NEUOverlay extends Gui {
         }
         if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect) {
             GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-           if (getFourthWardrobe() != null) {
-               slot1 = getFirstWardrobe();
-               slot2 = getSecondWardrobe();
-               slot3 = getThirdWardrobe();
-               slot4 = getFourthWardrobe();
+           if (getWardrobeSlot(1) != null) {
+               slot1 = getWardrobeSlot(4);
+               slot2 = getWardrobeSlot(3);
+               slot3 = getWardrobeSlot(2);
+               slot4 = getWardrobeSlot(1);
            }
             if (guiScreen instanceof GuiInventory) {
                 renderingArmorHud = true;
@@ -1905,7 +1842,27 @@ public class NEUOverlay extends Gui {
                 Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18);
                 Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36);
                 Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54);
-                if (slot1 != null) {
+                if (slot1 == null) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
+                    GlStateManager.color(1, 1, 1, 1);
+                    GL11.glTranslatef(0, 0, 100);
+                    Utils.drawTexturedRect(((width - 208) / 2f), ((height + 60) / 2f - 105), 16, 16, GL11.GL_NEAREST);
+                    GlStateManager.bindTexture(0);
+
+                    tooltipToDisplay = Lists.newArrayList(
+                            EnumChatFormatting.RED+"Warning",
+                            EnumChatFormatting.GREEN+"You need to open /wardrobe",
+                            EnumChatFormatting.GREEN+"To cache your armour"
+                    );
+                    if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+                        //top slot
+                        if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
+                            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                        }
+                    }
+
+                }
+                if (slot1 != null && slot2 != null && slot3 != null && slot4 != null) {
                     if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
                         //top slot
                         if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {

@@ -1076,14 +1076,15 @@ public class NEUEventListener {
                     if (button.anchorBottom) {
                         y += ySize;
                     }
-                    //System.out.println("x = " + x + " y = " + y + " guiTop = " + guiTop + " guiLeft = " + guiLeft + " xSize = " + xSize);
+                    //int veryCoolMath = guiLeft + xSize - 113;
+                    //System.out.println("x = " + x + " y = " + y + " guiTop = " + guiTop + " guiLeft = " + guiLeft + " xSize = " + xSize + " very cool maht = " + veryCoolMath);
                     if (AccessoryBagOverlay.isInAccessoryBag()) {
                         if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
                             x += 80 + 28;
                         }
                     }
                     if (NEUOverlay.isRenderingArmorHud()) {
-                        if (x == 213 && y > guiTop && y < guiTop + 84) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
                             x -= 25;
                         }
                     }
