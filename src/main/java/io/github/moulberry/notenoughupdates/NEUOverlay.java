@@ -1804,7 +1804,8 @@ public class NEUOverlay extends Gui {
             Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
             GlStateManager.bindTexture(0);
         }
-        if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect) {
+        if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
+                && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
             GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
            if (getWardrobeSlot(1) != null) {
                slot1 = getWardrobeSlot(4);
