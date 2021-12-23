@@ -32,13 +32,14 @@ public class RecipeGenerator {
     private final Map<String, String> savedForgingDurations = new HashMap<>();
 
     private final Debouncer debouncer = new Debouncer(1000 * 1000 * 50 /* 50 ms */);
+    private final Debouncer durationDebouncer = new Debouncer(1000 * 1000 * 500);
 
     public RecipeGenerator(NotEnoughUpdates neu) {
         this.neu = neu;
     }
 
     @SubscribeEvent
-    public void onGuiKeyPress(TickEvent event) {
+    public void onTick(TickEvent event) {
         if (!neu.config.hidden.enableItemEditing) return;
         GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
         if (currentScreen == null) return;
@@ -56,7 +57,8 @@ public class RecipeGenerator {
         String uiTitle = menu.getDisplayName().getUnformattedText();
         EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
         if (uiTitle.startsWith("Item Casting") || uiTitle.startsWith("Refine")) {
-            parseAllForgeItemMetadata(menu);
+            if (durationDebouncer.trigger())
+                parseAllForgeItemMetadata(menu);
         }
         boolean saveRecipe = shouldSaveRecipe();
         if (uiTitle.equals("Confirm Process") && saveRecipe) {
@@ -91,6 +93,7 @@ public class RecipeGenerator {
             if (i.isCoins()) continue;
             JsonObject outputJson = neu.manager.readJsonDefaultDir(i.getInternalItemId() + ".json");
             if (outputJson == null) return false;
+            outputJson.addProperty("clickcommand", "viewrecipe");
             outputJson.add("recipe", recipeJson);
             neu.manager.writeJsonDefaultDir(outputJson, i.getInternalItemId() + ".json");
             neu.manager.loadItem(i.getInternalItemId());

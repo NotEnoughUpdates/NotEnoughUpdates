@@ -3,7 +3,8 @@ package io.github.moulberry.notenoughupdates;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
-import io.github.moulberry.notenoughupdates.overlays.FuelBar;
+import io.github.moulberry.notenoughupdates.overlays.CraftingOverlay;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.*;
@@ -11,11 +12,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ProgressManager;
 import org.apache.commons.io.FileUtils;
 import org.lwjgl.input.Keyboard;
@@ -843,7 +844,28 @@ public class NEUManager {
     }
 
     public void showRecipe(JsonObject item) {
-        displayGuiItemRecipe(item.get("internalname").getAsString(), "");
+        ContainerChest container = null;
+        if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest)
+            container = (ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer;
+        String internalName = item.get("internalname").getAsString();
+        Set<NeuRecipe> recipesFor = getRecipesFor(internalName);
+        if (container != null && container.getLowerChestInventory().getDisplayName().getUnformattedText().equals("Craft Item")) {
+            Optional<NeuRecipe> recipe = recipesFor.stream().filter(it -> it instanceof CraftingRecipe).findAny();
+            if (recipe.isPresent()) {
+                CraftingOverlay.updateItem((CraftingRecipe) recipe.get());
+                return;
+            }
+        }
+        if (!item.has("clickcommand")) return;
+        String clickcommand = item.get("clickcommand").getAsString();
+        switch (clickcommand.intern()) {
+            case "viewrecipe":
+                displayGuiItemRecipe(internalName, null);
+                break;
+            case "viewoption":
+                neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+        }
+        displayGuiItemRecipe(internalName, "");
     }
 
     /**
@@ -1147,8 +1169,8 @@ public class NEUManager {
     public JsonObject readJsonDefaultDir(String filename) throws IOException {
         File f = new File(new File(repoLocation, "items"), filename);
         if (f.exists() && f.isFile() && f.canRead())
-            try (FileReader fis = new FileReader(f)) {
-                return gson.fromJson(fis, JsonObject.class);
+            try (Reader reader = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8)) {
+                return gson.fromJson(reader, JsonObject.class);
             } // rethrow io exceptions
         return null;
     }

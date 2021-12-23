@@ -3,6 +3,8 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
+import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -17,7 +19,7 @@ import org.lwjgl.input.Mouse;
 import java.util.List;
 
 public class CraftingOverlay {
-    private static ItemStack[] items = new ItemStack[9];
+    private static final ItemStack[] items = new ItemStack[9];
     private static final NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
     public static boolean shouldRender = false;
     private static String text = null;
@@ -85,5 +87,17 @@ public class CraftingOverlay {
                 }
             }
         }
+    }
+
+    public static void updateItem(CraftingRecipe recipe) {
+        for (int i = 0; i < 9; i++) {
+            Ingredient ingredient = recipe.getInputs()[i];
+            if (ingredient == null) {
+                items[i] = null;
+            } else {
+                items[i] = ingredient.getItemStack();
+            }
+        }
+        text = recipe.getCraftText();
     }
 }
