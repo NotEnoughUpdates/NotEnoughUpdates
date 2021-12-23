@@ -66,7 +66,7 @@ public class GuiItemRecipe extends GuiScreen {
         return craftingRecipes.get(currentIndex);
     }
 
-    private boolean isWithinRect(int x, int y, int topLeftX, int topLeftY, int width, int height) {
+    public boolean isWithinRect(int x, int y, int topLeftX, int topLeftY, int width, int height) {
         return topLeftX <= x && x <= topLeftX + width
                 && topLeftY <= y && y <= topLeftY + height;
     }
@@ -111,6 +111,7 @@ public class GuiItemRecipe extends GuiScreen {
                 Utils.drawHoveringText(slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false), mouseX, mouseY, width, height, -1, fontRendererObj);
             }
         }
+        currentRecipe.drawHoverInformation(this, mouseX, mouseY);
     }
 
     private void drawArrows(int mouseX, int mouseY) {

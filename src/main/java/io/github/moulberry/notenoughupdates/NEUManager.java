@@ -3,12 +3,10 @@ package io.github.moulberry.notenoughupdates;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
-import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.HypixelApi;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
@@ -17,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ProgressManager;
 import org.apache.commons.io.FileUtils;
 import org.lwjgl.input.Keyboard;
@@ -78,11 +77,15 @@ public class NEUManager {
     public File configLocation;
     public File repoLocation;
     public File configFile;
+    public HotmInformation hotm;
 
     public NEUManager(NotEnoughUpdates neu, File configLocation) {
         this.neu = neu;
         this.configLocation = configLocation;
         this.auctionManager = new APIManager(this);
+        this.hotm = new HotmInformation(neu);
+
+
         GIT_COMMITS_URL = neu.config.hidden.repoCommitsURL;
 
         gson = new GsonBuilder().setPrettyPrinting().create();

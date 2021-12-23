@@ -13,10 +13,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ForgeRecipe implements NeuRecipe {
 
@@ -26,6 +23,9 @@ public class ForgeRecipe implements NeuRecipe {
     private static final int SLOT_IMAGE_V = 0;
     private static final int SLOT_IMAGE_SIZE = 18;
     private static final int SLOT_PADDING = 1;
+    private static final int EXTRA_INFO_MAX_WIDTH = 75;
+    public static final int EXTRA_INFO_X = 132;
+    public static final int EXTRA_INFO_Y = 25;
 
     public enum ForgeType {
         REFINING, ITEM_FORGING
@@ -108,7 +108,32 @@ public class ForgeRecipe implements NeuRecipe {
     public void drawExtraInfo(GuiItemRecipe gui) {
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         if (timeInSeconds > 0)
-            Utils.drawStringCenteredScaledMaxWidth(formatDuration(timeInSeconds), fontRenderer, gui.guiLeft + 132, gui.guiTop + 25, false, 75, 0xff00ff);
+            Utils.drawStringCenteredScaledMaxWidth(formatDuration(timeInSeconds), fontRenderer, gui.guiLeft + EXTRA_INFO_X, gui.guiTop + EXTRA_INFO_Y, false, EXTRA_INFO_MAX_WIDTH, 0xff00ff);
+    }
+
+    @Override
+    public void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
+        manager.hotm.getInformationOnCurrentProfile().ifPresent(hotmTree -> {
+            if (timeInSeconds > 0 && gui.isWithinRect(
+                    mouseX, mouseY,
+                    gui.guiLeft + EXTRA_INFO_X - EXTRA_INFO_MAX_WIDTH / 2,
+                    gui.guiTop + EXTRA_INFO_Y - 8,
+                    EXTRA_INFO_MAX_WIDTH, 16
+            )) {
+                int qf = hotmTree.getLevel("forge_time");
+                int reducedTime = getReducedTime(qf);
+                if (qf > 0) {
+
+                    Utils.drawHoveringText(Arrays.asList(formatDuration(reducedTime) + " with Quick Forge (Level " + qf + ")"), mouseX, mouseY, gui.width, gui.height, 100, Minecraft.getMinecraft().fontRendererObj);
+                }
+            }
+        });
+    }
+
+    public int getReducedTime(int quickForgeUpgradeLevel) {
+        if (quickForgeUpgradeLevel <= 0) return timeInSeconds;
+        double reduction = Math.round(quickForgeUpgradeLevel * 5 + 100) / 1000.0;
+        return (int) (timeInSeconds - timeInSeconds * reduction);
     }
 
     @Override

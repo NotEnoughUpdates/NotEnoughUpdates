@@ -20,6 +20,9 @@ public interface NeuRecipe {
     default void drawExtraBackground(GuiItemRecipe gui) {
     }
 
+    default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
+    }
+
     JsonObject serialize();
 
     ResourceLocation getBackground();
