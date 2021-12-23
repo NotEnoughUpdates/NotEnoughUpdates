@@ -725,6 +725,10 @@ public class NEUManager {
                     break;
                 }
             }
+            if ("PARTY_HAT_CRAB".equals(internalname))  {
+                String crabhat = ea.getString("party_hat_color");
+                internalname = "PARTY_HAT_CRAB" + "_" + crabhat.toUpperCase();
+            }
         }
 
         return internalname;
