@@ -8,6 +8,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 public class CraftingRecipe implements NeuRecipe {
+
+    public static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     private static final int EXTRA_STRING_X = 132;
     private static final int EXTRA_STRING_Y = 25;
@@ -74,6 +77,11 @@ public class CraftingRecipe implements NeuRecipe {
 
     public String getCraftText() {
         return extraText;
+    }
+
+    @Override
+    public ResourceLocation getBackground() {
+        return BACKGROUND;
     }
 
     @Override

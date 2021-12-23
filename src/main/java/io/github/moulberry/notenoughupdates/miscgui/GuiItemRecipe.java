@@ -26,7 +26,6 @@ import java.util.List;
 public class GuiItemRecipe extends GuiScreen {
 
     public static final ResourceLocation resourcePacksTexture = new ResourceLocation("textures/gui/resource_packs.png");
-    public static final ResourceLocation craftingTableGuiTextures = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     public static final int SLOT_SIZE = 16;
     public static final int SLOT_SPACING = SLOT_SIZE + 2;
@@ -43,7 +42,6 @@ public class GuiItemRecipe extends GuiScreen {
     public static final int HOTBAR_SLOT_Y = 142;
     public static final int PLAYER_INVENTORY_X = 8;
     public static final int PLAYER_INVENTORY_Y = 84;
-
 
     private int currentIndex = 0;
 
@@ -88,37 +86,20 @@ public class GuiItemRecipe extends GuiScreen {
         this.guiTop = (height - this.ySize) / 2;
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(craftingTableGuiTextures);
-        this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
         NeuRecipe currentRecipe = getCurrentRecipe();
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(currentRecipe.getBackground());
+        this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
+
+        currentRecipe.drawExtraBackground(this);
 
         List<RecipeSlot> slots = getAllRenderedSlots();
         for (RecipeSlot slot : slots) {
             Utils.drawItemStack(slot.getItemStack(), slot.getX(this), slot.getY(this));
         }
 
-        if (craftingRecipes.size() > 1) {
-            boolean leftSelected = isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_LEFT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-            boolean rightSelected = isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_RIGHT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-            Minecraft.getMinecraft().getTextureManager().bindTexture(resourcePacksTexture);
-
-            Utils.drawTexturedRect(guiLeft + BUTTON_POSITION_LEFT_X, guiTop + BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT,
-                    34 / 256f, 48 / 256f,
-                    leftSelected ? 37 / 256f : 5 / 256f, leftSelected ? 59 / 256f : 27 / 256f
-            );
-            Utils.drawTexturedRect(guiLeft + BUTTON_POSITION_RIGHT_X, guiTop + BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT,
-                    10 / 256f, 24 / 256f,
-                    rightSelected ? 37 / 256f : 5 / 256f, rightSelected ? 59 / 256f : 27 / 256f
-            );
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-
-            String selectedPage = (currentIndex + 1) + "/" + craftingRecipes.size();
-
-            Utils.drawStringCenteredScaledMaxWidth(selectedPage, fontRendererObj,
-                    guiLeft + PAGE_STRING_X, guiTop + PAGE_STRING_Y, false, 24, Color.BLACK.getRGB());
-        }
+        if (craftingRecipes.size() > 1) drawArrows(mouseX, mouseY);
 
         Utils.drawStringScaledMaxWidth(title, fontRendererObj, guiLeft + TITLE_X, guiTop + TITLE_Y, false, xSize - 38, 0x404040);
 
@@ -130,6 +111,28 @@ public class GuiItemRecipe extends GuiScreen {
                 Utils.drawHoveringText(slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false), mouseX, mouseY, width, height, -1, fontRendererObj);
             }
         }
+    }
+
+    private void drawArrows(int mouseX, int mouseY) {
+        boolean leftSelected = isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_LEFT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+        boolean rightSelected = isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_RIGHT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(resourcePacksTexture);
+
+        Utils.drawTexturedRect(guiLeft + BUTTON_POSITION_LEFT_X, guiTop + BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                34 / 256f, 48 / 256f,
+                leftSelected ? 37 / 256f : 5 / 256f, leftSelected ? 59 / 256f : 27 / 256f
+        );
+        Utils.drawTexturedRect(guiLeft + BUTTON_POSITION_RIGHT_X, guiTop + BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                10 / 256f, 24 / 256f,
+                rightSelected ? 37 / 256f : 5 / 256f, rightSelected ? 59 / 256f : 27 / 256f
+        );
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+        String selectedPage = (currentIndex + 1) + "/" + craftingRecipes.size();
+
+        Utils.drawStringCenteredScaledMaxWidth(selectedPage, fontRendererObj,
+                guiLeft + PAGE_STRING_X, guiTop + PAGE_STRING_Y, false, 24, Color.BLACK.getRGB());
     }
 
     public List<RecipeSlot> getPlayerInventory() {
