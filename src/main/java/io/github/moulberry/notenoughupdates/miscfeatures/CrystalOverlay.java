@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 public class CrystalOverlay {
-
     private enum CrystalType {
         FARMING_MINION(8, 0xDAA520),
         MINING_MINION(40, 0x6e5a49),
@@ -111,14 +110,12 @@ public class CrystalOverlay {
     private static double posLastUpdateY;
     private static double posLastUpdateZ;
 
-    private static final HashMap<String, CrystalType> skullId = new HashMap<>();
-
-    static {
-        skullId.put("d9c3168a-8654-3dd8-b297-4d3b7e55b95a", CrystalType.FARMING_MINION);
-        skullId.put("949d100c-aa74-3b09-a642-af5529f808aa", CrystalType.MINING_MINION);
-        skullId.put("bd79a474-cf07-3f8c-b5a4-98657c33520a", CrystalType.FORAGING_MINION);
-        skullId.put("2e474ee3-5361-3218-84db-880eb1cface1", CrystalType.FISHING);
-    }
+    private static final HashMap<String, CrystalType> skullId = new HashMap<String, CrystalType>() {{
+        put("d9c3168a-8654-3dd8-b297-4d3b7e55b95a", CrystalType.FARMING_MINION);
+        put("949d100c-aa74-3b09-a642-af5529f808aa", CrystalType.MINING_MINION);
+        put("bd79a474-cf07-3f8c-b5a4-98657c33520a", CrystalType.FORAGING_MINION);
+        put("2e474ee3-5361-3218-84db-880eb1cface1", CrystalType.FISHING);
+    }};
 
     public static long displayMillis = 0;
 
@@ -366,5 +363,4 @@ public class CrystalOverlay {
         worldrenderer.pos(p_181561_0_.minX, p_181561_0_.maxY, p_181561_0_.maxZ)
                 .color(c.getRed() / 255f * 0.9f, c.getGreen() / 255f * 0.9f, c.getBlue() / 255f * 0.9f, c.getAlpha() / 255f * alpha).endVertex();
     }
-
 }

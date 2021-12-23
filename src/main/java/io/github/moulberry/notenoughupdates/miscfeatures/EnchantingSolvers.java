@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.*;
 
 public class EnchantingSolvers {
-
     private static SolverType currentSolver = SolverType.NONE;
 
     private enum SolverType {
@@ -31,12 +30,11 @@ public class EnchantingSolvers {
         SUPERPAIRS
     }
 
-    private static final NBTTagCompound enchTag = new NBTTagCompound();
-    static {
-        enchTag.setTag("ench", new NBTTagList());
-    }
+    private static final NBTTagCompound enchTag = new NBTTagCompound() {{
+        setTag("ench", new NBTTagList());
+    }};
 
-    //Chronomatron
+    // Chronomatron
     private static boolean addToChronomatron = false;
     private static boolean chronomatronStartSeq = false;
     private static final List<String> chronomatronOrder = new ArrayList<>();
@@ -44,7 +42,7 @@ public class EnchantingSolvers {
     private static int lastChronomatronSize = 0;
     private static long millisLastClick = 0;
 
-    //Ultrasequencer
+    // Ultrasequencer
     private static class UltrasequencerItem {
         ItemStack stack;
         int containerIndex;
@@ -58,7 +56,7 @@ public class EnchantingSolvers {
     private static final Map<Integer, UltrasequencerItem> ultraSequencerOrder = new HashMap<>();
     private static int ultrasequencerReplayIndex = 0;
 
-    //Superpairs
+    // Superpairs
     private static final Map<Integer, ItemStack> superpairStacks = new HashMap<>();
     private static int lastSlotClicked = -1;
     private static final HashSet<Integer> successfulMatches = new HashSet<>();
@@ -551,5 +549,4 @@ public class EnchantingSolvers {
 
         processInventoryContents(true);
     }
-
 }

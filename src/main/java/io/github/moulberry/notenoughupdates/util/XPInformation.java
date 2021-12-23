@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class XPInformation {
-
     private static final XPInformation INSTANCE = new XPInformation();
 
     public static XPInformation getInstance() {
@@ -209,5 +208,4 @@ public class XPInformation {
             skillInfoMap.put(skill.toLowerCase(), info);
         }
     }
-
 }

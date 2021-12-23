@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PositionNew {
-
     public enum Anchor {
         MIN(0, 0, 0),
         MID(0.5f, -0.5f, 0),
@@ -59,8 +58,7 @@ public class PositionNew {
         this.allowResize = allowResize;
     }
 
-    protected PositionNew() {
-    }
+    protected PositionNew() {}
 
     public int moveX(ScaledResolution scaledResolution, int deltaX, int sizeX) {
         int originalX = resolveX(scaledResolution, sizeX);

@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin({ItemStack.class})
 public class MixinItemStack {
-
     @Inject(method = "hasEffect", at = @At("HEAD"), cancellable = true)
     public void hasEffect(CallbackInfoReturnable<Boolean> cir) {
         if (Utils.getHasEffectOverride()) {
@@ -47,5 +46,4 @@ public class MixinItemStack {
             }
         } catch (Exception ignored) {}
     }
-
 }

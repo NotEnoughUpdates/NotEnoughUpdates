@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class StatsCommand extends ClientCommandBase {
-
     private final ExecutorService threadPool = Executors.newFixedThreadPool(1);
 
     public StatsCommand() {
@@ -147,5 +146,4 @@ public class StatsCommand extends ClientCommandBase {
         }
         return -1;
     }
-
 }

@@ -68,7 +68,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class NEUOverlay extends Gui {
-
     private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation("notenoughupdates:supersecretassets/bald.png");
     private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
     private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
@@ -236,11 +235,8 @@ public class NEUOverlay extends Gui {
                 int paddingUnscaled = getPaddingUnscaled();
 
                 GlStateManager.color(1, 1, 1, 1);
-                if (searchMode) {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_BAR_GOLD);
-                } else {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_BAR);
-                }
+
+                Minecraft.getMinecraft().getTextureManager().bindTexture(searchMode ? SEARCH_BAR_GOLD : SEARCH_BAR);
 
                 int w = getWidth();
                 int h = getHeight();
@@ -316,8 +312,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
         };
     }
 
@@ -334,8 +329,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
 
             @Override
             public void mouseClick(float x, float y, int mouseX, int mouseY) {
@@ -348,8 +342,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void mouseClickOutside() {
-            }
+            public void mouseClickOutside() {}
 
             @Override
             public void render(float x, float y) {
@@ -387,8 +380,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
 
             @Override
             public void mouseClick(float x, float y, int mouseX, int mouseY) {
@@ -405,8 +397,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void mouseClickOutside() {
-            }
+            public void mouseClickOutside() {}
 
             @Override
             public void render(float x, float y) {
@@ -445,8 +436,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
 
             @Override
             public void mouseClick(float x, float y, int mouseX, int mouseY) {
@@ -467,8 +457,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void mouseClickOutside() {
-            }
+            public void mouseClickOutside() {}
 
             @Override
             public void render(float x, float y) {
@@ -2060,8 +2049,6 @@ public class NEUOverlay extends Gui {
 
     /**
      * Sets the current page and marks that the itemsPane should be redrawn
-     *
-     * @param page
      */
     public void setPage(int page) {
         this.page = page;
@@ -2356,5 +2343,4 @@ public class NEUOverlay extends Gui {
     public float getInfoPaneOffsetFactor() {
         return infoPaneOffsetFactor.getValue() * getWidthMult();
     }
-
 }

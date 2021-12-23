@@ -24,7 +24,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.*;
 
 public class FishingHelper {
-
     private static final FishingHelper INSTANCE = new FishingHelper();
 
     public static FishingHelper getInstance() {
@@ -131,7 +130,6 @@ public class FishingHelper {
                     lastCastRodMillis = currentTime;
                 }
             }
-
         }
     }
 
@@ -587,5 +585,4 @@ public class FishingHelper {
 
         return false;
     }
-
 }

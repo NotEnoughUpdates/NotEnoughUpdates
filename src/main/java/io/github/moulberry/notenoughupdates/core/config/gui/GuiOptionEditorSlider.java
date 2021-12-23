@@ -8,7 +8,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class GuiOptionEditorSlider extends GuiOptionEditor {
-
     private final GuiElementSlider slider;
     private final GuiElementTextField textField;
 
@@ -126,5 +125,4 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
         }
         return false;
     }
-
 }

@@ -16,7 +16,6 @@ import org.lwjgl.input.Mouse;
 import java.util.HashMap;
 
 public class RancherBootOverlay {
-
     private static int selectedIndex = 0;
 
     private static final HashMap<Integer, Integer> currentSpeeds = new HashMap<>();
@@ -153,5 +152,4 @@ public class RancherBootOverlay {
             }
         }
     }
-
 }

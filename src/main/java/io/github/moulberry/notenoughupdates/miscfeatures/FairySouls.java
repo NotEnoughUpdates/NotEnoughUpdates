@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class FairySouls {
-
     private static final String unknownProfile = "unknown";
     private static List<BlockPos> currentSoulList = null;
     private static List<BlockPos> currentSoulListClose = null;
@@ -147,15 +146,13 @@ public class FairySouls {
 
         try {
             //noinspection UnstableApiUsage
-            Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {
-            }.getType();
+            Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {}.getType();
             loadedFoundSouls = gson.fromJson(fileContent, multiProfileSoulsType);
         } catch (JsonSyntaxException e) {
             //The file is in the old format, convert it to the new one and set the profile to unknown
             try {
                 //noinspection UnstableApiUsage
-                Type singleProfileSoulsType = new TypeToken<HashMap<String, Set<Integer>>>() {
-                }.getType();
+                Type singleProfileSoulsType = new TypeToken<HashMap<String, Set<Integer>>>() {}.getType();
                 loadedFoundSouls.put(unknownProfile, gson.fromJson(fileContent, singleProfileSoulsType));
             } catch (JsonSyntaxException e2) {
                 System.err.println("Can't read file containing collected fairy souls, resetting.");
@@ -171,8 +168,7 @@ public class FairySouls {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
                 writer.write(gson.toJson(loadedFoundSouls));
             }
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
     }
 
     public static void tick() {
@@ -212,8 +208,7 @@ public class FairySouls {
 
                             currentSoulList.add(new BlockPos(x, y, z));
                         }
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
                 }
             }
         }
@@ -322,5 +317,4 @@ public class FairySouls {
             super("neusouls", fairysoulRunnable);
         }
     }
-
 }

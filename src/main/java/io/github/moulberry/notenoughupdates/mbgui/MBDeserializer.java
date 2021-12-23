@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 
 public class MBDeserializer {
-
     public static MBGuiElement deserialize(JsonObject json) {
         return null;
     }
@@ -16,5 +15,4 @@ public class MBDeserializer {
         File file = new File(NotEnoughUpdates.INSTANCE.manager.configLocation, filename+".json");
         NotEnoughUpdates.INSTANCE.manager.writeJson(json, file);*/
     }
-
 }

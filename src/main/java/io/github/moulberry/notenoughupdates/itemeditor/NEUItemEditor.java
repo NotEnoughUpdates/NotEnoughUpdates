@@ -30,7 +30,6 @@ import java.util.function.Supplier;
 import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.*;
 
 public class NEUItemEditor extends GuiScreen {
-
     private final NEUManager manager;
 
     private final List<GuiElement> options = new ArrayList<>();

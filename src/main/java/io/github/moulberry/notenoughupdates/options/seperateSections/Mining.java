@@ -242,34 +242,34 @@ public class Mining {
     @ConfigEditorDraggableList(
             exampleText = {
                     "\u00a73Amber Crystal: \u00a7aPlaced\n" +
-                            "\u00a73Sapphire Crystal: \u00a7eCollected\n" +
-                            "\u00a73Jade Crystal: \u00a7eMissing\n" +
-                            "\u00a73Amethyst Crystal: \u00a7cMissing\n" +
-                            "\u00a73Topaz Crystal: \u00a7cMissing\n",
+                    "\u00a73Sapphire Crystal: \u00a7eCollected\n" +
+                    "\u00a73Jade Crystal: \u00a7eMissing\n" +
+                    "\u00a73Amethyst Crystal: \u00a7cMissing\n" +
+                    "\u00a73Topaz Crystal: \u00a7cMissing\n",
                     "\u00a73Crystals: \u00a7a4/5",
                     "\u00a73Crystals: \u00a7a80%",
                     "\u00a73Electron Transmitter: \u00a7aDone\n" +
-                            "\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
-                            "\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-                            "\u00a73Synthetic Hearth: \u00a7cMissing\n" +
-                            "\u00a73Control Switch: \u00a7cMissing\n" +
-                            "\u00a73FTX 3070: \u00a7cMissing",
+                    "\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
+                    "\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
+                    "\u00a73Synthetic Hearth: \u00a7cMissing\n" +
+                    "\u00a73Control Switch: \u00a7cMissing\n" +
+                    "\u00a73FTX 3070: \u00a7cMissing",
                     "\u00a73Electron Transmitter: \u00a7a3\n" +
-                            "\u00a73Robotron Reflector: \u00a7e2\n" +
-                            "\u00a73Superlite Motor: \u00a7e1\n" +
-                            "\u00a73Synthetic Hearth: \u00a7c0\n" +
-                            "\u00a73Control Switch: \u00a7c0\n" +
-                            "\u00a73FTX 3070: \u00a7c0",
+                    "\u00a73Robotron Reflector: \u00a7e2\n" +
+                    "\u00a73Superlite Motor: \u00a7e1\n" +
+                    "\u00a73Synthetic Hearth: \u00a7c0\n" +
+                    "\u00a73Control Switch: \u00a7c0\n" +
+                    "\u00a73FTX 3070: \u00a7c0",
                     "\u00a73Automaton parts: \u00a7a5/6",
                     "\u00a73Automaton parts: \u00a7a83%",
                     "\u00a73Scavenged Lapis Sword: \u00a7aDone\n" +
-                            "\u00a73Scavenged Golden Hammer: \u00a7eIn Storage\n" +
-                            "\u00a73Scavenged Diamond Axe: \u00a7eIn Inventory\n" +
-                            "\u00a73Scavenged Emerald Hammer: \u00a7cMissing\n",
+                    "\u00a73Scavenged Golden Hammer: \u00a7eIn Storage\n" +
+                    "\u00a73Scavenged Diamond Axe: \u00a7eIn Inventory\n" +
+                    "\u00a73Scavenged Emerald Hammer: \u00a7cMissing\n",
                     "\u00a73Scavenged Lapis Sword: \u00a7a3\n" +
-                            "\u00a73Scavenged Golden Hammer: \u00a7e2\n" +
-                            "\u00a73Scavenged Diamond Axe: \u00a7e1\n" +
-                            "\u00a73Scavenged Emerald Hammer: \u00a7c0\n",
+                    "\u00a73Scavenged Golden Hammer: \u00a7e2\n" +
+                    "\u00a73Scavenged Diamond Axe: \u00a7e1\n" +
+                    "\u00a73Scavenged Emerald Hammer: \u00a7c0\n",
                     "\u00a73Mines of Divan parts: \u00a7a3/4",
                     "\u00a73Mines of Divan parts: \u00a7a75%"
             }

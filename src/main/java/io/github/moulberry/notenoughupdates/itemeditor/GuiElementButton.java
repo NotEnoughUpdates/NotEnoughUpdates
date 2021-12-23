@@ -3,7 +3,6 @@ package io.github.moulberry.notenoughupdates.itemeditor;
 import java.awt.*;
 
 public class GuiElementButton extends GuiElementText {
-
     private final Runnable callback;
 
     public GuiElementButton(String text, int colour, Runnable callback) {

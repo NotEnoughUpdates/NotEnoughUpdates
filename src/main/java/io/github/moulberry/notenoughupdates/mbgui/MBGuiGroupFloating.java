@@ -13,7 +13,6 @@ import org.lwjgl.util.vector.Vector2f;
 import java.util.*;
 
 public class MBGuiGroupFloating extends MBGuiGroup {
-
     private GuiScreen lastScreen = null;
     private final HashMap<MBGuiElement, Vector2f> childrenPositionOffset = new HashMap<>();
 
@@ -58,8 +57,7 @@ public class MBGuiGroupFloating extends MBGuiGroup {
                         ySize = (int) Utils.getField(GuiContainer.class, currentContainer, "ySize", "field_147000_g");
                         guiLeft = (int) Utils.getField(GuiContainer.class, currentContainer, "guiLeft", "field_147003_i");
                         guiTop = (int) Utils.getField(GuiContainer.class, currentContainer, "guiTop", "field_147009_r");
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
                 } else if (currentScreen instanceof GuiItemRecipe) {
                     xSize = ((GuiItemRecipe) currentScreen).xSize;
                     ySize = ((GuiItemRecipe) currentScreen).ySize;
@@ -133,5 +131,4 @@ public class MBGuiGroupFloating extends MBGuiGroup {
     public Collection<MBGuiElement> getChildren() {
         return children.keySet();
     }
-
 }

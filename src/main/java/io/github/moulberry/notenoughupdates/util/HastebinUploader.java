@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
  * @author ThatGravyBoat
  */
 public class HastebinUploader {
-
     private static final String UPLOAD_URL = "https://hst.sh/documents";
     private static final String RETURN_URL = "https://hst.sh/";
     private static final String RAW_RETURN_URL = "https://hst.sh/raw/";

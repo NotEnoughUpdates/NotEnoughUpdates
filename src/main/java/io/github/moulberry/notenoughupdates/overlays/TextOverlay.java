@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public abstract class TextOverlay {
-
     private final Position position;
     protected Supplier<TextOverlayStyle> styleSupplier;
     public int overlayWidth = -1;
@@ -172,5 +171,4 @@ public abstract class TextOverlay {
             }
         }
     }
-
 }

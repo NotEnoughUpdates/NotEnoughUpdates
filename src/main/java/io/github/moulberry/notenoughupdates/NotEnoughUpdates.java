@@ -78,18 +78,15 @@ public class NotEnoughUpdates {
 
     public Commands commands;
 
-    public static HashMap<String, String> petRarityToColourMap = new HashMap<>();
-
-    static {
-        petRarityToColourMap.put("UNKNOWN", EnumChatFormatting.RED.toString());
-
-        petRarityToColourMap.put("COMMON", EnumChatFormatting.WHITE.toString());
-        petRarityToColourMap.put("UNCOMMON", EnumChatFormatting.GREEN.toString());
-        petRarityToColourMap.put("RARE", EnumChatFormatting.BLUE.toString());
-        petRarityToColourMap.put("EPIC", EnumChatFormatting.DARK_PURPLE.toString());
-        petRarityToColourMap.put("LEGENDARY", EnumChatFormatting.GOLD.toString());
-        petRarityToColourMap.put("MYTHIC", EnumChatFormatting.LIGHT_PURPLE.toString());
-    }
+    public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
+        put("UNKNOWN", EnumChatFormatting.RED.toString());
+        put("COMMON", EnumChatFormatting.WHITE.toString());
+        put("UNCOMMON", EnumChatFormatting.GREEN.toString());
+        put("RARE", EnumChatFormatting.BLUE.toString());
+        put("EPIC", EnumChatFormatting.DARK_PURPLE.toString());
+        put("LEGENDARY", EnumChatFormatting.GOLD.toString());
+        put("MYTHIC", EnumChatFormatting.LIGHT_PURPLE.toString());
+    }};
 
     public static ProfileViewer profileViewer;
 
@@ -104,8 +101,6 @@ public class NotEnoughUpdates {
 
     /**
      * Instantiates NEUIo, NEUManager and NEUOverlay instances. Registers keybinds and adds a shutdown hook to clear tmp folder.
-     *
-     * @param event
      */
     @EventHandler
     public void preinit(FMLPreInitializationEvent event) {
@@ -339,6 +334,5 @@ public class NotEnoughUpdates {
 
             hasSkyblockScoreboard = false;
         }
-
     }
 }

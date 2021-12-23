@@ -5,7 +5,6 @@ import org.lwjgl.util.vector.Vector2f;
 import java.io.Serializable;
 
 public class MBAnchorPoint implements Serializable {
-
     public enum AnchorPoint {
         TOPLEFT(0, 0), TOPMID(0.5f, 0), TOPRIGHT(1, 0),
         MIDRIGHT(1, 0.5f), BOTRIGHT(1, 1), BOTMID(0.5f, 1),

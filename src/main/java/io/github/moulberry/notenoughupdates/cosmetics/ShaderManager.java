@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class ShaderManager {
-
     private final ResourceLocation shaderLocation = new ResourceLocation("notenoughupdates:shaders");
     private final HashMap<String, Shader> shaderMap = new HashMap<>();
 

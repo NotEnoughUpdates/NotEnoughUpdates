@@ -3,8 +3,7 @@ package io.github.moulberry.notenoughupdates.util;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiTextures {
-
-    private GuiTextures() {} //Not instantiable. Use import static to access class members.
+    private GuiTextures() {} // Not instantiable. Use import static to access class members.
 
     public static final ResourceLocation itemPaneTabArrow = new ResourceLocation("notenoughupdates:item_pane_tab_arrow.png");
     //public static final ResourceLocation prev = new ResourceLocation("notenoughupdates:prev.png");

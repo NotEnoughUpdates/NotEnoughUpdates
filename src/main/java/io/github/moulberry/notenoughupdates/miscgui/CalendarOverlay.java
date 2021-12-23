@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
 
 public class CalendarOverlay {
-
     private static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates:calendar/background.png");
     private static final ResourceLocation DISPLAYBAR = new ResourceLocation("notenoughupdates:calendar/displaybar.png");
     private static final ResourceLocation TOAST = new ResourceLocation("notenoughupdates:calendar/toast.png");
@@ -1390,5 +1389,4 @@ public class CalendarOverlay {
         projMatrix.m23 = -1.0001999F;
         return projMatrix;
     }
-
 }

@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LayerArmorBase.class)
 public abstract class MixinLayerArmorBase<T extends ModelBase> {
-
     private static String customEnchGlint = null;
 
     @Redirect(method = "renderLayer",
@@ -62,5 +61,4 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 
         return item.getColor(stack);
     }
-
 }

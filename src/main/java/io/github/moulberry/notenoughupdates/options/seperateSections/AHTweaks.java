@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.*;
 
 public class AHTweaks {
-
     @ConfigOption(
             name = "Search GUI",
             desc = ""
@@ -93,5 +92,4 @@ public class AHTweaks {
     @ConfigEditorBoolean
     @ConfigAccordionId(id = 2)
     public boolean enableSortWarning = true;
-
 }

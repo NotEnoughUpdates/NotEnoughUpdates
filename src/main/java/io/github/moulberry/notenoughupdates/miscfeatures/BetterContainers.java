@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class BetterContainers {
-
     private static final ResourceLocation TOGGLE_OFF = new ResourceLocation("notenoughupdates:dynamic_54/toggle_off.png");
     private static final ResourceLocation TOGGLE_ON = new ResourceLocation("notenoughupdates:dynamic_54/toggle_on.png");
 
@@ -472,5 +471,4 @@ public class BetterContainers {
             return 0;
         }
     }
-
 }

@@ -4,7 +4,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 
 public abstract class ClientCommandBase extends CommandBase {
-
     private final String name;
 
     protected ClientCommandBase(String name) {

@@ -27,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SBInfo {
-
     private static final SBInfo INSTANCE = new SBInfo();
 
     public static SBInfo getInstance() {
@@ -127,7 +126,7 @@ public class SBInfo {
     private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
     public void tick() {
-        Boolean tempIsInDungeon = false;
+        boolean tempIsInDungeon = false;
 
         long currentTime = System.currentTimeMillis();
 
@@ -248,5 +247,4 @@ public class SBInfo {
             e.printStackTrace();
         }
     }
-
 }

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class ProfileApiSyncer {
-
     private static final ProfileApiSyncer INSTANCE = new ProfileApiSyncer();
 
     private final HashMap<String, Long> resyncTimes = new HashMap<>();
@@ -71,5 +70,4 @@ public class ProfileApiSyncer {
             finishSyncCallbacks.clear();
         });
     }
-
 }

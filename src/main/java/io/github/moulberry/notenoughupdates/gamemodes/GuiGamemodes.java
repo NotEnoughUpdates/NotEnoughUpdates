@@ -18,7 +18,6 @@ import java.util.List;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class GuiGamemodes extends GuiScreen {
-
     private final String currentProfile;
     private SBGamemodes.Gamemode currentGamemode = null;
     private final boolean upgradeOverride;

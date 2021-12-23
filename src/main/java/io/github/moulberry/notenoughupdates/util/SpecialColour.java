@@ -3,7 +3,6 @@ package io.github.moulberry.notenoughupdates.util;
 import java.awt.*;
 
 public class SpecialColour {
-
     public static String special(int chromaSpeed, int alpha, int rgb) {
         return special(chromaSpeed, alpha, (rgb & 0xFF0000) >> 16, (rgb & 0x00FF00) >> 8, (rgb & 0x0000FF));
     }
@@ -90,5 +89,4 @@ public class SpecialColour {
 
         return (a & 0xFF) << 24 | (Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]) & 0x00FFFFFF);
     }
-
 }

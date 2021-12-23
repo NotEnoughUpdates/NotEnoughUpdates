@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
 
 public class GuiEnchantColour extends GuiScreen {
-
     public static final ResourceLocation custom_ench_colour = new ResourceLocation("notenoughupdates:custom_ench_colour.png");
 
     private static final String sharePrefix = "NEUEC/";

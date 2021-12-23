@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector3f;
 
 public class RenderUtils {
-
     public static void drawFloatingRectDark(int x, int y, int width, int height) {
         drawFloatingRectDark(x, y, width, height, true);
     }
@@ -386,5 +385,4 @@ public class RenderUtils {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();
     }
-
 }

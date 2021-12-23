@@ -332,32 +332,19 @@ public class PlayerStats {
         return bonuses;
     }
 
-    private static final Pattern HEALTH_PATTERN = Pattern.compile("^Health: ((?:\\+|-)[0-9]+)");
-    private static final Pattern DEFENCE_PATTERN = Pattern.compile("^Defense: ((?:\\+|-)[0-9]+)");
-    private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: ((?:\\+|-)[0-9]+)");
-    private static final Pattern SPEED_PATTERN = Pattern.compile("^Speed: ((?:\\+|-)[0-9]+)");
-    private static final Pattern CC_PATTERN = Pattern.compile("^Crit Chance: ((?:\\+|-)[0-9]+)");
-    private static final Pattern CD_PATTERN = Pattern.compile("^Crit Damage: ((?:\\+|-)[0-9]+)");
-    private static final Pattern ATKSPEED_PATTERN = Pattern.compile("^Bonus Attack Speed: ((?:\\+|-)[0-9]+)");
-    private static final Pattern INTELLIGENCE_PATTERN = Pattern.compile("^Intelligence: ((?:\\+|-)[0-9]+)");
-    private static final Pattern SCC_PATTERN = Pattern.compile("^Sea Creature Chance: ((?:\\+|-)[0-9]+)");
-    private static final Pattern FEROCITY_PATTERN = Pattern.compile("^Ferocity: ((?:\\+|-)[0-9]+)");
-    private static final Pattern AD_PATTERN = Pattern.compile("^Ability Damage: ((?:\\+|-)[0-9]+)");
-    private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<>();
-
-    static {
-        STAT_PATTERN_MAP.put("health", HEALTH_PATTERN);
-        STAT_PATTERN_MAP.put("defence", DEFENCE_PATTERN);
-        STAT_PATTERN_MAP.put("strength", STRENGTH_PATTERN);
-        STAT_PATTERN_MAP.put("speed", SPEED_PATTERN);
-        STAT_PATTERN_MAP.put("crit_chance", CC_PATTERN);
-        STAT_PATTERN_MAP.put("crit_damage", CD_PATTERN);
-        STAT_PATTERN_MAP.put("bonus_attack_speed", ATKSPEED_PATTERN);
-        STAT_PATTERN_MAP.put("intelligence", INTELLIGENCE_PATTERN);
-        STAT_PATTERN_MAP.put("sea_creature_chance", SCC_PATTERN);
-        STAT_PATTERN_MAP.put("ferocity", FEROCITY_PATTERN);
-        STAT_PATTERN_MAP.put("ability_damage", AD_PATTERN);
-    }
+    private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {{
+        put(HEALTH, Pattern.compile("^Health: ((?:\\+|-)[0-9]+)"));
+        put(DEFENCE, Pattern.compile("^Defense: ((?:\\+|-)[0-9]+)"));
+        put(STRENGTH, Pattern.compile("^Strength: ((?:\\+|-)[0-9]+)"));
+        put(SPEED, Pattern.compile("^Speed: ((?:\\+|-)[0-9]+)"));
+        put(CRIT_CHANCE, Pattern.compile("^Crit Chance: ((?:\\+|-)[0-9]+)"));
+        put(CRIT_DAMAGE, Pattern.compile("^Crit Damage: ((?:\\+|-)[0-9]+)"));
+        put(BONUS_ATTACK_SPEED, Pattern.compile("^Bonus Attack Speed: ((?:\\+|-)[0-9]+)"));
+        put(INTELLIGENCE, Pattern.compile("^Intelligence: ((?:\\+|-)[0-9]+)"));
+        put(SEA_CREATURE_CHANCE, Pattern.compile("^Sea Creature Chance: ((?:\\+|-)[0-9]+)"));
+        put("ferocity", Pattern.compile("^Ferocity: ((?:\\+|-)[0-9]+)"));
+        put("ability_damage", Pattern.compile("^Ability Damage: ((?:\\+|-)[0-9]+)"));
+    }};
 
     private static Stats getStatForItem(String internalname, JsonObject item, JsonArray lore) {
         Stats stats = new Stats();
@@ -627,5 +614,4 @@ public class PlayerStats {
 
         return stats;
     }
-
 }

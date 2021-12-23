@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class CustomSkulls implements IResourceManagerReloadListener {
-
     private static final CustomSkulls INSTANCE = new CustomSkulls();
 
     public static CustomSkulls getInstance() {
@@ -283,5 +282,4 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
         return true;
     }
-
 }

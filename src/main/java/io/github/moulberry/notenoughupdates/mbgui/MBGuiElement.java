@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.mbgui;
 
 public abstract class MBGuiElement {
-
     public abstract int getWidth();
 
     public abstract int getHeight();
@@ -15,5 +14,4 @@ public abstract class MBGuiElement {
     public abstract void render(float x, float y);
 
     //public abstract JsonObject serialize();
-
 }

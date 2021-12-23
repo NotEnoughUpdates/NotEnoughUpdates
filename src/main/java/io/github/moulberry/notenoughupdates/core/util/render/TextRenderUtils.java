@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TextRenderUtils {
-
     public static int getCharVertLen(char c) {
         if ("acegmnopqrsuvwxyz".indexOf(c) >= 0) {
             return 5;
@@ -211,5 +210,4 @@ public class TextRenderUtils {
         }
         GlStateManager.disableLighting();
     }
-
 }

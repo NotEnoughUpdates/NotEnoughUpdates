@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 public class NEUResourceManager implements IResourceManager {
-
     private final IResourceManager parentResourceManager;
 
     public NEUResourceManager(IResourceManager parentResourceManager) {

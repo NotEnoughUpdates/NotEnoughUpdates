@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ConfigProcessor {
-
     public static class ProcessedCategory {
         public final String name;
         public final String desc;
@@ -180,5 +179,4 @@ public class ConfigProcessor {
         }
         return processedConfig;
     }
-
 }
