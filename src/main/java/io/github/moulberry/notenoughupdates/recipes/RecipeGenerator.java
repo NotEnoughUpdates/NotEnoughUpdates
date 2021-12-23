@@ -1,5 +1,6 @@
 package io.github.moulberry.notenoughupdates.recipes;
 
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Debouncer;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,9 +70,34 @@ public class RecipeGenerator {
                     p.addChatMessage(new ChatComponentText("  - " + EnumChatFormatting.AQUA + i.getInternalItemId() + " x " + i.getCount()));
                 p.addChatMessage(new ChatComponentText("" + EnumChatFormatting.AQUA + " Output: " + EnumChatFormatting.GOLD + recipe.getOutput().getInternalItemId() + " x " + recipe.getOutput().getCount()));
                 p.addChatMessage(new ChatComponentText("" + EnumChatFormatting.AQUA + " Time: " + EnumChatFormatting.GRAY + recipe.getTimeInSeconds() + " seconds (no QF) ."));
+                boolean saved = false;
+                try {
+                    saved = saveRecipe(recipe);
+                } catch (IOException e) {
+                }
+                if (!saved)
+                    p.addChatMessage(new ChatComponentText("" +
+                            EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
+                            EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + " ERROR " +
+                            EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
+                            EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + " Failed to save recipe. Does the item already exist?"));
             }
         }
     }
+
+    public boolean saveRecipe(NeuRecipe recipe) throws IOException {
+        JsonObject recipeJson = recipe.serialize();
+        for (Ingredient i : recipe.getOutputs()) {
+            if (i.isCoins()) continue;
+            JsonObject outputJson = neu.manager.readJsonDefaultDir(i.getInternalItemId() + ".json");
+            if (outputJson == null) return false;
+            outputJson.add("recipe", recipeJson);
+            neu.manager.writeJsonDefaultDir(outputJson, i.getInternalItemId() + ".json");
+            neu.manager.loadItem(i.getInternalItemId());
+        }
+        return true;
+    }
+
 
     public ForgeRecipe parseSingleForgeRecipe(IInventory chest) {
         int durationInSeconds = -1;
@@ -101,7 +128,7 @@ public class RecipeGenerator {
         if (output == null || inputs.isEmpty()) return null;
         if (savedForgingDurations.containsKey(output.getInternalItemId()))
             durationInSeconds = parseDuration(savedForgingDurations.get(output.getInternalItemId()));
-        return new ForgeRecipe(neu.manager, inputs, output, durationInSeconds, -1);
+        return new ForgeRecipe(neu.manager, new ArrayList<>(Ingredient.mergeIngredients(inputs)), output, durationInSeconds, -1);
     }
 
     private static Map<Character, Integer> durationSuffixLengthMap = new HashMap<Character, Integer>() {{

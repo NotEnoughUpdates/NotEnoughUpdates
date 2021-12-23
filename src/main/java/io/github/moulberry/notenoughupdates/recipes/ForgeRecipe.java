@@ -118,6 +118,7 @@ public class ForgeRecipe implements NeuRecipe {
         for (Ingredient input : inputs) {
             ingredients.add(new JsonPrimitive(input.serialize()));
         }
+        object.addProperty("type", "forge");
         object.add("inputs", ingredients);
         object.addProperty("count", output.getCount());
         object.addProperty("overrideOutputId", output.getInternalItemId());

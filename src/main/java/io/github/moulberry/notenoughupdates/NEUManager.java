@@ -1141,6 +1141,15 @@ public class NEUManager {
         writeJson(json, file);
     }
 
+    public JsonObject readJsonDefaultDir(String filename) throws IOException {
+        File f = new File(new File(repoLocation, "items"), filename);
+        if (f.exists() && f.isFile() && f.canRead())
+            try (FileReader fis = new FileReader(f)) {
+                return gson.fromJson(fis, JsonObject.class);
+            } // rethrow io exceptions
+        return null;
+    }
+
     public TreeMap<String, JsonObject> getItemInformation() {
         return itemMap;
     }
