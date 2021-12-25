@@ -5,8 +5,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
@@ -62,6 +66,8 @@ public class HotmInformation {
 
     private CompletableFuture<Void> updateTask = CompletableFuture.completedFuture(null);
 
+    private boolean shouldReloadSoon = false;
+
     public HotmInformation(NotEnoughUpdates neu) {
         this.neu = neu;
         MinecraftForge.EVENT_BUS.register(this);
@@ -75,8 +81,26 @@ public class HotmInformation {
         return getInformationOn(neu.manager.getCurrentProfile());
     }
 
+
     @SubscribeEvent
-    public void onWorldLoad(ClientChatReceivedEvent event) {
+    public synchronized void onLobbyJoin(WorldEvent.Load event) {
+        if (shouldReloadSoon) {
+            shouldReloadSoon = false;
+            requestUpdate(false);
+        }
+    }
+
+    @SubscribeEvent
+    public synchronized void onGuiOpen(GuiOpenEvent event) {
+        if (event.gui instanceof GuiChest) {
+            String containerName = ((ContainerChest) ((GuiChest) event.gui).inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
+            if (containerName.equals("Heart of the Mountain"))
+                shouldReloadSoon = true;
+        }
+    }
+
+    @SubscribeEvent
+    public synchronized void onChat(ClientChatReceivedEvent event) {
         if (event.message.getUnformattedText().equals("Welcome to Hypixel SkyBlock!"))
             requestUpdate(false);
     }

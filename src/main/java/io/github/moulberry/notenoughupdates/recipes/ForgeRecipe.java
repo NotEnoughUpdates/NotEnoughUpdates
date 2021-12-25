@@ -11,6 +11,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.*;
@@ -124,7 +125,7 @@ public class ForgeRecipe implements NeuRecipe {
                 int reducedTime = getReducedTime(qf);
                 if (qf > 0) {
 
-                    Utils.drawHoveringText(Arrays.asList(formatDuration(reducedTime) + " with Quick Forge (Level " + qf + ")"), mouseX, mouseY, gui.width, gui.height, 100, Minecraft.getMinecraft().fontRendererObj);
+                    Utils.drawHoveringText(Arrays.asList(EnumChatFormatting.YELLOW + formatDuration(reducedTime) + " with Quick Forge (Level " + qf + ")"), mouseX, mouseY, gui.width, gui.height, 500, Minecraft.getMinecraft().fontRendererObj);
                 }
             }
         });
@@ -215,6 +216,6 @@ public class ForgeRecipe implements NeuRecipe {
         if (hours != 0) sB.append(hours).append("h ");
         if (minutes != 0) sB.append(minutes).append("m ");
         if (seconds != 0) sB.append(seconds).append("s ");
-        return sB.toString();
+        return sB.substring(0, sB.length() - 1);
     }
 }
