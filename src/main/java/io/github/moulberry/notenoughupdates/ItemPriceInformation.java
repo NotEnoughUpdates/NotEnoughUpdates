@@ -152,7 +152,7 @@ public class ItemPriceInformation {
                         }
                         break;
                     case 4:
-                        if (craftCost.fromRecipe) {
+                        if (craftCost != null && craftCost.fromRecipe) {
                             if ((int) craftCost.craftCost == 0) {
                                 continue;
                             }
@@ -224,7 +224,7 @@ public class ItemPriceInformation {
                         }
                         break;
                     case 3:
-                        if (craftCost.fromRecipe) {
+                        if (craftCost != null && craftCost.fromRecipe) {
                             if ((int) craftCost.craftCost == 0) {
                                 continue;
                             }

@@ -760,43 +760,40 @@ public class APIManager {
     }
 
     public CraftInfo getCraftCost(String internalname) {
-        return getCraftCost(internalname, 0, new HashSet<>());
+        return getCraftCost(internalname, new HashSet<>());
     }
 
     /**
      * Recursively calculates the cost of crafting an item from raw materials.
      */
-    private CraftInfo getCraftCost(String internalname, int depth, Set<String> visited) {
+    private CraftInfo getCraftCost(String internalname, Set<String> visited) {
         if (craftCost.containsKey(internalname)) return craftCost.get(internalname);
         if (visited.contains(internalname)) return null;
         visited.add(internalname);
-        CraftInfo ci = new CraftInfo();
 
-        ci.vanillaItem = isVanillaItem(internalname);
+
+        boolean vanillaItem = isVanillaItem(internalname);
+        float craftCost = Float.POSITIVE_INFINITY;
 
         JsonObject auctionInfo = getItemAuctionInfo(internalname);
         float lowestBin = getLowestBin(internalname);
         JsonObject bazaarInfo = getBazaarInfo(internalname);
 
         if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
-            ci.craftCost = bazaarInfo.get("curr_buy").getAsFloat();
+            craftCost = bazaarInfo.get("curr_buy").getAsFloat();
         }
         //Don't use auction prices for vanilla items cuz people like to transfer money, messing up the cost of vanilla items.
-        if (!ci.vanillaItem) {
+        if (!vanillaItem) {
             if (lowestBin > 0) {
-                ci.craftCost = Math.min(lowestBin, ci.craftCost);
+                craftCost = Math.min(lowestBin, craftCost);
             } else if (auctionInfo != null) {
                 float auctionPrice = auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsInt();
-                ci.craftCost = Math.min(auctionPrice, ci.craftCost);
+                craftCost = Math.min(auctionPrice, craftCost);
             }
         }
 
-        if (depth > 16) {
-            craftCost.put(internalname, ci);
-            return ci;
-        }
-
         Set<NeuRecipe> recipes = manager.getRecipesFor(internalname);
+        boolean fromRecipe = false;
         if (recipes != null)
             RECIPE_ITER:
                     for (NeuRecipe recipe : recipes) {
@@ -806,10 +803,10 @@ public class APIManager {
                                 craftPrice += i.getCount();
                                 continue;
                             }
-                            CraftInfo craftCost = getCraftCost(i.getInternalItemId(), depth + 1, visited);
-                            if (craftCost == null)
-                                continue RECIPE_ITER; // Skip recipes with recursion
-                            craftPrice += craftCost.craftCost * i.getCount();
+                            CraftInfo ingredientCraftCost = getCraftCost(i.getInternalItemId(), visited);
+                            if (ingredientCraftCost == null)
+                                continue RECIPE_ITER; // Skip recipes with items further up the chain
+                            craftPrice += ingredientCraftCost.craftCost * i.getCount();
                         }
                         int resultCount = 0;
                         for (Ingredient item : recipe.getOutputs())
@@ -818,11 +815,22 @@ public class APIManager {
 
                         if (resultCount == 0)
                             continue;
-
-                        ci.craftCost = Math.min(craftPrice / resultCount, ci.craftCost);
+                        float craftPricePer = craftPrice / resultCount;
+                        if (craftPricePer < craftCost) {
+                            fromRecipe = true;
+                            craftCost = craftPricePer;
+                        }
                     }
-        craftCost.put(internalname, ci);
-        return ci;
+        visited.remove(internalname);
+        if (Float.isInfinite(craftCost)) {
+            return null;
+        }
+        CraftInfo craftInfo = new CraftInfo();
+        craftInfo.vanillaItem = vanillaItem;
+        craftInfo.craftCost = craftCost;
+        craftInfo.fromRecipe = fromRecipe;
+        this.craftCost.put(internalname, craftInfo);
+        return craftInfo;
     }
 
     /**

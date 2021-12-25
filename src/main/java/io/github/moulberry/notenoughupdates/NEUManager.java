@@ -412,11 +412,11 @@ public class NEUManager {
     }
 
     public Set<NeuRecipe> getRecipesFor(String internalName) {
-        return recipesMap.get(internalName);
+        return recipesMap.getOrDefault(internalName, Collections.emptySet());
     }
 
     public Set<NeuRecipe> getUsagesFor(String internalName) {
-        return usagesMap.get(internalName);
+        return usagesMap.getOrDefault(internalName, Collections.emptySet());
     }
 
     /**
