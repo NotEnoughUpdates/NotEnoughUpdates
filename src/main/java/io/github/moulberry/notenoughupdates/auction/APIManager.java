@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscgui.GuiTimeGraph;
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -263,7 +263,7 @@ public class APIManager {
                 ItemPriceInformation.updateAuctionableItemsList();
                 didFirstUpdate = true;
             }
-            GuiTimeGraph.addToCache(lowestBins);
+            GuiPriceGraph.addToCache(lowestBins);
         }, () -> {});
     }
 

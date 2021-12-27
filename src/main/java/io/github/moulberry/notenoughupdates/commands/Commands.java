@@ -753,7 +753,7 @@ public class Commands {
                 if (args.length == 1) {
                     NotEnoughUpdates.INSTANCE.manager.auctionManager.updateLowestBin();
                 } else {
-                    NotEnoughUpdates.INSTANCE.openGui = new GuiTimeGraph(args[1]);
+                    NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
                 }
             }
 
