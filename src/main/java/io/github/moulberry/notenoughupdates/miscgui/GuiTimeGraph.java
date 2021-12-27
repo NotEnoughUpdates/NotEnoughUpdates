@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 import java.io.*;
@@ -33,7 +34,7 @@ public class GuiTimeGraph extends GuiScreen {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-    private static final ResourceLocation TEXTURE = new ResourceLocation("notenoughupdates:price_information_gui.png");
+    private final ResourceLocation TEXTURE;
     private static final int X_SIZE = 364;
     private static final int Y_SIZE = 215;
     private boolean itemNotFound = false;
@@ -56,6 +57,20 @@ public class GuiTimeGraph extends GuiScreen {
     private int mode = 1;
 
     public GuiTimeGraph(String itemId) {
+        switch (NotEnoughUpdates.INSTANCE.config.ahGraph.graphStyle) {
+            case 1:
+                TEXTURE = new ResourceLocation("notenoughupdates:price_information_gui_dark.png");
+                break;
+            case 2:
+                TEXTURE = new ResourceLocation("notenoughupdates:price_information_gui_phqdark.png");
+                break;
+            case 3:
+                TEXTURE = new ResourceLocation("notenoughupdates:price_information_gui_fsr.png");
+                break;
+            default:
+                TEXTURE = new ResourceLocation("notenoughupdates:price_information_gui.png");
+                break;
+        }
         this.itemId = itemId;
         if (NotEnoughUpdates.INSTANCE.manager.getItemInformation().containsKey(itemId)) {
             JsonObject itemInfo = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(itemId);
@@ -101,7 +116,10 @@ public class GuiTimeGraph extends GuiScreen {
             int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
             int yPos = (int) map(price, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198);
             if (prevX != null) {
-                drawQuad(prevX, prevY, xPos, yPos, xPos, guiTop + 35, prevX, guiTop + 35, new Color(139, 139, 139).getRGB());
+                Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+                GlStateManager.color(1, 1, 1, 1);
+                drawTexturedQuad(prevX, prevY, xPos, yPos, xPos, guiTop + 35, prevX, guiTop + 35, 18 / 512f, 19 / 512f,
+                        36 / 512f, 37 / 512f, GL11.GL_NEAREST);
                 drawLine(prevX, prevY + 0.5f, xPos, yPos + 0.5f, 2, new Color(0, 255, 0).getRGB());
             }
             if (mouseX >= guiLeft + 17 && mouseX <= guiLeft + 315 && mouseY >= guiTop + 35 && mouseY <= guiTop + 198) {
@@ -208,6 +226,7 @@ public class GuiTimeGraph extends GuiScreen {
                 data = new HashMap<>(data.entrySet().stream()
                         .filter(e -> e.getKey() > (System.currentTimeMillis() - (mode == 0 ? 3600000 : mode == 1 ? 86400000 : 604800000)) / 1000)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+            if (data.isEmpty()) return;
             dataPoints = trimData(new TreeMap<>(data));
             firstTime = dataPoints.firstKey();
             lastTime = dataPoints.lastKey();
@@ -298,29 +317,37 @@ public class GuiTimeGraph extends GuiScreen {
         GlStateManager.popMatrix();
     }
 
-    private static void drawQuad(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int color) {
-        float f = (float) (color >> 24 & 255) / 255.0F;
-        float f1 = (float) (color >> 16 & 255) / 255.0F;
-        float f2 = (float) (color >> 8 & 255) / 255.0F;
-        float f3 = (float) (color & 255) / 255.0F;
-        GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
+    private static void drawTexturedQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4,
+                                             float uMin, float uMax, float vMin, float vMax, int filter) {
+        GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.color(f1, f2, f3, f);
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter);
+
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
-        worldrenderer.pos(x1, y1, 0).endVertex();
-        worldrenderer.pos(x2, y2, 0).endVertex();
-        worldrenderer.pos(x3, y3, 0).endVertex();
-        worldrenderer.pos(x4, y4, 0).endVertex();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer
+                .pos(x1, y1, 0.0D)
+                .tex(uMin, vMax).endVertex();
+        worldrenderer
+                .pos(x2, y2, 0.0D)
+                .tex(uMax, vMax).endVertex();
+        worldrenderer
+                .pos(x3, y3, 0.0D)
+                .tex(uMax, vMin).endVertex();
+        worldrenderer
+                .pos(x4, y4, 0.0D)
+                .tex(uMin, vMin).endVertex();
         tessellator.draw();
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
         GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.popMatrix();
     }
 
     private static HashMap<String, HashMap<Long, Long>> load(File file) {
@@ -341,11 +368,11 @@ public class GuiTimeGraph extends GuiScreen {
 
     private static String formatPrice(long price) {
         DecimalFormat df = new DecimalFormat("#.00");
-        if (price > 1000000000) {
+        if (price >= 1000000000) {
             return df.format(price / 1000000000f) + "B";
-        } else if (price > 1000000) {
+        } else if (price >= 1000000) {
             return df.format(price / 1000000f) + "M";
-        } else if (price > 1000) {
+        } else if (price >= 1000) {
             return df.format(price / 1000f) + "K";
         }
         return String.valueOf(price);
