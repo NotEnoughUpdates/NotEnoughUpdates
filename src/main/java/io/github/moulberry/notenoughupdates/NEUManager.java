@@ -89,7 +89,7 @@ public class NEUManager {
     }
 
     public void setCurrentProfile(String currentProfile) {
-        this.currentProfile = currentProfile;
+        SBInfo.getInstance().currentProfile = currentProfile;
     }
 
     public String getCurrentProfile() {
