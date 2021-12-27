@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -132,9 +133,7 @@ public class ForgeRecipe implements NeuRecipe {
     }
 
     public int getReducedTime(int quickForgeUpgradeLevel) {
-        if (quickForgeUpgradeLevel <= 0) return timeInSeconds;
-        double reduction = Math.round(quickForgeUpgradeLevel * 5 + 100) / 1000.0;
-        return (int) (timeInSeconds - timeInSeconds * reduction);
+        return HotmInformation.getQuickForgeMultiplier(quickForgeUpgradeLevel) * timeInSeconds / 1000;
     }
 
     @Override

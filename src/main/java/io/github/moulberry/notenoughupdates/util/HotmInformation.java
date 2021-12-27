@@ -26,6 +26,28 @@ public class HotmInformation {
             // Taken from the wiki: https://hypixel-skyblock.fandom.com/wiki/Heart_of_the_Mountain#Experience_for_Each_Tier
             0, 3000, 12000, 37000, 97000, 197000, 347000
     };
+    public static final int[] QUICK_FORGE_MULTIPLIERS = {
+            985,
+            970,
+            955,
+            940,
+            925,
+            910,
+            895,
+            880,
+            865,
+            850,
+            845,
+            840,
+            835,
+            830,
+            825,
+            820,
+            815,
+            810,
+            805,
+            700
+    };
     private final Map<String, Tree> profiles = new ConcurrentHashMap<>();
 
     public static class Tree {
@@ -111,6 +133,16 @@ public class HotmInformation {
                 put("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
             }}).thenAccept(this::updateInformation);
         }
+    }
+
+    /*
+     * 1000 = 100% of the time left
+     *  700 = 70% of the time left
+     * */
+    public static int getQuickForgeMultiplier(int level) {
+        if (level <= 0) return 1000;
+        if (level > 20) return -1;
+        return QUICK_FORGE_MULTIPLIERS[level - 1];
     }
 
     public void updateInformation(JsonObject entireApiResponse) {
