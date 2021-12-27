@@ -842,6 +842,10 @@ public class NEUEventListener {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
                     "[NEU] API Key automatically configured"));
             NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.substring(0, 36);
+        } else if (unformatted.startsWith("Player List Info is now disabled!")) {
+            SBInfo.getInstance().hasNewTab = false;
+        } else if (unformatted.startsWith("Player List Info is now enabled!")) {
+            SBInfo.getInstance().hasNewTab = true;
         }
         if (e.message.getFormattedText().equals(EnumChatFormatting.RESET.toString() +
                 EnumChatFormatting.RED + "You haven't unlocked this recipe!" + EnumChatFormatting.RESET)) {
