@@ -53,8 +53,9 @@ public class NEUManager {
     public final KeyBinding keybindToggleDisplay = new KeyBinding("Toggle NEU overlay", 0, "NotEnoughUpdates");
     public final KeyBinding keybindClosePanes = new KeyBinding("Close NEU panes", 0, "NotEnoughUpdates");
     public final KeyBinding keybindItemSelect = new KeyBinding("Select Item", -98 /*middle*/, "NotEnoughUpdates");
+    public final KeyBinding keybindItemGraph = new KeyBinding("View Graph", Keyboard.KEY_P, "NotEnoughUpdates");
     public final KeyBinding[] keybinds = new KeyBinding[]{keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe,
-            keybindToggleDisplay, keybindClosePanes, keybindItemSelect};
+            keybindToggleDisplay, keybindClosePanes, keybindItemSelect, keybindItemGraph};
 
     public String viewItemAttemptID = null;
     public long viewItemAttemptTime = 0;
