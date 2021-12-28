@@ -7,7 +7,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class GuiOptionEditorText extends GuiOptionEditor {
-
     private final GuiElementTextField textField;
 
     public GuiOptionEditorText(ConfigProcessor.ProcessedOption option) {
@@ -77,5 +76,4 @@ public class GuiOptionEditorText extends GuiOptionEditor {
         }
         return false;
     }
-
 }

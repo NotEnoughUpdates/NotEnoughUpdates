@@ -32,7 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class APIManager {
-
     private final NEUManager manager;
     public final CustomAH customAH;
 
@@ -993,5 +992,4 @@ public class APIManager {
             }
         }, 3000L, TimeUnit.MILLISECONDS);
     }*/
-
 }

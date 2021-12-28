@@ -32,7 +32,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class StorageManager {
-
     private static final StorageManager INSTANCE = new StorageManager();
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
@@ -40,8 +39,7 @@ public class StorageManager {
 
     public static class ItemStackSerializer implements JsonSerializer<ItemStack> {
         @Override
-        public JsonElement serialize(ItemStack src, Type typeOfSrc,
-                                     JsonSerializationContext context) {
+        public JsonElement serialize(ItemStack src, Type typeOfSrc, JsonSerializationContext context) {
             NBTTagCompound tag = src.serializeNBT();
             return nbtToJson(tag);
         }
@@ -51,8 +49,7 @@ public class StorageManager {
 
     public static class ItemStackDeserilizer implements JsonDeserializer<ItemStack> {
         @Override
-        public ItemStack deserialize(JsonElement json, Type typeOfT,
-                                     JsonDeserializationContext context) throws JsonParseException {
+        public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             try {
                 JsonObject object = json.getAsJsonObject();
 

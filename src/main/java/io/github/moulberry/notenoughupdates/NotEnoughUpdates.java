@@ -45,10 +45,10 @@ import java.util.Set;
 @Mod(modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true)
 public class NotEnoughUpdates {
     public static final String MODID = "notenoughupdates";
-    public static final String VERSION = "2.0.0-REL";
-    public static final String PRE_VERSION = "30.2";
-    public static final int VERSION_ID = 20000;
-    public static final int PRE_VERSION_ID = 3002;
+    public static final String VERSION = "2.1.0-REL";
+    public static final String PRE_VERSION = "0.0";
+    public static final int VERSION_ID = 20100;
+    public static final int PRE_VERSION_ID = 0;
 
     public static NotEnoughUpdates INSTANCE = null;
 
@@ -79,18 +79,15 @@ public class NotEnoughUpdates {
 
     public Commands commands;
 
-    public static HashMap<String, String> petRarityToColourMap = new HashMap<>();
-
-    static {
-        petRarityToColourMap.put("UNKNOWN", EnumChatFormatting.RED.toString());
-
-        petRarityToColourMap.put("COMMON", EnumChatFormatting.WHITE.toString());
-        petRarityToColourMap.put("UNCOMMON", EnumChatFormatting.GREEN.toString());
-        petRarityToColourMap.put("RARE", EnumChatFormatting.BLUE.toString());
-        petRarityToColourMap.put("EPIC", EnumChatFormatting.DARK_PURPLE.toString());
-        petRarityToColourMap.put("LEGENDARY", EnumChatFormatting.GOLD.toString());
-        petRarityToColourMap.put("MYTHIC", EnumChatFormatting.LIGHT_PURPLE.toString());
-    }
+    public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
+        put("UNKNOWN", EnumChatFormatting.RED.toString());
+        put("COMMON", EnumChatFormatting.WHITE.toString());
+        put("UNCOMMON", EnumChatFormatting.GREEN.toString());
+        put("RARE", EnumChatFormatting.BLUE.toString());
+        put("EPIC", EnumChatFormatting.DARK_PURPLE.toString());
+        put("LEGENDARY", EnumChatFormatting.GOLD.toString());
+        put("MYTHIC", EnumChatFormatting.LIGHT_PURPLE.toString());
+    }};
 
     public static ProfileViewer profileViewer;
 
@@ -105,8 +102,6 @@ public class NotEnoughUpdates {
 
     /**
      * Instantiates NEUIo, NEUManager and NEUOverlay instances. Registers keybinds and adds a shutdown hook to clear tmp folder.
-     *
-     * @param event
      */
     @EventHandler
     public void preinit(FMLPreInitializationEvent event) {
@@ -341,6 +336,5 @@ public class NotEnoughUpdates {
 
             hasSkyblockScoreboard = false;
         }
-
     }
 }

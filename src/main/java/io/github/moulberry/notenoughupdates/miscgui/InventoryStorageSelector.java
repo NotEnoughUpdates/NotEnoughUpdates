@@ -22,7 +22,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class InventoryStorageSelector {
-
     private static final InventoryStorageSelector INSTANCE = new InventoryStorageSelector();
 
     private static final ResourceLocation ICONS = new ResourceLocation("notenoughupdates:storage_gui/hotbar_icons.png");
@@ -155,8 +154,7 @@ public class InventoryStorageSelector {
                 }
 
                 KeyBinding.setKeyBindState(attack.getKeyCode(), false);
-                while (attack.isPressed()) {
-                }
+                while (attack.isPressed()) {}
             }
 
             if (use.isPressed() || use.isKeyDown()) {
@@ -165,8 +163,7 @@ public class InventoryStorageSelector {
                 }
 
                 KeyBinding.setKeyBindState(use.getKeyCode(), false);
-                while (use.isPressed()) {
-                }
+                while (use.isPressed()) {}
             }
         }
     }
@@ -455,5 +452,4 @@ public class InventoryStorageSelector {
 
         GlStateManager.enableBlend();
     }
-
 }

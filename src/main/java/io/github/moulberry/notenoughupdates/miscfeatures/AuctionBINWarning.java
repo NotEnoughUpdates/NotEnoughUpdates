@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AuctionBINWarning extends GuiElement {
-
     private static final AuctionBINWarning INSTANCE = new AuctionBINWarning();
 
     public static AuctionBINWarning getInstance() {
@@ -237,5 +236,4 @@ public class AuctionBINWarning extends GuiElement {
 
         return false;
     }
-
 }

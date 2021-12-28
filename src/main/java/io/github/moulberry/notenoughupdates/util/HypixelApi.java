@@ -173,5 +173,4 @@ public class HypixelApi {
         }
         return url.toString();
     }
-
 }

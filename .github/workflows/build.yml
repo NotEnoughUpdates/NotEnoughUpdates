@@ -33,4 +33,4 @@ jobs:
       run: chmod +x ./gradlew && ./gradlew setupCIWorkspace build --no-daemon
     - uses: actions/upload-artifact@v2
       with:
-        path: build/libs/*.jar
+        path: build/libs/*-dep.jar

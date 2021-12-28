@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractClientPlayer.class)
 public class MixinAbstractClientPlayer {
-
     @Inject(method = "hasSkin", at = @At("HEAD"), cancellable = true)
     public void hasSkin(CallbackInfoReturnable<Boolean> cir) {
         AbstractClientPlayer $this = (AbstractClientPlayer) (Object) this;
@@ -36,5 +35,4 @@ public class MixinAbstractClientPlayer {
             cir.setReturnValue(skin.skinny ? "slim" : "default");
         }
     }
-
 }

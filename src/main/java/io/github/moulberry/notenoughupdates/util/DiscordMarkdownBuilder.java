@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.util;
 
 public class DiscordMarkdownBuilder {
-
     private final StringBuilder builder;
 
     public DiscordMarkdownBuilder() {

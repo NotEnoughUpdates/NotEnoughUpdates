@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobal {
-
     @ModifyVariable(method = "setupTerrain", at = @At(value = "STORE"), ordinal = 4)
     public double setupTerrain_d0(double d3) {
         Vector3f currentPosition = CustomItemEffects.INSTANCE.getCurrentPosition();
@@ -105,5 +104,4 @@ public class MixinRenderGlobal {
         }
         return d2;
     }
-
 }

@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP {
-
     @Inject(method = "dropOneItem", at = @At("HEAD"), cancellable = true)
     public void dropOneItem(CallbackInfoReturnable<EntityItem> ci) {
         if (SBInfo.getInstance().isInDungeon) {
@@ -28,5 +27,4 @@ public class MixinEntityPlayerSP {
                     "NotEnoughUpdates has prevented you from dropping that locked item!"));
         }
     }
-
 }

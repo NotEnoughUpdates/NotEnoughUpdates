@@ -6,7 +6,6 @@ import org.lwjgl.input.Keyboard;
  * Utility used for positioning GUI elements during development.
  */
 public class TexLoc {
-
     public int x;
     public int y;
     private final int toggleKey;
@@ -53,5 +52,4 @@ public class TexLoc {
         }
         return false;
     }
-
 }

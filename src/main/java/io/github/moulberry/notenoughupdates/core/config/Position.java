@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import net.minecraft.client.gui.ScaledResolution;
 
 public class Position {
-
     @Expose
     private int x;
     @Expose
@@ -187,5 +186,4 @@ public class Position {
         }
         return deltaY;
     }
-
 }

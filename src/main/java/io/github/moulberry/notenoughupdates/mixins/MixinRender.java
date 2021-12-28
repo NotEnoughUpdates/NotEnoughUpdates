@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Render.class)
 public class MixinRender {
-
     @Inject(method = "bindEntityTexture", at = @At("HEAD"), cancellable = true)
     public void bindEntityTexture(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof EntityBat && DungeonBlocks.isOverriding()) {
@@ -27,5 +26,4 @@ public class MixinRender {
             }
         }
     }
-
 }

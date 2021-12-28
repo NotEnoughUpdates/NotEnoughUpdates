@@ -18,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemCooldowns {
-
     private static final Map<ItemStack, Float> durabilityOverrideMap = new HashMap<>();
     public static long pickaxeUseCooldownMillisRemaining = -1;
     private static long treecapitatorCooldownMillisRemaining = -1;
@@ -203,5 +202,4 @@ public class ItemCooldowns {
         durabilityOverrideMap.put(stack, -1f);
         return -1;
     }
-
 }

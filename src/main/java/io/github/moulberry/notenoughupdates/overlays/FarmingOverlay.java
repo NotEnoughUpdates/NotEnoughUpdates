@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class FarmingOverlay extends TextOverlay {
-
     private long lastUpdate = -1;
     private int counterLast = -1;
     private int counter = -1;
@@ -479,5 +478,4 @@ public class FarmingOverlay extends TextOverlay {
             if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
         }
     }
-
 }

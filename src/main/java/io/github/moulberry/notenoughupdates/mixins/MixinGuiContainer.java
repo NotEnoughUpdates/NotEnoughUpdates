@@ -37,7 +37,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mixin(GuiContainer.class)
 public abstract class MixinGuiContainer extends GuiScreen {
-
     private static boolean hasProfileViewerStack = false;
     private static final ItemStack profileViewerStack = Utils.createItemStack(Item.getItemFromBlock(Blocks.command_block),
             EnumChatFormatting.GREEN + "Profile Viewer",

@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiCollectionLog extends GuiScreen {
-
     private static final ResourceLocation COLLECTION_LOG_TEX = new ResourceLocation("notenoughupdates:collectionlog.png");
 
     @Override

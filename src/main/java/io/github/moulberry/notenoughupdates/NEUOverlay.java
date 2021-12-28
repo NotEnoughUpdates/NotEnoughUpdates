@@ -9,7 +9,6 @@ import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.infopanes.DevInfoPane;
-import io.github.moulberry.notenoughupdates.infopanes.HTMLInfoPane;
 import io.github.moulberry.notenoughupdates.infopanes.InfoPane;
 import io.github.moulberry.notenoughupdates.infopanes.TextInfoPane;
 import io.github.moulberry.notenoughupdates.itemeditor.NEUItemEditor;
@@ -50,7 +49,6 @@ import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ClientCommandHandler;
-import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -61,6 +59,7 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,7 +68,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class NEUOverlay extends Gui {
-
     private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation("notenoughupdates:supersecretassets/bald.png");
     private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
     private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
@@ -159,6 +157,8 @@ public class NEUOverlay extends Gui {
     private int lastScreenHeight;
     private int lastScale;
 
+    private CompletableFuture<Void> infoPaneLoadingJob = CompletableFuture.completedFuture(null);
+
     private List<String> textToDisplay = null;
 
     public MBGuiGroupFloating guiGroup = null;
@@ -235,11 +235,8 @@ public class NEUOverlay extends Gui {
                 int paddingUnscaled = getPaddingUnscaled();
 
                 GlStateManager.color(1, 1, 1, 1);
-                if (searchMode) {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_BAR_GOLD);
-                } else {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_BAR);
-                }
+
+                Minecraft.getMinecraft().getTextureManager().bindTexture(searchMode ? SEARCH_BAR_GOLD : SEARCH_BAR);
 
                 int w = getWidth();
                 int h = getHeight();
@@ -315,8 +312,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
         };
     }
 
@@ -333,8 +329,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
 
             @Override
             public void mouseClick(float x, float y, int mouseX, int mouseY) {
@@ -347,8 +342,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void mouseClickOutside() {
-            }
+            public void mouseClickOutside() {}
 
             @Override
             public void render(float x, float y) {
@@ -386,8 +380,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
 
             @Override
             public void mouseClick(float x, float y, int mouseX, int mouseY) {
@@ -404,8 +397,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void mouseClickOutside() {
-            }
+            public void mouseClickOutside() {}
 
             @Override
             public void render(float x, float y) {
@@ -444,8 +436,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void recalculate() {
-            }
+            public void recalculate() {}
 
             @Override
             public void mouseClick(float x, float y, int mouseX, int mouseY) {
@@ -466,8 +457,7 @@ public class NEUOverlay extends Gui {
             }
 
             @Override
-            public void mouseClickOutside() {
-            }
+            public void mouseClickOutside() {}
 
             @Override
             public void render(float x, float y) {
@@ -628,6 +618,7 @@ public class NEUOverlay extends Gui {
         searchBarHasFocus = false;
         if (!(searchMode || (NotEnoughUpdates.INSTANCE.config.itemlist.keepopen && itemPaneOpen))) {
             itemPaneOpen = false;
+            displayInformationPane(null);
             itemPaneOffsetFactor.setValue(1);
             itemPaneTabOffset.setValue(20);
         }
@@ -641,24 +632,19 @@ public class NEUOverlay extends Gui {
     public void showInfo(JsonObject item) {
         if (item.has("info") && item.has("infoType")) {
             JsonArray lore = item.get("info").getAsJsonArray();
-            String[] loreA = new String[lore.size()];
-            for (int i = 0; i < lore.size(); i++) loreA[i] = lore.get(i).getAsString();
-            String loreS = StringUtils.join(loreA, "\n");
-
+            StringBuilder loreBuilder = new StringBuilder();
+            for (int i = 0; i < lore.size(); i++) {
+                loreBuilder.append(lore.get(i).getAsString());
+                if (i != lore.size() - 1)
+                    loreBuilder.append("\n");
+            }
+            String infoText = loreBuilder.toString();
             String internalname = item.get("internalname").getAsString();
             String name = item.get("displayname").getAsString();
-            switch (item.get("infoType").getAsString()) {
-                case "WIKI_URL":
-                    displayInformationPane(HTMLInfoPane.createFromWikiUrl(this, manager, name, loreS));
-                    return;
-                case "WIKI":
-                    displayInformationPane(HTMLInfoPane.createFromWiki(this, manager, name, internalname, loreS));
-                    return;
-                case "HTML":
-                    displayInformationPane(new HTMLInfoPane(this, manager, name, internalname, loreS));
-                    return;
-            }
-            displayInformationPane(new TextInfoPane(this, manager, name, loreS));
+            String infoType = item.get("infoType").getAsString();
+            displayInformationPane(new TextInfoPane(this, manager, "Loading", "Loading your requested information about " + name + "."));
+            infoPaneLoadingJob = InfoPane.create(this, manager, infoType, name, internalname, infoText)
+                    .thenAccept(this::displayInformationPane);
         }
     }
 
@@ -882,6 +868,7 @@ public class NEUOverlay extends Gui {
      * Sets the activeInfoPane and sets the target of the infoPaneOffsetFactor to make the infoPane "slide" out.
      */
     public void displayInformationPane(InfoPane pane) {
+        infoPaneLoadingJob.cancel(false);
         if (pane == null) {
             infoPaneOffsetFactor.setTarget(0);
         } else {
@@ -2062,8 +2049,6 @@ public class NEUOverlay extends Gui {
 
     /**
      * Sets the current page and marks that the itemsPane should be redrawn
-     *
-     * @param page
      */
     public void setPage(int page) {
         this.page = page;
@@ -2358,5 +2343,4 @@ public class NEUOverlay extends Gui {
     public float getInfoPaneOffsetFactor() {
         return infoPaneOffsetFactor.getValue() * getWidthMult();
     }
-
 }

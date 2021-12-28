@@ -30,7 +30,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AuctionSearchOverlay {
-
     private static final ResourceLocation SEARCH_OVERLAY_TEXTURE = new ResourceLocation("notenoughupdates:auc_search/ah_search_overlay.png");
     private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation("notenoughupdates:auc_search/ah_search_overlay_tab_completed.png");
     private static final ResourceLocation STAR = new ResourceLocation("notenoughupdates:auc_search/star.png");
@@ -569,7 +568,5 @@ public class AuctionSearchOverlay {
                 }
             }
         }
-
     }
-
 }

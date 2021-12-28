@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class CustomAH extends Gui {
-
     private enum PriceFilter {
         Greater,
         Less,
@@ -439,21 +438,19 @@ public class CustomAH extends Gui {
         GlStateManager.disableBlend();
     }
 
-    private final HashMap<Pattern, Long> timeParseMap = new HashMap<>();
+    private final HashMap<Pattern, Long> timeParseMap = new HashMap<Pattern, Long>() {{
+        Pattern dayPattern = Pattern.compile("([0-9]+)d");
+        Pattern hourPattern = Pattern.compile("([0-9]+)h");
+        Pattern minutePattern = Pattern.compile("([0-9]+)m");
+        Pattern secondPattern = Pattern.compile("([0-9]+)s");
+
+        put(dayPattern, 24 * 60 * 60 * 1000L);
+        put(hourPattern, 60 * 60 * 1000L);
+        put(minutePattern, 60 * 1000L);
+        put(secondPattern, 1000L);
+    }};
 
     public long prettyTimeToMillis(String endsInStr) {
-        if (timeParseMap.isEmpty()) {
-            Pattern dayPattern = Pattern.compile("([0-9]+)d");
-            Pattern hourPattern = Pattern.compile("([0-9]+)h");
-            Pattern minutePattern = Pattern.compile("([0-9]+)m");
-            Pattern secondPattern = Pattern.compile("([0-9]+)s");
-
-            timeParseMap.put(dayPattern, 24 * 60 * 60 * 1000L);
-            timeParseMap.put(hourPattern, 60 * 60 * 1000L);
-            timeParseMap.put(minutePattern, 60 * 1000L);
-            timeParseMap.put(secondPattern, 1000L);
-        }
-
         if (endsInStr != null) {
             long timeUntilEnd = 0;
 

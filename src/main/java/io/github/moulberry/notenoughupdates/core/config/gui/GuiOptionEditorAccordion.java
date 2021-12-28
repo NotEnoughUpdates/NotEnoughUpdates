@@ -12,7 +12,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorAccordion extends GuiOptionEditor {
-
     private final int accordionId;
     private boolean accordionToggled;
 

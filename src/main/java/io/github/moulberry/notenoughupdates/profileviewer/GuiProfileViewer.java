@@ -60,7 +60,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GuiProfileViewer extends GuiScreen {
-
     private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
     public static final ResourceLocation pv_basic = new ResourceLocation("notenoughupdates:pv_basic.png");
     public static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
@@ -74,6 +73,8 @@ public class GuiProfileViewer extends GuiScreen {
     public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
     public static final ResourceLocation pv_ironman = new ResourceLocation("notenoughupdates:pv_ironman.png");
     public static final ResourceLocation pv_bingo = new ResourceLocation("notenoughupdates:pv_bingo.png");
+    public static final ResourceLocation pv_stranded = new ResourceLocation("notenoughupdates:pv_stranded.png");
+    public static final ResourceLocation pv_unknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
     public static final ResourceLocation resource_packs = new ResourceLocation("minecraft:textures/gui/resource_packs.png");
     public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
 
@@ -213,6 +214,21 @@ public class GuiProfileViewer extends GuiScreen {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
                     Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
                 }
+                //stranded icon
+                if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("stranded")) {
+                    GlStateManager.color(1, 1, 1, 1);
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
+                    Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
+                }
+                //icon if game mode is unknown
+                if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
+                        !currProfileInfo.get("game_mode").getAsString().equals("stranded") &&
+                        !currProfileInfo.get("game_mode").getAsString().equals("bingo") &&
+                        !currProfileInfo.get("game_mode").getAsString().equals("ironman")) {
+                    GlStateManager.color(1, 1, 1, 1);
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
+                    Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
+                }
                 //Render Open In Skycrypt button
                 renderBlurredBackground(width, height, guiLeft + 100 + 6 + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
                 Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
@@ -248,6 +264,19 @@ public class GuiProfileViewer extends GuiScreen {
                         if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("bingo")) {
                             GlStateManager.color(1, 1, 1, 1);
                             Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
+                            Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex, 16, 16, GL11.GL_NEAREST);
+                        }
+                        if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("stranded")) {
+                            GlStateManager.color(1, 1, 1, 1);
+                            Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
+                            Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex, 16, 16, GL11.GL_NEAREST);
+                        }
+                        if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
+                                !currProfileInfo.get("game_mode").getAsString().equals("stranded") &&
+                                !currProfileInfo.get("game_mode").getAsString().equals("bingo") &&
+                                !currProfileInfo.get("game_mode").getAsString().equals("ironman")) {
+                            GlStateManager.color(1, 1, 1, 1);
+                            Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
                             Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex, 16, 16, GL11.GL_NEAREST);
                         }
                     }
@@ -849,13 +878,10 @@ public class GuiProfileViewer extends GuiScreen {
         }
     }
 
-    private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<>();
-
-    static {
-        dungeonsModeIcons.put("catacombs", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DUNGEON_STONE")), EnumChatFormatting.GRAY + "Normal Mode", true));
-        dungeonsModeIcons.put("master_catacombs", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MASTER_SKULL_TIER_7")), EnumChatFormatting.GRAY + "Master Mode", true));
-
-    }
+    private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {{
+        put("catacombs", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DUNGEON_STONE")), EnumChatFormatting.GRAY + "Normal Mode", true));
+        put("master_catacombs", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MASTER_SKULL_TIER_7")), EnumChatFormatting.GRAY + "Master Mode", true));
+    }};
 
     private void drawDungPage(int mouseX, int mouseY, float partialTicks) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dung);
@@ -1260,7 +1286,6 @@ public class GuiProfileViewer extends GuiScreen {
         //drawSideButton(1, dungeonsModeIcons.get("master_catacombs"), true);
         //drawSideButton(1, dungeonsModeIcons.get("catacombs"), true);
         //drawSideButton(2, dungeonsModeIcons.get("catacombs"), false);
-
     }
 
     private boolean onMasterMode = false;
@@ -1327,7 +1352,6 @@ public class GuiProfileViewer extends GuiScreen {
 
         GlStateManager.enableDepth();
         Utils.drawItemStack(itemStack, x + 8, y + 7);
-
     }
 
     private void renderXpBar(String skillName, ItemStack stack, int x, int y, int xSize, ProfileViewer.Level levelObj, int mouseX, int mouseY) {
@@ -1467,53 +1491,30 @@ public class GuiProfileViewer extends GuiScreen {
         return levelObj;
     }
 
-    public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS = new HashMap<>();
+    public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS = new HashMap<String, HashMap<String, Float>>() {{
+        put("PET_ITEM_BIG_TEETH_COMMON", new HashMap<String, Float>() {{ put("CRIT_CHANCE", 5f); }});
+        put("PET_ITEM_HARDENED_SCALES_UNCOMMON", new HashMap<String, Float>() {{ put("DEFENCE", 25f); }});
+        put("PET_ITEM_LUCKY_CLOVER", new HashMap<String, Float>() {{ put("MAGIC_FIND", 7f); }});
+        put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", new HashMap<String, Float>() {{ put("CRIT_DAMAGE", 15f); }});
+    }};
 
-    static {
-        HashMap<String, Float> bigTeeth = new HashMap<>();
-        bigTeeth.put("CRIT_CHANCE", 5f);
-        PET_STAT_BOOSTS.put("PET_ITEM_BIG_TEETH_COMMON", bigTeeth);
-
-        HashMap<String, Float> hardenedScales = new HashMap<>();
-        hardenedScales.put("DEFENCE", 25f);
-        PET_STAT_BOOSTS.put("PET_ITEM_HARDENED_SCALES_UNCOMMON", hardenedScales);
-
-        HashMap<String, Float> luckyClover = new HashMap<>();
-        luckyClover.put("MAGIC_FIND", 7f);
-        PET_STAT_BOOSTS.put("PET_ITEM_LUCKY_CLOVER", luckyClover);
-
-        HashMap<String, Float> sharpenedClaws = new HashMap<>();
-        sharpenedClaws.put("CRIT_DAMAGE", 15f);
-        PET_STAT_BOOSTS.put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", sharpenedClaws);
-    }
-
-    public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT = new HashMap<>();
-
-    static {
-        HashMap<String, Float> ironClaws = new HashMap<>();
-        ironClaws.put("CRIT_DAMAGE", 1.4f);
-        ironClaws.put("CRIT_CHANCE", 1.4f);
-        PET_STAT_BOOSTS_MULT.put("PET_ITEM_IRON_CLAWS_COMMON", ironClaws);
-
-        HashMap<String, Float> textbook = new HashMap<>();
-        textbook.put("INTELLIGENCE", 2f);
-        PET_STAT_BOOSTS_MULT.put("PET_ITEM_TEXTBOOK", textbook);
-    }
-
+    public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT = new HashMap<String, HashMap<String, Float>>() {{
+        put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<String, Float>() {{ put("CRIT_DAMAGE", 1.4f); put("CRIT_CHANCE", 1.4f); }});
+        put("PET_ITEM_TEXTBOOK", new HashMap<String, Float>() {{ put("INTELLIGENCE", 2f); }});
+    }};
+    
     private int selectedPet = -1;
     private int petsPage = 0;
     private List<JsonObject> sortedPets = null;
     private List<ItemStack> sortedPetsStack = null;
-    public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<>();
-
-    static {
-        MINION_RARITY_TO_NUM.put("COMMON", "0");
-        MINION_RARITY_TO_NUM.put("UNCOMMON", "1");
-        MINION_RARITY_TO_NUM.put("RARE", "2");
-        MINION_RARITY_TO_NUM.put("EPIC", "3");
-        MINION_RARITY_TO_NUM.put("LEGENDARY", "4");
-        MINION_RARITY_TO_NUM.put("MYTHIC", "5");
-    }
+    public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {{
+        put("COMMON", "0");
+        put("UNCOMMON", "1");
+        put("RARE", "2");
+        put("EPIC", "3");
+        put("LEGENDARY", "4");
+        put("MYTHIC", "5");
+    }};
 
     private void drawPetsPage(int mouseX, int mouseY, float partialTicks) {
         JsonObject petsInfo = profile.getPetsInfo(profileId);
@@ -1611,8 +1612,7 @@ public class GuiProfileViewer extends GuiScreen {
                             try {
                                 float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
                                 replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value * entryBoost.getValue())));
-                            } catch (Exception ignored) {
-                            }
+                            } catch (Exception ignored) {}
                         }
                     }
                 }
@@ -2026,19 +2026,17 @@ public class GuiProfileViewer extends GuiScreen {
         //190
     }
 
-    private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<>();
-
-    static {
-        invNameToDisplayMap.put("inv_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory"));
-        invNameToDisplayMap.put("ender_chest_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest"));
-        //invNameToDisplayMap.put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
-        invNameToDisplayMap.put("backpack_contents", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("JUMBO_BACKPACK")), EnumChatFormatting.GRAY + "Backpacks", true));
-        invNameToDisplayMap.put("personal_vault_contents", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true));
-        invNameToDisplayMap.put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
-        invNameToDisplayMap.put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
-        invNameToDisplayMap.put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
-        invNameToDisplayMap.put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
-    }
+    private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {{
+        put("inv_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory"));
+        put("ender_chest_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest"));
+        // put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
+        put("backpack_contents", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("JUMBO_BACKPACK")), EnumChatFormatting.GRAY + "Backpacks", true));
+        put("personal_vault_contents", Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true));
+        put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
+        put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
+        put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
+        put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
+    }};
 
     public int countItemsInInventory(String internalname, JsonObject inventoryInfo, boolean specific, String... invsToSearch) {
         int count = 0;
@@ -2133,39 +2131,6 @@ public class GuiProfileViewer extends GuiScreen {
                 return 1;
         }
         return 0;
-    }
-
-    //unused function
-    //Data has been removed from the repo
-    @Deprecated
-    private int getAvailableSlotsForInventory(JsonObject inventoryInfo, JsonObject collectionInfo, String invName) {
-        if (collectionInfo == null) return -1;
-        JsonObject misc = Constants.MISC;
-        if (misc == null) return -1;
-        JsonElement sizesElement = Utils.getElement(misc, "bag_size." + invName + ".sizes");
-        JsonElement collectionElement = Utils.getElement(misc, "bag_size." + invName + ".collection");
-
-        if (sizesElement == null || !sizesElement.isJsonArray()) return -1;
-        if (collectionElement == null || !collectionElement.isJsonPrimitive()) return -1;
-
-        JsonArray sizes = sizesElement.getAsJsonArray();
-        String collection = collectionElement.getAsString();
-
-        JsonElement tierElement = Utils.getElement(collectionInfo, "collection_tiers." + collection);
-
-        if (tierElement == null || !tierElement.isJsonPrimitive()) {
-            return 0;
-        }
-        int tier = tierElement.getAsInt();
-
-        int currentSlots = 0;
-        for (int i = 0; i < sizes.size(); i++) {
-            JsonObject sizeInfo = sizes.get(i).getAsJsonObject();
-            if (sizeInfo.get("tier").getAsInt() <= tier) {
-                currentSlots = sizeInfo.get("slots").getAsInt();
-            }
-        }
-        return currentSlots;
     }
 
     private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
@@ -2890,9 +2855,9 @@ public class GuiProfileViewer extends GuiScreen {
         if (effMinerStat2 < 1) {
             effMinerStat2 = 1;
         }
-        int moul = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)));
-        float moulStat = (float) ((Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)) * 0.051);
-        double moleperkstat = (double) moul / 20 - 0.55 + 50;
+        int mole = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)));
+        float moleStat = (float) ((Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)) * 0.051);
+        double moleperkstat = (double) mole / 20 - 0.55 + 50;
         double moleperkstat2 = (double) Math.round(moleperkstat * 100) / 100;
 
         float output = Math.round((float) (moleperkstat2 % 1) * 100);
@@ -3368,26 +3333,24 @@ public class GuiProfileViewer extends GuiScreen {
                 }
             }
         }
-        //aaaaa
-        //aaa
-        boolean moulunlocked = (moul > 0);
-            List<String> moulTooltip = null;
+        boolean moleunlocked = (mole > 0);
+            List<String> moleTooltip = null;
             GlStateManager.color(1, 1, 1, 1);
             GlStateManager.disableLighting();
-            Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack((moulunlocked ? Items.emerald : Items.coal)), (int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 18));
+            Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack((moleunlocked ? Items.emerald : Items.coal)), (int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 18));
             GlStateManager.enableLighting();
             if (mouseX >= guiLeft + xStart + 255 && mouseX < guiLeft + xStart + 271) {
                 if (mouseY >= guiTop + yStartTop + 18 && mouseY <= guiTop + yStartTop + 34) {
-                    moulTooltip = Lists.newArrayList(
-                            (moulunlocked ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + "Mole",
-                            EnumChatFormatting.GRAY + "Level " + moul + EnumChatFormatting.DARK_GRAY + "/190",
+                    moleTooltip = Lists.newArrayList(
+                            (moleunlocked ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + "Mole",
+                            EnumChatFormatting.GRAY + "Level " + mole + EnumChatFormatting.DARK_GRAY + "/190",
                             "",
                             EnumChatFormatting.GRAY + "When mining hard stone, you have",
                             EnumChatFormatting.GRAY + "a " + EnumChatFormatting.GREEN + output + "% " + EnumChatFormatting.GRAY + "chance to mine " + EnumChatFormatting.GREEN + "",
-                            EnumChatFormatting.GREEN + "" + Math.round(moulStat) + EnumChatFormatting.GRAY + " adjacent hard stone blocks."
+                            EnumChatFormatting.GREEN + "" + Math.round(moleStat) + EnumChatFormatting.GRAY + " adjacent hard stone blocks."
                     );
-                    Utils.drawHoveringText(moulTooltip, mouseX, mouseY, width, height, -1, fr);
-                    moulTooltip = null;
+                    Utils.drawHoveringText(moleTooltip, mouseX, mouseY, width, height, -1, fr);
+                    moleTooltip = null;
                 }
             }
         boolean powderBuffunlocked = (powderBuff > 0);
@@ -3880,7 +3843,7 @@ public class GuiProfileViewer extends GuiScreen {
     private String getTimeSinceString(JsonObject profileInfo, String path) {
         JsonElement lastSaveElement = Utils.getElement(profileInfo, path);
 
-        if (lastSaveElement.isJsonPrimitive()) {
+        if (lastSaveElement != null && lastSaveElement.isJsonPrimitive()) {
 
             Instant lastSave = Instant.ofEpochMilli(lastSaveElement.getAsLong());
             LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());

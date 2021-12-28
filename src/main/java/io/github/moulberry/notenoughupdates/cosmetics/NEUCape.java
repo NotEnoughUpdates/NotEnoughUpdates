@@ -27,7 +27,6 @@ import java.nio.FloatBuffer;
 import java.util.*;
 
 public class NEUCape {
-
     private int currentFrame = 0;
     private int displayFrame = 0;
     private String capeName;
@@ -414,8 +413,7 @@ public class NEUCape {
     private static double interpolateRotation(float a, float b, float amount) {
         double f;
 
-        for (f = b - a; f < -180.0F; f += 360.0F) {
-        }
+        for (f = b - a; f < -180.0F; f += 360.0F) {}
 
         while (f >= 180.0F) {
             f -= 360.0F;
@@ -1285,5 +1283,4 @@ public class NEUCape {
         }
         renderNodes();
     }
-
 }

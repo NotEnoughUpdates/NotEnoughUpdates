@@ -28,13 +28,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class NEUManager {
-
     private final NotEnoughUpdates neu;
     public final Gson gson;
     public final APIManager auctionManager;
@@ -317,8 +317,6 @@ public class NEUManager {
     /**
      * Loads the item in to the itemMap and also stores various words associated with this item
      * in to titleWordMap and loreWordMap. These maps are used in the searching algorithm.
-     *
-     * @param internalName
      */
     public void loadItem(String internalName) {
         itemstackCache.remove(internalName);
@@ -432,11 +430,10 @@ public class NEUManager {
         out:
         for (String s : query.split(" ")) {
             for (int i = 0; i < splitToSeach.length; i++) {
-                if (lastMatch == -1 || lastMatch == i - 1) {
-                    if (splitToSeach[i].startsWith(s)) {
-                        lastMatch = i;
-                        continue out;
-                    }
+                if (!(lastMatch == -1 || lastMatch == i - 1)) continue;
+                if (splitToSeach[i].startsWith(s)) {
+                    lastMatch = i;
+                    continue out;
                 }
             }
             return false;
@@ -623,27 +620,24 @@ public class NEUManager {
         for (String queryWord : query.split(" ")) {
             HashMap<String, List<Integer>> matchesToKeep = new HashMap<>();
             for (HashMap<String, List<Integer>> wordMatches : subMapWithKeysThatAreSuffixes(queryWord, wordMap).values()) {
-                if (wordMatches != null && !wordMatches.isEmpty()) {
-                    if (matches == null) {
-                        //Copy all wordMatches to titleMatches
-                        for (String internalname : wordMatches.keySet()) {
+                if (!(wordMatches != null && !wordMatches.isEmpty())) continue;
+                if (matches == null) {
+                    //Copy all wordMatches to titleMatches
+                    for (String internalname : wordMatches.keySet()) {
+                        if (!matchesToKeep.containsKey(internalname)) {
+                            matchesToKeep.put(internalname, new ArrayList<>());
+                        }
+                        matchesToKeep.get(internalname).addAll(wordMatches.get(internalname));
+                    }
+                } else {
+                    for (String internalname : matches.keySet()) {
+                        if (!wordMatches.containsKey(internalname)) continue;
+                        for (Integer newIndex : wordMatches.get(internalname)) {
+                            if (!matches.get(internalname).contains(newIndex - 1)) continue;
                             if (!matchesToKeep.containsKey(internalname)) {
                                 matchesToKeep.put(internalname, new ArrayList<>());
                             }
-                            matchesToKeep.get(internalname).addAll(wordMatches.get(internalname));
-                        }
-                    } else {
-                        for (String internalname : matches.keySet()) {
-                            if (wordMatches.containsKey(internalname)) {
-                                for (Integer newIndex : wordMatches.get(internalname)) {
-                                    if (matches.get(internalname).contains(newIndex - 1)) {
-                                        if (!matchesToKeep.containsKey(internalname)) {
-                                            matchesToKeep.put(internalname, new ArrayList<>());
-                                        }
-                                        matchesToKeep.get(internalname).add(newIndex);
-                                    }
-                                }
-                            }
+                            matchesToKeep.get(internalname).add(newIndex);
                         }
                     }
                 }
@@ -748,6 +742,10 @@ public class NEUManager {
                     internalname = runename.toUpperCase() + "_RUNE" + ";" + rune.getInteger(runename);
                     break;
                 }
+            }
+            if ("PARTY_HAT_CRAB".equals(internalname) && (ea.getString("party_hat_color") != null)) {
+                String crabhat = ea.getString("party_hat_color");
+                internalname = "PARTY_HAT_CRAB" + "_" + crabhat.toUpperCase();
             }
         }
 
@@ -982,32 +980,34 @@ public class NEUManager {
     /**
      * Downloads a web file, appending some HTML attributes that makes wikia give us the raw wiki syntax.
      */
-    public File getWebFile(String url) {
-        File f = new File(configLocation, "tmp/" + Base64.getEncoder().encodeToString(url.getBytes()) + ".html");
-        if (f.exists()) {
-            return f;
-        }
-
-        try {
-            f.getParentFile().mkdirs();
-            f.createNewFile();
-            f.deleteOnExit();
-        } catch (IOException e) {
-            return null;
-        }
-        try (BufferedInputStream inStream = new BufferedInputStream(new URL(url + "?action=raw&templates=expand").openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(f)) {
-            byte[] dataBuffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inStream.read(dataBuffer, 0, 1024)) != -1) {
-                fileOutputStream.write(dataBuffer, 0, bytesRead);
+    public CompletableFuture<File> getWebFile(String url) {
+        return CompletableFuture.supplyAsync(() -> {
+            File f = new File(configLocation, "tmp/" + Base64.getEncoder().encodeToString(url.getBytes()) + ".html");
+            if (f.exists()) {
+                return f;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
 
-        return f;
+            try {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+                f.deleteOnExit();
+            } catch (IOException e) {
+                return null;
+            }
+            try (BufferedInputStream inStream = new BufferedInputStream(new URL(url + "?action=raw&templates=expand").openStream());
+                 FileOutputStream fileOutputStream = new FileOutputStream(f)) {
+                byte[] dataBuffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inStream.read(dataBuffer, 0, 1024)) != -1) {
+                    fileOutputStream.write(dataBuffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            return f;
+        });
     }
 
     /**
@@ -1435,5 +1435,4 @@ public class NEUManager {
             return stack;
         }
     }
-
 }

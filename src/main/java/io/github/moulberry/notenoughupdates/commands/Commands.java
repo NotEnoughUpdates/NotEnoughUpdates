@@ -56,7 +56,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Commands {
-
     public Commands() {
         //ClientCommandHandler.instance.registerCommand(collectionLogCommand);
         //ClientCommandHandler.instance.registerCommand(collectionLogCommand2);
@@ -909,8 +908,7 @@ public class Commands {
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
                     NotEnoughUpdates.INSTANCE.displayLinks(update);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
         }
     });

@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NPCRetexturing implements IResourceManagerReloadListener {
-
     private static final NPCRetexturing INSTANCE = new NPCRetexturing();
 
     private static final ResourceLocation npcRetexturingJson = new ResourceLocation("notenoughupdates:npccustomtextures/config.json");
@@ -91,5 +90,4 @@ public class NPCRetexturing implements IResourceManagerReloadListener {
     public static NPCRetexturing getInstance() {
         return INSTANCE;
     }
-
 }

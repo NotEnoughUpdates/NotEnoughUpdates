@@ -26,7 +26,6 @@ import java.awt.*;
 
 @Mixin(RenderFish.class)
 public abstract class MixinRenderFish extends Render<EntityFishHook> {
-
     protected MixinRenderFish(RenderManager renderManager) {
         super(renderManager);
     }
@@ -146,5 +145,4 @@ public abstract class MixinRenderFish extends Render<EntityFishHook> {
     private static double mathLerp(double var1, double var2, double var3) {
         return var2 + var1 * (var3 - var2);
     }
-
 }

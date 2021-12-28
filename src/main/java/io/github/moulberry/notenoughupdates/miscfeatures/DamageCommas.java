@@ -14,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DamageCommas {
-
     private static final WeakHashMap<EntityLivingBase, ChatComponentText> replacementMap = new WeakHashMap<>();
 
     private static final EnumChatFormatting[] coloursHypixel = {EnumChatFormatting.WHITE, EnumChatFormatting.YELLOW, EnumChatFormatting.GOLD, EnumChatFormatting.RED, EnumChatFormatting.RED, EnumChatFormatting.WHITE};
@@ -129,8 +128,7 @@ public class DamageCommas {
                     ChatComponentText ret = new ChatComponentText("\u00A7f\u2727" + colouredString + "\u00a7r\u2727\u00a7r");
                     replacementMap.put(hashCode, ret);
                     return ret;
-                } catch (NumberFormatException ignored) {
-                }
+                } catch (NumberFormatException ignored) {}
             }
 
             StringBuilder builder = new StringBuilder();
@@ -200,5 +198,4 @@ public class DamageCommas {
         replacementMap.put(hashCode, null);
         return name;*/
     }
-
 }

@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL14;
 import java.awt.*;
 
 public class FuelBar {
-
     public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");
 
     private float fuelAmount = -1;
@@ -165,5 +164,4 @@ public class FuelBar {
 
         GlStateManager.popMatrix();
     }
-
 }

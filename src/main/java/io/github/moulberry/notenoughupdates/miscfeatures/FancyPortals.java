@@ -26,7 +26,6 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 public class FancyPortals {
-
     private static final ResourceLocation[] RENDERS = new ResourceLocation[6];
 
     static {
@@ -291,5 +290,4 @@ public class FancyPortals {
         GL11.glDisable(GL11.GL_STENCIL_TEST);
         GlStateManager.enableCull();
     }
-
 }

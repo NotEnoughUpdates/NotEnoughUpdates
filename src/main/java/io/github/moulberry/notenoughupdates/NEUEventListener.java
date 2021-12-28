@@ -131,7 +131,7 @@ public class NEUEventListener {
                     neu.displayLinks(o);
 
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
-                } else if (shouldPreUpdate && NotEnoughUpdates.VERSION.equalsIgnoreCase("2.0.0-REL")) {
+                } else if (shouldPreUpdate && NotEnoughUpdates.VERSION_ID == o.get("version").getAsInt()) {
                     String pre_update_msg = o.get("pre_update_msg").getAsString();
 
                     int first_len = -1;
@@ -915,8 +915,6 @@ public class NEUEventListener {
      * <p>
      * All of this only matters if players are using gui scale auto which may result in the inventory being drawn
      * over the various panes.
-     *
-     * @param event
      */
     @SubscribeEvent
     public void onGuiBackgroundDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -1121,8 +1119,6 @@ public class NEUEventListener {
     /**
      * Will draw the NEUOverlay over the inventory if focusInv == false. (z-translation of 300 is so that NEUOverlay
      * will draw over Items in the inventory (which render at a z value of about 250))
-     *
-     * @param event
      */
     @SubscribeEvent
     public void onGuiScreenDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
@@ -1258,8 +1254,7 @@ public class NEUEventListener {
                         if (cost.length() > 0) {
                             chestCost = Integer.parseInt(cost.toString());
                         }
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
 
                     String missingItem = null;
                     int totalValue = 0;
@@ -1428,8 +1423,6 @@ public class NEUEventListener {
     /**
      * Sends a mouse event to NEUOverlay if the inventory isn't hovered AND focused.
      * Will also cancel the event if if NEUOverlay#mouseInput returns true.
-     *
-     * @param event
      */
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onGuiScreenMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
@@ -2532,8 +2525,6 @@ public class NEUEventListener {
 
     /**
      * This makes it so that holding LCONTROL while hovering over an item with NBT will show the NBT of the item.
-     *
-     * @param event
      */
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {

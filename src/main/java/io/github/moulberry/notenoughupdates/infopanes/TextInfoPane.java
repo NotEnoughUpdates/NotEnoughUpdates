@@ -10,7 +10,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
 
 public class TextInfoPane extends ScrollableInfoPane {
-
     protected String title;
     protected String text;
 

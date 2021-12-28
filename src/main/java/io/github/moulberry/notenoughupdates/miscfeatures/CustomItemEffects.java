@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CustomItemEffects {
-
     public static final CustomItemEffects INSTANCE = new CustomItemEffects();
 
     private static final int MAX_BUILDERS_BLOCKS = 241;
@@ -478,36 +477,33 @@ public class CustomItemEffects {
         return false;
     }
 
-    private static final List<BlockPos> zapperOffsets = new ArrayList<>();
+    private static final List<BlockPos> zapperOffsets = new ArrayList<BlockPos>() {{
+        add(new BlockPos(0, 0, -1));
+        add(new BlockPos(0, 0, 1));
+        add(new BlockPos(-1, 0, 0));
+        add(new BlockPos(1, 0, 0));
+        add(new BlockPos(0, 1, 0));
+        add(new BlockPos(0, -1, 0));
+    }};
 
-    static {
-        zapperOffsets.add(new BlockPos(0, 0, -1));
-        zapperOffsets.add(new BlockPos(0, 0, 1));
-        zapperOffsets.add(new BlockPos(-1, 0, 0));
-        zapperOffsets.add(new BlockPos(1, 0, 0));
-        zapperOffsets.add(new BlockPos(0, 1, 0));
-        zapperOffsets.add(new BlockPos(0, -1, 0));
-    }
+    private static final HashSet<Block> cropBlocksZapper = new HashSet<Block>() {{
+        add(Blocks.wheat);
+        add(Blocks.carrots);
+        add(Blocks.potatoes);
+        add(Blocks.pumpkin);
+        add(Blocks.pumpkin_stem);
+        add(Blocks.melon_block);
+        add(Blocks.melon_stem);
+        add(Blocks.cactus);
+        add(Blocks.reeds);
+        add(Blocks.nether_wart);
+        add(Blocks.tallgrass);
+        add(Blocks.double_plant);
+    }};
 
-    private static final HashSet<Block> cropBlocksZapper = new HashSet<>();
-    private static final HashSet<Block> otherBannedBlocksZapper = new HashSet<>();
-
-    static {
-        cropBlocksZapper.add(Blocks.wheat);
-        cropBlocksZapper.add(Blocks.carrots);
-        cropBlocksZapper.add(Blocks.potatoes);
-        cropBlocksZapper.add(Blocks.pumpkin);
-        cropBlocksZapper.add(Blocks.pumpkin_stem);
-        cropBlocksZapper.add(Blocks.melon_block);
-        cropBlocksZapper.add(Blocks.melon_stem);
-        cropBlocksZapper.add(Blocks.cactus);
-        cropBlocksZapper.add(Blocks.reeds);
-        cropBlocksZapper.add(Blocks.nether_wart);
-        cropBlocksZapper.add(Blocks.tallgrass);
-        cropBlocksZapper.add(Blocks.double_plant);
-
-        otherBannedBlocksZapper.add(Blocks.farmland);
-    }
+    private static final HashSet<Block> otherBannedBlocksZapper = new HashSet<Block>() {{
+        add(Blocks.farmland);
+    }};
 
     @SubscribeEvent
     public void renderBlockOverlay(DrawBlockHighlightEvent event) {
@@ -1204,5 +1200,4 @@ public class CustomItemEffects {
 
         GL11.glLineWidth(1);
     }
-
 }

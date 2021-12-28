@@ -11,7 +11,6 @@ import org.lwjgl.input.Mouse;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_fsr;
 
 public class GuiOptionEditorFSR extends GuiOptionEditor {
-
     private final int runnableId;
     private String buttonText;
     private final Config config;

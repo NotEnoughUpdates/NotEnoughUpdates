@@ -6,7 +6,6 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 
 public class GuiScreenElementWrapper extends GuiScreen {
-
     public final GuiElement element;
 
     public GuiScreenElementWrapper(GuiElement element) {

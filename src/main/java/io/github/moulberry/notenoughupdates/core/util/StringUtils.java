@@ -7,7 +7,6 @@ import net.minecraft.client.gui.FontRenderer;
 import java.util.Set;
 
 public class StringUtils {
-
     public static final Set<String> PROTOCOLS = Sets.newHashSet("http", "https");
 
     public static String cleanColour(String in) {
@@ -35,5 +34,4 @@ public class StringUtils {
 
         return trim;
     }
-
 }

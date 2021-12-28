@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class SlotLocking {
-
     private static final SlotLocking INSTANCE = new SlotLocking();
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -615,5 +614,4 @@ public class SlotLocking {
 
         return locked != null && (locked.locked || (NotEnoughUpdates.INSTANCE.config.slotLocking.bindingAlsoLocks && locked.boundTo != -1));
     }
-
 }

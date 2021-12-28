@@ -30,12 +30,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class HTMLInfoPane extends TextInfoPane {
-
     private static final WikiModel wikiModel;
 
     private final int ZOOM_FACTOR = 2;
@@ -92,24 +92,24 @@ public class HTMLInfoPane extends TextInfoPane {
     /**
      * Takes a wiki url, uses NEUManager#getWebFile to download the web file and passed that in to #createFromWiki
      */
-    public static HTMLInfoPane createFromWikiUrl(NEUOverlay overlay, NEUManager manager, String name,
-                                                 String wikiUrl) {
-        File f = manager.getWebFile(wikiUrl);
-        if (f == null) {
-            return new HTMLInfoPane(overlay, manager, "error", "error", "Failed to load wiki url: " + wikiUrl);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                new FileInputStream(f), StandardCharsets.UTF_8))) {
-            String l;
-            while ((l = br.readLine()) != null) {
-                sb.append(l).append("\n");
+    public static CompletableFuture<HTMLInfoPane> createFromWikiUrl(NEUOverlay overlay, NEUManager manager, String name, String wikiUrl) {
+        return manager.getWebFile(wikiUrl).thenApply(f -> {
+            if (f == null) {
+                return new HTMLInfoPane(overlay, manager, "error", "error", "Failed to load wiki url: " + wikiUrl);
             }
-        } catch (IOException e) {
-            return new HTMLInfoPane(overlay, manager, "error", "error", "Failed to load wiki url: " + wikiUrl);
-        }
-        return createFromWiki(overlay, manager, name, f.getName(), sb.toString());
+
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(f), StandardCharsets.UTF_8))) {
+                String l;
+                while ((l = br.readLine()) != null) {
+                    sb.append(l).append("\n");
+                }
+            } catch (IOException e) {
+                return new HTMLInfoPane(overlay, manager, "error", "error", "Failed to load wiki url: " + wikiUrl);
+            }
+            return createFromWikiText(overlay, manager, name, f.getName(), sb.toString());
+        });
     }
 
     /**
@@ -118,8 +118,8 @@ public class HTMLInfoPane extends TextInfoPane {
      * a more permanent solution that can be abstracted to work with arbitrary wiki codes (eg. moulberry.github.io/
      * files/neu_help.html).
      */
-    public static HTMLInfoPane createFromWiki(NEUOverlay overlay, NEUManager manager, String name, String filename,
-                                              String wiki) {
+    public static HTMLInfoPane createFromWikiText(NEUOverlay overlay, NEUManager manager, String name, String filename,
+                                                  String wiki) {
         String[] split = wiki.split("</infobox>");
         wiki = split[split.length - 1]; //Remove everything before infobox
         wiki = wiki.split("<span class=\"navbox-vde\">")[0]; //Remove navbox

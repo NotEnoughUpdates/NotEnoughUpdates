@@ -3,7 +3,6 @@ package io.github.moulberry.notenoughupdates.itemeditor;
 import net.minecraft.client.gui.Gui;
 
 public abstract class GuiElement extends Gui {
-
     public abstract void render(int x, int y);
 
     public abstract int getWidth();
@@ -17,5 +16,4 @@ public abstract class GuiElement extends Gui {
     public void otherComponentClick() {}
 
     public void keyTyped(char typedChar, int keyCode) {}
-
 }

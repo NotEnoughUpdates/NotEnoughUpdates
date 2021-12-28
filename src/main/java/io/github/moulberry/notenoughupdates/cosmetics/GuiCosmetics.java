@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Random;
 
 public class GuiCosmetics extends GuiScreen {
-
     public static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
     public static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
     public static final ResourceLocation cosmetics_fg = new ResourceLocation("notenoughupdates:cosmetics_fg.png");

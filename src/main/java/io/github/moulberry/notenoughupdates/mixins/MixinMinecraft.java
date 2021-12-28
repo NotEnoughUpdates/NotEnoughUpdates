@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
-
     //Commented as they weren't being loaded before
     /*@Shadow
     public WorldClient theWorld;
@@ -38,5 +37,4 @@ public class MixinMinecraft {
     public void currentItemMixin(CallbackInfo ci) {
         SlotLocking.getInstance().changedSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem);
     }
-
 }

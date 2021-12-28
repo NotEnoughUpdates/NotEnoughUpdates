@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.core.util.lerp;
 
 public class LerpUtils {
-
     public static float clampZeroOne(float f) {
         return Math.max(0, Math.min(1, f));
     }
@@ -22,5 +21,4 @@ public class LerpUtils {
     public static float lerp(float a, float b, float amount) {
         return b + (a - b) * clampZeroOne(amount);
     }
-
 }

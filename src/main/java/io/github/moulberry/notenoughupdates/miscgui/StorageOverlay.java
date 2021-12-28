@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.*;
 
 public class StorageOverlay extends GuiElement {
-
     private static final int CHEST_TOP_OFFSET = 17;
     private static final int CHEST_SLOT_SIZE = 18;
     private static final int CHEST_BOTTOM_OFFSET = 215;

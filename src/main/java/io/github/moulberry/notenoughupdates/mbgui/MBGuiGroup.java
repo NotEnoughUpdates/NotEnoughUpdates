@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class MBGuiGroup extends MBGuiElement {
-
     public int width;
     public int height;
     protected HashMap<MBGuiElement, Vector2f> childrenPosition = new HashMap<>();
@@ -61,5 +60,4 @@ public abstract class MBGuiGroup extends MBGuiElement {
             child.render(x + childPos.x, y + childPos.y);
         }
     }
-
 }

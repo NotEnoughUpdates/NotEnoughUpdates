@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class ItemCustomizeManager {
-
     public static class ReloadListener implements IResourceManagerReloadListener {
         @Override
         public void onResourceManagerReload(IResourceManager resourceManager) {
@@ -274,5 +273,4 @@ public class ItemCustomizeManager {
             }
         } catch (Exception ignored) {}
     }
-
 }

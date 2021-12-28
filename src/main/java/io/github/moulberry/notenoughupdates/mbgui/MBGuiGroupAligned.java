@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class MBGuiGroupAligned extends MBGuiGroup {
-
     //Serialized
     private final List<MBGuiElement> children;
     private final boolean vertical;
@@ -61,7 +60,5 @@ public abstract class MBGuiGroupAligned extends MBGuiGroup {
                 }
             }
         }
-
     }
-
 }

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiItemRecipe extends GuiScreen {
-
     public static final ResourceLocation resourcePacksTexture = new ResourceLocation("textures/gui/resource_packs.png");
 
     public static final int SLOT_SIZE = 16;
@@ -203,5 +202,4 @@ public class GuiItemRecipe extends GuiScreen {
             }
         }
     }
-
 }

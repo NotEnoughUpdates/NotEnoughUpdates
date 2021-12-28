@@ -372,6 +372,4 @@ public class FishingSkillOverlay extends TextOverlay { //Im sure there is a much
             if(overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
         }
     }
-
-
 }

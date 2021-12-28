@@ -29,44 +29,40 @@ import java.util.regex.Pattern;
 
 public class DwarvenMinesWaypoints {
 
-    private final HashMap<String, Vector3f> waypointsMap = new HashMap<>();
+    private final HashMap<String, Vector3f> waypointsMap = new HashMap<String, Vector3f>() {{
+        put("Dwarven Village", new Vector3f(-37, 199, -122));
+        put("Miner's Guild", new Vector3f(-74, 220, -122));
+        put("Fetchur", new Vector3f(85, 223, -120));
+        put("Palace Bridge", new Vector3f(129, 186, 8));
+        put("Royal Palace", new Vector3f(129, 194, 194));
+        put("Puzzler", new Vector3f(181, 195, 135));
+        put("Grand Library", new Vector3f(183, 195, 181));
+        put("Barracks of Heroes", new Vector3f(93, 195, 181));
+        put("Royal Mines", new Vector3f(178, 149, 71));
+        put("Cliffside Veins", new Vector3f(40, 136, 17));
+        put("Forge Basin", new Vector3f(0, 169, -2));
+        put("The Forge", new Vector3f(0, 148, -69));
+        put("Rampart's Quarry", new Vector3f(-106, 147, 2));
+        put("Far Reserve", new Vector3f(-160, 148, 17));
+        put("Upper Mines", new Vector3f(-123, 170, -71));
+        put("Goblin Burrows", new Vector3f(-138, 143, 141));
+        put("Great Ice Wall", new Vector3f(0, 127, 160));
+        put("Aristocrat Passage", new Vector3f(129, 150, 137));
+        put("Hanging Court", new Vector3f(91, 186, 129));
+        put("Divan's Gateway", new Vector3f(0, 127, 87));
+        put("Lava Springs", new Vector3f(57, 196, -15));
+        put("The Mist", new Vector3f(0, 75, 82));
+    }};
 
-    {
-        waypointsMap.put("Dwarven Village", new Vector3f(-37, 199, -122));
-        waypointsMap.put("Miner's Guild", new Vector3f(-74, 220, -122));
-        waypointsMap.put("Fetchur", new Vector3f(85, 223, -120));
-        waypointsMap.put("Palace Bridge", new Vector3f(129, 186, 8));
-        waypointsMap.put("Royal Palace", new Vector3f(129, 194, 194));
-        waypointsMap.put("Puzzler", new Vector3f(181, 195, 135));
-        waypointsMap.put("Grand Library", new Vector3f(183, 195, 181));
-        waypointsMap.put("Barracks of Heroes", new Vector3f(93, 195, 181));
-        waypointsMap.put("Royal Mines", new Vector3f(178, 149, 71));
-        waypointsMap.put("Cliffside Veins", new Vector3f(40, 136, 17));
-        waypointsMap.put("Forge Basin", new Vector3f(0, 169, -2));
-        waypointsMap.put("The Forge", new Vector3f(0, 148, -69));
-        waypointsMap.put("Rampart's Quarry", new Vector3f(-106, 147, 2));
-        waypointsMap.put("Far Reserve", new Vector3f(-160, 148, 17));
-        waypointsMap.put("Upper Mines", new Vector3f(-123, 170, -71));
-        waypointsMap.put("Goblin Burrows", new Vector3f(-138, 143, 141));
-        waypointsMap.put("Great Ice Wall", new Vector3f(0, 127, 160));
-        waypointsMap.put("Aristocrat Passage", new Vector3f(129, 150, 137));
-        waypointsMap.put("Hanging Court", new Vector3f(91, 186, 129));
-        waypointsMap.put("Divan's Gateway", new Vector3f(0, 127, 87));
-        waypointsMap.put("Lava Springs", new Vector3f(57, 196, -15));
-        waypointsMap.put("The Mist", new Vector3f(0, 75, 82));
-    }
-
-    private static final HashSet<String> emissaryNames = new HashSet<>();
-
-    static {
-        emissaryNames.add(EnumChatFormatting.GOLD + "Emissary Ceanna" + EnumChatFormatting.RESET);
-        emissaryNames.add(EnumChatFormatting.GOLD + "Emissary Carlton" + EnumChatFormatting.RESET);
-        emissaryNames.add(EnumChatFormatting.GOLD + "Emissary Wilson" + EnumChatFormatting.RESET);
-        emissaryNames.add(EnumChatFormatting.GOLD + "Emissary Lilith" + EnumChatFormatting.RESET);
-        emissaryNames.add(EnumChatFormatting.GOLD + "Emissary Frasier" + EnumChatFormatting.RESET);
-        emissaryNames.add(EnumChatFormatting.GOLD + "Emissary Eliza" + EnumChatFormatting.RESET);
-        emissaryNames.add(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "King Thormyr" + EnumChatFormatting.RESET);
-    }
+    private static final HashSet<String> emissaryNames = new HashSet<String>() {{
+        add(EnumChatFormatting.GOLD + "Emissary Ceanna" + EnumChatFormatting.RESET);
+        add(EnumChatFormatting.GOLD + "Emissary Carlton" + EnumChatFormatting.RESET);
+        add(EnumChatFormatting.GOLD + "Emissary Wilson" + EnumChatFormatting.RESET);
+        add(EnumChatFormatting.GOLD + "Emissary Lilith" + EnumChatFormatting.RESET);
+        add(EnumChatFormatting.GOLD + "Emissary Frasier" + EnumChatFormatting.RESET);
+        add(EnumChatFormatting.GOLD + "Emissary Eliza" + EnumChatFormatting.RESET);
+        add(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "King Thormyr" + EnumChatFormatting.RESET);
+    }};
 
     private enum Emissary {
         THORMYR("King Thormyr", 0, new Vector3f(129, 196, 196)),
@@ -256,9 +252,7 @@ public class DwarvenMinesWaypoints {
                         }
                     }
                 }
-
             }
         }
     }
-
 }

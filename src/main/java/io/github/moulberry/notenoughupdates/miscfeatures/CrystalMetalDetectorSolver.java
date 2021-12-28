@@ -104,7 +104,7 @@ public class CrystalMetalDetectorSolver {
     }
 
     public static void render(float partialTicks) {
-        int beaconRGB = 0xffdf00;
+        int beaconRGB = 0x1fd8f1;
 
         if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows") &&
                 SBInfo.getInstance().location.equals("Mines of Divan")) {
