@@ -1836,7 +1836,8 @@ public class NEUOverlay extends Gui {
 
                 GlStateManager.color(1, 1, 1, 1);
                 GL11.glTranslatef(0, 0, 80);
-                Utils.drawTexturedRect((float) ((width - 224.1) / 2f), (float) ((height + 60.9) / 2f - 114), 31, 86, GL11.GL_NEAREST);
+                float yNumber = (float) (height - 167) / 2f;
+                Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
                 GlStateManager.bindTexture(0);
 
                 Utils.drawItemStack(slot1, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105));
