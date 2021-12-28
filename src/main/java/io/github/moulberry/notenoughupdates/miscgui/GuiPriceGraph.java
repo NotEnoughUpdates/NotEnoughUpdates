@@ -103,8 +103,8 @@ public class GuiPriceGraph extends GuiScreen {
 
         if (itemName != null && itemStack != null) {
             Utils.drawItemStack(itemStack, guiLeft + 16, guiTop + 11);
-            Utils.drawStringScaled(itemName, Minecraft.getMinecraft().fontRendererObj, guiLeft + 35, guiTop + 13, false,
-                    0xffffff, 1.77f);
+            Utils.drawStringScaledMax(itemName, Minecraft.getMinecraft().fontRendererObj, guiLeft + 35, guiTop + 13, false,
+                    0xffffff, 1.77f, 208);
         }
 
         if (!loaded)
@@ -143,14 +143,20 @@ public class GuiPriceGraph extends GuiScreen {
                 prevX = xPos;
                 prevY = yPos;
             }
-            Date firstDate = Date.from(Instant.ofEpochSecond(firstTime));
-            Date lastDate = Date.from(Instant.ofEpochSecond(lastTime));
-            float firstHour = firstDate.getHours() + firstDate.getMinutes() / 60f;
-            float lastHour = lastDate.getHours() + lastDate.getMinutes() / 60f;
-            for (int h = (int) Math.ceil(firstHour); h <= lastHour; h++) {
-                Utils.drawStringCentered(String.valueOf(h), Minecraft.getMinecraft().fontRendererObj,
-                        (float) map(h, firstHour, lastHour, guiLeft + 17, guiLeft + 315), guiTop + 206,
-                        false, 0x8b8b8b);
+            boolean showDays = lastTime - firstTime > 86400;
+            int prevNum = showDays ? Date.from(Instant.ofEpochSecond(firstTime)).getDate() : Date.from(Instant.ofEpochSecond(firstTime)).getHours();
+            long prevXPos = -100;
+            for (long time = firstTime; time <= lastTime; time += showDays ? 3600 : 60) {
+                int num = showDays ? Date.from(Instant.ofEpochSecond(time)).getDate() : Date.from(Instant.ofEpochSecond(time)).getHours();
+                if (num != prevNum) {
+                    int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
+                    if (Math.abs(prevXPos - xPos) > 30) {
+                        Utils.drawStringCentered(String.valueOf(num), Minecraft.getMinecraft().fontRendererObj,
+                                xPos, guiTop + 206, false, 0x8b8b8b);
+                        prevXPos = xPos;
+                    }
+                    prevNum = num;
+                }
             }
             for (int i = 0; i <= 6; i++) {
                 long price = (long) map(i, 0, 6, highestValue, lowestValue);
@@ -161,10 +167,10 @@ public class GuiPriceGraph extends GuiScreen {
                         false, 0x8b8b8b);
             }
             if (customSelecting) {
-                Utils.drawDottedLine(customStart, guiTop + 38, customStart, guiTop + 195, 2, 10, 0xFF8b8b8b);
-                Utils.drawDottedLine(mouseX, guiTop + 38, mouseX, guiTop + 195, 2, 10, 0xFF8b8b8b);
-                Utils.drawDottedLine(customStart, guiTop + 38, mouseX, guiTop + 38, 2, 10, 0xFF8b8b8b);
-                Utils.drawDottedLine(customStart, guiTop + 195, mouseX, guiTop + 195, 2, 10, 0xFF8b8b8b);
+                Utils.drawDottedLine(customStart, guiTop + 36, customStart, guiTop + 197, 2, 10, 0xFFc6c6c6);
+                Utils.drawDottedLine(customEnd, guiTop + 36, customEnd, guiTop + 197, 2, 10, 0xFFc6c6c6);
+                Utils.drawDottedLine(customStart, guiTop + 36, customEnd, guiTop + 36, 2, 10, 0xFFc6c6c6);
+                Utils.drawDottedLine(customStart, guiTop + 197, customEnd, guiTop + 197, 2, 10, 0xFFc6c6c6);
             }
             if (lowestDist != null && !customSelecting) {
                 Long price = dataPoints.get(lowestDistTime);
@@ -220,6 +226,7 @@ public class GuiPriceGraph extends GuiScreen {
         } else if (mouseY >= guiTop + 35 && mouseY <= guiTop + 198 && mouseX >= guiLeft + 17 && mouseX <= guiLeft + 315) {
             customSelecting = true;
             customStart = mouseX;
+            customEnd = mouseX;
         }
     }
 
@@ -239,6 +246,14 @@ public class GuiPriceGraph extends GuiScreen {
                 mode = 4;
                 loadData();
             }
+        }
+    }
+
+    @Override
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+        if (customSelecting) {
+            customEnd = mouseX < guiLeft + 18 ? guiLeft + 18 : Math.min(mouseX, guiLeft + 314);
         }
     }
 
@@ -334,16 +349,19 @@ public class GuiPriceGraph extends GuiScreen {
         long last = data.lastKey();
         TreeMap<Long, Long> trimmed = new TreeMap<>();
         int zones = NotEnoughUpdates.INSTANCE.config.ahGraph.graphZones;
+        Long[] dataArray = data.keySet().toArray(new Long[0]);
+        int prev = 0;
         for (int i = 0; i < zones; i++) {
             long lowest = (long) map(i, 0, zones, first, last);
             long highest = (long) map(i + 1, 0, zones, first, last);
             int amount = 0;
             long sum = 0;
-            for (long key : data.keySet()) {
-                if (key >= lowest && key <= highest) {
+            for (int l = prev; l < dataArray.length; l++) {
+                if (dataArray[l] >= lowest && dataArray[l] <= highest) {
                     amount++;
-                    sum += data.get(key);
-                } else if (key > highest)
+                    sum += data.get(dataArray[l]);
+                    prev = l;
+                } else if (dataArray[l] > highest)
                     break;
             }
             if (amount > 0)

@@ -832,6 +832,16 @@ public class Utils {
         GlStateManager.scale(1 / factor, 1 / factor, 1);
     }
 
+    public static void drawStringScaledMax(String str, FontRenderer fr, float x, float y, boolean shadow, int colour, float factor, int len) {
+        int strLen = fr.getStringWidth(str);
+        float f = len / (float) strLen;
+        factor = Math.min(factor, f);
+
+        GlStateManager.scale(factor, factor, 1);
+        fr.drawString(str, x / factor, y / factor, colour, shadow);
+        GlStateManager.scale(1 / factor, 1 / factor, 1);
+    }
+
     public static void drawStringCenteredScaledMaxWidth(String str, FontRenderer fr, float x, float y, boolean shadow, int len, int colour) {
         int strLen = fr.getStringWidth(str);
         float factor = len / (float) strLen;
