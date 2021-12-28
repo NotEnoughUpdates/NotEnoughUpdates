@@ -4,9 +4,6 @@ import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.*;
 
 public class AHGraph {
-    /**
-     * AH data has a size of about 184 KB/hour.
-     **/
     @Expose
     @ConfigOption(
             name = "Enabled",
