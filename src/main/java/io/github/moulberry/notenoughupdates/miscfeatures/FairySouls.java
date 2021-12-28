@@ -135,60 +135,32 @@ public class FairySouls {
     }
 
     public static void load(File file, Gson gson) {
-        HashMap<String, HashMap<String, Set<Integer>>> foundSoulsList;
-        BufferedReader reader;
+        loadedFoundSouls = new HashMap<>();
+        String fileContent;
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+            fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining(System.lineSeparator()));
         } catch (FileNotFoundException e) {
-            loadedFoundSouls = new HashMap<>();
             return;
         }
-        String fileContent = reader
-                .lines()
-                .collect(Collectors.joining(System.lineSeparator()));
 
-        if (file.exists()) {
+        try {
+            //noinspection UnstableApiUsage
+            Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {
+            }.getType();
+            loadedFoundSouls = gson.fromJson(fileContent, multiProfileSoulsType);
+        } catch (JsonSyntaxException e) {
+            //The file is in the old format, convert it to the new one and set the profile to unknown
             try {
                 //noinspection UnstableApiUsage
-                Type type = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {
+                Type singleProfileSoulsType = new TypeToken<HashMap<String, Set<Integer>>>() {
                 }.getType();
-
-                foundSoulsList = gson.fromJson(fileContent, type);
-                for (Map.Entry<String, HashMap<String, Set<Integer>>> soulsJson : foundSoulsList.entrySet()) {
-                    String profileName = soulsJson.getKey();
-                    for (Map.Entry<String, Set<Integer>> souls : soulsJson.getValue().entrySet()) {
-                        HashMap<String, Set<Integer>> map = new HashMap<>();
-                        map.put(souls.getKey(), souls.getValue());
-                        loadedFoundSouls.put(profileName, map);
-                    }
-                }
-                return;
-            } catch (JsonSyntaxException e) {
-                //The file is in the old format, convert it to the new one and set the profile to unknown
-                try {
-                    //noinspection UnstableApiUsage
-                    Type type = new TypeToken<HashMap<String, Set<Integer>>>() {
-                    }.getType();
-
-                    HashMap<String, Set<Number>> foundSoulsListOldFormat = gson.fromJson(fileContent, type);
-                    HashMap<String, Set<Integer>> map = new HashMap<>();
-                    for (Map.Entry<String, Set<Number>> entry : foundSoulsListOldFormat.entrySet()) {
-                        HashSet<Integer> set = new HashSet<>();
-                        for (Number n : entry.getValue()) {
-                            set.add(n.intValue());
-                        }
-                        map.put(entry.getKey(), set);
-                    }
-                    loadedFoundSouls.put(unknownProfile, map);
-                    return;
-                } catch (JsonSyntaxException e2) {
-                    System.err.println("Can't read file containing collected fairy souls, resetting.");
-                    loadedFoundSouls = new HashMap<>();
-                    return;
-                }
+                loadedFoundSouls.put(unknownProfile, gson.fromJson(fileContent, singleProfileSoulsType));
+            } catch (JsonSyntaxException e2) {
+                System.err.println("Can't read file containing collected fairy souls, resetting.");
             }
         }
-        loadedFoundSouls = new HashMap<>();
     }
 
     public static void save(File file, Gson gson) {

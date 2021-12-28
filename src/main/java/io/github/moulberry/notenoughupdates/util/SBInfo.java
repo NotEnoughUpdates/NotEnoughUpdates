@@ -89,7 +89,7 @@ public class SBInfo {
         unloadedWorld = System.currentTimeMillis();
     }
 
-    private static final Pattern JSON_BRACKET_PATTERN = Pattern.compile("\\{.+}");
+    private static final Pattern JSON_BRACKET_PATTERN = Pattern.compile("^\\{.+}");
 
     public void onSendChatMessage(String msg) {
         if (msg.trim().startsWith("/locraw") || msg.trim().startsWith("/locraw ")) {

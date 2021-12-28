@@ -27,8 +27,8 @@
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates" target="_blank">
-        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=lines&color=informational&logo=GitHub" alt="downloads">
+    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </p>
 

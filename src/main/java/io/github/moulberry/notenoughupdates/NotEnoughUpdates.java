@@ -44,10 +44,10 @@ import java.util.Set;
 @Mod(modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true)
 public class NotEnoughUpdates {
     public static final String MODID = "notenoughupdates";
-    public static final String VERSION = "2.0.0-REL";
-    public static final String PRE_VERSION = "30.2";
-    public static final int VERSION_ID = 20000;
-    public static final int PRE_VERSION_ID = 3002;
+    public static final String VERSION = "2.1.0-REL";
+    public static final String PRE_VERSION = "0.0";
+    public static final int VERSION_ID = 20100;
+    public static final int PRE_VERSION_ID = 0;
 
     public static NotEnoughUpdates INSTANCE = null;
 

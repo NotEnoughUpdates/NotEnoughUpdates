@@ -152,8 +152,8 @@ public class DungeonWin {
         long currentTime = System.currentTimeMillis();
         String unformatted = Utils.cleanColour(e.message.getUnformattedText());
 
-        //Added two more Resets, cant do Reset+Reset+Reset cause idk?
-        //hypixel please dont randomly add more
+        //Added two more Resets, can't do Reset+Reset+Reset cause idk?
+        //hypixel please don't randomly add more
 
         if (e.message.getFormattedText().startsWith(EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "   ")) {
             if (currentTime - lastDungeonFinish > 30000) {

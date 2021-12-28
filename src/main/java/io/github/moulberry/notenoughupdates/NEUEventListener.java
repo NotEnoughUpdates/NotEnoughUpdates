@@ -131,7 +131,7 @@ public class NEUEventListener {
                     neu.displayLinks(o);
 
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
-                } else if (shouldPreUpdate && NotEnoughUpdates.VERSION.equalsIgnoreCase("2.0.0-REL")) {
+                } else if (shouldPreUpdate && NotEnoughUpdates.VERSION_ID == o.get("version").getAsInt()) {
                     String pre_update_msg = o.get("pre_update_msg").getAsString();
 
                     int first_len = -1;

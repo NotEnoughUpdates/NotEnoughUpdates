@@ -3910,7 +3910,7 @@ public class GuiProfileViewer extends GuiScreen {
     private String getTimeSinceString(JsonObject profileInfo, String path) {
         JsonElement lastSaveElement = Utils.getElement(profileInfo, path);
 
-        if (lastSaveElement.isJsonPrimitive()) {
+        if (lastSaveElement != null && lastSaveElement.isJsonPrimitive()) {
 
             Instant lastSave = Instant.ofEpochMilli(lastSaveElement.getAsLong());
             LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
