@@ -35,6 +35,24 @@ public class AHGraph {
 
     @Expose
     @ConfigOption(
+            name = "Secondary Graph Colour",
+            desc = "Set a custom colour for the second graph line."
+    )
+    @ConfigEditorColour
+    public String graphColor2 = "0:255:255:255:0";
+
+    @Expose
+    @ConfigOption(
+            name = "Default Time",
+            desc = "Change the default time period for the graph."
+    )
+    @ConfigEditorDropdown(
+            values = {"1 Hour", "1 Day", "1 Week", "All Time"}
+    )
+    public int defaultMode = 1;
+
+    @Expose
+    @ConfigOption(
             name = "Data Retention",
             desc = "Change the time (in days) that data is kept for.\nLonger retention require more storage."
     )

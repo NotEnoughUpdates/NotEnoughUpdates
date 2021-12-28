@@ -36,11 +36,11 @@ public class GuiPriceGraph extends GuiScreen {
     private final ResourceLocation TEXTURE;
     private static final int X_SIZE = 364;
     private static final int Y_SIZE = 215;
-    private TreeMap<Long, Long> dataPoints;
-    private long highestValue;
+    private Data dataPoints;
+    private float highestValue;
     private long firstTime;
     private long lastTime;
-    private Long lowestValue = null;
+    private Float lowestValue = null;
     private String itemName;
     private final String itemId;
     private int guiLeft;
@@ -54,7 +54,7 @@ public class GuiPriceGraph extends GuiScreen {
      * 3 = all
      * 4 = custom
      **/
-    private int mode = 1;
+    private int mode = NotEnoughUpdates.INSTANCE.config.ahGraph.defaultMode;
     private long customStart = 0;
     private long customEnd = 0;
     private boolean customSelecting = false;
@@ -110,38 +110,48 @@ public class GuiPriceGraph extends GuiScreen {
         if (!loaded)
             Utils.drawStringCentered("Loading...", Minecraft.getMinecraft().fontRendererObj,
                     guiLeft + 166, guiTop + 116, false, 0xffffff00);
-        else if (dataPoints == null || dataPoints.size() <= 1)
+        else if (dataPoints == null || dataPoints.get() == null || dataPoints.get().size() <= 1)
             Utils.drawStringCentered("No data found.", Minecraft.getMinecraft().fontRendererObj,
                     guiLeft + 166, guiTop + 116, false, 0xffff0000);
         else {
 
             int graphColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor);
-            Utils.drawGradientRect(0, guiLeft + 17, guiTop + 35, guiLeft + 315, guiTop + 198,
-                    changeAlpha(graphColor, 120), changeAlpha(graphColor, 10));
-            Integer prevX = null;
-            Integer prevY = null;
+            int graphColor2 = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor2);
             Integer lowestDist = null;
             Long lowestDistTime = null;
-            for (Long time : dataPoints.keySet()) {
-                Long price = dataPoints.get(time);
-                int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
-                int yPos = (int) map(price, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198);
-                if (prevX != null) {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-                    GlStateManager.color(1, 1, 1, 1);
-                    Utils.drawTexturedQuad(prevX, prevY, xPos, yPos, xPos, guiTop + 35, prevX, guiTop + 35, 18 / 512f, 19 / 512f,
-                            36 / 512f, 37 / 512f, GL11.GL_NEAREST);
-                    Utils.drawLine(prevX, prevY + 0.5f, xPos, yPos + 0.5f, 2, graphColor);
-                }
-                if (mouseX >= guiLeft + 17 && mouseX <= guiLeft + 315 && mouseY >= guiTop + 35 && mouseY <= guiTop + 198) {
-                    int dist = Math.abs(mouseX - xPos);
-                    if (lowestDist == null || dist < lowestDist) {
-                        lowestDist = dist;
-                        lowestDistTime = time;
+            HashMap<Integer, Integer> secondLineData = new HashMap<>();
+            for (int i = (dataPoints.isBz() ? 1 : 0); i >= 0; i--) {
+                Utils.drawGradientRect(0, guiLeft + 17, guiTop + 35, guiLeft + 315, guiTop + 198,
+                        changeAlpha(i == 0 ? graphColor : graphColor2, 120), changeAlpha(i == 0 ? graphColor : graphColor2, 10));
+                Integer prevX = null;
+                Integer prevY = null;
+                for (Long time : dataPoints.get().keySet()) {
+                    float price = dataPoints.isBz() ? i == 0 ? dataPoints.bz.get(time).b : dataPoints.bz.get(time).s : dataPoints.ah.get(time);
+                    int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
+                    int yPos = (int) map(price, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198);
+                    if (prevX != null) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+                        GlStateManager.color(1, 1, 1, 1);
+                        Utils.drawTexturedQuad(prevX, prevY, xPos, yPos, xPos, guiTop + 35, prevX, guiTop + 35, 18 / 512f, 19 / 512f,
+                                36 / 512f, 37 / 512f, GL11.GL_NEAREST);
+                        if (i == 0) {
+                            Utils.drawLine(prevX, prevY + 0.5f, xPos, yPos + 0.5f, 2, graphColor);
+                            if (dataPoints.isBz())
+                                Utils.drawLine(prevX, secondLineData.get(prevX) + 0.5f, xPos, secondLineData.get(xPos) + 0.5f, 2, graphColor2);
+                        }
                     }
+                    if (i == 1)
+                        secondLineData.put(xPos, yPos);
+                    if (mouseX >= guiLeft + 17 && mouseX <= guiLeft + 315 && mouseY >= guiTop + 35 && mouseY <= guiTop + 198) {
+                        int dist = Math.abs(mouseX - xPos);
+                        if (lowestDist == null || dist < lowestDist) {
+                            lowestDist = dist;
+                            lowestDistTime = time;
+                        }
+                    }
+                    prevX = xPos;
+                    prevY = yPos;
                 }
-                prevX = xPos;
-                prevY = yPos;
             }
             boolean showDays = lastTime - firstTime > 86400;
             int prevNum = showDays ? Date.from(Instant.ofEpochSecond(firstTime)).getDate() : Date.from(Instant.ofEpochSecond(firstTime)).getHours();
@@ -173,24 +183,37 @@ public class GuiPriceGraph extends GuiScreen {
                 Utils.drawDottedLine(customStart, guiTop + 197, customEnd, guiTop + 197, 2, 10, 0xFFc6c6c6);
             }
             if (lowestDist != null && !customSelecting) {
-                Long price = dataPoints.get(lowestDistTime);
+                float price = dataPoints.isBz() ? dataPoints.bz.get(lowestDistTime).b : dataPoints.ah.get(lowestDistTime);
+                Float price2 = dataPoints.isBz() ? dataPoints.bz.get(lowestDistTime).s : null;
                 int xPos = (int) map(lowestDistTime, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
                 int yPos = (int) map(price, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198);
+                int yPos2 = price2 != null ? (int) map(price2, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198) : 0;
 
                 Utils.drawLine(xPos, guiTop + 35, xPos, guiTop + 198, 2, 0x4D8b8b8b);
                 Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
                 GlStateManager.color(1, 1, 1, 1);
                 Utils.drawTexturedRect(xPos - 2.5f, yPos - 2.5f, 5, 5,
                         0, 5 / 512f, 247 / 512f, 252 / 512f, GL11.GL_NEAREST);
+                if (price2 != null) {
+                    Utils.drawTexturedRect(xPos - 2.5f, yPos2 - 2.5f, 5, 5,
+                            0, 5 / 512f, 247 / 512f, 252 / 512f, GL11.GL_NEAREST);
+                }
 
                 Date date = Date.from(Instant.ofEpochSecond(lowestDistTime));
                 SimpleDateFormat displayFormat = new SimpleDateFormat("'§b'd MMMMM yyyy '§eat§b' HH:mm");
                 NumberFormat nf = NumberFormat.getInstance();
-                drawHoveringText(new ArrayList<String>() {{
-                    add(displayFormat.format(date));
-                    add(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "Lowest BIN: " +
+                ArrayList<String> text = new ArrayList<>();
+                text.add(displayFormat.format(date));
+                if (dataPoints.isBz()) {
+                    text.add(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "Bazaar Insta-Buy: " +
                             EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + nf.format(price));
-                }}, xPos, yPos);
+                    text.add(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "Bazaar Insta-Sell: " +
+                            EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + nf.format(price2));
+                } else {
+                    text.add(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "Lowest BIN: " +
+                            EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + nf.format(price));
+                }
+                drawHoveringText(text, xPos, yPos);
             }
         }
 
@@ -267,38 +290,50 @@ public class GuiPriceGraph extends GuiScreen {
                 return;
             }
             File[] files = dir.listFiles();
-            HashMap<Long, Long> data = new HashMap<>();
-            assert files != null;
+            Data data = new Data();
+            if (files == null) return;
             for (File file : files) {
                 if (!file.getName().endsWith(".gz")) continue;
-                HashMap<String, HashMap<Long, Long>> data2 = load(file);
+                HashMap<String, Data> data2 = load(file);
                 if (data2 == null || !data2.containsKey(itemId)) continue;
-                data.putAll(data2.get(itemId));
+                if (data2.get(itemId).isBz()) {
+                    if (data.bz == null) data.bz = data2.get(itemId).bz;
+                    else data.bz.putAll(data2.get(itemId).bz);
+                } else if (data.ah == null) data.ah = data2.get(itemId).ah;
+                else data.ah.putAll(data2.get(itemId).ah);
             }
-            if (!data.isEmpty()) {
+            if (!data.get().isEmpty()) {
                 if (mode < 3)
-                    data = new HashMap<>(data.entrySet().stream()
+                    data = new Data(new TreeMap<>(data.get().entrySet().stream()
                             .filter(e -> e.getKey() > System.currentTimeMillis() / 1000 - (mode == 0 ? 3600 : mode == 1 ? 86400 : 604800))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))), data.isBz());
                 else if (mode == 4)
-                    data = new HashMap<>(data.entrySet().stream()
+                    data = new Data(new TreeMap<>(data.get().entrySet().stream()
                             .filter(e -> e.getKey() >= customStart && e.getKey() <= customEnd)
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-                if (data.isEmpty()) {
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))), data.isBz());
+                if (data.get() == null || data.get().isEmpty()) {
                     loaded = true;
                     return;
                 }
-                dataPoints = trimData(new TreeMap<>(data));
-                firstTime = dataPoints.firstKey();
-                lastTime = dataPoints.lastKey();
+                dataPoints = trimData(data);
+                firstTime = dataPoints.get().firstKey();
+                lastTime = dataPoints.get().lastKey();
                 highestValue = 0;
                 lowestValue = null;
-                for (long value : dataPoints.values()) {
-                    if (value > highestValue) {
-                        highestValue = value;
+                for (long key : dataPoints.get().keySet()) {
+                    float value1 = dataPoints.isBz() ? dataPoints.bz.get(key).b : dataPoints.ah.get(key);
+                    Float value2 = dataPoints.isBz() ? dataPoints.bz.get(key).s : null;
+                    if (value1 > highestValue) {
+                        highestValue = value1;
                     }
-                    if (lowestValue == null || value < lowestValue) {
-                        lowestValue = value;
+                    if (value2 != null && value2 > highestValue) {
+                        highestValue = value2;
+                    }
+                    if (lowestValue == null || value1 < lowestValue) {
+                        lowestValue = value1;
+                    }
+                    if (value2 != null && value2 < lowestValue) {
+                        lowestValue = value2;
                     }
                 }
             }
@@ -306,7 +341,7 @@ public class GuiPriceGraph extends GuiScreen {
         }).start();
     }
 
-    public static void addToCache(JsonObject items) {
+    public static void addToCache(JsonObject items, boolean bazaar) {
         if (!NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) return;
         try {
             File dir = new File("config/notenoughupdates/prices");
@@ -321,17 +356,25 @@ public class GuiPriceGraph extends GuiScreen {
             Date date = new Date();
             Long epochSecond = date.toInstant().getEpochSecond();
             File file = new File(dir, "prices_" + format.format(date) + ".gz");
-            HashMap<String, HashMap<Long, Long>> prices = new HashMap<>();
+            HashMap<String, Data> prices = new HashMap<>();
             if (file.exists())
                 prices = load(file);
             if (prices == null) return;
             for (Map.Entry<String, JsonElement> item : items.entrySet()) {
                 if (prices.containsKey(item.getKey())) {
-                    prices.get(item.getKey()).put(epochSecond, item.getValue().getAsLong());
+                    if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has("curr_sell"))
+                        prices.get(item.getKey()).bz.put(epochSecond, new BzData(item.getValue().getAsJsonObject().get("curr_buy").getAsFloat(),
+                                item.getValue().getAsJsonObject().get("curr_sell").getAsFloat()));
+                    else if (!bazaar)
+                        prices.get(item.getKey()).ah.put(epochSecond, item.getValue().getAsInt());
                 } else {
-                    HashMap<Long, Long> mapData = new HashMap<>();
-                    mapData.put(epochSecond, item.getValue().getAsLong());
-                    prices.put(item.getKey(), mapData);
+                    TreeMap<Long, Object> mapData = new TreeMap<>();
+                    if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has("curr_sell"))
+                        mapData.put(epochSecond, new BzData(item.getValue().getAsJsonObject().get("curr_buy").getAsFloat(),
+                                item.getValue().getAsJsonObject().get("curr_sell").getAsFloat()));
+                    else if (!bazaar)
+                        mapData.put(epochSecond, item.getValue().getAsLong());
+                    prices.put(item.getKey(), new Data(mapData, bazaar));
                 }
             }
             //noinspection ResultOfMethodCallIgnored
@@ -344,35 +387,45 @@ public class GuiPriceGraph extends GuiScreen {
         }
     }
 
-    private TreeMap<Long, Long> trimData(TreeMap<Long, Long> data) {
-        long first = data.firstKey();
-        long last = data.lastKey();
-        TreeMap<Long, Long> trimmed = new TreeMap<>();
+    private Data trimData(Data data) {
+        long first = data.get().firstKey();
+        long last = data.get().lastKey();
+        Data trimmed = new Data();
+        if (data.isBz())
+            trimmed.bz = new TreeMap<>();
+        else
+            trimmed.ah = new TreeMap<>();
         int zones = NotEnoughUpdates.INSTANCE.config.ahGraph.graphZones;
-        Long[] dataArray = data.keySet().toArray(new Long[0]);
+        Long[] dataArray = !data.isBz() ? data.ah.keySet().toArray(new Long[0]) : data.bz.keySet().toArray(new Long[0]);
         int prev = 0;
         for (int i = 0; i < zones; i++) {
             long lowest = (long) map(i, 0, zones, first, last);
             long highest = (long) map(i + 1, 0, zones, first, last);
             int amount = 0;
-            long sum = 0;
+            double sumBuy = 0;
+            double sumSell = 0;
             for (int l = prev; l < dataArray.length; l++) {
                 if (dataArray[l] >= lowest && dataArray[l] <= highest) {
                     amount++;
-                    sum += data.get(dataArray[l]);
+                    sumBuy += data.isBz() ? data.bz.get(dataArray[l]).b : data.ah.get(dataArray[l]);
+                    if (data.isBz()) sumSell += data.bz.get(dataArray[l]).s;
                     prev = l + 1;
                 } else if (dataArray[l] > highest)
                     break;
             }
-            if (amount > 0)
-                trimmed.put((lowest + highest) / 2, sum / amount);
+            if (amount > 0) {
+                if (data.isBz())
+                    trimmed.bz.put(lowest, new BzData((float) (sumBuy / amount), (float) (sumSell / amount)));
+                else
+                    trimmed.ah.put(lowest, (int) (sumBuy / amount));
+            }
         }
         return trimmed;
     }
 
 
-    private static HashMap<String, HashMap<Long, Long>> load(File file) {
-        Type type = new TypeToken<HashMap<String, HashMap<Long, Long>>>() {
+    private static HashMap<String, Data> load(File file) {
+        Type type = new TypeToken<HashMap<String, Data>>() {
         }.getType();
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file)), StandardCharsets.UTF_8))) {
@@ -402,5 +455,38 @@ public class GuiPriceGraph extends GuiScreen {
     private int changeAlpha(int origColor, int alpha) {
         origColor = origColor & 0x00ffffff; //drop the previous alpha value
         return (alpha << 24) | origColor; //add the one the user inputted
+    }
+}
+
+class Data {
+    public TreeMap<Long, Integer> ah = null;
+    public TreeMap<Long, BzData> bz = null;
+
+    public Data() {
+    }
+
+    public Data(TreeMap<Long, ?> map, boolean bz) {
+        if (bz)
+            this.bz = (TreeMap<Long, BzData>) map;
+        else
+            this.ah = (TreeMap<Long, Integer>) map;
+    }
+
+    public TreeMap<Long, ?> get() {
+        return !isBz() ? ah : bz;
+    }
+
+    public boolean isBz() {
+        return bz != null && !bz.isEmpty();
+    }
+}
+
+class BzData {
+    float b;
+    float s;
+
+    public BzData(float b, float s) {
+        this.b = b;
+        this.s = s;
     }
 }

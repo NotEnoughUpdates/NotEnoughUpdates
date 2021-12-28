@@ -750,7 +750,7 @@ public class Commands {
             }*/
             if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
                 if (args.length == 1) {
-                    NotEnoughUpdates.INSTANCE.manager.auctionManager.updateLowestBin();
+                    NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
                 } else {
                     NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
                 }

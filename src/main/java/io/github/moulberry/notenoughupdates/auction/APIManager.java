@@ -262,7 +262,7 @@ public class APIManager {
                 ItemPriceInformation.updateAuctionableItemsList();
                 didFirstUpdate = true;
             }
-            GuiPriceGraph.addToCache(lowestBins);
+            GuiPriceGraph.addToCache(lowestBins, false);
         }, () -> {});
     }
 
@@ -677,6 +677,7 @@ public class APIManager {
                     bazaarJson.add(entry.getKey().replace(":", "-"), productInfo);
                 }
             }
+            GuiPriceGraph.addToCache(bazaarJson, true);
         });
     }
 
