@@ -351,22 +351,23 @@ public class CrystalHollowOverlay extends TextOverlay {
 
     private static Map<String, ItemStack> crystallHollowsIcons;
     private static void setupCrystallHollowsIcons() {
-        crystallHollowsIcons = new HashMap<String, ItemStack>(){};
-        crystallHollowsIcons.put("Scavenged Lapis Sword", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_LAPIS_SWORD")));
-        crystallHollowsIcons.put("Scavenged Golden Hammer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_GOLD_HAMMER")));
-        crystallHollowsIcons.put("Scavenged Diamond Axe", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_DIAMOND_AXE")));
-        crystallHollowsIcons.put("Scavenged Emerald Hammer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_EMERALD_HAMMER")));
-        crystallHollowsIcons.put("Electron Transmitter", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ELECTRON_TRANSMITTER")));
-        crystallHollowsIcons.put("FTX 3070", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("FTX_3070")));
-        crystallHollowsIcons.put("Robotron Reflector", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ROBOTRON_REFLECTOR")));
-        crystallHollowsIcons.put("Superlite Motor", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SUPERLITE_MOTOR")));
-        crystallHollowsIcons.put("Control Switch", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("CONTROL_SWITCH")));
-        crystallHollowsIcons.put("Synthetic Heart", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SYNTHETIC_HEART")));
-        crystallHollowsIcons.put("Amber", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_AMBER_GEM")));
-        crystallHollowsIcons.put("Sapphire", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_SAPPHIRE_GEM")));
-        crystallHollowsIcons.put("Jade", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_JADE_GEM")));
-        crystallHollowsIcons.put("Amethyst", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_AMETHYST_GEM")));
-        crystallHollowsIcons.put("Topaz", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_TOPAZ_GEM")));
+        crystallHollowsIcons = new HashMap<String, ItemStack>() {{
+            put("Scavenged Lapis Sword", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_LAPIS_SWORD")));
+            put("Scavenged Golden Hammer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_GOLD_HAMMER")));
+            put("Scavenged Diamond Axe", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_DIAMOND_AXE")));
+            put("Scavenged Emerald Hammer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DWARVEN_EMERALD_HAMMER")));
+            put("Electron Transmitter", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ELECTRON_TRANSMITTER")));
+            put("FTX 3070", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("FTX_3070")));
+            put("Robotron Reflector", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ROBOTRON_REFLECTOR")));
+            put("Superlite Motor", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SUPERLITE_MOTOR")));
+            put("Control Switch", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("CONTROL_SWITCH")));
+            put("Synthetic Heart", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SYNTHETIC_HEART")));
+            put("Amber", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_AMBER_GEM")));
+            put("Sapphire", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_SAPPHIRE_GEM")));
+            put("Jade", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_JADE_GEM")));
+            put("Amethyst", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_AMETHYST_GEM")));
+            put("Topaz", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_TOPAZ_GEM")));
+        }};
     }
 
     @Override

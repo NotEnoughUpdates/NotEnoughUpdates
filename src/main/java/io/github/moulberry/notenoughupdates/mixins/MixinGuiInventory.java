@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiInventory.class)
 public class MixinGuiInventory {
-
     @Inject(method = "drawGuiContainerForegroundLayer", at = @At("HEAD"), cancellable = true)
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY, CallbackInfo ci) {
         if (NotEnoughUpdates.INSTANCE.config.inventoryButtons.hideCrafting ||
@@ -18,5 +17,4 @@ public class MixinGuiInventory {
             ci.cancel();
         }
     }
-
 }

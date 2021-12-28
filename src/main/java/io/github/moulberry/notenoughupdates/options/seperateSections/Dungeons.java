@@ -10,6 +10,7 @@ public class Dungeons {
     )
     @ConfigEditorAccordion(id = 0)
     public boolean dungeonMapAccordion = false;
+
     @Expose
     @ConfigOption(
             name = "\u00A7cWarning",

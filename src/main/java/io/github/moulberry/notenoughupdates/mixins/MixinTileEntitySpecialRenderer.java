@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({TileEntitySpecialRenderer.class})
 public abstract class MixinTileEntitySpecialRenderer {
-
     @Inject(method = "bindTexture", at = @At("HEAD"), cancellable = true)
     public void bindTexture(ResourceLocation location, CallbackInfo info) {
         if (DungeonBlocks.isOverriding()) {

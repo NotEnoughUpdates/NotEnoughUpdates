@@ -9,7 +9,6 @@ import net.minecraft.client.gui.Gui;
 import org.lwjgl.input.Mouse;
 
 public class GuiOptionEditorDropdown extends GuiOptionEditor {
-
     private final String[] values;
     private final boolean useOrdinal;
     private int selected;

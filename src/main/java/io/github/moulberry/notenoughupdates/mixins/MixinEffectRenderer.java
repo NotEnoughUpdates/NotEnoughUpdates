@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EffectRenderer.class)
 public class MixinEffectRenderer {
-
     @Redirect(method = "renderParticles", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/GlStateManager;enableBlend()V")
@@ -26,5 +25,4 @@ public class MixinEffectRenderer {
             EntityFX.interpPosZ = currentPosition.z;
         }
     }
-
 }

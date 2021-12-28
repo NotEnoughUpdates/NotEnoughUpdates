@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.function.Consumer;
 
 public class GuiElementBoolean extends GuiElement {
-
     public int x;
     public int y;
     private boolean value;

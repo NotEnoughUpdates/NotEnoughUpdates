@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SlayerOverlay {
-
     @Expose
     @ConfigOption(
             name = "\u00A7cWarning",

@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class GuiElementSlider extends GuiElement {
-
     public int x;
     public int y;
     public int width;
@@ -119,5 +118,4 @@ public class GuiElementSlider extends GuiElement {
     public boolean keyboardInput() {
         return false;
     }
-
 }

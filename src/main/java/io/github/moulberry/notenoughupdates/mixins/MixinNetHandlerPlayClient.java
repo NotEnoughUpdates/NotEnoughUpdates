@@ -93,5 +93,4 @@ public class MixinNetHandlerPlayClient {
         SBInfo.getInstance().header = packetIn.getHeader().getFormattedText().length() == 0 ? null : packetIn.getHeader();
         SBInfo.getInstance().footer = packetIn.getFooter().getFormattedText().length() == 0 ? null : packetIn.getFooter();
     }
-
 }

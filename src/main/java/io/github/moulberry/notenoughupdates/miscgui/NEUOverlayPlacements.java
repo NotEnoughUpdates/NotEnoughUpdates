@@ -18,7 +18,6 @@ import java.awt.*;
 import java.io.IOException;
 
 public class NEUOverlayPlacements extends GuiScreen {
-
     private int clickedX;
     private int clickedY;
     private int clickedAnchorX;

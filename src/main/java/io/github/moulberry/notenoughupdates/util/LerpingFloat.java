@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.util;
 
 public class LerpingFloat {
-
     private int timeSpent;
     private long lastMillis;
     private final int timeToReachTarget;

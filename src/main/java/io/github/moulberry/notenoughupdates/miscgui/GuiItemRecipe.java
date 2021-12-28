@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class GuiItemRecipe extends GuiScreen {
-
     private static final ResourceLocation resourcePacksTexture = new ResourceLocation("textures/gui/resource_packs.png");
     private static final ResourceLocation craftingTableGuiTextures = new ResourceLocation("textures/gui/container/crafting_table.png");
 
@@ -233,5 +232,4 @@ public class GuiItemRecipe extends GuiScreen {
             }
         }
     }
-
 }

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 public class NullzeeSphere {
-
     public static boolean enabled = false;
     public static float size = 20;
     public static BlockPos centerPos = new BlockPos(0, 0, 0);
@@ -230,5 +229,4 @@ public class NullzeeSphere {
         worldrenderer.pos(p_181561_0_.minX, p_181561_0_.maxY, p_181561_0_.maxZ)
                 .color(c.getRed() / 255f * 0.9f, c.getGreen() / 255f * 0.9f, c.getBlue() / 255f * 0.9f, c.getAlpha() / 255f * alpha).endVertex();
     }
-
 }

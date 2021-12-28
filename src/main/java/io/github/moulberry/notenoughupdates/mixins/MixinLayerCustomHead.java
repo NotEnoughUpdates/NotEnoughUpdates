@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LayerCustomHead.class)
 public class MixinLayerCustomHead {
-
     private static String customGlintColour = null;
 
     @Inject(method = "doRenderLayer", at = @At("HEAD"))

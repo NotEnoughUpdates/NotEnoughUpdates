@@ -12,7 +12,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class SunTzu {
-
     private static boolean enabled = false;
     private static int quoteNum = 0;
 
@@ -88,5 +87,4 @@ public class SunTzu {
     public void switchWorld(WorldEvent.Load event) {
         randomizeQuote();
     }
-
 }

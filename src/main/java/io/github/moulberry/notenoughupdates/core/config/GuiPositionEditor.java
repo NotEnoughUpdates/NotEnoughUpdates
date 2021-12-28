@@ -8,7 +8,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import java.io.IOException;
 
 public class GuiPositionEditor extends GuiScreen {
-
     public PositionNew position = new PositionNew();
 
     public int clickedX;

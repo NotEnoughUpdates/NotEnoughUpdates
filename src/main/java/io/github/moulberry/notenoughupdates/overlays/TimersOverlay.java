@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextOverlay {
-
     private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile("\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([0-9]*?:?[0-9]*?:?[0-9]*)\u00a7r");
 
     public TimersOverlay(Position position, Supplier<List<String>> dummyStrings, Supplier<TextOverlayStyle> styleSupplier) {
@@ -479,8 +478,6 @@ public class TimersOverlay extends TextOverlay {
         SOON,
         KINDASOON,
         ALWAYS,
-
     }
-
 }
 

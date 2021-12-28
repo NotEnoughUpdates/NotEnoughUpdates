@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import java.util.List;
 
 public class AuctionSortModeWarning {
-
     private static final AuctionSortModeWarning INSTANCE = new AuctionSortModeWarning();
 
     public static AuctionSortModeWarning getInstance() {
@@ -71,5 +70,4 @@ public class AuctionSortModeWarning {
             }
         }
     }
-
 }

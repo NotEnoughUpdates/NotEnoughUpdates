@@ -35,7 +35,6 @@ import java.util.*;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class GuiDungeonMapEditor extends GuiScreen {
-
     public static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates:dungeon_map/editor/background.png");
     public static final ResourceLocation BUTTON = new ResourceLocation("notenoughupdates:dungeon_map/editor/button.png");
     private static final DungeonMap demoMap = new DungeonMap();
@@ -508,8 +507,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
                             NotEnoughUpdates.INSTANCE.colourMap, decorations, 0,
                             players, false, 0);
                     Utils.pushGuiScale(-1);
-                }, () -> {
-                }, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor()
+                }, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor()
                 ).withScale(2));
                 return;
             }
@@ -753,5 +751,4 @@ public class GuiDungeonMapEditor extends GuiScreen {
         Utils.drawTexturedRect(x, y, blurWidth, blurHeight, uMin, uMax, vMin, vMax);
         blurOutputVert.unbindFramebufferTexture();
     }
-
 }

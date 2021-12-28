@@ -9,12 +9,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LoadingScreenRenderer.class)
 public class MixinLoadingScreenRenderer {
-
     @Inject(method = "setLoadingProgress", at = @At(value = "HEAD"), cancellable = true)
     public void setLoadingProgress(int progress, CallbackInfo ci) {
         if (progress < 0 && !FancyPortals.shouldRenderLoadingScreen()) {
             ci.cancel();
         }
     }
-
 }

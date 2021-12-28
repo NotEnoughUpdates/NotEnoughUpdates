@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 public class NEUConfig extends Config {
-
     private void editOverlay(String activeConfig, TextOverlay overlay, Position position) {
         Vector2f size = overlay.getDummySize();
         int width = (int) size.x;
@@ -58,8 +57,8 @@ public class NEUConfig extends Config {
             case 2:
                 Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
                         NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition,
-                        NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12, () -> {
-                }, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor)));
+                        NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12, () -> {}, 
+                        () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor)));
                 return;
             case 3:
                 editOverlay(activeConfigCategory, OverlayManager.farmingOverlay, skillOverlays.farmingPosition);
@@ -371,17 +370,17 @@ public class NEUConfig extends Config {
     }
 
     private static ArrayList<String> createDefaultQuickCommands() {
-        ArrayList<String> arr = new ArrayList<>();
-        arr.add("/warp home:Warp Home:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzljODg4MWU0MjkxNWE5ZDI5YmI2MWExNmZiMjZkMDU5OTEzMjA0ZDI2NWRmNWI0MzliM2Q3OTJhY2Q1NiJ9fX0=");
-        arr.add("/warp hub:Warp Hub:eyJ0aW1lc3RhbXAiOjE1NTkyMTU0MTY5MDksInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q3Y2M2Njg3NDIzZDA1NzBkNTU2YWM1M2UwNjc2Y2I1NjNiYmRkOTcxN2NkODI2OWJkZWJlZDZmNmQ0ZTdiZjgifX19");
-        arr.add("/warp dungeon_hub:Dungeon Hub:eyJ0aW1lc3RhbXAiOjE1Nzg0MDk0MTMxNjksInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzliNTY4OTViOTY1OTg5NmFkNjQ3ZjU4NTk5MjM4YWY1MzJkNDZkYjljMWIwMzg5YjhiYmViNzA5OTlkYWIzM2QiLCJtZXRhZGF0YSI6eyJtb2RlbCI6InNsaW0ifX19fQ==");
-        arr.add("/craft:Crafting Table:CRAFTING_TABLE");
-        arr.add("/storage:Storage:CHEST");
-        arr.add("/wardrobe:Wardrobe:LEATHER_CHESTPLATE");
-        arr.add("/pets:Pets:BONE");
-        arr.add("neuah:NEU Auction House:GOLD_BLOCK");
-        arr.add("/bz:Bazaar:GOLD_BARDING");
-        return arr;
+        return new ArrayList<String>() {{
+            add("/warp home:Warp Home:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzljODg4MWU0MjkxNWE5ZDI5YmI2MWExNmZiMjZkMDU5OTEzMjA0ZDI2NWRmNWI0MzliM2Q3OTJhY2Q1NiJ9fX0=");
+            add("/warp hub:Warp Hub:eyJ0aW1lc3RhbXAiOjE1NTkyMTU0MTY5MDksInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q3Y2M2Njg3NDIzZDA1NzBkNTU2YWM1M2UwNjc2Y2I1NjNiYmRkOTcxN2NkODI2OWJkZWJlZDZmNmQ0ZTdiZjgifX19");
+            add("/warp dungeon_hub:Dungeon Hub:eyJ0aW1lc3RhbXAiOjE1Nzg0MDk0MTMxNjksInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzliNTY4OTViOTY1OTg5NmFkNjQ3ZjU4NTk5MjM4YWY1MzJkNDZkYjljMWIwMzg5YjhiYmViNzA5OTlkYWIzM2QiLCJtZXRhZGF0YSI6eyJtb2RlbCI6InNsaW0ifX19fQ==");
+            add("/craft:Crafting Table:CRAFTING_TABLE");
+            add("/storage:Storage:CHEST");
+            add("/wardrobe:Wardrobe:LEATHER_CHESTPLATE");
+            add("/pets:Pets:BONE");
+            add("neuah:NEU Auction House:GOLD_BLOCK");
+            add("/bz:Bazaar:GOLD_BARDING");
+        }};
     }
 
     public HiddenProfileSpecific getProfileSpecific() {
@@ -460,64 +459,64 @@ public class NEUConfig extends Config {
     }
 
     public static List<InventoryButton> createDefaultInventoryButtons() {
-        List<InventoryButton> buttons = new ArrayList<>();
-        //Below crafting
-        buttons.add(new InventoryButton(87, 63, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 21, 63, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 21 * 2, 63, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 21 * 3, 63, null, true, false, false, 0, ""));
+        return new ArrayList<InventoryButton>() {{
+            //Below crafting
+            add(new InventoryButton(87, 63, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 21, 63, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 21 * 2, 63, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 21 * 3, 63, null, true, false, false, 0, ""));
 
-        //Above crafting
-        buttons.add(new InventoryButton(87, 5, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 21, 5, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 21 * 2, 5, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 21 * 3, 5, null, true, false, false, 0, ""));
+            //Above crafting
+            add(new InventoryButton(87, 5, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 21, 5, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 21 * 2, 5, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 21 * 3, 5, null, true, false, false, 0, ""));
 
-        //Crafting square
-        buttons.add(new InventoryButton(87, 25, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 18, 25, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87, 25 + 18, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(87 + 18, 25 + 18, null, true, false, false, 0, ""));
+            //Crafting square
+            add(new InventoryButton(87, 25, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 18, 25, null, true, false, false, 0, ""));
+            add(new InventoryButton(87, 25 + 18, null, true, false, false, 0, ""));
+            add(new InventoryButton(87 + 18, 25 + 18, null, true, false, false, 0, ""));
 
-        //Crafting result
-        buttons.add(new InventoryButton(143, 35, null, true, false, false, 0, ""));
+            //Crafting result
+            add(new InventoryButton(143, 35, null, true, false, false, 0, ""));
 
-        //Player menu area
-        buttons.add(new InventoryButton(60, 8, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(60, 60, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(26, 8, null, true, false, false, 0, ""));
-        buttons.add(new InventoryButton(26, 60, null, true, false, false, 0, ""));
+            //Player menu area
+            add(new InventoryButton(60, 8, null, true, false, false, 0, ""));
+            add(new InventoryButton(60, 60, null, true, false, false, 0, ""));
+            add(new InventoryButton(26, 8, null, true, false, false, 0, ""));
+            add(new InventoryButton(26, 60, null, true, false, false, 0, ""));
 
-        //Right side
-        for (int i = 0; i < 8; i++) {
-            int y = 2 + 20 * i;
-            if (y < 80) {
-                buttons.add(new InventoryButton(2, 2 + 20 * i, null, false, true, false, 0, ""));
-            } else {
-                buttons.add(new InventoryButton(2, 2 + 20 * i - 166, null, false, true, true, 0, ""));
+            //Right side
+            for (int i = 0; i < 8; i++) {
+                int y = 2 + 20 * i;
+                if (y < 80) {
+                    add(new InventoryButton(2, 2 + 20 * i, null, false, true, false, 0, ""));
+                } else {
+                    add(new InventoryButton(2, 2 + 20 * i - 166, null, false, true, true, 0, ""));
+                }
             }
-        }
 
-        //Top side
-        for (int i = 0; i < 8; i++) {
-            buttons.add(new InventoryButton(4 + 21 * i, -19, null, false, false, false, 0, ""));
-        }
-
-        //Left side
-        for (int i = 0; i < 8; i++) {
-            int y = 2 + 20 * i;
-            if (y < 80) {
-                buttons.add(new InventoryButton(-19, 2 + 20 * i, null, false, false, false, 0, ""));
-            } else {
-                buttons.add(new InventoryButton(-19, 2 + 20 * i - 166, null, false, false, true, 0, ""));
+            //Top side
+            for (int i = 0; i < 8; i++) {
+                add(new InventoryButton(4 + 21 * i, -19, null, false, false, false, 0, ""));
             }
-        }
 
-        //Bottom side
-        for (int i = 0; i < 8; i++) {
-            buttons.add(new InventoryButton(4 + 21 * i, 2, null, false, false, true, 0, ""));
-        }
-        return buttons;
+            //Left side
+            for (int i = 0; i < 8; i++) {
+                int y = 2 + 20 * i;
+                if (y < 80) {
+                    add(new InventoryButton(-19, 2 + 20 * i, null, false, false, false, 0, ""));
+                } else {
+                    add(new InventoryButton(-19, 2 + 20 * i - 166, null, false, false, true, 0, ""));
+                }
+            }
+
+            //Bottom side
+            for (int i = 0; i < 8; i++) {
+                add(new InventoryButton(4 + 21 * i, 2, null, false, false, true, 0, ""));
+            }
+        }};
     }
 
     public static class InventoryButton {

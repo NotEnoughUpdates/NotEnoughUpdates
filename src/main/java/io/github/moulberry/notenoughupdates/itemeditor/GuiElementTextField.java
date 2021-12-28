@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GuiElementTextField extends GuiElement {
-
     public static final int SCALE_TEXT = 0b100000;
     public static final int NUM_ONLY = 0b10000;
     public static final int NO_SPACE = 0b01000;

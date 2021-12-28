@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OverlayManager {
-
     public static Class<? extends TextOverlay> dontRenderOverlay = null;
 
     public static MiningOverlay miningOverlay;

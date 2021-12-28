@@ -46,8 +46,7 @@ public class ItemPriceInformation {
                 //noinspection ResultOfMethodCallIgnored
                 file.createNewFile();
                 writer.write(gson.toJson(items));
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) {}
         }
     }
 
@@ -304,5 +303,4 @@ public class ItemPriceInformation {
 
         return false;
     }
-
 }

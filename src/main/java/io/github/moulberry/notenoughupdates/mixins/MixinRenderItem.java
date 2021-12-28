@@ -29,7 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({RenderItem.class})
 public abstract class MixinRenderItem {
-
     private static void func_181565_a(WorldRenderer w, int x, int y, float width, int height,
                                       int r, int g, int b, int a) {
         w.begin(7, DefaultVertexFormats.POSITION_COLOR);
@@ -273,5 +272,4 @@ public abstract class MixinRenderItem {
             GlStateManager.enableDepth();
         }
     }
-
 }

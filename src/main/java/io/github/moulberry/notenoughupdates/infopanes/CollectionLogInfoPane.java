@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_mask;
 
 public class CollectionLogInfoPane extends ScrollableInfoPane {
-
     private final String mobRegex = ".*?((_MONSTER)|(_ANIMAL)|(_MINIBOSS)|(_BOSS)|(_SC))$";
     private final String petRegex = ".*?;[0-4]$";
 

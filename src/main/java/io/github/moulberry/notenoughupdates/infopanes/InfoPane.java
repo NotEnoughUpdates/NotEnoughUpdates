@@ -11,7 +11,6 @@ import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class InfoPane extends Gui {
-
     final NEUOverlay overlay;
     final NEUManager manager;
 
@@ -65,5 +64,4 @@ public abstract class InfoPane extends Gui {
                         new TextInfoPane(overlay, manager, name, infoText));
         }
     }
-
 }

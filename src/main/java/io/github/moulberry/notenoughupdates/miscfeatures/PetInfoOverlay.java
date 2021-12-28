@@ -44,7 +44,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PetInfoOverlay extends TextOverlay {
-
     private static final Pattern XP_BOOST_PATTERN = Pattern.compile("PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
     private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("\\((\\d)/(\\d)\\) Pets");
     private static final Pattern PET_NAME_PATTERN = Pattern.compile("\u00a77\\[Lvl \\d+] \u00a7(.+)");
@@ -123,8 +122,7 @@ public class PetInfoOverlay extends TextOverlay {
     public static void loadConfig(File file) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             config = GSON.fromJson(reader, PetConfig.class);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         if (config == null) {
             config = new PetConfig();
         }
@@ -191,12 +189,13 @@ public class PetInfoOverlay extends TextOverlay {
     }
 
     private static Pet getClosestPet(String petType, int petId, String petItem, float petLevel) {
-        Set<Pet> pets = new HashSet<>();
-        for (Pet pet : config.petMap.values()) {
-            if (pet.petType.equals(petType) && pet.rarity.petId == petId) {
-                pets.add(pet);
+        Set<Pet> pets = new HashSet<Pet>() {{
+            for (Pet pet : config.petMap.values()) {
+                if (pet.petType.equals(petType) && pet.rarity.petId == petId) {
+                    add(pet);
+                }
             }
-        }
+        }};
 
         if (pets == null || pets.isEmpty()) {
             return null;
@@ -418,38 +417,40 @@ public class PetInfoOverlay extends TextOverlay {
             }
         }
 
-        List<String> strings = new ArrayList<>();
-
-        for (int index : NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText) {
-            switch (index) {
-                case 0:
-                    strings.add(petName);
-                    break;
-                case 1:
-                    strings.add(lvlStringShort);
-                    break;
-                case 2:
-                    strings.add(lvlString);
-                    break;
-                case 3:
-                    strings.add(xpGainString);
-                    break;
-                case 4:
-                    strings.add(totalXpString);
-                    break;
-                case 5:
-                    strings.add(petItemStr);
-                    break;
-                case 6:
-                    if (etaStr != null) strings.add(etaStr);
-                    break;
-                case 7:
-                    if (etaMaxStr != null) strings.add(etaMaxStr);
-                    break;
+        String finalEtaStr = etaStr;
+        String finalEtaMaxStr = etaMaxStr;
+        String finalXpGainString = xpGainString;
+        String finalPetItemStr = petItemStr;
+        return new ArrayList<String>() {{
+            for (int index : NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText) {
+                switch (index) {
+                    case 0:
+                        add(petName);
+                        break;
+                    case 1:
+                        add(lvlStringShort);
+                        break;
+                    case 2:
+                        add(lvlString);
+                        break;
+                    case 3:
+                        add(finalXpGainString);
+                        break;
+                    case 4:
+                        add(totalXpString);
+                        break;
+                    case 5:
+                        add(finalPetItemStr);
+                        break;
+                    case 6:
+                        if (finalEtaStr != null) add(finalEtaStr);
+                        break;
+                    case 7:
+                        if (finalEtaMaxStr != null) add(finalEtaMaxStr);
+                        break;
+                }
             }
-        }
-
-        return strings;
+        }};
     }
 
     @Override
@@ -1058,8 +1059,7 @@ public class PetInfoOverlay extends TextOverlay {
     @SubscribeEvent
     public void switchWorld(WorldEvent.Load event) {
         if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-            ProfileApiSyncer.getInstance().requestResync("petinfo_quick", 10000, () -> {
-            }, PetInfoOverlay::getAndSetPet);
+            ProfileApiSyncer.getInstance().requestResync("petinfo_quick", 10000, () -> {}, PetInfoOverlay::getAndSetPet);
         }
     }
 

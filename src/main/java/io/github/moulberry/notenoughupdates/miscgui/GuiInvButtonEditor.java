@@ -38,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour.custom_ench_colour;
 
 public class GuiInvButtonEditor extends GuiScreen {
-
     private static final ResourceLocation INVENTORY = new ResourceLocation("minecraft:textures/gui/container/inventory.png");
     private static final ResourceLocation EDITOR = new ResourceLocation("notenoughupdates:invbuttons/editor.png");
     private static final ResourceLocation EXTRA_ICONS_JSON = new ResourceLocation("notenoughupdates:invbuttons/extraicons.json");
@@ -64,58 +63,54 @@ public class GuiInvButtonEditor extends GuiScreen {
     private final GuiElementTextField commandTextField = new GuiElementTextField("", editorXSize - 14, 16, GuiElementTextField.SCALE_TEXT);
     private final GuiElementTextField iconTextField = new GuiElementTextField("", editorXSize - 14, 16, GuiElementTextField.SCALE_TEXT);
 
-    private static final HashSet<String> prioritisedIcons = new HashSet<>();
-
-    static {
-        prioritisedIcons.add("WORKBENCH");
-        prioritisedIcons.add("LEATHER_CHESTPLATE");
-        prioritisedIcons.add("CHEST");
-        prioritisedIcons.add("BONE");
-        prioritisedIcons.add("ENDER_CHEST");
-        prioritisedIcons.add("GOLD_BARDING");
-        prioritisedIcons.add("COMPASS");
-        prioritisedIcons.add("GOLD_BLOCK");
-        prioritisedIcons.add("EMPTY_MAP");
-        prioritisedIcons.add("RAW_FISH");
-        prioritisedIcons.add("FISHING_ROD");
-        prioritisedIcons.add("EMERALD");
-        prioritisedIcons.add("IRON_SWORD");
-        prioritisedIcons.add("POTION");
-        prioritisedIcons.add("NETHER_STAR");
-        prioritisedIcons.add("PAINTING");
-        prioritisedIcons.add("COMMAND");
-        prioritisedIcons.add("BOOK");
-    }
+    private static final HashSet<String> prioritisedIcons = new HashSet<String>() {{
+        add("WORKBENCH");
+        add("LEATHER_CHESTPLATE");
+        add("CHEST");
+        add("BONE");
+        add("ENDER_CHEST");
+        add("GOLD_BARDING");
+        add("COMPASS");
+        add("GOLD_BLOCK");
+        add("EMPTY_MAP");
+        add("RAW_FISH");
+        add("FISHING_ROD");
+        add("EMERALD");
+        add("IRON_SWORD");
+        add("POTION");
+        add("NETHER_STAR");
+        add("PAINTING");
+        add("COMMAND");
+        add("BOOK");
+    }};
 
     private static HashMap<String, String> extraIcons = null;
 
-    private static final HashMap<String, String> skullIcons = new HashMap<>();
-
-    static {
-        skullIcons.put("personal bank", "skull:e36e94f6c34a35465fce4a90f2e25976389eb9709a12273574ff70fd4daa6852");
-        skullIcons.put("skyblock hub", "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8");
-        skullIcons.put("private island", "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56");
-        skullIcons.put("castle", "skull:f4559d75464b2e40a518e4de8e6cf3085f0a3ca0b1b7012614c4cd96fed60378");
-        skullIcons.put("sirius shack", "skull:7ab83858ebc8ee85c3e54ab13aabfcc1ef2ad446d6a900e471c3f33b78906a5b");
-        skullIcons.put("crypts", "skull:25d2f31ba162fe6272e831aed17f53213db6fa1c4cbe4fc827f3963cc98b9");
-        skullIcons.put("spiders den", "skull:c754318a3376f470e481dfcd6c83a59aa690ad4b4dd7577fdad1c2ef08d8aee6");
-        skullIcons.put("top of the nest", "skull:9d7e3b19ac4f3dee9c5677c135333b9d35a7f568b63d1ef4ada4b068b5a25");
-        skullIcons.put("blazing fortress", "skull:c3687e25c632bce8aa61e0d64c24e694c3eea629ea944f4cf30dcfb4fbce071");
-        skullIcons.put("blazing fortress magma boss", "skull:38957d5023c937c4c41aa2412d43410bda23cf79a9f6ab36b76fef2d7c429");
-        skullIcons.put("the end", "skull:7840b87d52271d2a755dedc82877e0ed3df67dcc42ea479ec146176b02779a5");
-        skullIcons.put("the end dragons nest", "skull:a1cd6d2d03f135e7c6b5d6cdae1b3a68743db4eb749faf7341e9fb347aa283b");
-        skullIcons.put("the park", "skull:a221f813dacee0fef8c59f76894dbb26415478d9ddfc44c2e708a6d3b7549b");
-        skullIcons.put("the park jungle", "skull:79ca3540621c1c79c32bf42438708ff1f5f7d0af9b14a074731107edfeb691c");
-        skullIcons.put("the park howling cave", "skull:1832d53997b451635c9cf9004b0f22bb3d99ab5a093942b5b5f6bb4e4de47065");
-        skullIcons.put("gold mines", "skull:73bc965d579c3c6039f0a17eb7c2e6faf538c7a5de8e60ec7a719360d0a857a9");
-        skullIcons.put("deep caverns", "skull:569a1f114151b4521373f34bc14c2963a5011cdc25a6554c48c708cd96ebfc");
-        skullIcons.put("the barn", "skull:4d3a6bd98ac1833c664c4909ff8d2dc62ce887bdcf3cc5b3848651ae5af6b");
-        skullIcons.put("mushroom desert", "skull:2116b9d8df346a25edd05f842e7a9345beaf16dca4118abf5a68c75bcaae10");
-        skullIcons.put("dungeon hub", "skull:9b56895b9659896ad647f58599238af532d46db9c1b0389b8bbeb70999dab33d");
-        skullIcons.put("dwarven mines", "skull:569a1f114151b4521373f34bc14c2963a5011cdc25a6554c48c708cd96ebfc");
-        skullIcons.put("hotm heart of the mountain", "skull:86f06eaa3004aeed09b3d5b45d976de584e691c0e9cade133635de93d23b9edb");
-        skullIcons.put("bazaar dude", "skull:c232e3820897429157619b0ee099fec0628f602fff12b695de54aef11d923ad7");
-    }
+    private static final HashMap<String, String> skullIcons = new HashMap<String, String>() {{
+        put("personal bank", "skull:e36e94f6c34a35465fce4a90f2e25976389eb9709a12273574ff70fd4daa6852");
+        put("skyblock hub", "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8");
+        put("private island", "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56");
+        put("castle", "skull:f4559d75464b2e40a518e4de8e6cf3085f0a3ca0b1b7012614c4cd96fed60378");
+        put("sirius shack", "skull:7ab83858ebc8ee85c3e54ab13aabfcc1ef2ad446d6a900e471c3f33b78906a5b");
+        put("crypts", "skull:25d2f31ba162fe6272e831aed17f53213db6fa1c4cbe4fc827f3963cc98b9");
+        put("spiders den", "skull:c754318a3376f470e481dfcd6c83a59aa690ad4b4dd7577fdad1c2ef08d8aee6");
+        put("top of the nest", "skull:9d7e3b19ac4f3dee9c5677c135333b9d35a7f568b63d1ef4ada4b068b5a25");
+        put("blazing fortress", "skull:c3687e25c632bce8aa61e0d64c24e694c3eea629ea944f4cf30dcfb4fbce071");
+        put("blazing fortress magma boss", "skull:38957d5023c937c4c41aa2412d43410bda23cf79a9f6ab36b76fef2d7c429");
+        put("the end", "skull:7840b87d52271d2a755dedc82877e0ed3df67dcc42ea479ec146176b02779a5");
+        put("the end dragons nest", "skull:a1cd6d2d03f135e7c6b5d6cdae1b3a68743db4eb749faf7341e9fb347aa283b");
+        put("the park", "skull:a221f813dacee0fef8c59f76894dbb26415478d9ddfc44c2e708a6d3b7549b");
+        put("the park jungle", "skull:79ca3540621c1c79c32bf42438708ff1f5f7d0af9b14a074731107edfeb691c");
+        put("the park howling cave", "skull:1832d53997b451635c9cf9004b0f22bb3d99ab5a093942b5b5f6bb4e4de47065");
+        put("gold mines", "skull:73bc965d579c3c6039f0a17eb7c2e6faf538c7a5de8e60ec7a719360d0a857a9");
+        put("deep caverns", "skull:569a1f114151b4521373f34bc14c2963a5011cdc25a6554c48c708cd96ebfc");
+        put("the barn", "skull:4d3a6bd98ac1833c664c4909ff8d2dc62ce887bdcf3cc5b3848651ae5af6b");
+        put("mushroom desert", "skull:2116b9d8df346a25edd05f842e7a9345beaf16dca4118abf5a68c75bcaae10");
+        put("dungeon hub", "skull:9b56895b9659896ad647f58599238af532d46db9c1b0389b8bbeb70999dab33d");
+        put("dwarven mines", "skull:569a1f114151b4521373f34bc14c2963a5011cdc25a6554c48c708cd96ebfc");
+        put("hotm heart of the mountain", "skull:86f06eaa3004aeed09b3d5b45d976de584e691c0e9cade133635de93d23b9edb");
+        put("bazaar dude", "skull:c232e3820897429157619b0ee099fec0628f602fff12b695de54aef11d923ad7");
+    }};
 
     private static LinkedHashMap<String, List<NEUConfig.InventoryButton>> presets = null;
 

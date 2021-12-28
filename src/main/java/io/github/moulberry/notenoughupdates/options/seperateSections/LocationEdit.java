@@ -156,5 +156,4 @@ public class LocationEdit {
             buttonText = "Edit"
     )
     public Position combatPosition = new Position(10, 200);
-
 }

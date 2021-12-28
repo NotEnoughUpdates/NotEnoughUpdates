@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_tex;
 
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
-
     private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
 
     private int keyCode;

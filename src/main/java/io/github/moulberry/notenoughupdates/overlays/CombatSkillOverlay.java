@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class CombatSkillOverlay extends TextOverlay { //Im sure there is a much better way to do this besides making another class ¯\_(ツ)_/¯
-
     private long lastUpdate = -1;
     private int killLast = -1;
     private int kill = -1;
@@ -241,6 +240,4 @@ public class CombatSkillOverlay extends TextOverlay { //Im sure there is a much 
             if(overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
         }
     }
-
-
 }

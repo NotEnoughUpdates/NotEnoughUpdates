@@ -18,7 +18,6 @@ import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
 public class GuiElementColour extends GuiElement {
-
     public static final ResourceLocation colour_selector_dot = new ResourceLocation("notenoughupdates:core/colour_selector_dot.png");
     public static final ResourceLocation colour_selector_bar = new ResourceLocation("notenoughupdates:core/colour_selector_bar.png");
     public static final ResourceLocation colour_selector_bar_alpha = new ResourceLocation("notenoughupdates:core/colour_selector_bar_alpha.png");
@@ -395,5 +394,4 @@ public class GuiElementColour extends GuiElement {
         }
         return false;
     }
-
 }

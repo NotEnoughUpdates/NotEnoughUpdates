@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
-
     @Shadow
     protected abstract float getFOVModifier(float partialTicks, boolean useFOVSetting);
 
@@ -158,5 +157,4 @@ public abstract class MixinEntityRenderer {
         }
         return d2;
     }
-
 }

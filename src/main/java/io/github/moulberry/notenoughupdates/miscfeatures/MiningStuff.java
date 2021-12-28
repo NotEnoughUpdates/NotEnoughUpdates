@@ -26,7 +26,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Map;
 
 public class MiningStuff {
-
     private static BlockPos overlayLoc = null;
     private static long titaniumNotifMillis = 0;
     private static Minecraft mc;
@@ -165,7 +164,7 @@ public class MiningStuff {
     }
 
     @SubscribeEvent
-    public void onChatRecevied(ClientChatReceivedEvent event) {
+    public void onChatReceived(ClientChatReceivedEvent event) {
         if (!NotEnoughUpdates.INSTANCE.config.mining.puzzlerSolver) {
             overlayLoc = null;
             return;
@@ -197,5 +196,4 @@ public class MiningStuff {
             overlayLoc = pos;
         }
     }
-
 }

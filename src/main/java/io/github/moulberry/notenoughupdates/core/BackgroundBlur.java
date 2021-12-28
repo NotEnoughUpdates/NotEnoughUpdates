@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class BackgroundBlur {
-
     private static class OutputStuff {
         public Framebuffer framebuffer;
         public Shader blurShaderHorz = null;
@@ -260,5 +259,4 @@ public class BackgroundBlur {
         out.framebuffer.unbindFramebufferTexture();
         GlStateManager.depthMask(true);
     }
-
 }

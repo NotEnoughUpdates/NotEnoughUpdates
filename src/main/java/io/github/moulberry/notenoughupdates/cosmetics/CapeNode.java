@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CapeNode {
-
     private static final NEUCape.Direction[] cardinals = new NEUCape.Direction[]{NEUCape.Direction.UP, NEUCape.Direction.RIGHT, NEUCape.Direction.DOWN, NEUCape.Direction.LEFT};
 
     public Vector3f position;

@@ -21,7 +21,6 @@ import java.util.List;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_tex;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
-
     private static final ResourceLocation DELETE = new ResourceLocation("notenoughupdates:core/delete.png");
 
     private final String[] exampleText;

@@ -345,7 +345,6 @@ public class ReverseWorldRenderer {
                     break;
                 case UBYTE:
                 case BYTE:
-
                     if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
                         this.byteBuffer.put(i, (byte) red);
                         this.byteBuffer.put(i + 1, (byte) green);
