@@ -278,7 +278,6 @@ public class NEUConfig extends Config {
     )
     public AHGraph ahGraph = new AHGraph();
 
-
     @Expose
     @Category(
             name = "Accessory Bag Overlay",
