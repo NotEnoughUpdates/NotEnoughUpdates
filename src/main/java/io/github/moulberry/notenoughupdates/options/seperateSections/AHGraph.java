@@ -6,6 +6,14 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.*;
 public class AHGraph {
     @Expose
     @ConfigOption(
+            name = "Enabled",
+            desc = "Enable or disable the graph. Disabling this will also make it so that no price data is stored."
+    )
+    @ConfigEditorBoolean
+    public boolean graphEnabled = true;
+
+    @Expose
+    @ConfigOption(
             name = "GUI Style",
             desc = "Change the style of the graph GUI"
     )
@@ -13,14 +21,6 @@ public class AHGraph {
             values = {"Minecraft", "Dark", "PacksHQ Dark", "FSR"}
     )
     public int graphStyle = 0;
-
-    @Expose
-    @ConfigOption(
-            name = "Enabled",
-            desc = "Enable or disable the graph. Disabling this will also make it so that no price data is stored."
-    )
-    @ConfigEditorBoolean
-    public boolean graphEnabled = true;
 
     @Expose
     @ConfigOption(
