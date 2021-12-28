@@ -957,7 +957,6 @@ public class NEUManager {
     }
 
     public boolean displayGuiItemRecipe(String internalName, String text) {
-        System.out.println("DEBUGLOG: Showing recipes of " + internalName);
         if (!recipesMap.containsKey(internalName)) return false;
         Set<NeuRecipe> recipes = recipesMap.get(internalName);
         if (recipes.isEmpty()) return false;

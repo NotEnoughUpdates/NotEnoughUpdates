@@ -96,6 +96,9 @@ public class HotmInformation {
     }
 
     public Optional<Tree> getInformationOn(String profile) {
+        if (profile == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(this.profiles.get(profile));
     }
 
