@@ -31,7 +31,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class GuiPriceGraph extends GuiScreen {
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().create();
     private static final SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
     private final ResourceLocation TEXTURE;
     private static final int X_SIZE = 364;
