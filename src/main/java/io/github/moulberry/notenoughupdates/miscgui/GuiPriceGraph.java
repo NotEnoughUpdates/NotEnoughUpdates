@@ -302,7 +302,7 @@ public class GuiPriceGraph extends GuiScreen {
                 } else if (data.ah == null) data.ah = data2.get(itemId).ah;
                 else data.ah.putAll(data2.get(itemId).ah);
             }
-            if (!data.get().isEmpty()) {
+            if (data.get() != null && !data.get().isEmpty()) {
                 if (mode < 3)
                     data = new Data(new TreeMap<>(data.get().entrySet().stream()
                             .filter(e -> e.getKey() > System.currentTimeMillis() / 1000 - (mode == 0 ? 3600 : mode == 1 ? 86400 : 604800))
