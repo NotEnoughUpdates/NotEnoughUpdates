@@ -360,7 +360,7 @@ public class GuiPriceGraph extends GuiScreen {
                 if (dataArray[l] >= lowest && dataArray[l] <= highest) {
                     amount++;
                     sum += data.get(dataArray[l]);
-                    prev = l;
+                    prev = l + 1;
                 } else if (dataArray[l] > highest)
                     break;
             }
