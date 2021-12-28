@@ -1038,7 +1038,7 @@ public class NEUOverlay extends Gui {
                             textField.setText("id:" + internalname.get());
                             itemPaneOpen = true;
                             updateSearch();
-                        } else if (keyPressed == manager.keybindItemGraph.getKeyCode() && NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
+                        } else if (keyPressed == NotEnoughUpdates.INSTANCE.config.ahGraph.graphKey && NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
                             NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
                             return true;
                         }

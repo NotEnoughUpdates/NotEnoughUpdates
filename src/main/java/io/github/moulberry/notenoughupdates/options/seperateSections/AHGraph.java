@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+import org.lwjgl.input.Keyboard;
 
 public class AHGraph {
     @Expose
@@ -11,6 +12,14 @@ public class AHGraph {
     )
     @ConfigEditorBoolean
     public boolean graphEnabled = true;
+
+    @Expose
+    @ConfigOption(
+            name = "Keybind",
+            desc = "Key to press to open the graph."
+    )
+    @ConfigEditorKeybind(defaultKey = Keyboard.KEY_P)
+    public int graphKey = Keyboard.KEY_P;
 
     @Expose
     @ConfigOption(
