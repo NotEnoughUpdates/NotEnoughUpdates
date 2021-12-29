@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -263,6 +264,7 @@ public class APIManager {
                 ItemPriceInformation.updateAuctionableItemsList();
                 didFirstUpdate = true;
             }
+            GuiPriceGraph.addToCache(lowestBins, false);
         }, () -> {});
     }
 
@@ -677,6 +679,7 @@ public class APIManager {
                     bazaarJson.add(entry.getKey().replace(":", "-"), productInfo);
                 }
             }
+            GuiPriceGraph.addToCache(bazaarJson, true);
         });
     }
 

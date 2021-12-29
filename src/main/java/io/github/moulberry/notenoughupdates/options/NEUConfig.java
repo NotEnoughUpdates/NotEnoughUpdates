@@ -273,6 +273,13 @@ public class NEUConfig extends Config {
 
     @Expose
     @Category(
+            name = "AH/BZ Graph",
+            desc = "Graph of auction and bazaar prices"
+    )
+    public AHGraph ahGraph = new AHGraph();
+
+    @Expose
+    @Category(
             name = "Accessory Bag Overlay",
             desc = "Accessory Bag Overlay"
     )

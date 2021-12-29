@@ -74,7 +74,8 @@ public class ItemPriceInformation {
             long lastUpdate = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLastLowestBinUpdateTime();
             //check if info is older than 10 minutes
             if (currentTime - lastUpdate > 600 * 1000) {
-                tooltip.add(EnumChatFormatting.RED + "[NEU] Price info is outdated by more than 10 minutes.\nIt will updated again as soon as the server can be reached again.");
+                tooltip.add(EnumChatFormatting.RED + "[NEU] Price info is outdated.");
+                tooltip.add(EnumChatFormatting.RED + "It will be updated again as soon as possible.");
             }
         }
 
