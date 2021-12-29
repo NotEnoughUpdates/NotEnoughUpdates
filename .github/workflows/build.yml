@@ -18,11 +18,21 @@ on:
   workflow_dispatch:
 jobs:
   build:
-
+    env:
+      GIT_URL: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.sha }}
+      REF_NAME: ${{ github.ref_name }}
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+    - name: Send discord notification
+      id: sendmsg
+      if: ${{ env.WEBHOOK_URL }}
+      run: |
+        ./.github/workflows/send_webhook_update.sh
+      env:
+        STATUS: WORKING
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
@@ -34,3 +44,17 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         path: build/libs/*.jar
+    - name: Update discord notification
+      if: ${{ env.WEBHOOK_URL && success() }}
+      run: |
+        ./.github/workflows/send_webhook_update.sh
+      env:
+        STATUS: SUCCESS
+        MESSAGE_ID: ${{ steps.sendmsg.outputs.MESSAGE_ID }}
+    - name: Update discord notification
+      if: ${{ env.WEBHOOK_URL && failure() }}
+      run: |
+        ./.github/workflows/send_webhook_update.sh
+      env:
+        STATUS: FAILURE
+        MESSAGE_ID: ${{ steps.sendmsg.outputs.MESSAGE_ID }}
