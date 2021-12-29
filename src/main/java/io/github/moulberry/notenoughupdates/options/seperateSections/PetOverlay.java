@@ -71,4 +71,22 @@ public class PetOverlay {
     )
     @ConfigEditorBoolean
     public boolean dualPets = false;
+
+    @Expose
+    @ConfigOption(
+            name = "GUI Colour",
+            desc = "Change the colour of the GUI"
+    )
+    @ConfigEditorDropdown(
+            values = {"Vanilla", "Grey", "Dark", "Transparent", "FSR"}
+    )
+    public int colourStyle = 0;
+
+    @Expose
+    @ConfigOption(
+            name = "Pet Inventory Display",
+            desc = "Shows an overlay in your inventory showing your current pet"
+    )
+    @ConfigEditorBoolean
+    public boolean petInvDisplay = true;
 }

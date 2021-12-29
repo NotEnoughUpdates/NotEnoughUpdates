@@ -16,6 +16,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBAnchorPoint;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -82,8 +83,25 @@ public class NEUOverlay extends Gui {
     private static final ResourceLocation ARMOR_DISPLAY_DARK = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_phq_dark.png");
     private static final ResourceLocation ARMOR_DISPLAY_FSR = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_fsr.png");
     private static final ResourceLocation ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_transparent.png");
+    private static final ResourceLocation ARMOR_DISPLAY_TRANSPARENT_PET = new ResourceLocation("notenoughupdates:armordisplay/armordisplay_transparent_pet.png");
+
     private static final ResourceLocation QUESTION_MARK = new ResourceLocation("notenoughupdates:pv_unknown.png");
+
+    private static final ResourceLocation PET_DISPLAY = new ResourceLocation("notenoughupdates:petdisplay/petdisplaysolo.png");
+    private static final ResourceLocation PET_DISPLAY_GREY = new ResourceLocation("notenoughupdates:petdisplay/petdisplaysolo_dark.png");
+    private static final ResourceLocation PET_DISPLAY_DARK = new ResourceLocation("notenoughupdates:petdisplay/petdisplaysolo_phqdark.png");
+    private static final ResourceLocation PET_DISPLAY_FSR = new ResourceLocation("notenoughupdates:petdisplay/petdisplaysolo_fsr.png");
+    private static final ResourceLocation PET_DISPLAY_TRANSPARENT = new ResourceLocation("notenoughupdates:petdisplay/petdisplaysolo_transparent.png");
+
+
+    private static final ResourceLocation PET_ARMOR_DISPLAY = new ResourceLocation("notenoughupdates:petdisplay/petdisplayarmor.png");
+    private static final ResourceLocation PET_ARMOR_DISPLAY_GREY = new ResourceLocation("notenoughupdates:petdisplay/petdisplayarmor_dark.png");
+    private static final ResourceLocation PET_ARMOR_DISPLAY_DARK = new ResourceLocation("notenoughupdates:petdisplay/petdisplayarmor_phqdark.png");
+    private static final ResourceLocation PET_ARMOR_DISPLAY_FSR = new ResourceLocation("notenoughupdates:petdisplay/petdisplayarmor_fsr.png");
+    private static final ResourceLocation PET_ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation("notenoughupdates:petdisplay/petdisplayarmor_transparent.png");
+
     private static boolean renderingArmorHud;
+    private static boolean renderingPetHud;
 
     private final NEUManager manager;
 
@@ -1757,8 +1775,12 @@ public class NEUOverlay extends Gui {
     public ItemStack slot2 = null;
     public ItemStack slot3 = null;
     public ItemStack slot4 = null;
+    public ItemStack petSlot = null;
     public static boolean isRenderingArmorHud() {
         return renderingArmorHud;
+    }
+    public static boolean isRenderingPetHud() {
+        return renderingPetHud;
     }
     /**
      * Renders the search bar, quick commands, item selection (right), item info (left) and armor hud gui elements.
@@ -1768,6 +1790,7 @@ public class NEUOverlay extends Gui {
             return;
         }
         renderingArmorHud = false;
+        renderingPetHud = false;
         GlStateManager.enableDepth();
 
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -1791,9 +1814,9 @@ public class NEUOverlay extends Gui {
             Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
             GlStateManager.bindTexture(0);
         }
+        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
                 && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-            GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
            if (getWardrobeSlot(1) != null) {
                slot1 = getWardrobeSlot(4);
                slot2 = getWardrobeSlot(3);
@@ -1815,7 +1838,11 @@ public class NEUOverlay extends Gui {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_DARK);
                 }
                 if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 3) {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT);
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT_PET);
+                    } else {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT);
+                    }
                 }
                 if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 4) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_FSR);
@@ -1880,6 +1907,68 @@ public class NEUOverlay extends Gui {
                         }
                     }
                     GL11.glTranslatef(0, 0, -80);
+                }
+            }
+        }
+        if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay
+                && NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId)) != null
+                && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect) {
+            petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+                    NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+                            PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
+            if (guiScreen instanceof GuiInventory) {
+                GL11.glTranslatef(0, 0, 80);
+                if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 1) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_GREY);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 2) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_DARK);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_TRANSPARENT);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 4) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_FSR);
+                    }
+                } else {
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 1) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_GREY);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 2) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_DARK);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_TRANSPARENT);
+                    }
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 4) {
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_FSR);
+                    }
+                }
+
+                GlStateManager.color(1, 1, 1, 1);
+                float yNumber = (float) (height - 23) / 2f;
+                Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
+                GlStateManager.bindTexture(0);
+
+                Utils.drawItemStack(petSlot, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 72);
+                renderingPetHud = true;
+                List<String> tooltipToDisplay = null;
+                if (petSlot != null) {
+                    if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+                        if (mouseY >= ((height + 60) / 2f - 105) + 72 && mouseY <= ((height + 60) / 2f - 105) + 88) {
+                            tooltipToDisplay = petSlot.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+                            Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                            tooltipToDisplay = null;
+                            GL11.glTranslatef(0, 0, -80);
+                        }
+                    }
                 }
             }
         }
