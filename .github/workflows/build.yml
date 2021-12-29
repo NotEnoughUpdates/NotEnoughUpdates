@@ -22,6 +22,7 @@ jobs:
       GIT_URL: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.sha }}
       REF_NAME: ${{ github.ref_name }}
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      ACTOR: ${{ github.actor }}
     runs-on: ubuntu-latest
 
     steps:

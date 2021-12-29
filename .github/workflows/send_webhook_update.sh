@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 COLOR_SUCCESS=8040199
 COLOR_WORKING=7472302
@@ -15,12 +16,12 @@ case "$STATUS" in
   SUCCESS)
     color="$COLOR_SUCCESS"
     status_message="Build succeeded."
-    to_upload=$(echo build/libs/*-dep.jar)
+    to_upload=$(echo build/libs/*-dep.json)
     upload_name=NotEnoughUpdates-beta-dep.jar
     ;;
 esac
 
-author_name=$(git log -1 --pretty=format:'%an')
+author_name="$ACTOR"
 commit_hash=$(git log -1 --pretty=format:'%h')
 commit_subject=$(git log -1 --pretty=format:'%s')
 commit_body=$(git log -1 --pretty=format:'%b')
@@ -68,6 +69,7 @@ function make_request() {
   curl -X $1 -H "Content-Type: multipart/form-data" -F "payload_json=$json" "$upload_arg" "$upload_name=@$to_upload" "$WEBHOOK_URL$2?wait=true"
 }
 
+echo "Should replace message with id: $MESSAGE_ID"
 if [ "$MESSAGE_ID" != "" ]; then
   discord_output=$(make_request PATCH "/messages/$MESSAGE_ID")
   RESULT=$?
@@ -83,4 +85,4 @@ fi
 echo "Message sent to discord."
 echo "$discord_output" | jq .
 id_string=$(echo "$discord_output" | jq .id)
-echo "::set-output name=MESSAGE_ID=${id_string//\"/}"
+echo "::set-output name=MESSAGE_ID::${id_string//\"/}"
