@@ -75,6 +75,7 @@ public class ItemPriceInformation {
             //check if info is older than 10 minutes
             if (currentTime - lastUpdate > 600 * 1000) {
                 tooltip.add(EnumChatFormatting.RED + "[NEU] Price info is outdated.");
+                tooltip.add(EnumChatFormatting.RED + "It will be updated again as soon as possible.");
             }
         }
 
