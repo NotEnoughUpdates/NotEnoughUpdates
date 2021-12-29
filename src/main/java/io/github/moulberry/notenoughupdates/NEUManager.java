@@ -944,7 +944,6 @@ public class NEUManager {
     }
 
     public boolean displayGuiItemUsages(String internalName) {
-        System.out.println("DEBUGLOG: Showing usages of " + internalName);
         if (!usagesMap.containsKey(internalName)) return false;
         Set<NeuRecipe> usages = usagesMap.get(internalName);
         if (usages.isEmpty()) return false;

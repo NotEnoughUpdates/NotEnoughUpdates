@@ -57,7 +57,6 @@ public class GuiItemRecipe extends GuiScreen {
         this.craftingRecipes = craftingRecipes;
         this.manager = manager;
         this.title = title;
-        System.out.println("DEBUGLOG: Creating GuiItemRecipe with title " + title);
     }
 
     public NeuRecipe getCurrentRecipe() {
