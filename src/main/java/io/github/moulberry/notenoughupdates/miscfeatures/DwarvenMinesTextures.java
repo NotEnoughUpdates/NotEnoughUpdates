@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class DwarvenMinesTextures {
-
     private static class IgnoreColumn {
         boolean always;
         int minY;
@@ -395,9 +394,7 @@ public class DwarvenMinesTextures {
                         }
                     }
                 }
-
             }
         }*/
     }
-
 }

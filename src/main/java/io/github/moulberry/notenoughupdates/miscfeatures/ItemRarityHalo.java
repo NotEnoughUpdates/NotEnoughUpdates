@@ -25,7 +25,6 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 
 public class ItemRarityHalo {
-
     public static Framebuffer itemFramebuffer1 = null;
     public static Framebuffer itemFramebuffer2 = null;
     public static HashMap<ItemStack, Integer> itemHaloTexMap = new HashMap<>();
@@ -256,5 +255,4 @@ public class ItemRarityHalo {
         shader.framebufferOut.unbindFramebuffer();
         shader.framebufferIn.unbindFramebufferTexture();
     }
-
 }

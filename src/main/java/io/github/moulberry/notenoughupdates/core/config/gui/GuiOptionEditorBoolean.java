@@ -4,7 +4,6 @@ import io.github.moulberry.notenoughupdates.core.GuiElementBoolean;
 import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor;
 
 public class GuiOptionEditorBoolean extends GuiOptionEditor {
-
     private final GuiElementBoolean bool;
 
     public GuiOptionEditorBoolean(ConfigProcessor.ProcessedOption option) {

@@ -43,7 +43,7 @@ jobs:
       run: chmod +x ./gradlew && ./gradlew setupCIWorkspace build --no-daemon
     - uses: actions/upload-artifact@v2
       with:
-        path: build/libs/*.jar
+        path: build/libs/*-deps.jar
     - name: Update discord notification
       if: ${{ env.WEBHOOK_URL && success() }}
       run: |

@@ -36,7 +36,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class NEUManager {
-
     private final NotEnoughUpdates neu;
     public final Gson gson;
     public final APIManager auctionManager;
@@ -305,8 +304,6 @@ public class NEUManager {
     /**
      * Loads the item in to the itemMap and also stores various words associated with this item
      * in to titleWordMap and loreWordMap. These maps are used in the searching algorithm.
-     *
-     * @param internalName
      */
     public void loadItem(String internalName) {
         itemstackCache.remove(internalName);
@@ -408,11 +405,10 @@ public class NEUManager {
         out:
         for (String s : query.split(" ")) {
             for (int i = 0; i < splitToSeach.length; i++) {
-                if (lastMatch == -1 || lastMatch == i - 1) {
-                    if (splitToSeach[i].startsWith(s)) {
-                        lastMatch = i;
-                        continue out;
-                    }
+                if (!(lastMatch == -1 || lastMatch == i - 1)) continue;
+                if (splitToSeach[i].startsWith(s)) {
+                    lastMatch = i;
+                    continue out;
                 }
             }
             return false;
@@ -599,27 +595,24 @@ public class NEUManager {
         for (String queryWord : query.split(" ")) {
             HashMap<String, List<Integer>> matchesToKeep = new HashMap<>();
             for (HashMap<String, List<Integer>> wordMatches : subMapWithKeysThatAreSuffixes(queryWord, wordMap).values()) {
-                if (wordMatches != null && !wordMatches.isEmpty()) {
-                    if (matches == null) {
-                        //Copy all wordMatches to titleMatches
-                        for (String internalname : wordMatches.keySet()) {
+                if (!(wordMatches != null && !wordMatches.isEmpty())) continue;
+                if (matches == null) {
+                    //Copy all wordMatches to titleMatches
+                    for (String internalname : wordMatches.keySet()) {
+                        if (!matchesToKeep.containsKey(internalname)) {
+                            matchesToKeep.put(internalname, new ArrayList<>());
+                        }
+                        matchesToKeep.get(internalname).addAll(wordMatches.get(internalname));
+                    }
+                } else {
+                    for (String internalname : matches.keySet()) {
+                        if (!wordMatches.containsKey(internalname)) continue;
+                        for (Integer newIndex : wordMatches.get(internalname)) {
+                            if (!matches.get(internalname).contains(newIndex - 1)) continue;
                             if (!matchesToKeep.containsKey(internalname)) {
                                 matchesToKeep.put(internalname, new ArrayList<>());
                             }
-                            matchesToKeep.get(internalname).addAll(wordMatches.get(internalname));
-                        }
-                    } else {
-                        for (String internalname : matches.keySet()) {
-                            if (wordMatches.containsKey(internalname)) {
-                                for (Integer newIndex : wordMatches.get(internalname)) {
-                                    if (matches.get(internalname).contains(newIndex - 1)) {
-                                        if (!matchesToKeep.containsKey(internalname)) {
-                                            matchesToKeep.put(internalname, new ArrayList<>());
-                                        }
-                                        matchesToKeep.get(internalname).add(newIndex);
-                                    }
-                                }
-                            }
+                            matchesToKeep.get(internalname).add(newIndex);
                         }
                     }
                 }
@@ -724,6 +717,10 @@ public class NEUManager {
                     internalname = runename.toUpperCase() + "_RUNE" + ";" + rune.getInteger(runename);
                     break;
                 }
+            }
+            if ("PARTY_HAT_CRAB".equals(internalname) && (ea.getString("party_hat_color") != null)) {
+                String crabhat = ea.getString("party_hat_color");
+                internalname = "PARTY_HAT_CRAB" + "_" + crabhat.toUpperCase();
             }
         }
 
@@ -1471,5 +1468,4 @@ public class NEUManager {
             return stack;
         }
     }
-
 }

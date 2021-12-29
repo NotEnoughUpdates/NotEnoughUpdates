@@ -8,7 +8,6 @@ import net.minecraft.util.BlockPos;
 import java.util.List;
 
 public class SimpleCommand extends CommandBase {
-
     private final String commandName;
     private final ProcessCommandRunnable runnable;
     private TabCompleteRunnable tabRunnable;

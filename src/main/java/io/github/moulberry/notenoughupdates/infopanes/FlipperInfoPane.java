@@ -16,12 +16,10 @@ import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextFiel
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.off;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.on;
 
+/**
+ * Not currently used
+ */
 public class FlipperInfoPane extends InfoPane {
-
-    /**
-     * Not currently used in BETA-1.6
-     */
-
     protected String title;
     protected String text;
 
@@ -87,9 +85,7 @@ public class FlipperInfoPane extends InfoPane {
         Utils.drawTexturedRect(x, y, 48, 16);
     }
 
-    public void mouseInput(int width, int height, int mouseX, int mouseY, boolean mouseDown) {
-
-    }
+    public void mouseInput(int width, int height, int mouseX, int mouseY, boolean mouseDown) {}
 
     public boolean keyboardInput() {
         return false;

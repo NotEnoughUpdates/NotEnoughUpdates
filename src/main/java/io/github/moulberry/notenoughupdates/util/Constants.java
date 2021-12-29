@@ -8,7 +8,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 public class Constants {
-
     private static class PatternSerializer implements JsonDeserializer<Pattern>, JsonSerializer<Pattern> {
         @Override
         public Pattern deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -59,5 +58,4 @@ public class Constants {
             lock.unlock();
         }
     }
-
 }

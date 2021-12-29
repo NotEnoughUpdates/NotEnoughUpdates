@@ -32,7 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TradeWindow {
-
     private static final ResourceLocation location = new ResourceLocation("notenoughupdates", "custom_trade.png");
 
     private static final int xSize = 176;
@@ -870,19 +869,22 @@ public class TradeWindow {
 
         if (mouseX >= guiLeft + xSize + 3 && mouseX <= guiLeft + xSize + 3 + 17) {
             if (mouseY >= guiTop + ySize - 19 && mouseY <= guiTop + ySize - 19 + 17) {
-                tooltipToDisplay = new ArrayList<>();
-                tooltipToDisplay.add(EnumChatFormatting.GOLD + "Enable Custom Trade Menu");
-                tooltipToDisplay.add(EnumChatFormatting.GRAY + "Use this menu instead of the default trade window");
+                tooltipToDisplay = new ArrayList<String>() {{
+                    add(EnumChatFormatting.GOLD + "Enable Custom Trade Menu");
+                    add(EnumChatFormatting.GRAY + "Use this menu instead of the default trade window");
+                }};
                 tooltipLen = 200;
             } else if (mouseY >= guiTop + ySize - 38 && mouseY <= guiTop + ySize - 38 + 17) {
-                tooltipToDisplay = new ArrayList<>();
-                tooltipToDisplay.add(EnumChatFormatting.GOLD + "Price Information");
-                tooltipToDisplay.add(EnumChatFormatting.GRAY + "Show the price of items on both sides");
+                tooltipToDisplay = new ArrayList<String>() {{
+                    add(EnumChatFormatting.GOLD + "Price Information");
+                    add(EnumChatFormatting.GRAY + "Show the price of items on both sides");
+                }};
                 tooltipLen = 200;
             } else if (mouseY >= guiTop + ySize - 57 && mouseY <= guiTop + ySize - 57 + 17) {
-                tooltipToDisplay = new ArrayList<>();
-                tooltipToDisplay.add(EnumChatFormatting.GOLD + "Trade Prices Style");
-                tooltipToDisplay.add(EnumChatFormatting.GRAY + "Changes the style of the top item prices");
+                tooltipToDisplay = new ArrayList<String>() {{
+                    add(EnumChatFormatting.GOLD + "Trade Prices Style");
+                    add(EnumChatFormatting.GRAY + "Changes the style of the top item prices");
+                }};
                 tooltipLen = 200;
             }
         }
@@ -1039,5 +1041,4 @@ public class TradeWindow {
 
         return Keyboard.getEventKey() != Keyboard.KEY_ESCAPE;
     }
-
 }

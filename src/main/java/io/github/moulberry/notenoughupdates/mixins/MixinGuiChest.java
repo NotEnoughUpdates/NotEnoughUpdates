@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin({GuiChest.class})
 public class MixinGuiChest {
-
     private static final String TARGET = "Lnet/minecraft/client/renderer/texture/TextureManager;" +
             "bindTexture(Lnet/minecraft/util/ResourceLocation;)V";
 
@@ -39,5 +38,4 @@ public class MixinGuiChest {
         } catch (Exception ignored) {}
         return fontRenderer.drawString(text, x, y, BetterContainers.isOverriding() ? BetterContainers.getTextColour() : color);
     }
-
 }

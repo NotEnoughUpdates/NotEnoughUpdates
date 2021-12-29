@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class MiningSkillOverlay extends TextOverlay { //Im sure there is a much better way to do this besides making another class ¯\_(ツ)_/¯
-
     private long lastUpdate = -1;
     private int compactLast = -1;
     private int compact = -1;
@@ -339,6 +338,4 @@ public class MiningSkillOverlay extends TextOverlay { //Im sure there is a much 
             if(overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
         }
     }
-
-
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CollectionConstant {
-
     public static class DropEntry {
         public String type;
         public Pattern regex;
@@ -13,5 +12,4 @@ public class CollectionConstant {
     }
 
     public List<DropEntry> dropdata;
-
 }

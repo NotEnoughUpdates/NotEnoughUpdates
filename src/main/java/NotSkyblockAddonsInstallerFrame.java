@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 public class NotSkyblockAddonsInstallerFrame extends JFrame implements ActionListener, MouseListener {
-
     private static final Pattern IN_MODS_SUBFOLDER = Pattern.compile("1\\.8\\.9[/\\\\]?$");
 
     private JLabel logo = null;

@@ -25,7 +25,6 @@ import java.util.Base64;
 import java.util.HashMap;
 
 public class SBGamemodes {
-
     private static final Gson gson = new Gson();
 
     public static final int MODIFIER_DEVILISH = 0b1;
@@ -341,5 +340,4 @@ public class SBGamemodes {
             }
         }
     }
-
 }

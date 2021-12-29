@@ -4,7 +4,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class KeybindHelper {
-
     public static String getKeyName(int keyCode) {
         if (keyCode == 0) {
             return "NONE";
@@ -46,5 +45,4 @@ public class KeybindHelper {
             return Keyboard.getEventKeyState() && Keyboard.getEventKey() == keyCode;
         }
     }
-
 }

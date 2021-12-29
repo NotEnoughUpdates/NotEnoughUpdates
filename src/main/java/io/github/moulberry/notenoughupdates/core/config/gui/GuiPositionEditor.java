@@ -12,7 +12,6 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 
 public class GuiPositionEditor extends GuiScreen {
-
     private final Position position;
     private final Position originalPosition;
     private final int elementWidth;

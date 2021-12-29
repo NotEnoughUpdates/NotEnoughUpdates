@@ -10,10 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Container.class)
 public class MixinContainer {
-
     @Inject(method = "putStacksInSlots", at = @At("RETURN"))
     public void putStacksInSlots(ItemStack[] stacks, CallbackInfo ci) {
         EnchantingSolvers.processInventoryContents(false);
     }
-
 }

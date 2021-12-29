@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.*;
 
 public class DungeonMap {
-
     private static final ResourceLocation GREEN_CHECK = new ResourceLocation("notenoughupdates:dungeon_map/green_check.png");
     private static final ResourceLocation WHITE_CHECK = new ResourceLocation("notenoughupdates:dungeon_map/white_check.png");
     private static final ResourceLocation QUESTION = new ResourceLocation("notenoughupdates:dungeon_map/question.png");
@@ -1583,5 +1582,4 @@ public class DungeonMap {
         projMatrix.m23 = -1.0001999F;
         return projMatrix;
     }
-
 }

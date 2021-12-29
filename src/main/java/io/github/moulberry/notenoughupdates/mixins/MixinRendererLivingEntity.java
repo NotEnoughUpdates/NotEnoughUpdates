@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RendererLivingEntity.class)
 public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
-
     @Redirect(method = "renderName", at = @At(value = "INVOKE", target =
             "Lnet/minecraft/entity/EntityLivingBase;getDisplayName()Lnet/minecraft/util/IChatComponent;"))
     public IChatComponent renderName_getDisplayName(EntityLivingBase entity) {
@@ -33,5 +32,4 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             cir.setReturnValue(0x80ff9500);
         }
     }
-
 }

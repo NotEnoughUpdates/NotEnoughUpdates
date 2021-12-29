@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class GuiItemCustomize extends GuiScreen {
-
     private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
 
     private final ItemStack stack;

@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DungeonWin {
-
     private static class Confetti {
         private float x;
         private float y;
@@ -418,5 +417,4 @@ public class DungeonWin {
 
         GlStateManager.enableBlend();
     }
-
 }

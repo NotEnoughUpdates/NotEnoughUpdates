@@ -36,5 +36,4 @@ public class MixinWorld {
             cir.setReturnValue(BiomeGenBase.coldBeach);
         }
     }
-
 }

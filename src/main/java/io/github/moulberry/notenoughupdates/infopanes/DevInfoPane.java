@@ -29,12 +29,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Provides some dev functions used to help with adding new items/detecting missing items.
+ */
 public class DevInfoPane extends TextInfoPane {
-
-    /**
-     * Provides some dev functions used to help with adding new items/detecting missing items.
-     */
-
     public DevInfoPane(NEUOverlay overlay, NEUManager manager) {
         super(overlay, manager, "Missing Items", "");
         text = getText();

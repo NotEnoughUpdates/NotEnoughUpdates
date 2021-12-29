@@ -36,7 +36,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class HTMLInfoPane extends TextInfoPane {
-
     private static final WikiModel wikiModel;
 
     private final int ZOOM_FACTOR = 2;

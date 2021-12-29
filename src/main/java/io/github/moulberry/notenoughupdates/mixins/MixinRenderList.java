@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({RenderList.class})
 public abstract class MixinRenderList {
-
     @Inject(method = "renderChunkLayer", at = @At("HEAD"))
     public void renderChunkLayer(EnumWorldBlockLayer layer, CallbackInfo ci) {
         if (DungeonBlocks.textureExists()) {

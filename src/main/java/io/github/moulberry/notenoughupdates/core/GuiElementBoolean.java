@@ -11,7 +11,6 @@ import org.lwjgl.input.Mouse;
 import java.util.function.Consumer;
 
 public class GuiElementBoolean extends GuiElement {
-
     public int x;
     public int y;
     private boolean value;

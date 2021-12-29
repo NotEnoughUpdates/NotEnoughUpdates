@@ -11,7 +11,6 @@ import org.lwjgl.input.Mouse;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_white;
 
 public class GuiOptionEditorColour extends GuiOptionEditor {
-
     private String chromaColour;
     private GuiElementColour colourElement = null;
 
@@ -67,5 +66,4 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
     public boolean keyboardInput() {
         return colourElement != null && colourElement.keyboardInput();
     }
-
 }

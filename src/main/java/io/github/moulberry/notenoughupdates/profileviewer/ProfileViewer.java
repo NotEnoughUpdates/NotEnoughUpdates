@@ -27,43 +27,38 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ProfileViewer {
-
     private final NEUManager manager;
 
     public ProfileViewer(NEUManager manager) {
         this.manager = manager;
     }
 
-    private static final HashMap<String, String> petRarityToNumMap = new HashMap<>();
+    private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {{
+        put("COMMON", "0");
+        put("UNCOMMON", "1");
+        put("RARE", "2");
+        put("EPIC", "3");
+        put("LEGENDARY", "4");
+        put("MYTHIC", "5");
+    }};
 
-    static {
-        petRarityToNumMap.put("COMMON", "0");
-        petRarityToNumMap.put("UNCOMMON", "1");
-        petRarityToNumMap.put("RARE", "2");
-        petRarityToNumMap.put("EPIC", "3");
-        petRarityToNumMap.put("LEGENDARY", "4");
-        petRarityToNumMap.put("MYTHIC", "5");
-    }
-
-    private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap = new LinkedHashMap<>();
-
-    static {
-        skillToSkillDisplayMap.put("skill_taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
-        skillToSkillDisplayMap.put("skill_mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
-        skillToSkillDisplayMap.put("skill_foraging", Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging"));
-        skillToSkillDisplayMap.put("skill_enchanting", Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting"));
-        skillToSkillDisplayMap.put("skill_carpentry", Utils.createItemStack(Item.getItemFromBlock(Blocks.crafting_table), EnumChatFormatting.DARK_RED + "Carpentry"));
-        skillToSkillDisplayMap.put("skill_farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
-        skillToSkillDisplayMap.put("skill_combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
-        skillToSkillDisplayMap.put("skill_fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
-        skillToSkillDisplayMap.put("skill_alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
-        skillToSkillDisplayMap.put("skill_runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
-        //skillToSkillDisplayMap.put("skill_catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
-        skillToSkillDisplayMap.put("slayer_zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
-        skillToSkillDisplayMap.put("slayer_spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
-        skillToSkillDisplayMap.put("slayer_wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
-        skillToSkillDisplayMap.put("slayer_enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
-    }
+    private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap = new LinkedHashMap<String, ItemStack>() {{
+        put("skill_taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
+        put("skill_mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
+        put("skill_foraging", Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging"));
+        put("skill_enchanting", Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting"));
+        put("skill_carpentry", Utils.createItemStack(Item.getItemFromBlock(Blocks.crafting_table), EnumChatFormatting.DARK_RED + "Carpentry"));
+        put("skill_farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
+        put("skill_combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
+        put("skill_fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
+        put("skill_alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
+        put("skill_runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
+        // put("skill_catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
+        put("slayer_zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
+        put("slayer_spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
+        put("slayer_wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
+        put("slayer_enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
+    }};
 
     private static final ItemStack CAT_FARMING = Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
     private static final ItemStack CAT_MINING = Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining");
@@ -71,189 +66,107 @@ public class ProfileViewer {
     private static final ItemStack CAT_FORAGING = Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging");
     private static final ItemStack CAT_FISHING = Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing");
 
-    private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap = new LinkedHashMap<>();
+    private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap = new LinkedHashMap<ItemStack, List<String>>() {{
+        put(CAT_FARMING, Utils.createList("WHEAT", "CARROT_ITEM", "POTATO_ITEM", "PUMPKIN", "MELON", "SEEDS",
+                "MUSHROOM_COLLECTION", "INK_SACK:3", "CACTUS", "SUGAR_CANE", "FEATHER", "LEATHER", "PORK", "RAW_CHICKEN",
+                "MUTTON", "RABBIT", "NETHER_STALK"));
+        put(CAT_MINING, Utils.createList("COBBLESTONE", "COAL", "IRON_INGOT", "GOLD_INGOT", "DIAMOND", "INK_SACK:4",
+                "EMERALD", "REDSTONE", "QUARTZ", "OBSIDIAN", "GLOWSTONE_DUST", "GRAVEL", "ICE", "NETHERRACK", "SAND",
+                "ENDER_STONE", null, "MITHRIL_ORE", "HARD_STONE", "GEMSTONE_COLLECTION"));
+        put(CAT_COMBAT, Utils.createList("ROTTEN_FLESH", "BONE", "STRING", "SPIDER_EYE", "SULPHUR", "ENDER_PEARL",
+                "GHAST_TEAR", "SLIME_BALL", "BLAZE_ROD", "MAGMA_CREAM", null, null, null));
+        put(CAT_FORAGING, Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
+        put(CAT_FISHING, Utils.createList("RAW_FISH", "RAW_FISH:1", "RAW_FISH:2", "RAW_FISH:3", "PRISMARINE_SHARD",
+                "PRISMARINE_CRYSTALS", "CLAY_BALL", "WATER_LILY", "INK_SACK", "SPONGE"));
 
-    static {
-        collectionCatToCollectionMap.put(CAT_FARMING,
-                Utils.createList("WHEAT", "CARROT_ITEM", "POTATO_ITEM", "PUMPKIN", "MELON", "SEEDS", "MUSHROOM_COLLECTION",
-                        "INK_SACK:3", "CACTUS", "SUGAR_CANE", "FEATHER", "LEATHER", "PORK", "RAW_CHICKEN", "MUTTON",
-                        "RABBIT", "NETHER_STALK"));
-        collectionCatToCollectionMap.put(CAT_MINING,
-                Utils.createList("COBBLESTONE", "COAL", "IRON_INGOT", "GOLD_INGOT", "DIAMOND", "INK_SACK:4",
-                        "EMERALD", "REDSTONE", "QUARTZ", "OBSIDIAN", "GLOWSTONE_DUST", "GRAVEL", "ICE", "NETHERRACK",
-                        "SAND", "ENDER_STONE", null, "MITHRIL_ORE", "HARD_STONE", "GEMSTONE_COLLECTION"));
-        collectionCatToCollectionMap.put(CAT_COMBAT,
-                Utils.createList("ROTTEN_FLESH", "BONE", "STRING", "SPIDER_EYE", "SULPHUR", "ENDER_PEARL",
-                        "GHAST_TEAR", "SLIME_BALL", "BLAZE_ROD", "MAGMA_CREAM", null, null, null));
-        collectionCatToCollectionMap.put(CAT_FORAGING,
-                Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
-        collectionCatToCollectionMap.put(CAT_FISHING,
-                Utils.createList("RAW_FISH", "RAW_FISH:1", "RAW_FISH:2", "RAW_FISH:3", "PRISMARINE_SHARD",
-                        "PRISMARINE_CRYSTALS", "CLAY_BALL", "WATER_LILY", "INK_SACK", "SPONGE"));
-    }
+    }};
 
-    private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap = new LinkedHashMap<>();
+    private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap = new LinkedHashMap<ItemStack, List<String>>() {{
+        put(CAT_FARMING, Utils.createList("WHEAT", "CARROT", "POTATO", "PUMPKIN", "MELON", null, "MUSHROOM",
+                "COCOA", "CACTUS", "SUGAR_CANE", "CHICKEN", "COW", "PIG", null, "SHEEP", "RABBIT", "NETHER_WARTS"));
+        put(CAT_MINING, Utils.createList("COBBLESTONE", "COAL", "IRON", "GOLD", "DIAMOND", "LAPIS", "EMERALD",
+                "REDSTONE", "QUARTZ", "OBSIDIAN", "GLOWSTONE", "GRAVEL", "ICE", null, "SAND", "ENDER_STONE", "SNOW",
+                "MITHRIL", "HARD_STONE", null));
+        put(CAT_COMBAT, Utils.createList("ZOMBIE", "SKELETON", "SPIDER", "CAVESPIDER", "CREEPER", "ENDERMAN",
+                "GHAST", "SLIME", "BLAZE", "MAGMA_CUBE", "REVENANT", "TARANTULA", "VOIDLING"));
+        put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
+        put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
 
-    static {
-        collectionCatToMinionMap.put(CAT_FARMING,
-                Utils.createList("WHEAT", "CARROT", "POTATO", "PUMPKIN", "MELON", null, "MUSHROOM",
-                        "COCOA", "CACTUS", "SUGAR_CANE", "CHICKEN", "COW", "PIG", null, "SHEEP",
-                        "RABBIT", "NETHER_WARTS"));
-        collectionCatToMinionMap.put(CAT_MINING,
-                Utils.createList("COBBLESTONE", "COAL", "IRON", "GOLD", "DIAMOND", "LAPIS",
-                        "EMERALD", "REDSTONE", "QUARTZ", "OBSIDIAN", "GLOWSTONE", "GRAVEL", "ICE", null,
-                        "SAND", "ENDER_STONE", "SNOW", "MITHRIL", "HARD_STONE", null));
-        collectionCatToMinionMap.put(CAT_COMBAT,
-                Utils.createList("ZOMBIE", "SKELETON", "SPIDER", "CAVESPIDER", "CREEPER", "ENDERMAN",
-                        "GHAST", "SLIME", "BLAZE", "MAGMA_CUBE", "REVENANT", "TARANTULA", "VOIDLING"));
-        collectionCatToMinionMap.put(CAT_FORAGING,
-                Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
-        collectionCatToMinionMap.put(CAT_FISHING,
-                Utils.createList("FISHING", null, null, null, null,
-                        null, "CLAY", null, null, null));
-    }
+    }};
 
-    private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap = new LinkedHashMap<>();
+    private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap = new LinkedHashMap<String, ItemStack>() {{
+        /* FARMING COLLECTIONS */
+        put("WHEAT", Utils.createItemStack(Items.wheat, EnumChatFormatting.YELLOW + "Wheat"));
+        put("CARROT_ITEM", Utils.createItemStack(Items.carrot, EnumChatFormatting.YELLOW + "Carrot"));
+        put("POTATO_ITEM", Utils.createItemStack(Items.potato, EnumChatFormatting.YELLOW + "Potato"));
+        put("PUMPKIN", Utils.createItemStack(Item.getItemFromBlock(Blocks.pumpkin), EnumChatFormatting.YELLOW + "Pumpkin"));
+        put("MELON", Utils.createItemStack(Items.melon, EnumChatFormatting.YELLOW + "Melon"));
+        put("SEEDS", Utils.createItemStack(Items.wheat_seeds, EnumChatFormatting.YELLOW + "Seeds"));
+        put("MUSHROOM_COLLECTION", Utils.createItemStack(Item.getItemFromBlock(Blocks.red_mushroom), EnumChatFormatting.YELLOW + "Mushroom"));
+        put("INK_SACK:3", Utils.createItemStack(Items.dye, EnumChatFormatting.YELLOW + "Cocoa Beans", 3));
+        put("CACTUS", Utils.createItemStack(Item.getItemFromBlock(Blocks.cactus), EnumChatFormatting.YELLOW + "Cactus"));
+        put("SUGAR_CANE", Utils.createItemStack(Items.reeds, EnumChatFormatting.YELLOW + "Sugar Cane"));
+        put("FEATHER", Utils.createItemStack(Items.feather, EnumChatFormatting.YELLOW + "Feather"));
+        put("LEATHER", Utils.createItemStack(Items.leather, EnumChatFormatting.YELLOW + "Leather"));
+        put("PORK", Utils.createItemStack(Items.porkchop, EnumChatFormatting.YELLOW + "Porkchop"));
+        put("RAW_CHICKEN", Utils.createItemStack(Items.chicken, EnumChatFormatting.YELLOW + "Chicken"));
+        put("MUTTON", Utils.createItemStack(Items.mutton, EnumChatFormatting.YELLOW + "Mutton"));
+        put("RABBIT", Utils.createItemStack(Items.rabbit, EnumChatFormatting.YELLOW + "Rabbit"));
+        put("NETHER_STALK", Utils.createItemStack(Items.nether_wart, EnumChatFormatting.YELLOW + "Nether Wart"));
 
-    static {
-        /* FARMING COLLECTIONS **/
-        collectionToCollectionDisplayMap.put("WHEAT", Utils.createItemStack(Items.wheat,
-                EnumChatFormatting.YELLOW + "Wheat"));
-        collectionToCollectionDisplayMap.put("CARROT_ITEM", Utils.createItemStack(Items.carrot,
-                EnumChatFormatting.YELLOW + "Carrot"));
-        collectionToCollectionDisplayMap.put("POTATO_ITEM", Utils.createItemStack(Items.potato,
-                EnumChatFormatting.YELLOW + "Potato"));
-        collectionToCollectionDisplayMap.put("PUMPKIN", Utils.createItemStack(Item.getItemFromBlock(Blocks.pumpkin),
-                EnumChatFormatting.YELLOW + "Pumpkin"));
-        collectionToCollectionDisplayMap.put("MELON", Utils.createItemStack(Items.melon,
-                EnumChatFormatting.YELLOW + "Melon"));
-        collectionToCollectionDisplayMap.put("SEEDS", Utils.createItemStack(Items.wheat_seeds,
-                EnumChatFormatting.YELLOW + "Seeds"));
-        collectionToCollectionDisplayMap.put("MUSHROOM_COLLECTION",
-                Utils.createItemStack(Item.getItemFromBlock(Blocks.red_mushroom)
-                        , EnumChatFormatting.YELLOW + "Mushroom"));
-        collectionToCollectionDisplayMap.put("INK_SACK:3", Utils.createItemStack(Items.dye,
-                EnumChatFormatting.YELLOW + "Cocoa Beans", 3));
-        collectionToCollectionDisplayMap.put("CACTUS", Utils.createItemStack(Item.getItemFromBlock(Blocks.cactus),
-                EnumChatFormatting.YELLOW + "Cactus"));
-        collectionToCollectionDisplayMap.put("SUGAR_CANE", Utils.createItemStack(Items.reeds,
-                EnumChatFormatting.YELLOW + "Sugar Cane"));
-        collectionToCollectionDisplayMap.put("FEATHER", Utils.createItemStack(Items.feather,
-                EnumChatFormatting.YELLOW + "Feather"));
-        collectionToCollectionDisplayMap.put("LEATHER", Utils.createItemStack(Items.leather,
-                EnumChatFormatting.YELLOW + "Leather"));
-        collectionToCollectionDisplayMap.put("PORK", Utils.createItemStack(Items.porkchop,
-                EnumChatFormatting.YELLOW + "Porkchop"));
-        collectionToCollectionDisplayMap.put("RAW_CHICKEN", Utils.createItemStack(Items.chicken,
-                EnumChatFormatting.YELLOW + "Chicken"));
-        collectionToCollectionDisplayMap.put("MUTTON", Utils.createItemStack(Items.mutton,
-                EnumChatFormatting.YELLOW + "Mutton"));
-        collectionToCollectionDisplayMap.put("RABBIT", Utils.createItemStack(Items.rabbit,
-                EnumChatFormatting.YELLOW + "Rabbit"));
-        collectionToCollectionDisplayMap.put("NETHER_STALK", Utils.createItemStack(Items.nether_wart,
-                EnumChatFormatting.YELLOW + "Nether Wart"));
+        /* MINING COLLECTIONS */
+        put("COBBLESTONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.cobblestone), EnumChatFormatting.GRAY + "Cobblestone"));
+        put("COAL", Utils.createItemStack(Items.coal, EnumChatFormatting.GRAY + "Coal"));
+        put("IRON_INGOT", Utils.createItemStack(Items.iron_ingot, EnumChatFormatting.GRAY + "Iron Ingot"));
+        put("GOLD_INGOT", Utils.createItemStack(Items.gold_ingot, EnumChatFormatting.GRAY + "Gold Ingot"));
+        put("DIAMOND", Utils.createItemStack(Items.diamond, EnumChatFormatting.GRAY + "Diamond"));
+        put("INK_SACK:4", Utils.createItemStack(Items.dye, EnumChatFormatting.GRAY + "Lapis Lazuli", 4));
+        put("EMERALD", Utils.createItemStack(Items.emerald, EnumChatFormatting.GRAY + "Emerald"));
+        put("REDSTONE", Utils.createItemStack(Items.redstone, EnumChatFormatting.GRAY + "Redstone"));
+        put("QUARTZ", Utils.createItemStack(Items.quartz, EnumChatFormatting.GRAY + "Nether Quartz"));
+        put("OBSIDIAN", Utils.createItemStack(Item.getItemFromBlock(Blocks.obsidian), EnumChatFormatting.GRAY + "Obsidian"));
+        put("GLOWSTONE_DUST", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Glowstone"));
+        put("GRAVEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.gravel), EnumChatFormatting.GRAY + "Gravel"));
+        put("ICE", Utils.createItemStack(Item.getItemFromBlock(Blocks.ice), EnumChatFormatting.GRAY + "Ice"));
+        put("NETHERRACK", Utils.createItemStack(Item.getItemFromBlock(Blocks.netherrack), EnumChatFormatting.GRAY + "Netherrack"));
+        put("SAND", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Sand"));
+        put("ENDER_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.end_stone), EnumChatFormatting.GRAY + "End Stone"));
+        put("MITHRIL_ORE", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.GRAY + "Mithril"));
+        put("HARD_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.stone), EnumChatFormatting.GRAY + "Hard Stone"));
+        put("GEMSTONE_COLLECTION", Utils.createItemStack(Item.getItemFromBlock(Blocks.stained_glass), EnumChatFormatting.GRAY + "Gem Stones", 14));
 
-        /* MINING COLLECTIONS **/
-        collectionToCollectionDisplayMap.put("COBBLESTONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.cobblestone),
-                EnumChatFormatting.GRAY + "Cobblestone"));
-        collectionToCollectionDisplayMap.put("COAL", Utils.createItemStack(Items.coal,
-                EnumChatFormatting.GRAY + "Coal"));
-        collectionToCollectionDisplayMap.put("IRON_INGOT", Utils.createItemStack(Items.iron_ingot,
-                EnumChatFormatting.GRAY + "Iron Ingot"));
-        collectionToCollectionDisplayMap.put("GOLD_INGOT", Utils.createItemStack(Items.gold_ingot,
-                EnumChatFormatting.GRAY + "Gold Ingot"));
-        collectionToCollectionDisplayMap.put("DIAMOND", Utils.createItemStack(Items.diamond,
-                EnumChatFormatting.GRAY + "Diamond"));
-        collectionToCollectionDisplayMap.put("INK_SACK:4", Utils.createItemStack(Items.dye,
-                EnumChatFormatting.GRAY + "Lapis Lazuli", 4));
-        collectionToCollectionDisplayMap.put("EMERALD", Utils.createItemStack(Items.emerald,
-                EnumChatFormatting.GRAY + "Emerald"));
-        collectionToCollectionDisplayMap.put("REDSTONE", Utils.createItemStack(Items.redstone,
-                EnumChatFormatting.GRAY + "Redstone"));
-        collectionToCollectionDisplayMap.put("QUARTZ", Utils.createItemStack(Items.quartz,
-                EnumChatFormatting.GRAY + "Nether Quartz"));
-        collectionToCollectionDisplayMap.put("OBSIDIAN", Utils.createItemStack(Item.getItemFromBlock(Blocks.obsidian),
-                EnumChatFormatting.GRAY + "Obsidian"));
-        collectionToCollectionDisplayMap.put("GLOWSTONE_DUST", Utils.createItemStack(Items.glowstone_dust,
-                EnumChatFormatting.GRAY + "Glowstone"));
-        collectionToCollectionDisplayMap.put("GRAVEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.gravel),
-                EnumChatFormatting.GRAY + "Gravel"));
-        collectionToCollectionDisplayMap.put("ICE", Utils.createItemStack(Item.getItemFromBlock(Blocks.ice),
-                EnumChatFormatting.GRAY + "Ice"));
-        collectionToCollectionDisplayMap.put("NETHERRACK", Utils.createItemStack(Item.getItemFromBlock(Blocks.netherrack),
-                EnumChatFormatting.GRAY + "Netherrack"));
-        collectionToCollectionDisplayMap.put("SAND", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand),
-                EnumChatFormatting.GRAY + "Sand"));
-        collectionToCollectionDisplayMap.put("ENDER_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.end_stone),
-                EnumChatFormatting.GRAY + "End Stone"));
-        collectionToCollectionDisplayMap.put("MITHRIL_ORE", Utils.createItemStack(Items.prismarine_crystals,
-                EnumChatFormatting.GRAY + "Mithril"));
-        collectionToCollectionDisplayMap.put("HARD_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.stone),
-                EnumChatFormatting.GRAY + "Hard Stone"));
-        ItemStack gemstone = Utils.createItemStack(Item.getItemFromBlock(Blocks.stained_glass),
-                EnumChatFormatting.GRAY + "Gem Stones");
-        gemstone.setItemDamage(14);
-        collectionToCollectionDisplayMap.put("GEMSTONE_COLLECTION", gemstone);
+        /* COMBAT COLLECTIONS */
+        put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.RED + "Rotten Flesh"));
+        put("BONE", Utils.createItemStack(Items.bone,EnumChatFormatting.RED + "Bone"));
+        put("STRING", Utils.createItemStack(Items.string, EnumChatFormatting.RED + "String"));
+        put("SPIDER_EYE", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.RED + "Spider Eye"));
+        put("SULPHUR", Utils.createItemStack(Items.gunpowder, EnumChatFormatting.RED + "Gunpowder"));
+        put("ENDER_PEARL", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.RED + "Ender Pearl"));
+        put("GHAST_TEAR", Utils.createItemStack(Items.ghast_tear, EnumChatFormatting.RED + "Ghast Tear"));
+        put("SLIME_BALL", Utils.createItemStack(Items.slime_ball, EnumChatFormatting.RED + "Slimeball"));
+        put("BLAZE_ROD", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.RED + "Blaze Rod"));
+        put("MAGMA_CREAM", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.RED + "Magma Cream"));
 
+        /* FORAGING COLLECTIONS */
+        put("LOG", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Oak"));
+        put("LOG:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Spruce", 1));
+        put("LOG:2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Birch", 2));
+        put("LOG_2:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Dark Oak", 1));
+        put("LOG_2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Acacia"));
+        put("LOG:3", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Jungle", 3));
 
-        /* COMBAT COLLECTIONS **/
-        collectionToCollectionDisplayMap.put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh,
-                EnumChatFormatting.RED + "Rotten Flesh"));
-        collectionToCollectionDisplayMap.put("BONE", Utils.createItemStack(Items.bone,
-                EnumChatFormatting.RED + "Bone"));
-        collectionToCollectionDisplayMap.put("STRING", Utils.createItemStack(Items.string,
-                EnumChatFormatting.RED + "String"));
-        collectionToCollectionDisplayMap.put("SPIDER_EYE", Utils.createItemStack(Items.spider_eye,
-                EnumChatFormatting.RED + "Spider Eye"));
-        collectionToCollectionDisplayMap.put("SULPHUR", Utils.createItemStack(Items.gunpowder,
-                EnumChatFormatting.RED + "Gunpowder"));
-        collectionToCollectionDisplayMap.put("ENDER_PEARL", Utils.createItemStack(Items.ender_pearl,
-                EnumChatFormatting.RED + "Ender Pearl"));
-        collectionToCollectionDisplayMap.put("GHAST_TEAR", Utils.createItemStack(Items.ghast_tear,
-                EnumChatFormatting.RED + "Ghast Tear"));
-        collectionToCollectionDisplayMap.put("SLIME_BALL", Utils.createItemStack(Items.slime_ball,
-                EnumChatFormatting.RED + "Slimeball"));
-        collectionToCollectionDisplayMap.put("BLAZE_ROD", Utils.createItemStack(Items.blaze_rod,
-                EnumChatFormatting.RED + "Blaze Rod"));
-        collectionToCollectionDisplayMap.put("MAGMA_CREAM", Utils.createItemStack(Items.magma_cream,
-                EnumChatFormatting.RED + "Magma Cream"));
-
-        /* FORAGING COLLECTIONS **/
-        collectionToCollectionDisplayMap.put("LOG", Utils.createItemStack(Item.getItemFromBlock(Blocks.log),
-                EnumChatFormatting.DARK_GREEN + "Oak"));
-        collectionToCollectionDisplayMap.put("LOG:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log),
-                EnumChatFormatting.DARK_GREEN + "Spruce", 1));
-        collectionToCollectionDisplayMap.put("LOG:2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log),
-                EnumChatFormatting.DARK_GREEN + "Birch", 2));
-        collectionToCollectionDisplayMap.put("LOG_2:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2),
-                EnumChatFormatting.DARK_GREEN + "Dark Oak", 1));
-        collectionToCollectionDisplayMap.put("LOG_2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2),
-                EnumChatFormatting.DARK_GREEN + "Acacia"));
-        collectionToCollectionDisplayMap.put("LOG:3", Utils.createItemStack(Item.getItemFromBlock(Blocks.log),
-                EnumChatFormatting.DARK_GREEN + "Jungle", 3));
-
-        /* FISHING COLLECTIONS **/
-        collectionToCollectionDisplayMap.put("RAW_FISH", Utils.createItemStack(Items.fish,
-                EnumChatFormatting.AQUA + "Fish"));
-        collectionToCollectionDisplayMap.put("RAW_FISH:1", Utils.createItemStack(Items.fish,
-                EnumChatFormatting.AQUA + "Salmon", 1));
-        collectionToCollectionDisplayMap.put("RAW_FISH:2", Utils.createItemStack(Items.fish,
-                EnumChatFormatting.AQUA + "Clownfish", 2));
-        collectionToCollectionDisplayMap.put("RAW_FISH:3", Utils.createItemStack(Items.fish,
-                EnumChatFormatting.AQUA + "Pufferfish", 3));
-        collectionToCollectionDisplayMap.put("PRISMARINE_SHARD", Utils.createItemStack(Items.prismarine_shard,
-                EnumChatFormatting.AQUA + "Prismarine Shard"));
-        collectionToCollectionDisplayMap.put("PRISMARINE_CRYSTALS", Utils.createItemStack(Items.prismarine_crystals,
-                EnumChatFormatting.AQUA + "Prismarine Crystals"));
-        collectionToCollectionDisplayMap.put("CLAY_BALL", Utils.createItemStack(Items.clay_ball,
-                EnumChatFormatting.AQUA + "Clay"));
-        collectionToCollectionDisplayMap.put("WATER_LILY", Utils.createItemStack(Item.getItemFromBlock(Blocks.waterlily),
-                EnumChatFormatting.AQUA + "Lilypad"));
-        collectionToCollectionDisplayMap.put("INK_SACK", Utils.createItemStack(Items.dye,
-                EnumChatFormatting.AQUA + "Ink Sack"));
-        collectionToCollectionDisplayMap.put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge),
-                EnumChatFormatting.AQUA + "Sponge"));
-    }
+        /* FISHING COLLECTIONS */
+        put("RAW_FISH", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Fish"));
+        put("RAW_FISH:1", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Salmon", 1));
+        put("RAW_FISH:2", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Clownfish", 2));
+        put("RAW_FISH:3", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Pufferfish", 3));
+        put("PRISMARINE_SHARD", Utils.createItemStack(Items.prismarine_shard, EnumChatFormatting.AQUA + "Prismarine Shard"));
+        put("PRISMARINE_CRYSTALS", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.AQUA + "Prismarine Crystals"));
+        put("CLAY_BALL", Utils.createItemStack(Items.clay_ball, EnumChatFormatting.AQUA + "Clay"));
+        put("WATER_LILY", Utils.createItemStack(Item.getItemFromBlock(Blocks.waterlily), EnumChatFormatting.AQUA + "Lilypad"));
+        put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sack"));
+        put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
+    }};
 
     public static LinkedHashMap<ItemStack, List<String>> getCollectionCatToMinionMap() {
         return collectionCatToMinionMap;
@@ -1260,5 +1173,4 @@ public class ProfileViewer {
 
         return null;
     }
-
 }

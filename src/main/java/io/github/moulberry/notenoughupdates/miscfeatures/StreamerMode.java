@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StreamerMode {
-
     private static final Pattern lobbyPattern = Pattern.compile("(mini|mega|m|M)([0-9]{1,3}[A-Z])");
 
     public static String filterLobbyNames(String line) {
@@ -33,5 +32,4 @@ public class StreamerMode {
         line = filterLobbyNames(line);
         return line;
     }
-
 }

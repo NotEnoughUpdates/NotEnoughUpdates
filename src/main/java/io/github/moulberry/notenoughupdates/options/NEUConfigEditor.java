@@ -33,7 +33,6 @@ import java.util.*;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
 
 public class NEUConfigEditor extends GuiElement {
-
     public static NEUConfigEditor editor = new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config);
 
     private static final ResourceLocation[] socialsIco = new ResourceLocation[]{

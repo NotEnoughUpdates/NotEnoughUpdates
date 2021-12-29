@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -30,7 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class APIManager {
-
     private final NEUManager manager;
     public final CustomAH customAH;
 
@@ -262,6 +262,7 @@ public class APIManager {
                 ItemPriceInformation.updateAuctionableItemsList();
                 didFirstUpdate = true;
             }
+            GuiPriceGraph.addToCache(lowestBins, false);
         }, () -> {});
     }
 
@@ -676,6 +677,7 @@ public class APIManager {
                     bazaarJson.add(entry.getKey().replace(":", "-"), productInfo);
                 }
             }
+            GuiPriceGraph.addToCache(bazaarJson, true);
         });
     }
 
@@ -1001,5 +1003,4 @@ public class APIManager {
             }
         }, 3000L, TimeUnit.MILLISECONDS);
     }*/
-
 }

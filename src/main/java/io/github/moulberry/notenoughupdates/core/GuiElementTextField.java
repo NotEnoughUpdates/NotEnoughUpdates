@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GuiElementTextField {
-
     public static final int SCISSOR_TEXT = 0b10000000;
     public static final int DISABLE_BG = 0b1000000;
     public static final int SCALE_TEXT = 0b100000;

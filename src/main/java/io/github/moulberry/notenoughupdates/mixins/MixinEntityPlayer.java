@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin({EntityPlayer.class})
 public abstract class MixinEntityPlayer {
-
     @Inject(method = "isWearing", at = @At("HEAD"), cancellable = true)
     public void isWearing(EnumPlayerModelParts part, CallbackInfoReturnable<Boolean> cir) {
         if (part == EnumPlayerModelParts.CAPE) {

@@ -8,11 +8,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorSlider {
-
     float minValue();
 
     float maxValue();
 
     float minStep();
-
 }

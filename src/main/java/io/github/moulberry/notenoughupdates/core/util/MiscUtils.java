@@ -20,7 +20,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class MiscUtils {
-
     public static void copyToClipboard(String str) {
         Toolkit.getDefaultToolkit().getSystemClipboard()
                 .setContents(new StringSelection(str), null);

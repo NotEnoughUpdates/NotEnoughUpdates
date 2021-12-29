@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 import static net.minecraft.util.EnumChatFormatting.*;
 
 public class MiningOverlay extends TextOverlay {
-
     public MiningOverlay(Position position, Supplier<List<String>> dummyStrings, Supplier<TextOverlayStyle> styleSupplier) {
         super(position, dummyStrings, styleSupplier);
     }
@@ -681,30 +680,30 @@ public class MiningOverlay extends TextOverlay {
 
     private static HashMap<String, ItemStack> miningOverlayCommisionItems;
     private static void setupMiningOverlayCommisionItems(){
-        miningOverlayCommisionItems = new HashMap<String, ItemStack>() {};
-        miningOverlayCommisionItems.put("Mithril Powder", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("INK_SACK-10")));
-        miningOverlayCommisionItems.put("Gemstone Powder", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("INK_SACK-9")));
-        miningOverlayCommisionItems.put("Lucky Raffle", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MINING_RAFFLE_TICKET")));
-        miningOverlayCommisionItems.put("Raffle", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MINING_RAFFLE_TICKET")));
-        miningOverlayCommisionItems.put("Pickaxe CD", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DIAMOND_PICKAXE")));
-        miningOverlayCommisionItems.put("Thyst Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("THYST_MONSTER")));
-        miningOverlayCommisionItems.put("Hard Stone Miner", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("HARD_STONE")));
-        miningOverlayCommisionItems.put("Ice Walker Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_ICE")));
-        miningOverlayCommisionItems.put("Goblin Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("GOBLIN_MONSTER")));
-        miningOverlayCommisionItems.put("Star Sentry Puncher", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("NETHER_STAR")));
-        miningOverlayCommisionItems.put("Goblin Raid", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_GOLD")));
-        miningOverlayCommisionItems.put("Goblin Raid Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_GOLD")));
-        miningOverlayCommisionItems.put("Golden Goblin Slayer", new ItemStack(Items.golden_helmet, 1, 0));
-        miningOverlayCommisionItems.put("2x Mithril Powder Collector", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_GLOWSTONE_DUST")));
-        miningOverlayCommisionItems.put("Automaton Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("AUTOMATON_MONSTER")));
-        miningOverlayCommisionItems.put("Sludge Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SLUDGE_MONSTER")));
-        miningOverlayCommisionItems.put("Team Treasurite Member Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("EXECUTIVE_WENDY_MONSTER")));
-        miningOverlayCommisionItems.put("Yog Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("YOG_MONSTER")));
-        miningOverlayCommisionItems.put("Boss Corleone Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("BOSS_CORLEONE_BOSS")));
-        miningOverlayCommisionItems.put("Chest Looter", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("CHEST")));
-        miningOverlayCommisionItems.put("Titanium", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("TITANIUM_ORE")));
-        miningOverlayCommisionItems.put("Mithril", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MITHRIL_ORE")));
-        miningOverlayCommisionItems.put("Forge", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ANVIL")));
+        miningOverlayCommisionItems = new HashMap<String, ItemStack>() {{
+            put("Mithril Powder", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("INK_SACK-10")));
+            put("Gemstone Powder", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("INK_SACK-9")));
+            put("Lucky Raffle", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MINING_RAFFLE_TICKET")));
+            put("Raffle", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MINING_RAFFLE_TICKET")));
+            put("Pickaxe CD", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DIAMOND_PICKAXE")));
+            put("Thyst Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("THYST_MONSTER")));
+            put("Hard Stone Miner", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("HARD_STONE")));
+            put("Ice Walker Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_ICE")));
+            put("Goblin Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("GOBLIN_MONSTER")));
+            put("Star Sentry Puncher", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("NETHER_STAR")));
+            put("Goblin Raid", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_GOLD")));
+            put("Goblin Raid Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_GOLD")));
+            put("Golden Goblin Slayer", new ItemStack(Items.golden_helmet, 1, 0));
+            put("2x Mithril Powder Collector", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ENCHANTED_GLOWSTONE_DUST")));
+            put("Automaton Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("AUTOMATON_MONSTER")));
+            put("Sludge Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SLUDGE_MONSTER")));
+            put("Team Treasurite Member Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("EXECUTIVE_WENDY_MONSTER")));
+            put("Yog Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("YOG_MONSTER")));
+            put("Boss Corleone Slayer", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("BOSS_CORLEONE_BOSS")));
+            put("Chest Looter", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("CHEST")));
+            put("Titanium", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("TITANIUM_ORE")));
+            put("Mithril", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MITHRIL_ORE")));
+            put("Forge", NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ANVIL")));
+        }};
     }
-
 }

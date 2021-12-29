@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
 public class GuiElementText extends GuiElement {
-
     protected String text;
     private final int colour;
 
@@ -38,5 +37,4 @@ public class GuiElementText extends GuiElement {
 
         fr.drawString(text, x, y + 6, colour);
     }
-
 }

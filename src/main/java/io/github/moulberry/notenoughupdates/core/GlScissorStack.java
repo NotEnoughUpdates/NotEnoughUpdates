@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.LinkedList;
 
 public class GlScissorStack {
-
     private static class Bounds {
         int left;
         int top;
@@ -83,5 +82,4 @@ public class GlScissorStack {
         boundsStack.clear();
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
-
 }

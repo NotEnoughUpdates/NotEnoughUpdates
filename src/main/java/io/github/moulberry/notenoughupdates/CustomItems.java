@@ -7,8 +7,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import net.minecraft.util.EnumChatFormatting;
 
 public class CustomItems {
-
-    /**
+    /*
      * So it has come to this, huh? Snooping through the source to find all my carefully crafted easter eggs. You
      * cheated not only the game, but yourself. You didn't grow. You didn't improve. You took a
      * shortcut and gained nothing. You experienced a hollow victory. Nothing was risked and nothing was gained.
@@ -77,7 +76,7 @@ public class CustomItems {
             "We do a lil Chatting"
     );
 
-    /**
+    /*
      * SHAAAAAAAAAAAAAAAAAAME
      */
 

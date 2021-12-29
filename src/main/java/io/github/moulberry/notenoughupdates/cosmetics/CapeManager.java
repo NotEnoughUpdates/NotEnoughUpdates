@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class CapeManager {
-
     public static final CapeManager INSTANCE = new CapeManager();
     public long lastCapeUpdate = 0;
     public long lastCapeSynced = 0;
@@ -57,6 +56,17 @@ public class CapeManager {
     }
 
     public CapeData[] capes = new CapeData[]{
+            //Patreon
+            new CapeData("patreon1", false, false),
+            new CapeData("patreon2", false, false),
+            new CapeData("fade", false, false),
+            new CapeData("space", false, false),
+            new CapeData("mcworld", false, false),
+            new CapeData("negative", false, false),
+            new CapeData("void", false, false),
+            new CapeData("lava", false, false),
+            new CapeData("tunnel", false, false),
+            new CapeData("planets", false, false),
 
             //Admins
             new CapeData("nullzee", true, false),
@@ -92,27 +102,7 @@ public class CapeManager {
             new CapeData("alexxoffi", false, true),
             new CapeData("secondpfirsisch", false, true),
             new CapeData("stormy_lh", false, true),
-
-            //Patreon
-            new CapeData("patreon1", false, false),
-            new CapeData("patreon2", false, false),
-            new CapeData("fade", false, false),
-            new CapeData("space", false, false),
-            new CapeData("mcworld", false, false),
-            new CapeData("negative", false, false),
-            new CapeData("void", false, false),
-            new CapeData("lava", false, false),
-            new CapeData("tunnel", false, false),
-            new CapeData("planets", false, false)
-
     };
-
-    /*private String[] capes = new String[]{"patreon1", "patreon2", "fade", "contrib", "nullzee",
-            "gravy", "space", "mcworld", "lava", "packshq", "mbstaff", "thebakery", "negative",
-            "void", "ironmoon", "krusty", "furf", "soldier", "dsm", "zera", "tunnel", "alexxoffi", "parallax", "jakethybro", "planets", "skytils" };
-    public Boolean[] specialCapes = new Boolean[] {true, true, false, true, true,
-            true, false, false, false, true, true, true, false,
-            false, true, false, true, true, true, true, false, true, true, true, true, true };*/
 
     public static CapeManager getInstance() {
         return INSTANCE;
@@ -135,7 +125,6 @@ public class CapeManager {
     }
 
     private void updateCapes() {
-
         NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync("activecapes.json", (jsonObject) -> {
             if (jsonObject.get("success").getAsBoolean()) {
                 lastJsonSync = jsonObject;
@@ -155,28 +144,25 @@ public class CapeManager {
             String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
             permSyncTries--;
             NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync("permscapes.json", (jsonObject) -> {
-                if (jsonObject.get("success").getAsBoolean()) {
-                    permSyncTries = 0;
+                if (!jsonObject.get("success").getAsBoolean()) return;
 
-                    availableCapes.clear();
-                    for (JsonElement permPlayer : jsonObject.get("perms").getAsJsonArray()) {
-                        if (permPlayer.isJsonObject()) {
-                            String playerUuid = permPlayer.getAsJsonObject().get("_id").getAsString();
-                            if (playerUuid != null && playerUuid.equals(uuid)) {
-                                for (JsonElement perm : permPlayer.getAsJsonObject().get("perms").getAsJsonArray()) {
-                                    if (perm.isJsonPrimitive()) {
-                                        String cape = perm.getAsString();
-                                        if (cape.equals("*")) {
-                                            allAvailable = true;
-                                        } else {
-                                            availableCapes.add(cape);
-                                        }
-                                    }
-                                }
-                                return;
-                            }
+                permSyncTries = 0;
+                availableCapes.clear();
+                for (JsonElement permPlayer : jsonObject.get("perms").getAsJsonArray()) {
+                    if (!permPlayer.isJsonObject()) continue;
+                    String playerUuid = permPlayer.getAsJsonObject().get("_id").getAsString();
+                    if (!(playerUuid != null && playerUuid.equals(uuid))) continue;
+                    for (JsonElement perm : permPlayer.getAsJsonObject().get("perms").getAsJsonArray()) {
+                        if (!perm.isJsonPrimitive()) continue;
+                        String cape = perm.getAsString();
+                        if (cape.equals("*")) {
+                            allAvailable = true;
+                        } else {
+                            availableCapes.add(cape);
                         }
+
                     }
+                    return;
                 }
             }, () -> System.out.println("[MBAPI] Update capes errored - perms"));
         }
@@ -195,11 +181,7 @@ public class CapeManager {
         }
 
         if (updateConfig) {
-            if (none) {
-                localCape = null;
-            } else {
-                localCape = new MutablePair<>(new NEUCape(capename), capename);
-            }
+            localCape = none ? null : new MutablePair<>(new NEUCape(capename), capename);
         } else if (capeMap.containsKey(playerUUID)) {
             if (none) {
                 capeMap.remove(playerUUID);
@@ -293,8 +275,7 @@ public class CapeManager {
             } else if (!Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.blindness) && capeMap.containsKey(uuid)) {
                 capeMap.get(uuid).getLeft().onRenderPlayer(e);
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     public static void onTickSlow() {
@@ -366,5 +347,4 @@ public class CapeManager {
     public CapeData[] getCapes() {
         return capes;
     }
-
 }

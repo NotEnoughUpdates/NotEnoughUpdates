@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldClient.class)
 public class MixinWorldClient {
-
     @Inject(method = "addEntityToWorld", at = @At("HEAD"))
     public void addEntityToWorld(int entityID, Entity entityToSpawn, CallbackInfo ci) {
         FishingHelper.getInstance().addEntity(entityID, entityToSpawn);
@@ -21,5 +20,4 @@ public class MixinWorldClient {
     public void removeEntityFromWorld(int entityID, CallbackInfoReturnable<Entity> cir) {
         FishingHelper.getInstance().removeEntity(entityID);
     }
-
 }

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class SlayerOverlay extends TextOverlay {
-
     public static boolean slayerQuest;
     public static String RNGMeter = "?";
     public static boolean isSlain = false;

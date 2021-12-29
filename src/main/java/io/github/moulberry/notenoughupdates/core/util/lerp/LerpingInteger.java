@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.core.util.lerp;
 
 public class LerpingInteger {
-
     private int timeSpent;
     private long lastMillis;
     private int timeToReachTarget;

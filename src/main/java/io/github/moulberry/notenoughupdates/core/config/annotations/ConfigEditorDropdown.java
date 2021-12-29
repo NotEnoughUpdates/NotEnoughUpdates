@@ -8,9 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorDropdown {
-
     String[] values();
 
     int initialIndex() default 0;
-
 }
