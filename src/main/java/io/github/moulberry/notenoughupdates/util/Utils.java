@@ -1361,4 +1361,26 @@ public class Utils {
                 thePlayer.openContainer.windowId));
         return true;
     }
+
+    public static String formatNumberWithDots(long number) {
+        if (number == 0)
+            return "0";
+        String work = "";
+        boolean isNegative = false;
+        if (number < 0) {
+            isNegative = true;
+            number = -number;
+        }
+        while (number != 0) {
+            work = String.format("%03d.%s", number % 1000, work);
+            number /= 1000;
+        }
+        work = work.substring(0, work.length() - 1);
+        while (work.startsWith("0"))
+            work = work.substring(1);
+        if (isNegative)
+            return "-" + work;
+        return work;
+    }
+
 }
