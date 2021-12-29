@@ -50,7 +50,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-
     public static boolean hasEffectOverride = false;
     public static boolean disableCustomDungColours = false;
     private static final LinkedList<Integer> guiScales = new LinkedList<>();
@@ -473,21 +472,19 @@ public class Utils {
             //EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
 
     };
-    public static final HashMap<String, String> rarityArrMap = new HashMap<>();
 
-    static {
-        rarityArrMap.put("COMMON", rarityArrC[0]);
-        rarityArrMap.put("UNCOMMON", rarityArrC[1]);
-        rarityArrMap.put("RARE", rarityArrC[2]);
-        rarityArrMap.put("EPIC", rarityArrC[3]);
-        rarityArrMap.put("LEGENDARY", rarityArrC[4]);
-        rarityArrMap.put("MYTHIC", rarityArrC[5]);
-        rarityArrMap.put("SPECIAL", rarityArrC[6]);
-        rarityArrMap.put("VERY SPECIAL", rarityArrC[7]);
-        rarityArrMap.put("DIVINE", rarityArrC[8]);
-        //rarityArrMap.put("DIVINE", rarityArrC[9]);
-
-    }
+    public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
+        put("COMMON", rarityArrC[0]);
+        put("UNCOMMON", rarityArrC[1]);
+        put("RARE", rarityArrC[2]);
+        put("EPIC", rarityArrC[3]);
+        put("LEGENDARY", rarityArrC[4]);
+        put("MYTHIC", rarityArrC[5]);
+        put("SPECIAL", rarityArrC[6]);
+        put("VERY SPECIAL", rarityArrC[7]);
+        put("DIVINE", rarityArrC[8]);
+        // put("DIVINE", rarityArrC[9]);
+    }};
 
     public static String getRarityFromInt(int rarity) {
         if (rarity < 0 || rarity >= rarityArr.length) {
