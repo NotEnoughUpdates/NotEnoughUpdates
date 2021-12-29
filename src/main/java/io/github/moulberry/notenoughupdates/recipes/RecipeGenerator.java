@@ -1,5 +1,6 @@
 package io.github.moulberry.notenoughupdates.recipes;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Debouncer;
@@ -94,7 +95,9 @@ public class RecipeGenerator {
             JsonObject outputJson = neu.manager.readJsonDefaultDir(i.getInternalItemId() + ".json");
             if (outputJson == null) return false;
             outputJson.addProperty("clickcommand", "viewrecipe");
-            outputJson.add("recipe", recipeJson);
+            JsonArray array = new JsonArray();
+            array.add(recipeJson);
+            outputJson.add("recipes", array);
             neu.manager.writeJsonDefaultDir(outputJson, i.getInternalItemId() + ".json");
             neu.manager.loadItem(i.getInternalItemId());
         }
