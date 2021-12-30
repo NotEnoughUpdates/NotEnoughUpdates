@@ -1962,7 +1962,7 @@ public class NEUOverlay extends Gui {
         if (PetInfoOverlay.getCurrentPet() != null) {
             if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay
                     && NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId)).hasDisplayName()
-                    && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect) {
+                    && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
                 petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
                         NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
                                 PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
