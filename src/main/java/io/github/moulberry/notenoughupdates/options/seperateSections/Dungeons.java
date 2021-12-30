@@ -84,7 +84,7 @@ public class Dungeons {
     )
     @ConfigEditorBoolean
     @ConfigAccordionId(id = 1)
-    public boolean useKismetOnDungeonProfit = false;
+    public boolean useKismetOnDungeonProfit = true;
 
 
     @ConfigOption(
