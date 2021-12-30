@@ -911,6 +911,7 @@ public class GuiProfileViewer extends GuiScreen {
                         "dungeons.dungeon_types.catacombs.experience"), 0);
                 levelObjCata = ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
                         cataXp, 50, false);
+                levelObjCata.totalXp = cataXp;
                 levelObjCatas.put(profileId, levelObjCata);
             }
 
@@ -1369,15 +1370,20 @@ public class GuiProfileViewer extends GuiScreen {
         if (mouseX > x && mouseX < x + 120) {
             if (mouseY > y - 4 && mouseY < y + 13) {
                 String levelStr;
+                String totalXpStr  = null;
                 if (levelObj.maxed) {
                     levelStr = EnumChatFormatting.GOLD + "MAXED!";
+                    totalXpStr = EnumChatFormatting.GRAY + "Total XP: " +EnumChatFormatting.DARK_PURPLE+ Utils.formatNumberWithDots((long) levelObj.totalXp);
                 } else {
                     int maxXp = (int) levelObj.maxXpForLevel;
                     levelStr = EnumChatFormatting.DARK_PURPLE + shortNumberFormat(Math.round((level % 1) * maxXp),
                             0) + "/" + shortNumberFormat(maxXp, 0);
                 }
-
-                tooltipToDisplay = Utils.createList(levelStr);
+                if(totalXpStr != null){
+                    tooltipToDisplay = Utils.createList(levelStr, totalXpStr);
+                }else {
+                    tooltipToDisplay = Utils.createList(levelStr);
+                }
             }
         }
 
@@ -1502,7 +1508,7 @@ public class GuiProfileViewer extends GuiScreen {
         put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<String, Float>() {{ put("CRIT_DAMAGE", 1.4f); put("CRIT_CHANCE", 1.4f); }});
         put("PET_ITEM_TEXTBOOK", new HashMap<String, Float>() {{ put("INTELLIGENCE", 2f); }});
     }};
-    
+
     private int selectedPet = -1;
     private int petsPage = 0;
     private List<JsonObject> sortedPets = null;

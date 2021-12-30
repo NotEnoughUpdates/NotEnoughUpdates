@@ -33,6 +33,7 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -1356,6 +1357,23 @@ public class NEUEventListener {
 
                     int profitLossBIN = totalValue - chestCost;
 
+                    boolean kismetUsed = false;
+                    // checking for kismet
+                    Slot slot = (eventGui.inventorySlots.getSlot(50));
+                    if(slot.getHasStack()) {
+                        String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(slot.getStack().getTagCompound());
+                        for (String line : lore) {
+                            if (line.contains("You already rerolled a chest!")) {
+                                kismetUsed = true;
+                                break;
+                            }
+                        }
+                    }
+                    int kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
+                    String kismetStr = EnumChatFormatting.RED + format.format(kismetPrice) + " coins";
+                    if(neu.config.dungeons.useKismetOnDungeonProfit)
+                    profitLossBIN = kismetUsed ? profitLossBIN-kismetPrice : profitLossBIN;
+
                     String profitPrefix = EnumChatFormatting.DARK_GREEN.toString();
                     String lossPrefix = EnumChatFormatting.RED.toString();
                     String prefix = profitLossBIN >= 0 ? profitPrefix : lossPrefix;
@@ -1384,16 +1402,20 @@ public class NEUEventListener {
 
                     Utils.renderAlignedString(valueStringBIN1, valueStringBIN2,
                             guiLeft + xSize + 4 + 10, guiTop + 14, 160);
+                    if (neu.config.dungeons.useKismetOnDungeonProfit && kismetUsed) {
+                        Utils.renderAlignedString(EnumChatFormatting.YELLOW + "Kismet Feather: ", kismetStr,
+                                guiLeft + xSize + 4 + 10, guiTop + 24, 160);
+                    }
                     if (totalValue >= 0) {
                         Utils.renderAlignedString(EnumChatFormatting.YELLOW + "Profit/Loss: ", plStringBIN,
-                                guiLeft + xSize + 4 + 10, guiTop + 24, 160);
+                                guiLeft + xSize + 4 + 10, guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ? (kismetUsed ? 34 : 24) : 24) , 160);
                     }
 
                     int index = 0;
                     for (Map.Entry<String, Float> entry : itemValues.entrySet()) {
                         Utils.renderAlignedString(entry.getKey(), prefix +
                                         format.format(entry.getValue().intValue()),
-                                guiLeft + xSize + 4 + 10, guiTop + 29 + (++index) * 10, 160);
+                                guiLeft + xSize + 4 + 10, guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ?  (kismetUsed ? 39 :29) : 29) + (++index) * 10, 160);
                     }
                 }
             } catch (Exception e) {

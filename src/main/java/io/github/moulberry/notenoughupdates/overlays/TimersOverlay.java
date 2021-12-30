@@ -41,8 +41,11 @@ public class TimersOverlay extends TextOverlay {
     private static final Pattern PUZZLER_PATTERN = Pattern.compile("\u00a7r\u00a7dPuzzler\u00a7r\u00a76 gave you .+ \u00a7r\u00a76for solving the puzzle!\u00a7r");
     private static final Pattern FETCHUR_PATTERN = Pattern.compile("\u00a7e\\[NPC] Fetchur\u00a7f: \u00a7rthanks thats probably what i needed\u00a7r");
     private static final Pattern FETCHUR2_PATTERN = Pattern.compile("\u00a7e\\[NPC] Fetchur\u00a7f: \u00a7rcome back another time, maybe tmrw\u00a7r");
-
-    private final boolean hideGodpot = false;
+    private static final Pattern DAILY_MITHRIL_POWDER = Pattern.compile("\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a72.+ Mithril Powder \u00a7r\u00a7ffrom mining your first Mithril Ore of the day!\u00a7r");
+    private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile("\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
+    private static final Pattern CATACOMBS_DAILY = Pattern.compile("\u00a7r\u00a7r\u00a7r\\s+\u00a7r\u00a78\\+\u00a7r\u00a73.+ Catacombs Experience\u00a7r");
+    private static final Pattern CATACOMBS_RUN_COMPLETED = Pattern.compile("\u00a7r\u00a7r\u00a7r\\s+\u00a7r\u00a7c\u2620 \u00a7r\u00a7eDefeated \u00a7r\u00a7c.+ \u00a7r\u00a7ein \u00a7r\u00a7a0.+\u00a7r");
+    private boolean isDungeonCompleted = true;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onChatMessageReceived(ClientChatReceivedEvent event) {
@@ -50,14 +53,16 @@ public class TimersOverlay extends TextOverlay {
         if (hidden == null) return;
 
         if (event.type == 0) {
+            System.out.println(event.message.getFormattedText());
             long currentTime = System.currentTimeMillis();
+            long catacombsReset = currentTime / 86400000 * 86400000;
+            long lastCatacombsReset = (currentTime - 86400000) / 86400000 * 86400000;
 
             Matcher cakeMatcher = CAKE_PATTERN.matcher(event.message.getFormattedText());
             if (cakeMatcher.matches()) {
                 hidden.firstCakeAte = currentTime;
                 return;
             }
-
             Matcher puzzlerMatcher = PUZZLER_PATTERN.matcher(event.message.getFormattedText());
             if (puzzlerMatcher.matches()) {
                 hidden.puzzlerCompleted = currentTime;
@@ -75,7 +80,31 @@ public class TimersOverlay extends TextOverlay {
                 hidden.fetchurCompleted = currentTime;
                 return;
             }
-
+            Matcher dailyGemstonePowder = DAILY_GEMSTONE_POWDER.matcher(event.message.getFormattedText());
+            if (dailyGemstonePowder.matches()) {
+                hidden.dailyGemstonePowderCompleted = currentTime;
+                return;
+            }
+            Matcher dailyMithrilPowder = DAILY_MITHRIL_POWDER.matcher(event.message.getFormattedText());
+            if (dailyMithrilPowder.matches()) {
+                hidden.dailyMithrilPowerCompleted = currentTime;
+                return;
+            }
+            Matcher catacombsRuns = CATACOMBS_DAILY.matcher(event.message.getFormattedText());
+            Matcher catacombsRunCompleted = CATACOMBS_RUN_COMPLETED.matcher(event.message.getFormattedText());
+            if(catacombsRunCompleted.matches()) {
+                isDungeonCompleted = true;
+            }
+            if (catacombsRuns.matches() && isDungeonCompleted) {
+                if (hidden.catacombsRunsAmount < 5) {
+                    hidden.catacombsRunsAmount++;
+                }
+                hidden.lastCatacombsRun = currentTime;
+                isDungeonCompleted = false;
+            }
+            if (hidden.lastCatacombsRun < lastCatacombsReset) { // 2 uhr
+                hidden.catacombsRunsAmount = 0;
+            }
         }
     }
 
@@ -92,6 +121,7 @@ public class TimersOverlay extends TextOverlay {
     private static final ItemStack COMMISSIONS_ICON = new ItemStack(Items.iron_pickaxe);
     private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
     private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
+
 
     @Override
     protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -131,8 +161,8 @@ public class TimersOverlay extends TextOverlay {
                             new ItemStack(Blocks.quartz_ore, 50, 0),
                             //new ItemStack(Items.ender_pearl, 16, 0)
                     };
+
                 }
-                long currentTime = System.currentTimeMillis();
 
                 ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
 
@@ -154,6 +184,14 @@ public class TimersOverlay extends TextOverlay {
             case "Cookie Buff":
                 icon = COOKIE_ICON;
                 break;
+            case "Daily Mithril Powder":
+                icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MITHRIL_ORE"));
+                break;
+            case "Daily Gemstone Powder":
+                icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PERFECT_AMETHYST_GEM"));
+                break;
+            case "Daily Catacombs Runs":
+                icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LIVID_BOSS"));
         }
 
         if (icon != null) {
@@ -168,6 +206,7 @@ public class TimersOverlay extends TextOverlay {
 
         super.renderLine(line, position, dummy);
     }
+
 
     @Override
     public void update() {
@@ -396,11 +435,11 @@ public class TimersOverlay extends TextOverlay {
             map.put(3, DARK_AQUA + "Puzzler: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(puzzlerEnd));
         }
 
-        long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000;
-
-        long fetchurComplete = hidden.fetchurCompleted;
-
+        long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000; // 12am est
+        long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
         long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
+        long catacombsDiffNow = catacombsReset + 86400000 - currentTime;
+        long fetchurComplete = hidden.fetchurCompleted;
 
         //Fetchur Display
         if (fetchurComplete < midnightReset) {
@@ -439,15 +478,67 @@ public class TimersOverlay extends TextOverlay {
             map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!");
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
                 (hidden.experimentsCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(timeDiffMidnightNow));
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(catacombsReset));
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.SOON.ordinal() &&
                 (hidden.experimentsCompleted < (midnightReset - TimeEnums.HOUR.time))) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(timeDiffMidnightNow));
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(catacombsReset));
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
                 (hidden.experimentsCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(timeDiffMidnightNow));
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(catacombsReset));
         } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
-            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(timeDiffMidnightNow));
+            map.put(6, DARK_AQUA + "Experiments: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(catacombsReset));
+        }
+
+        // Daily Mithril Powder display
+        long mithrilPowderCompleted = hidden.dailyMithrilPowerCompleted + 1000 * 60 * 60 * 24 - currentTime;
+
+        if (hidden.dailyMithrilPowerCompleted < midnightReset) {
+            map.put(7, DARK_AQUA + "Daily Mithril Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!");
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+                (hidden.dailyMithrilPowerCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+            map.put(7, DARK_AQUA + "Daily Mithril Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(timeDiffMidnightNow));
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+                (hidden.dailyMithrilPowerCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+            map.put(7, DARK_AQUA + "Daily Mithril Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(timeDiffMidnightNow));
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+                (hidden.dailyMithrilPowerCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+            map.put(7, DARK_AQUA + "Daily Mithril Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(timeDiffMidnightNow));
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
+            map.put(7, DARK_AQUA + "Daily Mithril Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(timeDiffMidnightNow));
+        }
+
+        // Daily Gemstone Powder Display
+        if (hidden.dailyGemstonePowderCompleted < midnightReset) {
+            map.put(8, DARK_AQUA + "Daily Gemstone Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!");
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+                (hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+            map.put(8, DARK_AQUA + "Daily Gemstone Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(timeDiffMidnightNow));
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+                (hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+            map.put(8, DARK_AQUA + "Daily Gemstone Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(timeDiffMidnightNow));
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+                (hidden.dailyGemstonePowderCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+            map.put(8, DARK_AQUA + "Daily Gemstone Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(timeDiffMidnightNow));
+        } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
+            map.put(8, DARK_AQUA + "Daily Gemstone Powder: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(timeDiffMidnightNow));
+        }
+
+        // Daily Catacombs Runs Display
+            map.put(9, DARK_AQUA + "Daily Catacombs Runs: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + compactRemaining(hidden.catacombsRunsAmount));
+            if (hidden.catacombsRunsAmount == 5) {
+                 if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyCatacombsRunsDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+                    (hidden.catacombsDailyCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
+                map.put(9, DARK_AQUA + "Daily Catacombs Runs: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] + Utils.prettyTime(catacombsDiffNow));
+            } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyCatacombsRunsDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+                    (hidden.catacombsDailyCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
+                map.put(9, DARK_AQUA + "Daily Catacombs Runs: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] + Utils.prettyTime(catacombsDiffNow));
+            } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyCatacombsRunsDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+                    (hidden.catacombsDailyCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
+                map.put(9, DARK_AQUA + "Daily Catacombs Runs: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] + Utils.prettyTime(catacombsDiffNow));
+            } else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyCatacombsRunsDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
+                map.put(9, DARK_AQUA + "Daily Catacombs Runs: " + EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] + Utils.prettyTime(catacombsDiffNow));
+            }
+
         }
 
         overlayStrings = new ArrayList<>();
@@ -457,6 +548,10 @@ public class TimersOverlay extends TextOverlay {
             }
         }
         if (overlayStrings.isEmpty()) overlayStrings = null;
+    }
+
+    public String compactRemaining(int amount) {
+        return (5-amount) + " remaining";
     }
 
     private enum TimeEnums {

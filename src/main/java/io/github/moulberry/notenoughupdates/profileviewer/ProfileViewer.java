@@ -188,6 +188,7 @@ public class ProfileViewer {
         public float level = 0;
         public float maxXpForLevel = 0;
         public boolean maxed = false;
+        public double totalXp;
     }
 
     public static Level getLevel(JsonArray levelingArray, float xp, int levelCap, boolean cumulative) {
