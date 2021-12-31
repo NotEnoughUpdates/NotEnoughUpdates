@@ -53,10 +53,9 @@ public class TimersOverlay extends TextOverlay {
         if (hidden == null) return;
 
         if (event.type == 0) {
-            System.out.println(event.message.getFormattedText());
             long currentTime = System.currentTimeMillis();
-            long catacombsReset = currentTime / 86400000 * 86400000;
-            long lastCatacombsReset = (currentTime - 86400000) / 86400000 * 86400000;
+            long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
+            long catacombsResetTmr = (currentTime+86400000) / 86400000 * 86400000; // 7pm est next day
 
             Matcher cakeMatcher = CAKE_PATTERN.matcher(event.message.getFormattedText());
             if (cakeMatcher.matches()) {
@@ -102,7 +101,7 @@ public class TimersOverlay extends TextOverlay {
                 hidden.lastCatacombsRun = currentTime;
                 isDungeonCompleted = false;
             }
-            if (hidden.lastCatacombsRun < lastCatacombsReset) { // 2 uhr
+            if (hidden.lastCatacombsRun >= catacombsResetTmr){
                 hidden.catacombsRunsAmount = 0;
             }
         }
@@ -121,7 +120,6 @@ public class TimersOverlay extends TextOverlay {
     private static final ItemStack COMMISSIONS_ICON = new ItemStack(Items.iron_pickaxe);
     private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
     private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
-
 
     @Override
     protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -161,7 +159,6 @@ public class TimersOverlay extends TextOverlay {
                             new ItemStack(Blocks.quartz_ore, 50, 0),
                             //new ItemStack(Items.ender_pearl, 16, 0)
                     };
-
                 }
 
                 ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
