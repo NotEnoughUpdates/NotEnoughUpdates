@@ -1370,18 +1370,18 @@ public class GuiProfileViewer extends GuiScreen {
         if (mouseX > x && mouseX < x + 120) {
             if (mouseY > y - 4 && mouseY < y + 13) {
                 String levelStr;
-                String totalXpStr  = null;
+                String totalXpStr = null;
                 if (levelObj.maxed) {
                     levelStr = EnumChatFormatting.GOLD + "MAXED!";
-                    totalXpStr = EnumChatFormatting.GRAY + "Total XP: " +EnumChatFormatting.DARK_PURPLE+ Utils.formatNumberWithDots((long) levelObj.totalXp);
+                    totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + Utils.formatNumberWithDots((long) levelObj.totalXp);
                 } else {
                     int maxXp = (int) levelObj.maxXpForLevel;
                     levelStr = EnumChatFormatting.DARK_PURPLE + shortNumberFormat(Math.round((level % 1) * maxXp),
                             0) + "/" + shortNumberFormat(maxXp, 0);
                 }
-                if(totalXpStr != null){
+                if (totalXpStr != null) {
                     tooltipToDisplay = Utils.createList(levelStr, totalXpStr);
-                }else {
+                } else {
                     tooltipToDisplay = Utils.createList(levelStr);
                 }
             }
