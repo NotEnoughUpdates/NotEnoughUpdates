@@ -42,11 +42,10 @@ public class MiscOverlays {
                     "\u00a73Experiments: \u00a7e3h38m",
                     "\u00a73Daily Mithril Powder: \u00a7e3h38m",
                     "\u00a73Daily Gemstone Powder: \u00a7e3h38m",
-                    "\u00a73Daily Catacombs Runs: \u00a7e3h38m",
             }
     )
     @ConfigAccordionId(id = 0)
-    public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+    public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 
     @ConfigOption(
             name = "Show Only If Soon",
@@ -163,18 +162,6 @@ public class MiscOverlays {
             values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
     )
     public int dailyGemstonePowderDisplay = 0;
-
-    @Expose
-    @ConfigOption(
-            name = "Daily Catacombs Runs Display",
-            desc = "Change the way the daily gemstone powder displays\n" +
-                    "Only when ready, When very Soon, When soon, When kinda soon or always."
-    )
-    @ConfigAccordionId(id = 1)
-    @ConfigEditorDropdown(
-            values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
-    )
-    public int dailyCatacombsRunsDisplay = 0;
 
     @ConfigOption(
             name = "Colours",
