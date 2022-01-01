@@ -358,9 +358,9 @@ public class ProfileViewer {
             if (networth == 0) return -1;
 
             //System.out.println(profileId);
-            for (Map.Entry<String, Long> entry : mostExpensiveInternal.entrySet()) {
+            //for (Map.Entry<String, Long> entry : mostExpensiveInternal.entrySet()) {
                 //System.out.println(entry.getKey() + ":" + entry.getValue());
-            }
+            //}
 
             networth = (int) (networth * 1.3f);
 
