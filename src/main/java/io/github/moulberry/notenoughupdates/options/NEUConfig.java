@@ -441,12 +441,6 @@ public class NEUConfig extends Config {
         public long dailyGemstonePowderCompleted = 0L;
         @Expose
         public long dailyMithrilPowerCompleted = 0L;
-        @Expose
-        public int catacombsRunsAmount = 0;
-        @Expose
-        public long catacombsDailyCompleted = 0L;
-        @Expose
-        public long lastCatacombsRun = 0L;
     }
 
     public HiddenLocationSpecific getLocationSpecific() {
