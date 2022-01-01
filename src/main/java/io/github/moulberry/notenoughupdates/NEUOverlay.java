@@ -1819,6 +1819,19 @@ public class NEUOverlay extends Gui {
             } else return null;
         }
 
+    public boolean isWardrobeSystemOnMainServer() {
+        JsonElement alphaWardrobeElement = Utils.getElement( Constants.MISC, "alphawardrobe");
+        if (alphaWardrobeElement == null || !alphaWardrobeElement.isJsonObject()) {
+            return true;
+        }
+        JsonObject isWardrobe = alphaWardrobeElement.getAsJsonObject();
+        if (isWardrobe.has("wardrobeonmain")) {
+            return isWardrobe.get("wardrobeonmain").getAsBoolean();
+        } else {
+            return true;
+        }
+    }
+
     public ItemStack slot1 = null;
     public ItemStack slot2 = null;
     public ItemStack slot3 = null;
@@ -1864,8 +1877,9 @@ public class NEUOverlay extends Gui {
             GlStateManager.bindTexture(0);
         }
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+
         if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
-                && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+                && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && isWardrobeSystemOnMainServer()) {
            if (getWardrobeSlot(1) != null) {
                slot1 = getWardrobeSlot(4);
                slot2 = getWardrobeSlot(3);
