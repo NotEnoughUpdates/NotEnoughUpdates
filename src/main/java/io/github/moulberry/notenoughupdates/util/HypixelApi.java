@@ -6,12 +6,15 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -27,12 +30,17 @@ public class HypixelApi {
     private final String[] myApiURLs = {"https://moulberry.codes/"};//, "http://moulberry.codes/", "http://51.79.51.21/"};//, "http://51.75.78.252/" };
     private final Integer[] myApiSuccesses = {0, 0, 0, 0};
 
+    public CompletableFuture<JsonObject> getHypixelApiAsync(String apiKey, String method, HashMap<String, String> args) {
+        return getApiAsync(generateApiUrl(apiKey, method, args));
+    }
+
     public void getHypixelApiAsync(String apiKey, String method, HashMap<String, String> args, Consumer<JsonObject> consumer) {
-        getHypixelApiAsync(apiKey, method, args, consumer, () -> {});
+        getHypixelApiAsync(apiKey, method, args, consumer, () -> {
+        });
     }
 
     public void getHypixelApiAsync(String apiKey, String method, HashMap<String, String> args, Consumer<JsonObject> consumer, Runnable error) {
-        getApiAsync(generateApiUrl(apiKey != null ? apiKey.trim() : null, method, args), consumer, error);
+        getApiAsync(generateApiUrl(apiKey, method, args), consumer, error);
     }
 
     private String getMyApiURL() {
@@ -59,6 +67,18 @@ public class HypixelApi {
                 }
             }
         }
+    }
+
+    public CompletableFuture<JsonObject> getApiAsync(String urlS) {
+        CompletableFuture<JsonObject> result = new CompletableFuture<>();
+        es.submit(() -> {
+            try {
+                result.complete(getApiSync(urlS));
+            } catch (Exception e) {
+                result.completeExceptionally(e);
+            }
+        });
+        return result;
     }
 
     public void getApiAsync(String urlS, Consumer<JsonObject> consumer, Runnable error) {
@@ -134,16 +154,22 @@ public class HypixelApi {
     }
 
     public String generateApiUrl(String apiKey, String method, HashMap<String, String> args) {
-        StringBuilder url = new StringBuilder("https://api.hypixel.net/" + method + (apiKey != null ? ("?key=" + apiKey.replace(" ", "")) : ""));
+        if (apiKey != null)
+            args.put("key", apiKey.trim().replace("-", ""));
+        StringBuilder url = new StringBuilder("https://api.hypixel.net/" + method);
         boolean first = true;
         for (Map.Entry<String, String> entry : args.entrySet()) {
-            if (first && apiKey == null) {
+            if (first) {
                 url.append("?");
                 first = false;
             } else {
                 url.append("&");
             }
-            url.append(entry.getKey()).append("=").append(entry.getValue());
+            try {
+                url.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8.name())).append("=")
+                        .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.name()));
+            } catch (UnsupportedEncodingException e) {
+            }
         }
         return url.toString();
     }

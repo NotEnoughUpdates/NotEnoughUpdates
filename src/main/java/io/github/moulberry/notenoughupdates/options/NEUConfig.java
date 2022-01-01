@@ -281,6 +281,13 @@ public class NEUConfig extends Config {
 
     @Expose
     @Category(
+            name = "AH/BZ Graph",
+            desc = "Graph of auction and bazaar prices"
+    )
+    public AHGraph ahGraph = new AHGraph();
+
+    @Expose
+    @Category(
             name = "Accessory Bag Overlay",
             desc = "Accessory Bag Overlay"
     )
@@ -438,6 +445,10 @@ public class NEUConfig extends Config {
             put("Sapphire", 0);
             put("Topaz", 0);
         }};
+        @Expose
+        public long dailyGemstonePowderCompleted = 0L;
+        @Expose
+        public long dailyMithrilPowerCompleted = 0L;
     }
 
     public HiddenLocationSpecific getLocationSpecific() {

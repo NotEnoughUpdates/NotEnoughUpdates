@@ -7,6 +7,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -28,6 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.BufferUtils;
@@ -44,8 +46,8 @@ import java.lang.reflect.Method;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -828,6 +830,16 @@ public class Utils {
         GlStateManager.scale(1 / factor, 1 / factor, 1);
     }
 
+    public static void drawStringScaledMax(String str, FontRenderer fr, float x, float y, boolean shadow, int colour, float factor, int len) {
+        int strLen = fr.getStringWidth(str);
+        float f = len / (float) strLen;
+        factor = Math.min(factor, f);
+
+        GlStateManager.scale(factor, factor, 1);
+        fr.drawString(str, x / factor, y / factor, colour, shadow);
+        GlStateManager.scale(1 / factor, 1 / factor, 1);
+    }
+
     public static void drawStringCenteredScaledMaxWidth(String str, FontRenderer fr, float x, float y, boolean shadow, int len, int colour) {
         int strLen = fr.getStringWidth(str);
         float factor = len / (float) strLen;
@@ -1351,4 +1363,97 @@ public class Utils {
 
         return endsIn;
     }
+    public static void drawLine(float sx, float sy, float ex, float ey, int width, int color) {
+        float f = (float) (color >> 24 & 255) / 255.0F;
+        float f1 = (float) (color >> 16 & 255) / 255.0F;
+        float f2 = (float) (color >> 8 & 255) / 255.0F;
+        float f3 = (float) (color & 255) / 255.0F;
+        GlStateManager.pushMatrix();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f1, f2, f3, f);
+        GL11.glLineWidth(width);
+        GL11.glBegin(GL11.GL_LINES);
+        GL11.glVertex2d(sx, sy);
+        GL11.glVertex2d(ex, ey);
+        GL11.glEnd();
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawDottedLine(float sx, float sy, float ex, float ey, int width, int factor , int color) {
+        GlStateManager.pushMatrix();
+        GL11.glLineStipple(factor, (short) 0xAAAA);
+        GL11.glEnable(GL11.GL_LINE_STIPPLE);
+        drawLine(sx, sy, ex, ey, width, color);
+        GL11.glDisable(GL11.GL_LINE_STIPPLE);
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawTexturedQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4,
+                                        float uMin, float uMax, float vMin, float vMax, int filter) {
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, filter);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer
+                .pos(x1, y1, 0.0D)
+                .tex(uMin, vMax).endVertex();
+        worldrenderer
+                .pos(x2, y2, 0.0D)
+                .tex(uMax, vMax).endVertex();
+        worldrenderer
+                .pos(x3, y3, 0.0D)
+                .tex(uMax, vMin).endVertex();
+        worldrenderer
+                .pos(x4, y4, 0.0D)
+                .tex(uMin, vMin).endVertex();
+        tessellator.draw();
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        GlStateManager.disableBlend();
+    }
+
+    public static boolean sendCloseScreenPacket() {
+        EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+        if (thePlayer.openContainer == null) return false;
+        thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(
+                thePlayer.openContainer.windowId));
+        return true;
+    }
+
+    public static String formatNumberWithDots(long number) {
+        if (number == 0)
+            return "0";
+        String work = "";
+        boolean isNegative = false;
+        if (number < 0) {
+            isNegative = true;
+            number = -number;
+        }
+        while (number != 0) {
+            work = String.format("%03d.%s", number % 1000, work);
+            number /= 1000;
+        }
+        work = work.substring(0, work.length() - 1);
+        while (work.startsWith("0"))
+            work = work.substring(1);
+        if (isNegative)
+            return "-" + work;
+        return work;
+    }
+
 }

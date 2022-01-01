@@ -18,6 +18,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
@@ -1070,6 +1071,9 @@ public class NEUOverlay extends Gui {
                             textField.setText("id:" + internalname.get());
                             itemPaneOpen = true;
                             updateSearch();
+                        } else if (keyPressed == NotEnoughUpdates.INSTANCE.config.ahGraph.graphKey && NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
+                            NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
+                            return true;
                         }
                     }
                 }

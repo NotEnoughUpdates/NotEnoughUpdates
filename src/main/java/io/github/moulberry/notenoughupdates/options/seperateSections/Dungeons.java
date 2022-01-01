@@ -77,6 +77,16 @@ public class Dungeons {
     @ConfigAccordionId(id = 1)
     public int profitDisplayLoc = 0;
 
+    @Expose
+    @ConfigOption(
+            name = "Include Kismet Feather",
+            desc = "Include Kismet Feathers in the Profit Calculation after rerolling"
+    )
+    @ConfigEditorBoolean
+    @ConfigAccordionId(id = 1)
+    public boolean useKismetOnDungeonProfit = true;
+
+
     @ConfigOption(
             name = "Dungeon Win Overlay",
             desc = ""

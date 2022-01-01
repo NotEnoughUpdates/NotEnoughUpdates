@@ -3,6 +3,8 @@ package io.github.moulberry.notenoughupdates.overlays;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
+import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -17,7 +19,7 @@ import org.lwjgl.input.Mouse;
 import java.util.List;
 
 public class CraftingOverlay {
-    private static ItemStack[] items = new ItemStack[9];
+    private static final ItemStack[] items = new ItemStack[9];
     private static final NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
     public static boolean shouldRender = false;
     private static String text = null;
@@ -56,34 +58,6 @@ public class CraftingOverlay {
         }
     }
 
-    public static void updateItem(JsonObject item) {
-        items = new ItemStack[9];
-        text = null;
-        String[] x = {"1", "2", "3"};
-        String[] y = {"A", "B", "C"};
-        for (int i = 0; i < 9; i++) {
-            String name = y[i / 3] + x[i % 3];
-            String itemS = item.getAsJsonObject("recipe").get(name).getAsString();
-            if (itemS != null && !itemS.equals("")) {
-                int count = 1;
-                if (itemS.split(":").length == 2) {
-                    count = Integer.parseInt(itemS.split(":")[1]);
-                    itemS = itemS.split(":")[0];
-                }
-                JsonObject craft = manager.getItemInformation().get(itemS);
-                if (craft != null) {
-                    ItemStack stack = manager.jsonToStack(craft);
-                    stack.stackSize = count;
-                    items[i] = stack;
-                }
-            }
-        }
-        if (item.has("crafttext")) {
-            text = item.get("crafttext").getAsString();
-        }
-        shouldRender = true;
-    }
-
     public static void keyInput() {
         if (!Keyboard.getEventKeyState() || Keyboard.getEventKey() != Keyboard.KEY_U && Keyboard.getEventKey() != Keyboard.KEY_R)
             return;
@@ -113,5 +87,17 @@ public class CraftingOverlay {
                 }
             }
         }
+    }
+
+    public static void updateItem(CraftingRecipe recipe) {
+        for (int i = 0; i < 9; i++) {
+            Ingredient ingredient = recipe.getInputs()[i];
+            if (ingredient == null) {
+                items[i] = null;
+            } else {
+                items[i] = ingredient.getItemStack();
+            }
+        }
+        text = recipe.getCraftText();
     }
 }
