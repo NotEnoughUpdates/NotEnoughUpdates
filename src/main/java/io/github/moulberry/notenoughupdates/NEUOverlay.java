@@ -103,6 +103,7 @@ public class NEUOverlay extends Gui {
     private static boolean renderingArmorHud;
     private static boolean renderingPetHud;
     public static boolean shouldUseCachedPet;
+    public static long cachedPetTimer;
 
     private final NEUManager manager;
 
@@ -1797,6 +1798,9 @@ public class NEUOverlay extends Gui {
                                     if (line.contains("\u00a77\u00a7cClick to despawn.")) {
                                         selectedPet = i;
                                         shouldUseCachedPet = true;
+                                        if (cachedPetTimer == -2) {
+                                            cachedPetTimer = -1;
+                                        }
                                         break;
                                     }
                                 }
@@ -1984,6 +1988,12 @@ public class NEUOverlay extends Gui {
                     petSlot2 = getChestSlotsAsItemStack(getEquippedPet());
                 }
                 ItemStack petInfo = null;
+                if (System.currentTimeMillis() - cachedPetTimer > 300) {
+                    shouldUseCachedPet = false;
+                    cachedPetTimer = -2;
+                } else if (cachedPetTimer < 0) {
+                    shouldUseCachedPet = true;
+                }
                 if (shouldUseCachedPet) {
                     petInfo = petSlot2;
                 } else {
