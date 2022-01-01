@@ -1798,10 +1798,6 @@ public class NEUOverlay extends Gui {
                                     if (line.contains("\u00a77\u00a7cClick to despawn.")) {
                                         selectedPet = i;
                                         shouldUseCachedPet = true;
-                                        if (cachedPetTimer == -2) {
-                                            cachedPetTimer = -1;
-                                        }
-                                        break;
                                     }
                                 }
                             } else {
@@ -1824,13 +1820,13 @@ public class NEUOverlay extends Gui {
         }
 
     public boolean isWardrobeSystemOnMainServer() {
-        JsonElement alphaWardrobeElement = Utils.getElement( Constants.MISC, "alphawardrobe");
+        JsonElement alphaWardrobeElement = Utils.getElement( Constants.DISABLE, "wardrobeFeature");
         if (alphaWardrobeElement == null || !alphaWardrobeElement.isJsonObject()) {
             return true;
         }
         JsonObject isWardrobe = alphaWardrobeElement.getAsJsonObject();
-        if (isWardrobe.has("wardrobeonmain")) {
-            return isWardrobe.get("wardrobeonmain").getAsBoolean();
+        if (isWardrobe.has("enableNewWardrob")) {
+            return isWardrobe.get("enableNewWardrob").getAsBoolean();
         } else {
             return true;
         }
@@ -1988,12 +1984,7 @@ public class NEUOverlay extends Gui {
                     petSlot2 = getChestSlotsAsItemStack(getEquippedPet());
                 }
                 ItemStack petInfo = null;
-                if (System.currentTimeMillis() - cachedPetTimer > 300) {
-                    shouldUseCachedPet = false;
-                    cachedPetTimer = -2;
-                } else if (cachedPetTimer < 0) {
-                    shouldUseCachedPet = true;
-                }
+
                 if (shouldUseCachedPet) {
                     petInfo = petSlot2;
                 } else {
@@ -2001,7 +1992,7 @@ public class NEUOverlay extends Gui {
                 }
                 if (guiScreen instanceof GuiInventory) {
                     GL11.glTranslatef(0, 0, 80);
-                    if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+                    if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !isWardrobeSystemOnMainServer()) {
                         if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
                             Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY);
                         }
