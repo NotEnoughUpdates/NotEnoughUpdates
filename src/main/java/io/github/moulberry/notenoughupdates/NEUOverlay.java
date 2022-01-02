@@ -1735,10 +1735,14 @@ public class NEUOverlay extends Gui {
                 ContainerChest container = (ContainerChest) chest.inventorySlots;
                 IInventory lower = container.getLowerChestInventory();
                 String containerName = lower.getDisplayName().getUnformattedText();
-                try {
-                    petPage = Integer.parseInt(containerName.substring(1, 2));
-                } catch (NumberFormatException e) {
+                if (containerName.equals("Pets")) {
                     petPage = 1;
+                } else {
+                    try {
+                        petPage = Integer.parseInt(containerName.substring(1, 2));
+                    } catch (NumberFormatException e) {
+                        petPage = 1;
+                    }
                 }
             } else petPage = -1;
         }
@@ -1804,8 +1808,6 @@ public class NEUOverlay extends Gui {
                                         shouldUseCachedPet = true;
                                     }
                                 }
-                            } else {
-                                shouldUseCachedPet = false;
                             }
                         }
                     }
@@ -1916,7 +1918,7 @@ public class NEUOverlay extends Gui {
                 }
 
                 GlStateManager.color(1, 1, 1, 1);
-                GL11.glTranslatef(0, 0, 80);
+                GL11.glTranslatef(0, 0, 401);
                 float yNumber = (float) (height - 167) / 2f;
                 Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
                 GlStateManager.bindTexture(0);
@@ -1928,7 +1930,7 @@ public class NEUOverlay extends Gui {
                 if (slot1 == null) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
                     GlStateManager.color(1, 1, 1, 1);
-                    GL11.glTranslatef(0, 0, 100);
+                    GL11.glTranslatef(0, 0, 401);
                     Utils.drawTexturedRect(((width - 208) / 2f), ((height + 60) / 2f - 105), 16, 16, GL11.GL_NEAREST);
                     GlStateManager.bindTexture(0);
 
@@ -1952,28 +1954,28 @@ public class NEUOverlay extends Gui {
                             tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
                             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                             tooltipToDisplay = null;
-                            GL11.glTranslatef(0, 0, -80);
+                            GL11.glTranslatef(0, 0, -401);
                         }
                         if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
                             tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
                             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                             tooltipToDisplay = null;
-                            GL11.glTranslatef(0, 0, -80);
+                            GL11.glTranslatef(0, 0, -401);
                         }
                         if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
                             tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
                             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                             tooltipToDisplay = null;
-                            GL11.glTranslatef(0, 0, -80);
+                            GL11.glTranslatef(0, 0, -401);
                         }
                         if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
                             tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
                             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                             tooltipToDisplay = null;
-                            GL11.glTranslatef(0, 0, -80);
+                            GL11.glTranslatef(0, 0, -401);
                         }
                     }
-                    GL11.glTranslatef(0, 0, -80);
+                    GL11.glTranslatef(0, 0, -401);
                 }
             }
         }
@@ -1990,12 +1992,12 @@ public class NEUOverlay extends Gui {
                 ItemStack petInfo = null;
 
                 if (shouldUseCachedPet) {
-                    petInfo = petSlot2;
+                    petInfo = petSlot;
                 } else {
                     petInfo = petSlot;
                 }
                 if (guiScreen instanceof GuiInventory) {
-                    GL11.glTranslatef(0, 0, 80);
+                    GL11.glTranslatef(0, 0, 401);
                     if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !isWardrobeSystemOnMainServer()) {
                         if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
                             Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY);
@@ -2044,7 +2046,7 @@ public class NEUOverlay extends Gui {
                                 tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
                                 Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                                 tooltipToDisplay = null;
-                                GL11.glTranslatef(0, 0, -80);
+                                GL11.glTranslatef(0, 0, -401);
                             }
                         }
                     }

@@ -1110,7 +1110,7 @@ public class PetInfoOverlay extends TextOverlay {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatReceived(ClientChatReceivedEvent event) {
         NEUConfig config = NotEnoughUpdates.INSTANCE.config;
-        if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck)) {
+        if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay)) {
             if (event.type == 0) {
                 String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 
