@@ -2,7 +2,7 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.ChangeLocationEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -126,7 +126,7 @@ public class SBInfo {
     }
     public void setLocation(String location){
         if(!Objects.equals(this.mode, location)){
-            MinecraftForge.EVENT_BUS.post(new ChangeLocationEvent(location, this.mode));
+            MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
         }
         this.mode=location;
 

@@ -9,6 +9,8 @@ import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.miscfeatures.*;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.DwarvenMinesTextures;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -145,7 +147,7 @@ public class NotEnoughUpdates {
         MinecraftForge.EVENT_BUS.register(new FairySouls());
         MinecraftForge.EVENT_BUS.register(new CrystalOverlay());
         MinecraftForge.EVENT_BUS.register(new ItemCooldowns());
-        MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
+
         MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
         MinecraftForge.EVENT_BUS.register(new FuelBar());
         //MinecraftForge.EVENT_BUS.register(new FancyPortals());
@@ -156,6 +158,9 @@ public class NotEnoughUpdates {
         MinecraftForge.EVENT_BUS.register(InventoryStorageSelector.getInstance());
         MinecraftForge.EVENT_BUS.register(SlotLocking.getInstance());
         MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
+
+        MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
+        MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 
         if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
             ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CustomSkulls.getInstance());

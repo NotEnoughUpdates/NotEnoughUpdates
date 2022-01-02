@@ -14,6 +14,8 @@ import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.gamemodes.GuiGamemodes;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CrystalHollowsTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FancyPortals;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
@@ -25,6 +27,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
@@ -39,6 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.storage.MapData;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -95,7 +99,16 @@ public class Commands {
         ClientCommandHandler.instance.registerCommand(neuHelp);
         ClientCommandHandler.instance.registerCommand(neuFeatures);
         ClientCommandHandler.instance.registerCommand(neuRepoMode);
+        ClientCommandHandler.instance.registerCommand(dokmTest);
     }
+
+    SimpleCommand dokmTest = new SimpleCommand("dokmTest", new SimpleCommand.ProcessCommandRunnable(){
+        public void processCommand(ICommandSender sender, String[] args) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Location: "+SBInfo.getInstance().getLocation()));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Biome: "+ CrystalHollowsTextures.retexture(Minecraft.getMinecraft().thePlayer.getPosition(),SBInfo.getInstance().getLocation()).biomeName));
+            MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo.getInstance().getLocation()));
+        }
+    });
 
     SimpleCommand.ProcessCommandRunnable collectionLogRun = new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
