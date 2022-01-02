@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.ChangeLocationEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -14,6 +15,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,7 +80,7 @@ public class SBInfo {
     public void onWorldLoad(WorldEvent.Load event) {
         lastLocRaw = -1;
         locraw = null;
-        mode = null;
+        this.setLocation(null);
         joinedWorld = System.currentTimeMillis();
         lastOpenContainerName = "";
         hasNewTab = false;
@@ -120,6 +123,13 @@ public class SBInfo {
             return null;
         }
         return mode;
+    }
+    public void setLocation(String location){
+        if(!Objects.equals(this.mode, location)){
+            MinecraftForge.EVENT_BUS.post(new ChangeLocationEvent(location, this.mode));
+        }
+        this.mode=location;
+
     }
 
     private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";

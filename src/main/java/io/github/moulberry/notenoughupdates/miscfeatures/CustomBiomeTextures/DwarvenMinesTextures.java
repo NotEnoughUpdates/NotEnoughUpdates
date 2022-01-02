@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.miscfeatures;
+package io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,6 +16,8 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenHell;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -27,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DwarvenMinesTextures {
+
     private static class IgnoreColumn {
         boolean always;
         int minY;
@@ -45,31 +48,23 @@ public class DwarvenMinesTextures {
     private static long time;
     private static boolean error = false;
 
-    public static int retexture(BlockPos pos) {
-        if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenTextures) return 0;
-        if (error) return 0;
-        if (Minecraft.getMinecraft().theWorld == null) return 0;
-
-        String location = SBInfo.getInstance().getLocation();
-
-        if (location == null) return 0;
-        if (location.equals("crystal_hollows")) return 3;
-        if (!location.equals("mining_3")) return 0;
+    public static BiomeGenBase retexture(BlockPos pos, String location) {
+        if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenTextures) return null;
 
         IBlockState state = Minecraft.getMinecraft().theWorld.getBlockState(pos);
         boolean titanium = state.getBlock() == Blocks.stone && state.getValue(BlockStone.VARIANT) == BlockStone.EnumType.DIORITE_SMOOTH;
         if (titanium) {
             IBlockState plus = Minecraft.getMinecraft().theWorld.getBlockState(pos.add(1, 0, 0));
             if (plus.getBlock() == Blocks.double_stone_slab) {
-                return 1;
+                return BiomeGenBase.extremeHillsPlus;
             }
             IBlockState minus = Minecraft.getMinecraft().theWorld.getBlockState(pos.add(-1, 0, 0));
             if (minus.getBlock() == Blocks.double_stone_slab) {
-                return 1;
+                return BiomeGenBase.extremeHillsPlus;
             }
             IBlockState above = Minecraft.getMinecraft().theWorld.getBlockState(pos.add(0, 1, 0));
             if (above.getBlock() == Blocks.stone_slab) {
-                return 1;
+                return BiomeGenBase.extremeHillsPlus;
             }
         }
 
@@ -94,7 +89,7 @@ public class DwarvenMinesTextures {
                     }
                 } catch (Exception e) {
                     error = true;
-                    return 1;
+                    return BiomeGenBase.extremeHillsPlus;
                 }
             }
             if (ignoredChunks != null) {
@@ -104,10 +99,10 @@ public class DwarvenMinesTextures {
                 lastRetextureCheck.put(pair, time);
 
                 if (ignoredChunks.contains(pair)) {
-                    return 1;
+                    return BiomeGenBase.extremeHillsPlus;
                 }
                 if (titanium) {
-                    return 2;
+                    return BiomeGenBase.extremeHillsEdge;
                 }
 
                 if (!loadedChunkData.containsKey(pair)) {
@@ -157,7 +152,7 @@ public class DwarvenMinesTextures {
                 if (loadedChunkData.get(pair) != null) {
                     HashMap<ChunkCoordIntPair, IgnoreColumn> map = loadedChunkData.get(pair);
                     if (map == null) {
-                        return 0;
+                        return null;
                     }
 
                     int modX = pos.getX() % 16;
@@ -169,11 +164,11 @@ public class DwarvenMinesTextures {
                     IgnoreColumn ignore = map.get(offset);
                     if (ignore != null) {
                         if (ignore.always) {
-                            return 1;
+                            return BiomeGenBase.extremeHillsPlus;
                         } else {
                             int y = pos.getY();
                             if (y >= ignore.minY && y <= ignore.maxY) {
-                                return 1;
+                                return BiomeGenBase.extremeHillsPlus;
                             }
                         }
                     }
@@ -181,7 +176,7 @@ public class DwarvenMinesTextures {
             }
         }
 
-        return 2;
+        return BiomeGenBase.extremeHillsEdge;
     }
 
     /*@SubscribeEvent
