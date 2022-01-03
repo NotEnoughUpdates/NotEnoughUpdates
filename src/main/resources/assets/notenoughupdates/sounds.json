@@ -1,23 +1,56 @@
 {
-  "calendar_notif_jingle":{
-    "category": "master",
-    "sounds": [{
-      "name": "jingle",
-      "stream": false
-    }]
+  "mithril.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "mithrilbreak",
+        "stream": false
+      }
+    ]
   },
-  "calendar_notif_in":{
-    "category": "master",
-    "sounds": [{
-      "name": "in",
-      "stream": false
-    }]
+  "gemstone.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreak",
+        "stream": false
+      }
+    ]
   },
-  "calendar_notif_out":{
+  "titanium.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "titaniumbreak",
+        "stream": false
+      }
+    ]
+  },
+  "calendar_notif_jingle": {
     "category": "master",
-    "sounds": [{
-      "name": "out",
-      "stream": false
-    }]
+    "sounds": [
+      {
+        "name": "jingle",
+        "stream": false
+      }
+    ]
+  },
+  "calendar_notif_in": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "in",
+        "stream": false
+      }
+    ]
+  },
+  "calendar_notif_out": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "out",
+        "stream": false
+      }
+    ]
   }
 }

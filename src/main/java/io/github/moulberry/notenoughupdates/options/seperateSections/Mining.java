@@ -507,5 +507,20 @@ public class Mining {
     @ConfigEditorBoolean
     public boolean crystalHollowTextures = false;
 
+    @Expose
+    @ConfigOption(
+            name = "Replace Gemstone sounds",
+            desc = "Replace the break sounds of crystals in the Crystal Hollows. Requires a texture pack with this feature"
+    )
+    @ConfigEditorBoolean
+    public boolean gemstoneSounds = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Replace Mithril sounds",
+            desc = "Replace the break sounds of mithril and titanium in the Dwarven mines. Requires a texture pack with this feature"
+    )
+    @ConfigEditorBoolean
+    public boolean mithrilSounds = false;
 
 }

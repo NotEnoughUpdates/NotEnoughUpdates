@@ -305,7 +305,6 @@ public class NEUEventListener {
 
         if (longUpdate) {
             CrystalOverlay.tick();
-            DwarvenMinesTextures.tick();
             FairySouls.tick();
             XPInformation.getInstance().tick();
             ProfileApiSyncer.getInstance().tick();

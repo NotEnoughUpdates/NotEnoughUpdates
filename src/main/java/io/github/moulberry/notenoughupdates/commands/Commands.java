@@ -14,7 +14,7 @@ import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.gamemodes.GuiGamemodes;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CrystalHollowsTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FancyPortals;
@@ -47,12 +47,12 @@ import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Desktop;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -102,10 +102,16 @@ public class Commands {
         ClientCommandHandler.instance.registerCommand(dokmTest);
     }
 
-    SimpleCommand dokmTest = new SimpleCommand("dokmTest", new SimpleCommand.ProcessCommandRunnable(){
+    SimpleCommand dokmTest = new SimpleCommand("dokmTest", new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Location: "+SBInfo.getInstance().getLocation()));
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Biome: "+ CrystalHollowsTextures.retexture(Minecraft.getMinecraft().thePlayer.getPosition(),SBInfo.getInstance().getLocation()).biomeName));
+            BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+            if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
+            Arrays.asList(
+                    new ChatComponentText("Showing Zone Info for: " + target),
+                    new ChatComponentText("Zone: " + CustomBiomes.INSTANCE.getSpecialZone(target).name()),
+                    new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
+                    new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
+            ).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
             MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo.getInstance().getLocation()));
         }
     });
@@ -385,7 +391,8 @@ public class Commands {
             if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(NotEnoughUpdates.INSTANCE.getConfigFile()), StandardCharsets.UTF_8))) {
                     NotEnoughUpdates.INSTANCE.config = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, NEUConfig.class);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
     });
@@ -929,7 +936,8 @@ public class Commands {
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
                     NotEnoughUpdates.INSTANCE.displayLinks(update);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
     });
@@ -965,7 +973,8 @@ public class Commands {
 
                         NotEnoughUpdates.INSTANCE.colourMap[x][y] = new Color(entry.getValue().getAsInt(), true);
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
 
             if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {

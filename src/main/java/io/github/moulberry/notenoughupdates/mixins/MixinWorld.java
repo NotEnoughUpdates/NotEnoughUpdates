@@ -27,8 +27,7 @@ public class MixinWorld {
 
     @Inject(method = "getBiomeGenForCoords", at = @At("HEAD"), cancellable = true)
     public void getBiomeGenForCoords(BlockPos pos, CallbackInfoReturnable<BiomeGenBase> cir) {
-
-        BiomeGenBase customBiome = CustomBiomes.getCustomBiome(pos);
+        BiomeGenBase customBiome = CustomBiomes.INSTANCE.getCustomBiome(pos);
         if(customBiome != null){
             cir.setReturnValue(customBiome);
         }
