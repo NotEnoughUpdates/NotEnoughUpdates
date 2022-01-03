@@ -23,6 +23,18 @@ minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
     runDir = "run"
     mappings = "stable_22"
+    clientJvmArgs.addAll(
+        listOf(
+            "-Dmixin.debug=true",
+            "-Dasmhelper.verbose=true"
+        )
+    )
+    clientRunArgs.addAll(
+        listOf(
+            "--tweakClass org.spongepowered.asm.launch.MixinTweaker",
+            "--mixin mixins.notenoughupdates.json"
+        )
+    )
 }
 
 mixin {
@@ -37,15 +49,11 @@ repositories {
     maven("https://repo.spongepowered.org/maven/")
 }
 
-val toShadow by configurations.creating {
-    configurations.implementation.get().extendsFrom(this)
-}
-
 dependencies {
-    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+    implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT")
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
-    toShadow("com.fasterxml.jackson.core:jackson-core:2.13.1")
-    toShadow("info.bliki.wiki:bliki-core:3.1.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
+    implementation("info.bliki.wiki:bliki-core:3.1.0")
 }
 
 
@@ -67,23 +75,34 @@ tasks.withType(Jar::class) {
     }
 }
 
-val autoRelocate by tasks.creating(ConfigureShadowRelocation::class) {
-    target = tasks.shadowJar.get()
-    prefix = "io.github.moulberry.notenoughdependencies"
-}
-
 tasks.shadowJar {
     archiveClassifier.set("dep")
     exclude(
         "module-info.class",
         "LICENSE.txt"
     )
-    dependsOn(autoRelocate)
+    dependencies {
+        include(dependency("org.spongepowered:mixin:0.7.11-SNAPSHOT"))
+
+        include(dependency("commons-io:commons-io"))
+        include(dependency("org.apache.commons:commons-lang3"))
+        include(dependency("com.fasterxml.jackson.core:jackson-databind:2.10.2"))
+        include(dependency("com.fasterxml.jackson.core:jackson-annotations:2.10.2"))
+        include(dependency("com.fasterxml.jackson.core:jackson-core:2.10.2"))
+
+        include(dependency("info.bliki.wiki:bliki-core:3.1.0"))
+        include(dependency("org.slf4j:slf4j-api:1.7.18"))
+        include(dependency("org.luaj:luaj-jse:3.0.1"))
+    }
 }
 
 tasks.build.get().dependsOn(tasks.shadowJar)
 
-reobf.all { mappingType = ReobfMappingType.SEARGE }
+reobf {
+    create("shadowJar") {
+        mappingType = ReobfMappingType.SEARGE
+    }
+}
 
 tasks.processResources {
     from(sourceSets.main.get().resources.srcDirs)
@@ -96,9 +115,16 @@ tasks.processResources {
     rename("(.+_at.cfg)".toPattern(), "META-INF/$1")
 }
 
-val moveResources by tasks.creating(Copy::class) {
-    from(tasks.processResources)
-    into("${buildDir}/classes/java/main")
+val moveResources by tasks.creating {
+    doLast {
+        ant.withGroovyBuilder {
+            "move"(
+                "file" to "$buildDir/resources/main",
+                "todir" to "$buildDir/classes/java"
+            )
+        }
+    }
+    dependsOn(tasks.processResources)
 }
 
 tasks.classes { dependsOn(moveResources) }
