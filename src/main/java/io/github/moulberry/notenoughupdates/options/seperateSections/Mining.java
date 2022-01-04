@@ -495,14 +495,14 @@ public class Mining {
     @Expose
     @ConfigOption(
             name = "Dwarven Mines Textures",
-            desc = "Allows texture packs to retexture blocks in the Dwarven Mines. If you don't have a texturepack that does this, you should leave this off"
+            desc = "Allows texture packs to retexture blocks in the Dwarven Mines. If you don't have a texture pack that does this, you should leave this off"
     )
     @ConfigEditorBoolean
     public boolean dwarvenTextures = false;
     @Expose
     @ConfigOption(
             name = "Crystal Hollows Textures",
-            desc = "Allows texture packs to retexture blocks in the Crystal Hollows. If you don't have a texturepack that does this, you should leave this off"
+            desc = "Allows texture packs to retexture blocks in the Crystal Hollows. If you don't have a texture pack that does this, you should leave this off"
     )
     @ConfigEditorBoolean
     public boolean crystalHollowTextures = false;

@@ -34,8 +34,11 @@ public class CustomBiomes {
 
     public BiomeGenBase getCustomBiome(BlockPos pos) {
         SpecialBlockZone specialZone = getSpecialZone(pos);
-        if (specialZone != null)
-            return specialZone.getCustomBiome();
+        if (specialZone != null) {
+            if ((specialZone.isDwarvenMines() && NotEnoughUpdates.INSTANCE.config.mining.dwarvenTextures)
+                    || (specialZone.isCrystalHollows() && NotEnoughUpdates.INSTANCE.config.mining.crystalHollowTextures))
+                return specialZone.getCustomBiome();
+        }
         return null;
     }
 
