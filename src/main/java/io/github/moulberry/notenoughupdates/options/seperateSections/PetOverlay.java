@@ -88,5 +88,5 @@ public class PetOverlay {
             desc = "Shows an overlay in your inventory showing your current pet"
     )
     @ConfigEditorBoolean
-    public boolean petInvDisplay = true;
+    public boolean petInvDisplay = false;
 }

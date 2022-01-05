@@ -1726,28 +1726,6 @@ public class NEUOverlay extends Gui {
         }
         return wardrobePage;
     }
-    private int petPage = -1;
-    private int getPetPage () {
-        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-        if (guiScreen instanceof GuiChest) {
-            if (isInNamedGui("Pets")) {
-                GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-                ContainerChest container = (ContainerChest) chest.inventorySlots;
-                IInventory lower = container.getLowerChestInventory();
-                String containerName = lower.getDisplayName().getUnformattedText();
-                if (containerName.equals("Pets")) {
-                    petPage = 1;
-                } else {
-                    try {
-                        petPage = Integer.parseInt(containerName.substring(1, 2));
-                    } catch (NumberFormatException e) {
-                        petPage = 1;
-                    }
-                }
-            } else petPage = -1;
-        }
-        return petPage;
-    }
     private ItemStack getChestSlotsAsItemStack(int slot) {
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (guiScreen instanceof GuiChest) {
@@ -1791,31 +1769,6 @@ public class NEUOverlay extends Gui {
         return selectedArmor;
         }
 
-    private int selectedPet = 0;
-    private int getEquippedPet() {
-        if (isInNamedGui("Pets")) {
-            for (int ii = 1; ii < 3; ii++) {
-                if (ii == 1 || selectedPet == 0) {
-                    if (getPetPage() == ii) {
-                        for (int i = 0; i < 54; i ++) {
-                            ItemStack stack1 = getChestSlotsAsItemStack(i);
-                            if (stack1 != null) {
-                                String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
-                                for (String line : lore1) {
-                                    //System.out.println(line);
-                                    if (line.contains("\u00a77\u00a7cClick to despawn.")) {
-                                        selectedPet = i;
-                                        shouldUseCachedPet = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return selectedPet;
-    }
 
     private ItemStack getWardrobeSlot(int armourSlot) {
             if (isInNamedGui("Wardrobe")) {
@@ -1843,7 +1796,6 @@ public class NEUOverlay extends Gui {
     public ItemStack slot3 = null;
     public ItemStack slot4 = null;
     public ItemStack petSlot = null;
-    public ItemStack petSlot2 = null;
     public static boolean isRenderingArmorHud() {
         return renderingArmorHud;
     }
@@ -1930,7 +1882,6 @@ public class NEUOverlay extends Gui {
                 if (slot1 == null) {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
                     GlStateManager.color(1, 1, 1, 1);
-                    GL11.glTranslatef(0, 0, 401);
                     Utils.drawTexturedRect(((width - 208) / 2f), ((height + 60) / 2f - 105), 16, 16, GL11.GL_NEAREST);
                     GlStateManager.bindTexture(0);
 
@@ -1943,6 +1894,7 @@ public class NEUOverlay extends Gui {
                         //top slot
                         if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
                             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+                            GL11.glTranslatef(0, 0, -401);
                         }
                     }
 
@@ -1986,16 +1938,8 @@ public class NEUOverlay extends Gui {
                 petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
                         NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
                                 PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
-                if (isInNamedGui("Pets")) {
-                    petSlot2 = getChestSlotsAsItemStack(getEquippedPet());
-                }
-                ItemStack petInfo = null;
+                ItemStack petInfo = petSlot;
 
-                if (shouldUseCachedPet) {
-                    petInfo = petSlot;
-                } else {
-                    petInfo = petSlot;
-                }
                 if (guiScreen instanceof GuiInventory) {
                     GL11.glTranslatef(0, 0, 401);
                     if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !isWardrobeSystemOnMainServer()) {
@@ -2039,20 +1983,9 @@ public class NEUOverlay extends Gui {
 
                     Utils.drawItemStack(petInfo, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 72);
                     renderingPetHud = true;
-                    List<String> tooltipToDisplay = null;
-                    if (petInfo != null) {
-                        if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-                            if (mouseY >= ((height + 60) / 2f - 105) + 72 && mouseY <= ((height + 60) / 2f - 105) + 88) {
-                                tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-                                Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-                                tooltipToDisplay = null;
-                                GL11.glTranslatef(0, 0, -401);
-                            }
-                        }
                     }
                 }
             }
-        }
 
         SunTzu.setEnabled(textField.getText().toLowerCase().startsWith("potato"));
 
