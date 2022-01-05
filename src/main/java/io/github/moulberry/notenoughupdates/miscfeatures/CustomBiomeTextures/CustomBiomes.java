@@ -66,7 +66,7 @@ public class CustomBiomes {
                 event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
             }
             if (specialZone.hasTitanium() && isTitanium(event.getBlock()) && hasMithrilSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.titaniumBreak));
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock()) && hasCrystalSounds) {
                 event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreak));
