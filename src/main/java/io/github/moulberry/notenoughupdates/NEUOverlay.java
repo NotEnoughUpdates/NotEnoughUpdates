@@ -1859,7 +1859,7 @@ public class NEUOverlay extends Gui {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_DARK);
                 }
                 if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 3) {
-                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
+                    if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petSlot != null) {
                         Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT_PET);
                     } else {
                         Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT);
