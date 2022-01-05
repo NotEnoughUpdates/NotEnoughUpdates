@@ -799,7 +799,7 @@ public class NEUEventListener {
 
     private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
-        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
+        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
             if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
                 String username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
                 if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
