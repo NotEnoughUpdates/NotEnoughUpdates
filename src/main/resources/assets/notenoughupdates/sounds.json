@@ -8,15 +8,70 @@
       }
     ]
   },
-  "gemstone.break": {
+  "gemstoneTopaz.break": {
     "category": "block",
     "sounds": [
       {
-        "name": "gemstonebreak",
+        "name": "gemstonebreaktopaz",
         "stream": false
       }
     ]
   },
+  "gemstoneRuby.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakruby",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneAmber.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakamber",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneAmethyst.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakamethyst",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneSapphire.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreaksapphire",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneJade.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakjade",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneJasper.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakjasper",
+        "stream": false
+      }
+    ]
+  },
+
   "titanium.break": {
     "category": "block",
     "sounds": [

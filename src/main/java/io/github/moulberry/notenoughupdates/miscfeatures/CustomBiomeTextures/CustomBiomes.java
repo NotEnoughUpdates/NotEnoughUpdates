@@ -62,15 +62,38 @@ public class CustomBiomes {
         boolean hasMithrilSounds = NotEnoughUpdates.INSTANCE.config.mining.mithrilSounds;
         boolean hasCrystalSounds = NotEnoughUpdates.INSTANCE.config.mining.gemstoneSounds;
         if (specialZone != null) {
-            if (specialZone.hasMithril() && isMithril(event.getBlock()) && hasMithrilSounds) {
+            if (specialZone.hasMithril() && isMithril(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("mining_3")) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
+            }
+            if (specialZone.hasMithril() && isMithrilHollows(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
                 event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
             }
             if (specialZone.hasTitanium() && isTitanium(event.getBlock()) && hasMithrilSounds) {
                 event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.titaniumBreak));
             }
-            if (specialZone.hasGemstones() && isGemstone(event.getBlock()) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreak));
+
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.RED) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakRuby));
             }
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.YELLOW) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakTopaz));
+            }
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.PINK) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakJasper));
+            }
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.LIGHT_BLUE) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakSapphire));
+            }
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.ORANGE) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakAmber));
+            }
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.PURPLE) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakAmethyst));
+            }
+            if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.LIME) && hasCrystalSounds) {
+                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakJade));
+            }
+
         }
     }
 
@@ -81,12 +104,18 @@ public class CustomBiomes {
     public static boolean isMithril(IBlockState state) {
         return (state.getBlock() == Blocks.stained_hardened_clay && state.getValue(BlockColored.COLOR) == EnumDyeColor.CYAN)
                 || (state.getBlock() == Blocks.wool && state.getValue(BlockColored.COLOR) == EnumDyeColor.GRAY)
+                || (state.getBlock() == Blocks.wool && state.getValue(BlockColored.COLOR) == EnumDyeColor.LIGHT_BLUE)
                 || state.getBlock() == Blocks.prismarine
                 || state.getBlock() == Blocks.bedrock;
     }
 
-    public static boolean isGemstone(IBlockState state) {
-        return state.getBlock() == Blocks.stained_glass || state.getBlock() == Blocks.stained_glass_pane;
+    public static boolean isMithrilHollows(IBlockState state) {
+        return state.getBlock() == Blocks.prismarine
+                || (state.getBlock() == Blocks.wool && state.getValue(BlockColored.COLOR) == EnumDyeColor.LIGHT_BLUE);
+    }
+
+    public static boolean isGemstone(IBlockState state, EnumDyeColor color) {
+        return ((state.getBlock() == Blocks.stained_glass || state.getBlock() == Blocks.stained_glass_pane) && state.getValue(BlockColored.COLOR) == color);
     }
 
     @SubscribeEvent
