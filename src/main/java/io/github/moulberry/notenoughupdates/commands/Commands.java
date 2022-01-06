@@ -16,6 +16,7 @@ import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.gamemodes.GuiGamemodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FancyPortals;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
@@ -99,22 +100,8 @@ public class Commands {
         ClientCommandHandler.instance.registerCommand(neuHelp);
         ClientCommandHandler.instance.registerCommand(neuFeatures);
         ClientCommandHandler.instance.registerCommand(neuRepoMode);
-        ClientCommandHandler.instance.registerCommand(dokmTest);
     }
 
-    SimpleCommand dokmTest = new SimpleCommand("dokmTest", new SimpleCommand.ProcessCommandRunnable() {
-        public void processCommand(ICommandSender sender, String[] args) {
-            BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
-            if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
-            Arrays.asList(
-                    new ChatComponentText("Showing Zone Info for: " + target),
-                    new ChatComponentText("Zone: " + CustomBiomes.INSTANCE.getSpecialZone(target).name()),
-                    new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
-                    new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
-            ).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
-            MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo.getInstance().getLocation()));
-        }
-    });
 
     SimpleCommand.ProcessCommandRunnable collectionLogRun = new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
@@ -775,7 +762,18 @@ public class Commands {
                     NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
                 }
             }
-
+            if (args.length == 1 && args[0].equalsIgnoreCase("zone")) {
+                BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+                if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
+                SpecialBlockZone zone = CustomBiomes.INSTANCE.getSpecialZone(target);
+                Arrays.asList(
+                        new ChatComponentText("Showing Zone Info for: " + target),
+                        new ChatComponentText("Zone: " + (zone != null ? zone.name() : "null")),
+                        new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
+                        new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
+                ).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
+                MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo.getInstance().getLocation()));
+            }
             if (args.length == 1 && args[0].equalsIgnoreCase("positiontest")) {
                 NotEnoughUpdates.INSTANCE.openGui = new GuiPositionEditor();
                 return;

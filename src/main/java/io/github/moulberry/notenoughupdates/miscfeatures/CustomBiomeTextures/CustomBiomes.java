@@ -62,7 +62,7 @@ public class CustomBiomes {
         boolean hasMithrilSounds = NotEnoughUpdates.INSTANCE.config.mining.mithrilSounds;
         boolean hasCrystalSounds = NotEnoughUpdates.INSTANCE.config.mining.gemstoneSounds;
         if (specialZone != null) {
-            if (specialZone.hasMithril() && isMithril(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("mining_3")) {
+            if (specialZone.hasMithril() && isBreakableMithril(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("mining_3")) {
                 event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
             }
             if (specialZone.hasMithril() && isMithrilHollows(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
@@ -102,11 +102,15 @@ public class CustomBiomes {
     }
 
     public static boolean isMithril(IBlockState state) {
+        return isBreakableMithril(state)
+                || state.getBlock() == Blocks.bedrock;
+    }
+
+    public static boolean isBreakableMithril(IBlockState state) {
         return (state.getBlock() == Blocks.stained_hardened_clay && state.getValue(BlockColored.COLOR) == EnumDyeColor.CYAN)
                 || (state.getBlock() == Blocks.wool && state.getValue(BlockColored.COLOR) == EnumDyeColor.GRAY)
                 || (state.getBlock() == Blocks.wool && state.getValue(BlockColored.COLOR) == EnumDyeColor.LIGHT_BLUE)
-                || state.getBlock() == Blocks.prismarine
-                || state.getBlock() == Blocks.bedrock;
+                || state.getBlock() == Blocks.prismarine;
     }
 
     public static boolean isMithrilHollows(IBlockState state) {

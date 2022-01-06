@@ -5,12 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import net.minecraft.block.BlockColored;
-import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
@@ -76,7 +73,8 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
         } catch (IOException e) {
             ignoredChunks = null;
             error = true;
-            System.out.println("NEU failed to load dwarven mines ignore chunks: " + e);
+            System.out.println("NEU failed to load dwarven mines ignore chunks: ");
+            e.printStackTrace();
         }
     }
 
@@ -132,7 +130,6 @@ public class DwarvenMinesTextures implements IslandZoneSubdivider {
                 }
             }
         } catch (Exception e) {
-            error = true;
         }
         return map;
     }
