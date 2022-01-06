@@ -17,6 +17,14 @@ public class CustomArmour {
 
     @Expose
     @ConfigOption(
+            name = "Click To Open Wardrobe",
+            desc = "Click on the hud to open /wardrobe"
+    )
+    @ConfigEditorBoolean
+    public boolean sendWardrobeCommand = true;
+
+    @Expose
+    @ConfigOption(
             name = "GUI Colour",
             desc = "Change the colour of the GUI"
     )

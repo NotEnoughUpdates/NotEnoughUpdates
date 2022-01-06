@@ -1938,7 +1938,15 @@ public class NEUOverlay extends Gui {
                             EnumChatFormatting.GREEN+"To cache your armour"
                     );
                     if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-                        //top slot
+                        if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 && NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
+                            if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+                                if (Mouse.getEventButtonState()) {
+                                    if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/wardrobe") == 0) {
+                                        NotEnoughUpdates.INSTANCE.sendChatMessage("/wardrobe");
+                                    }
+                                }
+                            }
+                        }
                         if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
                             Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                         }
@@ -1947,6 +1955,15 @@ public class NEUOverlay extends Gui {
                 }
                 if (slot1 != null && slot2 != null && slot3 != null && slot4 != null) {
                     if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+                        if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 && NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
+                            if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+                                if (Mouse.getEventButtonState()) {
+                                    if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/wardrobe") == 0) {
+                                        NotEnoughUpdates.INSTANCE.sendChatMessage("/wardrobe");
+                                    }
+                                }
+                            }
+                        }
                         //top slot
                         if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
                             tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
@@ -2040,7 +2057,14 @@ public class NEUOverlay extends Gui {
                     List<String> tooltipToDisplay = null;
                     if (petInfo != null) {
                         if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-                            if (mouseY >= ((height + 60) / 2f - 105) + 72 && mouseY <= ((height + 60) / 2f - 105) + 88) {
+                            if (mouseY >= ((height + 60) / 2f - 105) + 72 && mouseY <= ((height + 60) / 2f - 105) + 88 && NotEnoughUpdates.INSTANCE.config.petOverlay.sendPetsCommand) {
+                                if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+                                    if (Mouse.getEventButtonState()) {
+                                        if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/pets") == 0) {
+                                            NotEnoughUpdates.INSTANCE.sendChatMessage("/pets");
+                                        }
+                                    }
+                                }
                                 tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
                                 Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
                                 tooltipToDisplay = null;

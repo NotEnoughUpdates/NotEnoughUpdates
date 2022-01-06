@@ -74,6 +74,14 @@ public class PetOverlay {
 
     @Expose
     @ConfigOption(
+            name = "Pet Inventory Display",
+            desc = "Shows an overlay in your inventory showing your current pet"
+    )
+    @ConfigEditorBoolean
+    public boolean petInvDisplay = true;
+
+    @Expose
+    @ConfigOption(
             name = "GUI Colour",
             desc = "Change the colour of the GUI"
     )
@@ -84,9 +92,9 @@ public class PetOverlay {
 
     @Expose
     @ConfigOption(
-            name = "Pet Inventory Display",
-            desc = "Shows an overlay in your inventory showing your current pet"
+            name = "Click To Open Pets",
+            desc = "Click on the hud to open /pets"
     )
     @ConfigEditorBoolean
-    public boolean petInvDisplay = true;
+    public boolean sendPetsCommand = true;
 }
