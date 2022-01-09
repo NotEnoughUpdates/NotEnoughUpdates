@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 import net.minecraftforge.gradle.user.ReobfMappingType
 
 plugins {
@@ -9,7 +8,7 @@ plugins {
 }
 
 group = "io.github.moulberry"
-val modId = "notenoughupdates"
+version = "2.1"
 
 // Toolchains:
 
@@ -94,6 +93,10 @@ tasks.shadowJar {
         include(dependency("org.slf4j:slf4j-api:1.7.18"))
         include(dependency("org.luaj:luaj-jse:3.0.1"))
     }
+    fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
+    relocate("com.fasterxml.jackson")
+    relocate("org.eclipse")
+    relocate("org.slf4j")
 }
 
 tasks.build.get().dependsOn(tasks.shadowJar)
