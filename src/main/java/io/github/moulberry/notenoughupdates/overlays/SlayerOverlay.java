@@ -175,7 +175,7 @@ public class SlayerOverlay extends TextOverlay {
 
             if (xpPerBoss != 0 && slayerIntXP > 0) {
                 lineMap.put(5, EnumChatFormatting.YELLOW + "Bosses till next Lvl: " + EnumChatFormatting.LIGHT_PURPLE +
-                        (bossesUntilNextLevel > 1000 ? "?" : bossesUntilNextLevel));
+                        (bossesUntilNextLevel > 2000 ? "?" : bossesUntilNextLevel));
             }
 
             if (timeSinceLastBoss > 0 && timeSinceLastBoss2 > 0) {
