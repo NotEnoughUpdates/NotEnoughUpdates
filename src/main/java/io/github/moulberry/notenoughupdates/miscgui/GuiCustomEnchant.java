@@ -320,12 +320,12 @@ public class GuiCustomEnchant extends Gui {
             }
         }
 
-        Set<EnchantState> allowedSwitchStates = Sets.newHashSet(EnchantState.ADDING_ENCHANT, EnchantState.HAS_ITEM, EnchantState.SWITCHING_DONT_UPDATE);
+        // Set<EnchantState> allowedSwitchStates = Sets.newHashSet(EnchantState.ADDING_ENCHANT, EnchantState.HAS_ITEM, EnchantState.SWITCHING_DONT_UPDATE);
         if (lastState != currentState || lastPage != currentPage) {
-            if (!allowedSwitchStates.contains(lastState) || !allowedSwitchStates.contains(currentState)) {
-                leftScroll.setValue(0);
-                rightScroll.setValue(0);
-            }
+            // if (!allowedSwitchStates.contains(lastState) || !allowedSwitchStates.contains(currentState)) {
+            leftScroll.setValue(0);
+            rightScroll.setValue(0);
+            // }
             updateItems = true;
         }
 
