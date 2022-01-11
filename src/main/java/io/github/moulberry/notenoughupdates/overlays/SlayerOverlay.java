@@ -26,7 +26,7 @@ public class SlayerOverlay extends TextOverlay {
     private static boolean useSmallXpNext = true;
     public static long timeSinceLastBoss = 0;
     public static long timeSinceLastBoss2 = 0;
-    private static long agvSlayerTime = 0;
+    public static long agvSlayerTime = 0;
     private static boolean isSlayerNine = false;
     public static int slayerTier = 0;
     private static int xpPerBoss = 0;
@@ -135,7 +135,6 @@ public class SlayerOverlay extends TextOverlay {
         } else {
             bossesUntilNextLevel = 0;
         }
-        agvSlayerTime = (timeSinceLastBoss+timeSinceLastBoss2)/2;
     }
 
     @Override
@@ -180,7 +179,7 @@ public class SlayerOverlay extends TextOverlay {
 
             if (timeSinceLastBoss > 0 && timeSinceLastBoss2 > 0) {
                 lineMap.put(6, EnumChatFormatting.YELLOW + "Average kill time: " + EnumChatFormatting.RED +
-                        Utils.prettyTime((System.currentTimeMillis() - agvSlayerTime)));
+                        Utils.prettyTime(agvSlayerTime));
             }
             for (int strIndex : NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerText) {
                 if (lineMap.get(strIndex) != null) {
