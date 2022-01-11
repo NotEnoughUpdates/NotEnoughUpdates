@@ -863,6 +863,10 @@ public class NEUEventListener {
             } else {
                 timeSinceLastBoss2 = timeSinceLastBoss;
                 timeSinceLastBoss = System.currentTimeMillis();
+                
+                if (timeSinceLastBoss > 0 && timeSinceLastBoss2 > 0) {
+                    SlayerOverlay.agvSlayerTime = System.currentTimeMillis() - (timeSinceLastBoss+timeSinceLastBoss2)/2;
+                }
             }
         } else if (unformatted.startsWith("   RNGesus Meter:")) {
             RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
