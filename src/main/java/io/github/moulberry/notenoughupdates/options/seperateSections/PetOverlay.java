@@ -97,7 +97,4 @@ public class PetOverlay {
     )
     @ConfigEditorBoolean
     public boolean sendPetsCommand = true;
-
-    public boolean petInvDisplay = false;
-
 }
