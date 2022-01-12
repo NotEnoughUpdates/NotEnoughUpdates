@@ -1,9 +1,10 @@
 pluginManagement {
     repositories {
-        jcenter()
-        maven("https://jitpack.io")
-        maven("https://maven.minecraftforge.net")
-        maven("https://repo.spongepowered.org/maven")
+        mavenCentral()
+        gradlePluginPortal()
+        maven(url = "https://jitpack.io/")
+        maven(url = "https://maven.minecraftforge.net/")
+        maven(url = "https://repo.spongepowered.org/maven/")
     }
     resolutionStrategy {
         eachPlugin {

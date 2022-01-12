@@ -2,7 +2,7 @@ import net.minecraftforge.gradle.user.ReobfMappingType
 
 plugins {
     java
-    id("net.minecraftforge.gradle.forge") version "6f53277"
+    id("net.minecraftforge.gradle.forge") version "6f5327738df"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.spongepowered.mixin") version "d75e32e"
 }
