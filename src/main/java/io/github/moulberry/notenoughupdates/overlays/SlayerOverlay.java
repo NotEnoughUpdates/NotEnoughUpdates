@@ -24,9 +24,10 @@ public class SlayerOverlay extends TextOverlay {
     private static int untilNextSlayerLevel;
     private static int xpToLevelUp;
     private static boolean useSmallXpNext = true;
-    public static long timeSinceLastBoss = 0;
-    public static long timeSinceLastBoss2 = 0;
-    private static long agvSlayerTime = 0;
+    public static long timeLastBoss = 0;
+    public static long timeLastBoss2 = 0;
+    public static long timeLastBossUnix = 0;
+    public static long agvSlayerTime = 0;
     private static boolean isSlayerNine = false;
     public static int slayerTier = 0;
     private static int xpPerBoss = 0;
@@ -135,7 +136,6 @@ public class SlayerOverlay extends TextOverlay {
         } else {
             bossesUntilNextLevel = 0;
         }
-        agvSlayerTime = (timeSinceLastBoss+timeSinceLastBoss2)/2;
     }
 
     @Override
@@ -161,9 +161,9 @@ public class SlayerOverlay extends TextOverlay {
                 lineMap.put(2, EnumChatFormatting.YELLOW + "Lvl: " + EnumChatFormatting.LIGHT_PURPLE + slayerLVL);
             }
 
-            if (timeSinceLastBoss > 0) {
+            if (timeLastBossUnix > 0) {
                 lineMap.put(3, EnumChatFormatting.YELLOW + "Kill time: " + EnumChatFormatting.RED
-                        + Utils.prettyTime((System.currentTimeMillis() - timeSinceLastBoss)));
+                        + Utils.prettyTime((System.currentTimeMillis() - timeLastBossUnix)));
             }
 
             if (slayerIntXP > 0) {
@@ -178,10 +178,11 @@ public class SlayerOverlay extends TextOverlay {
                         (bossesUntilNextLevel > 1000 ? "?" : bossesUntilNextLevel));
             }
 
-            if (timeSinceLastBoss > 0 && timeSinceLastBoss2 > 0) {
-                lineMap.put(6, EnumChatFormatting.YELLOW + "Average kill time: " + EnumChatFormatting.RED +
-                        Utils.prettyTime((System.currentTimeMillis() - agvSlayerTime)));
+            if (agvSlayerTime > 0) {
+            lineMap.put(6, EnumChatFormatting.YELLOW + "Average kill time: " + EnumChatFormatting.RED +
+                    Utils.prettyTime(agvSlayerTime));
             }
+            
             for (int strIndex : NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerText) {
                 if (lineMap.get(strIndex) != null) {
                     overlayStrings.add(lineMap.get(strIndex));
