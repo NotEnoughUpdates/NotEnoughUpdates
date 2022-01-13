@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures;
+package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes.isMithril;
-import static io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes.isTitanium;
+import static io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes.isMithril;
+import static io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes.isTitanium;
 
 public class DwarvenMinesTextures implements IslandZoneSubdivider {
 

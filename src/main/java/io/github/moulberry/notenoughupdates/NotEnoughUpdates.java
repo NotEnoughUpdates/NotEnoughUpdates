@@ -9,8 +9,9 @@ import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.miscfeatures.*;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.DwarvenMinesTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -38,6 +39,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import scala.collection.parallel.ParIterableLike;
 
 import java.awt.*;
 import java.io.*;
@@ -175,9 +177,11 @@ public class NotEnoughUpdates {
         MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 
         if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CustomSkulls.getInstance());
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(NPCRetexturing.getInstance());
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new ItemCustomizeManager.ReloadListener());
+            IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+            manager.registerReloadListener(CustomSkulls.getInstance());
+            manager.registerReloadListener(NPCRetexturing.getInstance());
+            manager.registerReloadListener(new ItemCustomizeManager.ReloadListener());
+            manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
         }
 
         this.commands = new Commands();

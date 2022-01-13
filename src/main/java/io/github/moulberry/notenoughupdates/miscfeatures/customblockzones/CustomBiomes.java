@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures;
+package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.OnBlockBreakSoundEffect;
@@ -62,38 +62,46 @@ public class CustomBiomes {
         boolean hasMithrilSounds = NotEnoughUpdates.INSTANCE.config.mining.mithrilSounds;
         boolean hasCrystalSounds = NotEnoughUpdates.INSTANCE.config.mining.gemstoneSounds;
         if (specialZone != null) {
+            CustomBlockSounds.CustomSoundEvent customSound = null;
             if (specialZone.hasMithril() && isBreakableMithril(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("mining_3")) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
+                customSound = CustomBlockSounds.mithrilBreak;
             }
             if (specialZone.hasMithril() && isMithrilHollows(event.getBlock()) && hasMithrilSounds && SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.mithrilBreak));
+                customSound = CustomBlockSounds.mithrilBreak;
             }
             if (specialZone.hasTitanium() && isTitanium(event.getBlock()) && hasMithrilSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.titaniumBreak));
+                customSound = CustomBlockSounds.titaniumBreak;
             }
 
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.RED) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakRuby));
+                customSound = CustomBlockSounds.gemstoneBreakRuby;
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.YELLOW) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakTopaz));
+                customSound = CustomBlockSounds.gemstoneBreakTopaz;
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.PINK) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakJasper));
+                customSound = CustomBlockSounds.gemstoneBreakJasper;
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.LIGHT_BLUE) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakSapphire));
+                customSound = CustomBlockSounds.gemstoneBreakSapphire;
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.ORANGE) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakAmber));
+                customSound = CustomBlockSounds.gemstoneBreakAmber;
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.PURPLE) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakAmethyst));
+                customSound = CustomBlockSounds.gemstoneBreakAmethyst;
             }
             if (specialZone.hasGemstones() && isGemstone(event.getBlock(), EnumDyeColor.LIME) && hasCrystalSounds) {
-                event.setSound(CustomBlockSounds.replaceSoundEvent(event.getSound(), CustomBlockSounds.gemstoneBreakJade));
+                customSound = CustomBlockSounds.gemstoneBreakJade;
             }
 
+            if (customSound != null) {
+                if (customSound.shouldReplace()) {
+                    event.setSound(customSound.replaceSoundEvent(event.getSound()));
+                } else {
+                    event.setCanceled(true);
+                }
+            }
         }
     }
 

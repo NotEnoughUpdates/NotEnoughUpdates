@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures;
+package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import net.minecraft.world.biome.BiomeGenBase;

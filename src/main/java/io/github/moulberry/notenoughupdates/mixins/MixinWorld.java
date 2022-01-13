@@ -1,7 +1,7 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;

@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures;
+package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 

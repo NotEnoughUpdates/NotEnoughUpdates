@@ -2,7 +2,7 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomBiomeTextures.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
