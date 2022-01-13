@@ -20,6 +20,7 @@ import io.github.moulberry.notenoughupdates.miscgui.*;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.*;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -585,7 +586,6 @@ public class NEUEventListener {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        CraftingOverlay.shouldRender = false;
         NEUApi.disableInventoryButtons = false;
 
         if ((Minecraft.getMinecraft().currentScreen instanceof GuiScreenElementWrapper ||
@@ -1142,14 +1142,6 @@ public class NEUEventListener {
 
         String containerName = null;
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-        if (guiScreen instanceof GuiChest) {
-            GuiChest eventGui = (GuiChest) guiScreen;
-            ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-            containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (containerName.equals("Craft Item")) {
-                CraftingOverlay.render();
-            }
-        }
 
         if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
             return;
@@ -1651,14 +1643,6 @@ public class NEUEventListener {
 
         String containerName = null;
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-        if (guiScreen instanceof GuiChest) {
-            GuiChest eventGui = (GuiChest) guiScreen;
-            ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-            containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (CraftingOverlay.shouldRender && containerName.equals("Craft Item")) {
-                CraftingOverlay.keyInput();
-            }
-        }
 
         if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
                 GuiCustomEnchant.getInstance().keyboardInput()) {

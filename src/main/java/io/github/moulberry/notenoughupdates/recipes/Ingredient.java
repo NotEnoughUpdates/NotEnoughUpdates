@@ -6,7 +6,6 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -71,7 +70,7 @@ public class Ingredient {
 
     public ItemStack getItemStack() {
         if (itemStack != null) return itemStack;
-        if(isCoins()) {
+        if (isCoins()) {
             itemStack = new ItemStack(Items.gold_nugget);
             itemStack.setStackDisplayName("\u00A7r\u00A76" + Utils.formatNumberWithDots(getCount()) + " Coins");
             return itemStack;
