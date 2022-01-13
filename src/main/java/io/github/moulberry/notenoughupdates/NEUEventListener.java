@@ -799,7 +799,7 @@ public class NEUEventListener {
 
     private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
-        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
             if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
                 String username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
                 if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
@@ -856,14 +856,23 @@ public class NEUEventListener {
             r = "";
         } else if (unformatted.equals("  NICE! SLAYER BOSS SLAIN!")) {
             SlayerOverlay.isSlain = true;
+
+            if (timeLastBoss == 0) {
+                timeLastBoss = System.currentTimeMillis() - timeLastBossUnix;
+                SlayerOverlay.agvSlayerTime = timeLastBoss;
+                timeLastBoss2 = timeLastBoss;
+            } else if (timeLastBoss > 0 && timeLastBoss2 > 0) {
+                timeLastBoss = System.currentTimeMillis() - timeLastBossUnix;
+                SlayerOverlay.agvSlayerTime = (timeLastBoss+timeLastBoss2)/2;
+                timeLastBoss2 = timeLastBoss;
+            }
+            
+            timeLastBossUnix = 0;
+
+
         } else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
             SlayerOverlay.isSlain = false;
-            if (timeSinceLastBoss == 0) {
-                SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
-            } else {
-                timeSinceLastBoss2 = timeSinceLastBoss;
-                timeSinceLastBoss = System.currentTimeMillis();
-            }
+            SlayerOverlay.timeLastBossUnix = System.currentTimeMillis();
         } else if (unformatted.startsWith("   RNGesus Meter:")) {
             RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
         } else if (matcher.matches()) {
