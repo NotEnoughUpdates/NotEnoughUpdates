@@ -44,6 +44,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Items;
@@ -1970,4 +1971,19 @@ public class Utils {
 		}
 		return -1;
 	}
+    public static Framebuffer ensureFramebufferSize(Framebuffer framebuffer, int width, int height) {
+        if (framebuffer == null || framebuffer.framebufferWidth != width || framebuffer.framebufferHeight != height) {
+            if (framebuffer == null) {
+                framebuffer = new Framebuffer(width, height, true);
+            } else {
+                framebuffer.createBindFramebuffer(width, height);
+            }
+            framebuffer.setFramebufferFilter(GL11.GL_NEAREST);
+        }
+        return framebuffer;
+    }
+
+    public static boolean areRGBColorsEquals(Color a, Color b) {
+        return (a.getRGB() & 0xFFFFFF) == (b.getRGB() & 0xFFFFFF);
+    }
 }

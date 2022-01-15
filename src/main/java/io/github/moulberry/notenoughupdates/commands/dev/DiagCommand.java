@@ -41,7 +41,8 @@ public class DiagCommand extends ClientCommandBase {
 		"  center=<off | on>          Disable / enable using center\n" +
 		"/neudiag wishing        Wishing Compass Solver diagnostics\n" +
 		"/neudiag debug\n" +
-		"  <no sub-command>           Show current flags\n" +
+		"  <no sub-command>           Show all enabled flags\n" +
+		"  <list>                     Show all flags\n"+
 		"  <enable | disable> <flag>  Enable/disable flag\n";
 
 	private void showUsage(ICommandSender sender) {
@@ -86,6 +87,10 @@ public class DiagCommand extends ClientCommandBase {
 					boolean enablingFlag = true;
 					String action = args[1];
 					switch (action) {
+						case "list":
+							sender.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.YELLOW + "Here are all flags:\n" + NEUDebugFlag.getFlagList()));
+							return;
 						case "disable":
 							enablingFlag = false;
 							// falls through
@@ -93,7 +98,7 @@ public class DiagCommand extends ClientCommandBase {
 							if (args.length != 3) {
 								sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 									"You must specify a flag:\n" +
-									NEUDebugFlag.FLAG_LIST));
+									NEUDebugFlag.getFlagList()));
 								return;
 							}
 
@@ -108,7 +113,7 @@ public class DiagCommand extends ClientCommandBase {
 							} catch (IllegalArgumentException e) {
 								sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 									flagName + " is invalid. Valid flags are:\n" +
-									NEUDebugFlag.FLAG_LIST));
+									NEUDebugFlag.getFlagList()));
 								return;
 							}
 							break;
@@ -118,8 +123,8 @@ public class DiagCommand extends ClientCommandBase {
 					}
 				}
 
-				sender.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "Effective debug flags: " +
-					NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.toString()));
+				sender.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "Effective debug flags: \n" +
+					NEUDebugFlag.getEnabledFlags()));
 				break;
 			default:
 				showUsage(sender);

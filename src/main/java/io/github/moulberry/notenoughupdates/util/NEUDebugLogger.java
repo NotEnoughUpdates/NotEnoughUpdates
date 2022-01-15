@@ -38,11 +38,11 @@ public class NEUDebugLogger {
 	}
 
 	public static boolean isFlagEnabled(NEUDebugFlag flag) {
-		return NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(flag);
+		return allFlagsEnabled || NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(flag);
 	}
 
 	public static void log(NEUDebugFlag flag, String message) {
-		if (logMethod != null && (allFlagsEnabled || isFlagEnabled(flag))) {
+		if (logMethod != null && isFlagEnabled(flag)) {
 			logAlways(message);
 		}
 	}
