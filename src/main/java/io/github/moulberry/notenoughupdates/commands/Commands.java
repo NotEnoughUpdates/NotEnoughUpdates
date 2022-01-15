@@ -378,7 +378,7 @@ public class Commands {
             if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(NotEnoughUpdates.INSTANCE.getConfigFile()), StandardCharsets.UTF_8))) {
                     NotEnoughUpdates.INSTANCE.config = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, NEUConfig.class);
-                } catch (Exception ignored) {
+                } catch (Exception ignored) {}
                 }
             }
         }
