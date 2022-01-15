@@ -946,7 +946,6 @@ public class NEUManager {
         try {
             writeJson(json, new File(new File(repoLocation, "items"), internalname + ".json"));
         } catch (IOException ignored) {}
-        }
 
         loadItem(internalname);
     }
