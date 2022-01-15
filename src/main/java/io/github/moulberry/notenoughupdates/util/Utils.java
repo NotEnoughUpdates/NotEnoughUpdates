@@ -409,7 +409,7 @@ public class Utils {
             try {
                 field = clazz.getDeclaredField(fieldName);
                 break;
-            } catch (Exception ignored) {
+            } catch (Exception ignored) {}
             }
         }
         if (field != null) {
