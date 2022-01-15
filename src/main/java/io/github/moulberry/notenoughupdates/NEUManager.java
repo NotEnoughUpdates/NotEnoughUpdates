@@ -135,8 +135,7 @@ public class NEUManager {
         }
         try {
             new File(configLocation, "currentCommit.json").delete();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     /**

@@ -398,8 +398,7 @@ public class Utils {
         for (String methodName : methodNames) {
             try {
                 return clazz.getDeclaredMethod(methodName, params);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
         }
         return null;
     }
