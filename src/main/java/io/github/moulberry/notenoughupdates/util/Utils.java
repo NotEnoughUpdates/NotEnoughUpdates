@@ -410,7 +410,6 @@ public class Utils {
                 field = clazz.getDeclaredField(fieldName);
                 break;
             } catch (Exception ignored) {}
-            }
         }
         if (field != null) {
             field.setAccessible(true);
