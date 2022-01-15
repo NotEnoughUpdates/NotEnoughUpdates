@@ -416,7 +416,7 @@ public class Utils {
             field.setAccessible(true);
             try {
                 return field.get(o);
-            } catch (IllegalAccessException ignored) {
+            } catch (IllegalAccessException ignored) {}
             }
         }
         return null;
