@@ -416,7 +416,6 @@ public class Utils {
             try {
                 return field.get(o);
             } catch (IllegalAccessException ignored) {}
-            }
         }
         return null;
     }
