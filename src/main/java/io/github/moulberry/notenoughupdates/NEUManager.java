@@ -1405,7 +1405,7 @@ public class NEUManager {
                 try {
                     NBTTagCompound tag = JsonToNBT.getTagFromJson(json.get("nbttag").getAsString());
                     stack.setTagCompound(tag);
-                } catch (NBTException ignored) {
+                } catch (NBTException ignored) {}
                 }
             }
 
