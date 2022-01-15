@@ -935,7 +935,6 @@ public class Commands {
                     NotEnoughUpdates.INSTANCE.displayLinks(update);
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
                 } catch (Exception ignored) {}
-                }
             }
         }
     });
