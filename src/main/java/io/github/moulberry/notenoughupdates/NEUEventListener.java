@@ -2585,63 +2585,11 @@ public class NEUEventListener {
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
         if (!neu.isOnSkyblock()) return;
-        /*if(NotEnoughUpdates.INSTANCE.config.improvedSBMenu.hideEmptyPanes &&
-                event.itemStack.getItem().equals(Item.getItemFromBlock(Blocks.stained_glass_pane))) {
-            String first = Utils.cleanColour(event.toolTip.get(0));
-            first = first.replaceAll("\\(.*\\)", "").trim();
-            if(first.length() == 0) {
-                event.toolTip.clear();
-            }
-        }*/
-        //AH prices
-        /*if(Minecraft.getMinecraft().currentScreen != null) {
-            if(Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-                GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-                ContainerChest container = (ContainerChest) chest.inventorySlots;
-                String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-                if(containerName.trim().equals("Auctions Browser")) {
-                    String internalname = neu.manager.getInternalNameForItem(event.itemStack);
-                    if(internalname != null) {
-                        for(int i=0; i<event.toolTip.size(); i++) {
-                            String line = event.toolTip.get(i);
-                            if(line.contains(EnumChatFormatting.GRAY + "Bidder: ") ||
-                                    line.contains(EnumChatFormatting.GRAY + "Starting bid: ") ||
-                                    line.contains(EnumChatFormatting.GRAY + "Buy it now: ")) {
-                                neu.manager.updatePrices();
-                                JsonObject auctionInfo = neu.manager.getItemAuctionInfo(internalname);
+        //Render the pet inventory display tooltip to the left to avoid things from other mods rendering over the tooltip
+        if (event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
+            GlStateManager.translate(-200, 0, 0);
+        }
 
-                                if(auctionInfo != null) {
-                                    NumberFormat format = NumberFormat.getInstance(Locale.US);
-                                    int auctionPrice = (int)(auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
-                                    float costOfEnchants = neu.manager.getCostOfEnchants(internalname,
-                                            event.itemStack.getTagCompound());
-                                    int priceWithEnchants = auctionPrice+(int)costOfEnchants;
-
-                                    event.toolTip.add(++i, EnumChatFormatting.GRAY + "Average price: " +
-                                            EnumChatFormatting.GOLD + format.format(auctionPrice) + " coins");
-                                    if(costOfEnchants > 0) {
-                                        event.toolTip.add(++i, EnumChatFormatting.GRAY + "Average price (w/ enchants): " +
-                                                EnumChatFormatting.GOLD +
-                                                format.format(priceWithEnchants) + " coins");
-                                    }
-
-                                    if(neu.manager.config.advancedPriceInfo.value) {
-                                        int salesVolume = (int) auctionInfo.get("sales").getAsFloat();
-                                        int flipPrice = (int)(0.93*priceWithEnchants);
-
-                                        event.toolTip.add(++i, EnumChatFormatting.GRAY + "Flip Price (93%): " +
-                                                EnumChatFormatting.GOLD + format.format(flipPrice) + " coins");
-                                        event.toolTip.add(++i, EnumChatFormatting.GRAY + "Volume: " +
-                                                EnumChatFormatting.GOLD + format.format(salesVolume) + " sales/day");
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && NotEnoughUpdates.INSTANCE.config.hidden.dev &&
                 event.toolTip.size() > 0 && event.toolTip.get(event.toolTip.size() - 1).startsWith(EnumChatFormatting.DARK_GRAY + "NBT: ")) {
             event.toolTip.remove(event.toolTip.size() - 1);

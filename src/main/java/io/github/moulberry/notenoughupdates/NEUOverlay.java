@@ -1955,6 +1955,7 @@ public class NEUOverlay extends Gui {
                 petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
                         NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
                                 PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
+                petSlot.getTagCompound().setBoolean("NEUPETINVDISPLAY", true);
                 ItemStack petInfo = petSlot;
 
                 if (guiScreen instanceof GuiInventory) {
