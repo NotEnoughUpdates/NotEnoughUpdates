@@ -362,16 +362,7 @@ public class Commands {
 
     SimpleCommand reloadRepoCommand = new SimpleCommand("neureloadrepo", new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
-            File items = new File(NotEnoughUpdates.INSTANCE.manager.repoLocation, "items");
-            if (items.exists()) {
-                File[] itemFiles = new File(NotEnoughUpdates.INSTANCE.manager.repoLocation, "items").listFiles();
-                if (itemFiles != null) {
-                    for (File f : itemFiles) {
-                        String internalname = f.getName().substring(0, f.getName().length() - 5);
-                        NotEnoughUpdates.INSTANCE.manager.loadItem(internalname);
-                    }
-                }
-            }
+            NotEnoughUpdates.INSTANCE.manager.reloadRepository();
             Constants.reload();
 
             NotEnoughUpdates.INSTANCE.newConfigFile();

@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
@@ -1452,6 +1453,23 @@ public class NEUManager {
             return stack.copy();
         } else {
             return stack;
+        }
+    }
+
+    public void reloadRepository() {
+        File items = new File(repoLocation, "items");
+        if (items.exists()) {
+            recipes.clear();
+            recipesMap.clear();
+            usagesMap.clear();
+
+            File[] itemFiles = new File(repoLocation, "items").listFiles();
+            if (itemFiles != null) {
+                for (File f : itemFiles) {
+                    String internalname = f.getName().substring(0, f.getName().length() - 5);
+                    loadItem(internalname);
+                }
+            }
         }
     }
 }
