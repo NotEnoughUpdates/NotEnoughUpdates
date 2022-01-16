@@ -259,8 +259,7 @@ public class NEUManager {
                         newCurrentCommitJSON.addProperty("sha", latestRepoCommit);
                         try {
                             writeJson(newCurrentCommitJSON, new File(configLocation, "currentCommit.json"));
-                        } catch (IOException ignored) {
-                        }
+                        } catch (IOException ignored) {}
                     }
                 }
             } catch (Exception e) {
