@@ -215,14 +215,14 @@ public class GuiProfileViewer extends GuiScreen {
                     Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
                 }
                 //stranded icon
-                if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("stranded")) {
+                if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("island")) {
                     GlStateManager.color(1, 1, 1, 1);
                     Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
                     Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
                 }
                 //icon if game mode is unknown
                 if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
-                        !currProfileInfo.get("game_mode").getAsString().equals("stranded") &&
+                        !currProfileInfo.get("game_mode").getAsString().equals("island") &&
                         !currProfileInfo.get("game_mode").getAsString().equals("bingo") &&
                         !currProfileInfo.get("game_mode").getAsString().equals("ironman")) {
                     GlStateManager.color(1, 1, 1, 1);
@@ -266,13 +266,13 @@ public class GuiProfileViewer extends GuiScreen {
                             Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
                             Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex, 16, 16, GL11.GL_NEAREST);
                         }
-                        if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("stranded")) {
+                        if (currProfileInfo != null && currProfileInfo.has("game_mode") && currProfileInfo.get("game_mode").getAsString().equals("island")) {
                             GlStateManager.color(1, 1, 1, 1);
                             Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
                             Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex, 16, 16, GL11.GL_NEAREST);
                         }
                         if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
-                                !currProfileInfo.get("game_mode").getAsString().equals("stranded") &&
+                                !currProfileInfo.get("game_mode").getAsString().equals("island") &&
                                 !currProfileInfo.get("game_mode").getAsString().equals("bingo") &&
                                 !currProfileInfo.get("game_mode").getAsString().equals("ironman")) {
                             GlStateManager.color(1, 1, 1, 1);
