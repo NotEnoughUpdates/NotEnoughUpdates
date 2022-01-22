@@ -911,6 +911,7 @@ public class GuiProfileViewer extends GuiScreen {
                         "dungeons.dungeon_types.catacombs.experience"), 0);
                 levelObjCata = ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
                         cataXp, 50, false);
+                System.out.println(cataXp);
                 levelObjCata.totalXp = cataXp;
                 levelObjCatas.put(profileId, levelObjCata);
             }
@@ -1373,7 +1374,8 @@ public class GuiProfileViewer extends GuiScreen {
                 String totalXpStr = null;
                 if (levelObj.maxed) {
                     levelStr = EnumChatFormatting.GOLD + "MAXED!";
-                    totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + Utils.formatNumberWithDots((long) levelObj.totalXp);
+                    if(skillName.contains("Catacombs"))
+                        totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + Utils.formatNumberWithDots((long) levelObj.totalXp);
                 } else {
                     int maxXp = (int) levelObj.maxXpForLevel;
                     levelStr = EnumChatFormatting.DARK_PURPLE + shortNumberFormat(Math.round((level % 1) * maxXp),
