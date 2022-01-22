@@ -911,7 +911,6 @@ public class GuiProfileViewer extends GuiScreen {
                         "dungeons.dungeon_types.catacombs.experience"), 0);
                 levelObjCata = ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
                         cataXp, 50, false);
-                System.out.println(cataXp);
                 levelObjCata.totalXp = cataXp;
                 levelObjCatas.put(profileId, levelObjCata);
             }
