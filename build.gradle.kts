@@ -28,7 +28,7 @@ version = baseVersion + (buildVersion?.let { "+$it" } ?: "")
 // Toolchains:
 
 java {
-// Forge Gradle currently prevents using the toolchain: toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    // Forge Gradle currently prevents using the toolchain: toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
