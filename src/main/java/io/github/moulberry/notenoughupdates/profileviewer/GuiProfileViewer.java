@@ -3441,21 +3441,28 @@ public class GuiProfileViewer extends GuiScreen {
         );
     }
 
-    // Render a standard HOTM perk that can be levelled.
+    /**
+     * Renders a standard HOTM perk that can be levelled.
+     */
     private void renderHotmPerk(int perkLevel, int xPosition, int yPosition, int mouseX, int mouseY, Supplier<ArrayList<String>> tooltipSupplier, int maxLevel) {
         renderHotmPerk(perkLevel, xPosition, yPosition, mouseX, mouseY, tooltipSupplier, false, maxLevel);
     }
 
-    // Render a pickaxe ability that can be unlocked once and not levelled.
+    /**
+     * Renders a pickaxe ability that can be unlocked once and not levelled.
+     */
     private void renderPickaxeAbility(int perkLevel, int xPosition, int yPosition, int mouseX, int mouseY, Supplier<ArrayList<String>> tooltipSupplier) {
         renderHotmPerk(perkLevel, xPosition, yPosition, mouseX, mouseY, tooltipSupplier, true, -1);
     }
 
+    /**
+     * Renders a HOTM perk. This method is only called from its overloads above.
+     */
     private void renderHotmPerk(int perkLevel, int xPosition, int yPosition, int mouseX, int mouseY, Supplier<ArrayList<String>> tooltipSupplier, boolean isPickaxeAbility, int maxLevel) {
         boolean unlocked = perkLevel > 0;
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableLighting();
-        if(isPickaxeAbility) RenderHelper.enableGUIStandardItemLighting();
+        if(isPickaxeAbility) RenderHelper.enableGUIStandardItemLighting(); // GUI standard item lighting must be enabled for items that are rendered as blocks, like emerald blocks.
         Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
                 isPickaxeAbility ?
                         new ItemStack(unlocked ? Blocks.emerald_block : Blocks.coal_block) : // Pickaxe abilities are rendered as blocks
@@ -3472,11 +3479,18 @@ public class GuiProfileViewer extends GuiScreen {
         }
     }
 
-    // A separate method similar to the one above, but allowing the caller to specify an ItemStack to render. Used for rendering Peak of the Mountain and perks that are unlocked once and not upgraded.
+    /**
+     * A separate method similar to the one above, but allowing the caller to specify an ItemStack to render.
+     * Used for rendering Peak of the Mountain and perks that are unlocked once and not upgraded.
+      */
     private void renderHotmPerk(int perkLevel, int xPosition, int yPosition, int mouseX, int mouseY, Supplier<ArrayList<String>> tooltipSupplier, ItemStack itemStack) {
         renderHotmPerk(perkLevel, xPosition, yPosition, mouseX, mouseY, tooltipSupplier, itemStack, false);
     }
 
+    /**
+     * This method renders a HOTM perk using the provided ItemStack.
+     * It is overloaded by the method above, and is only called directly to render Peak of the Mountain.
+     */
     private void renderHotmPerk(int perkLevel, int xPosition, int yPosition, int mouseX, int mouseY, Supplier<ArrayList<String>> tooltipSupplier, ItemStack itemStack, boolean isRenderingBlock) {
         boolean unlocked = perkLevel > 0;
         GlStateManager.color(1, 1, 1, 1);
