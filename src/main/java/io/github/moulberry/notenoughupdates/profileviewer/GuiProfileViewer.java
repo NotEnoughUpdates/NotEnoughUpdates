@@ -3036,7 +3036,7 @@ public class GuiProfileViewer extends GuiScreen {
                         "",
                         "§7Increases the chance for you to",
                         "§7trigger rare occurrences im",
-                        "§2Dwarven Mines by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7."
+                        "§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7."
                 ),
                 45
         );
@@ -3152,8 +3152,8 @@ public class GuiProfileViewer extends GuiScreen {
                         EnumChatFormatting.GRAY + "Level " + mole + EnumChatFormatting.DARK_GRAY + "/190",
                         "",
                         EnumChatFormatting.GRAY + "When mining hard stone, you have",
-                        EnumChatFormatting.GRAY + "a " + EnumChatFormatting.GREEN + finalOutput + "% " + EnumChatFormatting.GRAY + "chance to mine " + EnumChatFormatting.GREEN + "",
-                        EnumChatFormatting.GREEN + "" + Math.round(moleStat) + EnumChatFormatting.GRAY + " adjacent hard stone blocks."
+                        EnumChatFormatting.GRAY + "a " + EnumChatFormatting.GREEN + finalOutput + "% " + EnumChatFormatting.GRAY + "chance to mine " + EnumChatFormatting.GREEN,
+                        EnumChatFormatting.GREEN + "" + Math.round(moleStat) + EnumChatFormatting.GRAY + " adjacent hard stone block" + (moleStat == 1.0 ? "." : "s.")
                 ),
                 190
         );
@@ -3304,7 +3304,7 @@ public class GuiProfileViewer extends GuiScreen {
                         "§7Level " + fortunate + EnumChatFormatting.DARK_GRAY + "/20",
                         "",
                         "§7Gain " + EnumChatFormatting.GREEN + "+" + fortunateStat + " §6☘ Mining",
-                        "§6Fortune§7 when mining Gemstones."
+                        "§6Fortune§7 when mining Gemstone."
                 ),
                 20
         );
@@ -3317,7 +3317,7 @@ public class GuiProfileViewer extends GuiScreen {
                         "Great Explorer",
                         "§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
                         "",
-                        "§7Grants " + EnumChatFormatting.GREEN + greatExplorerStat + "% " + EnumChatFormatting.GRAY + "chance to",
+                        "§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY + "chance to",
                         "§7find treasure."
                 ),
                 20
