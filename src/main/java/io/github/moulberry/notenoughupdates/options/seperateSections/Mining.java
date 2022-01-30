@@ -83,7 +83,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Fuel Bar Position",
+            name = "Edit Fuel Bar Position",
             desc = "Set the position of the drill fuel bar"
     )
     @ConfigEditorButton(
@@ -102,7 +102,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Dwarven Overlay",
+            name = "Enable Dwarven Overlay",
             desc = "Show an Overlay with useful information on the screen while in Dwarven Mines"
     )
     @ConfigEditorBoolean
@@ -127,7 +127,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Overlay Position",
+            name = "Edit Dwarven Overlay Position",
             desc = "Change the position of the Dwarven Mines information Overlay (commisions, powder & forge statuses)"
     )
     @ConfigEditorButton(
@@ -214,7 +214,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Enable Overlay",
+            name = "Enable Crystal Overlay",
             desc = "Enables the Crystal Hollows Overlay."
     )
     @ConfigEditorBoolean
@@ -223,7 +223,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Overlay Position",
+            name = "Edit Crystal Overlay Position",
             desc = "Change the position of the Crystal Hollows Overlay."
     )
     @ConfigEditorButton(

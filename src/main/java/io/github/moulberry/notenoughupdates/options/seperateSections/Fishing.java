@@ -22,7 +22,7 @@ public class Fishing {
 
     @Expose
     @ConfigOption(
-            name = "Fish Warning (R)",
+            name = "Enable Fish Warning (R)",
             desc = "Display a red '!' when you need to pull the fish up. The warning takes your ping into account"
     )
     @ConfigEditorBoolean
@@ -31,7 +31,7 @@ public class Fishing {
 
     @Expose
     @ConfigOption(
-            name = "Fish Warning (Y)",
+            name = "Enable Fish Warning (Y)",
             desc = "Display a yellow '!' when a fish is approaching your bobber"
     )
     @ConfigEditorBoolean
@@ -40,7 +40,7 @@ public class Fishing {
 
     @Expose
     @ConfigOption(
-            name = "Hooked Sound",
+            name = "Enable Hooked Sound",
             desc = "Play a high-pitched ding sound when the '!' turns red"
     )
     @ConfigEditorBoolean
@@ -49,7 +49,7 @@ public class Fishing {
 
     @Expose
     @ConfigOption(
-            name = "Approach Sound",
+            name = "Enable Approach Sound",
             desc = "Play low-pitched ding sounds while the yellow '!' is visible"
     )
     @ConfigEditorBoolean

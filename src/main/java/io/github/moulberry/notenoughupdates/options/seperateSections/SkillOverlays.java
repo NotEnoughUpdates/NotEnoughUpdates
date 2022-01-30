@@ -77,7 +77,7 @@ public class SkillOverlays {
 
     @Expose
     @ConfigOption(
-            name = "Farming Position",
+            name = "Edit Farming Overlay Position",
             desc = "Change the position of the Farming overlay"
     )
     @ConfigEditorButton(
@@ -134,7 +134,7 @@ public class SkillOverlays {
 
     @Expose
     @ConfigOption(
-            name = "Mining Position",
+            name = "Edit Mining Overlay Position",
             desc = "Change the position of the Mining overlay"
     )
     @ConfigEditorButton(
@@ -193,7 +193,7 @@ public class SkillOverlays {
 
     @Expose
     @ConfigOption(
-            name = "Fishing Position",
+            name = "Edit Fishing Overlay Position",
             desc = "Change the position of the Fishing overlay"
     )
     @ConfigEditorButton(
@@ -284,7 +284,7 @@ public class SkillOverlays {
 
     @Expose
     @ConfigOption(
-            name = "Combat Position",
+            name = "Edit Combat Overlay Position",
             desc = "Change the position of the Combat overlay"
     )
     @ConfigEditorButton(
