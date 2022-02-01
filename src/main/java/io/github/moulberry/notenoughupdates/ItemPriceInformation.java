@@ -160,8 +160,10 @@ public class ItemPriceInformation {
                                 tooltip.add("");
                                 added = true;
                             }
-                            tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Raw Craft Cost: " + EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-                                    (shortNumber && craftCost.craftCost > 1000 ? Utils.shortNumberFormat(craftCost.craftCost, 0) : format.format((int) craftCost.craftCost)) + " coins");
+                            float cost = craftCost.craftCost;
+                            if (shiftPressed) cost = cost * shiftStackMultiplier;
+
+                            tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Raw Craft Cost: " + EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && cost > 1000 ? Utils.shortNumberFormat(cost, 0) : format.format((int) cost)) + " coins");
                         }
                         break;
                 }
