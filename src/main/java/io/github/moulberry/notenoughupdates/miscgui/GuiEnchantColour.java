@@ -54,8 +54,6 @@ public class GuiEnchantColour extends GuiScreen {
     private final HashMap<Integer, String> modifiers = new HashMap<>();
     private final List<GuiElementTextField[]> guiElementTextFields = new ArrayList<>();
 
-    private List<String> enchantNamesPretty = null;
-    private final JsonArray enchantPresets = null;
 
     private final LerpingInteger scroll = new LerpingInteger(0, 100);
     private final LerpingInteger scrollSideBar = new LerpingInteger(0, 100);
@@ -65,25 +63,7 @@ public class GuiEnchantColour extends GuiScreen {
     public static int OBFUSCATED_MODIFIER = 0b100;
     public static int UNDERLINE_MODIFIER = 0b1000;
     public static int STRIKETHROUGH_MODIFIER = 0b10000;
-    private final Gson gson = new Gson();
-    private static final Pattern settingPattern = Pattern.compile(".*:[>=<]:[0-9]+:[a-zA-Z0-9]+(:[a-zA-Z0-9])?");
-
-    private List<String> getEnchantNamesPretty() {
-        if (enchantNamesPretty == null) {
-            JsonObject enchantsJson = Constants.ENCHANTS;
-            if (!enchantsJson.has("enchants_pretty")) {
-                return Lists.newArrayList("ERROR");
-            } else {
-                JsonArray pretty = enchantsJson.getAsJsonArray("enchants_pretty");
-
-                enchantNamesPretty = new ArrayList<>();
-                for (int i = 0; i < pretty.size(); i++) {
-                    enchantNamesPretty.add(pretty.get(i).getAsString());
-                }
-            }
-        }
-        return enchantNamesPretty;
-    }
+    private static final Pattern settingPattern = Pattern.compile(".*:[>=<]:[0-9]+:[a-zA-Z0-9]+(:[a-zA-Z0-9]+)?");
 
     private ItemStack maxedBook;
     private int maxedBookFound =0;
@@ -504,8 +484,6 @@ public class GuiEnchantColour extends GuiScreen {
                 } catch (IllegalArgumentException e) {
                     return;
                 }
-
-                System.out.println(jsonString);
 
                 JsonArray presetArray;
                 try {
