@@ -20,7 +20,6 @@ import io.github.moulberry.notenoughupdates.miscgui.*;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.*;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
-import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -53,14 +52,15 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1141,9 +1141,13 @@ public class NEUEventListener {
 
         String containerName = null;
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+            GuiChest eventGui = (GuiChest) guiScreen;
+            ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+            containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
-        if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
-            return;
+            if (GuiCustomEnchant.getInstance().shouldOverride(containerName))
+                return;
         }
 
         boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
