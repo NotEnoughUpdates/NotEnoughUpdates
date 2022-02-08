@@ -247,7 +247,7 @@ public class MiscOverlays {
 
     @Expose
     @ConfigOption(
-            name = "Todo Position",
+            name = "Edit Todo Overlay Position",
             desc = "Change the position of the Todo overlay"
     )
     @ConfigEditorButton(

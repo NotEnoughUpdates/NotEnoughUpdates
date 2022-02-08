@@ -83,7 +83,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Fuel Bar Position",
+            name = "Edit Fuel Bar Position",
             desc = "Set the position of the drill fuel bar"
     )
     @ConfigEditorButton(
@@ -102,7 +102,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Dwarven Overlay",
+            name = "Enable Dwarven Overlay",
             desc = "Show an Overlay with useful information on the screen while in Dwarven Mines"
     )
     @ConfigEditorBoolean
@@ -127,7 +127,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Overlay Position",
+            name = "Edit Dwarven Overlay Position",
             desc = "Change the position of the Dwarven Mines information Overlay (commisions, powder & forge statuses)"
     )
     @ConfigEditorButton(
@@ -214,7 +214,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Enable Overlay",
+            name = "Enable Crystal Overlay",
             desc = "Enables the Crystal Hollows Overlay."
     )
     @ConfigEditorBoolean
@@ -223,7 +223,7 @@ public class Mining {
 
     @Expose
     @ConfigOption(
-            name = "Overlay Position",
+            name = "Edit Crystal Overlay Position",
             desc = "Change the position of the Crystal Hollows Overlay."
     )
     @ConfigEditorButton(
@@ -492,11 +492,46 @@ public class Mining {
     @ConfigEditorBoolean
     public boolean titaniumAlertMustBeVisible = false;
 
+    @ConfigOption(
+            name = "Custom Textures",
+            desc = ""
+    )
+    @ConfigEditorAccordion(id = 7)
+    public boolean texturesAccordion = false;
+
     @Expose
     @ConfigOption(
             name = "Dwarven Mines Textures",
-            desc = "Allows texture packs to retexture blocks in the Dwarven Mines. If you don't have a texturepack that does this, you should leave this off"
+            desc = "Allows texture packs to retexture blocks in the Dwarven Mines. If you don't have a texture pack that does this, you should leave this off"
     )
+    @ConfigAccordionId(id = 7)
     @ConfigEditorBoolean
     public boolean dwarvenTextures = false;
+    @Expose
+    @ConfigOption(
+            name = "Crystal Hollows Textures",
+            desc = "Allows texture packs to retexture blocks in the Crystal Hollows. If you don't have a texture pack that does this, you should leave this off"
+    )
+    @ConfigAccordionId(id = 7)
+    @ConfigEditorBoolean
+    public boolean crystalHollowTextures = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Replace Gemstone sounds",
+            desc = "Replace the break sounds of crystals in the Crystal Hollows. Requires a texture pack with this feature"
+    )
+    @ConfigAccordionId(id = 7)
+    @ConfigEditorBoolean
+    public boolean gemstoneSounds = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Replace Mithril sounds",
+            desc = "Replace the break sounds of mithril and titanium in the Dwarven mines. Requires a texture pack with this feature"
+    )
+    @ConfigAccordionId(id = 7)
+    @ConfigEditorBoolean
+    public boolean mithrilSounds = false;
+
 }

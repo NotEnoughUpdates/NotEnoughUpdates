@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -14,6 +15,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,7 +80,7 @@ public class SBInfo {
     public void onWorldLoad(WorldEvent.Load event) {
         lastLocRaw = -1;
         locraw = null;
-        mode = null;
+        this.setLocation(null);
         joinedWorld = System.currentTimeMillis();
         lastOpenContainerName = "";
         hasNewTab = false;
@@ -106,7 +109,7 @@ public class SBInfo {
                     if (System.currentTimeMillis() - lastManualLocRaw > 5000) event.setCanceled(true);
                     if (obj.has("gametype") && obj.has("mode") && obj.has("map")) {
                         locraw = obj;
-                        mode = locraw.get("mode").getAsString();
+                        setLocation(locraw.get("mode").getAsString());
                     }
                 }
             } catch (Exception e) {
@@ -116,10 +119,14 @@ public class SBInfo {
     }
 
     public String getLocation() {
-        if (mode == null) {
-            return null;
-        }
         return mode;
+    }
+
+    public void setLocation(String location) {
+        if (!Objects.equals(this.mode, location)) {
+            MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
+        }
+        this.mode = location;
     }
 
     private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
@@ -154,7 +161,8 @@ public class SBInfo {
                         try {
                             int level = Integer.parseInt(matcher.group(2).trim());
                             XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
@@ -204,13 +212,17 @@ public class SBInfo {
                 if (SlayerOverlay.slayerQuest) {
                     if (line.contains(" I")) {
                         SlayerOverlay.slayerTier = 1;
-                    } if (line.contains(" II")) {
+                    }
+                    if (line.contains(" II")) {
                         SlayerOverlay.slayerTier = 2;
-                    } if (line.contains(" III")) {
+                    }
+                    if (line.contains(" III")) {
                         SlayerOverlay.slayerTier = 3;
-                    } if (line.contains(" IV")) {
+                    }
+                    if (line.contains(" IV")) {
                         SlayerOverlay.slayerTier = 4;
-                    } if (line.contains(" V")) {
+                    }
+                    if (line.contains(" V")) {
                         SlayerOverlay.slayerTier = 5;
                     }
                 }
@@ -226,7 +238,8 @@ public class SBInfo {
                         String timeSpace = time.replace("am", " am").replace("pm", " pm");
                         SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
                         currentTimeDate = parseFormat.parse(timeSpace);
-                    } catch (ParseException ignored) {}
+                    } catch (ParseException ignored) {
+                    }
                 }
                 //Replaced with for loop because in crystal hollows with events the line it's on can shift.
                 for (String line : lines) {

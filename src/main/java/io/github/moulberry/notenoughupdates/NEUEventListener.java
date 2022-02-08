@@ -52,14 +52,15 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -304,7 +305,6 @@ public class NEUEventListener {
 
         if (longUpdate) {
             CrystalOverlay.tick();
-            DwarvenMinesTextures.tick();
             FairySouls.tick();
             XPInformation.getInstance().tick();
             ProfileApiSyncer.getInstance().tick();
@@ -585,7 +585,6 @@ public class NEUEventListener {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        CraftingOverlay.shouldRender = false;
         NEUApi.disableInventoryButtons = false;
 
         if ((Minecraft.getMinecraft().currentScreen instanceof GuiScreenElementWrapper ||
@@ -1146,13 +1145,9 @@ public class NEUEventListener {
             GuiChest eventGui = (GuiChest) guiScreen;
             ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
             containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (containerName.equals("Craft Item")) {
-                CraftingOverlay.render();
-            }
-        }
 
-        if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
-            return;
+            if (GuiCustomEnchant.getInstance().shouldOverride(containerName))
+                return;
         }
 
         boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
@@ -1651,13 +1646,9 @@ public class NEUEventListener {
 
         String containerName = null;
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+
         if (guiScreen instanceof GuiChest) {
-            GuiChest eventGui = (GuiChest) guiScreen;
-            ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-            containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (CraftingOverlay.shouldRender && containerName.equals("Craft Item")) {
-                CraftingOverlay.keyInput();
-            }
+            containerName = ((ContainerChest) ((GuiChest) guiScreen).inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
         }
 
         if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&

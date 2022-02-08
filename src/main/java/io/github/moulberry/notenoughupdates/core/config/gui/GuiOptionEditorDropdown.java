@@ -6,7 +6,9 @@ import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorDropdown extends GuiOptionEditor {
     private final String[] values;
@@ -25,7 +27,6 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     @Override
     public void render(int x, int y, int width) {
         super.render(x, y, width);
-
         if (!open) {
             int height = getHeight();
 
@@ -66,6 +67,9 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 
             int main = 0xff202026;
             int blue = 0xff2355ad;
+
+            GlStateManager.pushMatrix();
+            GL11.glTranslated(0, 0, 100);
             Gui.drawRect(left, top, left + 1, top + dropdownHeight, blue); //Left
             Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, blue); //Top
             Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, blue); //Right
@@ -73,7 +77,6 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
             Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
             Gui.drawRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, blue); //Bar
-
             int dropdownY = 13;
             for (String option : values) {
                 if (option.isEmpty()) {
@@ -87,6 +90,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 
             TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
                     dropdownWidth - 16, 0xffa0a0a0);
+            GlStateManager.popMatrix();
         }
     }
 

@@ -21,7 +21,7 @@ public class SlayerOverlay {
 
     @Expose
     @ConfigOption(
-            name = "Slayer Overlay",
+            name = "Enable Slayer Overlay",
             desc = "Toggles the slayer overlay"
     )
     @ConfigEditorBoolean
@@ -46,7 +46,7 @@ public class SlayerOverlay {
 
     @Expose
     @ConfigOption(
-            name = "Slayer Position",
+            name = "Edit Slayer Overlay Position",
             desc = "Change the position of the Slayer overlay"
     )
     @ConfigEditorButton(

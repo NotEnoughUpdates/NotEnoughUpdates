@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.overlays;
+package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
@@ -9,7 +9,7 @@ public class CustomArmour {
 
     @Expose
     @ConfigOption(
-            name = "Enables Custom Amour Hud",
+            name = "Enable Custom Armour Hud",
             desc = "Shows an overlay in your inventory showing your 4 extra armour slots"
     )
     @ConfigEditorBoolean

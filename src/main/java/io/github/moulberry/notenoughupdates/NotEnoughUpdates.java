@@ -9,6 +9,9 @@ import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.miscfeatures.*;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -28,6 +31,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.biome.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -35,6 +39,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import scala.collection.parallel.ParIterableLike;
 
 import java.awt.*;
 import java.io.*;
@@ -101,6 +106,17 @@ public class NotEnoughUpdates {
     public Color[][] colourMap = null;
 
     /**
+     * Registers the biomes for the crystal hollows here so optifine knows they exists
+     */
+    public static final BiomeGenBase crystalHollowsJungle = (new BiomeGenJungle(101, true)).setColor(5470985).setBiomeName("NeuCrystalHollowsJungle").setFillerBlockMetadata(5470985).setTemperatureRainfall(0.95F, 0.9F);
+    public static final BiomeGenBase crystalHollowsMagmaFields = (new BiomeGenHell(102)).setColor(16711680).setBiomeName("NeuCrystalHollowsMagmaFields").setDisableRain().setTemperatureRainfall(2.0F, 0.0F);
+    public static final BiomeGenBase crystalHollowsGoblinHoldout = (new BiomeGenMesa(103, false, false)).setColor(13274213).setBiomeName("NeuCrystalHollowsGoblinHoldout");
+    public static final BiomeGenBase crystalHollowsPrecursorRemnants = (new BiomeGenMesa(104, false, true)).setColor(11573093).setBiomeName("NeuCrystalHollowsPrecursorRemnants");
+    public static final BiomeGenBase crystalHollowsMithrilDeposit = (new BiomeGenSnow(105, false)).setColor(16777215).setBiomeName("NeuCrystalHollowsMithrilDeposits");
+    public static final BiomeGenBase crystalHollowsCrystalNucleus = (new BiomeGenJungle(106, true)).setColor(5470985).setBiomeName("NeuCrystalHollowsCrystalNucleus").setFillerBlockMetadata(5470985).setTemperatureRainfall(0.95F, 0.9F);
+
+
+    /**
      * Instantiates NEUIo, NEUManager and NEUOverlay instances. Registers keybinds and adds a shutdown hook to clear tmp folder.
      */
     @EventHandler
@@ -145,7 +161,7 @@ public class NotEnoughUpdates {
         MinecraftForge.EVENT_BUS.register(new FairySouls());
         MinecraftForge.EVENT_BUS.register(new CrystalOverlay());
         MinecraftForge.EVENT_BUS.register(new ItemCooldowns());
-        MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
+
         MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
         MinecraftForge.EVENT_BUS.register(new FuelBar());
         //MinecraftForge.EVENT_BUS.register(new FancyPortals());
@@ -157,10 +173,15 @@ public class NotEnoughUpdates {
         MinecraftForge.EVENT_BUS.register(SlotLocking.getInstance());
         MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
 
+        MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
+        MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
+
         if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(CustomSkulls.getInstance());
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(NPCRetexturing.getInstance());
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new ItemCustomizeManager.ReloadListener());
+            IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
+            manager.registerReloadListener(CustomSkulls.getInstance());
+            manager.registerReloadListener(NPCRetexturing.getInstance());
+            manager.registerReloadListener(new ItemCustomizeManager.ReloadListener());
+            manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
         }
 
         this.commands = new Commands();

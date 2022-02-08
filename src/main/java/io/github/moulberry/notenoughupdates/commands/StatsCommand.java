@@ -120,7 +120,7 @@ public class StatsCommand extends ClientCommandBase {
         builder.category("Neu Settings");
         builder.append("API Key", NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.isEmpty() ? "FALSE" : "TRUE");
         builder.append("On Skyblock", NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ? "TRUE" : "FALSE");
-        builder.append("Mod Version", Loader.instance().getIndexedModList().get(NotEnoughUpdates.MODID).getSource().getName());
+        builder.append("Mod Version", Loader.instance().getIndexedModList().get(NotEnoughUpdates.MODID).getDisplayVersion());
         builder.append("SB Profile", SBInfo.getInstance().currentProfile);
         builder.append("Has Advanced Tab", SBInfo.getInstance().hasNewTab ? "TRUE" : "FALSE");
         builder.category("Repo Stats");

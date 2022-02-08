@@ -33,10 +33,11 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +47,6 @@ import java.lang.reflect.Method;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -456,21 +456,21 @@ public class Utils {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
-    public static String[] rarityArr = new String[] {
+    public static String[] rarityArr = new String[]{
             "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME", "^^ THAT ONE IS DIVINE ^^"//, "DIVINE"
     };
 
-    public static String[] rarityArrC = new String[] {
-            EnumChatFormatting.WHITE+EnumChatFormatting.BOLD.toString()+"COMMON",
-            EnumChatFormatting.GREEN+EnumChatFormatting.BOLD.toString()+"UNCOMMON",
-            EnumChatFormatting.BLUE+EnumChatFormatting.BOLD.toString()+"RARE",
-            EnumChatFormatting.DARK_PURPLE+EnumChatFormatting.BOLD.toString()+"EPIC",
-            EnumChatFormatting.GOLD+EnumChatFormatting.BOLD.toString()+"LEGENDARY",
-            EnumChatFormatting.LIGHT_PURPLE+EnumChatFormatting.BOLD.toString()+"MYTHIC",
-            EnumChatFormatting.RED+EnumChatFormatting.BOLD.toString()+"SPECIAL",
-            EnumChatFormatting.RED+EnumChatFormatting.BOLD.toString()+"VERY SPECIAL",
-            EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
-            EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
+    public static String[] rarityArrC = new String[]{
+            EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
+            EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
+            EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
+            EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
+            EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
+            EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
+            EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
+            EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
+            EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
+            EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
             //EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
 
     };
@@ -1363,6 +1363,7 @@ public class Utils {
 
         return endsIn;
     }
+
     public static void drawLine(float sx, float sy, float ex, float ey, int width, int color) {
         float f = (float) (color >> 24 & 255) / 255.0F;
         float f1 = (float) (color >> 16 & 255) / 255.0F;
@@ -1385,7 +1386,7 @@ public class Utils {
         GlStateManager.popMatrix();
     }
 
-    public static void drawDottedLine(float sx, float sy, float ex, float ey, int width, int factor , int color) {
+    public static void drawDottedLine(float sx, float sy, float ex, float ey, int width, int factor, int color) {
         GlStateManager.pushMatrix();
         GL11.glLineStipple(factor, (short) 0xAAAA);
         GL11.glEnable(GL11.GL_LINE_STIPPLE);
@@ -1456,4 +1457,17 @@ public class Utils {
         return work;
     }
 
+    public static int getMouseY() {
+        int height = peekGuiScale().getScaledHeight();
+        return height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+    }
+
+    public static int getMouseX() {
+        return Mouse.getX() * peekGuiScale().getScaledWidth() / Minecraft.getMinecraft().displayWidth;
+    }
+
+    public static boolean isWithinRect(int x, int y, int left, int top, int width, int height) {
+        return left <= x && x <= left + width &&
+                top <= y && y <= top + height;
+    }
 }

@@ -3,7 +3,8 @@ package io.github.moulberry.notenoughupdates;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
-import io.github.moulberry.notenoughupdates.overlays.CraftingOverlay;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
@@ -22,7 +23,8 @@ import org.apache.commons.io.FileUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -80,11 +82,14 @@ public class NEUManager {
     public File configFile;
     public HotmInformation hotm;
 
+    public CraftingOverlay craftingOverlay;
+
     public NEUManager(NotEnoughUpdates neu, File configLocation) {
         this.neu = neu;
         this.configLocation = configLocation;
         this.auctionManager = new APIManager(this);
         this.hotm = new HotmInformation(neu);
+        this.craftingOverlay = new CraftingOverlay(this);
 
 
         GIT_COMMITS_URL = neu.config.hidden.repoCommitsURL;
@@ -127,16 +132,16 @@ public class NEUManager {
     public void resetRepo() {
         try {
             Utils.recursiveDelete(new File(configLocation, "repo"));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         try {
             new File(configLocation, "currentCommit.json").delete();
         } catch (Exception ignored) {}
     }
 
     /**
-     * Called when the game is first loaded. Compares the local repository to the github repository and handles
-     * the downloading of new/updated files. This then calls the "loadItem" method for every item in the local
-     * repository.
+     * Called when the game is first loaded. Compares the local repository to the github repository and handles the
+     * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
      */
     public void loadItemInformation() {
         /*File repoFile = new File(configLocation, "repo2");
@@ -315,8 +320,8 @@ public class NEUManager {
     }
 
     /**
-     * Loads the item in to the itemMap and also stores various words associated with this item
-     * in to titleWordMap and loreWordMap. These maps are used in the searching algorithm.
+     * Loads the item in to the itemMap and also stores various words associated with this item in to titleWordMap and
+     * loreWordMap. These maps are used in the searching algorithm.
      */
     public void loadItem(String internalName) {
         itemstackCache.remove(internalName);
@@ -418,8 +423,8 @@ public class NEUManager {
     }
 
     /**
-     * Searches a string for a query. This method is used to mimic the behaviour of the
-     * more complex map-based search function. This method is used for the chest-item-search feature.
+     * Searches a string for a query. This method is used to mimic the behaviour of the more complex map-based search
+     * function. This method is used for the chest-item-search feature.
      */
     public boolean searchString(String toSearch, String query) {
         int lastMatch = -1;
@@ -443,8 +448,8 @@ public class NEUManager {
     }
 
     /**
-     * Checks whether an itemstack matches a certain query, following the same rules implemented by the
-     * more complex map-based search function.
+     * Checks whether an itemstack matches a certain query, following the same rules implemented by the more complex
+     * map-based search function.
      */
     public boolean doesStackMatchSearch(ItemStack stack, String query) {
         if (query.startsWith("title:")) {
@@ -498,8 +503,7 @@ public class NEUManager {
     }
 
     /**
-     * Calls search for each query, separated by |
-     * eg. search(A|B) = search(A) + search(B)
+     * Calls search for each query, separated by | eg. search(A|B) = search(A) + search(B)
      */
     public Set<String> search(String query, boolean multi) {
         if (multi) {
@@ -607,11 +611,10 @@ public class NEUManager {
     }
 
     /**
-     * Splits a search query into an array of strings delimited by a space character. Then, matches the query to
-     * the start of words in the various maps (title & lore). The small query does not need to match the whole entry
-     * of the map, only the beginning. eg. "ench" and "encha" will both match "enchanted". All sub queries must
-     * follow a word matching the previous sub query. eg. "ench po" will match "enchanted pork" but will not match
-     * "pork enchanted".
+     * Splits a search query into an array of strings delimited by a space character. Then, matches the query to the
+     * start of words in the various maps (title & lore). The small query does not need to match the whole entry of the
+     * map, only the beginning. eg. "ench" and "encha" will both match "enchanted". All sub queries must follow a word
+     * matching the previous sub query. eg. "ench po" will match "enchanted pork" but will not match "pork enchanted".
      */
     public Set<String> search(String query, TreeMap<String, HashMap<String, List<Integer>>> wordMap) {
         HashMap<String, List<Integer>> matches = null;
@@ -850,7 +853,7 @@ public class NEUManager {
         if (container != null && container.getLowerChestInventory().getDisplayName().getUnformattedText().equals("Craft Item")) {
             Optional<NeuRecipe> recipe = recipesFor.stream().filter(it -> it instanceof CraftingRecipe).findAny();
             if (recipe.isPresent()) {
-                CraftingOverlay.updateItem((CraftingRecipe) recipe.get());
+                craftingOverlay.setShownRecipe((CraftingRecipe) recipe.get());
                 return;
             }
         }
@@ -864,6 +867,10 @@ public class NEUManager {
                 neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
         }
         displayGuiItemRecipe(internalName, "");
+    }
+
+    public void showRecipe(String internalName) {
+        showRecipe(getItemInformation().get(internalName));
     }
 
     /**
@@ -947,7 +954,6 @@ public class NEUManager {
         if (!usagesMap.containsKey(internalName)) return false;
         Set<NeuRecipe> usages = usagesMap.get(internalName);
         if (usages.isEmpty()) return false;
-        Utils.sendCloseScreenPacket();
         Minecraft.getMinecraft().displayGuiScreen(
                 new GuiItemRecipe("Item Usages", new ArrayList<>(usages), this));
         return true;
@@ -957,7 +963,6 @@ public class NEUManager {
         if (!recipesMap.containsKey(internalName)) return false;
         Set<NeuRecipe> recipes = recipesMap.get(internalName);
         if (recipes.isEmpty()) return false;
-        Utils.sendCloseScreenPacket();
         Minecraft.getMinecraft().displayGuiScreen(
                 new GuiItemRecipe(text != null ? text : "Item Recipe", new ArrayList<>(recipes), this));
         return true;
@@ -1030,6 +1035,9 @@ public class NEUManager {
                     File newFile = new File(destDir + File.separator + fileName);
                     //create directories for sub directories in zip
                     new File(newFile.getParent()).mkdirs();
+                    if (!isInTree(dir, newFile)) {
+                        throw new RuntimeException("Not Enough Updates detected an invalid zip file. This is a potential security risk, please report this in the Moulberry discord.");
+                    }
                     FileOutputStream fos = new FileOutputStream(newFile);
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
@@ -1050,6 +1058,16 @@ public class NEUManager {
         }
     }
 
+    private static boolean isInTree(File rootDirectory, File file) throws IOException {
+        file = file.getCanonicalFile();
+        rootDirectory = rootDirectory.getCanonicalFile();
+        while (file != null) {
+            if (file.equals(rootDirectory)) return true;
+            file = file.getParentFile();
+        }
+        return false;
+    }
+
     /**
      * Modified from https://www.journaldev.com/960/java-unzip-file-example
      */
@@ -1063,6 +1081,9 @@ public class NEUManager {
                 if (!ze.isDirectory()) {
                     String fileName = ze.getName();
                     File newFile = new File(dest, fileName);
+                    if (!isInTree(dest, newFile)) {
+                        throw new RuntimeException("Not Enough Updates detected an invalid zip file. This is a potential security risk, please report this in the Moulberry discord.");
+                    }
                     //create directories for sub directories in zip
                     new File(newFile.getParent()).mkdirs();
                     FileOutputStream fos = new FileOutputStream(newFile);
@@ -1085,8 +1106,8 @@ public class NEUManager {
     }
 
     /**
-     * From here to the end of the file are various helper functions for creating and writing json files,
-     * in particular json files representing skyblock item data.
+     * From here to the end of the file are various helper functions for creating and writing json files, in particular
+     * json files representing skyblock item data.
      */
     public JsonObject createItemJson(String internalname, String itemid, String displayname, String[] lore,
                                      String crafttext, String infoType, String[] info,
@@ -1432,6 +1453,23 @@ public class NEUManager {
             return stack.copy();
         } else {
             return stack;
+        }
+    }
+
+    public void reloadRepository() {
+        File items = new File(repoLocation, "items");
+        if (items.exists()) {
+            recipes.clear();
+            recipesMap.clear();
+            usagesMap.clear();
+
+            File[] itemFiles = new File(repoLocation, "items").listFiles();
+            if (itemFiles != null) {
+                for (File f : itemFiles) {
+                    String internalname = f.getName().substring(0, f.getName().length() - 5);
+                    loadItem(internalname);
+                }
+            }
         }
     }
 }

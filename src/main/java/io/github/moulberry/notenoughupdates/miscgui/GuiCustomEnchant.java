@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -200,9 +199,8 @@ public class GuiCustomEnchant extends Gui {
 
     public boolean shouldOverride(String containerName) {
         shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-                containerName != null &&
-                NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() &&
-                containerName.equalsIgnoreCase("Enchant Item");
+                Objects.equals("Enchant Item", containerName) &&
+                NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
         if (!shouldOverrideFast) {
             currentState = EnchantState.NO_ITEM;
             applicable.clear();
@@ -320,12 +318,12 @@ public class GuiCustomEnchant extends Gui {
             }
         }
 
-        Set<EnchantState> allowedSwitchStates = Sets.newHashSet(EnchantState.ADDING_ENCHANT, EnchantState.HAS_ITEM, EnchantState.SWITCHING_DONT_UPDATE);
+        // Set<EnchantState> allowedSwitchStates = Sets.newHashSet(EnchantState.ADDING_ENCHANT, EnchantState.HAS_ITEM, EnchantState.SWITCHING_DONT_UPDATE);
         if (lastState != currentState || lastPage != currentPage) {
-            if (!allowedSwitchStates.contains(lastState) || !allowedSwitchStates.contains(currentState)) {
-                leftScroll.setValue(0);
-                rightScroll.setValue(0);
-            }
+            // if (!allowedSwitchStates.contains(lastState) || !allowedSwitchStates.contains(currentState)) {
+            leftScroll.setValue(0);
+            rightScroll.setValue(0);
+            // }
             updateItems = true;
         }
 

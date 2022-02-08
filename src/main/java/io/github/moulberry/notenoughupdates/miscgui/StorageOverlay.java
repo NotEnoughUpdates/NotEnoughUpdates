@@ -1976,7 +1976,7 @@ public class StorageOverlay extends GuiElement {
                         searchBar.getText().isEmpty()) {
                     searchBar.setFocus(false);
                 }
-            } else return Keyboard.getEventKey() != Keyboard.KEY_E;
+            } else return Keyboard.getEventKey() != Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode();
 
         }
 

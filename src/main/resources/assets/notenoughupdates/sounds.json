@@ -1,23 +1,111 @@
 {
-  "calendar_notif_jingle":{
-    "category": "master",
-    "sounds": [{
-      "name": "jingle",
-      "stream": false
-    }]
+  "mithril.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "mithrilbreak",
+        "stream": false
+      }
+    ]
   },
-  "calendar_notif_in":{
-    "category": "master",
-    "sounds": [{
-      "name": "in",
-      "stream": false
-    }]
+  "gemstoneTopaz.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreaktopaz",
+        "stream": false
+      }
+    ]
   },
-  "calendar_notif_out":{
+  "gemstoneRuby.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakruby",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneAmber.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonebreakamber",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneAmethyst.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstoneamethystbreak",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneSapphire.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonesapphirebreak",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneJade.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonejadebreak",
+        "stream": false
+      }
+    ]
+  },
+  "gemstoneJasper.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "gemstonejasperbreak",
+        "stream": false
+      }
+    ]
+  },
+
+  "titanium.break": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "titaniumbreak",
+        "stream": false
+      }
+    ]
+  },
+  "calendar_notif_jingle": {
     "category": "master",
-    "sounds": [{
-      "name": "out",
-      "stream": false
-    }]
+    "sounds": [
+      {
+        "name": "jingle",
+        "stream": false
+      }
+    ]
+  },
+  "calendar_notif_in": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "in",
+        "stream": false
+      }
+    ]
+  },
+  "calendar_notif_out": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "out",
+        "stream": false
+      }
+    ]
   }
 }
