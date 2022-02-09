@@ -1956,6 +1956,7 @@ public class NEUOverlay extends Gui {
                         NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
                                 PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
                 petSlot.getTagCompound().setBoolean("NEUPETINVDISPLAY", true);
+                petSlot.getTagCompound().setBoolean("NEUHIDEPETTOOLTIP", NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip);
                 ItemStack petInfo = petSlot;
 
                 if (guiScreen instanceof GuiInventory) {

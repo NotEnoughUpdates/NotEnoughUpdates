@@ -78,7 +78,7 @@ public class PetOverlay {
             desc = "Shows an overlay in your inventory showing your current pet"
     )
     @ConfigEditorBoolean
-    public boolean petInvDisplay = true;
+    public boolean petInvDisplay = false;
 
     @Expose
     @ConfigOption(
@@ -97,4 +97,12 @@ public class PetOverlay {
     )
     @ConfigEditorBoolean
     public boolean sendPetsCommand = true;
+
+    @Expose
+    @ConfigOption(
+            name = "Hide Pet Inventory Tooltip",
+            desc = "Hides the tooltip of your active in your inventory"
+    )
+    @ConfigEditorBoolean
+    public boolean hidePetTooltip = true;
 }

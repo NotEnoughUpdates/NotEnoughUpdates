@@ -2474,6 +2474,9 @@ public class NEUEventListener {
             ItemPriceInformation.addToTooltip(event.toolTip, internalname, event.itemStack);
         }
 
+        if (event.itemStack.getTagCompound().getBoolean("NEUHIDEPETTOOLTIP") && NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip) {
+            event.toolTip.clear();
+        }
     }
 
     private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
