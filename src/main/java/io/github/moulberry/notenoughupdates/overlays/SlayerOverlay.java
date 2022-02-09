@@ -39,8 +39,9 @@ public class SlayerOverlay extends TextOverlay {
     }
 
     private boolean shouldUpdate() {
+        if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.onlyShowWhenRelevant || SBInfo.getInstance().stranded)
+            return true;
         //Ignore if on stranded
-        if (SBInfo.getInstance().stranded) return true;
         String scoreboardLocation = SBInfo.getInstance().location;
         String locrawLocation = SBInfo.getInstance().getLocation();
         //In case something is broken still show the overlay
@@ -50,7 +51,7 @@ public class SlayerOverlay extends TextOverlay {
                 if (!locrawLocation.equals("combat_1")) return false;
                 break;
             case "Revenant":
-                if (!locrawLocation.equals("hub") || !revenantLocations.contains(scoreboardLocation)) return false;
+                if ((!locrawLocation.equals("hub") || !revenantLocations.contains(scoreboardLocation)) && !locrawLocation.equals("crystal_hollows")) return false;
                 break;
             case "Sven":
                 if ((!locrawLocation.equals("hub") || !scoreboardLocation.equals("Ruins")) && (!locrawLocation.equals("foraging_1") || !scoreboardLocation.equals("Howling Cave")))

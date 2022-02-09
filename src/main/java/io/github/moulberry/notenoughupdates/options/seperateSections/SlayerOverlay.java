@@ -29,6 +29,14 @@ public class SlayerOverlay {
 
     @Expose
     @ConfigOption(
+            name = "Only show when relevant",
+            desc = "Only shows the overlay when you are in an area where your current Slayer can be completed"
+    )
+    @ConfigEditorBoolean
+    public boolean onlyShowWhenRelevant = true;
+
+    @Expose
+    @ConfigOption(
             name = "Slayer Text",
             desc = "\u00a7eDrag text to change the appearance of the overlay"
     )
