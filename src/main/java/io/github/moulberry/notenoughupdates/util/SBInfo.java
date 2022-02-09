@@ -46,6 +46,7 @@ public class SBInfo {
     public String time = "";
     public String objective = "";
     public String slayer = "";
+    public boolean stranded = false;
 
     public String mode = "";
 
@@ -70,9 +71,8 @@ public class SBInfo {
         if (event.gui instanceof GuiChest) {
             GuiChest chest = (GuiChest) event.gui;
             ContainerChest container = (ContainerChest) chest.inventorySlots;
-            String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
 
-            lastOpenContainerName = containerName;
+            lastOpenContainerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
         }
     }
 
@@ -194,8 +194,8 @@ public class SBInfo {
             }
             isInDungeon = tempIsInDungeon;
 
+            boolean containsStranded = false;
             for (String line : lines) { //Slayer stuff
-                //System.out.println(line);
                 if (line.contains("Tarantula Broodfather")) {
                     slayer = "Tarantula";
                 } else if (line.contains("Revenant Horror")) {
@@ -226,7 +226,9 @@ public class SBInfo {
                         SlayerOverlay.slayerTier = 5;
                     }
                 }
+                if (line.contains("☀ Stranded")) containsStranded = true;
             }
+            stranded = containsStranded;
 
             if (lines.size() >= 5) {
                 date = Utils.cleanColour(lines.get(1)).trim();
