@@ -62,9 +62,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.awt.*;
+import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -2345,14 +2344,10 @@ public class NEUOverlay extends Gui {
                     ItemPriceInformation.addToTooltip(text, internalname, stack);
                 }
 
-                boolean hasClick = false;
-                boolean hasInfo = false;
-                if (json.has("clickcommand") && !json.get("clickcommand").getAsString().isEmpty()) {
-                    hasClick = true;
-                }
-                if (json.has("info") && json.get("info").getAsJsonArray().size() > 0) {
-                    hasInfo = true;
-                }
+                boolean hasClick =
+                        (json.has("clickcommand") && !json.get("clickcommand").getAsString().isEmpty())
+                                || !manager.getAvailableRecipesFor(internalname).isEmpty();
+                boolean hasInfo = json.has("info") && json.get("info").getAsJsonArray().size() > 0;
 
                 if (hasClick || hasInfo) text.add("");
                 if (hasClick)
