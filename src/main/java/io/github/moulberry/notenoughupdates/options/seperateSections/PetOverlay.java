@@ -104,5 +104,5 @@ public class PetOverlay {
             desc = "Hides the tooltip of your active in your inventory"
     )
     @ConfigEditorBoolean
-    public boolean hidePetTooltip = true;
+    public boolean hidePetTooltip = false;
 }
