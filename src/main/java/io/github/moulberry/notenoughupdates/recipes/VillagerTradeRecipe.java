@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -95,7 +96,7 @@ public class VillagerTradeRecipe implements NeuRecipe {
 
     @Override
     public boolean isAvailable() {
-        return SBInfo.getInstance().getCurrentMode() == SBInfo.Gamemode.STRANDED;
+        return SBInfo.getInstance().getCurrentMode() == SBInfo.Gamemode.STRANDED || NotEnoughUpdates.INSTANCE.config.hidden.dev;
     }
 
     @Override
