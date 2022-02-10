@@ -2580,7 +2580,7 @@ public class NEUEventListener {
     public void onItemTooltip(ItemTooltipEvent event) {
         if (!neu.isOnSkyblock()) return;
         //Render the pet inventory display tooltip to the left to avoid things from other mods rendering over the tooltip
-        if (event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
+        if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
             GlStateManager.translate(-200, 0, 0);
         }
 
