@@ -960,7 +960,7 @@ public class NEUManager {
 
     public boolean displayGuiItemUsages(String internalName) {
         if (!usagesMap.containsKey(internalName)) return false;
-        List<NeuRecipe> usages = getAvailableRecipesFor(internalName);
+        List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
         if (usages.isEmpty()) return false;
         Minecraft.getMinecraft().displayGuiScreen(
                 new GuiItemRecipe("Item Usages", usages, this));
