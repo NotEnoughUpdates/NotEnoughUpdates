@@ -2024,6 +2024,7 @@ public class NEUOverlay extends Gui {
                     }
                 }
             }
+        }
 
             SunTzu.setEnabled(textField.getText().toLowerCase().startsWith("potato"));
 
@@ -2381,7 +2382,6 @@ public class NEUOverlay extends Gui {
                 searchMode = false;
             }
         }
-    }
 
     /**
      * Used in SettingsInfoPane to redraw the items when a setting changes.
