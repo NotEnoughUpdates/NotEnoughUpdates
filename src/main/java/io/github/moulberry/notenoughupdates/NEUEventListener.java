@@ -2474,7 +2474,7 @@ public class NEUEventListener {
             ItemPriceInformation.addToTooltip(event.toolTip, internalname, event.itemStack);
         }
 
-        if (event.itemStack.getTagCompound().getBoolean("NEUHIDEPETTOOLTIP") && NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip) {
+        if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUHIDEPETTOOLTIP") && NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip) {
             event.toolTip.clear();
         }
     }
