@@ -90,7 +90,7 @@ public class GuiItemRecipe extends GuiScreen {
         Minecraft.getMinecraft().getTextureManager().bindTexture(currentRecipe.getBackground());
         this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
-        currentRecipe.drawExtraBackground(this);
+        currentRecipe.drawExtraBackground(this, mouseX, mouseY);
 
         List<RecipeSlot> slots = getAllRenderedSlots();
         for (RecipeSlot slot : slots) {
@@ -101,7 +101,7 @@ public class GuiItemRecipe extends GuiScreen {
 
         Utils.drawStringScaledMaxWidth(title, fontRendererObj, guiLeft + TITLE_X, guiTop + TITLE_Y, false, xSize - 38, 0x404040);
 
-        currentRecipe.drawExtraInfo(this);
+        currentRecipe.drawExtraInfo(this, mouseX, mouseY);
 
         for (RecipeSlot slot : slots) {
             if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {

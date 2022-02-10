@@ -799,6 +799,7 @@ public class APIManager {
         if (recipes != null)
             RECIPE_ITER:
                     for (NeuRecipe recipe : recipes) {
+                        if (recipe.hasVariableCost() || !recipe.shouldUseForCraftCost()) continue;
                         float craftPrice = 0;
                         for (Ingredient i : recipe.getIngredients()) {
                             if (i.isCoins()) {

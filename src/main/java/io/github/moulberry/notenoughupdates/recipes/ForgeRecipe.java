@@ -75,6 +75,11 @@ public class ForgeRecipe implements NeuRecipe {
     }
 
     @Override
+    public boolean hasVariableCost() {
+        return false;
+    }
+
+    @Override
     public Set<Ingredient> getOutputs() {
         return Collections.singleton(output);
     }
@@ -95,7 +100,7 @@ public class ForgeRecipe implements NeuRecipe {
     }
 
     @Override
-    public void drawExtraBackground(GuiItemRecipe gui) {
+    public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
         for (int i = 0; i < inputs.size(); i++) {
             int[] slotCoordinates = getSlotCoordinates(i, inputs.size());
@@ -107,7 +112,7 @@ public class ForgeRecipe implements NeuRecipe {
     }
 
     @Override
-    public void drawExtraInfo(GuiItemRecipe gui) {
+    public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         if (timeInSeconds > 0)
             Utils.drawStringCenteredScaledMaxWidth(formatDuration(timeInSeconds), fontRenderer, gui.guiLeft + EXTRA_INFO_X, gui.guiTop + EXTRA_INFO_Y, false, EXTRA_INFO_MAX_WIDTH, 0xff00ff);

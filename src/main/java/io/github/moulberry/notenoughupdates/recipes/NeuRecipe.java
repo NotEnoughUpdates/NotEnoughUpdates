@@ -15,13 +15,16 @@ public interface NeuRecipe {
 
     List<RecipeSlot> getSlots();
 
-    void drawExtraInfo(GuiItemRecipe gui);
+    default void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
+    }
 
-    default void drawExtraBackground(GuiItemRecipe gui) {
+    default void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
     }
 
     default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
     }
+
+    boolean hasVariableCost();
 
     JsonObject serialize();
 
@@ -32,8 +35,14 @@ public interface NeuRecipe {
             switch (recipe.get("type").getAsString().intern()) {
                 case "forge":
                     return ForgeRecipe.parseForgeRecipe(manager, recipe, output);
+                case "trade":
+                    return VillagerTradeRecipe.parseStaticRecipe(manager, recipe);
             }
         }
         return CraftingRecipe.parseCraftingRecipe(manager, recipe, output);
+    }
+
+    default boolean shouldUseForCraftCost() {
+        return true;
     }
 }

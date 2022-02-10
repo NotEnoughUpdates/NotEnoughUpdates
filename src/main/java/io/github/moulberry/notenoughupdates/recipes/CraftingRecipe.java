@@ -45,6 +45,11 @@ public class CraftingRecipe implements NeuRecipe {
     }
 
     @Override
+    public boolean hasVariableCost() {
+        return false;
+    }
+
+    @Override
     public Set<Ingredient> getOutputs() {
         return Collections.singleton(getOutput());
     }
@@ -85,7 +90,7 @@ public class CraftingRecipe implements NeuRecipe {
     }
 
     @Override
-    public void drawExtraInfo(GuiItemRecipe gui) {
+    public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 
         String craftingText = getCraftText();
