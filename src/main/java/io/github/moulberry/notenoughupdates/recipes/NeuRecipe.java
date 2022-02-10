@@ -45,4 +45,8 @@ public interface NeuRecipe {
     default boolean shouldUseForCraftCost() {
         return true;
     }
+
+    default boolean isAvailable() {
+        return true;
+    }
 }

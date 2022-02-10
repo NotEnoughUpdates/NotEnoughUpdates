@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -90,6 +91,11 @@ public class VillagerTradeRecipe implements NeuRecipe {
     @Override
     public boolean shouldUseForCraftCost() {
         return false;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return SBInfo.getInstance().getCurrentMode() == SBInfo.Gamemode.STRANDED;
     }
 
     @Override

@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -955,7 +956,7 @@ public class NEUManager {
         Set<NeuRecipe> usages = usagesMap.get(internalName);
         if (usages.isEmpty()) return false;
         Minecraft.getMinecraft().displayGuiScreen(
-                new GuiItemRecipe("Item Usages", new ArrayList<>(usages), this));
+                new GuiItemRecipe("Item Usages", usages.stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList()), this));
         return true;
     }
 
@@ -964,7 +965,7 @@ public class NEUManager {
         Set<NeuRecipe> recipes = recipesMap.get(internalName);
         if (recipes.isEmpty()) return false;
         Minecraft.getMinecraft().displayGuiScreen(
-                new GuiItemRecipe(text != null ? text : "Item Recipe", new ArrayList<>(recipes), this));
+                new GuiItemRecipe(text != null ? text : "Item Recipe", recipes.stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList()), this));
         return true;
     }
 

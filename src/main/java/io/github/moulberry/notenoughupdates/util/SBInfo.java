@@ -1,13 +1,19 @@
 package io.github.moulberry.notenoughupdates.util;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -19,13 +25,16 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +70,31 @@ public class SBInfo {
     public boolean isInDungeon = false;
     public boolean hasNewTab = false;
 
+
+    public enum Gamemode {
+        NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
+
+        private final String name;
+        private final String emoji;
+
+        Gamemode(String name, String emoji) {
+            this.name = name;
+            this.emoji = emoji;
+        }
+
+        public static Gamemode find(String type) {
+            for (Gamemode gamemode : values()) {
+                if (type.contains(gamemode.name))
+                    return gamemode;
+            }
+            return null;
+        }
+    }
+
+
+    private Map<String, Gamemode> gamemodes = new HashMap<>();
+    private boolean areGamemodesLoaded = false;
+    private int tickCount = 0;
     public String currentProfile = null;
 
     @SubscribeEvent
@@ -73,6 +107,74 @@ public class SBInfo {
             String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
 
             lastOpenContainerName = containerName;
+        }
+    }
+
+    @SubscribeEvent
+    public void onGuiTick(TickEvent event) {
+        if (tickCount++ % 10 != 0) return;
+        GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (currentScreen instanceof GuiChest) {
+            ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
+            if ("Profile Management".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) {
+                updateProfileInformation(container);
+            }
+        }
+    }
+
+    private static final Pattern PROFILE_PATTERN = Pattern.compile("(?<type>(♲ Ironman)|(☀ Stranded)|()) *Profile: (?<name>[^ ]+)");
+
+    private void updateProfileInformation(ContainerChest container) {
+        for (int i = 11; i < 16; i = -~i) {
+            Slot slot = container.getSlot(i);
+            if (slot == null || !slot.getHasStack()) continue;
+            ItemStack item = slot.getStack();
+            if (item == null || item.getItem() == Item.getItemFromBlock(Blocks.bedrock)) continue;
+            String displayName = Utils.cleanColour(item.getDisplayName());
+            Matcher matcher = PROFILE_PATTERN.matcher(displayName);
+            if (!matcher.matches()) continue;
+            String type = matcher.group("type");
+            String name = matcher.group("name");
+            Gamemode gamemode = Gamemode.find(type);
+            gamemodes.put(name, gamemode);
+        }
+        areGamemodesLoaded = true;
+        saveGameModes();
+    }
+
+    private Path getProfilesFile() {
+        return new File(NotEnoughUpdates.INSTANCE.manager.configLocation, "profiles.json").toPath();
+    }
+
+    public Map<String, Gamemode> getAllGamemodes() {
+        if (!areGamemodesLoaded)
+            loadGameModes();
+        return gamemodes;
+    }
+
+    public void saveGameModes() {
+        try {
+            Files.write(getProfilesFile(), NotEnoughUpdates.INSTANCE.manager.gson.toJson(gamemodes).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Gamemode getGamemodeForProfile(String profiles) {
+        return getAllGamemodes().get(profiles);
+    }
+
+    public Gamemode getCurrentMode() {
+        return getGamemodeForProfile(currentProfile);
+    }
+
+    public void loadGameModes() {
+        try {
+            gamemodes = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(Files.newBufferedReader(getProfilesFile()), new TypeToken<Map<String, Gamemode>>() {
+            }.getType());
+            areGamemodesLoaded = true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -14,13 +14,13 @@ import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.gamemodes.GuiGamemodes;
-import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
-import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
-import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FancyPortals;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.*;
 import io.github.moulberry.notenoughupdates.miscgui.tutorials.NeuTutorial;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -745,6 +745,11 @@ public class Commands {
                 DupePOC.doDupe(args[0]);
                 return;
             }*/
+            if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
+                String currentProfile = SBInfo.getInstance().currentProfile;
+                SBInfo.Gamemode gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile);
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "You are on Profile " + currentProfile + " with the mode " + gamemode));
+            }
             if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
                 if (args.length == 1) {
                     NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
