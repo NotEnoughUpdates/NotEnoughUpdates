@@ -1950,11 +1950,19 @@ public class NEUOverlay extends Gui {
         }
         if (PetInfoOverlay.getCurrentPet() != null) {
             if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay
-                    && NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId)).hasDisplayName()
+                    && (NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId)).hasDisplayName()
+                    || NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(PetInfoOverlay.getCurrentPet().petType + ";" + (PetInfoOverlay.getCurrentPet().rarity.petId - 1))).hasDisplayName())
                     && NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-                petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-                        NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-                                PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
+                if (!NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+                        NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId)).hasDisplayName()) {
+                    petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+                            NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+                                    PetInfoOverlay.getCurrentPet().petType + ";" + (PetInfoOverlay.getCurrentPet().rarity.petId - 1)));
+                } else {
+                    petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+                            NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+                                    PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
+                }
                 petSlot.getTagCompound().setBoolean("NEUPETINVDISPLAY", true);
                 petSlot.getTagCompound().setBoolean("NEUHIDEPETTOOLTIP", NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip);
                 ItemStack petInfo = petSlot;

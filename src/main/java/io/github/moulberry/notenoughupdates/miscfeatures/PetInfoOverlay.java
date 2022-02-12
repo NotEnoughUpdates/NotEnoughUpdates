@@ -62,7 +62,7 @@ public class PetInfoOverlay extends TextOverlay {
         RARE(11, 2, 3, EnumChatFormatting.BLUE),
         EPIC(16, 3, 4, EnumChatFormatting.DARK_PURPLE),
         LEGENDARY(20, 4, 5, EnumChatFormatting.GOLD),
-        MYTHIC(20, 4, 5, EnumChatFormatting.LIGHT_PURPLE);
+        MYTHIC(20, 5, 5, EnumChatFormatting.LIGHT_PURPLE);
 
         public int petOffset;
         public EnumChatFormatting chatFormatting;
@@ -833,8 +833,11 @@ public class PetInfoOverlay extends TextOverlay {
         }
 
         if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
-
-        JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petType + ";" + currentPet.rarity.petId);
+        int mythicRarity = currentPet.rarity.petId;
+        if (currentPet.rarity.petId == 5) {
+            mythicRarity = 4;
+        }
+        JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petType + ";" + mythicRarity);
         if (petItem != null) {
             Vector2f position = getPosition(overlayWidth, overlayHeight);
             int x = (int) position.x;
