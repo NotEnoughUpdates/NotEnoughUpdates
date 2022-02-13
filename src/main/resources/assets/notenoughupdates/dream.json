@@ -1,0 +1,24 @@
+{
+  "entity": "Player",
+  "modifiers": [
+	{
+	  "type": "playerdata",
+	  "skin": "notenoughupdates:dreamskin.png"
+	},
+	{
+	  "type": "riding",
+	  "entity": "Chicken",
+	  "modifiers": [
+		{
+		  "type": "riding",
+		  "entity": "Squid"
+		}
+	  ]
+	},
+	{
+	  "type": "equipment",
+	  "hand": "DIAMOND_SWORD",
+	  "feet": "DIAMOND_BOOTS"
+	}
+  ]
+}

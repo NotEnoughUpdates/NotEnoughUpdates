@@ -8,6 +8,7 @@
 	"MixinEffectRenderer",
 	"MixinEntity",
 	"MixinEntityAgeable",
+	"MixinEntityHorse",
 	"MixinEntityPlayer",
 	"MixinEntityPlayerSP",
 	"MixinEntityRenderer",
