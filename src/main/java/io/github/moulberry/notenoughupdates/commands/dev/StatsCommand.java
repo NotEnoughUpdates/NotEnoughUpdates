@@ -1,6 +1,7 @@
-package io.github.moulberry.notenoughupdates.commands;
+package io.github.moulberry.notenoughupdates.commands.dev;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.util.DiscordMarkdownBuilder;
 import io.github.moulberry.notenoughupdates.util.HastebinUploader;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -33,7 +34,7 @@ public class StatsCommand extends ClientCommandBase {
         super("neustats");
     }
 
-    private static int activeModCount = Loader.instance().getActiveModList().size();
+    private static final int activeModCount = Loader.instance().getActiveModList().size();
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {

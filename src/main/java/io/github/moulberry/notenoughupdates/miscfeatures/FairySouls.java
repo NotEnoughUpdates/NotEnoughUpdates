@@ -6,11 +6,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.commands.SimpleCommand;
+import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -31,83 +32,6 @@ public class FairySouls {
     private static List<BlockPos> currentSoulList = null;
     private static List<BlockPos> currentSoulListClose = null;
     private static HashMap<String, HashMap<String, Set<Integer>>> loadedFoundSouls = new HashMap<>();
-
-    private static final SimpleCommand.ProcessCommandRunnable fairysoulRunnable = new SimpleCommand.ProcessCommandRunnable() {
-        @Override
-        public void processCommand(ICommandSender sender, String[] args) {
-            if (args.length != 1) {
-                printHelp();
-                return;
-            }
-            String subcommand = args[0].toLowerCase();
-
-            switch (subcommand) {
-                case "help":
-                    printHelp();
-                    return;
-                case "on":
-                case "enable":
-                    print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
-                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = true;
-                    return;
-                case "off":
-                case "disable":
-                    print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
-                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = false;
-                    return;
-                case "clear": {
-                    String location = SBInfo.getInstance().getLocation();
-                    if (currentSoulList == null || location == null) {
-                        print(EnumChatFormatting.RED + "No fairy souls found in your current world");
-                    } else {
-                        HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
-                        Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
-                        for (int i = 0; i < currentSoulList.size(); i++) {
-                            found.add(i);
-                        }
-                        String profileName = SBInfo.getInstance().currentProfile;
-                        if (profileName == null) {
-                            if (loadedFoundSouls.containsKey(unknownProfile)) {
-                                loadedFoundSouls.get(unknownProfile).put(location, found);
-                            }
-                        } else {
-                            profileName = profileName.toLowerCase();
-                            if (!loadedFoundSouls.containsKey(profileName)) {
-                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
-                                loadedFoundSouls.put(profileName, profileData);
-                            }
-                            loadedFoundSouls.get(profileName).put(location, found);
-                        }
-                        print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as found");
-                    }
-                }
-                return;
-                case "unclear":
-                    String location = SBInfo.getInstance().getLocation();
-                    if (location == null) {
-                        print(EnumChatFormatting.RED + "No fairy souls found in your current world");
-                    } else {
-                        String profileName = SBInfo.getInstance().currentProfile;
-                        if (profileName == null) {
-                            if (loadedFoundSouls.containsKey(unknownProfile)) {
-                                loadedFoundSouls.get(unknownProfile).remove(location);
-                            }
-                        } else {
-                            profileName = profileName.toLowerCase();
-                            if (!loadedFoundSouls.containsKey(profileName)) {
-                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
-                                loadedFoundSouls.put(profileName, profileData);
-                            }
-                            loadedFoundSouls.get(profileName).remove(location);
-                        }
-                        print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as not found");
-                    }
-                    return;
-            }
-
-            print(EnumChatFormatting.RED + "Unknown subcommand: " + subcommand);
-        }
-    };
 
     private static HashMap<String, Set<Integer>> getFoundSoulsForProfile() {
         String profile = SBInfo.getInstance().currentProfile;
@@ -306,15 +230,90 @@ public class FairySouls {
         }
     }
 
-    public static class FairySoulsCommandAlt extends SimpleCommand {
-        public FairySoulsCommandAlt() {
-            super("fairysouls", fairysoulRunnable);
-        }
-    }
+    public static class FairySoulsCommand extends ClientCommandBase {
 
-    public static class FairySoulsCommand extends SimpleCommand {
         public FairySoulsCommand() {
-            super("neusouls", fairysoulRunnable);
+            super("neusouls");
+        }
+
+        @Override
+        public List<String> getCommandAliases() {
+            return Collections.singletonList("fairysouls");
+        }
+
+        @Override
+        public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+            if (args.length != 1) {
+                printHelp();
+                return;
+            }
+            String subcommand = args[0].toLowerCase();
+
+            switch (subcommand) {
+                case "help":
+                    printHelp();
+                    return;
+                case "on":
+                case "enable":
+                    print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
+                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = true;
+                    return;
+                case "off":
+                case "disable":
+                    print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
+                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = false;
+                    return;
+                case "clear": {
+                    String location = SBInfo.getInstance().getLocation();
+                    if (currentSoulList == null || location == null) {
+                        print(EnumChatFormatting.RED + "No fairy souls found in your current world");
+                    } else {
+                        HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
+                        Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
+                        for (int i = 0; i < currentSoulList.size(); i++) {
+                            found.add(i);
+                        }
+                        String profileName = SBInfo.getInstance().currentProfile;
+                        if (profileName == null) {
+                            if (loadedFoundSouls.containsKey(unknownProfile)) {
+                                loadedFoundSouls.get(unknownProfile).put(location, found);
+                            }
+                        } else {
+                            profileName = profileName.toLowerCase();
+                            if (!loadedFoundSouls.containsKey(profileName)) {
+                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
+                                loadedFoundSouls.put(profileName, profileData);
+                            }
+                            loadedFoundSouls.get(profileName).put(location, found);
+                        }
+                        print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as found");
+                    }
+                }
+                return;
+                case "unclear":
+                    String location = SBInfo.getInstance().getLocation();
+                    if (location == null) {
+                        print(EnumChatFormatting.RED + "No fairy souls found in your current world");
+                    } else {
+                        String profileName = SBInfo.getInstance().currentProfile;
+                        if (profileName == null) {
+                            if (loadedFoundSouls.containsKey(unknownProfile)) {
+                                loadedFoundSouls.get(unknownProfile).remove(location);
+                            }
+                        } else {
+                            profileName = profileName.toLowerCase();
+                            if (!loadedFoundSouls.containsKey(profileName)) {
+                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
+                                loadedFoundSouls.put(profileName, profileData);
+                            }
+                            loadedFoundSouls.get(profileName).remove(location);
+                        }
+                        print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as not found");
+                    }
+                    return;
+            }
+
+            print(EnumChatFormatting.RED + "Unknown subcommand: " + subcommand);
         }
     }
 }

@@ -8,6 +8,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
+import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
@@ -1513,7 +1514,7 @@ public class NEUEventListener {
                     if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
                         String username = tag.getCompoundTag("SkullOwner").getString("Name");
                         Utils.playPressSound();
-                        NotEnoughUpdates.INSTANCE.commands.viewProfileRunnable.processCommand(null, new String[]{username});
+                        ViewProfileCommand.RUNNABLE.accept(new String[]{username});
                     }
                 }
             }
