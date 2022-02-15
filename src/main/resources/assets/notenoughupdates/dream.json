@@ -7,11 +7,36 @@
 	},
 	{
 	  "type": "riding",
-	  "entity": "Chicken",
+	  "entity": "ArmorStand",
 	  "modifiers": [
 		{
+		  "type": "age",
+		  "baby": true
+		},
+		{
 		  "type": "riding",
-		  "entity": "Squid"
+		  "entity": "Zombie",
+		  "modifiers": [
+			{
+			  "type": "equipment",
+			  "hand": "BOW",
+			  "feet": "DIAMOND_BOOTS"
+			},
+			{
+			  "type": "age",
+			  "baby": true
+			},
+			{
+			  "type": "riding",
+			  "entity": "Sheep",
+			  "modifiers": [
+				{
+				  "type": "age",
+				  "baby": true
+				}
+			  ]
+			}
+		  ]
 		}
 	  ]
 	},

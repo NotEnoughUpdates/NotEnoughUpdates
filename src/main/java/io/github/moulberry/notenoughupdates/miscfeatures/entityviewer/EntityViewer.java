@@ -11,6 +11,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.util.ResourceLocation;
@@ -45,11 +47,15 @@ public class EntityViewer extends GuiScreen {
         put("Snowman", () -> new EntitySnowman(null));
         put("Villager", () -> new EntityVillager(null));
         put("Guardian", () -> new EntityGuardian(null));
+        put("ArmorStand", () -> new EntityArmorStand(null));
         put("Squid", () -> new EntitySquid(null));
         put("Bat", () -> new EntityBat(null));
         put("Spider", () -> new EntitySpider(null));
         put("CaveSpider", () -> new EntityCaveSpider(null));
         put("Pigman", () -> new EntityPigZombie(null));
+        put("Ghast", () -> new EntityGhast(null));
+        put("MagmaCube", () -> new EntityMagmaCube(null));
+        put("Wither", () -> new EntityWither(null));
         put("Enderman", () -> new EntityEnderman(null));
         put("Player", () -> new GUIClientPlayer());
     }};
@@ -59,7 +65,9 @@ public class EntityViewer extends GuiScreen {
         put("equipment", new EquipmentModifier());
         put("riding", new RidingModifier());
         put("charged", new ChargedModifier());
+        put("witherdata", new WitherModifier());
         put("invisible", new InvisibleModifier());
+        put("age", new AgeModifier());
     }};
 
     public int guiLeft = 0;
@@ -143,7 +151,7 @@ public class EntityViewer extends GuiScreen {
         EntityLivingBase stack = entity;
         while (true) {
             GuiInventory.drawEntityOnScreen(guiLeft + 90, (int) (guiTop + 75 - bottomOffset * scale), scale, guiLeft - mouseX + 80, guiTop + 60 - mouseY, stack);
-            bottomOffset += stack.height;
+            bottomOffset += stack.getMountedYOffset();
             if (!(stack.riddenByEntity instanceof EntityLivingBase)) {
                 break;
             }
