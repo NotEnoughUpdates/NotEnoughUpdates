@@ -105,4 +105,12 @@ public class PetOverlay {
     )
     @ConfigEditorBoolean
     public boolean hidePetTooltip = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Show upgraded Pet Level",
+            desc = "Show the estimated pet level after an upgrade at Kats"
+    )
+    @ConfigEditorBoolean
+    public boolean showKatSitting = true;
 }

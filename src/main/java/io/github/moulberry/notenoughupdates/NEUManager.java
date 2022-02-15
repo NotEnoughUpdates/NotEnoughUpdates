@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
@@ -82,6 +83,8 @@ public class NEUManager {
     public File configFile;
     public HotmInformation hotm;
 
+    public KatSitterOverlay katSitterOverlay;
+
     public CraftingOverlay craftingOverlay;
 
     public NEUManager(NotEnoughUpdates neu, File configLocation) {
@@ -90,7 +93,7 @@ public class NEUManager {
         this.auctionManager = new APIManager(this);
         this.hotm = new HotmInformation(neu);
         this.craftingOverlay = new CraftingOverlay(this);
-
+        this.katSitterOverlay = new KatSitterOverlay();
 
         GIT_COMMITS_URL = neu.config.hidden.repoCommitsURL;
 
