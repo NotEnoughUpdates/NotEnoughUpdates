@@ -4,12 +4,12 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 	"AccessorEntityAgeable",
+	"AccessorEntityArmorStand",
 	"MixinAbstractClientPlayer",
 	"MixinContainer",
 	"MixinEffectRenderer",
 	"MixinEntity",
 	"MixinEntityAgeable",
-	"AccessorEntityArmorStand",
 	"MixinEntityHorse",
 	"MixinEntityPlayer",
 	"MixinEntityPlayerSP",
@@ -43,5 +43,8 @@
 	"MixinVboRenderList",
 	"MixinWorld",
 	"MixinWorldClient"
+  ],
+  "client": [
+	"AccessorMinecraft"
   ]
 }
