@@ -163,7 +163,7 @@ public class AuctionSearchOverlay {
                         Utils.drawTexturedRect(width / 2 - 96 + 1, topY + 30 + num * 22 + 1, 193, 21, 214 / 512f, 407 / 512f, 0, 21 / 256f, GL11.GL_NEAREST);
 
                     }
-                    String itemName = Utils.trimWhitespaceAndFormatCodes(stack.getDisplayName().replaceAll("\\[.+]", ""));
+                    String itemName = Utils.trimIgnoreColour(stack.getDisplayName().replaceAll("\\[.+]", ""));
                     if (itemName.contains("Enchanted Book") && str.contains(";")) {
                         String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
                         itemName = lore[0].trim();
