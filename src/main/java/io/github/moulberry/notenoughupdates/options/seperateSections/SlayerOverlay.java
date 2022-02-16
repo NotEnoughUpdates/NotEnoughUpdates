@@ -21,11 +21,19 @@ public class SlayerOverlay {
 
     @Expose
     @ConfigOption(
-            name = "Slayer Overlay",
+            name = "Enable Slayer Overlay",
             desc = "Toggles the slayer overlay"
     )
     @ConfigEditorBoolean
     public boolean slayerOverlay = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Only show when relevant",
+            desc = "Only shows the overlay when you are in an area where your current Slayer can be completed"
+    )
+    @ConfigEditorBoolean
+    public boolean onlyShowWhenRelevant = true;
 
     @Expose
     @ConfigOption(
@@ -46,7 +54,7 @@ public class SlayerOverlay {
 
     @Expose
     @ConfigOption(
-            name = "Slayer Position",
+            name = "Edit Slayer Overlay Position",
             desc = "Change the position of the Slayer overlay"
     )
     @ConfigEditorButton(

@@ -7,6 +7,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -28,13 +29,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +48,6 @@ import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -448,25 +450,24 @@ public class Utils {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
-    public static String[] rarityArr = new String[] {
+    public static String[] rarityArr = new String[]{
             "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME", "^^ THAT ONE IS DIVINE ^^"//, "DIVINE"
     };
 
-    public static String[] rarityArrC = new String[] {
-            EnumChatFormatting.WHITE+EnumChatFormatting.BOLD.toString()+"COMMON",
-            EnumChatFormatting.GREEN+EnumChatFormatting.BOLD.toString()+"UNCOMMON",
-            EnumChatFormatting.BLUE+EnumChatFormatting.BOLD.toString()+"RARE",
-            EnumChatFormatting.DARK_PURPLE+EnumChatFormatting.BOLD.toString()+"EPIC",
-            EnumChatFormatting.GOLD+EnumChatFormatting.BOLD.toString()+"LEGENDARY",
-            EnumChatFormatting.LIGHT_PURPLE+EnumChatFormatting.BOLD.toString()+"MYTHIC",
-            EnumChatFormatting.RED+EnumChatFormatting.BOLD.toString()+"SPECIAL",
-            EnumChatFormatting.RED+EnumChatFormatting.BOLD.toString()+"VERY SPECIAL",
-            EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
-            EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
+    public static String[] rarityArrC = new String[]{
+            EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
+            EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
+            EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
+            EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
+            EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
+            EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
+            EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
+            EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
+            EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
+            EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
             //EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
 
     };
-
     public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
         put("COMMON", rarityArrC[0]);
         put("UNCOMMON", rarityArrC[1]);
@@ -1379,7 +1380,7 @@ public class Utils {
         GlStateManager.popMatrix();
     }
 
-    public static void drawDottedLine(float sx, float sy, float ex, float ey, int width, int factor , int color) {
+    public static void drawDottedLine(float sx, float sy, float ex, float ey, int width, int factor, int color) {
         GlStateManager.pushMatrix();
         GL11.glLineStipple(factor, (short) 0xAAAA);
         GL11.glEnable(GL11.GL_LINE_STIPPLE);
@@ -1389,7 +1390,7 @@ public class Utils {
     }
 
     public static void drawTexturedQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4,
-                                         float uMin, float uMax, float vMin, float vMax, int filter) {
+                                        float uMin, float uMax, float vMin, float vMax, int filter) {
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -1419,5 +1420,48 @@ public class Utils {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
         GlStateManager.disableBlend();
+    }
+
+    public static boolean sendCloseScreenPacket() {
+        EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+        if (thePlayer.openContainer == null) return false;
+        thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(
+                thePlayer.openContainer.windowId));
+        return true;
+    }
+
+    public static String formatNumberWithDots(long number) {
+        if (number == 0)
+            return "0";
+        String work = "";
+        boolean isNegative = false;
+        if (number < 0) {
+            isNegative = true;
+            number = -number;
+        }
+        while (number != 0) {
+            work = String.format("%03d.%s", number % 1000, work);
+            number /= 1000;
+        }
+        work = work.substring(0, work.length() - 1);
+        while (work.startsWith("0"))
+            work = work.substring(1);
+        if (isNegative)
+            return "-" + work;
+        return work;
+    }
+
+    public static int getMouseY() {
+        int height = peekGuiScale().getScaledHeight();
+        return height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+    }
+
+    public static int getMouseX() {
+        return Mouse.getX() * peekGuiScale().getScaledWidth() / Minecraft.getMinecraft().displayWidth;
+    }
+
+    public static boolean isWithinRect(int x, int y, int left, int top, int width, int height) {
+        return left <= x && x <= left + width &&
+                top <= y && y <= top + height;
     }
 }

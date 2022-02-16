@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -32,12 +33,12 @@ import org.lwjgl.opengl.GL14;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.accessory_bag_overlay;
 
 public class AccessoryBagOverlay {
     private static final int TAB_BASIC = 0;
@@ -565,14 +566,22 @@ public class AccessoryBagOverlay {
             if (o1Auc != null && o1Auc.has("price")) {
                 cost1 = o1Auc.get("price").getAsFloat();
             } else {
-                cost1 = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(o1).craftCost;
+                APIManager.CraftInfo info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(o1);
+                if (info != null)
+                    cost1 = info.craftCost;
+                else
+                    cost1 = 0;
             }
             float cost2;
             JsonObject o2Auc = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o2);
             if (o2Auc != null && o2Auc.has("price")) {
                 cost2 = o2Auc.get("price").getAsFloat();
             } else {
-                cost2 = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(o2).craftCost;
+                APIManager.CraftInfo info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(o2);
+                if (info != null)
+                    cost2 = info.craftCost;
+                else
+                    cost2 = 0;
             }
 
             if (cost1 == -1 && cost2 == -1) return o1.compareTo(o2);

@@ -24,9 +24,10 @@ public class GuiTextures {
 
     public static final ResourceLocation DISCORD = new ResourceLocation("notenoughupdates:social/discord.png");
     public static final ResourceLocation GITHUB = new ResourceLocation("notenoughupdates:social/github.png");
-    public static final ResourceLocation TWITCH = new ResourceLocation("notenoughupdates:social/twitch.png");
+    public static final ResourceLocation PATREON = new ResourceLocation("notenoughupdates:social/patreon.png");
     public static final ResourceLocation TWITTER = new ResourceLocation("notenoughupdates:social/twitter.png");
     public static final ResourceLocation YOUTUBE = new ResourceLocation("notenoughupdates:social/youtube.png");
+    public static final ResourceLocation TWITCH = new ResourceLocation("notenoughupdates:social/twitch.png");
 
     public static final ResourceLocation item_mask = new ResourceLocation("notenoughupdates:item_mask.png");
     public static final ResourceLocation item_haschild = new ResourceLocation("notenoughupdates:item_haschild.png");
@@ -85,6 +86,10 @@ public class GuiTextures {
     public static final ResourceLocation descending_overlay = new ResourceLocation("notenoughupdates:descending_overlay.png");
 
     public static final ResourceLocation BAR = new ResourceLocation("notenoughupdates:core/bar.png");
+    public static final ResourceLocation BAR_ONE = new ResourceLocation("notenoughupdates:core/bar_1.png");
+    public static final ResourceLocation BAR_TWO = new ResourceLocation("notenoughupdates:core/bar_2.png");
+    public static final ResourceLocation BAR_THREE = new ResourceLocation("notenoughupdates:core/bar_3.png");
+    public static final ResourceLocation BAR_ON = new ResourceLocation("notenoughupdates:core/bar_on.png");
     public static final ResourceLocation OFF = new ResourceLocation("notenoughupdates:core/toggle_off.png");
     public static final ResourceLocation ONE = new ResourceLocation("notenoughupdates:core/toggle_1.png");
     public static final ResourceLocation TWO = new ResourceLocation("notenoughupdates:core/toggle_2.png");

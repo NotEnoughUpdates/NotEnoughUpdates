@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.common.collect.Lists;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.NEUEventListener;
+import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
@@ -61,7 +62,7 @@ public class PetInfoOverlay extends TextOverlay {
         RARE(11, 2, 3, EnumChatFormatting.BLUE),
         EPIC(16, 3, 4, EnumChatFormatting.DARK_PURPLE),
         LEGENDARY(20, 4, 5, EnumChatFormatting.GOLD),
-        MYTHIC(20, 4, 5, EnumChatFormatting.LIGHT_PURPLE);
+        MYTHIC(20, 5, 5, EnumChatFormatting.LIGHT_PURPLE);
 
         public int petOffset;
         public EnumChatFormatting chatFormatting;
@@ -832,8 +833,11 @@ public class PetInfoOverlay extends TextOverlay {
         }
 
         if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
-
-        JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petType + ";" + currentPet.rarity.petId);
+        int mythicRarity = currentPet.rarity.petId;
+        if (currentPet.rarity.petId == 5) {
+            mythicRarity = 4;
+        }
+        JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.petType + ";" + mythicRarity);
         if (petItem != null) {
             Vector2f position = getPosition(overlayWidth, overlayHeight);
             int x = (int) position.x;
@@ -1109,12 +1113,16 @@ public class PetInfoOverlay extends TextOverlay {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatReceived(ClientChatReceivedEvent event) {
         NEUConfig config = NotEnoughUpdates.INSTANCE.config;
-        if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck)) {
+        if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay)) {
             if (event.type == 0) {
                 String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 
                 Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
-                if (autopetMatcher.matches()) {
+                if (event.message.getUnformattedText().startsWith("You summoned your") || System.currentTimeMillis() - NEUOverlay.cachedPetTimer < 500) {
+                    NEUOverlay.cachedPetTimer = System.currentTimeMillis();
+                    NEUOverlay.shouldUseCachedPet = false;
+                } else if (autopetMatcher.matches()) {
+                    NEUOverlay.shouldUseCachedPet = false;
                     try {
                         lastLevelHovered = Integer.parseInt(autopetMatcher.group(1));
                     } catch (NumberFormatException ignored) {}

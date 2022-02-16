@@ -944,8 +944,8 @@ public class TradeWindow {
                 int x = i % 4;
                 int y = i / 4;
 
-                int containerIndex = ourTradeIndexes[i];
-                if (containerIndex < 0) continue;
+                Integer containerIndex = ourTradeIndexes[i];
+                if (containerIndex == null || containerIndex < 0) continue;
 
                 if (mouseX > guiLeft + 10 + x * 18 - 1 && mouseX < guiLeft + 10 + x * 18 + 18) {
                     if (mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {

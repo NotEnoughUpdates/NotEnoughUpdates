@@ -19,7 +19,7 @@ public class PetOverlay {
 
     @Expose
     @ConfigOption(
-            name = "Pet Info Position",
+            name = "Edit Pet Info Position",
             desc = "The position of the pet info."
     )
     @ConfigEditorButton(
@@ -71,4 +71,38 @@ public class PetOverlay {
     )
     @ConfigEditorBoolean
     public boolean dualPets = false;
+
+    @Expose
+    @ConfigOption(
+            name = "Pet Inventory Display",
+            desc = "Shows an overlay in your inventory showing your current pet"
+    )
+    @ConfigEditorBoolean
+    public boolean petInvDisplay = false;
+
+    @Expose
+    @ConfigOption(
+            name = "GUI Colour",
+            desc = "Change the colour of the GUI"
+    )
+    @ConfigEditorDropdown(
+            values = {"Vanilla", "Grey", "Dark", "Transparent", "FSR"}
+    )
+    public int colourStyle = 0;
+
+    @Expose
+    @ConfigOption(
+            name = "Click To Open Pets",
+            desc = "Click on the hud to open /pets"
+    )
+    @ConfigEditorBoolean
+    public boolean sendPetsCommand = true;
+
+    @Expose
+    @ConfigOption(
+            name = "Hide Pet Inventory Tooltip",
+            desc = "Hides the tooltip of your active in your inventory"
+    )
+    @ConfigEditorBoolean
+    public boolean hidePetTooltip = false;
 }

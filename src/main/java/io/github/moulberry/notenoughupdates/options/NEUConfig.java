@@ -12,6 +12,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.seperateSections.*;
+import io.github.moulberry.notenoughupdates.options.seperateSections.CustomArmour;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -245,6 +246,13 @@ public class NEUConfig extends Config {
 
     @Expose
     @Category(
+            name = "Custom Armour Hud",
+            desc = "Custom Armour Hud"
+    )
+    public CustomArmour customArmour = new CustomArmour();
+
+    @Expose
+    @Category(
             name = "Calendar",
             desc = "Calendar"
     )
@@ -437,6 +445,10 @@ public class NEUConfig extends Config {
             put("Sapphire", 0);
             put("Topaz", 0);
         }};
+        @Expose
+        public long dailyGemstonePowderCompleted = 0L;
+        @Expose
+        public long dailyMithrilPowerCompleted = 0L;
     }
 
     public HiddenLocationSpecific getLocationSpecific() {

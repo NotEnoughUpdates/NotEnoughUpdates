@@ -1,14 +1,13 @@
 package io.github.moulberry.notenoughupdates;
 
-import com.google.common.collect.Lists;
 import com.google.gson.*;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
-import io.github.moulberry.notenoughupdates.overlays.CraftingOverlay;
-import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.HypixelApi;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
+import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
+import io.github.moulberry.notenoughupdates.recipes.Ingredient;
+import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
@@ -17,13 +16,14 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
-import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.ProgressManager;
 import org.apache.commons.io.FileUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -68,18 +69,29 @@ public class NEUManager {
 
     private static String GIT_COMMITS_URL;
 
-    private final HashMap<String, Set<String>> usagesMap = new HashMap<>();
+    // TODO: private final Map<String, NeuItem>
+
+    private final Set<NeuRecipe> recipes = new HashSet<>();
+    private final HashMap<String, Set<NeuRecipe>> recipesMap = new HashMap<>();
+    private final HashMap<String, Set<NeuRecipe>> usagesMap = new HashMap<>();
 
     public String latestRepoCommit = null;
 
     public File configLocation;
     public File repoLocation;
     public File configFile;
+    public HotmInformation hotm;
+
+    public CraftingOverlay craftingOverlay;
 
     public NEUManager(NotEnoughUpdates neu, File configLocation) {
         this.neu = neu;
         this.configLocation = configLocation;
         this.auctionManager = new APIManager(this);
+        this.hotm = new HotmInformation(neu);
+        this.craftingOverlay = new CraftingOverlay(this);
+
+
         GIT_COMMITS_URL = neu.config.hidden.repoCommitsURL;
 
         gson = new GsonBuilder().setPrettyPrinting().create();
@@ -89,7 +101,7 @@ public class NEUManager {
     }
 
     public void setCurrentProfile(String currentProfile) {
-        this.currentProfile = currentProfile;
+        SBInfo.getInstance().currentProfile = currentProfile;
     }
 
     public String getCurrentProfile() {
@@ -120,16 +132,16 @@ public class NEUManager {
     public void resetRepo() {
         try {
             Utils.recursiveDelete(new File(configLocation, "repo"));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         try {
             new File(configLocation, "currentCommit.json").delete();
         } catch (Exception ignored) {}
     }
 
     /**
-     * Called when the game is first loaded. Compares the local repository to the github repository and handles
-     * the downloading of new/updated files. This then calls the "loadItem" method for every item in the local
-     * repository.
+     * Called when the game is first loaded. Compares the local repository to the github repository and handles the
+     * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
      */
     public void loadItemInformation() {
         /*File repoFile = new File(configLocation, "repo2");
@@ -261,14 +273,17 @@ public class NEUManager {
             if (items.exists()) {
                 File[] itemFiles = new File(repoLocation, "items").listFiles();
                 if (itemFiles != null) {
+                    ProgressManager.ProgressBar bar = ProgressManager.push("Loading recipes", itemFiles.length);
                     for (File f : itemFiles) {
                         String internalname = f.getName().substring(0, f.getName().length() - 5);
+                        bar.step(internalname);
                         synchronized (itemMap) {
                             if (!itemMap.containsKey(internalname)) {
                                 loadItem(internalname);
                             }
                         }
                     }
+                    ProgressManager.pop(bar);
                 }
             }
 
@@ -283,14 +298,17 @@ public class NEUManager {
         if (items.exists()) {
             File[] itemFiles = new File(repoLocation, "items").listFiles();
             if (itemFiles != null) {
+                ProgressManager.ProgressBar bar = ProgressManager.push("Loading items", itemFiles.length);
                 for (File f : itemFiles) {
                     String internalname = f.getName().substring(0, f.getName().length() - 5);
+                    bar.step(internalname);
                     synchronized (itemMap) {
                         if (!itemMap.containsKey(internalname)) {
                             loadItem(internalname);
                         }
                     }
                 }
+                ProgressManager.pop(bar);
             }
         }
 
@@ -302,8 +320,8 @@ public class NEUManager {
     }
 
     /**
-     * Loads the item in to the itemMap and also stores various words associated with this item
-     * in to titleWordMap and loreWordMap. These maps are used in the searching algorithm.
+     * Loads the item in to the itemMap and also stores various words associated with this item in to titleWordMap and
+     * loreWordMap. These maps are used in the searching algorithm.
      */
     public void loadItem(String internalName) {
         itemstackCache.remove(internalName);
@@ -325,23 +343,17 @@ public class NEUManager {
             itemMap.put(internalName, json);
 
             if (json.has("recipe")) {
-                synchronized (usagesMap) {
-                    JsonObject recipe = json.get("recipe").getAsJsonObject();
-
-                    String[] x = {"1", "2", "3"};
-                    String[] y = {"A", "B", "C"};
-                    for (int i = 0; i < 9; i++) {
-                        String name = y[i / 3] + x[i % 3];
-                        String itemS = recipe.get(name).getAsString();
-                        if (itemS != null && itemS.split(":").length == 2) {
-                            itemS = itemS.split(":")[0];
-                        }
-
-                        if (!usagesMap.containsKey(itemS)) {
-                            usagesMap.put(itemS, new HashSet<>());
-                        }
-                        usagesMap.get(itemS).add(internalName);
-                    }
+                JsonObject recipe = json.getAsJsonObject("recipe");
+                NeuRecipe neuRecipe = NeuRecipe.parseRecipe(this, recipe, json);
+                if (neuRecipe != null)
+                    registerNeuRecipe(neuRecipe);
+            }
+            if (json.has("recipes")) {
+                for (JsonElement element : json.getAsJsonArray("recipes")) {
+                    JsonObject recipe = element.getAsJsonObject();
+                    NeuRecipe neuRecipe = NeuRecipe.parseRecipe(this, recipe, json);
+                    if (neuRecipe != null)
+                        registerNeuRecipe(neuRecipe);
                 }
             }
 
@@ -392,9 +404,35 @@ public class NEUManager {
         }
     }
 
+    public void registerNeuRecipe(NeuRecipe recipe) {
+        recipes.add(recipe);
+        for (Ingredient output : recipe.getOutputs()) {
+            recipesMap.computeIfAbsent(output.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
+        }
+        for (Ingredient input : recipe.getIngredients()) {
+            usagesMap.computeIfAbsent(input.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
+        }
+    }
+
+    public Set<NeuRecipe> getRecipesFor(String internalName) {
+        return recipesMap.getOrDefault(internalName, Collections.emptySet());
+    }
+
+    public List<NeuRecipe> getAvailableRecipesFor(String internalname) {
+        return getRecipesFor(internalname).stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList());
+    }
+
+    public Set<NeuRecipe> getUsagesFor(String internalName) {
+        return usagesMap.getOrDefault(internalName, Collections.emptySet());
+    }
+
+    public List<NeuRecipe> getAvailableUsagesFor(String internalname) {
+        return getUsagesFor(internalname).stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList());
+    }
+
     /**
-     * Searches a string for a query. This method is used to mimic the behaviour of the
-     * more complex map-based search function. This method is used for the chest-item-search feature.
+     * Searches a string for a query. This method is used to mimic the behaviour of the more complex map-based search
+     * function. This method is used for the chest-item-search feature.
      */
     public boolean searchString(String toSearch, String query) {
         int lastMatch = -1;
@@ -418,8 +456,8 @@ public class NEUManager {
     }
 
     /**
-     * Checks whether an itemstack matches a certain query, following the same rules implemented by the
-     * more complex map-based search function.
+     * Checks whether an itemstack matches a certain query, following the same rules implemented by the more complex
+     * map-based search function.
      */
     public boolean doesStackMatchSearch(ItemStack stack, String query) {
         if (query.startsWith("title:")) {
@@ -473,8 +511,7 @@ public class NEUManager {
     }
 
     /**
-     * Calls search for each query, separated by |
-     * eg. search(A|B) = search(A) + search(B)
+     * Calls search for each query, separated by | eg. search(A|B) = search(A) + search(B)
      */
     public Set<String> search(String query, boolean multi) {
         if (multi) {
@@ -582,11 +619,10 @@ public class NEUManager {
     }
 
     /**
-     * Splits a search query into an array of strings delimited by a space character. Then, matches the query to
-     * the start of words in the various maps (title & lore). The small query does not need to match the whole entry
-     * of the map, only the beginning. eg. "ench" and "encha" will both match "enchanted". All sub queries must
-     * follow a word matching the previous sub query. eg. "ench po" will match "enchanted pork" but will not match
-     * "pork enchanted".
+     * Splits a search query into an array of strings delimited by a space character. Then, matches the query to the
+     * start of words in the various maps (title & lore). The small query does not need to match the whole entry of the
+     * map, only the beginning. eg. "ench" and "encha" will both match "enchanted". All sub queries must follow a word
+     * matching the previous sub query. eg. "ench po" will match "enchanted pork" but will not match "pork enchanted".
      */
     public Set<String> search(String query, TreeMap<String, HashMap<String, List<Integer>>> wordMap) {
         HashMap<String, List<Integer>> matches = null;
@@ -820,27 +856,29 @@ public class NEUManager {
         ContainerChest container = null;
         if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest)
             container = (ContainerChest) Minecraft.getMinecraft().thePlayer.openContainer;
-        if (item.has("recipe") && container != null && container.getLowerChestInventory().getDisplayName().getUnformattedText().equals("Craft Item")) {
-            CraftingOverlay.updateItem(item);
-        } else if (item.has("useneucraft") && item.get("useneucraft").getAsBoolean()) {
-            displayGuiItemRecipe(item.get("internalname").getAsString(), "");
-        } else if (item.has("clickcommand")) {
-            String clickcommand = item.get("clickcommand").getAsString();
-
-            if (clickcommand.equals("viewrecipe")) {
-                neu.sendChatMessage(
-                        "/" + clickcommand + " " +
-                                item.get("internalname").getAsString().split(";")[0]);
-                viewItemAttemptID = item.get("internalname").getAsString();
-                viewItemAttemptTime = System.currentTimeMillis();
-            } else if (clickcommand.equals("viewpotion")) {
-                neu.sendChatMessage(
-                        "/" + clickcommand + " " +
-                                item.get("internalname").getAsString().split(";")[0].toLowerCase());
-                viewItemAttemptID = item.get("internalname").getAsString();
-                viewItemAttemptTime = System.currentTimeMillis();
+        String internalName = item.get("internalname").getAsString();
+        Set<NeuRecipe> recipesFor = getRecipesFor(internalName);
+        if (container != null && container.getLowerChestInventory().getDisplayName().getUnformattedText().equals("Craft Item")) {
+            Optional<NeuRecipe> recipe = recipesFor.stream().filter(it -> it instanceof CraftingRecipe).findAny();
+            if (recipe.isPresent()) {
+                craftingOverlay.setShownRecipe((CraftingRecipe) recipe.get());
+                return;
             }
         }
+        if (!item.has("clickcommand")) return;
+        String clickcommand = item.get("clickcommand").getAsString();
+        switch (clickcommand.intern()) {
+            case "viewrecipe":
+                displayGuiItemRecipe(internalName, null);
+                break;
+            case "viewoption":
+                neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+        }
+        displayGuiItemRecipe(internalName, "");
+    }
+
+    public void showRecipe(String internalName) {
+        showRecipe(getItemInformation().get(internalName));
     }
 
     /**
@@ -920,90 +958,22 @@ public class NEUManager {
         loadItem(internalname);
     }
 
-    /**
-     * Constructs a GuiItemUsages from the recipe usage data (see #usagesMap) of a given item
-     */
     public boolean displayGuiItemUsages(String internalName) {
-        List<ItemStack[]> craftMatrices = new ArrayList<>();
-        List<JsonObject> results = new ArrayList<>();
-
-        if (!usagesMap.containsKey(internalName)) {
-            return false;
-        }
-
-        for (String internalNameResult : usagesMap.get(internalName)) {
-            JsonObject item = getItemInformation().get(internalNameResult);
-            results.add(item);
-
-            if (item != null && item.has("recipe")) {
-                JsonObject recipe = item.get("recipe").getAsJsonObject();
-
-                ItemStack[] craftMatrix = new ItemStack[9];
-
-                String[] x = {"1", "2", "3"};
-                String[] y = {"A", "B", "C"};
-                for (int i = 0; i < 9; i++) {
-                    String name = y[i / 3] + x[i % 3];
-                    String itemS = recipe.get(name).getAsString();
-                    int count = 1;
-                    if (itemS != null && itemS.split(":").length == 2) {
-                        count = Integer.parseInt(itemS.split(":")[1]);
-                        itemS = itemS.split(":")[0];
-                    }
-                    JsonObject craft = getItemInformation().get(itemS);
-                    if (craft != null) {
-                        ItemStack stack = jsonToStack(craft);
-                        stack.stackSize = count;
-                        craftMatrix[i] = stack;
-                    }
-                }
-
-                craftMatrices.add(craftMatrix);
-            }
-        }
-
-        if (craftMatrices.size() > 0) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiItemRecipe("Item Usages", craftMatrices, results, this));
-            return true;
-        }
-        return false;
+        if (!usagesMap.containsKey(internalName)) return false;
+        List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
+        if (usages.isEmpty()) return false;
+        Minecraft.getMinecraft().displayGuiScreen(
+                new GuiItemRecipe("Item Usages", usages, this));
+        return true;
     }
 
-    /**
-     * Constructs a GuiItemRecipeOld from the recipe data of a given item.
-     */
     public boolean displayGuiItemRecipe(String internalName, String text) {
-        JsonObject item = getItemInformation().get(internalName);
-        if (item != null && item.has("recipe")) {
-            JsonObject recipe = item.get("recipe").getAsJsonObject();
-
-            ItemStack[] craftMatrix = new ItemStack[9];
-
-            String[] x = {"1", "2", "3"};
-            String[] y = {"A", "B", "C"};
-            for (int i = 0; i < 9; i++) {
-                String name = y[i / 3] + x[i % 3];
-                String itemS = recipe.get(name).getAsString();
-                int count = 1;
-                if (itemS != null && itemS.split(":").length == 2) {
-                    count = Integer.parseInt(itemS.split(":")[1]);
-                    itemS = itemS.split(":")[0];
-                }
-                JsonObject craft = getItemInformation().get(itemS);
-                if (craft != null) {
-                    ItemStack stack = jsonToStack(craft);
-                    stack.stackSize = count;
-                    craftMatrix[i] = stack;
-                }
-            }
-
-            Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(
-                    Minecraft.getMinecraft().thePlayer.openContainer.windowId));
-            Minecraft.getMinecraft().displayGuiScreen(new GuiItemRecipe(text != null ? text : "Item Recipe",
-                    Lists.<ItemStack[]>newArrayList(craftMatrix), Lists.newArrayList(item), this));
-            return true;
-        }
-        return false;
+        if (!recipesMap.containsKey(internalName)) return false;
+        List<NeuRecipe> recipes = getAvailableRecipesFor(internalName);
+        if (recipes.isEmpty()) return false;
+        Minecraft.getMinecraft().displayGuiScreen(
+                new GuiItemRecipe(text != null ? text : "Item Recipe", recipes, this));
+        return true;
     }
 
     /**
@@ -1073,6 +1043,9 @@ public class NEUManager {
                     File newFile = new File(destDir + File.separator + fileName);
                     //create directories for sub directories in zip
                     new File(newFile.getParent()).mkdirs();
+                    if (!isInTree(dir, newFile)) {
+                        throw new RuntimeException("Not Enough Updates detected an invalid zip file. This is a potential security risk, please report this in the Moulberry discord.");
+                    }
                     FileOutputStream fos = new FileOutputStream(newFile);
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
@@ -1093,6 +1066,16 @@ public class NEUManager {
         }
     }
 
+    private static boolean isInTree(File rootDirectory, File file) throws IOException {
+        file = file.getCanonicalFile();
+        rootDirectory = rootDirectory.getCanonicalFile();
+        while (file != null) {
+            if (file.equals(rootDirectory)) return true;
+            file = file.getParentFile();
+        }
+        return false;
+    }
+
     /**
      * Modified from https://www.journaldev.com/960/java-unzip-file-example
      */
@@ -1106,6 +1089,9 @@ public class NEUManager {
                 if (!ze.isDirectory()) {
                     String fileName = ze.getName();
                     File newFile = new File(dest, fileName);
+                    if (!isInTree(dest, newFile)) {
+                        throw new RuntimeException("Not Enough Updates detected an invalid zip file. This is a potential security risk, please report this in the Moulberry discord.");
+                    }
                     //create directories for sub directories in zip
                     new File(newFile.getParent()).mkdirs();
                     FileOutputStream fos = new FileOutputStream(newFile);
@@ -1128,8 +1114,8 @@ public class NEUManager {
     }
 
     /**
-     * From here to the end of the file are various helper functions for creating and writing json files,
-     * in particular json files representing skyblock item data.
+     * From here to the end of the file are various helper functions for creating and writing json files, in particular
+     * json files representing skyblock item data.
      */
     public JsonObject createItemJson(String internalname, String itemid, String displayname, String[] lore,
                                      String crafttext, String infoType, String[] info,
@@ -1205,6 +1191,15 @@ public class NEUManager {
     public void writeJsonDefaultDir(JsonObject json, String filename) throws IOException {
         File file = new File(new File(repoLocation, "items"), filename);
         writeJson(json, file);
+    }
+
+    public JsonObject readJsonDefaultDir(String filename) throws IOException {
+        File f = new File(new File(repoLocation, "items"), filename);
+        if (f.exists() && f.isFile() && f.canRead())
+            try (Reader reader = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8)) {
+                return gson.fromJson(reader, JsonObject.class);
+            } // rethrow io exceptions
+        return null;
     }
 
     public TreeMap<String, JsonObject> getItemInformation() {
@@ -1466,6 +1461,23 @@ public class NEUManager {
             return stack.copy();
         } else {
             return stack;
+        }
+    }
+
+    public void reloadRepository() {
+        File items = new File(repoLocation, "items");
+        if (items.exists()) {
+            recipes.clear();
+            recipesMap.clear();
+            usagesMap.clear();
+
+            File[] itemFiles = new File(repoLocation, "items").listFiles();
+            if (itemFiles != null) {
+                for (File f : itemFiles) {
+                    String internalname = f.getName().substring(0, f.getName().length() - 5);
+                    loadItem(internalname);
+                }
+            }
         }
     }
 }

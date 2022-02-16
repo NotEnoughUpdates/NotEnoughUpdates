@@ -1,33 +1,51 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
-import com.google.gson.JsonObject;
+import com.google.common.collect.ImmutableList;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuiItemRecipe extends GuiScreen {
-    private static final ResourceLocation resourcePacksTexture = new ResourceLocation("textures/gui/resource_packs.png");
-    private static final ResourceLocation craftingTableGuiTextures = new ResourceLocation("textures/gui/container/crafting_table.png");
+    public static final ResourceLocation resourcePacksTexture = new ResourceLocation("textures/gui/resource_packs.png");
 
-    private final List<ItemStack[]> craftMatrices;
-    private final List<JsonObject> results;
+    public static final int SLOT_SIZE = 16;
+    public static final int SLOT_SPACING = SLOT_SIZE + 2;
+    public static final int BUTTON_WIDTH = 7;
+    public static final int BUTTON_HEIGHT = 11;
+    public static final int BUTTON_POSITION_Y = 63;
+    public static final int BUTTON_POSITION_LEFT_X = 110;
+    public static final int BUTTON_POSITION_RIGHT_X = 147;
+    public static final int PAGE_STRING_X = 132;
+    public static final int PAGE_STRING_Y = 69;
+    public static final int TITLE_X = 28;
+    public static final int TITLE_Y = 6;
+    public static final int HOTBAR_SLOT_X = 8;
+    public static final int HOTBAR_SLOT_Y = 142;
+    public static final int PLAYER_INVENTORY_X = 8;
+    public static final int PLAYER_INVENTORY_Y = 84;
+
     private int currentIndex = 0;
 
     private final String title;
+    private final List<NeuRecipe> craftingRecipes;
     private final NEUManager manager;
 
     public int guiLeft = 0;
@@ -35,159 +53,122 @@ public class GuiItemRecipe extends GuiScreen {
     public int xSize = 176;
     public int ySize = 166;
 
-    public GuiItemRecipe(String title, List<ItemStack[]> craftMatrices, List<JsonObject> results, NEUManager manager) {
-        this.craftMatrices = craftMatrices;
-        this.results = results;
+    public GuiItemRecipe(String title, List<NeuRecipe> craftingRecipes, NEUManager manager) {
+        this.craftingRecipes = craftingRecipes;
         this.manager = manager;
         this.title = title;
     }
 
-    private String getCraftText() {
-        if(results.get(currentIndex).has("crafttext")) {
-            return results.get(currentIndex).get("crafttext").getAsString();
-        } else {
-            return "";
-        }
+    public NeuRecipe getCurrentRecipe() {
+        currentIndex = MathHelper.clamp_int(currentIndex, 0, craftingRecipes.size());
+        return craftingRecipes.get(currentIndex);
+    }
+
+    public boolean isWithinRect(int x, int y, int topLeftX, int topLeftY, int width, int height) {
+        return topLeftX <= x && x <= topLeftX + width
+                && topLeftY <= y && y <= topLeftY + height;
+    }
+
+    private ImmutableList<RecipeSlot> getAllRenderedSlots() {
+        return ImmutableList.<RecipeSlot>builder()
+                .addAll(getPlayerInventory())
+                .addAll(getCurrentRecipe().getSlots()).build();
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-
-        if(currentIndex < 0) {
-            currentIndex = 0;
-        } else if(currentIndex >= craftMatrices.size()) {
-            currentIndex = craftMatrices.size()-1;
-        }
-
         FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
         this.guiLeft = (width - this.xSize) / 2;
         this.guiTop = (height - this.ySize) / 2;
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(craftingTableGuiTextures);
+
+        NeuRecipe currentRecipe = getCurrentRecipe();
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(currentRecipe.getBackground());
         this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
-        List<String> tooltipToRender = null;
-        for(int index=0; index <= 45; index++) {
-            Vector2f pos = getPositionForIndex(index);
-            Utils.drawItemStack(getStackForIndex(index), (int)pos.x, (int)pos.y);
+        currentRecipe.drawExtraBackground(this, mouseX, mouseY);
 
-            if(mouseX > pos.x && mouseX < pos.x+16) {
-                if(mouseY > pos.y && mouseY < pos.y+16) {
-                    ItemStack stack = getStackForIndex(index);
-                    if(stack != null) {
-                        tooltipToRender = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-                    }
-                }
+        List<RecipeSlot> slots = getAllRenderedSlots();
+        for (RecipeSlot slot : slots) {
+            Utils.drawItemStack(slot.getItemStack(), slot.getX(this), slot.getY(this));
+        }
+
+        if (craftingRecipes.size() > 1) drawArrows(mouseX, mouseY);
+
+        Utils.drawStringScaledMaxWidth(title, fontRendererObj, guiLeft + TITLE_X, guiTop + TITLE_Y, false, xSize - 38, 0x404040);
+
+        currentRecipe.drawExtraInfo(this, mouseX, mouseY);
+
+        for (RecipeSlot slot : slots) {
+            if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
+                if (slot.getItemStack() == null) continue;
+                Utils.drawHoveringText(slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false), mouseX, mouseY, width, height, -1, fontRendererObj);
             }
         }
-
-        if(craftMatrices.size() > 1) {
-            int guiX = mouseX - guiLeft;
-            int guiY = mouseY - guiTop;
-
-            int buttonWidth = 7;
-            int buttonHeight = 11;
-
-            boolean leftSelected = false;
-            boolean rightSelected = false;
-
-            if(guiY > + 63 && guiY < + 63 + buttonHeight) {
-                if(guiX > + 110 && guiX < 110 + buttonWidth) {
-                    leftSelected = true;
-                } else if(guiX > 147 && guiX < 147 + buttonWidth) {
-                    rightSelected = true;
-                }
-            }
-
-            Minecraft.getMinecraft().getTextureManager().bindTexture(resourcePacksTexture);
-            //Left arrow
-            Utils.drawTexturedRect(guiLeft+110, guiTop+63, 7, 11, 34/256f, 48/256f,
-                    5/256f + (leftSelected ? 32/256f : 0), 27/256f + (leftSelected ? 32/256f : 0));
-            //Right arrow
-            Utils.drawTexturedRect(guiLeft+147, guiTop+63, 7, 11, 10/256f, 24/256f,
-                    5/256f + (rightSelected ? 32/256f : 0), 27/256f + (rightSelected ? 32/256f : 0));
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-
-            String str = (currentIndex+1)+"/"+craftMatrices.size();
-            Utils.drawStringCenteredScaledMaxWidth(str, fontRendererObj, guiLeft+132, guiTop+69,
-                    false, 24, Color.BLACK.getRGB());
-        }
-
-        Utils.drawStringCenteredScaledMaxWidth(getCraftText(), fontRendererObj, guiLeft+132, guiTop+25,
-                false, 75, 4210752);
-
-        Utils.drawStringScaledMaxWidth(title, fontRendererObj, guiLeft+28, guiTop+6, title.contains("\u00a7"), xSize-38, 4210752);
-
-        if(tooltipToRender != null) {
-            Utils.drawHoveringText(tooltipToRender, mouseX, mouseY, width, height, -1, fontRendererObj);
-        }
+        currentRecipe.drawHoverInformation(this, mouseX, mouseY);
     }
 
-    public ItemStack getStackForIndex(int index) {
-        if(index == 0) {
-            return manager.jsonToStack(results.get(currentIndex));
-        } else if(index >= 1 && index <= 9) {
-            return craftMatrices.get(currentIndex)[index-1];
-        } else {
-            return Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(index-10);
-        }
+    private void drawArrows(int mouseX, int mouseY) {
+        boolean leftSelected = isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_LEFT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+        boolean rightSelected = isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_RIGHT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(resourcePacksTexture);
+
+        Utils.drawTexturedRect(guiLeft + BUTTON_POSITION_LEFT_X, guiTop + BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                34 / 256f, 48 / 256f,
+                leftSelected ? 37 / 256f : 5 / 256f, leftSelected ? 59 / 256f : 27 / 256f
+        );
+        Utils.drawTexturedRect(guiLeft + BUTTON_POSITION_RIGHT_X, guiTop + BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                10 / 256f, 24 / 256f,
+                rightSelected ? 37 / 256f : 5 / 256f, rightSelected ? 59 / 256f : 27 / 256f
+        );
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+        String selectedPage = (currentIndex + 1) + "/" + craftingRecipes.size();
+
+        Utils.drawStringCenteredScaledMaxWidth(selectedPage, fontRendererObj,
+                guiLeft + PAGE_STRING_X, guiTop + PAGE_STRING_Y, false, 24, Color.BLACK.getRGB());
     }
 
-    public Vector2f getPositionForIndex(int index) {
-        //0 = result
-        //1-9 = craft matrix
-        //10-18 = hotbar
-        //19-45 = player inv
-
-        if(index == 0) {
-            return new Vector2f(guiLeft+124, guiTop+35);
-        } else if(index >= 1 && index <= 9) {
-            index -= 1;
-            int x = index % 3;
-            int y = index / 3;
-            return new Vector2f(guiLeft+30 + x*18, guiTop+17 + y * 18);
-        } else if(index >= 10 && index <= 18) {
-            index -= 10;
-            return new Vector2f(guiLeft+8 + index*18, guiTop+142);
-        } else if(index >= 19 && index <= 45) {
-            index -= 19;
-            int x = index % 9;
-            int y = index / 9;
-            return new Vector2f(guiLeft+8 + x*18, guiTop+84 + y*18);
+    public List<RecipeSlot> getPlayerInventory() {
+        List<RecipeSlot> slots = new ArrayList<>();
+        ItemStack[] inventory = Minecraft.getMinecraft().thePlayer.inventory.mainInventory;
+        int hotbarSize = InventoryPlayer.getHotbarSize();
+        for (int i = 0; i < inventory.length; i++) {
+            ItemStack item = inventory[i];
+            if (item == null || item.stackSize == 0) continue;
+            int row = i / hotbarSize;
+            int col = i % hotbarSize;
+            if (row == 0)
+                slots.add(new RecipeSlot(HOTBAR_SLOT_X + i * SLOT_SPACING, HOTBAR_SLOT_Y, item));
+            else
+                slots.add(new RecipeSlot(PLAYER_INVENTORY_X + col * SLOT_SPACING, PLAYER_INVENTORY_Y + (row - 1) * SLOT_SPACING, item));
         }
-        return null;
+        return slots;
     }
 
     @Override
     public void handleKeyboardInput() throws IOException {
         super.handleKeyboardInput();
 
-        if(!Keyboard.getEventKeyState()) return;
-
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         int width = scaledResolution.getScaledWidth();
         int height = scaledResolution.getScaledHeight();
         int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
         int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-
         int keyPressed = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter()+256 : Keyboard.getEventKey();
 
-        for(int index=0; index <= 45; index++) {
-            Vector2f pos = getPositionForIndex(index);
-            if(mouseX > pos.x && mouseX < pos.x+16) {
-                if(mouseY > pos.y && mouseY < pos.y+16) {
-                    ItemStack stack = getStackForIndex(index);
-                    if(stack != null) {
-                        if(keyPressed == manager.keybindViewRecipe.getKeyCode()) {
-                            manager.displayGuiItemRecipe(manager.getInternalNameForItem(stack), "");
-                        } else if(keyPressed == manager.keybindViewUsages.getKeyCode()) {
-                            manager.displayGuiItemUsages(manager.getInternalNameForItem(stack));
-                        }
-                    }
-                    return;
+        for (RecipeSlot slot : getAllRenderedSlots()) {
+            if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
+                ItemStack itemStack = slot.getItemStack();
+                if (keyPressed == manager.keybindViewRecipe.getKeyCode()) { // TODO: rework this so it doesnt skip recipe chains
+                    manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), "");
+                } else if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
+                    manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
                 }
             }
         }
@@ -197,37 +178,25 @@ public class GuiItemRecipe extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        int guiX = mouseX - guiLeft;
-        int guiY = mouseY - guiTop;
-
-        int buttonWidth = 7;
-        int buttonHeight = 11;
-
-        if(guiY > + 63 && guiY < + 63 + buttonHeight) {
-            if(guiX > + 110 && guiX < 110 + buttonWidth) {
-                currentIndex--;
-                Utils.playPressSound();
-                return;
-            } else if(guiX > 147 && guiX < 147 + buttonWidth) {
-                currentIndex++;
-                Utils.playPressSound();
-                return;
-            }
+        if (isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_LEFT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT)) {
+            currentIndex = currentIndex == 0 ? 0 : currentIndex - 1;
+            Utils.playPressSound();
+            return;
         }
 
-        for(int index=0; index <= 45; index++) {
-            Vector2f pos = getPositionForIndex(index);
-            if(mouseX > pos.x && mouseX < pos.x+16) {
-                if(mouseY > pos.y && mouseY < pos.y+16) {
-                    ItemStack stack = getStackForIndex(index);
-                    if(stack != null) {
-                        if(mouseButton == 0) {
-                            manager.displayGuiItemRecipe(manager.getInternalNameForItem(stack), "");
-                        } else if(mouseButton == 1) {
-                            manager.displayGuiItemUsages(manager.getInternalNameForItem(stack));
-                        }
-                    }
-                    return;
+        if (isWithinRect(mouseX - guiLeft, mouseY - guiTop, BUTTON_POSITION_RIGHT_X, BUTTON_POSITION_Y, BUTTON_WIDTH, BUTTON_HEIGHT)) {
+            currentIndex = currentIndex == craftingRecipes.size() - 1 ? currentIndex : currentIndex + 1;
+            Utils.playPressSound();
+            return;
+        }
+
+        for (RecipeSlot slot : getAllRenderedSlots()) {
+            if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
+                ItemStack itemStack = slot.getItemStack();
+                if (mouseButton == 0) {
+                    manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), "");
+                } else if (mouseButton == 1) {
+                    manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
                 }
             }
         }

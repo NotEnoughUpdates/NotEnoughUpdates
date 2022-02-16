@@ -18,6 +18,9 @@ import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FancyPortals;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.*;
 import io.github.moulberry.notenoughupdates.miscgui.tutorials.NeuTutorial;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -25,6 +28,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
@@ -39,16 +43,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.storage.MapData;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Desktop;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -96,6 +101,7 @@ public class Commands {
         ClientCommandHandler.instance.registerCommand(neuFeatures);
         ClientCommandHandler.instance.registerCommand(neuRepoMode);
     }
+
 
     SimpleCommand.ProcessCommandRunnable collectionLogRun = new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
@@ -356,16 +362,7 @@ public class Commands {
 
     SimpleCommand reloadRepoCommand = new SimpleCommand("neureloadrepo", new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
-            File items = new File(NotEnoughUpdates.INSTANCE.manager.repoLocation, "items");
-            if (items.exists()) {
-                File[] itemFiles = new File(NotEnoughUpdates.INSTANCE.manager.repoLocation, "items").listFiles();
-                if (itemFiles != null) {
-                    for (File f : itemFiles) {
-                        String internalname = f.getName().substring(0, f.getName().length() - 5);
-                        NotEnoughUpdates.INSTANCE.manager.loadItem(internalname);
-                    }
-                }
-            }
+            NotEnoughUpdates.INSTANCE.manager.reloadRepository();
             Constants.reload();
 
             NotEnoughUpdates.INSTANCE.newConfigFile();
@@ -715,7 +712,7 @@ public class Commands {
             "Ok, this is actually the last message, use the command again and you'll crash I promise"};
     private int devFailIndex = 0;
 
-    private static final List<String> devTestUsers = new ArrayList<>(Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "dediamondpro"));
+    private static final List<String> devTestUsers = new ArrayList<>(Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro"));
     SimpleCommand devTestCommand = new SimpleCommand("neudevtest", new SimpleCommand.ProcessCommandRunnable() {
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
@@ -748,6 +745,11 @@ public class Commands {
                 DupePOC.doDupe(args[0]);
                 return;
             }*/
+            if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
+                String currentProfile = SBInfo.getInstance().currentProfile;
+                SBInfo.Gamemode gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile);
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "You are on Profile " + currentProfile + " with the mode " + gamemode));
+            }
             if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
                 if (args.length == 1) {
                     NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
@@ -755,7 +757,18 @@ public class Commands {
                     NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
                 }
             }
-
+            if (args.length == 1 && args[0].equalsIgnoreCase("zone")) {
+                BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+                if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
+                SpecialBlockZone zone = CustomBiomes.INSTANCE.getSpecialZone(target);
+                Arrays.asList(
+                        new ChatComponentText("Showing Zone Info for: " + target),
+                        new ChatComponentText("Zone: " + (zone != null ? zone.name() : "null")),
+                        new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
+                        new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
+                ).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
+                MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo.getInstance().getLocation()));
+            }
             if (args.length == 1 && args[0].equalsIgnoreCase("positiontest")) {
                 NotEnoughUpdates.INSTANCE.openGui = new GuiPositionEditor();
                 return;

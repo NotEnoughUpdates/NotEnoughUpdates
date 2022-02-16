@@ -1,8 +1,8 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
-import io.github.moulberry.notenoughupdates.miscfeatures.DwarvenMinesTextures;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -27,13 +27,10 @@ public class MixinWorld {
 
     @Inject(method = "getBiomeGenForCoords", at = @At("HEAD"), cancellable = true)
     public void getBiomeGenForCoords(BlockPos pos, CallbackInfoReturnable<BiomeGenBase> cir) {
-        int retexture = DwarvenMinesTextures.retexture(pos);
-        if (retexture == 1) {
-            cir.setReturnValue(BiomeGenBase.extremeHillsPlus);
-        } else if (retexture == 2) {
-            cir.setReturnValue(BiomeGenBase.extremeHillsEdge);
-        } else if (retexture == 3) {
-            cir.setReturnValue(BiomeGenBase.coldBeach);
+        BiomeGenBase customBiome = CustomBiomes.INSTANCE.getCustomBiome(pos);
+        if(customBiome != null){
+            cir.setReturnValue(customBiome);
         }
+
     }
 }

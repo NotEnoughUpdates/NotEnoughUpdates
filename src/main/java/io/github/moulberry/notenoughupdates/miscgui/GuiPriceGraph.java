@@ -128,7 +128,7 @@ public class GuiPriceGraph extends GuiScreen {
                 for (Long time : dataPoints.get().keySet()) {
                     float price = dataPoints.isBz() ? i == 0 ? dataPoints.bz.get(time).b : dataPoints.bz.get(time).s : dataPoints.ah.get(time);
                     int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
-                    int yPos = (int) map(price, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198);
+                    int yPos = (int) map(price, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198);
                     if (prevX != null) {
                         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
                         GlStateManager.color(1, 1, 1, 1);
@@ -186,8 +186,8 @@ public class GuiPriceGraph extends GuiScreen {
                 float price = dataPoints.isBz() ? dataPoints.bz.get(lowestDistTime).b : dataPoints.ah.get(lowestDistTime);
                 Float price2 = dataPoints.isBz() ? dataPoints.bz.get(lowestDistTime).s : null;
                 int xPos = (int) map(lowestDistTime, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
-                int yPos = (int) map(price, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198);
-                int yPos2 = price2 != null ? (int) map(price2, highestValue + 10, lowestValue - 10, guiTop + 35, guiTop + 198) : 0;
+                int yPos = (int) map(price, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198);
+                int yPos2 = price2 != null ? (int) map(price2, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198) : 0;
 
                 Utils.drawLine(xPos, guiTop + 35, xPos, guiTop + 198, 2, 0x4D8b8b8b);
                 Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);

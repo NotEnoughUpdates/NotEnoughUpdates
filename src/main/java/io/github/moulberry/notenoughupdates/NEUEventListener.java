@@ -33,6 +33,7 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -51,14 +52,15 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -303,7 +305,6 @@ public class NEUEventListener {
 
         if (longUpdate) {
             CrystalOverlay.tick();
-            DwarvenMinesTextures.tick();
             FairySouls.tick();
             XPInformation.getInstance().tick();
             ProfileApiSyncer.getInstance().tick();
@@ -584,7 +585,6 @@ public class NEUEventListener {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        CraftingOverlay.shouldRender = false;
         NEUApi.disableInventoryButtons = false;
 
         if ((Minecraft.getMinecraft().currentScreen instanceof GuiScreenElementWrapper ||
@@ -798,7 +798,7 @@ public class NEUEventListener {
 
     private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
-        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) {
+        if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null && chatComponent.getChatStyle().getChatClickEvent() != null && chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
             if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
                 String username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
                 if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
@@ -842,6 +842,10 @@ public class NEUEventListener {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
                     "[NEU] API Key automatically configured"));
             NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.substring(0, 36);
+        } else if (unformatted.startsWith("Player List Info is now disabled!")) {
+            SBInfo.getInstance().hasNewTab = false;
+        } else if (unformatted.startsWith("Player List Info is now enabled!")) {
+            SBInfo.getInstance().hasNewTab = true;
         }
         if (e.message.getFormattedText().equals(EnumChatFormatting.RESET.toString() +
                 EnumChatFormatting.RED + "You haven't unlocked this recipe!" + EnumChatFormatting.RESET)) {
@@ -1079,6 +1083,16 @@ public class NEUEventListener {
                             x += 80 + 28;
                         }
                     }
+                    if (NEUOverlay.isRenderingArmorHud()) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+                            x -= 25;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingPetHud()) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+                            x -= 25;
+                        }
+                    }
 
                     GlStateManager.color(1, 1, 1, 1f);
 
@@ -1131,13 +1145,9 @@ public class NEUEventListener {
             GuiChest eventGui = (GuiChest) guiScreen;
             ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
             containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (containerName.equals("Craft Item")) {
-                CraftingOverlay.render();
-            }
-        }
 
-        if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
-            return;
+            if (GuiCustomEnchant.getInstance().shouldOverride(containerName))
+                return;
         }
 
         boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
@@ -1188,6 +1198,16 @@ public class NEUEventListener {
                     if (AccessoryBagOverlay.isInAccessoryBag()) {
                         if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
                             x += 80 + 28;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingArmorHud()) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+                            x -= 25;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingPetHud()) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+                            x -= 25;
                         }
                     }
 
@@ -1356,6 +1376,23 @@ public class NEUEventListener {
 
                     int profitLossBIN = totalValue - chestCost;
 
+                    boolean kismetUsed = false;
+                    // checking for kismet
+                    Slot slot = (eventGui.inventorySlots.getSlot(50));
+                    if(slot.getHasStack()) {
+                        String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(slot.getStack().getTagCompound());
+                        for (String line : lore) {
+                            if (line.contains("You already rerolled a chest!")) {
+                                kismetUsed = true;
+                                break;
+                            }
+                        }
+                    }
+                    int kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
+                    String kismetStr = EnumChatFormatting.RED + format.format(kismetPrice) + " coins";
+                    if(neu.config.dungeons.useKismetOnDungeonProfit)
+                    profitLossBIN = kismetUsed ? profitLossBIN-kismetPrice : profitLossBIN;
+
                     String profitPrefix = EnumChatFormatting.DARK_GREEN.toString();
                     String lossPrefix = EnumChatFormatting.RED.toString();
                     String prefix = profitLossBIN >= 0 ? profitPrefix : lossPrefix;
@@ -1384,16 +1421,20 @@ public class NEUEventListener {
 
                     Utils.renderAlignedString(valueStringBIN1, valueStringBIN2,
                             guiLeft + xSize + 4 + 10, guiTop + 14, 160);
+                    if (neu.config.dungeons.useKismetOnDungeonProfit && kismetUsed) {
+                        Utils.renderAlignedString(EnumChatFormatting.YELLOW + "Kismet Feather: ", kismetStr,
+                                guiLeft + xSize + 4 + 10, guiTop + 24, 160);
+                    }
                     if (totalValue >= 0) {
                         Utils.renderAlignedString(EnumChatFormatting.YELLOW + "Profit/Loss: ", plStringBIN,
-                                guiLeft + xSize + 4 + 10, guiTop + 24, 160);
+                                guiLeft + xSize + 4 + 10, guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ? (kismetUsed ? 34 : 24) : 24) , 160);
                     }
 
                     int index = 0;
                     for (Map.Entry<String, Float> entry : itemValues.entrySet()) {
                         Utils.renderAlignedString(entry.getKey(), prefix +
                                         format.format(entry.getValue().intValue()),
-                                guiLeft + xSize + 4 + 10, guiTop + 29 + (++index) * 10, 160);
+                                guiLeft + xSize + 4 + 10, guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ?  (kismetUsed ? 39 :29) : 29) + (++index) * 10, 160);
                     }
                 }
             } catch (Exception e) {
@@ -1543,6 +1584,16 @@ public class NEUEventListener {
                             x += 80 + 28;
                         }
                     }
+                    if (NEUOverlay.isRenderingArmorHud()) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+                            x -= 25;
+                        }
+                    }
+                    if (NEUOverlay.isRenderingPetHud()) {
+                        if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+                            x -= 25;
+                        }
+                    }
 
                     if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
                         if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
@@ -1595,13 +1646,9 @@ public class NEUEventListener {
 
         String containerName = null;
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+
         if (guiScreen instanceof GuiChest) {
-            GuiChest eventGui = (GuiChest) guiScreen;
-            ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-            containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (CraftingOverlay.shouldRender && containerName.equals("Craft Item")) {
-                CraftingOverlay.keyInput();
-            }
+            containerName = ((ContainerChest) ((GuiChest) guiScreen).inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
         }
 
         if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
@@ -2427,6 +2474,9 @@ public class NEUEventListener {
             ItemPriceInformation.addToTooltip(event.toolTip, internalname, event.itemStack);
         }
 
+        if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUHIDEPETTOOLTIP") && NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip) {
+            event.toolTip.clear();
+        }
     }
 
     private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
@@ -2529,63 +2579,11 @@ public class NEUEventListener {
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
         if (!neu.isOnSkyblock()) return;
-        /*if(NotEnoughUpdates.INSTANCE.config.improvedSBMenu.hideEmptyPanes &&
-                event.itemStack.getItem().equals(Item.getItemFromBlock(Blocks.stained_glass_pane))) {
-            String first = Utils.cleanColour(event.toolTip.get(0));
-            first = first.replaceAll("\\(.*\\)", "").trim();
-            if(first.length() == 0) {
-                event.toolTip.clear();
-            }
-        }*/
-        //AH prices
-        /*if(Minecraft.getMinecraft().currentScreen != null) {
-            if(Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-                GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-                ContainerChest container = (ContainerChest) chest.inventorySlots;
-                String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-                if(containerName.trim().equals("Auctions Browser")) {
-                    String internalname = neu.manager.getInternalNameForItem(event.itemStack);
-                    if(internalname != null) {
-                        for(int i=0; i<event.toolTip.size(); i++) {
-                            String line = event.toolTip.get(i);
-                            if(line.contains(EnumChatFormatting.GRAY + "Bidder: ") ||
-                                    line.contains(EnumChatFormatting.GRAY + "Starting bid: ") ||
-                                    line.contains(EnumChatFormatting.GRAY + "Buy it now: ")) {
-                                neu.manager.updatePrices();
-                                JsonObject auctionInfo = neu.manager.getItemAuctionInfo(internalname);
+        //Render the pet inventory display tooltip to the left to avoid things from other mods rendering over the tooltip
+        if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
+            GlStateManager.translate(-200, 0, 0);
+        }
 
-                                if(auctionInfo != null) {
-                                    NumberFormat format = NumberFormat.getInstance(Locale.US);
-                                    int auctionPrice = (int)(auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
-                                    float costOfEnchants = neu.manager.getCostOfEnchants(internalname,
-                                            event.itemStack.getTagCompound());
-                                    int priceWithEnchants = auctionPrice+(int)costOfEnchants;
-
-                                    event.toolTip.add(++i, EnumChatFormatting.GRAY + "Average price: " +
-                                            EnumChatFormatting.GOLD + format.format(auctionPrice) + " coins");
-                                    if(costOfEnchants > 0) {
-                                        event.toolTip.add(++i, EnumChatFormatting.GRAY + "Average price (w/ enchants): " +
-                                                EnumChatFormatting.GOLD +
-                                                format.format(priceWithEnchants) + " coins");
-                                    }
-
-                                    if(neu.manager.config.advancedPriceInfo.value) {
-                                        int salesVolume = (int) auctionInfo.get("sales").getAsFloat();
-                                        int flipPrice = (int)(0.93*priceWithEnchants);
-
-                                        event.toolTip.add(++i, EnumChatFormatting.GRAY + "Flip Price (93%): " +
-                                                EnumChatFormatting.GOLD + format.format(flipPrice) + " coins");
-                                        event.toolTip.add(++i, EnumChatFormatting.GRAY + "Volume: " +
-                                                EnumChatFormatting.GOLD + format.format(salesVolume) + " sales/day");
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && NotEnoughUpdates.INSTANCE.config.hidden.dev &&
                 event.toolTip.size() > 0 && event.toolTip.get(event.toolTip.size() - 1).startsWith(EnumChatFormatting.DARK_GRAY + "NBT: ")) {
             event.toolTip.remove(event.toolTip.size() - 1);

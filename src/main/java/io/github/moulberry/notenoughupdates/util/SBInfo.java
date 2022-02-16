@@ -1,12 +1,19 @@
 package io.github.moulberry.notenoughupdates.util;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -14,15 +21,20 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +55,7 @@ public class SBInfo {
     public String time = "";
     public String objective = "";
     public String slayer = "";
+    public boolean stranded = false;
 
     public String mode = "";
 
@@ -56,7 +69,33 @@ public class SBInfo {
     public long unloadedWorld = -1;
     private JsonObject locraw = null;
     public boolean isInDungeon = false;
+    public boolean hasNewTab = false;
 
+
+    public enum Gamemode {
+        NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
+
+        private final String name;
+        private final String emoji;
+
+        Gamemode(String name, String emoji) {
+            this.name = name;
+            this.emoji = emoji;
+        }
+
+        public static Gamemode find(String type) {
+            for (Gamemode gamemode : values()) {
+                if (type.contains(gamemode.name))
+                    return gamemode;
+            }
+            return null;
+        }
+    }
+
+
+    private Map<String, Gamemode> gamemodes = new HashMap<>();
+    private boolean areGamemodesLoaded = false;
+    private int tickCount = 0;
     public String currentProfile = null;
 
     @SubscribeEvent
@@ -66,9 +105,76 @@ public class SBInfo {
         if (event.gui instanceof GuiChest) {
             GuiChest chest = (GuiChest) event.gui;
             ContainerChest container = (ContainerChest) chest.inventorySlots;
-            String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
 
-            lastOpenContainerName = containerName;
+            lastOpenContainerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+        }
+    }
+
+    @SubscribeEvent
+    public void onGuiTick(TickEvent event) {
+        if (tickCount++ % 10 != 0) return;
+        GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+        if (currentScreen instanceof GuiChest) {
+            ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
+            if ("Profile Management".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) {
+                updateProfileInformation(container);
+            }
+        }
+    }
+
+    private static final Pattern PROFILE_PATTERN = Pattern.compile("(?<type>(♲ Ironman)|(☀ Stranded)|()) *Profile: (?<name>[^ ]+)");
+
+    private void updateProfileInformation(ContainerChest container) {
+        for (int i = 11; i < 16; i = -~i) {
+            Slot slot = container.getSlot(i);
+            if (slot == null || !slot.getHasStack()) continue;
+            ItemStack item = slot.getStack();
+            if (item == null || item.getItem() == Item.getItemFromBlock(Blocks.bedrock)) continue;
+            String displayName = Utils.cleanColour(item.getDisplayName());
+            Matcher matcher = PROFILE_PATTERN.matcher(displayName);
+            if (!matcher.matches()) continue;
+            String type = matcher.group("type");
+            String name = matcher.group("name");
+            Gamemode gamemode = Gamemode.find(type);
+            gamemodes.put(name, gamemode);
+        }
+        areGamemodesLoaded = true;
+        saveGameModes();
+    }
+
+    private Path getProfilesFile() {
+        return new File(NotEnoughUpdates.INSTANCE.manager.configLocation, "profiles.json").toPath();
+    }
+
+    public Map<String, Gamemode> getAllGamemodes() {
+        if (!areGamemodesLoaded)
+            loadGameModes();
+        return gamemodes;
+    }
+
+    public void saveGameModes() {
+        try {
+            Files.write(getProfilesFile(), NotEnoughUpdates.INSTANCE.manager.gson.toJson(gamemodes).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Gamemode getGamemodeForProfile(String profiles) {
+        return getAllGamemodes().get(profiles);
+    }
+
+    public Gamemode getCurrentMode() {
+        return getGamemodeForProfile(currentProfile);
+    }
+
+    public void loadGameModes() {
+        try {
+            gamemodes = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(Files.newBufferedReader(getProfilesFile()), new TypeToken<Map<String, Gamemode>>() {
+            }.getType());
+            areGamemodesLoaded = true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -76,9 +182,10 @@ public class SBInfo {
     public void onWorldLoad(WorldEvent.Load event) {
         lastLocRaw = -1;
         locraw = null;
-        mode = null;
+        this.setLocation(null);
         joinedWorld = System.currentTimeMillis();
         lastOpenContainerName = "";
+        hasNewTab = false;
     }
 
     @SubscribeEvent
@@ -104,7 +211,7 @@ public class SBInfo {
                     if (System.currentTimeMillis() - lastManualLocRaw > 5000) event.setCanceled(true);
                     if (obj.has("gametype") && obj.has("mode") && obj.has("map")) {
                         locraw = obj;
-                        mode = locraw.get("mode").getAsString();
+                        setLocation(locraw.get("mode").getAsString());
                     }
                 }
             } catch (Exception e) {
@@ -114,10 +221,14 @@ public class SBInfo {
     }
 
     public String getLocation() {
-        if (mode == null) {
-            return null;
-        }
         return mode;
+    }
+
+    public void setLocation(String location) {
+        if (!Objects.equals(this.mode, location)) {
+            MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
+        }
+        this.mode = location;
     }
 
     private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
@@ -144,6 +255,7 @@ public class SBInfo {
                 String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
                 if (name.startsWith(profilePrefix)) {
                     currentProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+                    hasNewTab = true;
                 } else if (name.startsWith(skillsPrefix)) {
                     String levelInfo = name.substring(skillsPrefix.length()).trim();
                     Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
@@ -151,7 +263,8 @@ public class SBInfo {
                         try {
                             int level = Integer.parseInt(matcher.group(2).trim());
                             XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
@@ -183,8 +296,8 @@ public class SBInfo {
             }
             isInDungeon = tempIsInDungeon;
 
+            boolean containsStranded = false;
             for (String line : lines) { //Slayer stuff
-                //System.out.println(line);
                 if (line.contains("Tarantula Broodfather")) {
                     slayer = "Tarantula";
                 } else if (line.contains("Revenant Horror")) {
@@ -201,17 +314,23 @@ public class SBInfo {
                 if (SlayerOverlay.slayerQuest) {
                     if (line.contains(" I")) {
                         SlayerOverlay.slayerTier = 1;
-                    } if (line.contains(" II")) {
+                    }
+                    if (line.contains(" II")) {
                         SlayerOverlay.slayerTier = 2;
-                    } if (line.contains(" III")) {
+                    }
+                    if (line.contains(" III")) {
                         SlayerOverlay.slayerTier = 3;
-                    } if (line.contains(" IV")) {
+                    }
+                    if (line.contains(" IV")) {
                         SlayerOverlay.slayerTier = 4;
-                    } if (line.contains(" V")) {
+                    }
+                    if (line.contains(" V")) {
                         SlayerOverlay.slayerTier = 5;
                     }
                 }
+                if (line.contains("☀ Stranded")) containsStranded = true;
             }
+            stranded = containsStranded;
 
             if (lines.size() >= 5) {
                 date = Utils.cleanColour(lines.get(1)).trim();
@@ -223,7 +342,8 @@ public class SBInfo {
                         String timeSpace = time.replace("am", " am").replace("pm", " pm");
                         SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
                         currentTimeDate = parseFormat.parse(timeSpace);
-                    } catch (ParseException ignored) {}
+                    } catch (ParseException ignored) {
+                    }
                 }
                 //Replaced with for loop because in crystal hollows with events the line it's on can shift.
                 for (String line : lines) {

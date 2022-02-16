@@ -8,9 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class SlayerOverlay extends TextOverlay {
@@ -19,27 +17,60 @@ public class SlayerOverlay extends TextOverlay {
     public static boolean isSlain = false;
     public static String slayerLVL = "-1";
     public static String slayerXp = "0";
+    public static long unloadOverlayTimer = -1;
+    public static long timeSinceLastBoss = 0;
+    public static long timeSinceLastBoss2 = 0;
+    public static int slayerTier = 0;
+
     private static String slayerEXP = "0";
     private static int slayerIntXP;
     private static int untilNextSlayerLevel;
     private static int xpToLevelUp;
     private static boolean useSmallXpNext = true;
-    public static long timeSinceLastBoss = 0;
-    public static long timeSinceLastBoss2 = 0;
     private static long agvSlayerTime = 0;
     private static boolean isSlayerNine = false;
-    public static int slayerTier = 0;
     private static int xpPerBoss = 0;
     private static int bossesUntilNextLevel = 0;
-    public static long unloadOverlayTimer = -1;
+    private final HashSet<String> revenantLocations = new HashSet<>(Arrays.asList("Graveyard", "Coal Mine"));
+    private boolean shouldUpdate = true;
 
     public SlayerOverlay(Position position, Supplier<List<String>> dummyStrings, Supplier<TextOverlayStyle> styleSupplier) {
         super(position, dummyStrings, styleSupplier);
     }
 
+    private boolean shouldUpdate() {
+        if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.onlyShowWhenRelevant || SBInfo.getInstance().stranded)
+            return true;
+        //Ignore if on stranded
+        String scoreboardLocation = SBInfo.getInstance().location;
+        String locrawLocation = SBInfo.getInstance().getLocation();
+        //In case something is broken still show the overlay
+        if (locrawLocation == null || scoreboardLocation == null) return true;
+        switch (SBInfo.getInstance().slayer) {
+            case "Tarantula":
+                if (!locrawLocation.equals("combat_1")) return false;
+                break;
+            case "Revenant":
+                if ((!locrawLocation.equals("hub") || !revenantLocations.contains(scoreboardLocation)) && !locrawLocation.equals("crystal_hollows")) return false;
+                break;
+            case "Sven":
+                if ((!locrawLocation.equals("hub") || !scoreboardLocation.equals("Ruins")) && (!locrawLocation.equals("foraging_1") || !scoreboardLocation.equals("Howling Cave")))
+                    return false;
+                break;
+            case "Enderman":
+                if (!locrawLocation.equals("combat_3")) return false;
+                break;
+            default:
+                //A new slayer would need an update (see SBInfo)
+                return false;
+        }
+        return true;
+    }
+
     @Override
     public void update() {
-        if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerOverlay) {
+        shouldUpdate = shouldUpdate();
+        if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerOverlay || !shouldUpdate) {
             overlayStrings = null;
             return;
         }
@@ -142,7 +173,7 @@ public class SlayerOverlay extends TextOverlay {
     public void updateFrequent() {
         super.updateFrequent();
 
-        if (!slayerQuest || !NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerOverlay) {
+        if (!slayerQuest || !NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerOverlay || !shouldUpdate) {
             overlayStrings = null;
         } else {
             HashMap<Integer, String> lineMap = new HashMap<>();
@@ -150,20 +181,18 @@ public class SlayerOverlay extends TextOverlay {
             NumberFormat format = NumberFormat.getIntegerInstance();
             //System.out.println(SBInfo.getInstance().isSlain);
             overlayStrings = new ArrayList<>();
-            lineMap.put(0, EnumChatFormatting.YELLOW + "Slayer: " + EnumChatFormatting.DARK_RED + SBInfo.getInstance().slayer
-                    + EnumChatFormatting.GREEN + (isSlain ? " (Killed) " : " ")/* + slayerTier*/);
+            lineMap.put(0, EnumChatFormatting.YELLOW + "Slayer: " + EnumChatFormatting.DARK_RED + SBInfo.getInstance().slayer + EnumChatFormatting.GREEN + (isSlain ? " (Killed) " : " ")/* + slayerTier*/);
 
-           if (!RNGMeter.equals("?")) {
-               lineMap.put(1, EnumChatFormatting.YELLOW + "RNG Meter: " + EnumChatFormatting.DARK_PURPLE + RNGMeter);
-           }
+            if (!RNGMeter.equals("?")) {
+                lineMap.put(1, EnumChatFormatting.YELLOW + "RNG Meter: " + EnumChatFormatting.DARK_PURPLE + RNGMeter);
+            }
 
             if (!slayerLVL.equals("-1")) {
                 lineMap.put(2, EnumChatFormatting.YELLOW + "Lvl: " + EnumChatFormatting.LIGHT_PURPLE + slayerLVL);
             }
 
             if (timeSinceLastBoss > 0) {
-                lineMap.put(3, EnumChatFormatting.YELLOW + "Kill time: " + EnumChatFormatting.RED
-                        + Utils.prettyTime((System.currentTimeMillis() - timeSinceLastBoss)));
+                lineMap.put(3, EnumChatFormatting.YELLOW + "Kill time: " + EnumChatFormatting.RED + Utils.prettyTime((System.currentTimeMillis() - timeSinceLastBoss)));
             }
 
             if (slayerIntXP > 0) {
@@ -175,7 +204,7 @@ public class SlayerOverlay extends TextOverlay {
 
             if (xpPerBoss != 0 && slayerIntXP > 0) {
                 lineMap.put(5, EnumChatFormatting.YELLOW + "Bosses till next Lvl: " + EnumChatFormatting.LIGHT_PURPLE +
-                        (bossesUntilNextLevel > 1000 ? "?" : bossesUntilNextLevel));
+                        (bossesUntilNextLevel > 2000 ? "?" : bossesUntilNextLevel));
             }
 
             if (timeSinceLastBoss > 0 && timeSinceLastBoss2 > 0) {
