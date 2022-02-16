@@ -252,46 +252,40 @@ public class Utils {
                 : shortNumberFormat(d, iteration + 1));
     }
 
-    public static String trimIgnoreColour(String str) {
-        return trimIgnoreColourStart(trimIgnoreColourEnd(str));
+    public static String trimWhitespaceAndFormatCodes(String str) {
+        int startIndex = indexOfFirstNonWhitespaceNonFormatCode(str);
+        int endIndex = lastIndexOfNonWhitespaceNonFormatCode(str);
+        if (startIndex == -1 || endIndex == -1) return "";
+        return str.substring(startIndex, endIndex);
     }
 
-    public static String trimIgnoreColourStart(String str) {
-        str = str.trim();
-        boolean colourCodeLast = false;
-        StringBuilder colours = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (colourCodeLast) {
-                colours.append('\u00a7').append(c);
-                colourCodeLast = false;
+    private static int indexOfFirstNonWhitespaceNonFormatCode(String str)
+    {
+        int len = str.length();
+        for (int i = 0; i < len; i++) {
+            char ch = str.charAt(i);
+            if (ch <= ' ') {
+                continue;
+            } else if (ch == '\u00a7') {
+                i++;
                 continue;
             }
-            if (c == '\u00A7') {
-                colourCodeLast = true;
-            } else if (c != ' ') {
-                return colours.append(str.substring(i)).toString();
-            }
+            return i;
         }
-
-        return "";
+        return -1;
     }
 
-    public static String trimIgnoreColourEnd(String str) {
-        str = str.trim();
+    private static int lastIndexOfNonWhitespaceNonFormatCode(String str)
+    {
         for (int i = str.length() - 1; i >= 0; i--) {
             char c = str.charAt(i);
-            if (c == ' ') {
-                continue;
-            } else if (i > 0 && str.charAt(i - 1) == '\u00a7') {
-                i--;
+            if (c <= ' ' || c == '\u00a7' || (i > 0 && str.charAt(i - 1) == '\u00a7')) {
                 continue;
             }
-
-            return str.substring(0, i + 1);
+            return i;
         }
 
-        return "";
+        return -1;
     }
 
     public static List<String> getRawTooltip(ItemStack stack) {

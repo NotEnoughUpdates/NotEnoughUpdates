@@ -793,7 +793,7 @@ public class NEUEventListener {
         if (Minecraft.getMinecraft().thePlayer == null) return text;
         if (!NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar) return text;
 
-        return Utils.trimIgnoreColour(text.replaceAll(EnumChatFormatting.DARK_GREEN + "\\S+ Drill Fuel", ""));
+        return Utils.trimWhitespaceAndFormatCodes(text.replaceAll(EnumChatFormatting.DARK_GREEN + "\\S+ Drill Fuel", ""));
     }
 
     private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
