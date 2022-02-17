@@ -307,7 +307,7 @@ public class Utils {
         int len = str.length();
         for (int i = 0; i < len; i++) {
             char ch = str.charAt(i);
-            if (ch <= ' ') {
+            if (Character.isWhitespace(ch)) {
                 continue;
             } else if (ch == '\u00a7') {
                 i++;
@@ -320,8 +320,8 @@ public class Utils {
 
     private static int lastIndexOfNonWhitespaceNonFormatCode(String str) {
         for (int i = str.length() - 1; i >= 0; i--) {
-            char c = str.charAt(i);
-            if (c <= ' ' || c == '\u00a7' || (i > 0 && str.charAt(i - 1) == '\u00a7')) {
+            char ch = str.charAt(i);
+            if (Character.isWhitespace(ch) || ch == '\u00a7' || (i > 0 && str.charAt(i - 1) == '\u00a7')) {
                 continue;
             }
             return i;
