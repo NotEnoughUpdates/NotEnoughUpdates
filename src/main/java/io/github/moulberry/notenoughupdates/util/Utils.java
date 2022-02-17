@@ -48,8 +48,6 @@ import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1475,16 +1473,5 @@ public class Utils {
     public static boolean isWithinRect(int x, int y, int left, int top, int width, int height) {
         return left <= x && x <= left + width &&
                 top <= y && y <= top + height;
-    }
-
-    public static <T, U> List<U> runningReduce(Iterable<T> values, U initial, BiFunction<T, U, U> reducer) {
-        Spliterator<T> spliterator = values.spliterator();
-        long size = spliterator.estimateSize();
-        List<U> rets = new ArrayList<>(Math.toIntExact(size == Long.MAX_VALUE ? 0 : size));
-        AtomicReference<U> acc = new AtomicReference<>(initial);
-        spliterator.forEachRemaining(it -> {
-            acc.getAndUpdate(value -> reducer.apply(it, value));
-        });
-        return rets;
     }
 }
