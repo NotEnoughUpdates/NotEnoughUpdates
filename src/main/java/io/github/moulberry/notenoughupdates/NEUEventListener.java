@@ -53,15 +53,14 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import java.awt.Color;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -2575,14 +2574,42 @@ public class NEUEventListener {
     DecimalFormat myFormatter = new DecimalFormat("###,###.###");
 
     /**
-     * This makes it so that holding LCONTROL while hovering over an item with NBT will show the NBT of the item.
+     * This method does the following:
+     * Move the pet inventory display tooltip to the left to avoid conflicts
+     * Remove reforge stats for Legendary items from Hypixel if enabled
+     * Show NBT data when holding LCONTROL
      */
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
         if (!neu.isOnSkyblock()) return;
+        if (event.toolTip == null) return;
         //Render the pet inventory display tooltip to the left to avoid things from other mods rendering over the tooltip
         if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
             GlStateManager.translate(-200, 0, 0);
+        }
+
+        if (event.toolTip.size() > 2 && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.hideDefaultReforgeStats) {
+            String secondLine = StringUtils.stripControlCodes(event.toolTip.get(1));
+            if (secondLine.equals("Reforge Stone")) {
+                Integer startIndex = null;
+                Integer cutoffIndex = null;
+                //loop from the back of the List to find the wanted index sooner
+                for (int i = event.toolTip.size() - 1; i >= 0; i--) {
+                    //rarity
+                    String line = StringUtils.stripControlCodes(event.toolTip.get(i));
+                    if (line.contains("REFORGE STONE") || line.contains("Requires Mining Skill Level")) {
+                        cutoffIndex = i;
+                    }
+
+                    if (line.contains("(Legendary):")) {
+                        startIndex = i;
+                        break;
+                    }
+                }
+                if (startIndex != null && cutoffIndex != null && startIndex < cutoffIndex) {
+                    event.toolTip.subList(startIndex, cutoffIndex).clear();
+                }
+            }
         }
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && NotEnoughUpdates.INSTANCE.config.hidden.dev &&

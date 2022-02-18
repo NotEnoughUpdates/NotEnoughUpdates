@@ -96,6 +96,14 @@ public class TooltipTweaks {
 
     @Expose
     @ConfigOption(
+            name = "Hide default reforge stats",
+            desc = "Hides the reforge stats only for Legendary items that Hypixel adds to the Reforge stones"
+    )
+    @ConfigEditorBoolean
+    public boolean hideDefaultReforgeStats = true;
+
+    @Expose
+    @ConfigOption(
             name = "Missing Enchant List",
             desc = "Show which enchants are missing on an item when pressing LSHIFT"
     )
