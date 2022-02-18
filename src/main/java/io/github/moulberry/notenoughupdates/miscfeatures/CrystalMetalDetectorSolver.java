@@ -85,7 +85,7 @@ public class CrystalMetalDetectorSolver {
     public static void process(IChatComponent message) {
         if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows")
                 && message.getUnformattedText().contains("TREASURE: ")) {
-            LocateMinesCenter();
+            locateMinesCenter();
 
             double distToTreasure = Double.parseDouble(message.getUnformattedText().split("TREASURE: ")[1].split("m")[0].replaceAll("(?!\\.)\\D", ""));
 
