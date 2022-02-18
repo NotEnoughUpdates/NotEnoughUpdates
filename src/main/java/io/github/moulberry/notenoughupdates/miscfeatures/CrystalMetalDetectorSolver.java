@@ -213,7 +213,7 @@ public class CrystalMetalDetectorSolver {
         }
     }
 
-    private static void LocateMinesCenter() {
+    private static void locateMinesCenter() {
         if (divanMinesCenter != Vec3i.NULL_VECTOR) {
             return;
         }
