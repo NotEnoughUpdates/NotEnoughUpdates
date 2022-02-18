@@ -262,16 +262,16 @@ public class Utils {
         str = str.trim();
         boolean colourCodeLast = false;
         StringBuilder colours = new StringBuilder();
-        for(int i=0; i<str.length(); i++) {
+        for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
-            if(colourCodeLast) {
+            if (colourCodeLast) {
                 colours.append('\u00a7').append(c);
                 colourCodeLast = false;
                 continue;
             }
-            if(c == '\u00A7') {
+            if (c == '\u00A7') {
                 colourCodeLast = true;
-            } else if(c != ' ') {
+            } else if (c != ' ') {
                 return colours.append(str.substring(i)).toString();
             }
         }
@@ -281,16 +281,16 @@ public class Utils {
 
     public static String trimIgnoreColourEnd(String str) {
         str = str.trim();
-        for(int i=str.length()-1; i>=0; i--) {
+        for (int i = str.length() - 1; i >= 0; i--) {
             char c = str.charAt(i);
-            if(c == ' ') {
+            if (c == ' ') {
                 continue;
-            } else if(i > 0 && str.charAt(i-1) == '\u00a7') {
+            } else if (i > 0 && str.charAt(i - 1) == '\u00a7') {
                 i--;
                 continue;
             }
 
-            return str.substring(0, i+1);
+            return str.substring(0, i + 1);
         }
 
         return "";
