@@ -2595,12 +2595,13 @@ public class NEUEventListener {
                 Integer cutoffIndex = null;
                 //loop from the back of the List to find the wanted index sooner
                 for (int i = event.toolTip.size() - 1; i >= 0; i--) {
-                    //rarity
+                    //rarity or mining level requirement
                     String line = StringUtils.stripControlCodes(event.toolTip.get(i));
                     if (line.contains("REFORGE STONE") || line.contains("Requires Mining Skill Level")) {
                         cutoffIndex = i;
                     }
 
+                    //The line where the Hypixel stats start
                     if (line.contains("(Legendary):")) {
                         startIndex = i;
                         break;
