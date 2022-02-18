@@ -30,5 +30,3 @@ else
 fi
 
 sort < <(echo "$LOCATIONS"; echo "$SRC_LOCATIONS") | uniq | awk '{printf "%-18s %s %s %s %s \n", $1, $2, $3, $4, $5}'
-
-# TODO: grab current list from source
