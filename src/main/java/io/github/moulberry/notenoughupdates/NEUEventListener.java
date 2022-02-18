@@ -166,7 +166,7 @@ public class NEUEventListener {
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Unload event) {
         NotEnoughUpdates.INSTANCE.saveConfig();
-        CrystalMetalDetectorSolver.reset(false);
+        CrystalMetalDetectorSolver.initWorld();
     }
 
     private static long notificationDisplayMillis = 0;

@@ -316,6 +316,8 @@ public class NEUConfig extends Config {
         public List<NEUConfig.InventoryButton> inventoryButtons = createDefaultInventoryButtons();
 
         @Expose
+        public int debugFlags = 0;
+        @Expose
         public boolean enableItemEditing = false;
         @Expose
         public boolean cacheRenderedItempane = true;
