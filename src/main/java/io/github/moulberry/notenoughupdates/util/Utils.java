@@ -313,7 +313,7 @@ public class Utils {
                 i++;
                 continue;
             }
-            return i;
+            return i+1;
         }
         return -1;
     }
