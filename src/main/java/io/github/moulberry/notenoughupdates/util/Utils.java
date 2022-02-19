@@ -300,7 +300,7 @@ public class Utils {
         int startIndex = indexOfFirstNonWhitespaceNonFormatCode(str);
         int endIndex = lastIndexOfNonWhitespaceNonFormatCode(str);
         if (startIndex == -1 || endIndex == -1) return "";
-        return str.substring(startIndex, endIndex);
+        return str.substring(startIndex, endIndex+1);
     }
 
     private static int indexOfFirstNonWhitespaceNonFormatCode(String str) {
@@ -313,7 +313,7 @@ public class Utils {
                 i++;
                 continue;
             }
-            return i+1;
+            return i;
         }
         return -1;
     }
