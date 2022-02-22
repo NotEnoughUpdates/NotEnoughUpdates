@@ -1,8 +1,12 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.entityviewer;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.Map;
 
 public class SkinModifier extends EntityViewerModifier {
     @Override
@@ -17,6 +21,19 @@ public class SkinModifier extends EntityViewerModifier {
             }
             if (info.has("slim")) {
                 player.overrideIsSlim = info.get("slim").getAsBoolean();
+            }
+            if (info.has("parts")) {
+                JsonObject parts = info.getAsJsonObject("parts");
+                byte partBitField = player.getDataWatcher().getWatchableObjectByte(10);
+                for (Map.Entry<String, JsonElement> part : parts.entrySet()) {
+                    EnumPlayerModelParts modelPart = EnumPlayerModelParts.valueOf(part.getKey());
+                    if (part.getValue().getAsBoolean()) {
+                        partBitField |= modelPart.getPartMask();
+                    } else {
+                        partBitField &= ~modelPart.getPartMask();
+                    }
+                }
+                player.getDataWatcher().updateObject(10, partBitField);
             }
         }
         return base;

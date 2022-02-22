@@ -143,6 +143,7 @@ public class GuiItemRecipe extends GuiScreen {
     }
 
     private void drawTabHoverInformation(int mouseX, int mouseY) {
+        if (tabs.size() < 2) return;
         for (int i = 0; i < tabs.size(); i++) {
             if (isWithinRect(mouseX - guiLeft, mouseY - guiTop, TAB_POS_X, TAB_POS_Y + TAB_OFFSET_Y * i, TAB_SIZE_X, TAB_SIZE_Y)) {
                 RecipeType type = tabs.get(i);
@@ -157,6 +158,7 @@ public class GuiItemRecipe extends GuiScreen {
     }
 
     private void drawTabs() {
+        if (tabs.size() < 2) return;
         for (int i = 0; i < tabs.size(); i++) {
             RecipeType recipeType = tabs.get(i);
             int tabPosX = guiLeft + TAB_POS_X, tabPosY = guiTop + TAB_OFFSET_Y * i + TAB_POS_Y;
@@ -171,7 +173,7 @@ public class GuiItemRecipe extends GuiScreen {
                     TAB_TEXTURE_SIZE_X, TAB_SIZE_X
             );
             Minecraft.getMinecraft().getTextureManager().bindTexture(recipeType.getIcon());
-            drawTexturedModalRect(tabPosX + 7, tabPosY + 6, 6, 0, 16, 16);
+            drawTexturedModalRect(tabPosX + 7, tabPosY + 7, 6, 0, 16, 16);
         }
     }
 
