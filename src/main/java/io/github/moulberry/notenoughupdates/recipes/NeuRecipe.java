@@ -9,44 +9,43 @@ import java.util.List;
 import java.util.Set;
 
 public interface NeuRecipe {
-	Set<Ingredient> getIngredients();
+    Set<Ingredient> getIngredients();
 
-	Set<Ingredient> getOutputs();
+    Set<Ingredient> getOutputs();
 
-	List<RecipeSlot> getSlots();
+    List<RecipeSlot> getSlots();
 
-	default void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
-	}
+    RecipeType getType();
 
-	default void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
-	}
+    default void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
+    }
 
-	default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
-	}
+    default void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
+    }
 
-	boolean hasVariableCost();
+    default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
+    }
 
-	JsonObject serialize();
+    boolean hasVariableCost();
 
-	ResourceLocation getBackground();
+    JsonObject serialize();
 
-	static NeuRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject output) {
-		if (recipe.has("type")) {
-			switch (recipe.get("type").getAsString().intern()) {
-				case "forge":
-					return ForgeRecipe.parseForgeRecipe(manager, recipe, output);
-				case "trade":
-					return VillagerTradeRecipe.parseStaticRecipe(manager, recipe);
-			}
-		}
-		return CraftingRecipe.parseCraftingRecipe(manager, recipe, output);
-	}
+    ResourceLocation getBackground();
 
-	default boolean shouldUseForCraftCost() {
-		return true;
-	}
+    static NeuRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject output) {
+        RecipeType recipeType = RecipeType.CRAFTING;
+        if (recipe.has("type")) {
+            recipeType = RecipeType.getRecipeTypeForId(recipe.get("type").getAsString());
+        }
+        if (recipeType == null) return null;
+        return recipeType.createRecipe(manager, recipe, output);
+    }
 
-	default boolean isAvailable() {
-		return true;
-	}
+    default boolean shouldUseForCraftCost() {
+        return true;
+    }
+
+    default boolean isAvailable() {
+        return true;
+    }
 }
