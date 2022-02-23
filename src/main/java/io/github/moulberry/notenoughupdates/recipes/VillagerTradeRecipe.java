@@ -21,9 +21,9 @@ import java.util.*;
 
 public class VillagerTradeRecipe implements NeuRecipe {
 
-    public static final int COST_SLOT_X = 51;
-    public static final int COST_SLOT_Y = 34;
-    public static final int RESULT_SLOT_Y = 35;
+    public static final int COST_SLOT_X = 53;
+    public static final int COST_SLOT_Y = 67;
+    public static final int RESULT_SLOT_Y = 66;
     public static final int RESULT_SLOT_X = 124;
 
     private static class Holder { // This holder object exists to defer initialization to first access
@@ -50,7 +50,7 @@ public class VillagerTradeRecipe implements NeuRecipe {
 
     }
 
-    private final static ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/villager_recipe.png");
+    private final static ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/villager_recipe_tall.png");
 
     private final Ingredient result;
     private final Ingredient cost;
@@ -110,14 +110,14 @@ public class VillagerTradeRecipe implements NeuRecipe {
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
             Utils.drawStringCenteredScaledMaxWidth(
                     minCost + " - " + maxCost, fontRenderer,
-                    gui.guiLeft + 50, gui.guiTop + 60, false, 75, 0xff00ff);
+                    gui.guiLeft + 50, gui.guiTop + 85, false, 75, 0xff00ff);
 
         }
     }
 
     @Override
     public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
-        GuiInventory.drawEntityOnScreen(gui.guiLeft + 90, gui.guiTop + 75, 30, gui.guiLeft - mouseX + 80, gui.guiTop + 60 - mouseY, Holder.DEMO_ENTITY);
+        GuiInventory.drawEntityOnScreen(gui.guiLeft + 90, gui.guiTop + 100, 30, gui.guiLeft - mouseX + 110, gui.guiTop + 60 - mouseY, Holder.DEMO_ENTITY);
     }
 
     @Override

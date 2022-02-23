@@ -32,17 +32,17 @@ public class GuiItemRecipe extends GuiScreen {
     public static final int SLOT_SPACING = SLOT_SIZE + 2;
     public static final int BUTTON_WIDTH = 7;
     public static final int BUTTON_HEIGHT = 11;
-    public static final int BUTTON_POSITION_Y = 63;
+    public static final int BUTTON_POSITION_Y = 90;
     public static final int BUTTON_POSITION_LEFT_X = 110;
     public static final int BUTTON_POSITION_RIGHT_X = 147;
     public static final int PAGE_STRING_X = 132;
-    public static final int PAGE_STRING_Y = 69;
+    public static final int PAGE_STRING_Y = BUTTON_POSITION_Y+6;
     public static final int TITLE_X = 28;
     public static final int TITLE_Y = 6;
     public static final int HOTBAR_SLOT_X = 8;
-    public static final int HOTBAR_SLOT_Y = 142;
+    public static final int HOTBAR_SLOT_Y = 197;
     public static final int PLAYER_INVENTORY_X = 8;
-    public static final int PLAYER_INVENTORY_Y = 84;
+    public static final int PLAYER_INVENTORY_Y = 140;
     public static final int TAB_POS_X = -26;
     public static final int TAB_POS_Y = 8;
     public static final int TAB_OFFSET_Y = 30;
@@ -62,7 +62,7 @@ public class GuiItemRecipe extends GuiScreen {
     public int guiLeft = 0;
     public int guiTop = 0;
     public int xSize = 176;
-    public int ySize = 166;
+    public int ySize = 222;
 
     public GuiItemRecipe(String title, List<NeuRecipe> unsortedRecipes, NEUManager manager) {
         this.manager = manager;
@@ -272,7 +272,7 @@ public class GuiItemRecipe extends GuiScreen {
             if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
                 ItemStack itemStack = slot.getItemStack();
                 if (mouseButton == 0) {
-                    manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), "");
+                    manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), null);
                 } else if (mouseButton == 1) {
                     manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
                 }
