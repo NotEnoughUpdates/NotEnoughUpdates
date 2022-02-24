@@ -355,7 +355,7 @@ public class GuiProfileViewer extends GuiScreen {
                                         Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You're a menace to society", Minecraft.getMinecraft().fontRendererObj,
                                                 guiLeft + sizeX / 2f, guiTop + 181, true, 0);
                                         if (timeDiff > 1800000) {
-                                            Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You dont know whats gonna happen to you", Minecraft.getMinecraft().fontRendererObj,
+                                            Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You don't know whats gonna happen to you", Minecraft.getMinecraft().fontRendererObj,
                                                     guiLeft + sizeX / 2f, guiTop + 191, true, 0);
                                             if (timeDiff > 3000000) {
                                                 Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You really want this?", Minecraft.getMinecraft().fontRendererObj,
