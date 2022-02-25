@@ -20,10 +20,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
-import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.LerpingFloat;
-import io.github.moulberry.notenoughupdates.util.SpecialColour;
-import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -233,7 +230,7 @@ public class NEUOverlay extends Gui {
                             searchMode = !searchMode;
                             lastSearchMode = System.currentTimeMillis();
                             if (searchMode && NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus) {
-                                NEUEventListener.displayNotification(Lists.newArrayList(
+                                NotificationHandler.displayNotification(Lists.newArrayList(
                                         "\u00a7eSearch Highlight",
                                         "\u00a77In this mode NEU will gray out non matching items in",
                                         "\u00a77your inventory or chests.",

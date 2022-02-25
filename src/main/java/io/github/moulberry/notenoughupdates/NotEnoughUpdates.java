@@ -8,6 +8,10 @@ import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
+import io.github.moulberry.notenoughupdates.listener.ChatListener;
+import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
+import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.*;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
@@ -147,9 +151,11 @@ public class NotEnoughUpdates {
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
+        MinecraftForge.EVENT_BUS.register(new ChatListener(this));
+        MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
+        MinecraftForge.EVENT_BUS.register(new RenderListener(this));
         MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
         MinecraftForge.EVENT_BUS.register(CapeManager.getInstance());
-        //MinecraftForge.EVENT_BUS.register(new SBGamemodes());
         MinecraftForge.EVENT_BUS.register(new EnchantingSolvers());
         MinecraftForge.EVENT_BUS.register(new CalendarOverlay());
         MinecraftForge.EVENT_BUS.register(SBInfo.getInstance());

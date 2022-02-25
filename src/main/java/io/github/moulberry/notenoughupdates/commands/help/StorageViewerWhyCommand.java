@@ -1,8 +1,8 @@
 package io.github.moulberry.notenoughupdates.commands.help;
 
 import com.google.common.collect.Lists;
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
+import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import net.minecraft.command.ICommandSender;
 
 public class StorageViewerWhyCommand extends ClientCommandBase {
@@ -13,7 +13,7 @@ public class StorageViewerWhyCommand extends ClientCommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
-        NEUEventListener.displayNotification(Lists.newArrayList(
+        NotificationHandler.displayNotification(Lists.newArrayList(
                 "\u00a7eStorage Viewer",
                 "\u00a77Currently, the storage viewer requires you to click twice",
                 "\u00a77in order to switch between pages. This is because Hypixel",

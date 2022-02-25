@@ -1,8 +1,8 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.*;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
@@ -91,7 +91,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
         else if (!($this instanceof GuiChest))
             BetterContainers.profileViewerStackIndex = -1;
 
-        if (slot.getStack() == null && NotEnoughUpdates.INSTANCE.overlay.searchMode && NEUEventListener.drawingGuiScreen) {
+        if (slot.getStack() == null && NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(0, 0, 100 + Minecraft.getMinecraft().getRenderItem().zLevel);
             GlStateManager.depthMask(false);

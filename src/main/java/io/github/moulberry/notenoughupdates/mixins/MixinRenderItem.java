@@ -1,9 +1,9 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import net.minecraft.client.Minecraft;
@@ -174,7 +174,7 @@ public abstract class MixinRenderItem {
 
     @Inject(method = "renderItemIntoGUI", at = @At("HEAD"))
     public void renderItemHead(ItemStack stack, int x, int y, CallbackInfo ci) {
-        if (NotEnoughUpdates.INSTANCE.overlay.searchMode && NEUEventListener.drawingGuiScreen) {
+        if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
             boolean matches = false;
 
             GuiTextField textField = NotEnoughUpdates.INSTANCE.overlay.getTextField();
@@ -200,7 +200,7 @@ public abstract class MixinRenderItem {
     @Inject(method = "renderItemIntoGUI", at = @At("RETURN"))
     public void renderItemReturn(ItemStack stack, int x, int y, CallbackInfo ci) {
         if (stack != null && stack.stackSize != 1) return;
-        if (NotEnoughUpdates.INSTANCE.overlay.searchMode && NEUEventListener.drawingGuiScreen) {
+        if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
             boolean matches = false;
 
             GuiTextField textField = NotEnoughUpdates.INSTANCE.overlay.getTextField();
@@ -224,7 +224,7 @@ public abstract class MixinRenderItem {
     @Inject(method = "renderItemOverlayIntoGUI", at = @At("RETURN"))
     public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, String text, CallbackInfo ci) {
         if (stack != null && stack.stackSize != 1) {
-            if (NotEnoughUpdates.INSTANCE.overlay.searchMode && NEUEventListener.drawingGuiScreen) {
+            if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
                 boolean matches = false;
 
                 GuiTextField textField = NotEnoughUpdates.INSTANCE.overlay.getTextField();

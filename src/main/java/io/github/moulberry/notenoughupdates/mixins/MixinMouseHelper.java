@@ -1,6 +1,6 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.NEUEventListener;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import net.minecraft.util.MouseHelper;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMouseHelper {
     @Inject(method = {"ungrabMouseCursor"}, at = {@At("HEAD")}, cancellable = true)
     public void ungrabMouseCursor(final CallbackInfo ci) {
-        if (System.currentTimeMillis() - NEUEventListener.lastGuiClosed < 150L) {
+        if (System.currentTimeMillis() - RenderListener.lastGuiClosed < 150L) {
             ci.cancel();
             Mouse.setGrabbed(false);
         }

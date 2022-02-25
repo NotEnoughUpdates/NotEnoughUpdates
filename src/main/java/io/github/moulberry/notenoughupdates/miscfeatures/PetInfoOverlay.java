@@ -2,11 +2,11 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.common.collect.Lists;
 import com.google.gson.*;
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
@@ -687,7 +687,7 @@ public class PetInfoOverlay extends TextOverlay {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && NEUEventListener.inventoryLoaded) {
+        if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
             ContainerChest container = (ContainerChest) chest.inventorySlots;
             IInventory lower = container.getLowerChestInventory();

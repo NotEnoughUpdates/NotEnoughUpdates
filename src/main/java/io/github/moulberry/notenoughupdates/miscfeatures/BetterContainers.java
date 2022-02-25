@@ -1,8 +1,8 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -66,7 +66,7 @@ public class BetterContainers {
     public static void bindHook(TextureManager textureManager, ResourceLocation location) {
         long currentMillis = System.currentTimeMillis();
 
-        if(isChestOpen() && NEUEventListener.inventoryLoaded) {
+        if(isChestOpen() && RenderListener.inventoryLoaded) {
             int invHashcode = lastInvHashcode;
 
             if(currentMillis - lastHashcodeCheck > 50) {

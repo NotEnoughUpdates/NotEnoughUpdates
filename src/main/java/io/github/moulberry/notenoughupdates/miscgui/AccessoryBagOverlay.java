@@ -3,10 +3,10 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -603,7 +603,7 @@ public class AccessoryBagOverlay {
 
     public static void renderOverlay() {
         inAccessoryBag = false;
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && NEUEventListener.inventoryLoaded) {
+        if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
             GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
             ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
             String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();

@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
-import io.github.moulberry.notenoughupdates.NEUEventListener;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.*;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
@@ -9,6 +8,7 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
+import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -2043,7 +2043,7 @@ public class StorageOverlay extends GuiElement {
     public void fastRenderCheck() {
         if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3) {
             this.fastRender = true;
-            NEUEventListener.displayNotification(Lists.newArrayList(
+            NotificationHandler.displayNotification(Lists.newArrayList(
                     "\u00a74Fast Render Warning",
                     "\u00a77Due to the way fast render works, it's not compatible with NEU.",
                     "\u00a77Please disable fast render in your options under",
