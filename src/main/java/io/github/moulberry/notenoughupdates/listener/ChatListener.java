@@ -122,10 +122,8 @@ public class ChatListener {
         } else if (unformatted.startsWith("Your profile was changed to: ")) {//Your profile was changed to:
             neu.manager.setCurrentProfile(unformatted.substring("Your profile was changed to: ".length()).split(" ")[0].trim());
         } else if (unformatted.startsWith("Your new API key is ")) {
-            //TODO substring
-            NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = unformatted.substring("Your new API key is ".length());
+            NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = unformatted.substring("Your new API key is ".length()).substring(0, 36);
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
-            NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.substring(0, 36);
         } else if (unformatted.startsWith("Player List Info is now disabled!")) {
             SBInfo.getInstance().hasNewTab = false;
         } else if (unformatted.startsWith("Player List Info is now enabled!")) {
