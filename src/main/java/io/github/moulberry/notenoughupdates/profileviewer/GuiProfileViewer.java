@@ -355,7 +355,7 @@ public class GuiProfileViewer extends GuiScreen {
                                         Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You're a menace to society", Minecraft.getMinecraft().fontRendererObj,
                                                 guiLeft + sizeX / 2f, guiTop + 181, true, 0);
                                         if (timeDiff > 1800000) {
-                                            Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You dont know whats gonna happen to you", Minecraft.getMinecraft().fontRendererObj,
+                                            Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You don't know what's gonna happen to you", Minecraft.getMinecraft().fontRendererObj,
                                                     guiLeft + sizeX / 2f, guiTop + 191, true, 0);
                                             if (timeDiff > 3000000) {
                                                 Utils.drawStringCentered(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You really want this?", Minecraft.getMinecraft().fontRendererObj,
@@ -2942,7 +2942,6 @@ public class GuiProfileViewer extends GuiScreen {
 
         //hotm render
         //Pain
-        //if (miningSpeed == 0) {
 
         renderHotmPerk(
                 miningSpeed,
@@ -3077,7 +3076,7 @@ public class GuiProfileViewer extends GuiScreen {
                 (int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 42),
                 mouseX, mouseY,
                 () -> {
-                    switch(potm) {
+                    switch (potm) {
                         case 0:
                             return Lists.newArrayList(
                                     EnumChatFormatting.RED + "Peak of the Mountain",
@@ -3462,18 +3461,29 @@ public class GuiProfileViewer extends GuiScreen {
         boolean unlocked = perkLevel > 0;
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableLighting();
-        if(isPickaxeAbility) RenderHelper.enableGUIStandardItemLighting(); // GUI standard item lighting must be enabled for items that are rendered as blocks, like emerald blocks.
-        Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
-                isPickaxeAbility ?
-                        new ItemStack(unlocked ? Blocks.emerald_block : Blocks.coal_block) : // Pickaxe abilities are rendered as blocks
-                        new ItemStack(unlocked ? (perkLevel >= maxLevel ? Items.diamond : Items.emerald) : Items.coal), // Non-pickaxe abilities are rendered as items
-                xPosition, yPosition);
+
+        ItemStack itemStack;
+        if(isPickaxeAbility){
+            RenderHelper.enableGUIStandardItemLighting(); // GUI standard item lighting must be enabled for items that are rendered as blocks, like emerald blocks.
+            itemStack = new ItemStack(unlocked ? Blocks.emerald_block : Blocks.coal_block); // Pickaxe abilities are rendered as blocks
+        } else {  // Non-pickaxe abilities are rendered as items
+            itemStack = new ItemStack(unlocked ? (perkLevel >= maxLevel ? Items.diamond : Items.emerald) : Items.coal);
+        }
+
+        ArrayList<String> tooltip = tooltipSupplier.get();
+        // Prepend the green, yellow, or red color on the first line of each tooltip depending on if the perk is unlocked
+        tooltip.set(0, (unlocked ? (perkLevel >= maxLevel ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED) + tooltip.get(0));
+
+        NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+        NBTTagCompound display = new NBTTagCompound();
+        display.setString("Name", tooltip.get(0));
+        nbt.setTag("display", display);
+        itemStack.setTagCompound(nbt);
+
+        Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, xPosition, yPosition);
         GlStateManager.enableLighting();
         if (mouseX >= xPosition && mouseX < xPosition + 16) {
             if (mouseY >= yPosition && mouseY <= yPosition + 16) {
-                ArrayList<String> tooltip = tooltipSupplier.get();
-                // Prepend the green or red color on the first line of each tooltip depending on if the perk is unlocked
-                tooltip.set(0, (unlocked ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + tooltip.get(0));
                 Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
             }
         }
@@ -3496,13 +3506,22 @@ public class GuiProfileViewer extends GuiScreen {
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableLighting();
         if(isRenderingBlock) RenderHelper.enableGUIStandardItemLighting();
+
+        ArrayList<String> tooltip = tooltipSupplier.get();
+        // Prepend the green or red color on the first line of each tooltip depending on if the perk is unlocked
+        if(!tooltip.get(0).contains("Peak of the Mountain")) tooltip.set(0, (unlocked ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + tooltip.get(0)); //Peak of the Moutain has three color options, and is set already
+
+        NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Resource Packs
+        NBTTagCompound display = new NBTTagCompound();
+        display.setString("Name", tooltip.get(0));
+        if(tooltip.get(0).contains("Peak of the Mountain")) display.setString("Lore", tooltip.get(1)); //Set Lore to Level
+        nbt.setTag("display", display);
+        itemStack.setTagCompound(nbt);
+
         Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, xPosition, yPosition);
         GlStateManager.enableLighting();
         if (mouseX >= xPosition && mouseX < xPosition + 16) {
             if (mouseY >= yPosition && mouseY <= yPosition + 16) {
-                ArrayList<String> tooltip = tooltipSupplier.get();
-                // Prepend the green or red color on the first line of each tooltip depending on if the perk is unlocked
-                tooltip.set(0, (unlocked ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + tooltip.get(0));
                 Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
             }
         }

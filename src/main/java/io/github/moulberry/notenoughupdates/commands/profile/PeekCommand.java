@@ -46,7 +46,7 @@ public class PeekCommand extends ClientCommandBase {
         NotEnoughUpdates.profileViewer.getProfileByName(name, profile -> {
             if (profile == null) {
                 Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-                        EnumChatFormatting.RED + "[PEEK] Unknown player or api is down."), id);
+                        EnumChatFormatting.RED + "[PEEK] Unknown player or the api is down."), id);
             } else {
                 profile.resetCache();
 
@@ -60,7 +60,7 @@ public class PeekCommand extends ClientCommandBase {
                 }
 
                 Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-                        EnumChatFormatting.YELLOW + "[PEEK] Getting player skyblock profiles..."), id);
+                        EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
 
                 long startTime = System.currentTimeMillis();
                 peekCommandExecutorService.schedule(new Runnable() {

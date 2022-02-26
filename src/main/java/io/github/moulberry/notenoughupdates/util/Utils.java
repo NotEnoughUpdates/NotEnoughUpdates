@@ -710,6 +710,31 @@ public class Utils {
         return itemStack;
     }
 
+    public static ItemStack createSkull(String displayName, String uuid, String value){
+        ItemStack render = new ItemStack(Items.skull, 1, 3);
+        NBTTagCompound tag = new NBTTagCompound();
+        NBTTagCompound skullOwner = new NBTTagCompound();
+        NBTTagCompound properties = new NBTTagCompound();
+        NBTTagList textures = new NBTTagList();
+        NBTTagCompound textures_0 = new NBTTagCompound();
+        NBTTagCompound display = new NBTTagCompound();
+
+        skullOwner.setString("Id", uuid);
+        skullOwner.setString("Name", uuid);
+
+        textures_0.setString("Value", value);
+        textures.appendTag(textures_0);
+
+        display.setString("Name", displayName);
+        tag.setTag("display",display);
+
+        properties.setTag("textures", textures);
+        skullOwner.setTag("Properties", properties);
+        tag.setTag("SkullOwner", skullOwner);
+        render.setTagCompound(tag);
+        return render;
+    }
+
     public static void drawStringF(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
         fr.drawString(str, x, y, colour, shadow);
     }
@@ -828,6 +853,10 @@ public class Utils {
         GlStateManager.scale(factor, factor, 1);
         fr.drawString(str, x / factor, y / factor, colour, shadow);
         GlStateManager.scale(1 / factor, 1 / factor, 1);
+    }
+
+    public static void drawStringRightAligned(String str, FontRenderer fr, float x, float y , boolean shadow, int colour, float factor) {
+        drawStringScaled(str, fr, x - fr.getStringWidth(str) * factor, y, shadow, colour, factor);
     }
 
     public static void drawStringScaledMax(String str, FontRenderer fr, float x, float y, boolean shadow, int colour, float factor, int len) {
