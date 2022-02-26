@@ -21,8 +21,8 @@ import java.util.*;
 
 public class VillagerTradeRecipe implements NeuRecipe {
 
-    public static final int COST_SLOT_X = 53;
-    public static final int COST_SLOT_Y = 67;
+    public static final int COST_SLOT_X = 52;
+    public static final int COST_SLOT_Y = 66;
     public static final int RESULT_SLOT_Y = 66;
     public static final int RESULT_SLOT_X = 124;
 

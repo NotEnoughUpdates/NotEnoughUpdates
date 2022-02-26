@@ -23,14 +23,19 @@ public class SkinModifier extends EntityViewerModifier {
                 player.overrideIsSlim = info.get("slim").getAsBoolean();
             }
             if (info.has("parts")) {
-                JsonObject parts = info.getAsJsonObject("parts");
+                JsonElement parts = info.get("parts");
                 byte partBitField = player.getDataWatcher().getWatchableObjectByte(10);
-                for (Map.Entry<String, JsonElement> part : parts.entrySet()) {
-                    EnumPlayerModelParts modelPart = EnumPlayerModelParts.valueOf(part.getKey());
-                    if (part.getValue().getAsBoolean()) {
-                        partBitField |= modelPart.getPartMask();
-                    } else {
-                        partBitField &= ~modelPart.getPartMask();
+                if (parts.isJsonPrimitive() && parts.getAsJsonPrimitive().isBoolean()) {
+                    partBitField = parts.getAsBoolean() ? (byte) -1 : 0;
+                } else {
+                    JsonObject obj = parts.getAsJsonObject();
+                    for (Map.Entry<String, JsonElement> part : obj.entrySet()) {
+                        EnumPlayerModelParts modelPart = EnumPlayerModelParts.valueOf(part.getKey());
+                        if (part.getValue().getAsBoolean()) {
+                            partBitField |= modelPart.getPartMask();
+                        } else {
+                            partBitField &= ~modelPart.getPartMask();
+                        }
                     }
                 }
                 player.getDataWatcher().updateObject(10, partBitField);

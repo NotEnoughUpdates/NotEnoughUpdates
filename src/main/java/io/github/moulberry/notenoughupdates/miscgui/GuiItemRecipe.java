@@ -153,6 +153,7 @@ public class GuiItemRecipe extends GuiScreen {
                                 "" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + craftingRecipes.get(type).size() + " Recipes"
                         ),
                         mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
+                return;
             }
         }
     }
@@ -170,7 +171,7 @@ public class GuiItemRecipe extends GuiScreen {
             drawTexturedModalRect(
                     tabPosX, tabPosY,
                     0, textureOffset,
-                    TAB_TEXTURE_SIZE_X, TAB_SIZE_X
+                    TAB_TEXTURE_SIZE_X, TAB_SIZE_Y
             );
             Minecraft.getMinecraft().getTextureManager().bindTexture(recipeType.getIcon());
             drawTexturedModalRect(tabPosX + 7, tabPosY + 7, 6, 0, 16, 16);
