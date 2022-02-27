@@ -41,11 +41,6 @@ public class MixinNetHandlerPlayClient {
         }
     }
 
-    @Inject(method = "handleSpawnMob", at = @At("RETURN"))
-    public void handleSpawnMob(S0FPacketSpawnMob packetIn, CallbackInfo ci) {
-        //CollectionLogManager.getInstance().onEntityMetadataUpdated(packetIn.getEntityID());
-    }
-
     @Inject(method = "handleSetSlot", at = @At("RETURN"))
     public void handleSetSlot(S2FPacketSetSlot packetIn, CallbackInfo ci) {
         EnchantingSolvers.processInventoryContents(false);

@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.*;
-import io.github.moulberry.notenoughupdates.collectionlog.CollectionConstant;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.locks.ReentrantLock;
@@ -34,7 +33,6 @@ public class Constants {
     public static JsonObject ESSENCECOSTS;
     public static JsonObject FAIRYSOULS;
     public static JsonObject REFORGESTONES;
-    public static CollectionConstant COLLECTIONLOG;
 
     private static final ReentrantLock lock = new ReentrantLock();
 
@@ -53,7 +51,6 @@ public class Constants {
             ESSENCECOSTS = Utils.getConstant("essencecosts", gson);
             FAIRYSOULS = Utils.getConstant("fairy_souls", gson);
             REFORGESTONES = Utils.getConstant("reforgestones", gson);
-            //COLLECTIONLOG = Utils.getConstant("collectionlog", gson, CollectionConstant.class);
         } finally {
             lock.unlock();
         }
