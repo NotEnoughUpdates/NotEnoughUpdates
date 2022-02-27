@@ -83,8 +83,9 @@ public class CrystalMetalDetectorSolver {
 	));
 
 	public static void process(IChatComponent message) {
-		if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows")
-			&& message.getUnformattedText().contains("TREASURE: ")) {
+		if (SBInfo.getInstance().getLocation() != null &&
+			SBInfo.getInstance().getLocation().equals("crystal_hollows") &&
+			message.getUnformattedText().contains("TREASURE: ")) {
 			locateMinesCenter();
 
 			double distToTreasure = Double.parseDouble(message
@@ -191,7 +192,7 @@ public class CrystalMetalDetectorSolver {
 		chestRecentlyFound = chestFound;
 		possibleBlocks.clear();
 		locations.clear();
-    }
+	}
 
 	public static void initWorld() {
 		debugEnabled = NEUDebugFlags.IsSet(NEUDebugFlags.METAL_DETECTOR);
