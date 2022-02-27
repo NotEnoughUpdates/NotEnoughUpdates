@@ -3,9 +3,9 @@ package io.github.moulberry.notenoughupdates.core;
 import net.minecraft.client.gui.Gui;
 
 public abstract class GuiElement extends Gui {
-    public abstract void render();
+	public abstract void render();
 
-    public abstract boolean mouseInput(int mouseX, int mouseY);
+	public abstract boolean mouseInput(int mouseX, int mouseY);
 
-    public abstract boolean keyboardInput();
+	public abstract boolean keyboardInput();
 }

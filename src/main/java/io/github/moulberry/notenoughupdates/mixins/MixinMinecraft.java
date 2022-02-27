@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
-    //Commented as they weren't being loaded before
+	//Commented as they weren't being loaded before
     /*@Shadow
     public WorldClient theWorld;
 
@@ -33,8 +33,8 @@ public class MixinMinecraft {
             at = @At(value = "INVOKE", target = "Ljava/lang/System;gc()V"))
     public void loadWorld_gc() {}*/
 
-    @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I", opcode = Opcodes.PUTFIELD))
-    public void currentItemMixin(CallbackInfo ci) {
-        SlotLocking.getInstance().changedSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem);
-    }
+	@Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I", opcode = Opcodes.PUTFIELD))
+	public void currentItemMixin(CallbackInfo ci) {
+		SlotLocking.getInstance().changedSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem);
+	}
 }

@@ -39,332 +39,337 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SBInfo {
-    private static final SBInfo INSTANCE = new SBInfo();
+	private static final SBInfo INSTANCE = new SBInfo();
 
-    public static SBInfo getInstance() {
-        return INSTANCE;
-    }
+	public static SBInfo getInstance() {
+		return INSTANCE;
+	}
 
-    private static final Pattern timePattern = Pattern.compile(".+(am|pm)");
+	private static final Pattern timePattern = Pattern.compile(".+(am|pm)");
 
-    public IChatComponent footer;
-    public IChatComponent header;
+	public IChatComponent footer;
+	public IChatComponent header;
 
-    public String location = "";
-    public String date = "";
-    public String time = "";
-    public String objective = "";
-    public String slayer = "";
-    public boolean stranded = false;
+	public String location = "";
+	public String date = "";
+	public String time = "";
+	public String objective = "";
+	public String slayer = "";
+	public boolean stranded = false;
 
-    public String mode = "";
+	public String mode = "";
 
-    public Date currentTimeDate = null;
+	public Date currentTimeDate = null;
 
-    public String lastOpenContainerName = "";
+	public String lastOpenContainerName = "";
 
-    private long lastManualLocRaw = -1;
-    private long lastLocRaw = -1;
-    public long joinedWorld = -1;
-    public long unloadedWorld = -1;
-    private JsonObject locraw = null;
-    public boolean isInDungeon = false;
-    public boolean hasNewTab = false;
+	private long lastManualLocRaw = -1;
+	private long lastLocRaw = -1;
+	public long joinedWorld = -1;
+	public long unloadedWorld = -1;
+	private JsonObject locraw = null;
+	public boolean isInDungeon = false;
+	public boolean hasNewTab = false;
 
+	public enum Gamemode {
+		NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
 
-    public enum Gamemode {
-        NORMAL("", ""), IRONMAN("Ironman", "♲"), STRANDED("Stranded", "☀");
+		private final String name;
+		private final String emoji;
 
-        private final String name;
-        private final String emoji;
+		Gamemode(String name, String emoji) {
+			this.name = name;
+			this.emoji = emoji;
+		}
 
-        Gamemode(String name, String emoji) {
-            this.name = name;
-            this.emoji = emoji;
-        }
+		public static Gamemode find(String type) {
+			for (Gamemode gamemode : values()) {
+				if (type.contains(gamemode.name))
+					return gamemode;
+			}
+			return null;
+		}
+	}
 
-        public static Gamemode find(String type) {
-            for (Gamemode gamemode : values()) {
-                if (type.contains(gamemode.name))
-                    return gamemode;
-            }
-            return null;
-        }
-    }
+	private Map<String, Gamemode> gamemodes = new HashMap<>();
+	private boolean areGamemodesLoaded = false;
+	private int tickCount = 0;
+	public String currentProfile = null;
 
+	@SubscribeEvent
+	public void onGuiOpen(GuiOpenEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 
-    private Map<String, Gamemode> gamemodes = new HashMap<>();
-    private boolean areGamemodesLoaded = false;
-    private int tickCount = 0;
-    public String currentProfile = null;
+		if (event.gui instanceof GuiChest) {
+			GuiChest chest = (GuiChest) event.gui;
+			ContainerChest container = (ContainerChest) chest.inventorySlots;
 
-    @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
-        if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
+			lastOpenContainerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+		}
+	}
 
-        if (event.gui instanceof GuiChest) {
-            GuiChest chest = (GuiChest) event.gui;
-            ContainerChest container = (ContainerChest) chest.inventorySlots;
+	@SubscribeEvent
+	public void onGuiTick(TickEvent event) {
+		if (tickCount++ % 10 != 0) return;
+		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+		if (currentScreen instanceof GuiChest) {
+			ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
+			if ("Profile Management".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) {
+				updateProfileInformation(container);
+			}
+		}
+	}
 
-            lastOpenContainerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-        }
-    }
+	private static final Pattern PROFILE_PATTERN =
+		Pattern.compile("(?<type>(♲ Ironman)|(☀ Stranded)|()) *Profile: (?<name>[^ ]+)");
 
-    @SubscribeEvent
-    public void onGuiTick(TickEvent event) {
-        if (tickCount++ % 10 != 0) return;
-        GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-        if (currentScreen instanceof GuiChest) {
-            ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
-            if ("Profile Management".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) {
-                updateProfileInformation(container);
-            }
-        }
-    }
+	private void updateProfileInformation(ContainerChest container) {
+		for (int i = 11; i < 16; i = -~i) {
+			Slot slot = container.getSlot(i);
+			if (slot == null || !slot.getHasStack()) continue;
+			ItemStack item = slot.getStack();
+			if (item == null || item.getItem() == Item.getItemFromBlock(Blocks.bedrock)) continue;
+			String displayName = Utils.cleanColour(item.getDisplayName());
+			Matcher matcher = PROFILE_PATTERN.matcher(displayName);
+			if (!matcher.matches()) continue;
+			String type = matcher.group("type");
+			String name = matcher.group("name");
+			Gamemode gamemode = Gamemode.find(type);
+			gamemodes.put(name, gamemode);
+		}
+		areGamemodesLoaded = true;
+		saveGameModes();
+	}
 
-    private static final Pattern PROFILE_PATTERN = Pattern.compile("(?<type>(♲ Ironman)|(☀ Stranded)|()) *Profile: (?<name>[^ ]+)");
+	private Path getProfilesFile() {
+		return new File(NotEnoughUpdates.INSTANCE.manager.configLocation, "profiles.json").toPath();
+	}
 
-    private void updateProfileInformation(ContainerChest container) {
-        for (int i = 11; i < 16; i = -~i) {
-            Slot slot = container.getSlot(i);
-            if (slot == null || !slot.getHasStack()) continue;
-            ItemStack item = slot.getStack();
-            if (item == null || item.getItem() == Item.getItemFromBlock(Blocks.bedrock)) continue;
-            String displayName = Utils.cleanColour(item.getDisplayName());
-            Matcher matcher = PROFILE_PATTERN.matcher(displayName);
-            if (!matcher.matches()) continue;
-            String type = matcher.group("type");
-            String name = matcher.group("name");
-            Gamemode gamemode = Gamemode.find(type);
-            gamemodes.put(name, gamemode);
-        }
-        areGamemodesLoaded = true;
-        saveGameModes();
-    }
+	public Map<String, Gamemode> getAllGamemodes() {
+		if (!areGamemodesLoaded)
+			loadGameModes();
+		return gamemodes;
+	}
 
-    private Path getProfilesFile() {
-        return new File(NotEnoughUpdates.INSTANCE.manager.configLocation, "profiles.json").toPath();
-    }
+	public void saveGameModes() {
+		try {
+			Files.write(
+				getProfilesFile(),
+				NotEnoughUpdates.INSTANCE.manager.gson.toJson(gamemodes).getBytes(StandardCharsets.UTF_8)
+			);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public Map<String, Gamemode> getAllGamemodes() {
-        if (!areGamemodesLoaded)
-            loadGameModes();
-        return gamemodes;
-    }
+	public Gamemode getGamemodeForProfile(String profiles) {
+		return getAllGamemodes().get(profiles);
+	}
 
-    public void saveGameModes() {
-        try {
-            Files.write(getProfilesFile(), NotEnoughUpdates.INSTANCE.manager.gson.toJson(gamemodes).getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	public Gamemode getCurrentMode() {
+		return getGamemodeForProfile(currentProfile);
+	}
 
-    public Gamemode getGamemodeForProfile(String profiles) {
-        return getAllGamemodes().get(profiles);
-    }
+	public void loadGameModes() {
+		try {
+			gamemodes = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(
+				Files.newBufferedReader(getProfilesFile()),
+				new TypeToken<Map<String, Gamemode>>() {
+				}.getType()
+			);
+			areGamemodesLoaded = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public Gamemode getCurrentMode() {
-        return getGamemodeForProfile(currentProfile);
-    }
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		lastLocRaw = -1;
+		locraw = null;
+		this.setLocation(null);
+		joinedWorld = System.currentTimeMillis();
+		lastOpenContainerName = "";
+		hasNewTab = false;
+	}
 
-    public void loadGameModes() {
-        try {
-            gamemodes = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(Files.newBufferedReader(getProfilesFile()), new TypeToken<Map<String, Gamemode>>() {
-            }.getType());
-            areGamemodesLoaded = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload event) {
+		unloadedWorld = System.currentTimeMillis();
+	}
 
-    @SubscribeEvent
-    public void onWorldLoad(WorldEvent.Load event) {
-        lastLocRaw = -1;
-        locraw = null;
-        this.setLocation(null);
-        joinedWorld = System.currentTimeMillis();
-        lastOpenContainerName = "";
-        hasNewTab = false;
-    }
+	private static final Pattern JSON_BRACKET_PATTERN = Pattern.compile("^\\{.+}");
 
-    @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload event) {
-        unloadedWorld = System.currentTimeMillis();
-    }
+	public void onSendChatMessage(String msg) {
+		if (msg.trim().startsWith("/locraw") || msg.trim().startsWith("/locraw ")) {
+			lastManualLocRaw = System.currentTimeMillis();
+		}
+	}
 
-    private static final Pattern JSON_BRACKET_PATTERN = Pattern.compile("^\\{.+}");
+	@SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+	public void onChatMessage(ClientChatReceivedEvent event) {
+		Matcher matcher = JSON_BRACKET_PATTERN.matcher(event.message.getUnformattedText());
+		if (matcher.find()) {
+			try {
+				JsonObject obj = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(matcher.group(), JsonObject.class);
+				if (obj.has("server")) {
+					if (System.currentTimeMillis() - lastManualLocRaw > 5000) event.setCanceled(true);
+					if (obj.has("gametype") && obj.has("mode") && obj.has("map")) {
+						locraw = obj;
+						setLocation(locraw.get("mode").getAsString());
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    public void onSendChatMessage(String msg) {
-        if (msg.trim().startsWith("/locraw") || msg.trim().startsWith("/locraw ")) {
-            lastManualLocRaw = System.currentTimeMillis();
-        }
-    }
+	public String getLocation() {
+		return mode;
+	}
 
-    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
-    public void onChatMessage(ClientChatReceivedEvent event) {
-        Matcher matcher = JSON_BRACKET_PATTERN.matcher(event.message.getUnformattedText());
-        if (matcher.find()) {
-            try {
-                JsonObject obj = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(matcher.group(), JsonObject.class);
-                if (obj.has("server")) {
-                    if (System.currentTimeMillis() - lastManualLocRaw > 5000) event.setCanceled(true);
-                    if (obj.has("gametype") && obj.has("mode") && obj.has("map")) {
-                        locraw = obj;
-                        setLocation(locraw.get("mode").getAsString());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	public void setLocation(String location) {
+		if (!Objects.equals(this.mode, location)) {
+			MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
+		}
+		this.mode = location;
+	}
 
-    public String getLocation() {
-        return mode;
-    }
+	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
+	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
 
-    public void setLocation(String location) {
-        if (!Objects.equals(this.mode, location)) {
-            MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
-        }
-        this.mode = location;
-    }
+	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
-    private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
-    private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
+	public void tick() {
+		boolean tempIsInDungeon = false;
 
-    private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
+		long currentTime = System.currentTimeMillis();
 
-    public void tick() {
-        boolean tempIsInDungeon = false;
+		if (Minecraft.getMinecraft().thePlayer != null &&
+			Minecraft.getMinecraft().theWorld != null &&
+			locraw == null &&
+			(currentTime - joinedWorld) > 1000 &&
+			(currentTime - lastLocRaw) > 15000) {
+			lastLocRaw = System.currentTimeMillis();
+			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
+		}
 
-        long currentTime = System.currentTimeMillis();
+		try {
+			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
+				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
+				if (name.startsWith(profilePrefix)) {
+					currentProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					hasNewTab = true;
+				} else if (name.startsWith(skillsPrefix)) {
+					String levelInfo = name.substring(skillsPrefix.length()).trim();
+					Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
+					if (matcher.find()) {
+						try {
+							int level = Integer.parseInt(matcher.group(2).trim());
+							XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
+						} catch (Exception ignored) {
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        if (Minecraft.getMinecraft().thePlayer != null &&
-                Minecraft.getMinecraft().theWorld != null &&
-                locraw == null &&
-                (currentTime - joinedWorld) > 1000 &&
-                (currentTime - lastLocRaw) > 15000) {
-            lastLocRaw = System.currentTimeMillis();
-            NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
-        }
+		try {
+			Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
 
-        try {
-            for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
-                String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
-                if (name.startsWith(profilePrefix)) {
-                    currentProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
-                    hasNewTab = true;
-                } else if (name.startsWith(skillsPrefix)) {
-                    String levelInfo = name.substring(skillsPrefix.length()).trim();
-                    Matcher matcher = SKILL_LEVEL_PATTERN.matcher(Utils.cleanColour(levelInfo).split(":")[0]);
-                    if (matcher.find()) {
-                        try {
-                            int level = Integer.parseInt(matcher.group(2).trim());
-                            XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
-                        } catch (Exception ignored) {
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
 
-        try {
-            Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
+			List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
 
-            ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
+			List<String> lines = new ArrayList<>();
+			for (int i = scores.size() - 1; i >= 0; i--) {
+				Score score = scores.get(i);
+				ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
+				String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
+				line = Utils.cleanDuplicateColourCodes(line);
 
-            List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
+				String cleanLine = Utils.cleanColour(line);
 
-            List<String> lines = new ArrayList<>();
-            for (int i = scores.size() - 1; i >= 0; i--) {
-                Score score = scores.get(i);
-                ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
-                String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
-                line = Utils.cleanDuplicateColourCodes(line);
+				if (cleanLine.contains("Dungeon") && cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
+					tempIsInDungeon = true;
+				}
 
-                String cleanLine = Utils.cleanColour(line);
+				lines.add(line);
+			}
+			isInDungeon = tempIsInDungeon;
 
-                if (cleanLine.contains("Dungeon") && cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
-                    tempIsInDungeon = true;
-                }
+			boolean containsStranded = false;
+			for (String line : lines) { //Slayer stuff
+				if (line.contains("Tarantula Broodfather")) {
+					slayer = "Tarantula";
+				} else if (line.contains("Revenant Horror")) {
+					slayer = "Revenant";
+				} else if (line.contains("Sven Packmaster")) {
+					slayer = "Sven";
+				} else if (line.contains("Voidgloom Seraph")) {
+					slayer = "Enderman";
+				}
+				if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
+					lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
+					SlayerOverlay.slayerQuest = true;
+				}
+				if (SlayerOverlay.slayerQuest) {
+					if (line.contains(" I")) {
+						SlayerOverlay.slayerTier = 1;
+					}
+					if (line.contains(" II")) {
+						SlayerOverlay.slayerTier = 2;
+					}
+					if (line.contains(" III")) {
+						SlayerOverlay.slayerTier = 3;
+					}
+					if (line.contains(" IV")) {
+						SlayerOverlay.slayerTier = 4;
+					}
+					if (line.contains(" V")) {
+						SlayerOverlay.slayerTier = 5;
+					}
+				}
+				if (line.contains("☀ Stranded")) containsStranded = true;
+			}
+			stranded = containsStranded;
 
-                lines.add(line);
-            }
-            isInDungeon = tempIsInDungeon;
+			if (lines.size() >= 5) {
+				date = Utils.cleanColour(lines.get(1)).trim();
+				//§74:40am
+				Matcher matcher = timePattern.matcher(lines.get(2));
+				if (matcher.find()) {
+					time = Utils.cleanColour(matcher.group()).trim();
+					try {
+						String timeSpace = time.replace("am", " am").replace("pm", " pm");
+						SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
+						currentTimeDate = parseFormat.parse(timeSpace);
+					} catch (ParseException ignored) {
+					}
+				}
+				//Replaced with for loop because in crystal hollows with events the line it's on can shift.
+				for (String line : lines) {
+					if (line.contains("⏣")) {
+						location = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
+						break;
+					}
+				}
+			}
+			objective = null;
 
-            boolean containsStranded = false;
-            for (String line : lines) { //Slayer stuff
-                if (line.contains("Tarantula Broodfather")) {
-                    slayer = "Tarantula";
-                } else if (line.contains("Revenant Horror")) {
-                    slayer = "Revenant";
-                } else if (line.contains("Sven Packmaster")) {
-                    slayer = "Sven";
-                } else if (line.contains("Voidgloom Seraph")) {
-                    slayer = "Enderman";
-                }
-                if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
-                        lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
-                    SlayerOverlay.slayerQuest = true;
-                }
-                if (SlayerOverlay.slayerQuest) {
-                    if (line.contains(" I")) {
-                        SlayerOverlay.slayerTier = 1;
-                    }
-                    if (line.contains(" II")) {
-                        SlayerOverlay.slayerTier = 2;
-                    }
-                    if (line.contains(" III")) {
-                        SlayerOverlay.slayerTier = 3;
-                    }
-                    if (line.contains(" IV")) {
-                        SlayerOverlay.slayerTier = 4;
-                    }
-                    if (line.contains(" V")) {
-                        SlayerOverlay.slayerTier = 5;
-                    }
-                }
-                if (line.contains("☀ Stranded")) containsStranded = true;
-            }
-            stranded = containsStranded;
+			boolean objTextLast = false;
+			for (String line : lines) {
+				if (objTextLast) {
+					objective = line;
+				}
 
-            if (lines.size() >= 5) {
-                date = Utils.cleanColour(lines.get(1)).trim();
-                //§74:40am
-                Matcher matcher = timePattern.matcher(lines.get(2));
-                if (matcher.find()) {
-                    time = Utils.cleanColour(matcher.group()).trim();
-                    try {
-                        String timeSpace = time.replace("am", " am").replace("pm", " pm");
-                        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
-                        currentTimeDate = parseFormat.parse(timeSpace);
-                    } catch (ParseException ignored) {
-                    }
-                }
-                //Replaced with for loop because in crystal hollows with events the line it's on can shift.
-                for (String line : lines) {
-                    if (line.contains("⏣")) {
-                        location = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
-                        break;
-                    }
-                }
-            }
-            objective = null;
-
-            boolean objTextLast = false;
-            for (String line : lines) {
-                if (objTextLast) {
-                    objective = line;
-                }
-
-                objTextLast = line.equals("Objective");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+				objTextLast = line.equals("Objective");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

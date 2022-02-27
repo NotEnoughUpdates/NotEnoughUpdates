@@ -7,34 +7,34 @@ import net.minecraft.util.BlockPos;
 
 public class OnBlockBreakSoundEffect extends NEUEvent {
 
-    private ISound sound;
-    private final BlockPos position;
-    private final IBlockState block;
+	private ISound sound;
+	private final BlockPos position;
+	private final IBlockState block;
 
-    public OnBlockBreakSoundEffect(ISound sound, BlockPos position, IBlockState block) {
-        this.sound = sound;
-        this.position = position;
-        this.block = block;
-    }
+	public OnBlockBreakSoundEffect(ISound sound, BlockPos position, IBlockState block) {
+		this.sound = sound;
+		this.position = position;
+		this.block = block;
+	}
 
-    @Override
-    public boolean isCancelable() {
-        return true;
-    }
+	@Override
+	public boolean isCancelable() {
+		return true;
+	}
 
-    public BlockPos getPosition() {
-        return position;
-    }
+	public BlockPos getPosition() {
+		return position;
+	}
 
-    public IBlockState getBlock() {
-        return block;
-    }
+	public IBlockState getBlock() {
+		return block;
+	}
 
-    public ISound getSound() {
-        return sound;
-    }
+	public ISound getSound() {
+		return sound;
+	}
 
-    public void setSound(ISound sound) {
-        this.sound = sound;
-    }
+	public void setSound(ISound sound) {
+		this.sound = sound;
+	}
 }
