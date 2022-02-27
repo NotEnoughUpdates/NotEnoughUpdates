@@ -7,12 +7,12 @@ import net.minecraft.command.ICommandSender;
 
 public class ResetRepoCommand extends ClientCommandBase {
 
-    public ResetRepoCommand() {
-        super("neuresetrepo");
-    }
+	public ResetRepoCommand() {
+		super("neuresetrepo");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        NotEnoughUpdates.INSTANCE.manager.resetRepo();
-    }
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		NotEnoughUpdates.INSTANCE.manager.resetRepo();
+	}
 }

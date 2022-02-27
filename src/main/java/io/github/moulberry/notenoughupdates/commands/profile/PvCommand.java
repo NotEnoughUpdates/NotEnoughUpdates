@@ -7,16 +7,16 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PvCommand extends ViewProfileCommand {
 
-    public PvCommand() {
-        super("pv");
-    }
+	public PvCommand() {
+		super("pv");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) {
-        if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/pv " + StringUtils.join(args, " "));
-        } else {
-            super.processCommand(sender, args);
-        }
-    }
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) {
+		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
+			Minecraft.getMinecraft().thePlayer.sendChatMessage("/pv " + StringUtils.join(args, " "));
+		} else {
+			super.processCommand(sender, args);
+		}
+	}
 }

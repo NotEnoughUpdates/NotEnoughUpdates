@@ -16,648 +16,663 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 public class NotSkyblockAddonsInstallerFrame extends JFrame implements ActionListener, MouseListener {
-    private static final Pattern IN_MODS_SUBFOLDER = Pattern.compile("1\\.8\\.9[/\\\\]?$");
-
-    private JLabel logo = null;
-    private JLabel versionInfo = null;
-    private JLabel labelFolder = null;
-
-    private JPanel panelCenter = null;
-    private JPanel panelBottom = null;
-    private JPanel totalContentPane = null;
-
-    private JTextArea descriptionText = null;
-    private JTextArea forgeDescriptionText = null;
-
-    private JTextField textFieldFolderLocation = null;
-    private JButton buttonChooseFolder = null;
-
-    private JButton buttonInstall = null;
-    private JButton buttonOpenFolder = null;
-    private JButton buttonClose = null;
-
-    private static final int TOTAL_HEIGHT = 435;
-    private static final int TOTAL_WIDTH = 404;
-
-    private int x = 0;
-    private int y = 0;
-
-    private int w = TOTAL_WIDTH;
-    private int h;
-    private int margin;
-
-    public NotSkyblockAddonsInstallerFrame() {
-        try {
-            setName("NotEnoughUpdatesInstallerFrame");
-            setTitle("NotEnoughUpdates Installer");
-            setResizable(false);
-            setSize(TOTAL_WIDTH, TOTAL_HEIGHT);
-            setContentPane(getPanelContentPane());
-
-            getButtonFolder().addActionListener(this);
-            getButtonInstall().addActionListener(this);
-            getButtonOpenFolder().addActionListener(this);
-            getButtonClose().addActionListener(this);
-            getForgeTextArea().addMouseListener(this);
-
-            pack();
-            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-            getFieldFolder().setText(getModsFolder().getPath());
-            getButtonInstall().setEnabled(true);
-            getButtonInstall().requestFocus();
-        } catch (Exception ex) {
-            showErrorPopup(ex);
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            NotSkyblockAddonsInstallerFrame frame = new NotSkyblockAddonsInstallerFrame();
-            frame.centerFrame(frame);
-            frame.show();
-
-        } catch (Exception ex) {
-            showErrorPopup(ex);
-        }
-    }
-
-    private JPanel getPanelContentPane() {
-        if (totalContentPane == null) {
-            try {
-                totalContentPane = new JPanel();
-                totalContentPane.setName("PanelContentPane");
-                totalContentPane.setLayout(new BorderLayout(5, 5));
-                totalContentPane.setPreferredSize(new Dimension(TOTAL_WIDTH, TOTAL_HEIGHT));
-                totalContentPane.add(getPanelCenter(), "Center");
-                totalContentPane.add(getPanelBottom(), "South");
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return totalContentPane;
-    }
-
-    private JPanel getPanelCenter() {
-        if (panelCenter == null) {
-            try {
-                (panelCenter = new JPanel()).setName("PanelCenter");
-                panelCenter.setLayout(null);
-                panelCenter.add(getPictureLabel(), getPictureLabel().getName());
-                panelCenter.add(getVersionInfo(), getVersionInfo().getName());
-                panelCenter.add(getTextArea(), getTextArea().getName());
-                panelCenter.add(getForgeTextArea(), getForgeTextArea().getName());
-                panelCenter.add(getLabelFolder(), getLabelFolder().getName());
-                panelCenter.add(getFieldFolder(), getFieldFolder().getName());
-                panelCenter.add(getButtonFolder(), getButtonFolder().getName());
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return panelCenter;
-    }
-
-    private JLabel getPictureLabel() {
-        if (logo == null) {
-            try {
-                h = w / 2;
-                margin = 5;
-
-                BufferedImage myPicture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("assets/notenoughupdates/logo.png"));
-                Image scaled = myPicture.getScaledInstance(w - margin * 2, h - margin, Image.SCALE_SMOOTH);
-                logo = new JLabel(new ImageIcon(scaled));
-                logo.setName("Logo");
-                logo.setBounds(x + margin, y + margin, w - margin * 2, h - margin);
-                logo.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
-                logo.setHorizontalAlignment(SwingConstants.CENTER);
-                logo.setPreferredSize(new Dimension(h * 742 / 537, h));
-
-                y += h;
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return logo;
-    }
-
-    private JLabel getVersionInfo() {
-        if (versionInfo == null) {
-            try {
-                h = 25;
-
-                versionInfo = new JLabel();
-                versionInfo.setName("LabelMcVersion");
-                versionInfo.setBounds(x, y, w, h);
-                versionInfo.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-                versionInfo.setHorizontalAlignment(SwingConstants.CENTER);
-                versionInfo.setPreferredSize(new Dimension(w, h));
-                versionInfo.setText("NEU by Moulberry, Installer by Biscuit - for Minecraft 1.8.9");
-
-                y += h;
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return versionInfo;
-    }
-
-    private JTextArea getTextArea() {
-        if (descriptionText == null) {
-            try {
-                h = 60;
-                margin = 10;
-
-                descriptionText = new JTextArea();
-                descriptionText.setName("TextArea");
-                descriptionText.setBounds(x + margin, y + margin, w - margin * 2, h - margin);
-                descriptionText.setEditable(false);
-                descriptionText.setHighlighter(null);
-                descriptionText.setEnabled(true);
-                descriptionText.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-                descriptionText.setLineWrap(true);
-                descriptionText.setOpaque(false);
-                descriptionText.setPreferredSize(new Dimension(w - margin * 2, h - margin));
-                descriptionText.setText("This installer will copy NotEnoughUpdates into your forge mods folder for you, and replace any old versions that already exist. " +
-                        "Close this if you prefer to do this yourself!");
-                descriptionText.setWrapStyleWord(true);
-
-                y += h;
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return descriptionText;
-    }
-
-    private JTextArea getForgeTextArea() {
-        if (forgeDescriptionText == null) {
-            try {
-                h = 55;
-                margin = 10;
-
-                forgeDescriptionText = new JTextArea();
-                forgeDescriptionText.setName("TextAreaForge");
-                forgeDescriptionText.setBounds(x + margin, y + margin, w - margin * 2, h - margin);
-                forgeDescriptionText.setEditable(false);
-                forgeDescriptionText.setHighlighter(null);
-                forgeDescriptionText.setEnabled(true);
-                forgeDescriptionText.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-                forgeDescriptionText.setLineWrap(true);
-                forgeDescriptionText.setOpaque(false);
-                forgeDescriptionText.setPreferredSize(new Dimension(w - margin * 2, h - margin));
-                forgeDescriptionText.setText("However, you still need to install Forge client in order to be able to run this mod. Click here to visit the download page for Forge 1.8.9!");
-                forgeDescriptionText.setForeground(Color.BLUE.darker());
-                forgeDescriptionText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                forgeDescriptionText.setWrapStyleWord(true);
-
-                y += h;
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return forgeDescriptionText;
-    }
-
-    private JLabel getLabelFolder() {
-        if (labelFolder == null) {
-            h = 16;
-            w = 65;
-
-            x += 10; // Padding
-
-            try {
-                labelFolder = new JLabel();
-                labelFolder.setName("LabelFolder");
-                labelFolder.setBounds(x, y + 2, w, h);
-                labelFolder.setPreferredSize(new Dimension(w, h));
-                labelFolder.setText("Mods Folder");
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-
-            x += w;
-        }
-        return labelFolder;
-    }
-
-    private JTextField getFieldFolder() {
-        if (textFieldFolderLocation == null) {
-            h = 20;
-            w = 287;
-
-            try {
-                textFieldFolderLocation = new JTextField();
-                textFieldFolderLocation.setName("FieldFolder");
-                textFieldFolderLocation.setBounds(x, y, w, h);
-                textFieldFolderLocation.setEditable(false);
-                textFieldFolderLocation.setPreferredSize(new Dimension(w, h));
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-
-            x += w;
-        }
-        return textFieldFolderLocation;
-    }
-
-    private JButton getButtonFolder() {
-        if (buttonChooseFolder == null) {
-            h = 20;
-            w = 25;
-
-            x += 10; // Padding
-
-            try {
-                BufferedImage myPicture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("assets/notenoughupdates/folder.png"));
-                Image scaled = myPicture.getScaledInstance(w - 8, h - 6, Image.SCALE_SMOOTH);
-                buttonChooseFolder = new JButton(new ImageIcon(scaled));
-                buttonChooseFolder.setName("ButtonFolder");
-                buttonChooseFolder.setBounds(x, y, w, h);
-                buttonChooseFolder.setPreferredSize(new Dimension(w, h));
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return buttonChooseFolder;
-    }
-
-    private JPanel getPanelBottom() {
-        if (panelBottom == null) {
-            try {
-                panelBottom = new JPanel();
-                panelBottom.setName("PanelBottom");
-                panelBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
-                panelBottom.setPreferredSize(new Dimension(390, 55));
-                panelBottom.add(getButtonInstall(), getButtonInstall().getName());
-                panelBottom.add(getButtonOpenFolder(), getButtonOpenFolder().getName());
-                panelBottom.add(getButtonClose(), getButtonClose().getName());
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return panelBottom;
-    }
-
-    private JButton getButtonInstall() {
-        if (buttonInstall == null) {
-            w = 100;
-            h = 26;
-
-            try {
-                buttonInstall = new JButton();
-                buttonInstall.setName("ButtonInstall");
-                buttonInstall.setPreferredSize(new Dimension(w, h));
-                buttonInstall.setText("Install");
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return buttonInstall;
-    }
-
-    private JButton getButtonOpenFolder() {
-        if (buttonOpenFolder == null) {
-            w = 130;
-            h = 26;
-
-            try {
-                buttonOpenFolder = new JButton();
-                buttonOpenFolder.setName("ButtonOpenFolder");
-                buttonOpenFolder.setPreferredSize(new Dimension(w, h));
-                buttonOpenFolder.setText("Open Mods Folder");
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return buttonOpenFolder;
-    }
-
-    private JButton getButtonClose() {
-        if (buttonClose == null) {
-            w = 100;
-            h = 26;
-
-            try {
-                (buttonClose = new JButton()).setName("ButtonClose");
-                buttonClose.setPreferredSize(new Dimension(w, h));
-                buttonClose.setText("Cancel");
-            } catch (Throwable ivjExc) {
-                showErrorPopup(ivjExc);
-            }
-        }
-        return buttonClose;
-    }
-
-    public void onFolderSelect() {
-        File currentDirectory = new File(getFieldFolder().getText());
-
-        JFileChooser jFileChooser = new JFileChooser(currentDirectory);
-        jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        jFileChooser.setAcceptAllFileFilterUsed(false);
-        if (jFileChooser.showOpenDialog(this) == 0) {
-            File newDirectory = jFileChooser.getSelectedFile();
-            getFieldFolder().setText(newDirectory.getPath());
-        }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == getButtonClose()) {
-            dispose();
-            System.exit(0);
-        }
-        if (e.getSource() == getButtonFolder()) {
-            onFolderSelect();
-        }
-        if (e.getSource() == getButtonInstall()) {
-            onInstall();
-        }
-        if (e.getSource() == getButtonOpenFolder()) {
-            onOpenFolder();
-        }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getSource() == getForgeTextArea()) {
-            try {
-                Desktop.getDesktop().browse(new URI("http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.8.9.html"));
-            } catch (IOException | URISyntaxException ex) {
-                showErrorPopup(ex);
-            }
-        }
-    }
-
-    public void onInstall() {
-        try {
-            File modsFolder = new File(getFieldFolder().getText());
-            if (!modsFolder.exists()) {
-                showErrorMessage("Folder not found: " + modsFolder.getPath());
-                return;
-            }
-            if (!modsFolder.isDirectory()) {
-                showErrorMessage("Not a folder: " + modsFolder.getPath());
-                return;
-            }
-            tryInstall(modsFolder);
-        } catch (Exception e) {
-            showErrorPopup(e);
-        }
-    }
-
-    private void tryInstall(File modsFolder) {
-        File thisFile = getThisFile();
-
-        if (thisFile != null) {
-            boolean inSubFolder = IN_MODS_SUBFOLDER.matcher(modsFolder.getPath()).find();
-
-            boolean deletingFailure = false;
-            if (modsFolder.isDirectory()) { // Delete in this current folder.
-                boolean failed = findSkyblockAddonsAndDelete(modsFolder.listFiles());
-                if (failed) deletingFailure = true;
-            }
-            if (inSubFolder) { // We are in the 1.8.9 folder, delete in the parent folder as well.
-                if (modsFolder.getParentFile().isDirectory()) {
-                    boolean failed = findSkyblockAddonsAndDelete(modsFolder.getParentFile().listFiles());
-                    if (failed) deletingFailure = true;
-                }
-            } else { // We are in the main mods folder, but the 1.8.9 subfolder exists... delete in there too.
-                File subFolder = new File(modsFolder, "1.8.9");
-                if (subFolder.exists() && subFolder.isDirectory()) {
-                    boolean failed = findSkyblockAddonsAndDelete(subFolder.listFiles());
-                    if (failed) deletingFailure = true;
-                }
-            }
-
-            if (deletingFailure) return;
-
-            if (thisFile.isDirectory()) {
-                showErrorMessage("This file is a directory... Are we in a development environment?");
-                return;
-            }
-
-            try {
-                Files.copy(thisFile.toPath(), new File(modsFolder, thisFile.getName()).toPath());
-            } catch (Exception ex) {
-                showErrorPopup(ex);
-                return;
-            }
-
-            showMessage("NotEnoughUpdates has been successfully installed into your mods folder.");
-            dispose();
-            System.exit(0);
-        }
-    }
-
-    private boolean findSkyblockAddonsAndDelete(File[] files) {
-        if (files == null) return false;
-
-        for (File file : files) {
-            if (!file.isDirectory() && file.getPath().endsWith(".jar")) {
-                try {
-                    JarFile jarFile = new JarFile(file);
-                    ZipEntry mcModInfo = jarFile.getEntry("mcmod.info");
-                    if (mcModInfo != null) {
-                        InputStream inputStream = jarFile.getInputStream(mcModInfo);
-                        String modID = getModIDFromInputStream(inputStream);
-                        if (modID.equals("notenoughupdates")) {
-                            jarFile.close();
-                            try {
-                                boolean deleted = file.delete();
-                                if (!deleted) {
-                                    throw new Exception();
-                                }
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                showErrorMessage("Was not able to delete the other NotEnoughUpdates files found in your mods folder!" + System.lineSeparator() +
-                                        "Please make sure that your minecraft is currently closed and try again, or feel" + System.lineSeparator() +
-                                        "free to open your mods folder and delete those files manually.");
-                                return true;
-                            }
-                            continue;
-                        }
-                    }
-                    jarFile.close();
-                } catch (Exception ex) {
-                    // Just don't check the file I guess, move on to the next...
-                }
-            }
-        }
-        return false;
-    }
-
-    public void onOpenFolder() {
-        try {
-            Desktop.getDesktop().open(getModsFolder());
-        } catch (Exception e) {
-            showErrorPopup(e);
-        }
-    }
-
-    public File getModsFolder() {
-        String userHome = System.getProperty("user.home", ".");
-
-        File modsFolder = getFile(userHome, "minecraft/mods/1.8.9");
-        if (!modsFolder.exists()) {
-            modsFolder = getFile(userHome, "minecraft/mods");
-        }
-
-        if (!modsFolder.exists() && !modsFolder.mkdirs()) {
-            throw new RuntimeException("The working directory could not be created: " + modsFolder);
-        }
-        return modsFolder;
-    }
-
-    public File getFile(String userHome, String minecraftPath) {
-        File workingDirectory;
-        switch (getOperatingSystem()) {
-            case LINUX:
-            case SOLARIS: {
-                workingDirectory = new File(userHome, '.' + minecraftPath + '/');
-                break;
-            }
-            case WINDOWS: {
-                String applicationData = System.getenv("APPDATA");
-                if (applicationData != null) {
-                    workingDirectory = new File(applicationData, "." + minecraftPath + '/');
-                    break;
-                }
-                workingDirectory = new File(userHome, '.' + minecraftPath + '/');
-                break;
-            }
-            case MACOS: {
-                workingDirectory = new File(userHome, "Library/Application Support/" + minecraftPath);
-                break;
-            }
-            default: {
-                workingDirectory = new File(userHome, minecraftPath + '/');
-                break;
-            }
-        }
-        return workingDirectory;
-    }
-
-    public OperatingSystem getOperatingSystem() {
-        String osName = System.getProperty("os.name").toLowerCase(Locale.US);
-        if (osName.contains("win")) {
-            return OperatingSystem.WINDOWS;
-
-        } else if (osName.contains("mac")) {
-            return OperatingSystem.MACOS;
-
-        } else if (osName.contains("solaris") || osName.contains("sunos")) {
-
-            return OperatingSystem.SOLARIS;
-        } else if (osName.contains("linux") || osName.contains("unix")) {
-
-            return OperatingSystem.LINUX;
-        }
-        return OperatingSystem.UNKNOWN;
-    }
-
-    public void centerFrame(JFrame frame) {
-        Rectangle rectangle = frame.getBounds();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Rectangle screenRectangle = new Rectangle(0, 0, screenSize.width, screenSize.height);
-
-        int newX = screenRectangle.x + (screenRectangle.width - rectangle.width) / 2;
-        int newY = screenRectangle.y + (screenRectangle.height - rectangle.height) / 2;
-
-        if (newX < 0) newX = 0;
-        if (newY < 0) newY = 0;
-
-        frame.setBounds(newX, newY, rectangle.width, rectangle.height);
-    }
-
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message, "NotEnoughUpdates", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(null, message, "NotEnoughUpdates - Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    public enum OperatingSystem {
-        LINUX,
-        SOLARIS,
-        WINDOWS,
-        MACOS,
-        UNKNOWN
-    }
-
-    private static String getStacktraceText(Throwable ex) {
-        StringWriter stringWriter = new StringWriter();
-        ex.printStackTrace(new PrintWriter(stringWriter));
-        return stringWriter.toString().replace("\t", "  ");
-    }
-
-    private static void showErrorPopup(Throwable ex) {
-        ex.printStackTrace();
-
-        JTextArea textArea = new JTextArea(getStacktraceText(ex));
-        textArea.setEditable(false);
-        Font currentFont = textArea.getFont();
-        Font newFont = new Font(Font.MONOSPACED, currentFont.getStyle(), currentFont.getSize());
-        textArea.setFont(newFont);
-
-        JScrollPane errorScrollPane = new JScrollPane(textArea);
-        errorScrollPane.setPreferredSize(new Dimension(600, 400));
-        JOptionPane.showMessageDialog(null, errorScrollPane, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    private String getVersionFromMcmodInfo() {
-        String version = "";
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("mcmod.info")));
-            while ((version = bufferedReader.readLine()) != null) {
-                if (version.contains("\"version\": \"")) {
-                    version = version.split(Pattern.quote("\"version\": \""))[1];
-                    version = version.substring(0, version.length() - 2);
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            // It's okay, I guess just don't use the version lol.
-        }
-        return version;
-    }
-
-    private String getModIDFromInputStream(InputStream inputStream) {
-        String version = "";
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((version = bufferedReader.readLine()) != null) {
-                if (version.contains("\"modid\": \"")) {
-                    version = version.split(Pattern.quote("\"modid\": \""))[1];
-                    version = version.substring(0, version.length() - 2);
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            // RIP, couldn't find the modid...
-        }
-        return version;
-    }
-
-    private File getThisFile() {
-        try {
-            return new File(NotSkyblockAddonsInstallerFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException ex) {
-            showErrorPopup(ex);
-        }
-        return null;
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {}
-
-    @Override
-    public void mouseReleased(MouseEvent e) {}
-
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
+	private static final Pattern IN_MODS_SUBFOLDER = Pattern.compile("1\\.8\\.9[/\\\\]?$");
+
+	private JLabel logo = null;
+	private JLabel versionInfo = null;
+	private JLabel labelFolder = null;
+
+	private JPanel panelCenter = null;
+	private JPanel panelBottom = null;
+	private JPanel totalContentPane = null;
+
+	private JTextArea descriptionText = null;
+	private JTextArea forgeDescriptionText = null;
+
+	private JTextField textFieldFolderLocation = null;
+	private JButton buttonChooseFolder = null;
+
+	private JButton buttonInstall = null;
+	private JButton buttonOpenFolder = null;
+	private JButton buttonClose = null;
+
+	private static final int TOTAL_HEIGHT = 435;
+	private static final int TOTAL_WIDTH = 404;
+
+	private int x = 0;
+	private int y = 0;
+
+	private int w = TOTAL_WIDTH;
+	private int h;
+	private int margin;
+
+	public NotSkyblockAddonsInstallerFrame() {
+		try {
+			setName("NotEnoughUpdatesInstallerFrame");
+			setTitle("NotEnoughUpdates Installer");
+			setResizable(false);
+			setSize(TOTAL_WIDTH, TOTAL_HEIGHT);
+			setContentPane(getPanelContentPane());
+
+			getButtonFolder().addActionListener(this);
+			getButtonInstall().addActionListener(this);
+			getButtonOpenFolder().addActionListener(this);
+			getButtonClose().addActionListener(this);
+			getForgeTextArea().addMouseListener(this);
+
+			pack();
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+			getFieldFolder().setText(getModsFolder().getPath());
+			getButtonInstall().setEnabled(true);
+			getButtonInstall().requestFocus();
+		} catch (Exception ex) {
+			showErrorPopup(ex);
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			NotSkyblockAddonsInstallerFrame frame = new NotSkyblockAddonsInstallerFrame();
+			frame.centerFrame(frame);
+			frame.show();
+
+		} catch (Exception ex) {
+			showErrorPopup(ex);
+		}
+	}
+
+	private JPanel getPanelContentPane() {
+		if (totalContentPane == null) {
+			try {
+				totalContentPane = new JPanel();
+				totalContentPane.setName("PanelContentPane");
+				totalContentPane.setLayout(new BorderLayout(5, 5));
+				totalContentPane.setPreferredSize(new Dimension(TOTAL_WIDTH, TOTAL_HEIGHT));
+				totalContentPane.add(getPanelCenter(), "Center");
+				totalContentPane.add(getPanelBottom(), "South");
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return totalContentPane;
+	}
+
+	private JPanel getPanelCenter() {
+		if (panelCenter == null) {
+			try {
+				(panelCenter = new JPanel()).setName("PanelCenter");
+				panelCenter.setLayout(null);
+				panelCenter.add(getPictureLabel(), getPictureLabel().getName());
+				panelCenter.add(getVersionInfo(), getVersionInfo().getName());
+				panelCenter.add(getTextArea(), getTextArea().getName());
+				panelCenter.add(getForgeTextArea(), getForgeTextArea().getName());
+				panelCenter.add(getLabelFolder(), getLabelFolder().getName());
+				panelCenter.add(getFieldFolder(), getFieldFolder().getName());
+				panelCenter.add(getButtonFolder(), getButtonFolder().getName());
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return panelCenter;
+	}
+
+	private JLabel getPictureLabel() {
+		if (logo == null) {
+			try {
+				h = w / 2;
+				margin = 5;
+
+				BufferedImage myPicture = ImageIO.read(getClass()
+					.getClassLoader()
+					.getResourceAsStream("assets/notenoughupdates/logo.png"));
+				Image scaled = myPicture.getScaledInstance(w - margin * 2, h - margin, Image.SCALE_SMOOTH);
+				logo = new JLabel(new ImageIcon(scaled));
+				logo.setName("Logo");
+				logo.setBounds(x + margin, y + margin, w - margin * 2, h - margin);
+				logo.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
+				logo.setHorizontalAlignment(SwingConstants.CENTER);
+				logo.setPreferredSize(new Dimension(h * 742 / 537, h));
+
+				y += h;
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return logo;
+	}
+
+	private JLabel getVersionInfo() {
+		if (versionInfo == null) {
+			try {
+				h = 25;
+
+				versionInfo = new JLabel();
+				versionInfo.setName("LabelMcVersion");
+				versionInfo.setBounds(x, y, w, h);
+				versionInfo.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+				versionInfo.setHorizontalAlignment(SwingConstants.CENTER);
+				versionInfo.setPreferredSize(new Dimension(w, h));
+				versionInfo.setText("NEU by Moulberry, Installer by Biscuit - for Minecraft 1.8.9");
+
+				y += h;
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return versionInfo;
+	}
+
+	private JTextArea getTextArea() {
+		if (descriptionText == null) {
+			try {
+				h = 60;
+				margin = 10;
+
+				descriptionText = new JTextArea();
+				descriptionText.setName("TextArea");
+				descriptionText.setBounds(x + margin, y + margin, w - margin * 2, h - margin);
+				descriptionText.setEditable(false);
+				descriptionText.setHighlighter(null);
+				descriptionText.setEnabled(true);
+				descriptionText.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+				descriptionText.setLineWrap(true);
+				descriptionText.setOpaque(false);
+				descriptionText.setPreferredSize(new Dimension(w - margin * 2, h - margin));
+				descriptionText.setText(
+					"This installer will copy NotEnoughUpdates into your forge mods folder for you, and replace any old versions that already exist. " +
+						"Close this if you prefer to do this yourself!");
+				descriptionText.setWrapStyleWord(true);
+
+				y += h;
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return descriptionText;
+	}
+
+	private JTextArea getForgeTextArea() {
+		if (forgeDescriptionText == null) {
+			try {
+				h = 55;
+				margin = 10;
+
+				forgeDescriptionText = new JTextArea();
+				forgeDescriptionText.setName("TextAreaForge");
+				forgeDescriptionText.setBounds(x + margin, y + margin, w - margin * 2, h - margin);
+				forgeDescriptionText.setEditable(false);
+				forgeDescriptionText.setHighlighter(null);
+				forgeDescriptionText.setEnabled(true);
+				forgeDescriptionText.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+				forgeDescriptionText.setLineWrap(true);
+				forgeDescriptionText.setOpaque(false);
+				forgeDescriptionText.setPreferredSize(new Dimension(w - margin * 2, h - margin));
+				forgeDescriptionText.setText(
+					"However, you still need to install Forge client in order to be able to run this mod. Click here to visit the download page for Forge 1.8.9!");
+				forgeDescriptionText.setForeground(Color.BLUE.darker());
+				forgeDescriptionText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				forgeDescriptionText.setWrapStyleWord(true);
+
+				y += h;
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return forgeDescriptionText;
+	}
+
+	private JLabel getLabelFolder() {
+		if (labelFolder == null) {
+			h = 16;
+			w = 65;
+
+			x += 10; // Padding
+
+			try {
+				labelFolder = new JLabel();
+				labelFolder.setName("LabelFolder");
+				labelFolder.setBounds(x, y + 2, w, h);
+				labelFolder.setPreferredSize(new Dimension(w, h));
+				labelFolder.setText("Mods Folder");
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+
+			x += w;
+		}
+		return labelFolder;
+	}
+
+	private JTextField getFieldFolder() {
+		if (textFieldFolderLocation == null) {
+			h = 20;
+			w = 287;
+
+			try {
+				textFieldFolderLocation = new JTextField();
+				textFieldFolderLocation.setName("FieldFolder");
+				textFieldFolderLocation.setBounds(x, y, w, h);
+				textFieldFolderLocation.setEditable(false);
+				textFieldFolderLocation.setPreferredSize(new Dimension(w, h));
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+
+			x += w;
+		}
+		return textFieldFolderLocation;
+	}
+
+	private JButton getButtonFolder() {
+		if (buttonChooseFolder == null) {
+			h = 20;
+			w = 25;
+
+			x += 10; // Padding
+
+			try {
+				BufferedImage myPicture = ImageIO.read(getClass()
+					.getClassLoader()
+					.getResourceAsStream("assets/notenoughupdates/folder.png"));
+				Image scaled = myPicture.getScaledInstance(w - 8, h - 6, Image.SCALE_SMOOTH);
+				buttonChooseFolder = new JButton(new ImageIcon(scaled));
+				buttonChooseFolder.setName("ButtonFolder");
+				buttonChooseFolder.setBounds(x, y, w, h);
+				buttonChooseFolder.setPreferredSize(new Dimension(w, h));
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return buttonChooseFolder;
+	}
+
+	private JPanel getPanelBottom() {
+		if (panelBottom == null) {
+			try {
+				panelBottom = new JPanel();
+				panelBottom.setName("PanelBottom");
+				panelBottom.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
+				panelBottom.setPreferredSize(new Dimension(390, 55));
+				panelBottom.add(getButtonInstall(), getButtonInstall().getName());
+				panelBottom.add(getButtonOpenFolder(), getButtonOpenFolder().getName());
+				panelBottom.add(getButtonClose(), getButtonClose().getName());
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return panelBottom;
+	}
+
+	private JButton getButtonInstall() {
+		if (buttonInstall == null) {
+			w = 100;
+			h = 26;
+
+			try {
+				buttonInstall = new JButton();
+				buttonInstall.setName("ButtonInstall");
+				buttonInstall.setPreferredSize(new Dimension(w, h));
+				buttonInstall.setText("Install");
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return buttonInstall;
+	}
+
+	private JButton getButtonOpenFolder() {
+		if (buttonOpenFolder == null) {
+			w = 130;
+			h = 26;
+
+			try {
+				buttonOpenFolder = new JButton();
+				buttonOpenFolder.setName("ButtonOpenFolder");
+				buttonOpenFolder.setPreferredSize(new Dimension(w, h));
+				buttonOpenFolder.setText("Open Mods Folder");
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return buttonOpenFolder;
+	}
+
+	private JButton getButtonClose() {
+		if (buttonClose == null) {
+			w = 100;
+			h = 26;
+
+			try {
+				(buttonClose = new JButton()).setName("ButtonClose");
+				buttonClose.setPreferredSize(new Dimension(w, h));
+				buttonClose.setText("Cancel");
+			} catch (Throwable ivjExc) {
+				showErrorPopup(ivjExc);
+			}
+		}
+		return buttonClose;
+	}
+
+	public void onFolderSelect() {
+		File currentDirectory = new File(getFieldFolder().getText());
+
+		JFileChooser jFileChooser = new JFileChooser(currentDirectory);
+		jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jFileChooser.setAcceptAllFileFilterUsed(false);
+		if (jFileChooser.showOpenDialog(this) == 0) {
+			File newDirectory = jFileChooser.getSelectedFile();
+			getFieldFolder().setText(newDirectory.getPath());
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == getButtonClose()) {
+			dispose();
+			System.exit(0);
+		}
+		if (e.getSource() == getButtonFolder()) {
+			onFolderSelect();
+		}
+		if (e.getSource() == getButtonInstall()) {
+			onInstall();
+		}
+		if (e.getSource() == getButtonOpenFolder()) {
+			onOpenFolder();
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if (e.getSource() == getForgeTextArea()) {
+			try {
+				Desktop.getDesktop().browse(new URI(
+					"http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.8.9.html"));
+			} catch (IOException | URISyntaxException ex) {
+				showErrorPopup(ex);
+			}
+		}
+	}
+
+	public void onInstall() {
+		try {
+			File modsFolder = new File(getFieldFolder().getText());
+			if (!modsFolder.exists()) {
+				showErrorMessage("Folder not found: " + modsFolder.getPath());
+				return;
+			}
+			if (!modsFolder.isDirectory()) {
+				showErrorMessage("Not a folder: " + modsFolder.getPath());
+				return;
+			}
+			tryInstall(modsFolder);
+		} catch (Exception e) {
+			showErrorPopup(e);
+		}
+	}
+
+	private void tryInstall(File modsFolder) {
+		File thisFile = getThisFile();
+
+		if (thisFile != null) {
+			boolean inSubFolder = IN_MODS_SUBFOLDER.matcher(modsFolder.getPath()).find();
+
+			boolean deletingFailure = false;
+			if (modsFolder.isDirectory()) { // Delete in this current folder.
+				boolean failed = findSkyblockAddonsAndDelete(modsFolder.listFiles());
+				if (failed) deletingFailure = true;
+			}
+			if (inSubFolder) { // We are in the 1.8.9 folder, delete in the parent folder as well.
+				if (modsFolder.getParentFile().isDirectory()) {
+					boolean failed = findSkyblockAddonsAndDelete(modsFolder.getParentFile().listFiles());
+					if (failed) deletingFailure = true;
+				}
+			} else { // We are in the main mods folder, but the 1.8.9 subfolder exists... delete in there too.
+				File subFolder = new File(modsFolder, "1.8.9");
+				if (subFolder.exists() && subFolder.isDirectory()) {
+					boolean failed = findSkyblockAddonsAndDelete(subFolder.listFiles());
+					if (failed) deletingFailure = true;
+				}
+			}
+
+			if (deletingFailure) return;
+
+			if (thisFile.isDirectory()) {
+				showErrorMessage("This file is a directory... Are we in a development environment?");
+				return;
+			}
+
+			try {
+				Files.copy(thisFile.toPath(), new File(modsFolder, thisFile.getName()).toPath());
+			} catch (Exception ex) {
+				showErrorPopup(ex);
+				return;
+			}
+
+			showMessage("NotEnoughUpdates has been successfully installed into your mods folder.");
+			dispose();
+			System.exit(0);
+		}
+	}
+
+	private boolean findSkyblockAddonsAndDelete(File[] files) {
+		if (files == null) return false;
+
+		for (File file : files) {
+			if (!file.isDirectory() && file.getPath().endsWith(".jar")) {
+				try {
+					JarFile jarFile = new JarFile(file);
+					ZipEntry mcModInfo = jarFile.getEntry("mcmod.info");
+					if (mcModInfo != null) {
+						InputStream inputStream = jarFile.getInputStream(mcModInfo);
+						String modID = getModIDFromInputStream(inputStream);
+						if (modID.equals("notenoughupdates")) {
+							jarFile.close();
+							try {
+								boolean deleted = file.delete();
+								if (!deleted) {
+									throw new Exception();
+								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
+								showErrorMessage("Was not able to delete the other NotEnoughUpdates files found in your mods folder!" +
+									System.lineSeparator() +
+									"Please make sure that your minecraft is currently closed and try again, or feel" +
+									System.lineSeparator() +
+									"free to open your mods folder and delete those files manually.");
+								return true;
+							}
+							continue;
+						}
+					}
+					jarFile.close();
+				} catch (Exception ex) {
+					// Just don't check the file I guess, move on to the next...
+				}
+			}
+		}
+		return false;
+	}
+
+	public void onOpenFolder() {
+		try {
+			Desktop.getDesktop().open(getModsFolder());
+		} catch (Exception e) {
+			showErrorPopup(e);
+		}
+	}
+
+	public File getModsFolder() {
+		String userHome = System.getProperty("user.home", ".");
+
+		File modsFolder = getFile(userHome, "minecraft/mods/1.8.9");
+		if (!modsFolder.exists()) {
+			modsFolder = getFile(userHome, "minecraft/mods");
+		}
+
+		if (!modsFolder.exists() && !modsFolder.mkdirs()) {
+			throw new RuntimeException("The working directory could not be created: " + modsFolder);
+		}
+		return modsFolder;
+	}
+
+	public File getFile(String userHome, String minecraftPath) {
+		File workingDirectory;
+		switch (getOperatingSystem()) {
+			case LINUX:
+			case SOLARIS: {
+				workingDirectory = new File(userHome, '.' + minecraftPath + '/');
+				break;
+			}
+			case WINDOWS: {
+				String applicationData = System.getenv("APPDATA");
+				if (applicationData != null) {
+					workingDirectory = new File(applicationData, "." + minecraftPath + '/');
+					break;
+				}
+				workingDirectory = new File(userHome, '.' + minecraftPath + '/');
+				break;
+			}
+			case MACOS: {
+				workingDirectory = new File(userHome, "Library/Application Support/" + minecraftPath);
+				break;
+			}
+			default: {
+				workingDirectory = new File(userHome, minecraftPath + '/');
+				break;
+			}
+		}
+		return workingDirectory;
+	}
+
+	public OperatingSystem getOperatingSystem() {
+		String osName = System.getProperty("os.name").toLowerCase(Locale.US);
+		if (osName.contains("win")) {
+			return OperatingSystem.WINDOWS;
+
+		} else if (osName.contains("mac")) {
+			return OperatingSystem.MACOS;
+
+		} else if (osName.contains("solaris") || osName.contains("sunos")) {
+
+			return OperatingSystem.SOLARIS;
+		} else if (osName.contains("linux") || osName.contains("unix")) {
+
+			return OperatingSystem.LINUX;
+		}
+		return OperatingSystem.UNKNOWN;
+	}
+
+	public void centerFrame(JFrame frame) {
+		Rectangle rectangle = frame.getBounds();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle screenRectangle = new Rectangle(0, 0, screenSize.width, screenSize.height);
+
+		int newX = screenRectangle.x + (screenRectangle.width - rectangle.width) / 2;
+		int newY = screenRectangle.y + (screenRectangle.height - rectangle.height) / 2;
+
+		if (newX < 0) newX = 0;
+		if (newY < 0) newY = 0;
+
+		frame.setBounds(newX, newY, rectangle.width, rectangle.height);
+	}
+
+	public void showMessage(String message) {
+		JOptionPane.showMessageDialog(null, message, "NotEnoughUpdates", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	public void showErrorMessage(String message) {
+		JOptionPane.showMessageDialog(null, message, "NotEnoughUpdates - Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	public enum OperatingSystem {
+		LINUX,
+		SOLARIS,
+		WINDOWS,
+		MACOS,
+		UNKNOWN
+	}
+
+	private static String getStacktraceText(Throwable ex) {
+		StringWriter stringWriter = new StringWriter();
+		ex.printStackTrace(new PrintWriter(stringWriter));
+		return stringWriter.toString().replace("\t", "  ");
+	}
+
+	private static void showErrorPopup(Throwable ex) {
+		ex.printStackTrace();
+
+		JTextArea textArea = new JTextArea(getStacktraceText(ex));
+		textArea.setEditable(false);
+		Font currentFont = textArea.getFont();
+		Font newFont = new Font(Font.MONOSPACED, currentFont.getStyle(), currentFont.getSize());
+		textArea.setFont(newFont);
+
+		JScrollPane errorScrollPane = new JScrollPane(textArea);
+		errorScrollPane.setPreferredSize(new Dimension(600, 400));
+		JOptionPane.showMessageDialog(null, errorScrollPane, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	private String getVersionFromMcmodInfo() {
+		String version = "";
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getClass()
+				.getClassLoader()
+				.getResourceAsStream("mcmod.info")));
+			while ((version = bufferedReader.readLine()) != null) {
+				if (version.contains("\"version\": \"")) {
+					version = version.split(Pattern.quote("\"version\": \""))[1];
+					version = version.substring(0, version.length() - 2);
+					break;
+				}
+			}
+		} catch (Exception ex) {
+			// It's okay, I guess just don't use the version lol.
+		}
+		return version;
+	}
+
+	private String getModIDFromInputStream(InputStream inputStream) {
+		String version = "";
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+			while ((version = bufferedReader.readLine()) != null) {
+				if (version.contains("\"modid\": \"")) {
+					version = version.split(Pattern.quote("\"modid\": \""))[1];
+					version = version.substring(0, version.length() - 2);
+					break;
+				}
+			}
+		} catch (Exception ex) {
+			// RIP, couldn't find the modid...
+		}
+		return version;
+	}
+
+	private File getThisFile() {
+		try {
+			return new File(NotSkyblockAddonsInstallerFrame.class
+				.getProtectionDomain()
+				.getCodeSource()
+				.getLocation()
+				.toURI());
+		} catch (URISyntaxException ex) {
+			showErrorPopup(ex);
+		}
+		return null;
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
 }

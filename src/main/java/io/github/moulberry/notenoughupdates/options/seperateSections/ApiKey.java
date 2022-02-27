@@ -5,11 +5,11 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class ApiKey {
-    @Expose
-    @ConfigOption(
-            name = "Api Key",
-            desc = "Hypixel api key"
-    )
-    @ConfigEditorText
-    public String apiKey = "";
+	@Expose
+	@ConfigOption(
+		name = "Api Key",
+		desc = "Hypixel api key"
+	)
+	@ConfigEditorText
+	public String apiKey = "";
 }

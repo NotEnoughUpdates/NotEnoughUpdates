@@ -18,76 +18,82 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NPCRetexturing implements IResourceManagerReloadListener {
-    private static final NPCRetexturing INSTANCE = new NPCRetexturing();
+	private static final NPCRetexturing INSTANCE = new NPCRetexturing();
 
-    private static final ResourceLocation npcRetexturingJson = new ResourceLocation("notenoughupdates:npccustomtextures/config.json");
+	private static final ResourceLocation npcRetexturingJson = new ResourceLocation(
+		"notenoughupdates:npccustomtextures/config.json");
 
-    private final Gson gson = new GsonBuilder().create();
+	private final Gson gson = new GsonBuilder().create();
 
-    public static class Skin {
-        public ResourceLocation skinLocation;
-        public boolean skinny;
+	public static class Skin {
+		public ResourceLocation skinLocation;
+		public boolean skinny;
 
-        public Skin(ResourceLocation skinLocation, boolean skinny) {
-            this.skinLocation = skinLocation;
-            this.skinny = skinny;
-        }
-    }
+		public Skin(ResourceLocation skinLocation, boolean skinny) {
+			this.skinLocation = skinLocation;
+			this.skinny = skinny;
+		}
+	}
 
-    private final HashMap<AbstractClientPlayer, Skin> skinOverrideCache = new HashMap<>();
-    private final HashMap<String, Skin> skinMap = new HashMap<>();
+	private final HashMap<AbstractClientPlayer, Skin> skinOverrideCache = new HashMap<>();
+	private final HashMap<String, Skin> skinMap = new HashMap<>();
 
-    private boolean gettingSkin = false;
+	private boolean gettingSkin = false;
 
-    public Skin getSkin(AbstractClientPlayer player) {
-        if (gettingSkin) return null;
+	public Skin getSkin(AbstractClientPlayer player) {
+		if (gettingSkin) return null;
 
-        if (player.getUniqueID().version() == 4 && !NotEnoughUpdates.INSTANCE.config.hidden.npcRetextureOnSelf) return null;
+		if (player.getUniqueID().version() == 4 && !NotEnoughUpdates.INSTANCE.config.hidden.npcRetextureOnSelf) return null;
 
-        if (skinOverrideCache.containsKey(player)) {
-            return skinOverrideCache.get(player);
-        }
+		if (skinOverrideCache.containsKey(player)) {
+			return skinOverrideCache.get(player);
+		}
 
-        gettingSkin = true;
-        ResourceLocation loc = player.getLocationSkin();
-        gettingSkin = false;
+		gettingSkin = true;
+		ResourceLocation loc = player.getLocationSkin();
+		gettingSkin = false;
 
-        if (skinMap.containsKey(loc.getResourcePath()) && !NotEnoughUpdates.INSTANCE.config.misc.disableNPCRetexturing) {
-            Skin skin = skinMap.get(loc.getResourcePath());
-            skinOverrideCache.put(player, skin);
-            return skin;
-        }
+		if (skinMap.containsKey(loc.getResourcePath()) && !NotEnoughUpdates.INSTANCE.config.misc.disableNPCRetexturing) {
+			Skin skin = skinMap.get(loc.getResourcePath());
+			skinOverrideCache.put(player, skin);
+			return skin;
+		}
 
-        skinOverrideCache.put(player, null);
-        return null;
-    }
+		skinOverrideCache.put(player, null);
+		return null;
+	}
 
-    public void tick() {
-        skinOverrideCache.clear();
-    }
+	public void tick() {
+		skinOverrideCache.clear();
+	}
 
-    @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
-        skinMap.clear();
+	@Override
+	public void onResourceManagerReload(IResourceManager resourceManager) {
+		skinMap.clear();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                Minecraft.getMinecraft().getResourceManager().getResource(npcRetexturingJson).getInputStream(), StandardCharsets.UTF_8))) {
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
+		try (
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+				Minecraft.getMinecraft().getResourceManager().getResource(npcRetexturingJson).getInputStream(),
+				StandardCharsets.UTF_8
+			))
+		) {
+			JsonObject json = gson.fromJson(reader, JsonObject.class);
 
-            if (json == null) return;
+			if (json == null) return;
 
-            for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-                if (entry.getValue().isJsonObject()) {
-                    JsonObject val = entry.getValue().getAsJsonObject();
+			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+				if (entry.getValue().isJsonObject()) {
+					JsonObject val = entry.getValue().getAsJsonObject();
 
-                    Skin skin = new Skin(new ResourceLocation(val.get("skin").getAsString()), val.get("skinny").getAsBoolean());
-                    skinMap.put("skins/" + entry.getKey(), skin);
-                }
-            }
-        } catch (Exception ignored) {}
-    }
+					Skin skin = new Skin(new ResourceLocation(val.get("skin").getAsString()), val.get("skinny").getAsBoolean());
+					skinMap.put("skins/" + entry.getKey(), skin);
+				}
+			}
+		} catch (Exception ignored) {
+		}
+	}
 
-    public static NPCRetexturing getInstance() {
-        return INSTANCE;
-    }
+	public static NPCRetexturing getInstance() {
+		return INSTANCE;
+	}
 }

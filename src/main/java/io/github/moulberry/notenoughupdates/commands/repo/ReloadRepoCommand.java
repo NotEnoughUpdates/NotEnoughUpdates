@@ -14,20 +14,26 @@ import java.nio.charset.StandardCharsets;
 
 public class ReloadRepoCommand extends ClientCommandBase {
 
-    public ReloadRepoCommand() {
-        super("neureloadrepo");
-    }
+	public ReloadRepoCommand() {
+		super("neureloadrepo");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        NotEnoughUpdates.INSTANCE.manager.reloadRepository();
-        Constants.reload();
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		NotEnoughUpdates.INSTANCE.manager.reloadRepository();
+		Constants.reload();
 
-        NotEnoughUpdates.INSTANCE.newConfigFile();
-        if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(NotEnoughUpdates.INSTANCE.getConfigFile()), StandardCharsets.UTF_8))) {
-                NotEnoughUpdates.INSTANCE.config = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, NEUConfig.class);
-            } catch (Exception ignored) {}
-        }
-    }
+		NotEnoughUpdates.INSTANCE.newConfigFile();
+		if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
+			try (
+				BufferedReader reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(NotEnoughUpdates.INSTANCE.getConfigFile()),
+					StandardCharsets.UTF_8
+				))
+			) {
+				NotEnoughUpdates.INSTANCE.config = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, NEUConfig.class);
+			} catch (Exception ignored) {
+			}
+		}
+	}
 }

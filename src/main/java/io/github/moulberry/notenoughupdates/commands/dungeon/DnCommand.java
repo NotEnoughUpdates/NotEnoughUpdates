@@ -9,13 +9,14 @@ import net.minecraft.util.EnumChatFormatting;
 
 public class DnCommand extends ClientCommandBase {
 
-    public DnCommand() {
-        super("dn");
-    }
+	public DnCommand() {
+		super("dn");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao"));
-    }
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
+		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+			EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao"));
+	}
 }

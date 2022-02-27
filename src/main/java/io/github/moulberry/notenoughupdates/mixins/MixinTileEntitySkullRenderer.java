@@ -11,11 +11,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TileEntitySkullRenderer.class)
 public class MixinTileEntitySkullRenderer {
-    @Inject(method = "renderSkull", at = @At("HEAD"), cancellable = true)
-    public void renderSkull(float xOffset, float yOffset, float zOffset, EnumFacing placedDirection,
-                            float rotationDeg, int skullType, GameProfile skullOwner, int damage, CallbackInfo ci) {
-        if (CustomSkulls.getInstance().renderSkull(xOffset, yOffset, zOffset, placedDirection, rotationDeg, skullType, skullOwner, damage)) {
-            ci.cancel();
-        }
-    }
+	@Inject(method = "renderSkull", at = @At("HEAD"), cancellable = true)
+	public void renderSkull(
+		float xOffset, float yOffset, float zOffset, EnumFacing placedDirection,
+		float rotationDeg, int skullType, GameProfile skullOwner, int damage, CallbackInfo ci
+	) {
+		if (CustomSkulls.getInstance().renderSkull(
+			xOffset,
+			yOffset,
+			zOffset,
+			placedDirection,
+			rotationDeg,
+			skullType,
+			skullOwner,
+			damage
+		)) {
+			ci.cancel();
+		}
+	}
 }

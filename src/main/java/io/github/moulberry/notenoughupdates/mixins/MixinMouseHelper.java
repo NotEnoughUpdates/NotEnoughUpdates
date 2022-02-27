@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MouseHelper.class)
 public class MixinMouseHelper {
-    @Inject(method = {"ungrabMouseCursor"}, at = {@At("HEAD")}, cancellable = true)
-    public void ungrabMouseCursor(final CallbackInfo ci) {
-        if (System.currentTimeMillis() - RenderListener.lastGuiClosed < 150L) {
-            ci.cancel();
-            Mouse.setGrabbed(false);
-        }
-    }
+	@Inject(method = {"ungrabMouseCursor"}, at = {@At("HEAD")}, cancellable = true)
+	public void ungrabMouseCursor(final CallbackInfo ci) {
+		if (System.currentTimeMillis() - RenderListener.lastGuiClosed < 150L) {
+			ci.cancel();
+			Mouse.setGrabbed(false);
+		}
+	}
 }

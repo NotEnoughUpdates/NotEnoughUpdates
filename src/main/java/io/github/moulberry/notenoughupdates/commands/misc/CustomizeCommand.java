@@ -15,33 +15,33 @@ import java.util.List;
 
 public class CustomizeCommand extends ClientCommandBase {
 
-    public CustomizeCommand() {
-        super("neucustomize");
-    }
+	public CustomizeCommand() {
+		super("neucustomize");
+	}
 
-    @Override
-    public List<String> getCommandAliases() {
-        return Collections.singletonList("neurename");
-    }
+	@Override
+	public List<String> getCommandAliases() {
+		return Collections.singletonList("neurename");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
-        if (held == null) {
-            sender.addChatMessage(new ChatComponentText("\u00a7cYou can't customize your hand..."));
-            return;
-        }
+		if (held == null) {
+			sender.addChatMessage(new ChatComponentText("\u00a7cYou can't customize your hand..."));
+			return;
+		}
 
-        String heldUUID = NotEnoughUpdates.INSTANCE.manager.getUUIDForItem(held);
+		String heldUUID = NotEnoughUpdates.INSTANCE.manager.getUUIDForItem(held);
 
-        if (heldUUID == null) {
-            sender.addChatMessage(new ChatComponentText("\u00a7cHeld item does not have UUID, cannot be customized"));
-            return;
-        }
+		if (heldUUID == null) {
+			sender.addChatMessage(new ChatComponentText("\u00a7cHeld item does not have UUID, cannot be customized"));
+			return;
+		}
 
-        NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(held, heldUUID);
-    }
+		NotEnoughUpdates.INSTANCE.openGui = new GuiItemCustomize(held, heldUUID);
+	}
 
     /*SimpleCommand itemRenameCommand = new SimpleCommand("neurename", new SimpleCommand.ProcessCommandRunnable() {
         public void processCommand(ICommandSender sender, String[] args) {
