@@ -11,6 +11,7 @@ import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
+import io.github.moulberry.notenoughupdates.options.customtypes.DebugFlags;
 import io.github.moulberry.notenoughupdates.options.seperateSections.*;
 import io.github.moulberry.notenoughupdates.options.seperateSections.CustomArmour;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
@@ -319,7 +320,7 @@ public class NEUConfig extends Config {
 		public List<NEUConfig.InventoryButton> inventoryButtons = createDefaultInventoryButtons();
 
 		@Expose
-		public int debugFlags = 0;
+		public DebugFlags debugFlags = new DebugFlags(0);
 		@Expose
 		public boolean enableItemEditing = false;
 		@Expose

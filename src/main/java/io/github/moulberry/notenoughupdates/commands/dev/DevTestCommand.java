@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DevTestCommand extends ClientCommandBase {
 
 	private static final List<String> DEV_TESTERS =
-		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro");
+		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro", "craftyoldminer");
 
 	private static final String[] DEV_FAIL_STRINGS = {
 		"No.",

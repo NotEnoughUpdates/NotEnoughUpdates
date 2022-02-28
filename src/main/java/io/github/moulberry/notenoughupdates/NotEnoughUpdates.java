@@ -14,6 +14,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
+import io.github.moulberry.notenoughupdates.options.customtypes.DebugFlags;
+import io.github.moulberry.notenoughupdates.options.customtypes.DebugFlagsAdapter;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
@@ -98,7 +100,8 @@ public class NotEnoughUpdates {
 
 	public boolean packDevEnabled = false;
 
-	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(
+		DebugFlags.class, new DebugFlagsAdapter()).create();
 	private File neuDir;
 
 	public File getNeuDir() {

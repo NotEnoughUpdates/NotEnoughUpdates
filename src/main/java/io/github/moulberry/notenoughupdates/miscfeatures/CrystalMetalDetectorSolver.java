@@ -2,7 +2,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
-import io.github.moulberry.notenoughupdates.options.NEUDebugFlags;
+import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 public class CrystalMetalDetectorSolver {
 	private static final Minecraft mc = Minecraft.getMinecraft();
-	private static boolean debugEnabled;
 
 	private static BlockPos prevPlayerPos;
 	private static double prevDistToTreasure = 0;
@@ -49,7 +48,7 @@ public class CrystalMetalDetectorSolver {
 		-11546281377832L,	// x=-43, y=-22, z=-40
 		11818542038999L,	// x=42, y=-19, z=-41
 		12093285728240L,	// x=43, y=-21, z=-16
-		-1409286164L,		// x=-1, y=-22, z=-20
+		-1409286164L,			// x=-1, y=-22, z=-20
 		1922736062492L,		// x=6, y=-21, z=28
 		2197613969419L,		// x=7, y=-21, z=11
 		2197613969430L,		// x=7, y=-21, z=22
@@ -57,7 +56,7 @@ public class CrystalMetalDetectorSolver {
 		3571936395295L,		// x=12, y=-22, z=31
 		3572003504106L,		// x=12, y=-22, z=-22
 		3572003504135L,		// x=12, y=-21, z=7
-		3572070612949L		// x=12, y=-21, z=-43
+		3572070612949L,		// x=12, y=-21, z=-43
 		-3574822076373L,	// x=-14, y=-21, z=43
 		-3574822076394L,	// x=-14, y=-21, z=22
 		-4399455797228L,	// x=-17, y=-21, z=20
@@ -65,6 +64,7 @@ public class CrystalMetalDetectorSolver {
 		548346527764L,		// x=1, y=-21, z=20
 		5496081743901L,		// x=19, y=-22, z=29
 		5770959650816L,		// x=20, y=-22, z=0
+		5771093868518L,		// x=20, y=-21, z=-26
 		-6048790347736L,	// x=-23, y=-22, z=40
 		6320849682418L,		// x=22, y=-21, z=-14
 		-6323668254708L,	// x=-24, y=-22, z=12
@@ -183,8 +183,19 @@ public class CrystalMetalDetectorSolver {
 			return chestOffsets.contains(block.subtract(divanMinesCenter).toLong());
 		}).collect(Collectors.toList());
 		if (temp.size() == 1) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Known location identified."));
 			possibleBlocks = temp;
+			NEUDebugLogger.log(NEUDebugLogger.METAL_DETECTOR_FLAG, "Known location identified.");
+		} else if (temp.size() > 1) {
+			NEUDebugLogger.log(NEUDebugLogger.METAL_DETECTOR_FLAG, "Known locations identified:");
+			logDebugBlockPositions(temp);
+		}
+	}
+
+	private static void logDebugBlockPositions(List<BlockPos> positions) {
+		if (NEUDebugLogger.checkFlags(NEUDebugLogger.METAL_DETECTOR_FLAG)) {
+			for (BlockPos blockPos : positions) {
+				NEUDebugLogger.log(NEUDebugLogger.METAL_DETECTOR_FLAG, blockPos.toString());
+			}
 		}
 	}
 
@@ -195,7 +206,6 @@ public class CrystalMetalDetectorSolver {
 	}
 
 	public static void initWorld() {
-		debugEnabled = NEUDebugFlags.IsSet(NEUDebugFlags.METAL_DETECTOR);
 		divanMinesCenter = Vec3i.NULL_VECTOR;
 		visitKeeperMessagePrinted = false;
 		reset(false);
@@ -235,7 +245,7 @@ public class CrystalMetalDetectorSolver {
 		if (keeperEntities.size() == 0) {
 			if (!visitKeeperMessagePrinted) {
 				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-					"[NEU] Approach a Keeper while holding the metal detector to enable faster locating."));
+					"[NEU] Approach a Keeper while holding the metal detector to enable faster treasure hunting."));
 				visitKeeperMessagePrinted = true;
 			}
 			return;
@@ -243,15 +253,11 @@ public class CrystalMetalDetectorSolver {
 
 		EntityArmorStand keeperEntity = keeperEntities.get(0);
 		String keeperName = keeperEntity.getCustomNameTag();
-		if (debugEnabled) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Locating center using keeper:" + keeperEntity.toString()));
-		}
+		NEUDebugLogger.log(NEUDebugLogger.METAL_DETECTOR_FLAG,"Locating center using Keeper:" + keeperEntity.toString());
 		String keeperType = keeperName.substring(keeperName.indexOf(KEEPER_OF_STRING) + KEEPER_OF_STRING.length());
 		divanMinesCenter =  keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase()));
-		if (debugEnabled) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Mines center:" + divanMinesCenter.toString()));
-		}
-		mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Faster locating enabled."));
+		NEUDebugLogger.log(NEUDebugLogger.METAL_DETECTOR_FLAG,"Mines center:" + divanMinesCenter.toString());
+		mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Faster treasure hunting enabled based on Keeper location."));
 	}
 
 	private static double round(double value, int precision) {
@@ -268,15 +274,13 @@ public class CrystalMetalDetectorSolver {
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "[NEU] Failed to find solution."));
 			reset(false);
 		} else {
-			String message = EnumChatFormatting.YELLOW + "[NEU] Found solution.";
+			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Found solution."));
 
-			if (debugEnabled && divanMinesCenter != Vec3i.NULL_VECTOR) {
+			if (NEUDebugLogger.checkFlags(NEUDebugLogger.METAL_DETECTOR_FLAG) && divanMinesCenter != Vec3i.NULL_VECTOR) {
 				BlockPos block = possibleBlocks.get(0);
 				BlockPos relativeOffset = block.subtract(divanMinesCenter);
-				message += " Absolute: " + block.toString() + ", Relative: " + relativeOffset  + " (" + relativeOffset.toLong() + ")";
+				NEUDebugLogger.log(NEUDebugLogger.METAL_DETECTOR_FLAG, "Absolute: " + block.toString() + ", Relative: " + relativeOffset  + " (" + relativeOffset.toLong() + ")");
 			}
-
-			mc.thePlayer.addChatMessage(new ChatComponentText(message));
 		}
 	}
 
