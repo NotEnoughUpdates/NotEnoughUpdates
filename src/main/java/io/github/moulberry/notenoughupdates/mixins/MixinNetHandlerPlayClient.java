@@ -82,14 +82,6 @@ public class MixinNetHandlerPlayClient {
 		StorageManager.getInstance().setItemsPacket(packetIn);
 	}
 
-	@Inject(method = "handleRespawn", at = @At(
-		value = "INVOKE",
-		target = "Lnet/minecraft/network/PacketThreadUtil;checkThreadAndEnqueue(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;Lnet/minecraft/util/IThreadListener;)V",
-		shift = At.Shift.AFTER))
-	public void handleOpenWindow(S07PacketRespawn packetIn, CallbackInfo ci) {
-		FancyPortals.onRespawnPacket(packetIn);
-	}
-
 	@Inject(method = "handleBlockChange", at = @At("HEAD"))
 	public void handleBlockChange(S23PacketBlockChange packetIn, CallbackInfo ci) {
 		MiningStuff.processBlockChangePacket(packetIn);

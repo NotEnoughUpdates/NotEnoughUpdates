@@ -219,7 +219,6 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new ItemCooldowns());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
 		MinecraftForge.EVENT_BUS.register(new FuelBar());
-		//MinecraftForge.EVENT_BUS.register(new FancyPortals());
 		MinecraftForge.EVENT_BUS.register(XPInformation.getInstance());
 		MinecraftForge.EVENT_BUS.register(OverlayManager.petInfoOverlay);
 		MinecraftForge.EVENT_BUS.register(OverlayManager.timersOverlay);

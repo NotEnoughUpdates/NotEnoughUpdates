@@ -3,7 +3,6 @@ package io.github.moulberry.notenoughupdates.commands.dev;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
-import io.github.moulberry.notenoughupdates.miscfeatures.FancyPortals;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
@@ -11,24 +10,21 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Specia
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class DevTestCommand extends ClientCommandBase {
 
 	private static final List<String> DEV_TESTERS =
-		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro");
+		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro", "lulonaut");
 
 	private static final String[] DEV_FAIL_STRINGS = {
 		"No.",
@@ -48,9 +44,7 @@ public class DevTestCommand extends ClientCommandBase {
 		"",
 		"Ok, this is actually the last message, use the command again and you'll crash I promise"
 	};
-
 	private int devFailIndex = 0;
-	private final ScheduledExecutorService devES = Executors.newSingleThreadScheduledExecutor();
 
 	public DevTestCommand() {
 		super("neudevtest");
@@ -84,10 +78,6 @@ public class DevTestCommand extends ClientCommandBase {
 				DEV_FAIL_STRINGS[devFailIndex++]));
 			return;
 		}
-            /*if(args.length == 1) {
-                DupePOC.doDupe(args[0]);
-                return;
-            }*/
 		if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
 			String currentProfile = SBInfo.getInstance().currentProfile;
 			SBInfo.Gamemode gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile);
@@ -146,62 +136,6 @@ public class DevTestCommand extends ClientCommandBase {
 			double x = Math.floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f;
 			double z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f;
 			Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z);
-			return;
 		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("pansc")) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
-				"Taking panorama screenshot"));
-
-			AtomicInteger perspective = new AtomicInteger(0);
-			FancyPortals.perspectiveId = 0;
-
-			EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-			p.prevRotationYaw = p.rotationYaw = 0;
-			p.prevRotationPitch = p.rotationPitch = 90;
-			devES.schedule(new Runnable() {
-				@Override
-				public void run() {
-					Minecraft.getMinecraft().addScheduledTask(() -> {
-						ScreenShotHelper.saveScreenshot(new File("C:/Users/James/Desktop/"), "pansc-" + perspective.get() + ".png",
-							Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight,
-							Minecraft.getMinecraft().getFramebuffer()
-						);
-					});
-					if (perspective.incrementAndGet() >= 6) {
-						FancyPortals.perspectiveId = -1;
-						return;
-					}
-					devES.schedule(() -> {
-						FancyPortals.perspectiveId = perspective.get();
-						if (FancyPortals.perspectiveId == 5) {
-							p.prevRotationYaw = p.rotationYaw = 0;
-							p.prevRotationPitch = p.rotationPitch = -90;
-						} else if (FancyPortals.perspectiveId >= 1 && FancyPortals.perspectiveId <= 4) {
-							float yaw = 90 * FancyPortals.perspectiveId - 180;
-							if (yaw > 180) yaw -= 360;
-							p.prevRotationYaw = p.rotationYaw = yaw;
-							p.prevRotationPitch = p.rotationPitch = 0;
-						}
-						devES.schedule(this, 3000L, TimeUnit.MILLISECONDS);
-					}, 100L, TimeUnit.MILLISECONDS);
-				}
-			}, 3000L, TimeUnit.MILLISECONDS);
-
-			return;
-		}
-
-            /* if(args.length == 1 && args[0].equalsIgnoreCase("update")) {
-                NEUEventListener.displayUpdateMessageIfOutOfDate();
-            } */
-
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
-			"Executing dubious code"));
-            /*Minecraft.getMinecraft().thePlayer.rotationYaw = 0;
-            Minecraft.getMinecraft().thePlayer.rotationPitch = 0;
-            Minecraft.getMinecraft().thePlayer.setPosition(
-                    Math.floor(Minecraft.getMinecraft().thePlayer.posX) + Float.parseFloat(args[0]),
-                    Minecraft.getMinecraft().thePlayer.posY,
-                    Minecraft.getMinecraft().thePlayer.posZ);*/
-		//Hot reload me yay!
 	}
 }
