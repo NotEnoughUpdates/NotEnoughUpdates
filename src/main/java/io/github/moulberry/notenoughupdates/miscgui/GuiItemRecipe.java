@@ -6,12 +6,15 @@ import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -234,8 +237,8 @@ public class GuiItemRecipe extends GuiScreen {
         for (RecipeSlot slot : getAllRenderedSlots()) {
             if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
                 ItemStack itemStack = slot.getItemStack();
-                if (keyPressed == manager.keybindViewRecipe.getKeyCode()) { // TODO: rework this so it doesnt skip recipe chains
-                    manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), "");
+                if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
+                    manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), null);
                 } else if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
                     manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
                 }

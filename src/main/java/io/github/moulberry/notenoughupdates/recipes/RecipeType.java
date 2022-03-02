@@ -7,7 +7,8 @@ import net.minecraft.util.ResourceLocation;
 public enum RecipeType {
     CRAFTING("crafting", "Crafting", CraftingRecipe::parseCraftingRecipe),
     FORGE("forge", "Forge", ForgeRecipe::parseForgeRecipe),
-    TRADE("trade", "Trade", VillagerTradeRecipe::parseStaticRecipe);
+    TRADE("trade", "Trade", VillagerTradeRecipe::parseStaticRecipe),
+    MOB_LOOT("drops", "Mob Loot", MobLootRecipe::parseRecipe);
 
     private final String id;
     private final String label;

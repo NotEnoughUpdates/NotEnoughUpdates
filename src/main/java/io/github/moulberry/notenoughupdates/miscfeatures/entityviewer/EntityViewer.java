@@ -143,19 +143,24 @@ public class EntityViewer extends GuiScreen {
 
 
         Utils.drawStringScaledMaxWidth(label, fontRenderer, guiLeft + 10, guiTop + 10, false, 100, 0xFF00FF);
+        renderEntity(entity, guiLeft + 90, guiTop + 75, mouseX, mouseY);
+    }
 
+    public static void renderEntity(EntityLivingBase entity, int posX, int posY, int mouseX, int mouseY) {
         GlStateManager.color(1F, 1F, 1F, 1F);
 
         int scale = 30;
         float bottomOffset = 0F;
         EntityLivingBase stack = entity;
         while (true) {
-            GuiInventory.drawEntityOnScreen(guiLeft + 90, (int) (guiTop + 75 - bottomOffset * scale), scale, guiLeft - mouseX + 80, guiTop + 60 - mouseY, stack);
+
+            GuiInventory.drawEntityOnScreen(posX, (int) (posY - bottomOffset * scale), scale, posX - mouseX, (int) (posY - stack.getEyeHeight() * scale - mouseY), stack);
             bottomOffset += stack.getMountedYOffset();
             if (!(stack.riddenByEntity instanceof EntityLivingBase)) {
                 break;
             }
             stack = (EntityLivingBase) stack.riddenByEntity;
         }
+
     }
 }
