@@ -1361,7 +1361,8 @@ public class NEUOverlay extends Gui {
 				"DUNGEON SWORD",
 				"DUNGEON BOW",
 				"DRILL",
-				"GAUNTLET"
+				"GAUNTLET",
+				"LONGSWORD"
 			) >= 0;
 		} else if (getSortMode() == SORT_MODE_ARMOR) {
 			return checkItemType(
