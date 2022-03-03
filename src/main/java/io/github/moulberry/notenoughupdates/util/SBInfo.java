@@ -293,7 +293,7 @@ public class SBInfo {
 
 				String cleanLine = Utils.cleanColour(line);
 
-				if (cleanLine.contains("Dungeon") && cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
+				if (cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
 					tempIsInDungeon = true;
 				}
 

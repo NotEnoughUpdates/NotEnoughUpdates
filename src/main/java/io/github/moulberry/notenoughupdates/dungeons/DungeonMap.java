@@ -578,8 +578,8 @@ public class DungeonMap {
 				GlStateManager.rotate(-rotation + 180, 0, 0, 1);
 
 				if (NotEnoughUpdates.INSTANCE.config.dungeonMap.dmCenterPlayer && playerPos != null) {
-					float x = playerPos.getRenderX();
-					float y = playerPos.getRenderY();
+					float x = playerPos.getRenderX(0);
+					float y = playerPos.getRenderY(0);
 					x -= minRoomX * (renderRoomSize + renderConnSize);
 					y -= minRoomY * (renderRoomSize + renderConnSize);
 
@@ -648,8 +648,8 @@ public class DungeonMap {
 				for (Map.Entry<String, MapPosition> entry : playerMarkerMapPositions.entrySet()) {
 					String name = entry.getKey();
 					MapPosition pos = entry.getValue();
-					float x = pos.getRenderX();
-					float y = pos.getRenderY();
+					float x = pos.getRenderX(0);
+					float y = pos.getRenderY(0);
 					float angle = pos.rotation;
 
 					boolean doInterp = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPlayerInterp;
@@ -657,19 +657,8 @@ public class DungeonMap {
 						MapPosition entityPos = playerEntityMapPositions.get(name);
 						angle = entityPos.rotation;
 
-						float deltaX = entityPos.getRenderX() - pos.getRenderX();
-						float deltaY = entityPos.getRenderY() - pos.getRenderY();
-
-                        /*if(deltaX > (renderRoomSize + renderConnSize)/2) {
-                            deltaX -= (renderRoomSize + renderConnSize);
-                        } else if(deltaX < -(renderRoomSize + renderConnSize)/2) {
-                            deltaX += (renderRoomSize + renderConnSize);
-                        }
-                        if(deltaY > (renderRoomSize + renderConnSize)/2) {
-                            deltaY -= (renderRoomSize + renderConnSize);
-                        } else if(deltaY < -(renderRoomSize + renderConnSize)/2) {
-                            deltaY += (renderRoomSize + renderConnSize);
-                        }*/
+						float deltaX = entityPos.getRenderX(9) - pos.getRenderX(0);
+						float deltaY = entityPos.getRenderY(9) - pos.getRenderY(0);
 
 						x += deltaX;
 						y += deltaY;
@@ -689,8 +678,8 @@ public class DungeonMap {
 
 					if (doInterp && playerMarkerMapPositionsLast.containsKey(name)) {
 						MapPosition last = playerMarkerMapPositionsLast.get(name);
-						float xLast = last.getRenderX();
-						float yLast = last.getRenderY();
+						float xLast = last.getRenderX(0);
+						float yLast = last.getRenderY(0);
 
 						float distSq = (x - xLast) * (x - xLast) + (y - yLast) * (y - yLast);
 						if (distSq < renderRoomSize * renderRoomSize / 4f) {
@@ -1087,12 +1076,12 @@ public class DungeonMap {
 			this.connOffsetY = connOffsetY;
 		}
 
-		public float getRenderX() {
-			return roomOffsetX * getRenderRoomSize() + connOffsetX * getRenderConnSize();
+		public float getRenderX(int blockOffset) {
+			return (roomOffsetX + blockOffset) * getRenderRoomSize() + connOffsetX * getRenderConnSize();
 		}
 
-		public float getRenderY() {
-			return roomOffsetY * getRenderRoomSize() + connOffsetY * getRenderConnSize();
+		public float getRenderY(int blockOffset) {
+			return (roomOffsetY + blockOffset) * getRenderRoomSize() + connOffsetY * getRenderConnSize();
 		}
 
 		@Override
@@ -1425,8 +1414,8 @@ public class DungeonMap {
 				for (Map.Entry<String, MapPosition> entry : playerMarkerMapPositionsLast.entrySet()) {
 					HashMap<Integer, Float> deltaDists = new HashMap<>();
 					for (int i = 0; i < positions.size(); i++) {
-						float dx = entry.getValue().getRenderX() - positions.get(i).getRenderX();
-						float dy = entry.getValue().getRenderY() - positions.get(i).getRenderY();
+						float dx = entry.getValue().getRenderX(0) - positions.get(i).getRenderX(0);
+						float dy = entry.getValue().getRenderY(0) - positions.get(i).getRenderY(0);
 						deltaDists.put(i, dx * dx + dy * dy);
 					}
 					distanceMap.put(entry.getKey(), deltaDists);
