@@ -25,222 +25,267 @@ import java.util.concurrent.TimeUnit;
 
 public class PeekCommand extends ClientCommandBase {
 
-    private ScheduledExecutorService peekCommandExecutorService = null;
+	private ScheduledExecutorService peekCommandExecutorService = null;
 
-    public PeekCommand() {
-        super("peek");
-    }
+	public PeekCommand() {
+		super("peek");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        String name;
-        if (args.length == 0) {
-            name = Minecraft.getMinecraft().thePlayer.getName();
-        } else {
-            name = args[0];
-        }
-        int id = new Random().nextInt(Integer.MAX_VALUE / 2) + Integer.MAX_VALUE / 2;
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		String name;
+		if (args.length == 0) {
+			name = Minecraft.getMinecraft().thePlayer.getName();
+		} else {
+			name = args[0];
+		}
+		int id = new Random().nextInt(Integer.MAX_VALUE / 2) + Integer.MAX_VALUE / 2;
 
-        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-                EnumChatFormatting.YELLOW + "[PEEK] Getting player information..."), id);
-        NotEnoughUpdates.profileViewer.getProfileByName(name, profile -> {
-            if (profile == null) {
-                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-                        EnumChatFormatting.RED + "[PEEK] Unknown player or api is down."), id);
-            } else {
-                profile.resetCache();
+		Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
+			EnumChatFormatting.YELLOW + "[PEEK] Getting player information..."), id);
+		NotEnoughUpdates.profileViewer.getProfileByName(name, profile -> {
+			if (profile == null) {
+				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
+					EnumChatFormatting.RED + "[PEEK] Unknown player or the api is down."), id);
+			} else {
+				profile.resetCache();
 
-                if (peekCommandExecutorService == null || peekCommandExecutorService.isShutdown()) {
-                    peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
-                } else {
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                            EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one."));
-                    peekCommandExecutorService.shutdownNow();
-                    peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
-                }
+				if (peekCommandExecutorService == null || peekCommandExecutorService.isShutdown()) {
+					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
+				} else {
+					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+						EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one."));
+					peekCommandExecutorService.shutdownNow();
+					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
+				}
 
-                Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-                        EnumChatFormatting.YELLOW + "[PEEK] Getting player skyblock profiles..."), id);
+				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
+					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
 
-                long startTime = System.currentTimeMillis();
-                peekCommandExecutorService.schedule(new Runnable() {
-                    public void run() {
-                        if (System.currentTimeMillis() - startTime > 10 * 1000) {
+				long startTime = System.currentTimeMillis();
+				peekCommandExecutorService.schedule(new Runnable() {
+					public void run() {
+						if (System.currentTimeMillis() - startTime > 10 * 1000) {
 
-                            Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-                                    EnumChatFormatting.RED + "[PEEK] Getting profile info took too long, aborting."), id);
-                            return;
-                        }
+							Minecraft.getMinecraft().ingameGUI
+								.getChatGUI()
+								.printChatMessageWithOptionalDeletion(new ChatComponentText(
+									EnumChatFormatting.RED + "[PEEK] Getting profile info took too long, aborting."), id);
+							return;
+						}
 
-                        String g = EnumChatFormatting.GRAY.toString();
+						String g = EnumChatFormatting.GRAY.toString();
 
-                        JsonObject profileInfo = profile.getProfileInformation(null);
-                        if (profileInfo != null) {
-                            float overallScore = 0;
+						JsonObject profileInfo = profile.getProfileInformation(null);
+						if (profileInfo != null) {
+							float overallScore = 0;
 
-                            boolean isMe = name.equalsIgnoreCase("moulberry");
+							boolean isMe = name.equalsIgnoreCase("moulberry");
 
-                            PlayerStats.Stats stats = profile.getStats(null);
-                            JsonObject skill = profile.getSkillInfo(null);
+							PlayerStats.Stats stats = profile.getStats(null);
+							JsonObject skill = profile.getSkillInfo(null);
 
-                            Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(EnumChatFormatting.GREEN + " " +
-                                    EnumChatFormatting.STRIKETHROUGH + "-=-" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + " " +
-                                    Utils.getElementAsString(profile.getHypixelProfile().get("displayname"), name) + "'s Info " +
-                                    EnumChatFormatting.STRIKETHROUGH + "-=-"), id);
+							Minecraft.getMinecraft().ingameGUI
+								.getChatGUI()
+								.printChatMessageWithOptionalDeletion(new ChatComponentText(EnumChatFormatting.GREEN + " " +
+									EnumChatFormatting.STRIKETHROUGH + "-=-" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + " " +
+									Utils.getElementAsString(profile.getHypixelProfile().get("displayname"), name) + "'s Info " +
+									EnumChatFormatting.STRIKETHROUGH + "-=-"), id);
 
-                            if (skill == null) {
-                                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "Skills api disabled!"));
-                            } else {
-                                float totalSkillLVL = 0;
-                                float totalSkillCount = 0;
+							if (skill == null) {
+								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+									EnumChatFormatting.YELLOW + "Skills api disabled!"));
+							} else {
+								float totalSkillLVL = 0;
+								float totalSkillCount = 0;
 
-                                for (Map.Entry<String, JsonElement> entry : skill.entrySet()) {
-                                    if (entry.getKey().startsWith("level_skill")) {
-                                        if (entry.getKey().contains("runecrafting")) continue;
-                                        if (entry.getKey().contains("carpentry")) continue;
-                                        totalSkillLVL += entry.getValue().getAsFloat();
-                                        totalSkillCount++;
-                                    }
-                                }
+								for (Map.Entry<String, JsonElement> entry : skill.entrySet()) {
+									if (entry.getKey().startsWith("level_skill")) {
+										if (entry.getKey().contains("runecrafting")) continue;
+										if (entry.getKey().contains("carpentry")) continue;
+										totalSkillLVL += entry.getValue().getAsFloat();
+										totalSkillCount++;
+									}
+								}
 
-                                float combat = Utils.getElementAsFloat(skill.get("level_skill_combat"), 0);
-                                float zombie = Utils.getElementAsFloat(skill.get("level_slayer_zombie"), 0);
-                                float spider = Utils.getElementAsFloat(skill.get("level_slayer_spider"), 0);
-                                float wolf = Utils.getElementAsFloat(skill.get("level_slayer_wolf"), 0);
-                                float enderman = Utils.getElementAsFloat(skill.get("level_slayer_enderman"), 0);
+								float combat = Utils.getElementAsFloat(skill.get("level_skill_combat"), 0);
+								float zombie = Utils.getElementAsFloat(skill.get("level_slayer_zombie"), 0);
+								float spider = Utils.getElementAsFloat(skill.get("level_slayer_spider"), 0);
+								float wolf = Utils.getElementAsFloat(skill.get("level_slayer_wolf"), 0);
+								float enderman = Utils.getElementAsFloat(skill.get("level_slayer_enderman"), 0);
 
-                                float avgSkillLVL = totalSkillLVL / totalSkillCount;
+								float avgSkillLVL = totalSkillLVL / totalSkillCount;
 
-                                if (isMe) {
-                                    avgSkillLVL = 6;
-                                    combat = 4;
-                                    zombie = 2;
-                                    spider = 1;
-                                    wolf = 2;
-                                    enderman = 0;
-                                }
+								if (isMe) {
+									avgSkillLVL = 6;
+									combat = 4;
+									zombie = 2;
+									spider = 1;
+									wolf = 2;
+									enderman = 0;
+								}
 
-                                EnumChatFormatting combatPrefix = combat > 20 ? (combat > 35 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting zombiePrefix = zombie > 3 ? (zombie > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting spiderPrefix = spider > 3 ? (spider > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting wolfPrefix = wolf > 3 ? (wolf > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting endermanPrefix = enderman > 3 ? (enderman > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting avgPrefix = avgSkillLVL > 20 ? (avgSkillLVL > 35 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
+								EnumChatFormatting combatPrefix = combat > 20
+									? (combat > 35 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting zombiePrefix = zombie > 3
+									? (zombie > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting spiderPrefix = spider > 3
+									? (spider > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting wolfPrefix =
+									wolf > 3 ? (wolf > 6 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
+								EnumChatFormatting endermanPrefix = enderman > 3
+									? (enderman > 6
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting avgPrefix = avgSkillLVL > 20
+									? (avgSkillLVL > 35
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
 
-                                overallScore += zombie * zombie / 81f;
-                                overallScore += spider * spider / 81f;
-                                overallScore += wolf * wolf / 81f;
-                                overallScore += enderman * enderman / 81f;
-                                overallScore += avgSkillLVL / 20f;
+								overallScore += zombie * zombie / 81f;
+								overallScore += spider * spider / 81f;
+								overallScore += wolf * wolf / 81f;
+								overallScore += enderman * enderman / 81f;
+								overallScore += avgSkillLVL / 20f;
 
-                                int cata = (int) Utils.getElementAsFloat(skill.get("level_skill_catacombs"), 0);
-                                EnumChatFormatting cataPrefix = cata > 15 ? (cata > 25 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
+								int cata = (int) Utils.getElementAsFloat(skill.get("level_skill_catacombs"), 0);
+								EnumChatFormatting cataPrefix = cata > 15
+									? (cata > 25 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
 
-                                overallScore += cata * cata / 2000f;
+								overallScore += cata * cata / 2000f;
 
-                                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                                        g + "Combat: " + combatPrefix + (int) Math.floor(combat) +
-                                                (cata > 0 ? g + " - Cata: " + cataPrefix + cata : "") +
-                                                g + " - AVG: " + avgPrefix + (int) Math.floor(avgSkillLVL)));
-                                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                                        g + "Slayer: " + zombiePrefix + (int) Math.floor(zombie) + g + "-" +
-                                                spiderPrefix + (int) Math.floor(spider) + g + "-" +
-                                                wolfPrefix + (int) Math.floor(wolf) + "-" +
-                                                endermanPrefix + (int) Math.floor(enderman)));
-                            }
-                            if (stats == null) {
-                                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                                        EnumChatFormatting.YELLOW + "Skills, collection and/or inventory apis disabled!"));
-                            } else {
-                                int health = (int) stats.get("health");
-                                int defence = (int) stats.get("defence");
-                                int strength = (int) stats.get("strength");
-                                int intelligence = (int) stats.get("intelligence");
+								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+									g + "Combat: " + combatPrefix + (int) Math.floor(combat) +
+										(cata > 0 ? g + " - Cata: " + cataPrefix + cata : "") +
+										g + " - AVG: " + avgPrefix + (int) Math.floor(avgSkillLVL)));
+								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+									g + "Slayer: " + zombiePrefix + (int) Math.floor(zombie) + g + "-" +
+										spiderPrefix + (int) Math.floor(spider) + g + "-" +
+										wolfPrefix + (int) Math.floor(wolf) + "-" +
+										endermanPrefix + (int) Math.floor(enderman)));
+							}
+							if (stats == null) {
+								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+									EnumChatFormatting.YELLOW + "Skills, collection and/or inventory apis disabled!"));
+							} else {
+								int health = (int) stats.get("health");
+								int defence = (int) stats.get("defence");
+								int strength = (int) stats.get("strength");
+								int intelligence = (int) stats.get("intelligence");
 
-                                EnumChatFormatting healthPrefix = health > 800 ? (health > 1600 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting defencePrefix = defence > 200 ? (defence > 600 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting strengthPrefix = strength > 100 ? (strength > 300 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                                EnumChatFormatting intelligencePrefix = intelligence > 300 ? (intelligence > 900 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
+								EnumChatFormatting healthPrefix = health > 800
+									? (health > 1600
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting defencePrefix = defence > 200
+									? (defence > 600
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting strengthPrefix = strength > 100
+									? (strength > 300
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
+								EnumChatFormatting intelligencePrefix = intelligence > 300
+									? (intelligence > 900
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
 
-                                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                                        g + "Stats  : " + healthPrefix + health + EnumChatFormatting.RED + "\u2764 " +
-                                                defencePrefix + defence + EnumChatFormatting.GREEN + "\u2748 " +
-                                                strengthPrefix + strength + EnumChatFormatting.RED + "\u2741 " +
-                                                intelligencePrefix + intelligence + EnumChatFormatting.AQUA + "\u270e "));
-                            }
-                            float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), -1);
-                            float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
+								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+									g + "Stats  : " + healthPrefix + health + EnumChatFormatting.RED + "\u2764 " +
+										defencePrefix + defence + EnumChatFormatting.GREEN + "\u2748 " +
+										strengthPrefix + strength + EnumChatFormatting.RED + "\u2741 " +
+										intelligencePrefix + intelligence + EnumChatFormatting.AQUA + "\u270e "));
+							}
+							float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), -1);
+							float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
 
-                            long networth = profile.getNetWorth(null);
-                            float money = Math.max(bankBalance + purseBalance, networth);
-                            EnumChatFormatting moneyPrefix = money > 50 * 1000 * 1000 ?
-                                    (money > 200 * 1000 * 1000 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-                            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                                    g + "Purse: " + moneyPrefix + Utils.shortNumberFormat(purseBalance, 0) + g + " - Bank: " +
-                                            (bankBalance == -1 ? EnumChatFormatting.YELLOW + "N/A" : moneyPrefix +
-                                                    (isMe ? "4.8b" : Utils.shortNumberFormat(bankBalance, 0))) +
-                                            (networth > 0 ? g + " - Net: " + moneyPrefix + Utils.shortNumberFormat(networth, 0) : "")));
+							long networth = profile.getNetWorth(null);
+							float money = Math.max(bankBalance + purseBalance, networth);
+							EnumChatFormatting moneyPrefix = money > 50 * 1000 * 1000 ?
+								(money > 200 * 1000 * 1000
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								g + "Purse: " + moneyPrefix + Utils.shortNumberFormat(purseBalance, 0) + g + " - Bank: " +
+									(bankBalance == -1 ? EnumChatFormatting.YELLOW + "N/A" : moneyPrefix +
+										(isMe ? "4.8b" : Utils.shortNumberFormat(bankBalance, 0))) +
+									(networth > 0 ? g + " - Net: " + moneyPrefix + Utils.shortNumberFormat(networth, 0) : "")));
 
-                            overallScore += Math.min(2, money / (100f * 1000 * 1000));
+							overallScore += Math.min(2, money / (100f * 1000 * 1000));
 
-                            String activePet = Utils.getElementAsString(Utils.getElement(profile.getPetsInfo(null), "active_pet.type"),
-                                    "None Active");
-                            String activePetTier = Utils.getElementAsString(Utils.getElement(profile.getPetsInfo(null), "active_pet.tier"), "UNKNOWN");
+							String activePet = Utils.getElementAsString(
+								Utils.getElement(profile.getPetsInfo(null), "active_pet.type"),
+								"None Active"
+							);
+							String activePetTier = Utils.getElementAsString(Utils.getElement(
+								profile.getPetsInfo(null),
+								"active_pet.tier"
+							), "UNKNOWN");
 
-                            String col = NotEnoughUpdates.petRarityToColourMap.get(activePetTier);
-                            if (col == null) col = EnumChatFormatting.LIGHT_PURPLE.toString();
+							String col = NotEnoughUpdates.petRarityToColourMap.get(activePetTier);
+							if (col == null) col = EnumChatFormatting.LIGHT_PURPLE.toString();
 
-                            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Pet    : " +
-                                    col + WordUtils.capitalizeFully(activePet.replace("_", " "))));
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Pet    : " +
+								col + WordUtils.capitalizeFully(activePet.replace("_", " "))));
 
-                            String overall = "Skywars Main";
-                            if (isMe) {
-                                overall = Utils.chromaString("Literally the best player to exist"); // ego much
-                            } else if (overallScore < 5 && (bankBalance + purseBalance) > 500 * 1000 * 1000) {
-                                overall = EnumChatFormatting.GOLD + "Bill Gates";
-                            } else if (overallScore > 9) {
-                                overall = Utils.chromaString("Didn't even think this score was possible");
-                            } else if (overallScore > 8) {
-                                overall = Utils.chromaString("Mentally unstable");
-                            } else if (overallScore > 7) {
-                                overall = EnumChatFormatting.GOLD + "Why though 0.0";
-                            } else if (overallScore > 5.5) {
-                                overall = EnumChatFormatting.GOLD + "Bro stop playing";
-                            } else if (overallScore > 4) {
-                                overall = EnumChatFormatting.GREEN + "Kinda sweaty";
-                            } else if (overallScore > 3) {
-                                overall = EnumChatFormatting.YELLOW + "Alright I guess";
-                            } else if (overallScore > 2) {
-                                overall = EnumChatFormatting.YELLOW + "Ender Non";
-                            } else if (overallScore > 1) {
-                                overall = EnumChatFormatting.RED + "Played Skyblock";
-                            }
+							String overall = "Skywars Main";
+							if (isMe) {
+								overall = Utils.chromaString("Literally the best player to exist"); // ego much
+							} else if (overallScore < 5 && (bankBalance + purseBalance) > 500 * 1000 * 1000) {
+								overall = EnumChatFormatting.GOLD + "Bill Gates";
+							} else if (overallScore > 9) {
+								overall = Utils.chromaString("Didn't even think this score was possible");
+							} else if (overallScore > 8) {
+								overall = Utils.chromaString("Mentally unstable");
+							} else if (overallScore > 7) {
+								overall = EnumChatFormatting.GOLD + "Why though 0.0";
+							} else if (overallScore > 5.5) {
+								overall = EnumChatFormatting.GOLD + "Bro stop playing";
+							} else if (overallScore > 4) {
+								overall = EnumChatFormatting.GREEN + "Kinda sweaty";
+							} else if (overallScore > 3) {
+								overall = EnumChatFormatting.YELLOW + "Alright I guess";
+							} else if (overallScore > 2) {
+								overall = EnumChatFormatting.YELLOW + "Ender Non";
+							} else if (overallScore > 1) {
+								overall = EnumChatFormatting.RED + "Played Skyblock";
+							}
 
-                            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Overall score: " +
-                                    overall + g + " (" + Math.round(overallScore * 10) / 10f + ")"));
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Overall score: " +
+								overall + g + " (" + Math.round(overallScore * 10) / 10f + ")"));
 
-                            peekCommandExecutorService.shutdownNow();
-                        } else {
-                            peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
-                        }
-                    }
-                }, 200, TimeUnit.MILLISECONDS);
-            }
-        });
-    }
+							peekCommandExecutorService.shutdownNow();
+						} else {
+							peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
+						}
+					}
+				}, 200, TimeUnit.MILLISECONDS);
+			}
+		});
+	}
 
-    @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        if (args.length != 1) return null;
+	@Override
+	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+		if (args.length != 1) return null;
 
-        String lastArg = args[args.length - 1];
-        List<String> playerMatches = new ArrayList<>();
-        for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
-            String playerName = player.getName();
-            if (playerName.toLowerCase().startsWith(lastArg.toLowerCase())) {
-                playerMatches.add(playerName);
-            }
-        }
-        return playerMatches;
-    }
+		String lastArg = args[args.length - 1];
+		List<String> playerMatches = new ArrayList<>();
+		for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
+			String playerName = player.getName();
+			if (playerName.toLowerCase().startsWith(lastArg.toLowerCase())) {
+				playerMatches.add(playerName);
+			}
+		}
+		return playerMatches;
+	}
 }

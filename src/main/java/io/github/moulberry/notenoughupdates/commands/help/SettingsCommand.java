@@ -13,21 +13,22 @@ import java.util.List;
 
 public class SettingsCommand extends ClientCommandBase {
 
-    public SettingsCommand() {
-        super("neu");
-    }
+	public SettingsCommand() {
+		super("neu");
+	}
 
-    @Override
-    public List<String> getCommandAliases() {
-        return Arrays.asList("neusettings", "neuconfig");
-    }
+	@Override
+	public List<String> getCommandAliases() {
+		return Arrays.asList("neusettings", "neuconfig");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length > 0) {
-            NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, StringUtils.join(args, " ")));
-        } else {
-            NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
-        }
-    }
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		if (args.length > 0) {
+			NotEnoughUpdates.INSTANCE.openGui =
+				new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, StringUtils.join(args, " ")));
+		} else {
+			NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+		}
+	}
 }

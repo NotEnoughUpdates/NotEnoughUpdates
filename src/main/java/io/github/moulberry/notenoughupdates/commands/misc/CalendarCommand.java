@@ -9,14 +9,14 @@ import net.minecraft.command.ICommandSender;
 
 public class CalendarCommand extends ClientCommandBase {
 
-    public CalendarCommand() {
-        super("neucalendar");
-    }
+	public CalendarCommand() {
+		super("neucalendar");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        Minecraft.getMinecraft().thePlayer.closeScreen();
-        CalendarOverlay.setEnabled(true);
-        NotEnoughUpdates.INSTANCE.sendChatMessage("/calendar");
-    }
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		Minecraft.getMinecraft().thePlayer.closeScreen();
+		CalendarOverlay.setEnabled(true);
+		NotEnoughUpdates.INSTANCE.sendChatMessage("/calendar");
+	}
 }

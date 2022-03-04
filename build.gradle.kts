@@ -59,7 +59,6 @@ mixin {
 
 repositories {
     mavenCentral()
-    flatDir { dirs("deps/") }
     maven("https://repo.spongepowered.org/maven/")
 }
 

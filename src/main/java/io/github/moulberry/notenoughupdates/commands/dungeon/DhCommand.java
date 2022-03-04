@@ -7,12 +7,12 @@ import net.minecraft.command.ICommandSender;
 
 public class DhCommand extends ClientCommandBase {
 
-    public DhCommand() {
-        super("dh");
-    }
+	public DhCommand() {
+		super("dh");
+	}
 
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-    }
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
+	}
 }

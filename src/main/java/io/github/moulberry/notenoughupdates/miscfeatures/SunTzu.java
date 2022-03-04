@@ -12,79 +12,88 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Random;
 
 public class SunTzu {
-    private static boolean enabled = false;
-    private static int quoteNum = 0;
+	private static boolean enabled = false;
+	private static int quoteNum = 0;
 
-    private static final Random rand = new Random();
+	private static final Random rand = new Random();
 
-    private static final String[] quotes = new String[]{
-            "Appear weak when you are strong, and strong when you are weak.",
-            "The supreme art of war is to subdue the enemy without fighting.",
-            "If you know the enemy and know yourself, you need not fear the result of a hundred battles.",
-            "Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.",
-            "All warfare is based on deception.",
-            "In the midst of chaos, there is also opportunity.",
-            "The greatest victory is that which requires no battle.",
-            "To know your Enemy, you must become your Enemy.",
-            "There is no instance of a nation benefitting from prolonged warfare.",
-            "Even the finest sword plunged into salt water will eventually rust.",
-            "Opportunities multiply as they are seized.",
-            "When the enemy is relaxed, make them toil. When full, starve them. When settled, make them move.",
-            "He who wishes to fight must first count the cost",
-            "If you wait by the river long enough, the bodies of your enemies will float by.",
-            "Be extremely subtle even to the point of formlessness. Be extremely mysterious even to the point of soundlessness. Thereby you can be the director of the opponent's fate.",
-            "Build your opponent a golden bridge to retreat across.",
-            "The wise warrior avoids the battle.",
-            "Great results, can be achieved with small forces.",
-            "Attack is the secret of defense; defense is the planning of an attack.",
-            "Subscribe to Moulberry on YouTube."
-    };
+	private static final String[] quotes = new String[]{
+		"Appear weak when you are strong, and strong when you are weak.",
+		"The supreme art of war is to subdue the enemy without fighting.",
+		"If you know the enemy and know yourself, you need not fear the result of a hundred battles.",
+		"Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.",
+		"All warfare is based on deception.",
+		"In the midst of chaos, there is also opportunity.",
+		"The greatest victory is that which requires no battle.",
+		"To know your Enemy, you must become your Enemy.",
+		"There is no instance of a nation benefitting from prolonged warfare.",
+		"Even the finest sword plunged into salt water will eventually rust.",
+		"Opportunities multiply as they are seized.",
+		"When the enemy is relaxed, make them toil. When full, starve them. When settled, make them move.",
+		"He who wishes to fight must first count the cost",
+		"If you wait by the river long enough, the bodies of your enemies will float by.",
+		"Be extremely subtle even to the point of formlessness. Be extremely mysterious even to the point of soundlessness. Thereby you can be the director of the opponent's fate.",
+		"Build your opponent a golden bridge to retreat across.",
+		"The wise warrior avoids the battle.",
+		"Great results, can be achieved with small forces.",
+		"Attack is the secret of defense; defense is the planning of an attack.",
+		"Subscribe to Moulberry on YouTube."
+	};
 
-    public static void setEnabled(boolean enabled) {
-        SunTzu.enabled = enabled;
-    }
+	public static void setEnabled(boolean enabled) {
+		SunTzu.enabled = enabled;
+	}
 
-    public static void randomizeQuote() {
-        for (int i = 0; i < 3; i++) {
-            int newQuote = rand.nextInt(quotes.length);
+	public static void randomizeQuote() {
+		for (int i = 0; i < 3; i++) {
+			int newQuote = rand.nextInt(quotes.length);
 
-            if (newQuote != quoteNum) {
-                quoteNum = newQuote;
-                return;
-            }
-        }
-    }
+			if (newQuote != quoteNum) {
+				quoteNum = newQuote;
+				return;
+			}
+		}
+	}
 
-    private static String getQuote() {
-        return quotes[quoteNum];
-    }
+	private static String getQuote() {
+		return quotes[quoteNum];
+	}
 
-    @SubscribeEvent
-    public void onOverlayDrawn(RenderGameOverlayEvent event) {
-        if (enabled && ((event.type == null && Loader.isModLoaded("labymod")) ||
-                event.type == RenderGameOverlayEvent.ElementType.ALL)) {
-            if (Minecraft.getMinecraft().gameSettings.showDebugInfo ||
-                    (Minecraft.getMinecraft().gameSettings.keyBindPlayerList.isKeyDown() &&
-                            (!Minecraft.getMinecraft().isIntegratedServerRunning() ||
-                                    Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap().size() > 1))) {
-                return;
-            }
+	@SubscribeEvent
+	public void onOverlayDrawn(RenderGameOverlayEvent event) {
+		if (enabled && ((event.type == null && Loader.isModLoaded("labymod")) ||
+			event.type == RenderGameOverlayEvent.ElementType.ALL)) {
+			if (Minecraft.getMinecraft().gameSettings.showDebugInfo ||
+				(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.isKeyDown() &&
+					(!Minecraft.getMinecraft().isIntegratedServerRunning() ||
+						Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap().size() > 1))) {
+				return;
+			}
 
-            ScaledResolution sr = Utils.pushGuiScale(2);
+			ScaledResolution sr = Utils.pushGuiScale(2);
 
-            int height = Utils.renderStringTrimWidth(EnumChatFormatting.YELLOW + getQuote(), Minecraft.getMinecraft().fontRendererObj,
-                    true, sr.getScaledWidth() / 2 - 100, 5, 200, -1, -1);
-            String sunTzu = "- Sun Tzu, The Art of War";
-            int sunTzuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth(sunTzu);
-            Minecraft.getMinecraft().fontRendererObj.drawString(EnumChatFormatting.GOLD + sunTzu,
-                    sr.getScaledWidth() / 2f + 100 - sunTzuLength, 15 + height, 0, true);
+			int height = Utils.renderStringTrimWidth(
+				EnumChatFormatting.YELLOW + getQuote(),
+				Minecraft.getMinecraft().fontRendererObj,
+				true,
+				sr.getScaledWidth() / 2 - 100,
+				5,
+				200,
+				-1,
+				-1
+			);
+			String sunTzu = "- Sun Tzu, The Art of War";
+			int sunTzuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth(sunTzu);
+			Minecraft.getMinecraft().fontRendererObj.drawString(EnumChatFormatting.GOLD + sunTzu,
+				sr.getScaledWidth() / 2f + 100 - sunTzuLength, 15 + height, 0, true
+			);
 
-            Utils.pushGuiScale(-1);
-        }
-    }
+			Utils.pushGuiScale(-1);
+		}
+	}
 
-    @SubscribeEvent
-    public void switchWorld(WorldEvent.Load event) {
-        randomizeQuote();
-    }
+	@SubscribeEvent
+	public void switchWorld(WorldEvent.Load event) {
+		randomizeQuote();
+	}
 }

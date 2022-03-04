@@ -1,0 +1,219 @@
+package io.github.moulberry.notenoughupdates.listener;
+
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
+import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.*;
+
+public class ChatListener {
+	private final NotEnoughUpdates neu;
+	private static final Pattern SLAYER_XP = Pattern.compile(
+		"   (Spider|Zombie|Wolf|Enderman) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
+	AtomicBoolean missingRecipe = new AtomicBoolean(false);
+
+	public ChatListener(NotEnoughUpdates neu) {
+		this.neu = neu;
+	}
+
+	private String processText(String text) {
+		if (SBInfo.getInstance().getLocation() == null) return text;
+		if (!SBInfo.getInstance().getLocation().startsWith("mining_") && !SBInfo.getInstance().getLocation().equals(
+			"crystal_hollows"))
+			return text;
+
+		if (Minecraft.getMinecraft().thePlayer == null) return text;
+		if (!NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar) return text;
+
+		return Utils.trimIgnoreColour(text.replaceAll(EnumChatFormatting.DARK_GREEN + "\\S+ Drill Fuel", ""));
+	}
+
+	private IChatComponent processChatComponent(IChatComponent chatComponent) {
+		IChatComponent newComponent;
+		if (chatComponent instanceof ChatComponentText) {
+			ChatComponentText text = (ChatComponentText) chatComponent;
+
+			newComponent = new ChatComponentText(processText(text.getUnformattedTextForChat()));
+			newComponent.setChatStyle(text.getChatStyle().createShallowCopy());
+
+			for (IChatComponent sibling : text.getSiblings()) {
+				newComponent.appendSibling(processChatComponent(sibling));
+			}
+		} else if (chatComponent instanceof ChatComponentTranslation) {
+			ChatComponentTranslation trans = (ChatComponentTranslation) chatComponent;
+
+			Object[] args = trans.getFormatArgs();
+			Object[] newArgs = new Object[args.length];
+			for (int i = 0; i < trans.getFormatArgs().length; i++) {
+				if (args[i] instanceof IChatComponent) {
+					newArgs[i] = processChatComponent((IChatComponent) args[i]);
+				} else {
+					newArgs[i] = args[i];
+				}
+			}
+			newComponent = new ChatComponentTranslation(trans.getKey(), newArgs);
+
+			for (IChatComponent sibling : trans.getSiblings()) {
+				newComponent.appendSibling(processChatComponent(sibling));
+			}
+		} else {
+			newComponent = chatComponent.createCopy();
+		}
+
+		return newComponent;
+	}
+
+	private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
+
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null &&
+			chatComponent.getChatStyle().getChatClickEvent() != null &&
+			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND &&
+			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
+				String username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
+					chatComponent.setChatStyle(Utils.createClickStyle(
+						ClickEvent.Action.RUN_COMMAND,
+						"/pv " + username,
+						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
+							EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
+							EnumChatFormatting.YELLOW + " profile viewer."
+					));
+					return chatComponent;
+				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
+					chatComponent.setChatStyle(Utils.createClickStyle(
+						ClickEvent.Action.RUN_COMMAND,
+						"/ah " + username,
+						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
+					));
+					return chatComponent;
+				}
+			} // wanted to add this for guild but guild uses uuid :sad:
+		}
+		return chatComponent;
+	}
+
+	/**
+	 * 1) When receiving "You are playing on profile" messages, will set the current profile.
+	 * 2) When a /viewrecipe command fails (i.e. player does not have recipe unlocked, will open the custom recipe GUI)
+	 * 3) Replaces lobby join notifications when streamer mode is active
+	 */
+	@SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+	public void onGuiChat(ClientChatReceivedEvent e) {
+		if (e.type == 2) {
+			CrystalMetalDetectorSolver.process(e.message);
+			e.message = processChatComponent(e.message);
+			return;
+		} else if (e.type == 0) {
+			e.message = replaceSocialControlsWithPV(e.message);
+		}
+
+		DungeonWin.onChatMessage(e);
+
+		String r = null;
+		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
+		Matcher matcher = SLAYER_XP.matcher(unformatted);
+		if (unformatted.startsWith("You are playing on profile: ")) {
+			neu.manager.setCurrentProfile(unformatted
+				.substring("You are playing on profile: ".length())
+				.split(" ")[0].trim());
+		} else if (unformatted.startsWith("Your profile was changed to: ")) {//Your profile was changed to:
+			neu.manager.setCurrentProfile(unformatted
+				.substring("Your profile was changed to: ".length())
+				.split(" ")[0].trim());
+		} else if (unformatted.startsWith("Your new API key is ")) {
+			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = unformatted.substring("Your new API key is ".length()).substring(
+				0,
+				36
+			);
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
+		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
+			SBInfo.getInstance().hasNewTab = false;
+		} else if (unformatted.startsWith("Player List Info is now enabled!")) {
+			SBInfo.getInstance().hasNewTab = true;
+		}
+		if (e.message.getFormattedText().equals(
+			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "You haven't unlocked this recipe!" +
+				EnumChatFormatting.RESET)) {
+			r = EnumChatFormatting.RED + "You haven't unlocked this recipe!";
+		} else if (e.message.getFormattedText().startsWith(
+			EnumChatFormatting.RESET.toString() + EnumChatFormatting.RED + "Invalid recipe ")) {
+			r = "";
+		} else if (unformatted.equals("  NICE! SLAYER BOSS SLAIN!")) {
+			SlayerOverlay.isSlain = true;
+		} else if (unformatted.equals("  SLAYER QUEST STARTED!")) {
+			SlayerOverlay.isSlain = false;
+			if (timeSinceLastBoss == 0) {
+				SlayerOverlay.timeSinceLastBoss = System.currentTimeMillis();
+			} else {
+				timeSinceLastBoss2 = timeSinceLastBoss;
+				timeSinceLastBoss = System.currentTimeMillis();
+			}
+		} else if (unformatted.startsWith("   RNGesus Meter:")) {
+			RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
+		} else if (matcher.matches()) {
+			//matcher.group(1);
+			SlayerOverlay.slayerLVL = matcher.group(2);
+			if (!SlayerOverlay.slayerLVL.equals("9")) {
+				SlayerOverlay.slayerXp = matcher.group(3);
+			} else {
+				slayerXp = "maxed";
+			}
+		} else if (unformatted.startsWith("Sending to server") || (unformatted.startsWith(
+			"Your Slayer Quest has been cancelled!"))) {
+			SlayerOverlay.slayerQuest = false;
+			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
+		}
+		if (e.message.getFormattedText().contains(
+			EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {
+			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBid != null &&
+				System.currentTimeMillis() - NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBidMillis < 5000) {
+				NotEnoughUpdates.INSTANCE.sendChatMessage("/viewauction " +
+					NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.niceAucId(NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBid));
+			}
+		}
+		if (r != null) {
+			if (neu.manager.failViewItem(r)) {
+				e.setCanceled(true);
+			}
+			missingRecipe.set(true);
+		}
+		if (unformatted.startsWith("Sending to server") && neu.isOnSkyblock() &&
+			NotEnoughUpdates.INSTANCE.config.misc.streamerMode && e.message instanceof ChatComponentText) {
+			String m = e.message.getFormattedText();
+			String m2 = StreamerMode.filterChat(e.message.getFormattedText());
+			if (!m.equals(m2)) {
+				e.message = new ChatComponentText(m2);
+			}
+		}
+		if (unformatted.startsWith("You found ") && SBInfo.getInstance().getLocation() != null &&
+			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
+			CrystalMetalDetectorSolver.reset(true);
+		}
+		if (unformatted.startsWith("[NPC] Keeper of ") | unformatted.startsWith("[NPC] Professor Robot: ") ||
+			unformatted.startsWith("  ") || unformatted.startsWith("✦") || unformatted.equals(
+			"  You've earned a Crystal Loot Bundle!"))
+			OverlayManager.crystalHollowOverlay.message(unformatted);
+	}
+}

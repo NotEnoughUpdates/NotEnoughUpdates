@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityAgeable.class)
 public class MixinEntityAgeable {
-    @Shadow
-    protected int growingAge;
+	@Shadow
+	protected int growingAge;
 
-    // Fix NPE in vanilla code, that we need to work for VillagerTradeRecipe
-    @Inject(method = "getGrowingAge", cancellable = true, at = @At("HEAD"))
-    public void onGetGrowingAge(CallbackInfoReturnable<Integer> cir) {
-        if (((EntityAgeable) (Object) this).worldObj == null)
-            cir.setReturnValue(growingAge);
-    }
+	// Fix NPE in vanilla code, that we need to work for VillagerTradeRecipe
+	@Inject(method = "getGrowingAge", cancellable = true, at = @At("HEAD"))
+	public void onGetGrowingAge(CallbackInfoReturnable<Integer> cir) {
+		if (((EntityAgeable) (Object) this).worldObj == null)
+			cir.setReturnValue(growingAge);
+	}
 }

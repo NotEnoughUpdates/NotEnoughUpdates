@@ -25,50 +25,50 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Loader;
 
 public class Commands {
-    public Commands() {
+	public Commands() {
 
-        // Help Commands
-        ClientCommandHandler.instance.registerCommand(new LinksCommand());
-        ClientCommandHandler.instance.registerCommand(new HelpCommand());
-        ClientCommandHandler.instance.registerCommand(new StorageViewerWhyCommand());
-        ClientCommandHandler.instance.registerCommand(new FeaturesCommand());
-        ClientCommandHandler.instance.registerCommand(new SettingsCommand());
+		// Help Commands
+		ClientCommandHandler.instance.registerCommand(new LinksCommand());
+		ClientCommandHandler.instance.registerCommand(new HelpCommand());
+		ClientCommandHandler.instance.registerCommand(new StorageViewerWhyCommand());
+		ClientCommandHandler.instance.registerCommand(new FeaturesCommand());
+		ClientCommandHandler.instance.registerCommand(new SettingsCommand());
 
-        // Dev Commands
-        ClientCommandHandler.instance.registerCommand(new PackDevCommand());
-        ClientCommandHandler.instance.registerCommand(new DungeonWinTestCommand());
-        ClientCommandHandler.instance.registerCommand(new StatsCommand());
-        ClientCommandHandler.instance.registerCommand(new DevTestCommand());
-        ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
+		// Dev Commands
+		ClientCommandHandler.instance.registerCommand(new PackDevCommand());
+		ClientCommandHandler.instance.registerCommand(new DungeonWinTestCommand());
+		ClientCommandHandler.instance.registerCommand(new StatsCommand());
+		ClientCommandHandler.instance.registerCommand(new DevTestCommand());
+		ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
 
-        // Repo Commands
-        ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
-        ClientCommandHandler.instance.registerCommand(new RepoModeCommand());
-        ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
+		// Repo Commands
+		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
+		ClientCommandHandler.instance.registerCommand(new RepoModeCommand());
+		ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
 
-        // Profile Commands
-        ClientCommandHandler.instance.registerCommand(new PeekCommand());
-        ClientCommandHandler.instance.registerCommand(new ViewProfileCommand());
-        ClientCommandHandler.instance.registerCommand(new PvCommand());
-        if (!Loader.isModLoaded("skyblockextras")) ClientCommandHandler.instance.registerCommand(new CataCommand());
+		// Profile Commands
+		ClientCommandHandler.instance.registerCommand(new PeekCommand());
+		ClientCommandHandler.instance.registerCommand(new ViewProfileCommand());
+		ClientCommandHandler.instance.registerCommand(new PvCommand());
+		if (!Loader.isModLoaded("skyblockextras")) ClientCommandHandler.instance.registerCommand(new CataCommand());
 
-        // Dungeon Commands
-        ClientCommandHandler.instance.registerCommand(new MapCommand());
-        ClientCommandHandler.instance.registerCommand(new JoinDungeonCommand());
-        ClientCommandHandler.instance.registerCommand(new DnCommand());
-        ClientCommandHandler.instance.registerCommand(new DhCommand());
+		// Dungeon Commands
+		ClientCommandHandler.instance.registerCommand(new MapCommand());
+		ClientCommandHandler.instance.registerCommand(new JoinDungeonCommand());
+		ClientCommandHandler.instance.registerCommand(new DnCommand());
+		ClientCommandHandler.instance.registerCommand(new DhCommand());
 
-        // Misc Commands
-        ClientCommandHandler.instance.registerCommand(new CosmeticsCommand());
-        ClientCommandHandler.instance.registerCommand(new CustomizeCommand());
-        ClientCommandHandler.instance.registerCommand(new ScreenCommand("neubuttons", GuiInvButtonEditor::new));
-        ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuec", GuiEnchantColour::new));
-        ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuoverlay", NEUOverlayPlacements::new));
-        //ClientCommandHandler.instance.registerCommand(new ScreenCommand("neututorial", NeuTutorial::new));
-        ClientCommandHandler.instance.registerCommand(new AhCommand());
-        ClientCommandHandler.instance.registerCommand(new CalendarCommand());
+		// Misc Commands
+		ClientCommandHandler.instance.registerCommand(new CosmeticsCommand());
+		ClientCommandHandler.instance.registerCommand(new CustomizeCommand());
+		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neubuttons", GuiInvButtonEditor::new));
+		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuec", GuiEnchantColour::new));
+		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuoverlay", NEUOverlayPlacements::new));
+		//ClientCommandHandler.instance.registerCommand(new ScreenCommand("neututorial", NeuTutorial::new));
+		ClientCommandHandler.instance.registerCommand(new AhCommand());
+		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
 
-        // Fairy Soul Commands
-        ClientCommandHandler.instance.registerCommand(new FairySouls.FairySoulsCommand());
-    }
+		// Fairy Soul Commands
+		ClientCommandHandler.instance.registerCommand(new FairySouls.FairySoulsCommand());
+	}
 }
