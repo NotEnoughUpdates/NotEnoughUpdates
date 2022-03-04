@@ -1546,7 +1546,7 @@ public class GuiProfileViewer extends GuiScreen {
 					), 0);
 					ProfileViewer.Level levelObj =
 						ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
-							cataXp, 50, false
+							cataXp, 70, false
 						);
 					levelObjClasses.put(skillName, levelObj);
 				}
