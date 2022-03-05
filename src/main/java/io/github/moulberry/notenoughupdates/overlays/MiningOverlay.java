@@ -269,10 +269,10 @@ public class MiningOverlay extends TextOverlay {
 
 						if (name.contains("LOCKED")) {
 							ForgeItem item = new ForgeItem(forgeInt, 1, true);
-                            replaceForgeOrAdd(item, profileConfig.forgeItems, true);
+							replaceForgeOrAdd(item, profileConfig.forgeItems, true);
 						} else if (name.contains("EMPTY")) {
 							ForgeItem item = new ForgeItem(forgeInt, 0, true);
-                            replaceForgeOrAdd(item, profileConfig.forgeItems, true);
+							replaceForgeOrAdd(item, profileConfig.forgeItems, true);
 						} else {
 							Matcher matcher = timeRemainingTab.matcher(cleanName);
 
@@ -386,7 +386,7 @@ public class MiningOverlay extends TextOverlay {
 						overlayStrings.add(gemstonePowder);
 						break;
 					case 3:
-						if(profileConfig != null) {
+						if (profileConfig != null) {
 							overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
 						}
 						break;
