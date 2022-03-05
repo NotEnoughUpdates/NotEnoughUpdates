@@ -126,14 +126,14 @@ public class CrystalWishingCompassSolver {
 	 * seems to be very high.
 	 *
 	 * The target location varies based on various criteria, including, but not limited to:
-	 * 	Topaz Crystal (Khazad-dûm)                Magma Fields
-	 * 	Odawa (Jungle Village)                    Jungle w/no Jungle Key in inventory
-	 * 	Amethyst Crystal (Jungle Temple)          Jungle w/Jungle Key in inventory
-	 * 	Sapphire Crystal (Lost Precursor City)    Precursor Remnants
-	 * 	Jade Crystal (Mines of Divan)             Mithril Deposits
-	 * 	King Yolkar                               Goblin Holdout without "King's Scent I" effect
-	 * 	Goblin Queen                              Goblin Holdout with "King's Scent I" effect
-	 * 	Crystal Nucleus                           All Crystals found and none placed
+	 *  Topaz Crystal (Khazad-dûm)                Magma Fields
+	 *  Odawa (Jungle Village)                    Jungle w/no Jungle Key in inventory
+	 *  Amethyst Crystal (Jungle Temple)          Jungle w/Jungle Key in inventory
+	 *  Sapphire Crystal (Lost Precursor City)    Precursor Remnants
+	 *  Jade Crystal (Mines of Divan)             Mithril Deposits
+	 *  King Yolkar                               Goblin Holdout without "King's Scent I" effect
+	 *  Goblin Queen                              Goblin Holdout with "King's Scent I" effect
+	 *  Crystal Nucleus                           All Crystals found and none placed
 	 *                                            per-area structure missing, or because Hypixel.
 	 *                                            Always within 1 block of X=513 Y=106 Z=551.
 	 */
