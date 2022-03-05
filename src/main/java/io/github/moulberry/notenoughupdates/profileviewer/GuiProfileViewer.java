@@ -990,7 +990,7 @@ public class GuiProfileViewer extends GuiScreen {
 	};
 	private static int floorTime = 7;
 	private int floorLevelTo = -1;
-	private int floorLevelToXP = -1;
+	private long floorLevelToXP = -1;
 
 	private void calculateFloorLevelXP() {
 		JsonObject leveling = Constants.LEVELING;
@@ -1016,7 +1016,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (remaining < 0) {
 				remaining = 0;
 			}
-			floorLevelToXP = (int) remaining;
+			floorLevelToXP = (long) remaining;
 		} catch (Exception e) {
 			dungeonLevelTextField.setCustomBorderColour(0xffff0000);
 		}
@@ -1042,7 +1042,8 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
 
 		JsonObject hypixelInfo = profile.getHypixelProfile();
-		if (hypixelInfo == null) return;
+		//TODO REPLACE THIS
+		//if (hypixelInfo == null) return;
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
 
