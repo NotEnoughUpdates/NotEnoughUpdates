@@ -7,7 +7,10 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.util.vector.Vector2f;
@@ -47,6 +50,57 @@ public class CrystalHollowOverlay extends TextOverlay {
 		Supplier<TextOverlayStyle> styleSupplier
 	) {
 		super(position, dummyStrings, styleSupplier);
+	}
+
+	private final Pattern hotmCrystalNotFoundPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) \\u2716 Not Found");
+	private final Pattern hotmCrystalNotPlacedPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) \\u2716 Not Placed");
+	private final Pattern hotmCrystalPlacedPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) \\u2714 Placed");
+
+	private void updateHotmCrystalState(IInventory lower) {
+		NEUConfig.HiddenProfileSpecific perProfileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (perProfileConfig == null) return;
+
+		ItemStack crystalStateStack = lower.getStackInSlot(50);
+		if (crystalStateStack == null || !crystalStateStack.hasTagCompound()) {
+			return;
+		}
+
+		String name = Utils.cleanColour(crystalStateStack.getDisplayName()).trim();
+		if (!name.equals("Crystal Hollows Crystals")) {
+			return;
+		}
+
+		String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(crystalStateStack.getTagCompound());
+		for (String line : lore) {
+			if (line == null) {
+				continue;
+			}
+			String cleanLine = Utils.cleanColour(line).trim();
+			Matcher hotmCrystalNotPlacedMatcher = hotmCrystalNotPlacedPattern.matcher(cleanLine);
+			Matcher hotmCrystalNotFoundMatcher = hotmCrystalNotFoundPattern.matcher(cleanLine);
+			Matcher hotmCrystalPlacedMatcher = hotmCrystalPlacedPattern.matcher(cleanLine);
+			if (hotmCrystalNotFoundMatcher.matches() && perProfileConfig.crystals.containsKey(hotmCrystalNotFoundMatcher.group("crystal"))) {
+				perProfileConfig.crystals.put(hotmCrystalNotFoundMatcher.group("crystal"), 0);
+			} else if (hotmCrystalNotPlacedMatcher.matches() && perProfileConfig.crystals.containsKey(hotmCrystalNotPlacedMatcher.group("crystal"))) {
+				perProfileConfig.crystals.put(hotmCrystalNotPlacedMatcher.group("crystal"), 1);
+			} else if (hotmCrystalPlacedMatcher.matches() && perProfileConfig.crystals.containsKey(hotmCrystalPlacedMatcher.group("crystal"))) {
+				perProfileConfig.crystals.put(hotmCrystalPlacedMatcher.group("crystal"), 2);
+			}
+		}
+	}
+
+	@Override
+	public void updateFrequent() {
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest container = (ContainerChest) chest.inventorySlots;
+			IInventory lower = container.getLowerChestInventory();
+			String containerName = lower.getDisplayName().getUnformattedText();
+
+			if (containerName.equals("Heart of the Mountain") && lower.getSizeInventory() >= 54) {
+				updateHotmCrystalState(lower);
+			}
+		}
 	}
 
 	@Override
