@@ -115,7 +115,7 @@ public class CrystalWishingCompassSolver {
 		}
 	}
 
-	/**
+	/*
 	 * Processes particles if the wishing compass was used within the last 5 seconds.
 	 *
 	 * The first and the last particles are used to create a line for each wishing compass
@@ -136,11 +136,6 @@ public class CrystalWishingCompassSolver {
 	 * 	Crystal Nucleus													- All Crystals found and none placed
 	 * 																						per-area structure missing, or because Hypixel.
 	 * 																						Always within 1 block of X=513 Y=106 Z=551.
-	 *
-	 * @param particleType Particle type.
-	 * @param x Absolute X coordinate of particle.
-	 * @param y Absolute Y coordinate of particle.
-	 * @param z Absolute Z coordinate of particle.
 	 */
 	public void onSpawnParticle(
 		EnumParticleTypes particleType,
