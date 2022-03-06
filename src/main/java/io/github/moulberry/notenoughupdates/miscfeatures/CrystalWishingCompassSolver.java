@@ -65,10 +65,7 @@ public class CrystalWishingCompassSolver {
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Unload event) {
 		resetForNewTarget();
-		isSkytilsPresent = Loader.instance().getActiveModList().stream().anyMatch(mod -> mod
-			.getName()
-			.toLowerCase()
-			.contains("skytils"));
+		isSkytilsPresent = Loader.isModLoaded("skytils");
 	}
 
 	@SubscribeEvent
