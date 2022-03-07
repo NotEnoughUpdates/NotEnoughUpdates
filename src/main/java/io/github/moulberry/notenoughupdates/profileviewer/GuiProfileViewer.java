@@ -1042,8 +1042,7 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
 
 		JsonObject hypixelInfo = profile.getHypixelProfile();
-		//TODO REPLACE THIS
-		//if (hypixelInfo == null) return;
+		if (hypixelInfo == null) return;
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
 
