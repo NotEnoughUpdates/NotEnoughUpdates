@@ -563,7 +563,6 @@ public class ProfileViewer {
 			}
 			if (networth == 0) return -1;
 
-
 			networth = (int) (networth * 1.3f);
 
 			JsonObject petsInfo = getPetsInfo(profileId);
@@ -1179,8 +1178,12 @@ public class ProfileViewer {
 			if (profileId == null) profileId = latestProfile;
 			if (collectionInfoMap.containsKey(profileId)) return collectionInfoMap.get(profileId);
 
+			List<JsonObject> coopMembers = getCoopProfileInformation(profileId);
 			JsonElement unlocked_coll_tiers_element = Utils.getElement(profileInfo, "unlocked_coll_tiers");
 			JsonElement crafted_generators_element = Utils.getElement(profileInfo, "crafted_generators");
+			JsonObject fakeMember = new JsonObject();
+			fakeMember.add("crafted_generators", crafted_generators_element);
+			coopMembers.add(coopMembers.size(), fakeMember);
 			JsonElement collectionInfoElement = Utils.getElement(profileInfo, "collection");
 
 			if (unlocked_coll_tiers_element == null || collectionInfoElement == null) {
@@ -1231,17 +1234,15 @@ public class ProfileViewer {
 					}
 				}
 			}
-
-			if (crafted_generators_element != null && crafted_generators_element.isJsonArray()) {
-				JsonArray crafted_generators = crafted_generators_element.getAsJsonArray();
-				for (int i = 0; i < crafted_generators.size(); i++) {
-					String unlocked = crafted_generators.get(i).getAsString();
-
+			for (JsonObject current_member_info : coopMembers) {
+				if (!current_member_info.has("crafted_generators")) continue;
+				JsonArray crafted_generators = Utils.getElement(current_member_info, "crafted_generators").getAsJsonArray();
+				for (int j = 0; j < crafted_generators.size(); j++) {
+					String unlocked = crafted_generators.get(j).getAsString();
 					Matcher matcher = COLL_TIER_PATTERN.matcher(unlocked);
-
 					if (matcher.find()) {
-						String tier_str = matcher.group(1);
-						int tier = Integer.parseInt(tier_str);
+						String tierString = matcher.group(1);
+						int tier = Integer.parseInt(tierString);
 						String coll = unlocked.substring(0, unlocked.length() - (matcher.group().length()));
 						if (!minionTiers.has(coll) || minionTiers.get(coll).getAsInt() < tier) {
 							minionTiers.addProperty(coll, tier);
