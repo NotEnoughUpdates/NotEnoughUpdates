@@ -107,8 +107,6 @@ public class AuctionBINWarning extends GuiElement {
 				lowestPrice = (int) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalname);
 			}
 
-			//TODO: Add option for warning if lowest price does not exist
-
 			float undercutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.warningThreshold / 100;
 			if (undercutFactor < 0) undercutFactor = 0;
 			if (undercutFactor > 1) undercutFactor = 1;
