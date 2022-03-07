@@ -61,8 +61,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GuiProfileViewer extends GuiScreen {
-	private static final ResourceLocation CHEST_GUI_TEXTURE =
-		new ResourceLocation("textures/gui/container/generic_54.png");
 	public static final ResourceLocation pv_basic = new ResourceLocation("notenoughupdates:pv_basic.png");
 	public static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
 	public static final ResourceLocation pv_extra = new ResourceLocation("notenoughupdates:pv_extra.png");
@@ -80,46 +78,173 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation resource_packs =
 		new ResourceLocation("minecraft:textures/gui/resource_packs.png");
 	public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
-
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS =
+		new HashMap<String, HashMap<String, Float>>() {{
+			put("PET_ITEM_BIG_TEETH_COMMON", new HashMap<String, Float>() {{
+				put("CRIT_CHANCE", 5f);
+			}});
+			put("PET_ITEM_HARDENED_SCALES_UNCOMMON", new HashMap<String, Float>() {{
+				put("DEFENCE", 25f);
+			}});
+			put("PET_ITEM_LUCKY_CLOVER", new HashMap<String, Float>() {{
+				put("MAGIC_FIND", 7f);
+			}});
+			put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", new HashMap<String, Float>() {{
+				put("CRIT_DAMAGE", 15f);
+			}});
+		}};
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT =
+		new HashMap<String, HashMap<String, Float>>() {{
+			put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<String, Float>() {{
+				put("CRIT_DAMAGE", 1.4f);
+				put("CRIT_CHANCE", 1.4f);
+			}});
+			put("PET_ITEM_TEXTBOOK", new HashMap<String, Float>() {{
+				put("INTELLIGENCE", 2f);
+			}});
+		}};
+	private static final ResourceLocation CHEST_GUI_TEXTURE =
+		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-
-	private final ProfileViewer.Profile profile;
+	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
+	private static final ItemStack iron_pick = new ItemStack(Items.iron_pickaxe);
+	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
+	private static final String[] dungSkillsName = {"Healer", "Mage", "Berserk", "Archer", "Tank"};
+	private static final ItemStack[] dungSkillsStack = {
+		new ItemStack(Items.potionitem, 1, 16389),
+		new ItemStack(Items.blaze_rod),
+		new ItemStack(Items.iron_sword),
+		new ItemStack(Items.bow),
+		new ItemStack(Items.leather_chestplate)
+	};
+	private static final String[] bossFloorArr = {"Bonzo", "Scarf", "Professor", "Thorn", "Livid", "Sadan", "Necron"};
+	private static final String[] bossFloorHeads = {
+		"12716ecbf5b8da00b05f316ec6af61e8bd02805b21eb8e440151468dc656549c",
+		"7de7bbbdf22bfe17980d4e20687e386f11d59ee1db6f8b4762391b79a5ac532d",
+		"9971cee8b833a62fc2a612f3503437fdf93cad692d216b8cf90bbb0538c47dd8",
+		"8b6a72138d69fbbd2fea3fa251cabd87152e4f1c97e5f986bf685571db3cc0",
+		"c1007c5b7114abec734206d4fc613da4f3a0e99f71ff949cedadc99079135a0b",
+		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
+		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a"
+	};
+	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {{
+		put(
+			"catacombs",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("DUNGEON_STONE")), EnumChatFormatting.GRAY + "Normal Mode", true)
+		);
+		put(
+			"master_catacombs",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("MASTER_SKULL_TIER_7")), EnumChatFormatting.GRAY + "Master Mode", true)
+		);
+	}};
+	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {{
+		put(
+			"inv_contents",
+			Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory")
+		);
+		put(
+			"ender_chest_contents",
+			Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
+		);
+		// put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
+		put(
+			"backpack_contents",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("JUMBO_BACKPACK")), EnumChatFormatting.GRAY + "Backpacks", true)
+		);
+		put(
+			"personal_vault_contents",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true)
+		);
+		put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
+		put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
+		put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
+		put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
+	}};
+	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+([0-9]+)");
+	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+([0-9]+)");
+	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+([0-9]+)");
+	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
+	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
+	private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
+	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {{
+		put("COMMON", "0");
+		put("UNCOMMON", "1");
+		put("RARE", "2");
+		put("EPIC", "3");
+		put("LEGENDARY", "4");
+		put("MYTHIC", "5");
+	}};
+	private static int floorTime = 7;
+	private static int guiLeft;
+	private static int guiTop;
+	private static ProfileViewer.Profile profile = null;
+	private final GuiElementTextField playerNameTextField;
+	private final HashMap<String, ProfileViewer.Level> levelObjCatas = new HashMap<>();
+	private final HashMap<String, ProfileViewer.Level> levelObjhotms = new HashMap<>();
+	private final HashMap<String, HashMap<String, ProfileViewer.Level>> levelObjClasseses = new HashMap<>();
+	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	private final String[] romans = new String[]{
+		"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
+		"XII", "XIII", "XIV", "XV", "XVI", "XVII", "XIX", "XX"
+	};
+	private final int COLLS_XCOUNT = 5;
+	private final int COLLS_YCOUNT = 4;
+	private final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
+	private final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
+	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
+	private final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	private final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
+	Shader blurShaderHorz = null;
+	Framebuffer blurOutputHorz = null;
+	Shader blurShaderVert = null;
+	Framebuffer blurOutputVert = null;
 	private int sizeX;
 	private int sizeY;
-	private int guiLeft;
-	private int guiTop;
-
 	private float backgroundRotation = 0;
-
 	private long currentTime = 0;
 	private long lastTime = 0;
 	private long startTime = 0;
-
 	private List<String> tooltipToDisplay = null;
-
 	private String profileId = null;
 	private boolean profileDropdownSelected = false;
-
-	public enum ProfileViewerPage {
-		LOADING(null),
-		INVALID_NAME(null),
-		NO_SKYBLOCK(null),
-		BASIC(new ItemStack(Items.paper)),
-		DUNG(new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
-		EXTRA(new ItemStack(Items.book)),
-		INVS(new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
-		COLS(new ItemStack(Items.painting)),
-		PETS(new ItemStack(Items.bone)),
-		MINING(new ItemStack(Items.iron_pickaxe));
-
-		public final ItemStack stack;
-
-		ProfileViewerPage(ItemStack stack) {
-			this.stack = stack;
-		}
-	}
-
+	private ItemStack selectedCollectionCategory = null;
+	private int floorLevelTo = -1;
+	private long floorLevelToXP = -1;
+	private boolean onMasterMode = false;
+	private int selectedPet = -1;
+	private int petsPage = 0;
+	private List<JsonObject> sortedPets = null;
+	private List<ItemStack> sortedPetsStack = null;
+	private ItemStack[] bestWeapons = null;
+	private ItemStack[] bestRods = null;
+	private ItemStack[] armorItems = null;
+	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
+	private String selectedInventory = "inv_contents";
+	private int currentInventoryIndex = 0;
+	private int arrowCount = -1;
+	private int greenCandyCount = -1;
+	private int purpleCandyCount = -1;
+	private ItemStack lastBackpack;
+	private int lastBackpackX;
+	private int lastBackpackY;
+	private EntityOtherPlayerMP entityPlayer = null;
+	private ResourceLocation playerLocationSkin = null;
+	private ResourceLocation playerLocationCape = null;
+	private String skinType = null;
+	private TreeMap<Integer, Set<String>> topKills = null;
+	private TreeMap<Integer, Set<String>> topDeaths = null;
+	private int backgroundClickedX = -1;
+	private boolean loadingProfile = false;
+	private double lastBgBlurFactor = -1;
 	public GuiProfileViewer(ProfileViewer.Profile profile) {
 		this.profile = profile;
 		String name = "";
@@ -137,7 +262,175 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private final GuiElementTextField playerNameTextField;
+	private static JsonObject getPetInfo(String pet_name, String rarity) {
+		JsonObject petInfo = new JsonObject();
+		//System.out.println(pet_name);
+		//System.out.println(rarity);
+
+		if (Constants.PETS.has("custom_pet_leveling") &&
+			Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
+			JsonObject pet = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet_name);
+			if (pet.has("type") && pet.has("pet_levels")) {
+				int type = pet.get("type").getAsInt();
+				switch (type) {
+					case 1:
+						JsonArray defaultLevels = Constants.PETS.getAsJsonArray("pet_levels");
+						defaultLevels.addAll(pet.getAsJsonArray("pet_levels"));
+						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+						break;
+					case 2:
+						petInfo.add("pet_levels", pet.getAsJsonArray("pet_levels"));
+						break;
+					default:
+						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+						break;
+				}
+			} else {
+				petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+			}
+			if (pet.has("max_level")) {
+				petInfo.add("max_level", pet.get("max_level"));
+			} else {
+				petInfo.add("max_level", new JsonPrimitive(100));
+			}
+
+			if (pet.has("pet_rarity_offset")) {
+				petInfo.add("offset", pet.get("pet_rarity_offset"));
+			} else {
+				petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
+			}
+
+		} else {
+			//System.out.println("Default Path");
+			petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
+			petInfo.add("max_level", new JsonPrimitive(100));
+			petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+		}
+
+		return petInfo;
+
+	}
+
+	public static PetLevel getPetLevel(String pet_name, String rarity, float exp) {
+		JsonObject petInfo = getPetInfo(pet_name, rarity);
+		int offset = petInfo.get("offset").getAsInt();
+		int maxPetLevel = petInfo.get("max_level").getAsInt();
+		JsonArray levels = petInfo.getAsJsonArray("pet_levels");
+
+		float xpTotal = 0;
+		float level = 1;
+		float currentLevelRequirement = 0;
+		float currentLevelProgress = 0;
+
+		boolean addLevel = true;
+
+		for (int i = offset; i < offset + maxPetLevel - 1; i++) {
+			if (addLevel) {
+				currentLevelRequirement = levels.get(i).getAsFloat();
+				xpTotal += currentLevelRequirement;
+				if (xpTotal > exp) {
+					currentLevelProgress = (exp - (xpTotal - currentLevelRequirement));
+					addLevel = false;
+				} else {
+					level += 1;
+				}
+			} else {
+
+				xpTotal += levels.get(i).getAsFloat();
+
+			}
+		}
+
+		level += currentLevelProgress / currentLevelRequirement;
+		if (level <= 0) {
+			level = 1;
+		} else if (level > maxPetLevel) {
+			level = maxPetLevel;
+		}
+		PetLevel levelObj = new PetLevel();
+		levelObj.level = level;
+		levelObj.currentLevelRequirement = currentLevelRequirement;
+		levelObj.maxXP = xpTotal;
+		levelObj.levelPercentage = currentLevelProgress / currentLevelRequirement;
+		levelObj.levelXp = currentLevelProgress;
+		levelObj.totalXp = exp;
+		return levelObj;
+	}
+
+	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 1000) {
+			if (n % 1 == 0) {
+				return Integer.toString((int) n);
+			} else {
+				return String.format("%.2f", n);
+			}
+		}
+
+		double d = ((long) n / 100) / 10.0;
+		boolean isRound = (d * 10) % 10 == 0;
+		return (d < 1000 ?
+			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
+				(int) d * 10 / 10 : d + ""
+			) + "" + c[iteration])
+			: shortNumberFormat(d, iteration + 1));
+	}
+
+	public static void drawEntityOnScreen(
+		int posX,
+		int posY,
+		int scale,
+		float mouseX,
+		float mouseY,
+		EntityLivingBase ent
+	) {
+		GlStateManager.enableColorMaterial();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate((float) posX, (float) posY, 50.0F);
+		GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
+		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+		float renderYawOffset = ent.renderYawOffset;
+		float f1 = ent.rotationYaw;
+		float f2 = ent.rotationPitch;
+		float f3 = ent.prevRotationYawHead;
+		float f4 = ent.rotationYawHead;
+		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+		RenderHelper.enableStandardItemLighting();
+		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(25, 1.0F, 0.0F, 0.0F);
+		ent.renderYawOffset = (float) Math.atan(mouseX / 40.0F) * 20.0F;
+		ent.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
+		ent.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
+		ent.rotationYawHead = ent.rotationYaw;
+		ent.prevRotationYawHead = ent.rotationYaw;
+		RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+		rendermanager.setPlayerViewY(180.0F);
+		rendermanager.setRenderShadow(false);
+		rendermanager.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+
+		ent.renderYawOffset = renderYawOffset;
+		ent.rotationYaw = f1;
+		ent.rotationPitch = f2;
+		ent.prevRotationYawHead = f3;
+		ent.rotationYawHead = f4;
+		GlStateManager.popMatrix();
+		RenderHelper.disableStandardItemLighting();
+		GlStateManager.disableRescaleNormal();
+		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GlStateManager.disableTexture2D();
+		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+	}
+
+	public static int getGuiLeft() {
+		return guiLeft;
+	}
+
+	public static int getGuiTop() {
+		return guiTop;
+	}
+
+	public static ProfileViewer.Profile getProfile() {
+		return profile;
+	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -362,6 +655,9 @@ public class GuiProfileViewer extends GuiScreen {
 				break;
 			case MINING:
 				drawMiningPage(mouseX, mouseY, partialTicks);
+				break;
+			case BINGO:
+				BingoPage.renderPage(mouseX, mouseY, partialTicks);
 				break;
 			case LOADING:
 				String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
@@ -941,8 +1237,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private ItemStack selectedCollectionCategory = null;
-
 	private void mouseReleasedCols(int mouseX, int mouseY, int mouseButton) {
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
@@ -959,38 +1253,6 @@ public class GuiProfileViewer extends GuiScreen {
 			yIndex++;
 		}
 	}
-
-	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
-	private static final ItemStack iron_pick = new ItemStack(Items.iron_pickaxe);
-	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
-
-	private final HashMap<String, ProfileViewer.Level> levelObjCatas = new HashMap<>();
-	private final HashMap<String, ProfileViewer.Level> levelObjhotms = new HashMap<>();
-	private final HashMap<String, HashMap<String, ProfileViewer.Level>> levelObjClasseses = new HashMap<>();
-
-	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-
-	private static final String[] dungSkillsName = {"Healer", "Mage", "Berserk", "Archer", "Tank"};
-	private static final ItemStack[] dungSkillsStack = {
-		new ItemStack(Items.potionitem, 1, 16389),
-		new ItemStack(Items.blaze_rod),
-		new ItemStack(Items.iron_sword),
-		new ItemStack(Items.bow),
-		new ItemStack(Items.leather_chestplate)
-	};
-	private static final String[] bossFloorArr = {"Bonzo", "Scarf", "Professor", "Thorn", "Livid", "Sadan", "Necron"};
-	private static final String[] bossFloorHeads = {
-		"12716ecbf5b8da00b05f316ec6af61e8bd02805b21eb8e440151468dc656549c",
-		"7de7bbbdf22bfe17980d4e20687e386f11d59ee1db6f8b4762391b79a5ac532d",
-		"9971cee8b833a62fc2a612f3503437fdf93cad692d216b8cf90bbb0538c47dd8",
-		"8b6a72138d69fbbd2fea3fa251cabd87152e4f1c97e5f986bf685571db3cc0",
-		"c1007c5b7114abec734206d4fc613da4f3a0e99f71ff949cedadc99079135a0b",
-		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
-		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a"
-	};
-	private static int floorTime = 7;
-	private int floorLevelTo = -1;
-	private long floorLevelToXP = -1;
 
 	private void calculateFloorLevelXP() {
 		JsonObject leveling = Constants.LEVELING;
@@ -1021,21 +1283,6 @@ public class GuiProfileViewer extends GuiScreen {
 			dungeonLevelTextField.setCustomBorderColour(0xffff0000);
 		}
 	}
-
-	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {{
-		put(
-			"catacombs",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("DUNGEON_STONE")), EnumChatFormatting.GRAY + "Normal Mode", true)
-		);
-		put(
-			"master_catacombs",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("MASTER_SKULL_TIER_7")), EnumChatFormatting.GRAY + "Master Mode", true)
-		);
-	}};
 
 	private void drawDungPage(int mouseX, int mouseY, float partialTicks) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dung);
@@ -1570,8 +1817,6 @@ public class GuiProfileViewer extends GuiScreen {
 		//drawSideButton(2, dungeonsModeIcons.get("catacombs"), false);
 	}
 
-	private boolean onMasterMode = false;
-
 	//TODO: improve this shit
 	private void drawSideButtons() {
 		// GlStateManager.pushMatrix();
@@ -1687,150 +1932,6 @@ public class GuiProfileViewer extends GuiScreen {
 		GL11.glScalef(1 / 0.7f, 1 / 0.7f, 1);
 		GL11.glTranslatef(-(x), -(y - 6f), 0);
 	}
-
-	public static class PetLevel {
-		public float level;
-		public float currentLevelRequirement;
-		public float maxXP;
-		public float levelPercentage;
-		public float levelXp;
-		public float totalXp;
-	}
-
-	private static JsonObject getPetInfo(String pet_name, String rarity) {
-		JsonObject petInfo = new JsonObject();
-		//System.out.println(pet_name);
-		//System.out.println(rarity);
-
-		if (Constants.PETS.has("custom_pet_leveling") &&
-			Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
-			JsonObject pet = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet_name);
-			if (pet.has("type") && pet.has("pet_levels")) {
-				int type = pet.get("type").getAsInt();
-				switch (type) {
-					case 1:
-						JsonArray defaultLevels = Constants.PETS.getAsJsonArray("pet_levels");
-						defaultLevels.addAll(pet.getAsJsonArray("pet_levels"));
-						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-						break;
-					case 2:
-						petInfo.add("pet_levels", pet.getAsJsonArray("pet_levels"));
-						break;
-					default:
-						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-						break;
-				}
-			} else {
-				petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-			}
-			if (pet.has("max_level")) {
-				petInfo.add("max_level", pet.get("max_level"));
-			} else {
-				petInfo.add("max_level", new JsonPrimitive(100));
-			}
-
-			if (pet.has("pet_rarity_offset")) {
-				petInfo.add("offset", pet.get("pet_rarity_offset"));
-			} else {
-				petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
-			}
-
-		} else {
-			//System.out.println("Default Path");
-			petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
-			petInfo.add("max_level", new JsonPrimitive(100));
-			petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-		}
-
-		return petInfo;
-
-	}
-
-	public static PetLevel getPetLevel(String pet_name, String rarity, float exp) {
-		JsonObject petInfo = getPetInfo(pet_name, rarity);
-		int offset = petInfo.get("offset").getAsInt();
-		int maxPetLevel = petInfo.get("max_level").getAsInt();
-		JsonArray levels = petInfo.getAsJsonArray("pet_levels");
-
-		float xpTotal = 0;
-		float level = 1;
-		float currentLevelRequirement = 0;
-		float currentLevelProgress = 0;
-
-		boolean addLevel = true;
-
-		for (int i = offset; i < offset + maxPetLevel - 1; i++) {
-			if (addLevel) {
-				currentLevelRequirement = levels.get(i).getAsFloat();
-				xpTotal += currentLevelRequirement;
-				if (xpTotal > exp) {
-					currentLevelProgress = (exp - (xpTotal - currentLevelRequirement));
-					addLevel = false;
-				} else {
-					level += 1;
-				}
-			} else {
-
-				xpTotal += levels.get(i).getAsFloat();
-
-			}
-		}
-
-		level += currentLevelProgress / currentLevelRequirement;
-		if (level <= 0) {
-			level = 1;
-		} else if (level > maxPetLevel) {
-			level = maxPetLevel;
-		}
-		PetLevel levelObj = new PetLevel();
-		levelObj.level = level;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = xpTotal;
-		levelObj.levelPercentage = currentLevelProgress / currentLevelRequirement;
-		levelObj.levelXp = currentLevelProgress;
-		levelObj.totalXp = exp;
-		return levelObj;
-	}
-
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS =
-		new HashMap<String, HashMap<String, Float>>() {{
-			put("PET_ITEM_BIG_TEETH_COMMON", new HashMap<String, Float>() {{
-				put("CRIT_CHANCE", 5f);
-			}});
-			put("PET_ITEM_HARDENED_SCALES_UNCOMMON", new HashMap<String, Float>() {{
-				put("DEFENCE", 25f);
-			}});
-			put("PET_ITEM_LUCKY_CLOVER", new HashMap<String, Float>() {{
-				put("MAGIC_FIND", 7f);
-			}});
-			put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", new HashMap<String, Float>() {{
-				put("CRIT_DAMAGE", 15f);
-			}});
-		}};
-
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT =
-		new HashMap<String, HashMap<String, Float>>() {{
-			put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<String, Float>() {{
-				put("CRIT_DAMAGE", 1.4f);
-				put("CRIT_CHANCE", 1.4f);
-			}});
-			put("PET_ITEM_TEXTBOOK", new HashMap<String, Float>() {{
-				put("INTELLIGENCE", 2f);
-			}});
-		}};
-
-	private int selectedPet = -1;
-	private int petsPage = 0;
-	private List<JsonObject> sortedPets = null;
-	private List<ItemStack> sortedPetsStack = null;
-	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {{
-		put("COMMON", "0");
-		put("UNCOMMON", "1");
-		put("RARE", "2");
-		put("EPIC", "3");
-		put("LEGENDARY", "4");
-		put("MYTHIC", "5");
-	}};
 
 	private void drawPetsPage(int mouseX, int mouseY, float partialTicks) {
 		JsonObject petsInfo = profile.getPetsInfo(profileId);
@@ -2198,16 +2299,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private final String[] romans = new String[]{
-		"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
-		"XII", "XIII", "XIV", "XV", "XVI", "XVII", "XIX", "XX"
-	};
-
-	private final int COLLS_XCOUNT = 5;
-	private final int COLLS_YCOUNT = 4;
-	private final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
-	private final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
-
 	private void drawColsPage(int mouseX, int mouseY, float partialTicks) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_cols);
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
@@ -2434,34 +2525,6 @@ public class GuiProfileViewer extends GuiScreen {
 		//190
 	}
 
-	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {{
-		put(
-			"inv_contents",
-			Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory")
-		);
-		put(
-			"ender_chest_contents",
-			Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
-		);
-		// put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
-		put(
-			"backpack_contents",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("JUMBO_BACKPACK")), EnumChatFormatting.GRAY + "Backpacks", true)
-		);
-		put(
-			"personal_vault_contents",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true)
-		);
-		put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
-		put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
-		put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
-		put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
-	}};
-
 	public int countItemsInInventory(
 		String internalname,
 		JsonObject inventoryInfo,
@@ -2486,10 +2549,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		return count;
 	}
-
-	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+([0-9]+)");
-	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+([0-9]+)");
-	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+([0-9]+)");
 
 	private ItemStack[] findBestItems(
 		JsonObject inventoryInfo,
@@ -2567,8 +2626,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		return 0;
 	}
-
-	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
 
 	public ItemStack[][][] getItemsForInventory(JsonObject inventoryInfo, String invName) {
 		if (inventoryItems.containsKey(invName)) return inventoryItems.get(invName);
@@ -2680,20 +2737,6 @@ public class GuiProfileViewer extends GuiScreen {
 		inventoryItems.put(invName, inventories);
 		return inventories;
 	}
-
-	private ItemStack[] bestWeapons = null;
-	private ItemStack[] bestRods = null;
-	private ItemStack[] armorItems = null;
-	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
-	private String selectedInventory = "inv_contents";
-	private int currentInventoryIndex = 0;
-	private int arrowCount = -1;
-	private int greenCandyCount = -1;
-	private int purpleCandyCount = -1;
-	private final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	private ItemStack lastBackpack;
-	private int lastBackpackX;
-	private int lastBackpackY;
 
 	private void drawInvsPage(int mouseX, int mouseY, float partialTicks) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_invs);
@@ -2973,13 +3016,6 @@ public class GuiProfileViewer extends GuiScreen {
 		return entityPlayer;
 	}
 
-	private EntityOtherPlayerMP entityPlayer = null;
-	private ResourceLocation playerLocationSkin = null;
-	private ResourceLocation playerLocationCape = null;
-	private String skinType = null;
-
-	private final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
-
 	public ResourceLocation[] getPanoramasForLocation(String location, String identifier) {
 		if (panoramasMap.containsKey(location + identifier)) return panoramasMap.get(location + identifier);
 		try {
@@ -3011,9 +3047,6 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 	}
-
-	private TreeMap<Integer, Set<String>> topKills = null;
-	private TreeMap<Integer, Set<String>> topDeaths = null;
 
 	private void drawExtraPage(int mouseX, int mouseY, float partialTicks) {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -4351,31 +4384,6 @@ public class GuiProfileViewer extends GuiScreen {
 		return null;
 	}
 
-	private int backgroundClickedX = -1;
-
-	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
-
-	public static String shortNumberFormat(double n, int iteration) {
-		if (n < 1000) {
-			if (n % 1 == 0) {
-				return Integer.toString((int) n);
-			} else {
-				return String.format("%.2f", n);
-			}
-		}
-
-		double d = ((long) n / 100) / 10.0;
-		boolean isRound = (d * 10) % 10 == 0;
-		return (d < 1000 ?
-			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
-				(int) d * 10 / 10 : d + ""
-			) + "" + c[iteration])
-			: shortNumberFormat(d, iteration + 1));
-	}
-
-	private boolean loadingProfile = false;
-	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
-
 	private void drawBasicPage(int mouseX, int mouseY, float partialTicks) {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 
@@ -4909,89 +4917,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
-
-	public static void drawEntityOnScreen(
-		int posX,
-		int posY,
-		int scale,
-		float mouseX,
-		float mouseY,
-		EntityLivingBase ent
-	) {
-		GlStateManager.enableColorMaterial();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate((float) posX, (float) posY, 50.0F);
-		GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
-		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-		float renderYawOffset = ent.renderYawOffset;
-		float f1 = ent.rotationYaw;
-		float f2 = ent.rotationPitch;
-		float f3 = ent.prevRotationYawHead;
-		float f4 = ent.rotationYawHead;
-		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
-		RenderHelper.enableStandardItemLighting();
-		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(25, 1.0F, 0.0F, 0.0F);
-		ent.renderYawOffset = (float) Math.atan(mouseX / 40.0F) * 20.0F;
-		ent.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
-		ent.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
-		ent.rotationYawHead = ent.rotationYaw;
-		ent.prevRotationYawHead = ent.rotationYaw;
-		RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-		rendermanager.setPlayerViewY(180.0F);
-		rendermanager.setRenderShadow(false);
-		rendermanager.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
-
-        /*{
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(770, 771);
-            rendermanager.renderEngine.bindTexture(shadowTextures);
-            GlStateManager.depthMask(false);
-            float f = 0.5f;
-
-            if (ent instanceof EntityLiving) {
-                EntityLiving entityliving = (EntityLiving)ent;
-                f *= entityliving.getRenderSizeModifier();
-
-                if (entityliving.isChild())
-                {
-                    f *= 0.5F;
-                }
-            }
-
-            /*Tessellator tessellator = Tessellator.getInstance();
-            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-
-            GlStateManager.color(1, 1, 1, 0.5f);
-            Utils.drawTexturedRect(-0.5f*tl.x, -0.5f*tl.x, 1*tl.x, 1*tl.x);
-
-            /*for (BlockPos blockpos : BlockPos.getAllInBoxMutable(new BlockPos(i, k, i1), new BlockPos(j, l, j1))) {
-                Block block = world.getBlockState(blockpos.down()).getBlock();
-
-                if (block.getRenderType() != -1 && world.getLightFromNeighbors(blockpos) > 3) {
-                    this.func_180549_a(block, x, y, z, blockpos, shadowAlpha, f, d2, d3, d4);
-                }
-            }
-
-            GlStateManager.disableBlend();
-            GlStateManager.depthMask(true);
-        }*/
-
-		ent.renderYawOffset = renderYawOffset;
-		ent.rotationYaw = f1;
-		ent.rotationPitch = f2;
-		ent.prevRotationYawHead = f3;
-		ent.rotationYawHead = f4;
-		GlStateManager.popMatrix();
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-		GlStateManager.disableTexture2D();
-		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-	}
-
 	public void resetCache() {
 		bestWeapons = null;
 		bestRods = null;
@@ -5010,11 +4935,6 @@ public class GuiProfileViewer extends GuiScreen {
 		sortedPetsStack = null;
 		selectedPet = -1;
 	}
-
-	Shader blurShaderHorz = null;
-	Framebuffer blurOutputHorz = null;
-	Shader blurShaderVert = null;
-	Framebuffer blurOutputVert = null;
 
 	/**
 	 * Creates a projection matrix that projects from our coordinate space [0->width; 0->height] to OpenGL coordinate
@@ -5035,14 +4955,6 @@ public class GuiProfileViewer extends GuiScreen {
 		projMatrix.m23 = -1.0001999F;
 		return projMatrix;
 	}
-
-	/**
-	 * Renders whatever is currently in the Minecraft framebuffer to our two framebuffers, applying a horizontal
-	 * and vertical blur separately in order to significantly save computation time.
-	 * This is only possible if framebuffers are supported by the system, so this method will exit prematurely
-	 * if framebuffers are not available. (Apple machines, for example, have poor framebuffer support).
-	 */
-	private double lastBgBlurFactor = -1;
 
 	private void blurBackground() {
 		if (!OpenGlHelper.isFramebufferEnabled()) return;
@@ -5123,5 +5035,34 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawTexturedRect(x, y, blurWidth, blurHeight, uMin, uMax, vMin, vMax);
 		//Utils.setScreen(width, height, f);
 		blurOutputVert.unbindFramebufferTexture();
+	}
+
+	public enum ProfileViewerPage {
+		LOADING(null),
+		INVALID_NAME(null),
+		NO_SKYBLOCK(null),
+		BASIC(new ItemStack(Items.paper)),
+		DUNG(new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
+		EXTRA(new ItemStack(Items.book)),
+		INVS(new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
+		COLS(new ItemStack(Items.painting)),
+		PETS(new ItemStack(Items.bone)),
+		MINING(new ItemStack(Items.iron_pickaxe)),
+		BINGO(new ItemStack(Items.tnt_minecart));
+
+		public final ItemStack stack;
+
+		ProfileViewerPage(ItemStack stack) {
+			this.stack = stack;
+		}
+	}
+
+	public static class PetLevel {
+		public float level;
+		public float currentLevelRequirement;
+		public float maxXP;
+		public float levelPercentage;
+		public float levelXp;
+		public float totalXp;
 	}
 }

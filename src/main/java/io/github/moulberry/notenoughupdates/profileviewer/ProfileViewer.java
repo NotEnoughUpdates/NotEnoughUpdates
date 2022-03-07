@@ -435,15 +435,18 @@ public class ProfileViewer {
 		private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingGuildStatusState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
 		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?[0-9]+)");
 		private String latestProfile = null;
 		private JsonArray playerInformation = null;
 		private JsonObject guildInformation = null;
 		private JsonObject basicInfo = null;
 		private JsonObject playerStatus = null;
+		private JsonObject bingoInformation = null;
 		private long lastPlayerInfoState = 0;
 		private long lastStatusInfoState = 0;
 		private long lastGuildInfoState = 0;
+		private long lastBingoInfoState = 0;
 
 		public Profile(String uuid) {
 			this.uuid = uuid;
@@ -470,6 +473,33 @@ public class ProfileViewer {
 				}, () -> updatingPlayerStatusState.set(false)
 			);
 
+			return null;
+		}
+
+		public JsonObject getBingoInformation() {
+			if (bingoInformation != null) return bingoInformation;
+			if (updatingBingoInfo.get()) return null;
+
+			long currentTime = System.currentTimeMillis();
+			if (currentTime - lastBingoInfoState < 15 * 1000) return null;
+			lastBingoInfoState = currentTime;
+
+			HashMap<String, String> args = new HashMap<>();
+			args.put("uuid", "" + uuid);
+			NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+				NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+				"skyblock/bingo",
+				args,
+				jsonObject -> {
+					if (jsonObject == null) return;
+					updatingBingoInfo.set(false);
+					if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+						bingoInformation = jsonObject;
+					} else {
+						bingoInformation = null;
+					}
+				}, () -> updatingBingoInfo.set(false)
+			);
 			return null;
 		}
 
