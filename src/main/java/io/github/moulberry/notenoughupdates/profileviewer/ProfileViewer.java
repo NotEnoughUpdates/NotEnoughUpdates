@@ -1235,7 +1235,7 @@ public class ProfileViewer {
 				}
 			}
 			for (JsonObject current_member_info : coopMembers) {
-				if (!current_member_info.has("crafted_generators")) continue;
+				if (!current_member_info.has("crafted_generators") || !current_member_info.get("crafted_generators").isJsonArray()) continue;
 				JsonArray crafted_generators = Utils.getElement(current_member_info, "crafted_generators").getAsJsonArray();
 				for (int j = 0; j < crafted_generators.size(); j++) {
 					String unlocked = crafted_generators.get(j).getAsString();
