@@ -28,14 +28,15 @@ public class BingoPage {
 	private static int currentEventId;
 
 	public static void renderPage(int mouseX, int mouseY) {
-		getBingoResources();
-		int guiLeft = GuiProfileViewer.getGuiLeft();
-		int guiTop = GuiProfileViewer.getGuiTop();
+		processBingoResources();
+		JsonObject bingoInfo = GuiProfileViewer.getProfile().getBingoInformation();
+
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
-		JsonObject bingoInfo = GuiProfileViewer.getProfile().getBingoInformation();
 
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
 		//check if the player has created a bingo profile for the current event
 		if (bingoInfo == null) {
 			showMissingDataMessage(guiLeft, guiTop);
@@ -59,8 +60,8 @@ public class BingoPage {
 
 		int row = 0;
 		int col = 0;
-		int initalY = guiTop + 46; //jani
-		int initalX = guiLeft + 231;
+		int initialY = guiTop + 46;
+		int initialX = guiLeft + 231;
 		int xAdjustment = 0;
 		int yAdjustment = 0;
 		for (JsonObject bingoGoal : bingoGoals) {
@@ -94,8 +95,8 @@ public class BingoPage {
 			if (dye) {
 				itemStack.setItemDamage(10);
 			}
-			int x = col == 0 ? initalX + xAdjustment : initalX + (24 * col) + xAdjustment;
-			int y = row == 0 ? initalY + yAdjustment : initalY + (24 * row) + yAdjustment;
+			int x = col == 0 ? initialX + xAdjustment : initialX + (24 * col) + xAdjustment;
+			int y = row == 0 ? initialY + yAdjustment : initialY + (24 * row) + yAdjustment;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
 			if (mouseX >= x && mouseX < x + 24) {
@@ -118,6 +119,17 @@ public class BingoPage {
 			}
 		}
 
+		String totalPointsString = EnumChatFormatting.AQUA + "Collected Points: " + EnumChatFormatting.WHITE + lastEvent.get("points").getAsInt();
+		String personalGoalsString =
+			EnumChatFormatting.AQUA + "Personal Goals: " + EnumChatFormatting.WHITE + completedGoals.size() +
+				EnumChatFormatting.GOLD + "/" + EnumChatFormatting.WHITE + 20;
+		Utils.drawStringF(totalPointsString, Minecraft.getMinecraft().fontRendererObj,
+			guiLeft + 22, guiTop + 19, true, 0
+		);
+		Utils.drawStringF(personalGoalsString, Minecraft.getMinecraft().fontRendererObj,
+			guiLeft + 22, guiTop + 31, true, 0
+		);
+
 		GlStateManager.enableLighting();
 	}
 
@@ -136,34 +148,61 @@ public class BingoPage {
 		return finalTier == totalTiers;
 	}
 
+	private static String generateProgressIndicator(double progress, double goal) {
+		int totalFields = 20;
+		int filled;
+		double percentage = progress / goal * 100;
+		if (percentage >= 100) {
+			filled = 20;
+		} else {
+			filled = (int) Math.round((percentage / 100) * 20);
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(EnumChatFormatting.DARK_GREEN);
+		for (int i = 0; i < totalFields; i++) {
+			stringBuilder.append("-");
+			if (i > filled) {
+				stringBuilder.append(EnumChatFormatting.GRAY);
+			}
+		}
+
+		return stringBuilder.toString();
+	}
+
 	private static List<String> getTooltip(JsonObject goal, boolean completed, boolean communityGoal) {
 		List<String> tooltip = new ArrayList<>();
 		if (communityGoal) {
 			//get current tier
 			JsonArray tiers = goal.get("tiers").getAsJsonArray();
 			int totalTiers = tiers.size();
-			long progress = goal.get("progress").getAsLong();
+			double progress = goal.get("progress").getAsLong();
 			int finalTier = 0;
 			for (JsonElement tier : tiers) {
-				long currentTier = tier.getAsLong();
+				double currentTier = tier.getAsLong();
 				if (progress < currentTier) {
 					break;
 				}
 				finalTier++;
 			}
-			long nextTier = finalTier < totalTiers ? tiers.get(totalTiers - 1).getAsLong() : tiers
+			double nextTier = finalTier < totalTiers ? tiers.get(totalTiers - 1).getAsLong() : tiers
 				.get(finalTier - 1)
 				.getAsLong();
-			long progressToNextTier = progress / nextTier * 100;
-
+			int progressToNextTier = (int) Math.round(progress / nextTier * 100);
+			if (progressToNextTier > 100) progressToNextTier = 100;
+			String progressBar = generateProgressIndicator(progress, nextTier);
 			String name = goal.get("name").getAsString();
 			int nextTierNum = finalTier < totalTiers ? finalTier + 1 : totalTiers;
+
+			String nextTierString = Utils.shortNumberFormat(nextTier, 0);
+			String progressString = Utils.shortNumberFormat(progress, 0);
 			tooltip.add(EnumChatFormatting.GREEN + name + " " + finalTier);
 			tooltip.add(EnumChatFormatting.DARK_GRAY + "Community Goal");
 			tooltip.add("");
 			tooltip.add(
 				EnumChatFormatting.GRAY + "Progress to " + name + " " + nextTierNum + ": " + EnumChatFormatting.YELLOW +
 					progressToNextTier + EnumChatFormatting.GOLD + "%");
+			tooltip.add(progressBar + EnumChatFormatting.YELLOW + " " + progressString + EnumChatFormatting.GOLD + "/" +
+				EnumChatFormatting.YELLOW + nextTierString);
 			tooltip.add("");
 			tooltip.add(EnumChatFormatting.GRAY + "Contribution Rewards");
 			tooltip.add(
@@ -209,8 +248,7 @@ public class BingoPage {
 			if (completed) {
 				tooltip.add("");
 				tooltip.add(EnumChatFormatting.GREEN + "GOAL REACHED");
-			}
-			if (!completed) {
+			} else {
 				tooltip.add("");
 				tooltip.add(EnumChatFormatting.RED + "You have not reached this goal!");
 			}
@@ -242,7 +280,7 @@ public class BingoPage {
 		return list;
 	}
 
-	private static void getBingoResources() {
+	private static void processBingoResources() {
 		long currentTime = System.currentTimeMillis();
 
 		//renew every 2 minutes
