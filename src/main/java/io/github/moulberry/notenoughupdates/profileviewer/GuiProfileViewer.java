@@ -245,6 +245,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private int backgroundClickedX = -1;
 	private boolean loadingProfile = false;
 	private double lastBgBlurFactor = -1;
+
 	public GuiProfileViewer(ProfileViewer.Profile profile) {
 		this.profile = profile;
 		String name = "";
@@ -264,8 +265,6 @@ public class GuiProfileViewer extends GuiScreen {
 
 	private static JsonObject getPetInfo(String pet_name, String rarity) {
 		JsonObject petInfo = new JsonObject();
-		//System.out.println(pet_name);
-		//System.out.println(rarity);
 
 		if (Constants.PETS.has("custom_pet_leveling") &&
 			Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
@@ -461,6 +460,15 @@ public class GuiProfileViewer extends GuiScreen {
 		this.guiLeft = (this.width - this.sizeX) / 2;
 		this.guiTop = (this.height - this.sizeY) / 2;
 
+		boolean bingo = false;
+		JsonObject currProfileInfo = profile.getProfileInformation(profileId);
+		if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
+			currProfileInfo.get("game_mode").getAsString().equals("bingo")) {
+			bingo = true;
+		}
+		if (!bingo && currentPage == ProfileViewerPage.BINGO)
+			currentPage = ProfileViewerPage.BASIC;
+
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		drawDefaultBackground();
 
@@ -469,12 +477,12 @@ public class GuiProfileViewer extends GuiScreen {
 
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
-		renderTabs(true);
+		renderTabs(true, bingo);
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.disableDepth();
 		GlStateManager.translate(0, 0, -2);
-		renderTabs(false);
+		renderTabs(false, bingo);
 		GlStateManager.translate(0, 0, 2);
 
 		GlStateManager.disableLighting();
@@ -492,7 +500,6 @@ public class GuiProfileViewer extends GuiScreen {
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 			if (profile != null) {
-				JsonObject currProfileInfo = profile.getProfileInformation(profileId);
 				//Render Profile chooser button
 				renderBlurredBackground(width, height, guiLeft + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
@@ -834,11 +841,11 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private void renderTabs(boolean renderPressed) {
+	private void renderTabs(boolean renderPressed, boolean bingo) {
 		int ignoredTabs = 0;
 		for (int i = 0; i < ProfileViewerPage.values().length; i++) {
 			ProfileViewerPage page = ProfileViewerPage.values()[i];
-			if (page.stack == null) {
+			if (page.stack == null || (page == ProfileViewerPage.BINGO && !bingo)) {
 				ignoredTabs++;
 				continue;
 			}
