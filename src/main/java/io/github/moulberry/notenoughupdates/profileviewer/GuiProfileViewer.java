@@ -657,7 +657,7 @@ public class GuiProfileViewer extends GuiScreen {
 				drawMiningPage(mouseX, mouseY, partialTicks);
 				break;
 			case BINGO:
-				BingoPage.renderPage(mouseX, mouseY, partialTicks);
+				BingoPage.renderPage(mouseX, mouseY);
 				break;
 			case LOADING:
 				String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
@@ -5048,7 +5048,7 @@ public class GuiProfileViewer extends GuiScreen {
 		COLS(new ItemStack(Items.painting)),
 		PETS(new ItemStack(Items.bone)),
 		MINING(new ItemStack(Items.iron_pickaxe)),
-		BINGO(new ItemStack(Items.tnt_minecart));
+		BINGO(new ItemStack(Items.filled_map));
 
 		public final ItemStack stack;
 
