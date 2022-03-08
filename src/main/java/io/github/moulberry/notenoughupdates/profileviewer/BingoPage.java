@@ -59,8 +59,8 @@ public class BingoPage {
 
 		int row = 0;
 		int col = 0;
-		int initalY = guiTop + 41; //jani
-		int initalX = guiLeft + 234;
+		int initalY = guiTop + 46; //jani
+		int initalX = guiLeft + 231;
 		int xAdjustment = 0;
 		int yAdjustment = 0;
 		for (JsonObject bingoGoal : bingoGoals) {
@@ -94,12 +94,12 @@ public class BingoPage {
 			if (dye) {
 				itemStack.setItemDamage(10);
 			}
-			int x = col == 0 ? initalX + xAdjustment : initalX + (18 * col) + xAdjustment;
-			int y = row == 0 ? initalY + yAdjustment : initalY + (18 * row) + yAdjustment;
+			int x = col == 0 ? initalX + xAdjustment : initalX + (24 * col) + xAdjustment;
+			int y = row == 0 ? initalY + yAdjustment : initalY + (24 * row) + yAdjustment;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
-			if (mouseX >= x && mouseX < x + 18) {
-				if (mouseY >= y && mouseY <= y + 18) {
+			if (mouseX >= x && mouseX < x + 24) {
+				if (mouseY >= y && mouseY <= y + 24) {
 					Utils.drawHoveringText(
 						getTooltip(bingoGoal, completed, communityGoal),
 						mouseX,
@@ -206,6 +206,10 @@ public class BingoPage {
 			tooltip.add("");
 			tooltip.add(EnumChatFormatting.GRAY + "Reward");
 			tooltip.add(EnumChatFormatting.GOLD + "1 Bingo Point");
+			if (completed) {
+				tooltip.add("");
+				tooltip.add(EnumChatFormatting.GREEN + "GOAL REACHED");
+			}
 			if (!completed) {
 				tooltip.add("");
 				tooltip.add(EnumChatFormatting.RED + "You have not reached this goal!");
