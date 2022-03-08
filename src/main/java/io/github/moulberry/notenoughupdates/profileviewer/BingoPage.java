@@ -119,10 +119,17 @@ public class BingoPage {
 			}
 		}
 
-		String totalPointsString = EnumChatFormatting.AQUA + "Collected Points: " + EnumChatFormatting.WHITE + lastEvent.get("points").getAsInt();
-		String personalGoalsString =
-			EnumChatFormatting.AQUA + "Personal Goals: " + EnumChatFormatting.WHITE + completedGoals.size() +
-				EnumChatFormatting.GOLD + "/" + EnumChatFormatting.WHITE + 20;
+		String totalPointsString =
+			EnumChatFormatting.AQUA + "Collected Points: " + EnumChatFormatting.WHITE + lastEvent.get("points").getAsInt();
+		int totalGoals = completedGoals.size();
+		String personalGoalsString;
+		if (totalGoals == 20) {
+			personalGoalsString = EnumChatFormatting.AQUA + "Personal Goals: " + EnumChatFormatting.GOLD + "20/20";
+		} else {
+			personalGoalsString =
+				EnumChatFormatting.AQUA + "Personal Goals: " + EnumChatFormatting.WHITE + completedGoals.size() +
+					EnumChatFormatting.GOLD + "/" + EnumChatFormatting.WHITE + 20;
+		}
 		Utils.drawStringF(totalPointsString, Minecraft.getMinecraft().fontRendererObj,
 			guiLeft + 22, guiTop + 19, true, 0
 		);
