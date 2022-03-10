@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.*;
@@ -57,6 +58,13 @@ public class EntityViewer extends GuiScreen {
         put("MagmaCube", () -> new EntityMagmaCube(null));
         put("Wither", () -> new EntityWither(null));
         put("Enderman", () -> new EntityEnderman(null));
+        put("WitherSkeleton", () -> {
+            EntitySkeleton skeleton = new EntitySkeleton(null);
+            skeleton.setSkeletonType(1);
+            return skeleton;
+        });
+        put("Cow", () -> new EntityCow(null));
+        put("Dragon", ()-> new EntityDragon(null));
         put("Player", () -> new GUIClientPlayer());
     }};
 
