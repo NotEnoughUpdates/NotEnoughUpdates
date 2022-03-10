@@ -98,15 +98,6 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-		name = "Profile Viewer",
-		desc = "Brings up the profile viewer (/pv)\n" +
-			"Shows stats and networth of players"
-	)
-	@ConfigEditorButton(runnableId = 13, buttonText = "Open")
-	public boolean openPV = true;
-
-	@Expose
-	@ConfigOption(
 		name = "Edit Enchant Colours",
 		desc = "Change the colours of certain skyblock enchants (/neuec)"
 	)

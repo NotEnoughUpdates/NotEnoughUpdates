@@ -299,6 +299,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Profile Viewer",
+		desc = "Profile Viewer"
+	)
+	public ProfileViewer profileViewer = new ProfileViewer();
+
+	@Expose
+	@Category(
 		name = "Api Key",
 		desc = "Api Key"
 	)

@@ -173,7 +173,6 @@ public class GuiProfileViewer extends GuiScreen {
 	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+([0-9]+)");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
-	private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
 	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {{
 		put("COMMON", "0");
@@ -233,9 +232,6 @@ public class GuiProfileViewer extends GuiScreen {
 	private int arrowCount = -1;
 	private int greenCandyCount = -1;
 	private int purpleCandyCount = -1;
-	private ItemStack lastBackpack;
-	private int lastBackpackX;
-	private int lastBackpackY;
 	private EntityOtherPlayerMP entityPlayer = null;
 	private ResourceLocation playerLocationSkin = null;
 	private ResourceLocation playerLocationCape = null;
@@ -245,6 +241,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private int backgroundClickedX = -1;
 	private boolean loadingProfile = false;
 	private double lastBgBlurFactor = -1;
+	private boolean showBingoPage;
 
 	public GuiProfileViewer(ProfileViewer.Profile profile) {
 		this.profile = profile;
@@ -451,7 +448,7 @@ public class GuiProfileViewer extends GuiScreen {
 		{
 			//this is just to cache the guild info
 			if (profile != null) {
-				JsonObject guildinfo = profile.getGuildInfo(null);
+				profile.getGuildInfo(null);
 			}
 		}
 
@@ -462,11 +459,18 @@ public class GuiProfileViewer extends GuiScreen {
 
 		boolean bingo = false;
 		JsonObject currProfileInfo = profile.getProfileInformation(profileId);
-		if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
-			currProfileInfo.get("game_mode").getAsString().equals("bingo")) {
-			bingo = true;
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
+			showBingoPage = true;
+		} else {
+			if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
+				currProfileInfo.get("game_mode").getAsString().equals("bingo")) {
+				showBingoPage = true;
+			} else {
+				showBingoPage = false;
+			}
 		}
-		if (!bingo && currentPage == ProfileViewerPage.BINGO)
+
+		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO)
 			currentPage = ProfileViewerPage.BASIC;
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
@@ -477,12 +481,12 @@ public class GuiProfileViewer extends GuiScreen {
 
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
-		renderTabs(true, bingo);
+		renderTabs(true);
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.disableDepth();
 		GlStateManager.translate(0, 0, -2);
-		renderTabs(false, bingo);
+		renderTabs(false);
 		GlStateManager.translate(0, 0, 2);
 
 		GlStateManager.disableLighting();
@@ -841,11 +845,11 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private void renderTabs(boolean renderPressed, boolean bingo) {
+	private void renderTabs(boolean renderPressed) {
 		int ignoredTabs = 0;
 		for (int i = 0; i < ProfileViewerPage.values().length; i++) {
 			ProfileViewerPage page = ProfileViewerPage.values()[i];
-			if (page.stack == null || (page == ProfileViewerPage.BINGO && !bingo)) {
+			if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 				ignoredTabs++;
 				continue;
 			}
@@ -903,7 +907,7 @@ public class GuiProfileViewer extends GuiScreen {
 			int ignoredTabs = 0;
 			for (int i = 0; i < ProfileViewerPage.values().length; i++) {
 				ProfileViewerPage page = ProfileViewerPage.values()[i];
-				if (page.stack == null) {
+				if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
 				}
@@ -1102,10 +1106,8 @@ public class GuiProfileViewer extends GuiScreen {
 		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
 			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
 				onMasterMode = false;
-				return;
 			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
 				onMasterMode = true;
-				return;
 			}
 		}
 	}
