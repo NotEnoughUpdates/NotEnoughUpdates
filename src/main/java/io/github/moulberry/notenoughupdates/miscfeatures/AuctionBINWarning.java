@@ -232,7 +232,7 @@ public class AuctionBINWarning extends GuiElement {
 			0xff00ff00
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
-			EnumChatFormatting.RED + "[n]o",
+			EnumChatFormatting.RED + "[N]o",
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2 + 23,
 			height / 2 + 31,
