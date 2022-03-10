@@ -137,17 +137,6 @@ tasks.processResources {
     rename("(.+_at.cfg)".toPattern(), "META-INF/$1")
 }
 
-val moveResources by tasks.creating {
-    doLast {
-        ant.withGroovyBuilder {
-            "move"(
-                "file" to "$buildDir/resources/main",
-                "todir" to "$buildDir/classes/java"
-            )
-        }
-    }
-    dependsOn(tasks.processResources)
+sourceSets.main {
+    output.setResourcesDir(file("$buildDir/classes/java/main"))
 }
-
-tasks.classes { dependsOn(moveResources) }
-
