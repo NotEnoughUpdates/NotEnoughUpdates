@@ -649,16 +649,16 @@ public class GuiProfileViewer extends GuiScreen {
 			case BASIC:
 				drawBasicPage(mouseX, mouseY, partialTicks);
 				break;
-			case DUNG:
+			case DUNGEON:
 				drawDungPage(mouseX, mouseY, partialTicks);
 				break;
 			case EXTRA:
 				drawExtraPage(mouseX, mouseY, partialTicks);
 				break;
-			case INVS:
+			case INVENTORIES:
 				drawInvsPage(mouseX, mouseY, partialTicks);
 				break;
-			case COLS:
+			case COLLECTIONS:
 				drawColsPage(mouseX, mouseY, partialTicks);
 				break;
 			case PETS:
@@ -847,8 +847,10 @@ public class GuiProfileViewer extends GuiScreen {
 
 	private void renderTabs(boolean renderPressed) {
 		int ignoredTabs = 0;
-		for (int i = 0; i < ProfileViewerPage.values().length; i++) {
-			ProfileViewerPage page = ProfileViewerPage.values()[i];
+		List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+		for (int i = 0; i < configList.size(); i++) {
+			ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+			if (page == null) continue;
 			if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 				ignoredTabs++;
 				continue;
@@ -905,8 +907,9 @@ public class GuiProfileViewer extends GuiScreen {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
 			int ignoredTabs = 0;
-			for (int i = 0; i < ProfileViewerPage.values().length; i++) {
-				ProfileViewerPage page = ProfileViewerPage.values()[i];
+			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+			for (int i = 0; i < configList.size(); i++) {
+				ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
 				if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
@@ -927,10 +930,10 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 		switch (currentPage) {
-			case DUNG:
+			case DUNGEON:
 				mouseClickedDung(mouseX, mouseY, mouseButton);
 				break;
-			case INVS:
+			case INVENTORIES:
 				inventoryTextField.setSize(88, 20);
 				if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
 					if (mouseY > guiTop + sizeY - 26 - 20 && mouseY < guiTop + sizeY - 26) {
@@ -1036,14 +1039,14 @@ public class GuiProfileViewer extends GuiScreen {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		super.keyTyped(typedChar, keyCode);
 		switch (currentPage) {
-			case INVS:
+			case INVENTORIES:
 				keyTypedInvs(typedChar, keyCode);
 				inventoryTextField.keyTyped(typedChar, keyCode);
 				break;
-			case COLS:
+			case COLLECTIONS:
 				keyTypedCols(typedChar, keyCode);
 				break;
-			case DUNG:
+			case DUNGEON:
 				keyTypedDung(typedChar, keyCode);
 				break;
 		}
@@ -1064,10 +1067,10 @@ public class GuiProfileViewer extends GuiScreen {
 		super.mouseReleased(mouseX, mouseY, mouseButton);
 
 		switch (currentPage) {
-			case INVS:
+			case INVENTORIES:
 				mouseReleasedInvs(mouseX, mouseY, mouseButton);
 				break;
-			case COLS:
+			case COLLECTIONS:
 				mouseReleasedCols(mouseX, mouseY, mouseButton);
 				break;
 			case PETS:
@@ -5047,22 +5050,33 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	public enum ProfileViewerPage {
-		LOADING(null),
-		INVALID_NAME(null),
-		NO_SKYBLOCK(null),
-		BASIC(new ItemStack(Items.paper)),
-		DUNG(new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
-		EXTRA(new ItemStack(Items.book)),
-		INVS(new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
-		COLS(new ItemStack(Items.painting)),
-		PETS(new ItemStack(Items.bone)),
-		MINING(new ItemStack(Items.iron_pickaxe)),
-		BINGO(new ItemStack(Items.filled_map));
+		LOADING(-1, null),
+		INVALID_NAME(-1, null),
+		NO_SKYBLOCK(-1, null),
+		BASIC(0, new ItemStack(Items.paper)),
+		DUNGEON(1, new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
+		EXTRA(2, new ItemStack(Items.book)),
+		INVENTORIES(3, new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
+		COLLECTIONS(4, new ItemStack(Items.painting)),
+		PETS(5, new ItemStack(Items.bone)),
+		MINING(6, new ItemStack(Items.iron_pickaxe)),
+		BINGO(7, new ItemStack(Items.filled_map));
 
 		public final ItemStack stack;
+		public final int id;
 
-		ProfileViewerPage(ItemStack stack) {
+		ProfileViewerPage(int id, ItemStack stack) {
+			this.id = id;
 			this.stack = stack;
+		}
+
+		public static ProfileViewerPage getById(int id) {
+			for (ProfileViewerPage page : values()) {
+				if (page.id == id) {
+					return page;
+				}
+			}
+			return null;
 		}
 	}
 

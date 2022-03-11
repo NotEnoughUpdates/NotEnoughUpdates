@@ -1,10 +1,11 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ProfileViewer {
 
@@ -30,6 +31,27 @@ public class ProfileViewer {
 		buttonText = "Open"
 	)
 	public boolean openPV = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Page layout",
+		desc = "\u00a7rSelect the order of the pages at the top of the Profile Viewer\n" +
+			"\u00a7eDrag text to rearrange"
+	)
+	@ConfigEditorDraggableList(
+		exampleText = {
+			"\u00a7eBasic Info",
+			"\u00a7eDungeons",
+			"\u00a7eExtra Info",
+			"\u00a7eInventories",
+			"\u00a7eCollections",
+			"\u00a7ePets",
+			"\u00a7eMining",
+			"\u00a7eBingo",
+		},
+		allowDeleting = false
+	)
+	public List<Integer> pageLayout = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
 
 	@Expose
 	@ConfigOption(
