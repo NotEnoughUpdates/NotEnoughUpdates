@@ -38,6 +38,7 @@ public class AuctionBINWarning extends GuiElement {
 	private int sellingPrice;
 	private int lowestPrice;
 	private int buyPercentage;
+	private int sellStackAmount;
 	private boolean isALoss = true;
 
 	private boolean shouldPerformCheck() {
@@ -85,6 +86,7 @@ public class AuctionBINWarning extends GuiElement {
 
 			ItemStack sellStack = chest.inventorySlots.getSlot(13).getStack();
 			String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(sellStack);
+			sellStackAmount = sellStack.stackSize;
 
 			if (internalname == null) {
 				return false;
@@ -114,7 +116,9 @@ public class AuctionBINWarning extends GuiElement {
 			if (overcutFactor < 0) overcutFactor = 0;
 			if (overcutFactor > 1) overcutFactor = 1;
 
-			if ((sellingPrice > 0 && lowestPrice > 0 && sellingPrice < lowestPrice * undercutFactor) || (sellingPrice > 0 && lowestPrice > 0 && sellingPrice > lowestPrice * (overcutFactor + 1)) || lowestPrice == -1) {
+			if ((sellingPrice > 0 && lowestPrice > 0 && sellingPrice < sellStackAmount * lowestPrice * undercutFactor)
+				|| (sellingPrice > 0 && lowestPrice > 0 && sellingPrice > sellStackAmount * lowestPrice * (overcutFactor + 1))
+				|| lowestPrice == -1) {
 				showWarning = true;
 				return true;
 			} else {
@@ -158,10 +162,10 @@ public class AuctionBINWarning extends GuiElement {
 		);
 
 		String lowestPriceStr;
-		if (lowestPrice > 999) {
-			lowestPriceStr = Utils.shortNumberFormat(lowestPrice, 0);
+		if (lowestPrice * sellStackAmount > 999) {
+			lowestPriceStr = Utils.shortNumberFormat(lowestPrice * sellStackAmount, 0);
 		} else {
-			lowestPriceStr = "" + lowestPrice;
+			lowestPriceStr = "" + lowestPrice * sellStackAmount;
 		}
 
 		String sellingPriceStr;
@@ -186,11 +190,11 @@ public class AuctionBINWarning extends GuiElement {
 			0xffa0a0a0
 		);
 
-		if (sellingPrice > lowestPrice) {
-			buyPercentage = sellingPrice * 100 / lowestPrice;
+		if (sellingPrice > lowestPrice * sellStackAmount) {
+			buyPercentage = sellingPrice * 100 / (lowestPrice * sellStackAmount);
 			isALoss = false;
-		} else if (sellingPrice < lowestPrice) {
-			 buyPercentage = 100 - sellingPrice * 100 / lowestPrice;
+		} else if (sellingPrice < lowestPrice * sellStackAmount) {
+			 buyPercentage = 100 - sellingPrice * 100 / (lowestPrice * sellStackAmount);
 			if (buyPercentage <= 0) buyPercentage = 1;
 			isALoss = true;
 		}
@@ -228,7 +232,7 @@ public class AuctionBINWarning extends GuiElement {
 			0xff00ff00
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
-			EnumChatFormatting.RED + "[n]o",
+			EnumChatFormatting.RED + "[N]o",
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2 + 23,
 			height / 2 + 31,
