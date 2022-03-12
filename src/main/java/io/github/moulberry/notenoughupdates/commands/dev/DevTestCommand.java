@@ -24,7 +24,7 @@ import java.util.List;
 public class DevTestCommand extends ClientCommandBase {
 
 	private static final List<String> DEV_TESTERS =
-		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro", "lulonaut");
+		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro", "lulonaut", "craftyoldminer");
 
 	private static final String[] DEV_FAIL_STRINGS = {
 		"No.",

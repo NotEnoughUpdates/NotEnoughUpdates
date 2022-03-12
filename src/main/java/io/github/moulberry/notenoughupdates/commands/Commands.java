@@ -40,6 +40,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new StatsCommand());
 		ClientCommandHandler.instance.registerCommand(new DevTestCommand());
 		ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
+		ClientCommandHandler.instance.registerCommand(new DiagCommand());
 
 		// Repo Commands
 		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());

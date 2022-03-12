@@ -665,6 +665,14 @@ public class Mining {
 	@ConfigEditorBoolean
 	public boolean titaniumAlertMustBeVisible = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Wishing Compass Solver",
+		desc = "Show wishing compass target coordinates based on two samples"
+	)
+	@ConfigEditorBoolean
+	public boolean wishingCompassSolver = true;
+
 	@ConfigOption(
 		name = "Custom Textures",
 		desc = ""

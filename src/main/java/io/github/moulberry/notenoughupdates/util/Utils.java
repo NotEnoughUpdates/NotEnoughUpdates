@@ -301,6 +301,40 @@ public class Utils {
 		return "";
 	}
 
+	public static String trimWhitespaceAndFormatCodes(String str) {
+		int startIndex = indexOfFirstNonWhitespaceNonFormatCode(str);
+		int endIndex = lastIndexOfNonWhitespaceNonFormatCode(str);
+		if (startIndex == -1 || endIndex == -1) return "";
+		return str.substring(startIndex, endIndex+1);
+	}
+
+	private static int indexOfFirstNonWhitespaceNonFormatCode(String str) {
+		int len = str.length();
+		for (int i = 0; i < len; i++) {
+			char ch = str.charAt(i);
+			if (Character.isWhitespace(ch)) {
+				continue;
+			} else if (ch == '\u00a7') {
+				i++;
+				continue;
+			}
+			return i;
+		}
+		return -1;
+	}
+
+	private static int lastIndexOfNonWhitespaceNonFormatCode(String str) {
+		for (int i = str.length() - 1; i >= 0; i--) {
+			char ch = str.charAt(i);
+			if (Character.isWhitespace(ch) || ch == '\u00a7' || (i > 0 && str.charAt(i - 1) == '\u00a7')) {
+				continue;
+			}
+			return i;
+		}
+
+		return -1;
+	}
+
 	public static List<String> getRawTooltip(ItemStack stack) {
 		List<String> list = Lists.newArrayList();
 		String s = stack.getDisplayName();

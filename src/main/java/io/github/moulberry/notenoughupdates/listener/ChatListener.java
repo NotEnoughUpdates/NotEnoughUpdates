@@ -209,7 +209,7 @@ public class ChatListener {
 		}
 		if (unformatted.startsWith("You found ") && SBInfo.getInstance().getLocation() != null &&
 			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
-			CrystalMetalDetectorSolver.reset(true);
+			CrystalMetalDetectorSolver.resetSolution(true);
 		}
 		if (unformatted.startsWith("[NPC] Keeper of ") | unformatted.startsWith("[NPC] Professor Robot: ") ||
 			unformatted.startsWith("  ") || unformatted.startsWith("✦") || unformatted.equals(
