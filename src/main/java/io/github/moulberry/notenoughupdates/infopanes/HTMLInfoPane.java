@@ -10,6 +10,7 @@ import info.bliki.wiki.tags.HTMLTag;
 import info.bliki.wiki.tags.IgnoreTag;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.AllowEmptyHTMLTag;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -30,6 +31,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -117,7 +119,14 @@ public class HTMLInfoPane extends TextInfoPane {
 			} catch (IOException e) {
 				return new HTMLInfoPane(overlay, manager, "error", "error", "Failed to load wiki url: " + wikiUrl, false);
 			}
-			return createFromWikiText(overlay, manager, name, f.getName(), sb.toString(), wikiUrl.startsWith("https://wiki.hypixel.net/"));
+			return createFromWikiText(
+				overlay,
+				manager,
+				name,
+				f.getName(),
+				sb.toString(),
+				wikiUrl.startsWith("https://wiki.hypixel.net/")
+			);
 		});
 	}
 
@@ -128,19 +137,25 @@ public class HTMLInfoPane extends TextInfoPane {
 	 * files/neu_help.html).
 	 */
 
-	private static final Pattern replacePattern = Pattern.compile("<nav class=\"page-actions-menu\">.*</nav>|</?tbody>", Pattern.DOTALL);
+	private static final Pattern replacePattern = Pattern.compile(
+		"<nav class=\"page-actions-menu\">.*</nav>|",
+		Pattern.DOTALL
+	);
 
 	public static HTMLInfoPane createFromWikiText(
 		NEUOverlay overlay, NEUManager manager, String name, String filename,
 		String wiki, boolean isOfficialWiki
 	) {
 		if (isOfficialWiki) {
-			wiki = wiki.split("<main id=\"content\" class=\"mw-body\">")[1].split("</main>")[0];
-			//wiki = wiki.split("<div class=\"container-navbox\">")[0];
-			wiki = wiki.replaceAll("<script>.*</script>", "");
-			wiki = wiki.replaceAll("<style data-mw-deduplicate=\".*\">.*</style>", "");
+			wiki = wiki.split("<main id=\"content\" class=\"mw-body\">")[1].split("</main>")[0]; // hide top bar
+			wiki = wiki.split("<div class=\"container-navbox\">")[0]; // hide giant bottom list
+			wiki = wiki.split("<div class=\"categoryboxcontainer\">")[0]; // hide small bottom category thing
 			wiki = replacePattern.matcher(wiki).replaceAll("");
-			wiki = wiki.replace("��", "✓");
+			wiki = wiki.replaceAll(
+				"<div id=\"siteNotice\"></div><div id=\"mw-dismissablenotice-anonplace\"></div><script>.*</script>",
+				""
+			); // hide beta box
+			wiki = wiki.replaceAll("<h1 id=\"section_0\">.*</h1>", ""); // hide title
 			wiki = wiki.replace("src=\"/", "src=\"https://wiki.hypixel.net/");
 		} else {
 			String[] split = wiki.split("</infobox>");
@@ -153,15 +168,17 @@ public class HTMLInfoPane extends TextInfoPane {
 			out.println(wiki);
 		} catch (IOException ignored) {
 		}
-		String html;
-		try {
-			html = wikiModel.render(wiki);
-		} catch (IOException e) {
-			return new HTMLInfoPane(overlay, manager, "error", "error", "Could not render wiki.", false);
-		}
-		try (PrintWriter out = new PrintWriter(new File(manager.configLocation, "debug/html.txt"))) {
-			out.println(html);
-		} catch (IOException ignored) {
+		String html = wiki;
+		if (!isOfficialWiki) {
+			try {
+				html = wikiModel.render(wiki);
+			} catch (IOException e) {
+				return new HTMLInfoPane(overlay, manager, "error", "error", "Could not render wiki.", false);
+			}
+			try (PrintWriter out = new PrintWriter(new File(manager.configLocation, "debug/html.txt"))) {
+				out.println(html);
+			} catch (IOException ignored) {
+			}
 		}
 		return new HTMLInfoPane(overlay, manager, name, filename, html, isOfficialWiki);
 	}
@@ -178,7 +195,14 @@ public class HTMLInfoPane extends TextInfoPane {
 	 * generation is done asynchronously as sometimes it can take up to 10 seconds for more
 	 * complex webpages.
 	 */
-	public HTMLInfoPane(NEUOverlay overlay, NEUManager manager, String name, String filename, String html, boolean isOfficial) {
+	public HTMLInfoPane(
+		NEUOverlay overlay,
+		NEUManager manager,
+		String name,
+		String filename,
+		String html,
+		boolean isOfficial
+	) {
 		super(overlay, manager, name, "");
 		this.title = name;
 
@@ -194,7 +218,7 @@ public class HTMLInfoPane extends TextInfoPane {
 			return;
 		}
 
-		File cssFile = new File(manager.configLocation, isOfficial ? "wikia2.css" : "wikia.css");
+		File cssFile = new File(manager.configLocation, isOfficial ? "official-wiki.css" : "wikia.css");
 		File wkHtmlToImage = new File(manager.configLocation, "wkhtmltox-" + osId + "/bin/wkhtmltoimage");
 
 		//Use old binary folder
@@ -247,6 +271,15 @@ public class HTMLInfoPane extends TextInfoPane {
 				text = EnumChatFormatting.YELLOW + "Downloading web renderer... try again soon";
 			}
 			return;
+		}
+
+		if (!cssFile.exists() && isOfficial) {
+			try {
+				Files.copy(this.getClass().getResourceAsStream("/assets/notenoughupdates/official-wiki.css"), cssFile.toPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
 		}
 
 		File input = new File(manager.configLocation, "tmp/input.html");
@@ -429,7 +462,7 @@ public class HTMLInfoPane extends TextInfoPane {
 			float vMin = yScroll / (imageHeight / scaleF);
 			float vMax = (yScroll + height - overlay.getBoxPadding() * 3) / (imageHeight / scaleF);
 			Utils.drawTexturedRect(leftSide + overlay.getBoxPadding(), overlay.getBoxPadding() * 2, imageW,
-				height - overlay.getBoxPadding() * 3,
+				(height - overlay.getBoxPadding() * 3),
 				0, 1, vMin, vMax
 			);
 		} else {

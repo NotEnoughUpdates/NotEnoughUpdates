@@ -836,6 +836,10 @@ public class NEUOverlay extends Gui {
 		if (selectedItemGroup != null) {
 			int selectedX = Math.min(selectedItemGroupX, width - getBoxPadding() - 18 * selectedItemGroup.size());
 			if (mouseY > selectedItemGroupY + 17 && mouseY < selectedItemGroupY + 35) {
+				if (!Mouse.getEventButtonState()) {
+					Utils.pushGuiScale(-1);
+					return true; //End early if the mouse isn't pressed, but still cancel event.
+				}
 				for (int i = 0; i < selectedItemGroup.size(); i++) {
 					if (mouseX >= selectedX - 1 + 18 * i && mouseX <= selectedX + 17 + 18 * i) {
 						JsonObject item = selectedItemGroup.get(i);
