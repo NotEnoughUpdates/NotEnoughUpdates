@@ -3737,7 +3737,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"",
 				EnumChatFormatting.GRAY + "Grants " + EnumChatFormatting.GREEN + "+" + miningSpeedStat +
 					EnumChatFormatting.GOLD + " ⸕ Mining",
-				EnumChatFormatting.GOLD + "Speed" + EnumChatFormatting.GRAY + "."
+				EnumChatFormatting.GOLD + "Speed" + EnumChatFormatting.GRAY + ".",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(miningSpeed + 2, 3) + " Mithril Powder"
 			),
 			50
 		);
@@ -3752,7 +3755,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"",
 				EnumChatFormatting.GRAY + "Grants " + EnumChatFormatting.GREEN + "+" + miningFortuneStat +
 					EnumChatFormatting.GOLD + " ☘ Mining",
-				EnumChatFormatting.GOLD + "Fortune" + EnumChatFormatting.GRAY + "."
+				EnumChatFormatting.GOLD + "Fortune" + EnumChatFormatting.GRAY + ".",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(miningFortune + 2, 3.05) + " Mithril Powder"
 			),
 			50
 		);
@@ -3769,7 +3775,10 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "have a " + EnumChatFormatting.GREEN + tittyInsaneStat + "% " +
 					EnumChatFormatting.GRAY + "chance to",
 				EnumChatFormatting.GRAY + "convert the block into Titanium",
-				EnumChatFormatting.GRAY + "Ore."
+				EnumChatFormatting.GRAY + "Ore.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(tittyInsane + 2, 3.1) + " Mithril Powder"
 			),
 			50
 		);
@@ -3822,7 +3831,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"",
 				"§7Increases the chance for you to",
 				"§7trigger rare occurrences im",
-				"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7."
+				"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(luckofcave + 2, 3.07) + " Mithril Powder"
 			),
 			45
 		);
@@ -3838,7 +3850,10 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "Gains " + EnumChatFormatting.GREEN + dailyPowderStat + " Powder" +
 					EnumChatFormatting.GRAY + " from the",
 				EnumChatFormatting.GRAY + "first ore you mine every day.",
-				EnumChatFormatting.GRAY + "Works for all Powder types."
+				EnumChatFormatting.GRAY + "Works for all Powder types.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) (200 + ((dailyPowder) * 18)) + " Mithril Powder"
 			),
 			100
 		);
@@ -3855,7 +3870,10 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "When mining ores, you have a",
 				EnumChatFormatting.GREEN + "" + effMinerStat + "%" + EnumChatFormatting.GRAY + " chance to mine " +
 					EnumChatFormatting.GREEN + Math.round(finalEffMinerStat2),
-				EnumChatFormatting.GRAY + "adjacent ores."
+				EnumChatFormatting.GRAY + "adjacent ores.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(effMiner + 2, 2.6) + " Mithril Powder"
 			),
 			100
 		);
@@ -3869,7 +3887,10 @@ public class GuiProfileViewer extends GuiScreen {
 					case 0:
 						return Lists.newArrayList(
 							EnumChatFormatting.RED + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/5"
+							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/5",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "50000 Mithril Powder"
 						);
 					case 1:
 						return Lists.newArrayList(
@@ -3877,7 +3898,10 @@ public class GuiProfileViewer extends GuiScreen {
 							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/5",
 							"",
 							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain"
+							"§7§8+§51 Token of the Mountain",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "50000 Mithril Powder"
 						);
 					case 2:
 						return Lists.newArrayList(
@@ -3886,7 +3910,10 @@ public class GuiProfileViewer extends GuiScreen {
 							"",
 							"§7§8+§c1 Pickaxe Ability Level",
 							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot"
+							"§7§8+§a1 Forge Slot",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "75000 Mithril Powder"
 						);
 					case 3:
 						return Lists.newArrayList(
@@ -3896,7 +3923,10 @@ public class GuiProfileViewer extends GuiScreen {
 							"§7§8+§c1 Pickaxe Ability Level",
 							"§7§8+§51 Token of the Mountain",
 							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot"
+							"§7§8+§a1 Commission Slot",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "100000 Mithril Powder"
 						);
 					case 4:
 						return Lists.newArrayList(
@@ -3908,7 +3938,10 @@ public class GuiProfileViewer extends GuiScreen {
 							"§7§8+§a1 Forge Slot",
 							"§7§8+§a1 Commission Slot",
 							"§7§8+§21 Mithril Powder §7when",
-							"§7mining §fMithril"
+							"§7mining §fMithril",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "125000 Mithril Powder"
 						);
 					case 5:
 						return Lists.newArrayList(
@@ -3943,7 +3976,10 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "a " + EnumChatFormatting.GREEN + finalOutput + "% " + EnumChatFormatting.GRAY +
 					"chance to mine " + EnumChatFormatting.GREEN,
 				EnumChatFormatting.GREEN + "" + Math.round(moleStat) + EnumChatFormatting.GRAY + " adjacent hard stone block" +
-					(moleStat == 1.0 ? "." : "s.")
+					(moleStat == 1.0 ? "." : "s."),
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(mole + 2, 2.2) + " Gemstone Powder"
 			),
 			190
 		);
@@ -3958,7 +3994,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"",
 				EnumChatFormatting.GRAY + "Gain " + EnumChatFormatting.GREEN + powderBuff + "% " + EnumChatFormatting.GRAY +
 					"more Mithril",
-				EnumChatFormatting.GRAY + "Powder and Gemstone Powder§7."
+				EnumChatFormatting.GRAY + "Powder and Gemstone Powder§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(powderBuff + 2, 3.2) + " Gemstone Powder"
 			),
 			50
 		);
@@ -4010,7 +4049,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Level " + seasonMine + "§8/100",
 				"",
 				"§7Increases your Mining",
-				"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7."
+				"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(seasonMine + 2, 2.3) + " Mithril Powder"
 			),
 			100
 		);
@@ -4039,7 +4081,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§9Chance, §9☠ Crit Damage, §a❈",
 				"§aDefense, and §c❤ Health",
 				"§c§7statistics gain by " + EnumChatFormatting.GREEN + lonesomeMinerStat + "%§7",
-				"§7while in the Crystal Hollows."
+				"§7while in the Crystal Hollows.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(lonesomeMiner + 2, 3.07) + " Gemstone Powder"
 			),
 			45
 		);
@@ -4053,7 +4098,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Level " + professional + EnumChatFormatting.DARK_GRAY + "/140",
 				"",
 				"§7Gain §a+" + professionalStat + "§6 ⸕ Mining",
-				"§6Speed§7 when mining Gemstones."
+				"§6Speed§7 when mining Gemstones.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(professional + 2, 2.3) + " Gemstone Powder"
 			),
 			140
 		);
@@ -4067,7 +4115,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Level " + miningSpeed2 + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
 				"§7Grants " + EnumChatFormatting.GREEN + "+" + miningSpeed2Stat + EnumChatFormatting.GOLD + " ⸕ Mining",
-				"§6Speed§7."
+				"§6Speed§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(miningSpeed2 + 2, 3.2) + " Gemstone Powder"
 			),
 			50
 		);
@@ -4081,7 +4132,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Level " + quickForge + EnumChatFormatting.DARK_GRAY + "/20",
 				"",
 				"§7Decreases the time it takes to",
-				"§7forge by §a" + (quickForgeStat < 20 ? quickForgeStat : 30) + "%§7."
+				"§7forge by §a" + (quickForgeStat < 20 ? quickForgeStat : 30) + "%§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(quickForge + 2, 4) + " Mithril Powder"
 			),
 			20
 		);
@@ -4095,7 +4149,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Level " + fortunate + EnumChatFormatting.DARK_GRAY + "/20",
 				"",
 				"§7Gain " + EnumChatFormatting.GREEN + "+" + fortunateStat + " §6☘ Mining",
-				"§6Fortune§7 when mining Gemstone."
+				"§6Fortune§7 when mining Gemstone.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(fortunate + 2, 3.05) + " Mithril Powder"
 			),
 			20
 		);
@@ -4109,7 +4166,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
 				"",
 				"§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY + "chance to",
-				"§7find treasure."
+				"§7find treasure.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(greatExplorer + 2, 4) + " Gemstone Powder"
 			),
 			20
 		);
@@ -4122,7 +4182,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"Mining Fortune 2",
 				"§7Level " + miningFortune2 + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
-				"§7Grants §a+§a" + miningFortune2Stat + "§7 §6☘ Mining", "§6Fortune§7."
+				"§7Grants §a+§a" + miningFortune2Stat + "§7 §6☘ Mining", "§6Fortune§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(miningFortune2 + 2, 3.2) + " Gemstone Powder"
 			),
 			50
 		);
@@ -4137,7 +4200,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"",
 				"§7When mining ores, you have a",
 				EnumChatFormatting.GREEN + "" + orbitStat + "%" + EnumChatFormatting.GRAY + " chance to get a random",
-				"§7amount of experience orbs."
+				"§7amount of experience orbs.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) ((orbit+1)*70) + " Mithril Powder"
 			),
 			80
 		);
@@ -4194,7 +4260,10 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining",
 				"§6Speed §7and a §a" + crystallizedStat + "%§7 §7chance",
 				"§7to deal §a+1 §7extra damage near",
-				"§7§5Fallen Stars§7."
+				"§7§5Fallen Stars§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(crystallized + 2, 2.4) + " Mithril Powder"
 			),
 			30
 		);
