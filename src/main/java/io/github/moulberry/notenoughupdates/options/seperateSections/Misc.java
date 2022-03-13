@@ -70,7 +70,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "GUI Click Sounds",
-		desc = "Play click sounds in various NEU-related GUIs when pressing buttons"
+		desc = "Play click sounds in various NEU-related GUIs when pressing buttons"its only the line endings right?
 	)
 	@ConfigEditorBoolean
 	public boolean guiButtonClicks = true;
@@ -98,6 +98,18 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+
+=======
+		name = "Profile Viewer",
+		desc = "Brings up the profile viewer (/pv)\n" +
+			"Shows stats and networth of players"
+	)
+	@ConfigEditorButton(runnableId = 13, buttonText = "Open")
+	public boolean openPV = true;
+
+	@Expose
+	@ConfigOption(
+
 		name = "Edit Enchant Colours",
 		desc = "Change the colours of certain skyblock enchants (/neuec)"
 	)
@@ -131,5 +143,5 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean disableNPCRetexturing = false;
-
+  
 }
