@@ -1,7 +1,13 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class Misc {
 	@Expose
@@ -70,7 +76,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "GUI Click Sounds",
-		desc = "Play click sounds in various NEU-related GUIs when pressing buttons"its only the line endings right?
+		desc = "Play click sounds in various NEU-related GUIs when pressing buttons"
 	)
 	@ConfigEditorBoolean
 	public boolean guiButtonClicks = true;
@@ -98,8 +104,6 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-
-=======
 		name = "Profile Viewer",
 		desc = "Brings up the profile viewer (/pv)\n" +
 			"Shows stats and networth of players"
@@ -143,5 +147,5 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean disableNPCRetexturing = false;
-  
+
 }
