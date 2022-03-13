@@ -751,16 +751,27 @@ public class NEUOverlay extends Gui {
 	public void showInfo(JsonObject item) {
 		if (item.has("info") && item.has("infoType")) {
 			JsonArray lore = item.get("info").getAsJsonArray();
-			StringBuilder loreBuilder = new StringBuilder();
-			for (int i = 0; i < lore.size(); i++) {
-				loreBuilder.append(lore.get(i).getAsString());
-				if (i != lore.size() - 1)
-					loreBuilder.append("\n");
+			String infoType = item.get("infoType").getAsString();
+			String infoText = "";
+			if (infoType.equals("WIKI_URL")) {
+				for (JsonElement url : lore) {
+					infoText = url.getAsString();
+					if (
+						url.getAsString().startsWith("https://wiki.hypixel.net/") && NotEnoughUpdates.INSTANCE.config.misc.wiki == 0
+							|| url.getAsString().startsWith("https://hypixel-skyblock.fandom.com/") &&
+							NotEnoughUpdates.INSTANCE.config.misc.wiki == 1) break;
+				}
+			} else {
+				StringBuilder loreBuilder = new StringBuilder();
+				for (int i = 0; i < lore.size(); i++) {
+					loreBuilder.append(lore.get(i).getAsString());
+					if (i != lore.size() - 1)
+						loreBuilder.append("\n");
+				}
+				infoText = loreBuilder.toString();
 			}
-			String infoText = loreBuilder.toString();
 			String internalname = item.get("internalname").getAsString();
 			String name = item.get("displayname").getAsString();
-			String infoType = item.get("infoType").getAsString();
 			displayInformationPane(new TextInfoPane(
 				this,
 				manager,
@@ -1349,7 +1360,8 @@ public class NEUOverlay extends Gui {
 		} else if (getSortMode() == SORT_MODE_PET) {
 			return internalname.matches(petRegex) && item.get("displayname").getAsString().contains("[");
 		} else if (getSortMode() == SORT_MODE_TOOL) {
-			return checkItemType(item.get("lore").getAsJsonArray(),
+			return checkItemType(
+				item.get("lore").getAsJsonArray(),
 				"SWORD",
 				"BOW",
 				"AXE",
