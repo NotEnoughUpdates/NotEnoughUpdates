@@ -101,7 +101,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private String profileId = null;
 	private boolean profileDropdownSelected = false;
 
-	public enum ProfileViewerPage {
+public enum ProfileViewerPage {
 		LOADING(null),
 		INVALID_NAME(null),
 		NO_SKYBLOCK(null),
@@ -384,7 +384,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (timeDiff > 20000) {
 					Utils.drawStringCentered(
-						EnumChatFormatting.YELLOW + "Its taking a while...",
+						EnumChatFormatting.YELLOW + "It's taking a while...",
 						Minecraft.getMinecraft().fontRendererObj,
 						guiLeft + sizeX / 2f,
 						guiTop + 111,
@@ -401,7 +401,7 @@ public class GuiProfileViewer extends GuiScreen {
 					);
 					if (timeDiff > 60000) {
 						Utils.drawStringCentered(
-							EnumChatFormatting.YELLOW + "Might be hypixel's fault.",
+							EnumChatFormatting.YELLOW + "Might be Hypixel's fault.",
 							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + sizeX / 2f,
 							guiTop + 131,
@@ -506,7 +506,7 @@ public class GuiProfileViewer extends GuiScreen {
 				break;
 			case INVALID_NAME:
 				Utils.drawStringCentered(
-					EnumChatFormatting.RED + "Invalid name or API is down!",
+					EnumChatFormatting.RED + "Invalid name or the API is down!",
 					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + sizeX / 2f,
 					guiTop + 101,
@@ -516,7 +516,7 @@ public class GuiProfileViewer extends GuiScreen {
 				break;
 			case NO_SKYBLOCK:
 				Utils.drawStringCentered(
-					EnumChatFormatting.RED + "No skyblock data found!",
+					EnumChatFormatting.RED + "No Skyblock data found!",
 					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + sizeX / 2f,
 					guiTop + 101,
@@ -2664,8 +2664,6 @@ public class GuiProfileViewer extends GuiScreen {
 								break;
 							}
 						}
-						tag.setTag("ExtraAttributes", ea);
-						stack.setTagCompound(tag);
 					}
 				}
 
