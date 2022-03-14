@@ -22596,3 +22596,7 @@ a.external--reference {
     background-image: url(https://wiki.hypixel.net/load.php?modules=skins.minerva.personalMenu.icons&image=markup&format=rasterized&skin=minerva&version=1j2d9);
     background-image: linear-gradient(transparent,transparent),url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48dGl0bGU+bWFya3VwPC90aXRsZT48ZyBmaWxsPSIjNTQ1OTVkIj48cGF0aCBkPSJNNi41IDMuNUwwIDEwbDEuNSAxLjUgNSA1TDggMTVsLTUtNSA1LTV6bTcgMEwxMiA1bDUgNS01IDUgMS41IDEuNUwyMCAxMHoiLz48L2c+PC9zdmc+)
 }
+
+div#mw-content-text {
+    position: absolute;
+}

@@ -10,11 +10,11 @@ import info.bliki.wiki.tags.HTMLTag;
 import info.bliki.wiki.tags.IgnoreTag;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.AllowEmptyHTMLTag;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -49,6 +49,10 @@ public class HTMLInfoPane extends TextInfoPane {
 	private BufferedImage imageTemp = null;
 	private int imageHeight = 0;
 	private int imageWidth = 0;
+
+	private float xMin = 0;
+	private int mouseOffset = 0;
+	private boolean selected = false;
 
 	private static boolean hasAttemptedDownload = false;
 
@@ -157,6 +161,9 @@ public class HTMLInfoPane extends TextInfoPane {
 			); // hide beta box
 			wiki = wiki.replaceAll("<h1 id=\"section_0\">.*</h1>", ""); // hide title
 			wiki = wiki.replace("src=\"/", "src=\"https://wiki.hypixel.net/");
+			wiki = wiki.replace("\uD83D\uDDF8", "\u2713"); // replace checkmark with one that renders
+			wiki = wiki.replace("\uD83E\uDC10", "\u27F5"); // replace left arrow with one that renders
+			wiki = wiki.replace("\uD83E\uDC12", "\u27F6"); // replace right arrow with one that renders
 		} else {
 			String[] split = wiki.split("</infobox>");
 			wiki = split[split.length - 1]; //Remove everything before infobox
@@ -459,12 +466,23 @@ public class HTMLInfoPane extends TextInfoPane {
 			}
 			int yScroll = scrollHeight.getValue();
 
+			float xSize = Math.min((paneWidth - overlay.getBoxPadding() * 2f) / imageWidth * scaleF, 1);
+			float xMax = xMin + xSize;
+
 			float vMin = yScroll / (imageHeight / scaleF);
 			float vMax = (yScroll + height - overlay.getBoxPadding() * 3) / (imageHeight / scaleF);
 			Utils.drawTexturedRect(leftSide + overlay.getBoxPadding(), overlay.getBoxPadding() * 2, imageW,
 				(height - overlay.getBoxPadding() * 3),
-				0, 1, vMin, vMax
+				xMin, xMax, vMin, vMax
 			);
+			if (xSize < 1) {
+				int barX = (int) (xMin * imageW) + leftSide + overlay.getBoxPadding();
+				int barY = height - overlay.getBoxPadding() - 10;
+				int barWidth = (int) (xMax * imageW) + leftSide + overlay.getBoxPadding();
+				int barHeight = height - overlay.getBoxPadding() - 5;
+				boolean isHovered = mouseX >= barX && mouseX <= barWidth && mouseY >= barY && mouseY <= barHeight || selected;
+				Gui.drawRect(barX, barY, barWidth, barHeight, new Color(255, 255, 255, isHovered ? 150 : 100).getRGB());
+			}
 		} else {
 			scrollHeight.setValue(0);
 
@@ -482,6 +500,27 @@ public class HTMLInfoPane extends TextInfoPane {
 
 	@Override
 	public void mouseInput(int width, int height, int mouseX, int mouseY, boolean mouseDown) {
+		int paneWidth = (int) (width / 3 * overlay.getWidthMult());
+		int rightSide = (int) (width * overlay.getInfoPaneOffsetFactor());
+		int leftSide = rightSide - paneWidth;
+		int imageW = paneWidth - overlay.getBoxPadding() * 2;
+		float scaleF = IMAGE_WIDTH * ZOOM_FACTOR / (float) imageW;
+		float xSize = Math.min((paneWidth - overlay.getBoxPadding() * 2f) / imageWidth * scaleF, 1);
+		float xMax = xMin + xSize;
+		int barX = (int) (xMin * imageW) + leftSide + overlay.getBoxPadding();
+		int barY = height - overlay.getBoxPadding() - 10;
+		int barWidth = (int) (xMax * imageW) + leftSide + overlay.getBoxPadding();
+		int barHeight = height - overlay.getBoxPadding() - 5;
+		if (!mouseDown)
+			selected = false;
+		if (mouseX >= barX && mouseX <= barWidth && mouseY >= barY && mouseY <= barHeight && mouseDown || selected) {
+			if (!selected)
+				mouseOffset = mouseX - barX;
+			xMin = (mouseX - leftSide - overlay.getBoxPadding() / 2f - mouseOffset) / imageWidth * scaleF;
+			xMin = Math.max(0, xMin);
+			xMin = Math.min(xMin, 1 - xSize);
+			selected = true;
+		}
 		super.mouseInput(width, height, mouseX, mouseY, mouseDown);
 	}
 
