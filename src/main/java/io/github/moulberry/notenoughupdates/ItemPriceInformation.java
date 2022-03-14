@@ -86,7 +86,7 @@ public class ItemPriceInformation {
 			long currentTime = System.currentTimeMillis();
 			long lastUpdate = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLastLowestBinUpdateTime();
 			//check if info is older than 10 minutes
-			if (currentTime - lastUpdate > 600 * 1000) {
+			if (currentTime - lastUpdate > 600 * 1000 && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 				tooltip.add(EnumChatFormatting.RED + "[NEU] Price info is outdated.");
 				tooltip.add(EnumChatFormatting.RED + "It will be updated again as soon as possible.");
 			}
@@ -336,7 +336,7 @@ public class ItemPriceInformation {
 			}
 
 			return added;
-		} else if (auctionInfoErrored) {
+		} else if (auctionInfoErrored && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			String message = EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] API is down";
 			if (auctionableItems != null && !auctionableItems.isEmpty()) {
 				if (auctionableItems.contains(internalname)) {

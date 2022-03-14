@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.DwarvenMinesWaypoints;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
@@ -226,6 +227,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(InventoryStorageSelector.getInstance());
 		MinecraftForge.EVENT_BUS.register(SlotLocking.getInstance());
 		MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
+		MinecraftForge.EVENT_BUS.register(CrystalWishingCompassSolver.getInstance());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
 		MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 
