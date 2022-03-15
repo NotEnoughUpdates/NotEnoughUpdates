@@ -320,6 +320,9 @@ public class HTMLInfoPane extends TextInfoPane {
 			html = "<div id=\"WikiaArticle\" class=\"WikiaArticle\">" + html + "</div>";
 			html = "<link rel=\"stylesheet\" href=\"file:///" + cssFile.getAbsolutePath().replaceAll("^/", "") + "\">\n" +
 				html;
+			System.out.println(isOfficial);
+			if (isOfficial)
+				html = "<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>\n" + html;
 
 			try (
 				PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
