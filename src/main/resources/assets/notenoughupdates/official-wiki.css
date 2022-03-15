@@ -22600,3 +22600,8 @@ a.external--reference {
 div#mw-content-text {
     position: absolute;
 }
+
+body {
+    text-rendering: optimizeLegibility;
+    text-rendering: geometricPrecision
+}
