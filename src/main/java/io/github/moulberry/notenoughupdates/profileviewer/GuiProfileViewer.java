@@ -101,22 +101,57 @@ public class GuiProfileViewer extends GuiScreen {
 	private String profileId = null;
 	private boolean profileDropdownSelected = false;
 
-	public enum ProfileViewerPage {
-		LOADING(null),
-		INVALID_NAME(null),
-		NO_SKYBLOCK(null),
-		BASIC(new ItemStack(Items.paper)),
-		DUNG(new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
-		EXTRA(new ItemStack(Items.book)),
-		INVS(new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
-		COLS(new ItemStack(Items.painting)),
-		PETS(new ItemStack(Items.bone)),
-		MINING(new ItemStack(Items.iron_pickaxe));
+public enum ProfileViewerPage {
+		LOADING(),
+		INVALID_NAME(),
+		NO_SKYBLOCK(),
+		BASIC(Items.paper, "Your Skills"),
+		DUNG(Item.getItemFromBlock(Blocks.deadbush), "Dungeoneering"),
+		EXTRA(Items.book, "Profile Stats"),
+		INVS(Item.getItemFromBlock(Blocks.ender_chest), "Storage"),
+		COLS(Items.painting, "Collections"),
+		PETS(Items.bone, "Pets"),
+		MINING(Items.iron_pickaxe, "Heart of the Mountain");
 
-		public final ItemStack stack;
+		private final ItemStack itemStack;
 
-		ProfileViewerPage(ItemStack stack) {
-			this.stack = stack;
+		ProfileViewerPage(){
+			this(null,null);
+		}
+
+		ProfileViewerPage(Item item, String name) {
+			if(item == null){
+				itemStack = null;
+			} else {
+				itemStack = new ItemStack(item);
+				NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+				NBTTagCompound display = new NBTTagCompound();
+				display.setString("Name", name);
+				nbt.setTag("display", display);
+				itemStack.setTagCompound(nbt);
+			}
+		}
+
+		public boolean hasItem(){
+			return itemStack != null;
+		}
+
+		public Optional<ItemStack> getItem (){
+			return Optional.ofNullable(itemStack);
+		}
+
+		public static List<ProfileViewerPage> getPagesWithItem(){
+			final ProfileViewerPage[] pages = ProfileViewerPage.values();
+
+			final List<ProfileViewerPage> filteredPages = new ArrayList<>(pages.length);
+			for (final ProfileViewerPage page : pages){
+				if (page.hasItem()){
+					filteredPages.add(page);
+				}
+			}
+
+			return filteredPages;
+
 		}
 	}
 
@@ -539,16 +574,12 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	private void renderTabs(boolean renderPressed) {
-		int ignoredTabs = 0;
-		for (int i = 0; i < ProfileViewerPage.values().length; i++) {
-			ProfileViewerPage page = ProfileViewerPage.values()[i];
-			if (page.stack == null) {
-				ignoredTabs++;
-				continue;
-			}
+		final List<ProfileViewerPage> pages = ProfileViewerPage.getPagesWithItem();
+		for (int index = 0; pages.size()>index; index++){
+			final ProfileViewerPage page = pages.get(index);
 			boolean pressed = page == currentPage;
 			if (pressed == renderPressed) {
-				renderTab(page.stack, i - ignoredTabs, pressed);
+				renderTab(page.itemStack,index,pressed);
 			}
 		}
 	}
@@ -597,15 +628,11 @@ public class GuiProfileViewer extends GuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
-			int ignoredTabs = 0;
-			for (int i = 0; i < ProfileViewerPage.values().length; i++) {
-				ProfileViewerPage page = ProfileViewerPage.values()[i];
-				if (page.stack == null) {
-					ignoredTabs++;
-					continue;
-				}
-				int i2 = i - ignoredTabs;
-				int x = guiLeft + i2 * 28;
+			final List<ProfileViewerPage> pages = ProfileViewerPage.getPagesWithItem();
+			for (int i = 0; i < pages.size(); i++) {
+				ProfileViewerPage page = pages.get(i);
+
+				int x = guiLeft + i * 28;
 				int y = guiTop - 28;
 
 				if (mouseX > x && mouseX < x + 28) {
@@ -1680,6 +1707,12 @@ public class GuiProfileViewer extends GuiScreen {
 				}
 			}
 		}
+
+		NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+		NBTTagCompound display = new NBTTagCompound();
+		display.setString("Name", skillName);
+		nbt.setTag("display", display);
+		stack.setTagCompound(nbt);
 
 		GL11.glTranslatef((x), (y - 6f), 0);
 		GL11.glScalef(0.7f, 0.7f, 1);
