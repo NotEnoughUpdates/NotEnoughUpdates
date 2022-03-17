@@ -575,7 +575,7 @@ public enum ProfileViewerPage {
 
 	private void renderTabs(boolean renderPressed) {
 		final List<ProfileViewerPage> pages = ProfileViewerPage.getPagesWithItem();
-		for (int index = 0; pages.size()>index; index++){
+		for (int index = 0; pages.size() > index; index++){
 			final ProfileViewerPage page = pages.get(index);
 			boolean pressed = page == currentPage;
 			if (pressed == renderPressed) {
