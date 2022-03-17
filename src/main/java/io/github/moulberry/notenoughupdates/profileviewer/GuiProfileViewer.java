@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -1955,6 +1956,12 @@ public class GuiProfileViewer extends GuiScreen {
 				}
 			}
 		}
+
+		NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+		NBTTagCompound display = new NBTTagCompound();
+		display.setString("Name", skillName);
+		nbt.setTag("display", display);
+		stack.setTagCompound(nbt);
 
 		GL11.glTranslatef((x), (y - 6f), 0);
 		GL11.glScalef(0.7f, 0.7f, 1);
@@ -5324,24 +5331,37 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	public enum ProfileViewerPage {
-		LOADING(-1, null),
-		INVALID_NAME(-1, null),
-		NO_SKYBLOCK(-1, null),
-		BASIC(0, new ItemStack(Items.paper)),
-		DUNGEON(1, new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
-		EXTRA(2, new ItemStack(Items.book)),
-		INVENTORIES(3, new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
-		COLLECTIONS(4, new ItemStack(Items.painting)),
-		PETS(5, new ItemStack(Items.bone)),
-		MINING(6, new ItemStack(Items.iron_pickaxe)),
-		BINGO(7, new ItemStack(Items.filled_map));
+		LOADING(),
+		INVALID_NAME(),
+		NO_SKYBLOCK(),
+		BASIC(0, Items.paper, "Your Skills"),
+		DUNGEON(1, Item.getItemFromBlock(Blocks.deadbush), "Dungeoneering"),
+		EXTRA(2, Items.book, "Profile Stats"),
+		INVENTORIES(3, Item.getItemFromBlock(Blocks.ender_chest), "Storage"),
+		COLLECTIONS(4, Items.painting, "Collections"),
+		PETS(5, Items.bone, "Pets"),
+		MINING(6, Items.iron_pickaxe, "Heart of the Mountain"),
+		BINGO(7, Items.filled_map, "Bingo");
 
 		public final ItemStack stack;
 		public final int id;
 
-		ProfileViewerPage(int id, ItemStack stack) {
+		ProfileViewerPage() {
+			this(-1, null, null);
+		}
+
+		ProfileViewerPage(int id, Item item, String name) {
 			this.id = id;
-			this.stack = stack;
+			if (item == null) {
+				stack = null;
+			} else {
+				stack = new ItemStack(item);
+				NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+				NBTTagCompound display = new NBTTagCompound();
+				display.setString("Name", name);
+				nbt.setTag("display", display);
+				stack.setTagCompound(nbt);
+			}
 		}
 
 		public static ProfileViewerPage getById(int id) {
@@ -5352,6 +5372,11 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 			return null;
 		}
+
+		public Optional<ItemStack> getItem() {
+			return Optional.ofNullable(stack);
+		}
+
 	}
 
 	public static class PetLevel {
