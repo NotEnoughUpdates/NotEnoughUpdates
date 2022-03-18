@@ -49,7 +49,7 @@ public class ProfileViewer {
 			"\u00a7eMining",
 			"\u00a7eBingo",
 		},
-		allowDeleting = false
+		allowRemovingElements = false
 	)
 	public List<Integer> pageLayout = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
 

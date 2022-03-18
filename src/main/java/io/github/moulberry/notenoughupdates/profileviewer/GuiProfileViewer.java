@@ -1964,32 +1964,11 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	private ItemStack getQuestionmarkSkull() {
-		String textureLink = "bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40";
-
-		String b64Decoded =
-			"{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + textureLink + "\"}}}";
-		String b64Encoded = new String(Base64.getEncoder().encode(b64Decoded.getBytes()));
-
-		ItemStack stack = new ItemStack(Items.skull, 1, 3);
-		NBTTagCompound nbt = new NBTTagCompound();
-		NBTTagCompound skullOwner = new NBTTagCompound();
-		NBTTagCompound properties = new NBTTagCompound();
-		NBTTagList textures = new NBTTagList();
-		NBTTagCompound textures_0 = new NBTTagCompound();
-
-		String uuid = UUID.nameUUIDFromBytes(b64Encoded.getBytes()).toString();
-		skullOwner.setString("Id", uuid);
-		skullOwner.setString("Name", uuid);
-
-		textures_0.setString("Value", b64Encoded);
-		textures.appendTag(textures_0);
-
-		properties.setTag("textures", textures);
-		skullOwner.setTag("Properties", properties);
-		nbt.setTag("SkullOwner", skullOwner);
-		stack.setTagCompound(nbt);
-		stack.setStackDisplayName(EnumChatFormatting.RED + "Unknown Pet");
-		return stack;
+		return Utils.createSkull(
+			EnumChatFormatting.RED + "Unknown Pet",
+			"Unknown Pet",
+			"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM4ZWExZjUxZjI1M2ZmNTE0MmNhMTFhZTQ1MTkzYTRhZDhjM2FiNWU5YzZlZWM4YmE3YTRmY2I3YmFjNDAifX19"
+		);
 	}
 
 	private void drawPetsPage(int mouseX, int mouseY, float partialTicks) {

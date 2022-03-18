@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ConfigEditorDraggableList {
 	String[] exampleText();
-	boolean allowDeleting() default true;
+	boolean allowRemovingElements() default true;
 }

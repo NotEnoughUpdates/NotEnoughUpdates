@@ -113,7 +113,6 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-
 		name = "Edit Enchant Colours",
 		desc = "Change the colours of certain skyblock enchants (/neuec)"
 	)
