@@ -39,11 +39,11 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 	public GuiOptionEditorDraggableList(
 		ConfigProcessor.ProcessedOption option,
 		String[] exampleText,
-		boolean disableDeleting
+		boolean allowRemovingElements
 	) {
 		super(option);
 
-		this.allowRemovingElements = disableDeleting;
+		this.allowRemovingElements = allowRemovingElements;
 		this.exampleText = exampleText;
 		this.activeText = (List<Integer>) option.get();
 	}
