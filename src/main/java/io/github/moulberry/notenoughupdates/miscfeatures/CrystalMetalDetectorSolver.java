@@ -1,6 +1,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.Vec3Comparable;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
@@ -11,7 +12,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
 
 import java.util.Arrays;
@@ -22,25 +22,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CrystalMetalDetectorSolver {
+	enum SolutionState {
+		NOT_STARTED,
+		MULTIPLE,
+		MULTIPLE_KNOWN,
+		FOUND,
+		FOUND_KNOWN,
+		FAILED,
+		INVALID,
+	}
+
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
-	private static BlockPos prevPlayerPos;
-	private static double prevDistToTreasure = 0;
+	private static Vec3Comparable prevPlayerPos;
+	private static double prevDistToTreasure;
 	private static HashSet<BlockPos> possibleBlocks = new HashSet<>();
-	private static final HashMap<BlockPos, Double> evaluatedPlayerPositions = new HashMap<>();
-	private static BlockPos blockPosIfLastSolutionInvalid;
-	private static Boolean chestRecentlyFound = false;
-	private static long chestLastFoundMillis = 0;
+	private static final HashMap<Vec3Comparable, Double> evaluatedPlayerPositions = new HashMap<>();
+	private static boolean chestRecentlyFound;
+	private static long chestLastFoundMillis;
 	private static final HashSet<BlockPos> openedChestPositions = new HashSet<>();
 
 	// Keeper and Mines of Divan center location info
 	private static Vec3i minesCenter;
-	private static boolean visitKeeperMessagePrinted = false;
-	private static String KEEPER_OF_STRING = "Keeper of ";
-	private static String DIAMOND_STRING = "diamond";
-	private static String LAPIS_STRING = "lapis";
-	private static String EMERALD_STRING = "emerald";
-	private static String GOLD_STRING = "gold";
+	private static boolean debugDoNotUseCenter = false;
+	private static boolean visitKeeperMessagePrinted;
+	private static final String KEEPER_OF_STRING = "Keeper of ";
+	private static final String DIAMOND_STRING = "diamond";
+	private static final String LAPIS_STRING = "lapis";
+	private static final String EMERALD_STRING = "emerald";
+	private static final String GOLD_STRING = "gold";
 	private static final HashMap<String, Vec3i> keeperOffsets = new HashMap<String, Vec3i>() {{
 		put(DIAMOND_STRING, new Vec3i(33,0,3));
 		put(LAPIS_STRING, new Vec3i(-33,0,-3));
@@ -94,6 +104,14 @@ public class CrystalMetalDetectorSolver {
 		-9896946827286L		// x=-37, y=-21, z=-22
 	));
 
+	static Predicate<BlockPos> treasureAllowedPredicate = CrystalMetalDetectorSolver::treasureAllowed;
+	static SolutionState currentState = SolutionState.NOT_STARTED;
+	static SolutionState previousState = SolutionState.NOT_STARTED;
+
+	public interface Predicate<BlockPos> {
+		boolean check(BlockPos blockPos);
+	}
+
 	public static void process(IChatComponent message) {
 		if (SBInfo.getInstance().getLocation() == null ||
 			!NotEnoughUpdates.INSTANCE.config.mining.metalDetectorEnabled ||
@@ -102,7 +120,7 @@ public class CrystalMetalDetectorSolver {
 			return;
 		}
 
-		locateMinesCenterIfNeeded();
+		boolean centerNewlyDiscovered = locateMinesCenterIfNeeded();
 
 		double distToTreasure = Double.parseDouble(message
 			.getUnformattedText()
@@ -122,20 +140,64 @@ public class CrystalMetalDetectorSolver {
 			chestRecentlyFound = false;
 		}
 
-		if (prevDistToTreasure == distToTreasure &&
-				prevPlayerPos.equals(mc.thePlayer.getPosition()) &&
-				!evaluatedPlayerPositions.keySet().contains(mc.thePlayer.getPosition())) {
+		SolutionState originalState = currentState;
+		int originalCount = possibleBlocks.size();
+		Vec3Comparable adjustedPlayerPos = getPlayerPosAdjustedForEyeHeight();
+		findPossibleSolutions(distToTreasure, adjustedPlayerPos, centerNewlyDiscovered);
+		if (currentState != originalState || originalCount != possibleBlocks.size()) {
+			switch (currentState) {
+				case FOUND_KNOWN:
+					NEUDebugLogger.log(NEUDebugFlag.METAL, "Known location identified.");
+					// falls through
+				case FOUND:
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Found solution."));
+					if (NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.METAL) &&
+						(previousState == SolutionState.INVALID || previousState == SolutionState.FAILED)) {
+						NEUDebugLogger.log(NEUDebugFlag.METAL,
+							EnumChatFormatting.AQUA + "Solution coordinates: " +
+								EnumChatFormatting.WHITE + possibleBlocks.iterator().next().toString());
+					}
+					break;
+				case INVALID:
+					mc.thePlayer.addChatMessage(new ChatComponentText(
+						EnumChatFormatting.RED + "[NEU] Previous solution is invalid."));
+					logDiagnosticData(false);
+					resetSolution(false);
+					break;
+				case FAILED:
+					mc.thePlayer.addChatMessage(new ChatComponentText(
+						EnumChatFormatting.RED + "[NEU] Failed to find a solution."));
+					logDiagnosticData(false);
+					resetSolution(false);
+					break;
+				case MULTIPLE_KNOWN:
+					NEUDebugLogger.log(NEUDebugFlag.METAL, "Multiple known locations identified:");
+					// falls through
+				case MULTIPLE:
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
+						"[NEU] Need another position to find solution. Possible blocks: " + possibleBlocks.size()));
+					break;
+				default:
+					throw new IllegalStateException("Metal detector is in invalid state");
+			}
+		}
+	}
+
+	static void findPossibleSolutions(double distToTreasure, Vec3Comparable playerPos, boolean centerNewlyDiscovered) {
+		if (prevDistToTreasure == distToTreasure &&	prevPlayerPos.equals(playerPos) &&
+				!evaluatedPlayerPositions.containsKey(playerPos)) {
+				evaluatedPlayerPositions.put(playerPos, distToTreasure);
 			if (possibleBlocks.size() == 0) {
-				evaluatedPlayerPositions.put(mc.thePlayer.getPosition(), distToTreasure);
 				for (int zOffset = (int) Math.floor(-distToTreasure); zOffset <= Math.ceil(distToTreasure); zOffset++) {
 					for (int y = 65; y <= 75; y++) {
 						double calculatedDist = 0;
 						int xOffset = 0;
 						while (calculatedDist < distToTreasure) {
-							BlockPos pos = new BlockPos(Math.floor(mc.thePlayer.posX) + xOffset,
-								y, Math.floor(mc.thePlayer.posZ) + zOffset);
-							calculatedDist = getPlayerPos().distanceTo(new Vec3(pos).addVector(0D, 1D, 0D));
-							if (round(calculatedDist, 1) == distToTreasure && treasureAllowed(pos)) {
+							BlockPos pos = new BlockPos(Math.floor(playerPos.xCoord) + xOffset,
+								y, Math.floor(playerPos.zCoord) + zOffset
+							);
+							calculatedDist = playerPos.distanceTo(new Vec3Comparable(pos).addVector(0D, 1D, 0D));
+							if (round(calculatedDist, 1) == distToTreasure && treasureAllowedPredicate.check(pos)) {
 								possibleBlocks.add(pos);
 							}
 							xOffset++;
@@ -143,10 +205,11 @@ public class CrystalMetalDetectorSolver {
 						xOffset = 0;
 						calculatedDist = 0;
 						while (calculatedDist < distToTreasure) {
-							BlockPos pos = new BlockPos(Math.floor(mc.thePlayer.posX) - xOffset,
-								y, Math.floor(mc.thePlayer.posZ) + zOffset);
-							calculatedDist = getPlayerPos().distanceTo(new Vec3(pos).addVector(0D, 1D, 0D));
-							if (round(calculatedDist, 1) == distToTreasure && treasureAllowed(pos)) {
+							BlockPos pos = new BlockPos(Math.floor(playerPos.xCoord) - xOffset,
+								y, Math.floor(playerPos.zCoord) + zOffset
+							);
+							calculatedDist = playerPos.distanceTo(new Vec3Comparable(pos).addVector(0D, 1D, 0D));
+							if (round(calculatedDist, 1) == distToTreasure && treasureAllowedPredicate.check(pos)) {
 								possibleBlocks.add(pos);
 							}
 							xOffset++;
@@ -154,48 +217,33 @@ public class CrystalMetalDetectorSolver {
 					}
 				}
 
-				checkAndDisplaySolutionState();
+				updateSolutionState();
 			} else if (possibleBlocks.size() != 1) {
-				evaluatedPlayerPositions.put(mc.thePlayer.getPosition().getImmutable(), distToTreasure);
 				HashSet<BlockPos> temp = new HashSet<>();
 				for (BlockPos pos : possibleBlocks) {
-					if (round(getPlayerPos().distanceTo(new Vec3(pos).addVector(0D, 1D, 0D)), 1) == distToTreasure) {
+					if (round(playerPos.distanceTo(new Vec3Comparable(pos).addVector(0D, 1D, 0D)), 1) == distToTreasure) {
 						temp.add(pos);
 					}
 				}
 
 				possibleBlocks = temp;
-				checkAndDisplaySolutionState();
+				updateSolutionState();
 			} else {
 				BlockPos pos = possibleBlocks.iterator().next();
-				if (Math.abs(distToTreasure - (getPlayerPos().distanceTo(new Vec3(pos)))) > 5) {
-					mc.thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "[NEU] Previous solution is invalid."));
-					blockPosIfLastSolutionInvalid = pos.getImmutable();
-					logDiagnosticData(false);
-					resetSolution(false);
+				if (Math.abs(distToTreasure - (playerPos.distanceTo(new Vec3Comparable(pos)))) > 5) {
+					currentState = SolutionState.INVALID;
 				}
 			}
+		} else if (centerNewlyDiscovered && possibleBlocks.size() > 1) {
+			updateSolutionState();
 		}
 
-		prevPlayerPos = mc.thePlayer.getPosition().getImmutable();
+		prevPlayerPos = playerPos;
 		prevDistToTreasure = distToTreasure;
 	}
 
-	private static void checkForSingleKnownLocationMatch() {
-		if (minesCenter == BlockPos.NULL_VECTOR || possibleBlocks.size() < 2) {
-			return;
-		}
-
-		HashSet<BlockPos> temp = possibleBlocks.stream()
-			.filter(block -> knownChestOffsets.contains(block.subtract(minesCenter).toLong()))
-			.collect(Collectors.toCollection(HashSet::new));
-		if (temp.size() == 1) {
-			possibleBlocks = temp;
-			NEUDebugLogger.log(NEUDebugFlag.METAL, "Known location identified.");
-		} else if (temp.size() > 1) {
-			NEUDebugLogger.log(NEUDebugFlag.METAL, temp.size() + " known locations identified:");
-		}
+	public static void setDebugDoNotUseCenter(boolean val) {
+		debugDoNotUseCenter = val;
 	}
 
 	private static String getFriendlyBlockPositions(Collection<BlockPos> positions) {
@@ -206,10 +254,13 @@ public class CrystalMetalDetectorSolver {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 		for (BlockPos blockPos : positions) {
-			sb.append("Absolute: " + blockPos.toString());
+			sb.append("Absolute: ");
+			sb.append(blockPos.toString());
 			if (minesCenter != Vec3i.NULL_VECTOR) {
 				BlockPos relativeOffset = blockPos.subtract(minesCenter);
-				sb.append(", Relative: " + relativeOffset.toString() + " (" + relativeOffset.toLong() + ")");
+				sb.append(", Relative: ");
+				sb.append(relativeOffset.toString() );
+				sb.append(" (" + relativeOffset.toLong() + ")");
 			}
 			sb.append("\n");
 		}
@@ -217,22 +268,23 @@ public class CrystalMetalDetectorSolver {
 		return sb.toString();
 	}
 
-	private static String getFriendlyEvaluatedPositions(HashMap<BlockPos, Double> positions) {
-		if (!NEUDebugLogger.isFlagEnabled(NEUDebugFlag.METAL) || positions.size() == 0) {
+	private static String getFriendlyEvaluatedPositions() {
+		if (!NEUDebugLogger.isFlagEnabled(NEUDebugFlag.METAL) || evaluatedPlayerPositions.size() == 0) {
 			return "";
 		}
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
-		for (BlockPos blockPos : positions.keySet()) {
-			sb.append("Absolute: " + blockPos.toString());
+		for (Vec3Comparable vec : evaluatedPlayerPositions.keySet()) {
+			sb.append("Absolute: " + vec.toString());
 			if (minesCenter != Vec3i.NULL_VECTOR) {
-				BlockPos relativeOffset = blockPos.subtract(minesCenter);
+				BlockPos positionBlockPos = new BlockPos(vec);
+				BlockPos relativeOffset = positionBlockPos.subtract(minesCenter);
 				sb.append(", Relative: " + relativeOffset.toString() + " (" + relativeOffset.toLong() + ")");
 			}
 
 			sb.append(" Distance: ");
-			sb.append(positions.get(blockPos));
+			sb.append(evaluatedPlayerPositions.get(vec));
 
 			sb.append("\n");
 		}
@@ -240,35 +292,194 @@ public class CrystalMetalDetectorSolver {
 		return sb.toString();
 	}
 
-	public static void logDiagnosticData(boolean outputAlways) {
-		if (SBInfo.getInstance().getLocation() == null) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"[NEU] This command is not available outside SkyBlock"));
+	public static void resetSolution(Boolean chestFound) {
+		if (chestFound) {
+			prevPlayerPos = null;
+			prevDistToTreasure = 0;
+		  if (possibleBlocks.size() == 1) {
+				openedChestPositions.add(possibleBlocks.iterator().next().getImmutable());
+			}
+		}
+
+		chestRecentlyFound = chestFound;
+		possibleBlocks.clear();
+		evaluatedPlayerPositions.clear();
+		previousState = currentState;
+		currentState = SolutionState.NOT_STARTED;
+	}
+
+	public static void initWorld() {
+		minesCenter = Vec3i.NULL_VECTOR;
+		visitKeeperMessagePrinted = false;
+		openedChestPositions.clear();
+		chestLastFoundMillis = 0;
+		prevDistToTreasure = 0;
+		prevPlayerPos = null;
+		currentState = SolutionState.NOT_STARTED;
+		resetSolution(false);
+	}
+
+	public static void render(float partialTicks) {
+		int beaconRGB = 0x1fd8f1;
+
+		if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows") &&
+			SBInfo.getInstance().location.equals("Mines of Divan")) {
+
+			if (possibleBlocks.size() == 1) {
+				BlockPos block = possibleBlocks.iterator().next();
+
+				RenderUtils.renderBeaconBeam(block.add(0, 1, 0), beaconRGB, 1.0f, partialTicks);
+				RenderUtils.renderWayPoint("Treasure", possibleBlocks.iterator().next().add(0, 2.5, 0), partialTicks);
+			} else if (possibleBlocks.size() > 1 && NotEnoughUpdates.INSTANCE.config.mining.metalDetectorShowPossible) {
+				for (BlockPos block : possibleBlocks) {
+					RenderUtils.renderBeaconBeam(block.add(0, 1, 0), beaconRGB, 1.0f, partialTicks);
+					RenderUtils.renderWayPoint("Possible Treasure Location", block.add(0, 2.5, 0), partialTicks);
+				}
+			}
+		}
+	}
+
+	private static boolean locateMinesCenterIfNeeded() {
+		if (minesCenter != Vec3i.NULL_VECTOR) {
+			return false;
+		}
+
+		List<EntityArmorStand> keeperEntities = mc.theWorld.getEntities(EntityArmorStand.class, (entity) -> {
+			if (!entity.hasCustomName()) return false;
+			return entity.getCustomNameTag().contains(KEEPER_OF_STRING);
+		});
+
+		if (keeperEntities.size() == 0) {
+			if (!visitKeeperMessagePrinted) {
+				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
+					"[NEU] Approach a Keeper while holding the metal detector to enable faster treasure hunting."));
+				visitKeeperMessagePrinted = true;
+			}
+			return false;
+		}
+
+		EntityArmorStand keeperEntity = keeperEntities.get(0);
+		String keeperName = keeperEntity.getCustomNameTag();
+		NEUDebugLogger.log(NEUDebugFlag.METAL,"Locating center using Keeper: " +
+			EnumChatFormatting.WHITE + keeperEntity);
+		String keeperType = keeperName.substring(keeperName.indexOf(KEEPER_OF_STRING) + KEEPER_OF_STRING.length());
+		minesCenter =  keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase()));
+		NEUDebugLogger.log(NEUDebugFlag.METAL,"Mines center: " +
+			EnumChatFormatting.WHITE + minesCenter.toString());
+		mc.thePlayer.addChatMessage(new ChatComponentText(
+			EnumChatFormatting.YELLOW + "[NEU] Faster treasure hunting is now enabled based on Keeper location."));
+		return true;
+	}
+
+	public static void setMinesCenter(BlockPos center) {
+		minesCenter = center;
+	}
+
+	private static double round(double value, int precision) {
+		int scale = (int) Math.pow(10, precision);
+		return (double) Math.round(value * scale) / scale;
+	}
+
+	private static void updateSolutionState() {
+		previousState = currentState;
+
+		if (possibleBlocks.size() == 0) {
+			currentState = SolutionState.FAILED;
 			return;
 		}
 
-		if (!NotEnoughUpdates.INSTANCE.config.mining.metalDetectorEnabled)
-		{
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"[NEU] Metal Detector Solver is not enabled."));
+		if (possibleBlocks.size() == 1) {
+			currentState = SolutionState.FOUND;
 			return;
 		}
 
-		if (!outputAlways && !NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.METAL)) {
+		// Narrow solutions using known locations if the mines center is known
+		if (minesCenter.equals(BlockPos.NULL_VECTOR) || debugDoNotUseCenter) {
+			currentState = SolutionState.MULTIPLE;
 			return;
 		}
 
-		boolean originalDebugFlag = !NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.add(NEUDebugFlag.METAL);
+		HashSet<BlockPos> temp =
+			possibleBlocks.stream()
+										.filter(block -> knownChestOffsets.contains(block.subtract(minesCenter).toLong()))
+										.collect(Collectors.toCollection(HashSet::new));
+		if (temp.size() == 0) {
+			currentState = SolutionState.MULTIPLE;
+			return;
+		}
 
+		if (temp.size() == 1) {
+			possibleBlocks = temp;
+			currentState = SolutionState.FOUND_KNOWN;
+			return;
+
+		}
+
+		currentState = SolutionState.MULTIPLE_KNOWN;
+	}
+
+	public static BlockPos getSolution() {
+		if (CrystalMetalDetectorSolver.possibleBlocks.size() != 1) {
+			return BlockPos.ORIGIN;
+		}
+
+		return CrystalMetalDetectorSolver.possibleBlocks.stream().iterator().next();
+	}
+
+	private static Vec3Comparable getPlayerPosAdjustedForEyeHeight() {
+		return new Vec3Comparable(
+			mc.thePlayer.posX,
+			mc.thePlayer.posY + (mc.thePlayer.getEyeHeight() - mc.thePlayer.getDefaultEyeHeight()),
+			mc.thePlayer.posZ
+		);
+	}
+
+	static boolean isKnownOffset(BlockPos pos) {
+		return knownChestOffsets.contains(pos.subtract(minesCenter).toLong());
+	}
+
+	static boolean isAllowedBlockType(BlockPos pos) {
+		return mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:gold_block") ||
+			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:prismarine") ||
+			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:chest") ||
+			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:stained_glass") ||
+			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:stained_glass_pane") ||
+			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:wool") ||
+			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:stained_hardened_clay");
+	}
+
+	static boolean isAirAbove(BlockPos pos) {
+		return mc.theWorld.
+			getBlockState(pos.add(0, 1, 0)).getBlock().getRegistryName().equals("minecraft:air");
+	}
+
+	private static boolean treasureAllowed(BlockPos pos) {
+		boolean airAbove = isAirAbove(pos);
+		boolean allowedBlockType = isAllowedBlockType(pos);
+		return airAbove & (isKnownOffset(pos) | allowedBlockType);
+	}
+
+	static private String getDiagnosticMessage() {
 		StringBuilder diagsMessage = new StringBuilder();
 
 		diagsMessage.append(EnumChatFormatting.AQUA);
 		diagsMessage.append("Mines Center: ");
 		diagsMessage.append(EnumChatFormatting.WHITE);
-		diagsMessage.append((minesCenter == Vec3i.NULL_VECTOR) ? "<NOT DISCOVERED>" : minesCenter.toString());
+		diagsMessage.append((minesCenter.equals(Vec3i.NULL_VECTOR)) ? "<NOT DISCOVERED>" : minesCenter.toString());
 		diagsMessage.append("\n");
 
+		diagsMessage.append(EnumChatFormatting.AQUA);
+		diagsMessage.append("Current Solution State: ");
+		diagsMessage.append(EnumChatFormatting.WHITE);
+		diagsMessage.append(currentState.name());
 		diagsMessage.append("\n");
+
+		diagsMessage.append(EnumChatFormatting.AQUA);
+		diagsMessage.append("Previous Solution State: ");
+		diagsMessage.append(EnumChatFormatting.WHITE);
+		diagsMessage.append(previousState.name());
+		diagsMessage.append("\n");
+
 		diagsMessage.append(EnumChatFormatting.AQUA);
 		diagsMessage.append("Previous Player Position: ");
 		diagsMessage.append(EnumChatFormatting.WHITE);
@@ -282,12 +493,6 @@ public class CrystalMetalDetectorSolver {
 		diagsMessage.append("\n");
 
 		diagsMessage.append(EnumChatFormatting.AQUA);
-		diagsMessage.append("Last Solution Invalid Position: ");
-		diagsMessage.append(EnumChatFormatting.WHITE);
-		diagsMessage.append((blockPosIfLastSolutionInvalid == null) ? "<NONE>" : blockPosIfLastSolutionInvalid.toString());
-		diagsMessage.append("\n");
-
-		diagsMessage.append(EnumChatFormatting.AQUA);
 		diagsMessage.append("Current Possible Blocks: ");
 		diagsMessage.append(EnumChatFormatting.WHITE);
 		diagsMessage.append(possibleBlocks.size());
@@ -298,7 +503,7 @@ public class CrystalMetalDetectorSolver {
 		diagsMessage.append("Evaluated player positions: ");
 		diagsMessage.append(EnumChatFormatting.WHITE);
 		diagsMessage.append(evaluatedPlayerPositions.size());
-		diagsMessage.append(getFriendlyEvaluatedPositions(evaluatedPlayerPositions));
+		diagsMessage.append(getFriendlyEvaluatedPositions());
 		diagsMessage.append("\n");
 
 		diagsMessage.append(EnumChatFormatting.AQUA);
@@ -325,131 +530,24 @@ public class CrystalMetalDetectorSolver {
 			diagsMessage.append("<REQUIRES MINES CENTER>");
 		}
 
-		NEUDebugLogger.log(NEUDebugFlag.METAL, diagsMessage.toString());
-
-		if (!originalDebugFlag) {
-			NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.remove(NEUDebugFlag.METAL);
-		}
+		return diagsMessage.toString();
 	}
 
-	public static void resetSolution(Boolean chestFound) {
-		if (chestFound) {
-			blockPosIfLastSolutionInvalid = null;
-			prevPlayerPos = null;
-			prevDistToTreasure = 0;
-		  if (possibleBlocks.size() == 1) {
-				openedChestPositions.add(possibleBlocks.iterator().next().getImmutable());
-			}
-		}
-
-		chestRecentlyFound = chestFound;
-		possibleBlocks.clear();
-		evaluatedPlayerPositions.clear();
-	}
-
-	public static void initWorld() {
-		minesCenter = Vec3i.NULL_VECTOR;
-		visitKeeperMessagePrinted = false;
-		blockPosIfLastSolutionInvalid = null;
-		openedChestPositions.clear();
-		prevDistToTreasure = 0;
-		prevPlayerPos = null;
-		resetSolution(false);
-	}
-
-	public static void render(float partialTicks) {
-		int beaconRGB = 0x1fd8f1;
-
-		if (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows") &&
-			SBInfo.getInstance().location.equals("Mines of Divan")) {
-
-			if (possibleBlocks.size() == 1) {
-				BlockPos block = possibleBlocks.iterator().next();
-
-				RenderUtils.renderBeaconBeam(block.add(0, 1, 0), beaconRGB, 1.0f, partialTicks);
-				RenderUtils.renderWayPoint("Treasure", possibleBlocks.iterator().next().add(0, 2.5, 0), partialTicks);
-			} else if (possibleBlocks.size() > 1 && NotEnoughUpdates.INSTANCE.config.mining.metalDetectorShowPossible) {
-				for (BlockPos block : possibleBlocks) {
-					RenderUtils.renderBeaconBeam(block.add(0, 1, 0), beaconRGB, 1.0f, partialTicks);
-					RenderUtils.renderWayPoint("Possible Treasure Location", block.add(0, 2.5, 0), partialTicks);
-				}
-			}
-		}
-	}
-
-	private static void locateMinesCenterIfNeeded() {
-		if (minesCenter != Vec3i.NULL_VECTOR) {
+	public static void logDiagnosticData(boolean outputAlways) {
+		if (!SBInfo.getInstance().checkForSkyblockLocation()) {
 			return;
 		}
 
-		List<EntityArmorStand> keeperEntities = mc.theWorld.getEntities(EntityArmorStand.class, (entity) -> {
-			if (!entity.hasCustomName()) return false;
-			if (entity.getCustomNameTag().contains(KEEPER_OF_STRING)) return true;
-			return false;
-		});
-
-		if (keeperEntities.size() == 0) {
-			if (!visitKeeperMessagePrinted) {
-				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-					"[NEU] Approach a Keeper while holding the metal detector to enable faster treasure hunting."));
-				visitKeeperMessagePrinted = true;
-			}
+		if (!NotEnoughUpdates.INSTANCE.config.mining.metalDetectorEnabled)
+		{
+			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
+				"[NEU] Metal Detector Solver is not enabled."));
 			return;
 		}
 
-		EntityArmorStand keeperEntity = keeperEntities.get(0);
-		String keeperName = keeperEntity.getCustomNameTag();
-		NEUDebugLogger.log(NEUDebugFlag.METAL,"Locating center using Keeper: " +
-			EnumChatFormatting.WHITE + keeperEntity);
-		String keeperType = keeperName.substring(keeperName.indexOf(KEEPER_OF_STRING) + KEEPER_OF_STRING.length());
-		minesCenter =  keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase()));
-		NEUDebugLogger.log(NEUDebugFlag.METAL,"Mines center: " +
-			EnumChatFormatting.WHITE + minesCenter.toString());
-		mc.thePlayer.addChatMessage(new ChatComponentText(
-			EnumChatFormatting.YELLOW + "[NEU] Faster treasure hunting is now enabled based on Keeper location."));
-	}
-
-	private static double round(double value, int precision) {
-		int scale = (int) Math.pow(10, precision);
-		return (double) Math.round(value * scale) / scale;
-	}
-
-	private static void checkAndDisplaySolutionState() {
-		if (possibleBlocks.size() == 0) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "[NEU] Failed to find a solution."));
-			logDiagnosticData(false);
-			resetSolution(false);
-			return;
+		boolean metalDebugFlagSet = NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.METAL);
+		if (outputAlways || metalDebugFlagSet) {
+			NEUDebugLogger.logAlways(getDiagnosticMessage());
 		}
-
-		checkForSingleKnownLocationMatch();
-		if (possibleBlocks.size() > 1) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-				"[NEU] Need another position to find solution. Possible blocks: " + possibleBlocks.size()));
-		} else {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Found solution."));
-		}
-	}
-
-	private static Vec3 getPlayerPos() {
-		return new Vec3(
-			mc.thePlayer.posX,
-			mc.thePlayer.posY + (mc.thePlayer.getEyeHeight() - mc.thePlayer.getDefaultEyeHeight()),
-			mc.thePlayer.posZ
-		);
-	}
-
-	private static boolean treasureAllowed(BlockPos pos) {
-		boolean airAbove = mc.theWorld.
-			getBlockState(pos.add(0, 1, 0)).getBlock().getRegistryName().equals("minecraft:air");
-		boolean allowedBlockType = mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:gold_block") ||
-			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:prismarine") ||
-			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:chest") ||
-			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:stained_glass") ||
-			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:stained_glass_pane") ||
-			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:wool") ||
-			mc.theWorld.getBlockState(pos).getBlock().getRegistryName().equals("minecraft:stained_hardened_clay");
-		boolean knownOffset = knownChestOffsets.contains(pos.subtract(minesCenter).toLong());
-		return airAbove & (knownOffset | allowedBlockType);
 	}
 }
