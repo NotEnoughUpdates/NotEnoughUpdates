@@ -49,7 +49,7 @@ class Vec3ComparableTest {
 	}
 
 	@Test
-	void equals_true_when_vec3_equals() {
+	void equals_false_when_vec3_equals() {
 		// Arrange
 		Vec3Comparable vec3c1 = new Vec3Comparable(1.0, 2.0, 3.0);
 		Vec3 vec3c2 = new Vec3(1.0, 2.0, 3.0);
@@ -58,7 +58,7 @@ class Vec3ComparableTest {
 		boolean areEqual = vec3c1.equals(vec3c2);
 
 		// Assert
-		assertTrue(areEqual);
+		assertFalse(areEqual);
 	}
 
 	@Test
