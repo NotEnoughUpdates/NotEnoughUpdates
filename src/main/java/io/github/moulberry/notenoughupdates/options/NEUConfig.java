@@ -11,8 +11,36 @@ import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
-import io.github.moulberry.notenoughupdates.options.seperateSections.*;
+import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
+import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
+import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.ApiKey;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Calendar;
 import io.github.moulberry.notenoughupdates.options.seperateSections.CustomArmour;
+import io.github.moulberry.notenoughupdates.options.seperateSections.DungeonMapConfig;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Dungeons;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Enchanting;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Fishing;
+import io.github.moulberry.notenoughupdates.options.seperateSections.ImprovedSBMenu;
+import io.github.moulberry.notenoughupdates.options.seperateSections.InventoryButtons;
+import io.github.moulberry.notenoughupdates.options.seperateSections.ItemOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Itemlist;
+import io.github.moulberry.notenoughupdates.options.seperateSections.LocationEdit;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
+import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Notifications;
+import io.github.moulberry.notenoughupdates.options.seperateSections.PetOverlay;
+import io.github.moulberry.notenoughupdates.options.seperateSections.ProfileViewer;
+import io.github.moulberry.notenoughupdates.options.seperateSections.SkillOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.SlayerOverlay;
+import io.github.moulberry.notenoughupdates.options.seperateSections.SlotLocking;
+import io.github.moulberry.notenoughupdates.options.seperateSections.StorageGUI;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Toolbar;
+import io.github.moulberry.notenoughupdates.options.seperateSections.TooltipTweaks;
+import io.github.moulberry.notenoughupdates.options.seperateSections.TradeMenu;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -22,6 +50,7 @@ import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -299,6 +328,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Profile Viewer",
+		desc = "Profile Viewer"
+	)
+	public ProfileViewer profileViewer = new ProfileViewer();
+
+	@Expose
+	@Category(
 		name = "Api Key",
 		desc = "Api Key"
 	)
@@ -318,6 +354,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public List<NEUConfig.InventoryButton> inventoryButtons = createDefaultInventoryButtons();
 
+		@Expose
+		public EnumSet<NEUDebugFlag> debugFlags = EnumSet.noneOf(NEUDebugFlag.class);
 		@Expose
 		public boolean enableItemEditing = false;
 		@Expose

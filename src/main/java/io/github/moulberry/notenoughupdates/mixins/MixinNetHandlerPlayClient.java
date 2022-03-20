@@ -47,6 +47,11 @@ public class MixinNetHandlerPlayClient {
 		double xCoord, double yCoord, double zCoord,
 		double xOffset, double yOffset, double zOffset, int[] params
 	) {
+		CrystalWishingCompassSolver.getInstance().onSpawnParticle(particleTypes,
+			xCoord,
+			yCoord,
+			zCoord
+		);
 		boolean override = FishingHelper.getInstance().onSpawnParticle(
 			particleTypes,
 			xCoord,

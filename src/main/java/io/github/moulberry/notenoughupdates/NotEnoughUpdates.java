@@ -193,6 +193,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(InventoryStorageSelector.getInstance());
 		MinecraftForge.EVENT_BUS.register(SlotLocking.getInstance());
 		MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
+		MinecraftForge.EVENT_BUS.register(CrystalWishingCompassSolver.getInstance());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
 		MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 

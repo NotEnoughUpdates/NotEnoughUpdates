@@ -54,7 +54,7 @@ public class MiningOverlay extends TextOverlay {
 			String containerName = lower.getDisplayName().getUnformattedText();
 
 			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 27) {
-				UpdateCommissions(lower);
+				updateCommissions(lower);
 			} else if (containerName.equals("Forge") && lower.getSizeInventory() >= 36) {
 				updateForge(lower);
 			}
@@ -127,7 +127,7 @@ public class MiningOverlay extends TextOverlay {
 		}
 	}
 
-	private void UpdateCommissions(IInventory lower) {
+	private void updateCommissions(IInventory lower) {
 		// Get the location (type) of the currently shown commissions
 		ItemStack commTypeStack = lower.getStackInSlot(27);
 		if (commTypeStack == null || !commTypeStack.hasTagCompound()) {
@@ -202,93 +202,32 @@ public class MiningOverlay extends TextOverlay {
 		"\\xA77Time Remaining: \\xA7a((?<Completed>Completed!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern timeRemainingTab = Pattern.compile(
 		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
+	private static final Pattern forgesHeaderPattern = Pattern.compile(
+		"\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?");
 
 	@Override
 	public void update() {
 		overlayStrings = null;
-		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
-
-
-        /*if(Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-            GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-            ContainerChest container = (ContainerChest) chest.inventorySlots;
-            String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-
-
-            long currentTime = System.currentTimeMillis();
-            if(currentTime - lastSkymallSync > 60*1000) {
-                if(CapeManager.getInstance().lastJsonSync != null) {
-                    JsonObject obj = CapeManager.getInstance().lastJsonSync;
-                    if(obj.has("skymall") && obj.get("skymall").isJsonPrimitive()) {
-                        activeSkymall = obj.get("skymall").getAsString();
-                    }
-                }
-            }
-
-            if(containerName.equals("Heart of the Mountain") && container.getLowerChestInventory().getSizeInventory() > 10) {
-                System.out.println("HOTM Container");
-                ItemStack stack = container.getLowerChestInventory().getStackInSlot(10);
-                if(stack != null && stack.getDisplayName().equals(GREEN+"Sky Mall")) {
-                    NotEnoughUpdates.INSTANCE.config.hidden.skymallActive = false;
-
-                    String[] lines = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-
-                    for(String line : lines) {
-                        if(line.equals("\u00a7aYour Current Effect")) {
-                            System.out.println("Current effect");
-                            NotEnoughUpdates.INSTANCE.config.hidden.skymallActive = true;
-                        } else if(NotEnoughUpdates.INSTANCE.config.hidden.skymallActive) {
-                            String prevActiveSkymall = activeSkymall;
-                            System.out.println("Setting");
-                            if(line.contains("Gain \u00a7a+100 \u00a76\u2E15 Mining Speed")) {
-                                activeSkymall = "mining_speed";
-                            } else if(line.contains("Gain \u00a7a+50 \u00a76\u2618 Mining Fortune")) {
-                                activeSkymall = "mining_fortune";
-                            } else if(line.contains("Gain \u00a7a+15% \u00a77Powder from mining")) {
-                                activeSkymall = "powder";
-                            } else if(line.contains("Reduce Pickaxe Ability cooldown")) {
-                                activeSkymall = "pickaxe_ability";
-                            } else if(line.contains("10x \u00a77chance to find Goblins")) {
-                                activeSkymall = "goblin";
-                            } else if(line.contains("Gain \u00a7a5x \u00a79Titanium \u00a77drops")) {
-                                activeSkymall = "titanium";
-                            } else {
-                                System.out.println("Unknown");
-                                activeSkymall = "unknown";
-                            }
-                            if(!activeSkymall.equals(prevActiveSkymall)) {
-                                System.out.println("Maybe sending to server");
-                                if(currentTime - lastSkymallSync > 60*1000) {
-                                    lastSkymallSync = currentTime;
-                                    System.out.println("Sending to server");
-                                    NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync("skymall?"+activeSkymall, (jsonObject) -> {
-                                        System.out.println("Success!");
-                                    }, () -> {
-                                        System.out.println("Error!");
-                                    });
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }*/
+		NEUConfig.HiddenProfileSpecific profileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay &&
 			NotEnoughUpdates.INSTANCE.config.mining.emissaryWaypoints == 0 &&
 			!NotEnoughUpdates.INSTANCE.config.mining.titaniumAlert &&
-			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0) return;
-		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
-		if (SBInfo.getInstance().getLocation() == null) return;
-		if (SBInfo.getInstance().getLocation().equals("mining_3") || SBInfo.getInstance().getLocation().equals(
-			"crystal_hollows")) {
+			NotEnoughUpdates.INSTANCE.config.mining.locWaypoints == 0) {
+			return;
+		}
 
-			overlayStrings = new ArrayList<>();
+		// Get commission and forge info even if the overlay isn't going to be rendered since it is used elsewhere
+		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
+		if(SBInfo.getInstance().getLocation() == null) return;
+		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
+			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
 			commissionProgress.clear();
 
-			String mithrilPowder = null;
-			String gemstonePowder = null;
+			// These strings will be displayed one after the other when the player list is disabled
+			String mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
+			String gemstonePowder = RED + "Please enable player list info in your skyblock settings";
+
 			int forgeInt = 0;
 			boolean commissions = false;
 			boolean forges = false;
@@ -298,48 +237,43 @@ public class MiningOverlay extends TextOverlay {
 			for (NetworkPlayerInfo info : players) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
 				if (name.contains("Mithril Powder:")) {
-					mithrilPowder = DARK_AQUA + Utils.trimIgnoreColour(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
-				} else if (mithrilPowder == null) {
-					mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
+					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
 					continue;
 				}
 
 				if (name.contains("Gemstone Powder:")) {
-					gemstonePowder = DARK_AQUA + Utils.trimIgnoreColour(name).replaceAll("\u00a7[f|F|r]", "");
-					continue;
-				} else if (gemstonePowder == null) {
-					gemstonePowder = RED + "Please enable player list info in your skyblock settings";
+					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
 					continue;
 				}
 
-				if (name.matches("\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?") && hidden != null) {
+				Matcher forgesMatcher = forgesHeaderPattern.matcher(name);
+				if (forgesMatcher.matches() && profileConfig != null) {
 					commissions = false;
 					forges = true;
 					continue;
-				} else if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET) && hidden != null) {
+				}
+
+				// Commissions appear after Forges, start enumerating Commissions instead of Forges
+				if (name.equals(RESET.toString() + BLUE + BOLD + "Commissions" + RESET) && profileConfig != null) {
 					commissions = true;
 					forges = false;
 					continue;
 				}
-				String clean = StringUtils.cleanColour(name);
-				if (forges && clean.startsWith(" ") && hidden != null) {
 
-					char firstChar = clean.trim().charAt(0);
+				String cleanName = StringUtils.cleanColour(name);
+				if (forges && cleanName.startsWith(" ") && profileConfig != null) {
+					char firstChar = cleanName.trim().charAt(0);
 					if (firstChar < '0' || firstChar > '9') {
 						forges = false;
 					} else {
 
 						if (name.contains("LOCKED")) {
 							ForgeItem item = new ForgeItem(forgeInt, 1, true);
-							replaceForgeOrAdd(item, hidden.forgeItems, true);
+							replaceForgeOrAdd(item, profileConfig.forgeItems, true);
 						} else if (name.contains("EMPTY")) {
 							ForgeItem item = new ForgeItem(forgeInt, 0, true);
-							replaceForgeOrAdd(item, hidden.forgeItems, true);
-							//forgeStringsEmpty.add(DARK_AQUA+"Forge "+ Utils.trimIgnoreColour(name).replaceAll("\u00a7[f|F|r]", ""));
+							replaceForgeOrAdd(item, profileConfig.forgeItems, true);
 						} else {
-							String cleanName = Utils.cleanColour(name);
-
 							Matcher matcher = timeRemainingTab.matcher(cleanName);
 
 							if (matcher.matches()) {
@@ -348,7 +282,7 @@ public class MiningOverlay extends TextOverlay {
 
 								if (matcher.group("Ready") != null && !matcher.group("Ready").equals("")) {
 									ForgeItem item = new ForgeItem(Utils.cleanColour(itemName), 0, forgeInt, true);
-									replaceForgeOrAdd(item, hidden.forgeItems, true);
+									replaceForgeOrAdd(item, profileConfig.forgeItems, true);
 								} else {
 									long duration = 0;
 									try {
@@ -374,15 +308,15 @@ public class MiningOverlay extends TextOverlay {
 											forgeInt,
 											true
 										);
-										replaceForgeOrAdd(item, hidden.forgeItems, false);
+										replaceForgeOrAdd(item, profileConfig.forgeItems, false);
 									}
 								}
 							}
 						}
 						forgeInt++;
 					}
-				} else if (commissions && clean.startsWith(" ") && hidden != null) {
-					String[] split = clean.trim().split(": ");
+				} else if (commissions && cleanName.startsWith(" ") && profileConfig != null) {
+					String[] split = cleanName.trim().split(": ");
 					if (split.length == 2) {
 						if (split[1].endsWith("%")) {
 							try {
@@ -400,8 +334,8 @@ public class MiningOverlay extends TextOverlay {
 					forges = false;
 				}
 			}
+
 			if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
-				overlayStrings = null;
 				return;
 			}
 
@@ -430,22 +364,6 @@ public class MiningOverlay extends TextOverlay {
 					}
 				}
 			}
-        /*boolean hasAny = false;
-        if(NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay) {
-            overlayStrings.addAll(commissionsStrings);
-            hasAny = true;
-        }
-        if(NotEnoughUpdates.INSTANCE.config.mining.powderOverlay) {
-            if(mithrilPowder != null) {
-                if(hasAny) overlayStrings.add(null);
-                overlayStrings.add(DARK_AQUA+mithrilPowder);
-                hasAny = true;
-            }
-        }
-        if(NotEnoughUpdates.INSTANCE.config.mining.forgeOverlay) {
-            if(hasAny) overlayStrings.add(null);
-            overlayStrings.addAll(forgeStrings);
-        }*/
 
 			String pickaxeCooldown;
 			if (ItemCooldowns.pickaxeUseCooldownMillisRemaining <= 0) {
@@ -455,6 +373,7 @@ public class MiningOverlay extends TextOverlay {
 					DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
 			}
 
+			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2) {
 				switch (index) {
 					case 0:
@@ -467,8 +386,8 @@ public class MiningOverlay extends TextOverlay {
 						overlayStrings.add(gemstonePowder);
 						break;
 					case 3:
-						if (hidden != null) {
-							overlayStrings.addAll(getForgeStrings(hidden.forgeItems));
+						if (profileConfig != null) {
+							overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
 						}
 						break;
 					case 4:
@@ -479,8 +398,7 @@ public class MiningOverlay extends TextOverlay {
 				}
 			}
 		} else {
-			overlayStrings = new ArrayList<>();
-			if (hidden == null) {
+			if (profileConfig == null) {
 				return;
 			}
 			boolean forgeDisplay = false;
@@ -490,16 +408,17 @@ public class MiningOverlay extends TextOverlay {
 				}
 			}
 			if (forgeDisplay) {
+				overlayStrings = new ArrayList<>();
 				if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 1 &&
 					!SBInfo.getInstance().isInDungeon) {
-					overlayStrings.addAll(getForgeStrings(hidden.forgeItems));
+					overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
 				} else if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 2) {
-					overlayStrings.addAll(getForgeStrings(hidden.forgeItems));
+					overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
 				}
 			}
 		}
 
-		if (overlayStrings.isEmpty()) overlayStrings = null;
+		if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
 	}
 
 	private static List<String> getForgeStrings(List<ForgeItem> forgeItems) {

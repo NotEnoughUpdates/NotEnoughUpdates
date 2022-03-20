@@ -200,7 +200,12 @@ public class DungeonWin {
 					displayWin();
 				} else {
 					if (unformatted.trim().length() > 0) {
-						text.add(e.message.getFormattedText().substring(6).trim());
+						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") || unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains("Total Damage")
+							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains("Deaths") || unformatted.contains("Secrets Found")) {
+							text.add(e.message.getFormattedText().substring(6).trim());
+						} else {
+							System.out.println("These messages would of showed on neu dungeon overlay but didnt, They are either bugged or i missed them: \"" + e.message.getFormattedText().substring(6).trim() + "\"");
+						}
 					}
 				}
 			} else {
