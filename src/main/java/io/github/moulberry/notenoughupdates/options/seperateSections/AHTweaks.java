@@ -66,8 +66,8 @@ public class AHTweaks {
 
 	@Expose
 	@ConfigOption(
-		name = "Warning Threshold",
-		desc = "Threshold for BIN warning\nExample: 10% means warn if sell price is 10% lower than lowestbin"
+		name = "Undercut Warning Threshold",
+		desc = "Threshold for BIN warning\nExample: 10% means warn if sell price is 10% lower than lowest bin"
 	)
 	@ConfigEditorSlider(
 		minValue = 0.0f,
@@ -76,6 +76,19 @@ public class AHTweaks {
 	)
 	@ConfigAccordionId(id = 1)
 	public float warningThreshold = 10f;
+
+	@Expose
+	@ConfigOption(
+		name = "Overcut Warning Threshold",
+		desc = "Threshold for BIN warning\nExample: 50% means warn if sell price is 50% higher than lowest bin"
+	)
+	@ConfigEditorSlider(
+		minValue = 0.0f,
+		maxValue = 100.0f,
+		minStep = 5f
+	)
+	@ConfigAccordionId(id = 1)
+	public float overcutWarningThreshold = 50f;
 
 	@ConfigOption(
 		name = "Sort Warning",

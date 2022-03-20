@@ -31,7 +31,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagByteArray;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
@@ -51,8 +56,21 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -61,8 +79,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GuiProfileViewer extends GuiScreen {
-	private static final ResourceLocation CHEST_GUI_TEXTURE =
-		new ResourceLocation("textures/gui/container/generic_54.png");
 	public static final ResourceLocation pv_basic = new ResourceLocation("notenoughupdates:pv_basic.png");
 	public static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
 	public static final ResourceLocation pv_extra = new ResourceLocation("notenoughupdates:pv_extra.png");
@@ -80,45 +96,170 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation resource_packs =
 		new ResourceLocation("minecraft:textures/gui/resource_packs.png");
 	public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
-
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS =
+		new HashMap<String, HashMap<String, Float>>() {{
+			put("PET_ITEM_BIG_TEETH_COMMON", new HashMap<String, Float>() {{
+				put("CRIT_CHANCE", 5f);
+			}});
+			put("PET_ITEM_HARDENED_SCALES_UNCOMMON", new HashMap<String, Float>() {{
+				put("DEFENCE", 25f);
+			}});
+			put("PET_ITEM_LUCKY_CLOVER", new HashMap<String, Float>() {{
+				put("MAGIC_FIND", 7f);
+			}});
+			put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", new HashMap<String, Float>() {{
+				put("CRIT_DAMAGE", 15f);
+			}});
+		}};
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT =
+		new HashMap<String, HashMap<String, Float>>() {{
+			put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<String, Float>() {{
+				put("CRIT_DAMAGE", 1.4f);
+				put("CRIT_CHANCE", 1.4f);
+			}});
+			put("PET_ITEM_TEXTBOOK", new HashMap<String, Float>() {{
+				put("INTELLIGENCE", 2f);
+			}});
+		}};
+	private static final ResourceLocation CHEST_GUI_TEXTURE =
+		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-
-	private final ProfileViewer.Profile profile;
+	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
+	private static final ItemStack iron_pick = new ItemStack(Items.iron_pickaxe);
+	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
+	private static final String[] dungSkillsName = {"Healer", "Mage", "Berserk", "Archer", "Tank"};
+	private static final ItemStack[] dungSkillsStack = {
+		new ItemStack(Items.potionitem, 1, 16389),
+		new ItemStack(Items.blaze_rod),
+		new ItemStack(Items.iron_sword),
+		new ItemStack(Items.bow),
+		new ItemStack(Items.leather_chestplate)
+	};
+	private static final String[] bossFloorArr = {"Bonzo", "Scarf", "Professor", "Thorn", "Livid", "Sadan", "Necron"};
+	private static final String[] bossFloorHeads = {
+		"12716ecbf5b8da00b05f316ec6af61e8bd02805b21eb8e440151468dc656549c",
+		"7de7bbbdf22bfe17980d4e20687e386f11d59ee1db6f8b4762391b79a5ac532d",
+		"9971cee8b833a62fc2a612f3503437fdf93cad692d216b8cf90bbb0538c47dd8",
+		"8b6a72138d69fbbd2fea3fa251cabd87152e4f1c97e5f986bf685571db3cc0",
+		"c1007c5b7114abec734206d4fc613da4f3a0e99f71ff949cedadc99079135a0b",
+		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
+		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a"
+	};
+	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {{
+		put(
+			"catacombs",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("DUNGEON_STONE")), EnumChatFormatting.GRAY + "Normal Mode", true)
+		);
+		put(
+			"master_catacombs",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("MASTER_SKULL_TIER_7")), EnumChatFormatting.GRAY + "Master Mode", true)
+		);
+	}};
+	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {{
+		put(
+			"inv_contents",
+			Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory")
+		);
+		put(
+			"ender_chest_contents",
+			Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
+		);
+		// put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
+		put(
+			"backpack_contents",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("JUMBO_BACKPACK")), EnumChatFormatting.GRAY + "Backpacks", true)
+		);
+		put(
+			"personal_vault_contents",
+			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true)
+		);
+		put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
+		put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
+		put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
+		put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
+	}};
+	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+([0-9]+)");
+	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+([0-9]+)");
+	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+([0-9]+)");
+	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
+	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
+	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {{
+		put("COMMON", "0");
+		put("UNCOMMON", "1");
+		put("RARE", "2");
+		put("EPIC", "3");
+		put("LEGENDARY", "4");
+		put("MYTHIC", "5");
+	}};
+	private static int floorTime = 7;
+	private static int guiLeft;
+	private static int guiTop;
+	private static ProfileViewer.Profile profile = null;
+	private final GuiElementTextField playerNameTextField;
+	private final HashMap<String, ProfileViewer.Level> levelObjCatas = new HashMap<>();
+	private final HashMap<String, ProfileViewer.Level> levelObjhotms = new HashMap<>();
+	private final HashMap<String, HashMap<String, ProfileViewer.Level>> levelObjClasseses = new HashMap<>();
+	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	private final String[] romans = new String[]{
+		"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
+		"XII", "XIII", "XIV", "XV", "XVI", "XVII", "XIX", "XX"
+	};
+	private final int COLLS_XCOUNT = 5;
+	private final int COLLS_YCOUNT = 4;
+	private final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
+	private final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
+	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
+	private final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	private final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
+	Shader blurShaderHorz = null;
+	Framebuffer blurOutputHorz = null;
+	Shader blurShaderVert = null;
+	Framebuffer blurOutputVert = null;
 	private int sizeX;
 	private int sizeY;
-	private int guiLeft;
-	private int guiTop;
-
 	private float backgroundRotation = 0;
-
 	private long currentTime = 0;
 	private long lastTime = 0;
 	private long startTime = 0;
-
 	private List<String> tooltipToDisplay = null;
-
 	private String profileId = null;
 	private boolean profileDropdownSelected = false;
-
-	public enum ProfileViewerPage {
-		LOADING(null),
-		INVALID_NAME(null),
-		NO_SKYBLOCK(null),
-		BASIC(new ItemStack(Items.paper)),
-		DUNG(new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
-		EXTRA(new ItemStack(Items.book)),
-		INVS(new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
-		COLS(new ItemStack(Items.painting)),
-		PETS(new ItemStack(Items.bone)),
-		MINING(new ItemStack(Items.iron_pickaxe));
-
-		public final ItemStack stack;
-
-		ProfileViewerPage(ItemStack stack) {
-			this.stack = stack;
-		}
-	}
+	private ItemStack selectedCollectionCategory = null;
+	private int floorLevelTo = -1;
+	private long floorLevelToXP = -1;
+	private boolean onMasterMode = false;
+	private int selectedPet = -1;
+	private int petsPage = 0;
+	private List<JsonObject> sortedPets = null;
+	private List<ItemStack> sortedPetsStack = null;
+	private ItemStack[] bestWeapons = null;
+	private ItemStack[] bestRods = null;
+	private ItemStack[] armorItems = null;
+	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
+	private String selectedInventory = "inv_contents";
+	private int currentInventoryIndex = 0;
+	private int arrowCount = -1;
+	private int greenCandyCount = -1;
+	private int purpleCandyCount = -1;
+	private EntityOtherPlayerMP entityPlayer = null;
+	private ResourceLocation playerLocationSkin = null;
+	private ResourceLocation playerLocationCape = null;
+	private String skinType = null;
+	private TreeMap<Integer, Set<String>> topKills = null;
+	private TreeMap<Integer, Set<String>> topDeaths = null;
+	private int backgroundClickedX = -1;
+	private boolean loadingProfile = false;
+	private double lastBgBlurFactor = -1;
+	private boolean showBingoPage;
 
 	public GuiProfileViewer(ProfileViewer.Profile profile) {
 		this.profile = profile;
@@ -137,7 +278,173 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private final GuiElementTextField playerNameTextField;
+	private static JsonObject getPetInfo(String pet_name, String rarity) {
+		JsonObject petInfo = new JsonObject();
+
+		if (Constants.PETS.has("custom_pet_leveling") &&
+			Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
+			JsonObject pet = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet_name);
+			if (pet.has("type") && pet.has("pet_levels")) {
+				int type = pet.get("type").getAsInt();
+				switch (type) {
+					case 1:
+						JsonArray defaultLevels = Constants.PETS.getAsJsonArray("pet_levels");
+						defaultLevels.addAll(pet.getAsJsonArray("pet_levels"));
+						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+						break;
+					case 2:
+						petInfo.add("pet_levels", pet.getAsJsonArray("pet_levels"));
+						break;
+					default:
+						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+						break;
+				}
+			} else {
+				petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+			}
+			if (pet.has("max_level")) {
+				petInfo.add("max_level", pet.get("max_level"));
+			} else {
+				petInfo.add("max_level", new JsonPrimitive(100));
+			}
+
+			if (pet.has("pet_rarity_offset")) {
+				petInfo.add("offset", pet.get("pet_rarity_offset"));
+			} else {
+				petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
+			}
+
+		} else {
+			//System.out.println("Default Path");
+			petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
+			petInfo.add("max_level", new JsonPrimitive(100));
+			petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
+		}
+
+		return petInfo;
+
+	}
+
+	public static PetLevel getPetLevel(String pet_name, String rarity, float exp) {
+		JsonObject petInfo = getPetInfo(pet_name, rarity);
+		int offset = petInfo.get("offset").getAsInt();
+		int maxPetLevel = petInfo.get("max_level").getAsInt();
+		JsonArray levels = petInfo.getAsJsonArray("pet_levels");
+
+		float xpTotal = 0;
+		float level = 1;
+		float currentLevelRequirement = 0;
+		float currentLevelProgress = 0;
+
+		boolean addLevel = true;
+
+		for (int i = offset; i < offset + maxPetLevel - 1; i++) {
+			if (addLevel) {
+				currentLevelRequirement = levels.get(i).getAsFloat();
+				xpTotal += currentLevelRequirement;
+				if (xpTotal > exp) {
+					currentLevelProgress = (exp - (xpTotal - currentLevelRequirement));
+					addLevel = false;
+				} else {
+					level += 1;
+				}
+			} else {
+
+				xpTotal += levels.get(i).getAsFloat();
+
+			}
+		}
+
+		level += currentLevelProgress / currentLevelRequirement;
+		if (level <= 0) {
+			level = 1;
+		} else if (level > maxPetLevel) {
+			level = maxPetLevel;
+		}
+		PetLevel levelObj = new PetLevel();
+		levelObj.level = level;
+		levelObj.currentLevelRequirement = currentLevelRequirement;
+		levelObj.maxXP = xpTotal;
+		levelObj.levelPercentage = currentLevelProgress / currentLevelRequirement;
+		levelObj.levelXp = currentLevelProgress;
+		levelObj.totalXp = exp;
+		return levelObj;
+	}
+
+	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 1000) {
+			if (n % 1 == 0) {
+				return Integer.toString((int) n);
+			} else {
+				return String.format("%.2f", n);
+			}
+		}
+
+		double d = ((long) n / 100) / 10.0;
+		boolean isRound = (d * 10) % 10 == 0;
+		return (d < 1000 ?
+			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
+				(int) d * 10 / 10 : d + ""
+			) + "" + c[iteration])
+			: shortNumberFormat(d, iteration + 1));
+	}
+
+	public static void drawEntityOnScreen(
+		int posX,
+		int posY,
+		int scale,
+		float mouseX,
+		float mouseY,
+		EntityLivingBase ent
+	) {
+		GlStateManager.enableColorMaterial();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate((float) posX, (float) posY, 50.0F);
+		GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
+		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+		float renderYawOffset = ent.renderYawOffset;
+		float f1 = ent.rotationYaw;
+		float f2 = ent.rotationPitch;
+		float f3 = ent.prevRotationYawHead;
+		float f4 = ent.rotationYawHead;
+		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+		RenderHelper.enableStandardItemLighting();
+		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(25, 1.0F, 0.0F, 0.0F);
+		ent.renderYawOffset = (float) Math.atan(mouseX / 40.0F) * 20.0F;
+		ent.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
+		ent.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
+		ent.rotationYawHead = ent.rotationYaw;
+		ent.prevRotationYawHead = ent.rotationYaw;
+		RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+		rendermanager.setPlayerViewY(180.0F);
+		rendermanager.setRenderShadow(false);
+		rendermanager.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+
+		ent.renderYawOffset = renderYawOffset;
+		ent.rotationYaw = f1;
+		ent.rotationPitch = f2;
+		ent.prevRotationYawHead = f3;
+		ent.rotationYawHead = f4;
+		GlStateManager.popMatrix();
+		RenderHelper.disableStandardItemLighting();
+		GlStateManager.disableRescaleNormal();
+		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GlStateManager.disableTexture2D();
+		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+	}
+
+	public static int getGuiLeft() {
+		return guiLeft;
+	}
+
+	public static int getGuiTop() {
+		return guiTop;
+	}
+
+	public static ProfileViewer.Profile getProfile() {
+		return profile;
+	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -159,7 +466,7 @@ public class GuiProfileViewer extends GuiScreen {
 		{
 			//this is just to cache the guild info
 			if (profile != null) {
-				JsonObject guildinfo = profile.getGuildInfo(null);
+				profile.getGuildInfo(null);
 			}
 		}
 
@@ -167,6 +474,22 @@ public class GuiProfileViewer extends GuiScreen {
 		this.sizeY = 202;
 		this.guiLeft = (this.width - this.sizeX) / 2;
 		this.guiTop = (this.height - this.sizeY) / 2;
+
+		boolean bingo = false;
+		JsonObject currProfileInfo = profile.getProfileInformation(profileId);
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
+			showBingoPage = true;
+		} else {
+			if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
+				currProfileInfo.get("game_mode").getAsString().equals("bingo")) {
+				showBingoPage = true;
+			} else {
+				showBingoPage = false;
+			}
+		}
+
+		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO)
+			currentPage = ProfileViewerPage.BASIC;
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		drawDefaultBackground();
@@ -199,7 +522,6 @@ public class GuiProfileViewer extends GuiScreen {
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 			if (profile != null) {
-				JsonObject currProfileInfo = profile.getProfileInformation(profileId);
 				//Render Profile chooser button
 				renderBlurredBackground(width, height, guiLeft + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
@@ -345,16 +667,16 @@ public class GuiProfileViewer extends GuiScreen {
 			case BASIC:
 				drawBasicPage(mouseX, mouseY, partialTicks);
 				break;
-			case DUNG:
+			case DUNGEON:
 				drawDungPage(mouseX, mouseY, partialTicks);
 				break;
 			case EXTRA:
 				drawExtraPage(mouseX, mouseY, partialTicks);
 				break;
-			case INVS:
+			case INVENTORIES:
 				drawInvsPage(mouseX, mouseY, partialTicks);
 				break;
-			case COLS:
+			case COLLECTIONS:
 				drawColsPage(mouseX, mouseY, partialTicks);
 				break;
 			case PETS:
@@ -362,6 +684,9 @@ public class GuiProfileViewer extends GuiScreen {
 				break;
 			case MINING:
 				drawMiningPage(mouseX, mouseY, partialTicks);
+				break;
+			case BINGO:
+				BingoPage.renderPage(mouseX, mouseY);
 				break;
 			case LOADING:
 				String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
@@ -540,9 +865,11 @@ public class GuiProfileViewer extends GuiScreen {
 
 	private void renderTabs(boolean renderPressed) {
 		int ignoredTabs = 0;
-		for (int i = 0; i < ProfileViewerPage.values().length; i++) {
-			ProfileViewerPage page = ProfileViewerPage.values()[i];
-			if (page.stack == null) {
+		List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+		for (int i = 0; i < configList.size(); i++) {
+			ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+			if (page == null) continue;
+			if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 				ignoredTabs++;
 				continue;
 			}
@@ -598,9 +925,10 @@ public class GuiProfileViewer extends GuiScreen {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
 			int ignoredTabs = 0;
-			for (int i = 0; i < ProfileViewerPage.values().length; i++) {
-				ProfileViewerPage page = ProfileViewerPage.values()[i];
-				if (page.stack == null) {
+			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+			for (int i = 0; i < configList.size(); i++) {
+				ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+				if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
 				}
@@ -620,10 +948,10 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 		switch (currentPage) {
-			case DUNG:
+			case DUNGEON:
 				mouseClickedDung(mouseX, mouseY, mouseButton);
 				break;
-			case INVS:
+			case INVENTORIES:
 				inventoryTextField.setSize(88, 20);
 				if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
 					if (mouseY > guiTop + sizeY - 26 - 20 && mouseY < guiTop + sizeY - 26) {
@@ -729,14 +1057,14 @@ public class GuiProfileViewer extends GuiScreen {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		super.keyTyped(typedChar, keyCode);
 		switch (currentPage) {
-			case INVS:
+			case INVENTORIES:
 				keyTypedInvs(typedChar, keyCode);
 				inventoryTextField.keyTyped(typedChar, keyCode);
 				break;
-			case COLS:
+			case COLLECTIONS:
 				keyTypedCols(typedChar, keyCode);
 				break;
-			case DUNG:
+			case DUNGEON:
 				keyTypedDung(typedChar, keyCode);
 				break;
 		}
@@ -757,10 +1085,10 @@ public class GuiProfileViewer extends GuiScreen {
 		super.mouseReleased(mouseX, mouseY, mouseButton);
 
 		switch (currentPage) {
-			case INVS:
+			case INVENTORIES:
 				mouseReleasedInvs(mouseX, mouseY, mouseButton);
 				break;
-			case COLS:
+			case COLLECTIONS:
 				mouseReleasedCols(mouseX, mouseY, mouseButton);
 				break;
 			case PETS:
@@ -799,10 +1127,8 @@ public class GuiProfileViewer extends GuiScreen {
 		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
 			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
 				onMasterMode = false;
-				return;
 			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
 				onMasterMode = true;
-				return;
 			}
 		}
 	}
@@ -941,8 +1267,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private ItemStack selectedCollectionCategory = null;
-
 	private void mouseReleasedCols(int mouseX, int mouseY, int mouseButton) {
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
@@ -959,38 +1283,6 @@ public class GuiProfileViewer extends GuiScreen {
 			yIndex++;
 		}
 	}
-
-	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
-	private static final ItemStack iron_pick = new ItemStack(Items.iron_pickaxe);
-	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
-
-	private final HashMap<String, ProfileViewer.Level> levelObjCatas = new HashMap<>();
-	private final HashMap<String, ProfileViewer.Level> levelObjhotms = new HashMap<>();
-	private final HashMap<String, HashMap<String, ProfileViewer.Level>> levelObjClasseses = new HashMap<>();
-
-	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-
-	private static final String[] dungSkillsName = {"Healer", "Mage", "Berserk", "Archer", "Tank"};
-	private static final ItemStack[] dungSkillsStack = {
-		new ItemStack(Items.potionitem, 1, 16389),
-		new ItemStack(Items.blaze_rod),
-		new ItemStack(Items.iron_sword),
-		new ItemStack(Items.bow),
-		new ItemStack(Items.leather_chestplate)
-	};
-	private static final String[] bossFloorArr = {"Bonzo", "Scarf", "Professor", "Thorn", "Livid", "Sadan", "Necron"};
-	private static final String[] bossFloorHeads = {
-		"12716ecbf5b8da00b05f316ec6af61e8bd02805b21eb8e440151468dc656549c",
-		"7de7bbbdf22bfe17980d4e20687e386f11d59ee1db6f8b4762391b79a5ac532d",
-		"9971cee8b833a62fc2a612f3503437fdf93cad692d216b8cf90bbb0538c47dd8",
-		"8b6a72138d69fbbd2fea3fa251cabd87152e4f1c97e5f986bf685571db3cc0",
-		"c1007c5b7114abec734206d4fc613da4f3a0e99f71ff949cedadc99079135a0b",
-		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
-		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a"
-	};
-	private static int floorTime = 7;
-	private int floorLevelTo = -1;
-	private int floorLevelToXP = -1;
 
 	private void calculateFloorLevelXP() {
 		JsonObject leveling = Constants.LEVELING;
@@ -1016,26 +1308,11 @@ public class GuiProfileViewer extends GuiScreen {
 			if (remaining < 0) {
 				remaining = 0;
 			}
-			floorLevelToXP = (int) remaining;
+			floorLevelToXP = (long) remaining;
 		} catch (Exception e) {
 			dungeonLevelTextField.setCustomBorderColour(0xffff0000);
 		}
 	}
-
-	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {{
-		put(
-			"catacombs",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("DUNGEON_STONE")), EnumChatFormatting.GRAY + "Normal Mode", true)
-		);
-		put(
-			"master_catacombs",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("MASTER_SKULL_TIER_7")), EnumChatFormatting.GRAY + "Master Mode", true)
-		);
-	}};
 
 	private void drawDungPage(int mouseX, int mouseY, float partialTicks) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dung);
@@ -1067,7 +1344,7 @@ public class GuiProfileViewer extends GuiScreen {
 					"dungeons.dungeon_types.catacombs.experience"
 				), 0);
 				levelObjCata = ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
-					cataXp, 50, false
+					cataXp, 99, false
 				);
 				levelObjCata.totalXp = cataXp;
 				levelObjCatas.put(profileId, levelObjCata);
@@ -1570,8 +1847,6 @@ public class GuiProfileViewer extends GuiScreen {
 		//drawSideButton(2, dungeonsModeIcons.get("catacombs"), false);
 	}
 
-	private boolean onMasterMode = false;
-
 	//TODO: improve this shit
 	private void drawSideButtons() {
 		// GlStateManager.pushMatrix();
@@ -1688,149 +1963,13 @@ public class GuiProfileViewer extends GuiScreen {
 		GL11.glTranslatef(-(x), -(y - 6f), 0);
 	}
 
-	public static class PetLevel {
-		public float level;
-		public float currentLevelRequirement;
-		public float maxXP;
-		public float levelPercentage;
-		public float levelXp;
-		public float totalXp;
+	private ItemStack getQuestionmarkSkull() {
+		return Utils.createSkull(
+			EnumChatFormatting.RED + "Unknown Pet",
+			"Unknown Pet",
+			"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM4ZWExZjUxZjI1M2ZmNTE0MmNhMTFhZTQ1MTkzYTRhZDhjM2FiNWU5YzZlZWM4YmE3YTRmY2I3YmFjNDAifX19"
+		);
 	}
-
-	private static JsonObject getPetInfo(String pet_name, String rarity) {
-		JsonObject petInfo = new JsonObject();
-		//System.out.println(pet_name);
-		//System.out.println(rarity);
-
-		if (Constants.PETS.has("custom_pet_leveling") &&
-			Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
-			JsonObject pet = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet_name);
-			if (pet.has("type") && pet.has("pet_levels")) {
-				int type = pet.get("type").getAsInt();
-				switch (type) {
-					case 1:
-						JsonArray defaultLevels = Constants.PETS.getAsJsonArray("pet_levels");
-						defaultLevels.addAll(pet.getAsJsonArray("pet_levels"));
-						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-						break;
-					case 2:
-						petInfo.add("pet_levels", pet.getAsJsonArray("pet_levels"));
-						break;
-					default:
-						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-						break;
-				}
-			} else {
-				petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-			}
-			if (pet.has("max_level")) {
-				petInfo.add("max_level", pet.get("max_level"));
-			} else {
-				petInfo.add("max_level", new JsonPrimitive(100));
-			}
-
-			if (pet.has("pet_rarity_offset")) {
-				petInfo.add("offset", pet.get("pet_rarity_offset"));
-			} else {
-				petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
-			}
-
-		} else {
-			//System.out.println("Default Path");
-			petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
-			petInfo.add("max_level", new JsonPrimitive(100));
-			petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-		}
-
-		return petInfo;
-
-	}
-
-	public static PetLevel getPetLevel(String pet_name, String rarity, float exp) {
-		JsonObject petInfo = getPetInfo(pet_name, rarity);
-		int offset = petInfo.get("offset").getAsInt();
-		int maxPetLevel = petInfo.get("max_level").getAsInt();
-		JsonArray levels = petInfo.getAsJsonArray("pet_levels");
-
-		float xpTotal = 0;
-		float level = 1;
-		float currentLevelRequirement = 0;
-		float currentLevelProgress = 0;
-
-		boolean addLevel = true;
-
-		for (int i = offset; i < offset + maxPetLevel - 1; i++) {
-			if (addLevel) {
-				currentLevelRequirement = levels.get(i).getAsFloat();
-				xpTotal += currentLevelRequirement;
-				if (xpTotal > exp) {
-					currentLevelProgress = (exp - (xpTotal - currentLevelRequirement));
-					addLevel = false;
-				} else {
-					level += 1;
-				}
-			} else {
-
-				xpTotal += levels.get(i).getAsFloat();
-
-			}
-		}
-
-		level += currentLevelProgress / currentLevelRequirement;
-		if (level <= 0) {
-			level = 1;
-		} else if (level > maxPetLevel) {
-			level = maxPetLevel;
-		}
-		PetLevel levelObj = new PetLevel();
-		levelObj.level = level;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = xpTotal;
-		levelObj.levelPercentage = currentLevelProgress / currentLevelRequirement;
-		levelObj.levelXp = currentLevelProgress;
-		levelObj.totalXp = exp;
-		return levelObj;
-	}
-
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS =
-		new HashMap<String, HashMap<String, Float>>() {{
-			put("PET_ITEM_BIG_TEETH_COMMON", new HashMap<String, Float>() {{
-				put("CRIT_CHANCE", 5f);
-			}});
-			put("PET_ITEM_HARDENED_SCALES_UNCOMMON", new HashMap<String, Float>() {{
-				put("DEFENCE", 25f);
-			}});
-			put("PET_ITEM_LUCKY_CLOVER", new HashMap<String, Float>() {{
-				put("MAGIC_FIND", 7f);
-			}});
-			put("PET_ITEM_SHARPENED_CLAWS_UNCOMMON", new HashMap<String, Float>() {{
-				put("CRIT_DAMAGE", 15f);
-			}});
-		}};
-
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT =
-		new HashMap<String, HashMap<String, Float>>() {{
-			put("PET_ITEM_IRON_CLAWS_COMMON", new HashMap<String, Float>() {{
-				put("CRIT_DAMAGE", 1.4f);
-				put("CRIT_CHANCE", 1.4f);
-			}});
-			put("PET_ITEM_TEXTBOOK", new HashMap<String, Float>() {{
-				put("INTELLIGENCE", 2f);
-			}});
-		}};
-
-	private int selectedPet = -1;
-	private int petsPage = 0;
-	private List<JsonObject> sortedPets = null;
-	private List<ItemStack> sortedPetsStack = null;
-	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {{
-		put("COMMON", "0");
-		put("UNCOMMON", "1");
-		put("RARE", "2");
-		put("EPIC", "3");
-		put("LEGENDARY", "4");
-		put("MYTHIC", "5");
-	}};
 
 	private void drawPetsPage(int mouseX, int mouseY, float partialTicks) {
 		JsonObject petsInfo = profile.getPetsInfo(profileId);
@@ -1908,121 +2047,148 @@ public class GuiProfileViewer extends GuiScreen {
 				pet.addProperty("maxXP", maxXP);
 
 				JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(petname + ";" + tierNum);
-				if (petItem == null) continue;
-
-				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem, false, false);
-				HashMap<String, String> replacements =
-					NotEnoughUpdates.INSTANCE.manager.getLoreReplacements(petname, tier, (int) Math.floor(level));
-
-				if (heldItem != null) {
-					HashMap<String, Float> petStatBoots = PET_STAT_BOOSTS.get(heldItem);
-					HashMap<String, Float> petStatBootsMult = PET_STAT_BOOSTS_MULT.get(heldItem);
-					if (petStatBoots != null) {
-						for (Map.Entry<String, Float> entryBoost : petStatBoots.entrySet()) {
-							try {
-								float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
-								replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value + entryBoost.getValue())));
-							} catch (Exception ignored) {
-							}
-						}
-
+				ItemStack stack;
+				if (petItem == null) {
+					stack = getQuestionmarkSkull();
+					HashMap<String, String> replacements = new HashMap<>();
+					NBTTagCompound display = new NBTTagCompound();
+					if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("display")) {
+						display = stack.getTagCompound().getCompoundTag("display");
 					}
-					if (petStatBootsMult != null) {
-						for (Map.Entry<String, Float> entryBoost : petStatBootsMult.entrySet()) {
-							try {
-								float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
-								replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value * entryBoost.getValue())));
-							} catch (Exception ignored) {
-							}
-						}
-					}
-				}
+					NBTTagList lore = new NBTTagList();
+					lore.appendTag(new NBTTagString(EnumChatFormatting.RED + "This pet is not saved in the repository"));
+					lore.appendTag(new NBTTagString(""));
+					lore.appendTag(new NBTTagString(
+						EnumChatFormatting.RED + "If you expected it to be there please send a message in"));
+					lore.appendTag(new NBTTagString(EnumChatFormatting.RED.toString() +
+						EnumChatFormatting.BOLD + "#neu-support " + EnumChatFormatting.RESET + EnumChatFormatting.RED + "on " +
+						EnumChatFormatting.BOLD + "discord.gg/moulberry"));
 
-				NBTTagCompound tag = stack.getTagCompound() == null ? new NBTTagCompound() : stack.getTagCompound();
-				if (tag.hasKey("display", 10)) {
-					NBTTagCompound display = tag.getCompoundTag("display");
-					if (display.hasKey("Lore", 9)) {
-						NBTTagList newLore = new NBTTagList();
-						NBTTagList lore = display.getTagList("Lore", 8);
-						HashMap<Integer, Integer> blankLocations = new HashMap<>();
-						for (int j = 0; j < lore.tagCount(); j++) {
-							String line = lore.getStringTagAt(j);
-							if (line.trim().isEmpty()) {
-								blankLocations.put(blankLocations.size(), j);
-							}
-							for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-								line = line.replace("{" + replacement.getKey() + "}", replacement.getValue());
-							}
-							newLore.appendTag(new NBTTagString(line));
-						}
-						Integer secondLastBlank = blankLocations.get(blankLocations.size() - 2);
-						if (skin != null) {
-							JsonObject petSkin = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PET_SKIN_" + skin);
-							if (petSkin != null) {
-								try {
-									NBTTagCompound nbt = JsonToNBT.getTagFromJson(petSkin.get("nbttag").getAsString());
-									tag.setTag("SkullOwner", nbt.getTag("SkullOwner"));
-									String name = petSkin.get("displayname").getAsString();
-									if (name != null) {
-										name = Utils.cleanColour(name);
-										newLore.set(0, new NBTTagString(newLore.get(0).toString().replace("\"", "") + ", " + name));
-									}
-								} catch (NBTException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-						for (int i = 0; i < newLore.tagCount(); i++) {
-							String cleaned = Utils.cleanColour(newLore.get(i).toString());
-							if (cleaned.equals("\"Right-click to add this pet to\"")) {
-								newLore.removeTag(i + 1);
-								newLore.removeTag(i);
-								secondLastBlank = i - 1;
-								break;
-							}
-						}
-						NBTTagList temp = new NBTTagList();
-						for (int i = 0; i < newLore.tagCount(); i++) {
-							temp.appendTag(newLore.get(i));
-							if (secondLastBlank != null && i == secondLastBlank) {
-								if (heldItem != null) {
-									temp.appendTag(new NBTTagString(
-										EnumChatFormatting.GOLD + "Held Item: " + heldItemJson.get("displayname").getAsString()));
-									int blanks = 0;
-									JsonArray heldItemLore = heldItemJson.get("lore").getAsJsonArray();
-									for (int k = 0; k < heldItemLore.size(); k++) {
-										String heldItemLine = heldItemLore.get(k).getAsString();
-										if (heldItemLine.trim().isEmpty()) {
-											blanks++;
-										} else if (blanks == 2) {
-											temp.appendTag(new NBTTagString(heldItemLine));
-										} else if (blanks > 2) {
-											break;
-										}
-									}
-									temp.appendTag(new NBTTagString());
-								}
-								if (candy != 0) {
-									temp.appendTag(new NBTTagString(EnumChatFormatting.GREEN + "(" + candy + "/10) Pet Candy Used"));
-									temp.appendTag(new NBTTagString());
-								}
-								temp.removeTag(temp.tagCount() - 1);
-							}
-						}
-						newLore = temp;
-						display.setTag("Lore", newLore);
-					}
-					if (display.hasKey("Name", 8)) {
-						String displayName = display.getString("Name");
-						for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-							displayName = displayName.replace("{" + replacement.getKey() + "}", replacement.getValue());
-						}
-						display.setTag("Name", new NBTTagString(displayName));
-					}
+					display.setTag("Lore", lore);
+					NBTTagCompound tag = stack.getTagCompound() != null ? stack.getTagCompound() : new NBTTagCompound();
 					tag.setTag("display", display);
-				}
-				stack.setTagCompound(tag);
+					stack.setTagCompound(tag);
+				} else {
+					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem, false, false);
+					HashMap<String, String> replacements =
+						NotEnoughUpdates.INSTANCE.manager.getLoreReplacements(petname, tier, (int) Math.floor(level));
 
+					if (heldItem != null) {
+						HashMap<String, Float> petStatBoots = PET_STAT_BOOSTS.get(heldItem);
+						HashMap<String, Float> petStatBootsMult = PET_STAT_BOOSTS_MULT.get(heldItem);
+						if (petStatBoots != null) {
+							for (Map.Entry<String, Float> entryBoost : petStatBoots.entrySet()) {
+								try {
+									float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
+									replacements.put(
+										entryBoost.getKey(),
+										String.valueOf((int) Math.floor(value + entryBoost.getValue()))
+									);
+								} catch (Exception ignored) {
+								}
+							}
+
+						}
+						if (petStatBootsMult != null) {
+							for (Map.Entry<String, Float> entryBoost : petStatBootsMult.entrySet()) {
+								try {
+									float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
+									replacements.put(
+										entryBoost.getKey(),
+										String.valueOf((int) Math.floor(value * entryBoost.getValue()))
+									);
+								} catch (Exception ignored) {
+								}
+							}
+						}
+					}
+
+					NBTTagCompound tag = stack.getTagCompound() == null ? new NBTTagCompound() : stack.getTagCompound();
+					if (tag.hasKey("display", 10)) {
+						NBTTagCompound display = tag.getCompoundTag("display");
+						if (display.hasKey("Lore", 9)) {
+							NBTTagList newLore = new NBTTagList();
+							NBTTagList lore = display.getTagList("Lore", 8);
+							HashMap<Integer, Integer> blankLocations = new HashMap<>();
+							for (int j = 0; j < lore.tagCount(); j++) {
+								String line = lore.getStringTagAt(j);
+								if (line.trim().isEmpty()) {
+									blankLocations.put(blankLocations.size(), j);
+								}
+								for (Map.Entry<String, String> replacement : replacements.entrySet()) {
+									line = line.replace("{" + replacement.getKey() + "}", replacement.getValue());
+								}
+								newLore.appendTag(new NBTTagString(line));
+							}
+							Integer secondLastBlank = blankLocations.get(blankLocations.size() - 2);
+							if (skin != null) {
+								JsonObject petSkin = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PET_SKIN_" + skin);
+								if (petSkin != null) {
+									try {
+										NBTTagCompound nbt = JsonToNBT.getTagFromJson(petSkin.get("nbttag").getAsString());
+										tag.setTag("SkullOwner", nbt.getTag("SkullOwner"));
+										String name = petSkin.get("displayname").getAsString();
+										if (name != null) {
+											name = Utils.cleanColour(name);
+											newLore.set(0, new NBTTagString(newLore.get(0).toString().replace("\"", "") + ", " + name));
+										}
+									} catch (NBTException e) {
+										e.printStackTrace();
+									}
+								}
+							}
+							for (int i = 0; i < newLore.tagCount(); i++) {
+								String cleaned = Utils.cleanColour(newLore.get(i).toString());
+								if (cleaned.equals("\"Right-click to add this pet to\"")) {
+									newLore.removeTag(i + 1);
+									newLore.removeTag(i);
+									secondLastBlank = i - 1;
+									break;
+								}
+							}
+							NBTTagList temp = new NBTTagList();
+							for (int i = 0; i < newLore.tagCount(); i++) {
+								temp.appendTag(newLore.get(i));
+								if (secondLastBlank != null && i == secondLastBlank) {
+									if (heldItem != null) {
+										temp.appendTag(new NBTTagString(
+											EnumChatFormatting.GOLD + "Held Item: " + heldItemJson.get("displayname").getAsString()));
+										int blanks = 0;
+										JsonArray heldItemLore = heldItemJson.get("lore").getAsJsonArray();
+										for (int k = 0; k < heldItemLore.size(); k++) {
+											String heldItemLine = heldItemLore.get(k).getAsString();
+											if (heldItemLine.trim().isEmpty()) {
+												blanks++;
+											} else if (blanks == 2) {
+												temp.appendTag(new NBTTagString(heldItemLine));
+											} else if (blanks > 2) {
+												break;
+											}
+										}
+										temp.appendTag(new NBTTagString());
+									}
+									if (candy != 0) {
+										temp.appendTag(new NBTTagString(EnumChatFormatting.GREEN + "(" + candy + "/10) Pet Candy Used"));
+										temp.appendTag(new NBTTagString());
+									}
+									temp.removeTag(temp.tagCount() - 1);
+								}
+							}
+							newLore = temp;
+							display.setTag("Lore", newLore);
+						}
+						if (display.hasKey("Name", 8)) {
+							String displayName = display.getString("Name");
+							for (Map.Entry<String, String> replacement : replacements.entrySet()) {
+								displayName = displayName.replace("{" + replacement.getKey() + "}", replacement.getValue());
+							}
+							display.setTag("Name", new NBTTagString(displayName));
+						}
+						tag.setTag("display", display);
+					}
+					stack.setTagCompound(tag);
+
+				}
 				sortedPetsStack.add(stack);
 			}
 		}
@@ -2113,7 +2279,12 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		if (selectedPet >= 0) {
-			ItemStack petStack = sortedPetsStack.get(selectedPet);
+			ItemStack petStack;
+			if (sortedPetsStack.size() <= selectedPet) {
+				petStack = getQuestionmarkSkull();
+			} else {
+				petStack = sortedPetsStack.get(selectedPet);
+			}
 			String display = petStack.getDisplayName();
 			JsonObject pet = sortedPets.get(selectedPet);
 
@@ -2197,16 +2368,6 @@ public class GuiProfileViewer extends GuiScreen {
 			);
 		}
 	}
-
-	private final String[] romans = new String[]{
-		"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
-		"XII", "XIII", "XIV", "XV", "XVI", "XVII", "XIX", "XX"
-	};
-
-	private final int COLLS_XCOUNT = 5;
-	private final int COLLS_YCOUNT = 4;
-	private final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
-	private final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
 
 	private void drawColsPage(int mouseX, int mouseY, float partialTicks) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_cols);
@@ -2434,34 +2595,6 @@ public class GuiProfileViewer extends GuiScreen {
 		//190
 	}
 
-	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {{
-		put(
-			"inv_contents",
-			Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory")
-		);
-		put(
-			"ender_chest_contents",
-			Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
-		);
-		// put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
-		put(
-			"backpack_contents",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("JUMBO_BACKPACK")), EnumChatFormatting.GRAY + "Backpacks", true)
-		);
-		put(
-			"personal_vault_contents",
-			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true)
-		);
-		put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
-		put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
-		put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
-		put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
-	}};
-
 	public int countItemsInInventory(
 		String internalname,
 		JsonObject inventoryInfo,
@@ -2486,10 +2619,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		return count;
 	}
-
-	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+([0-9]+)");
-	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+([0-9]+)");
-	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+([0-9]+)");
 
 	private ItemStack[] findBestItems(
 		JsonObject inventoryInfo,
@@ -2567,8 +2696,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		return 0;
 	}
-
-	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
 
 	public ItemStack[][][] getItemsForInventory(JsonObject inventoryInfo, String invName) {
 		if (inventoryItems.containsKey(invName)) return inventoryItems.get(invName);
@@ -2680,20 +2807,6 @@ public class GuiProfileViewer extends GuiScreen {
 		inventoryItems.put(invName, inventories);
 		return inventories;
 	}
-
-	private ItemStack[] bestWeapons = null;
-	private ItemStack[] bestRods = null;
-	private ItemStack[] armorItems = null;
-	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
-	private String selectedInventory = "inv_contents";
-	private int currentInventoryIndex = 0;
-	private int arrowCount = -1;
-	private int greenCandyCount = -1;
-	private int purpleCandyCount = -1;
-	private final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	private ItemStack lastBackpack;
-	private int lastBackpackX;
-	private int lastBackpackY;
 
 	private void drawInvsPage(int mouseX, int mouseY, float partialTicks) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_invs);
@@ -2973,13 +3086,6 @@ public class GuiProfileViewer extends GuiScreen {
 		return entityPlayer;
 	}
 
-	private EntityOtherPlayerMP entityPlayer = null;
-	private ResourceLocation playerLocationSkin = null;
-	private ResourceLocation playerLocationCape = null;
-	private String skinType = null;
-
-	private final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
-
 	public ResourceLocation[] getPanoramasForLocation(String location, String identifier) {
 		if (panoramasMap.containsKey(location + identifier)) return panoramasMap.get(location + identifier);
 		try {
@@ -3011,9 +3117,6 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 	}
-
-	private TreeMap<Integer, Set<String>> topKills = null;
-	private TreeMap<Integer, Set<String>> topDeaths = null;
 
 	private void drawExtraPage(int mouseX, int mouseY, float partialTicks) {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -3686,7 +3789,17 @@ public class GuiProfileViewer extends GuiScreen {
 			(int) (guiTop + yStartTop + 138),
 			mouseX,
 			mouseY,
-			() -> Lists.newArrayList(
+			() -> miningSpeed != 50 && miningSpeed != 0 ? Lists.newArrayList(
+				"Mining Speed",
+				EnumChatFormatting.GRAY + "Level " + miningSpeed + EnumChatFormatting.DARK_GRAY + "/50",
+				"",
+				EnumChatFormatting.GRAY + "Grants " + EnumChatFormatting.GREEN + "+" + miningSpeedStat +
+					EnumChatFormatting.GOLD + " ⸕ Mining",
+				EnumChatFormatting.GOLD + "Speed" + EnumChatFormatting.GRAY + ".",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(miningSpeed + 2, 3) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Mining Speed",
 				EnumChatFormatting.GRAY + "Level " + miningSpeed + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
@@ -3701,7 +3814,17 @@ public class GuiProfileViewer extends GuiScreen {
 			miningFortune,
 			(int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 114),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> miningFortune != 0 && miningFortune != 50 ? Lists.newArrayList(
+				"Mining Fortune",
+				EnumChatFormatting.GRAY + "Level " + miningFortune + EnumChatFormatting.DARK_GRAY + "/50",
+				"",
+				EnumChatFormatting.GRAY + "Grants " + EnumChatFormatting.GREEN + "+" + miningFortuneStat +
+					EnumChatFormatting.GOLD + " ☘ Mining",
+				EnumChatFormatting.GOLD + "Fortune" + EnumChatFormatting.GRAY + ".",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(miningFortune + 2, 3.05) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Mining Fortune",
 				EnumChatFormatting.GRAY + "Level " + miningFortune + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
@@ -3716,7 +3839,19 @@ public class GuiProfileViewer extends GuiScreen {
 			tittyInsane,
 			(int) (guiLeft + xStart + 231), (int) (guiTop + yStartTop + 114),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> tittyInsane != 0 && tittyInsane != 50 ? Lists.newArrayList(
+				"Titanium Insanium",
+				EnumChatFormatting.GRAY + "Level " + tittyInsane + EnumChatFormatting.DARK_GRAY + "/50",
+				"",
+				EnumChatFormatting.GRAY + "When mining Mithril Ore, you",
+				EnumChatFormatting.GRAY + "have a " + EnumChatFormatting.GREEN + tittyInsaneStat + "% " +
+					EnumChatFormatting.GRAY + "chance to",
+				EnumChatFormatting.GRAY + "convert the block into Titanium",
+				EnumChatFormatting.GRAY + "Ore.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(tittyInsane + 2, 3.1) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Titanium Insanium",
 				EnumChatFormatting.GRAY + "Level " + tittyInsane + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
@@ -3771,7 +3906,17 @@ public class GuiProfileViewer extends GuiScreen {
 			luckofcave,
 			(int) (guiLeft + xStart + 207), (int) (guiTop + yStartTop + 90),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> luckofcave != 0 && luckofcave != 45 ? Lists.newArrayList(
+				"Luck of the Cave",
+				"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
+				"",
+				"§7Increases the chance for you to",
+				"§7trigger rare occurrences im",
+				"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(luckofcave + 2, 3.07) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Luck of the Cave",
 				"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
 				"",
@@ -3786,7 +3931,18 @@ public class GuiProfileViewer extends GuiScreen {
 			dailyPowder,
 			(int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 90),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> dailyPowder != 0 && dailyPowder != 100 ? Lists.newArrayList(
+				"Daily Powder",
+				EnumChatFormatting.GRAY + "Level " + dailyPowder + EnumChatFormatting.DARK_GRAY + "/100",
+				"",
+				EnumChatFormatting.GRAY + "Gains " + EnumChatFormatting.GREEN + dailyPowderStat + " Powder" +
+					EnumChatFormatting.GRAY + " from the",
+				EnumChatFormatting.GRAY + "first ore you mine every day.",
+				EnumChatFormatting.GRAY + "Works for all Powder types.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (200 + ((dailyPowder) * 18)) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Daily Powder",
 				EnumChatFormatting.GRAY + "Level " + dailyPowder + EnumChatFormatting.DARK_GRAY + "/100",
 				"",
@@ -3803,7 +3959,18 @@ public class GuiProfileViewer extends GuiScreen {
 			effMiner,
 			(int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 66),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> effMiner != 0 && effMiner != 100 ? Lists.newArrayList(
+				"Efficient Miner",
+				EnumChatFormatting.GRAY + "Level " + effMiner + EnumChatFormatting.DARK_GRAY + "/100",
+				"",
+				EnumChatFormatting.GRAY + "When mining ores, you have a",
+				EnumChatFormatting.GREEN + "" + effMinerStat + "%" + EnumChatFormatting.GRAY + " chance to mine " +
+					EnumChatFormatting.GREEN + Math.round(finalEffMinerStat2),
+				EnumChatFormatting.GRAY + "adjacent ores.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(effMiner + 2, 2.6) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Efficient Miner",
 				EnumChatFormatting.GRAY + "Level " + effMiner + EnumChatFormatting.DARK_GRAY + "/100",
 				"",
@@ -3824,7 +3991,10 @@ public class GuiProfileViewer extends GuiScreen {
 					case 0:
 						return Lists.newArrayList(
 							EnumChatFormatting.RED + "Peak of the Mountain",
-							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/5"
+							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/5",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "50000 Mithril Powder"
 						);
 					case 1:
 						return Lists.newArrayList(
@@ -3832,7 +4002,10 @@ public class GuiProfileViewer extends GuiScreen {
 							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/5",
 							"",
 							"§7§8+§c1 Pickaxe Ability Level",
-							"§7§8+§51 Token of the Mountain"
+							"§7§8+§51 Token of the Mountain",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "50000 Mithril Powder"
 						);
 					case 2:
 						return Lists.newArrayList(
@@ -3841,7 +4014,10 @@ public class GuiProfileViewer extends GuiScreen {
 							"",
 							"§7§8+§c1 Pickaxe Ability Level",
 							"§7§8+§51 Token of the Mountain",
-							"§7§8+§a1 Forge Slot"
+							"§7§8+§a1 Forge Slot",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "75000 Mithril Powder"
 						);
 					case 3:
 						return Lists.newArrayList(
@@ -3851,7 +4027,10 @@ public class GuiProfileViewer extends GuiScreen {
 							"§7§8+§c1 Pickaxe Ability Level",
 							"§7§8+§51 Token of the Mountain",
 							"§7§8+§a1 Forge Slot",
-							"§7§8+§a1 Commission Slot"
+							"§7§8+§a1 Commission Slot",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "100000 Mithril Powder"
 						);
 					case 4:
 						return Lists.newArrayList(
@@ -3863,7 +4042,10 @@ public class GuiProfileViewer extends GuiScreen {
 							"§7§8+§a1 Forge Slot",
 							"§7§8+§a1 Commission Slot",
 							"§7§8+§21 Mithril Powder §7when",
-							"§7mining §fMithril"
+							"§7mining §fMithril",
+							"",
+							EnumChatFormatting.GRAY + "Cost",
+							EnumChatFormatting.DARK_GREEN + "125000 Mithril Powder"
 						);
 					case 5:
 						return Lists.newArrayList(
@@ -3890,7 +4072,19 @@ public class GuiProfileViewer extends GuiScreen {
 			mole,
 			(int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop + 18),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> mole != 0 && mole != 190 ? Lists.newArrayList(
+				"Mole",
+				EnumChatFormatting.GRAY + "Level " + mole + EnumChatFormatting.DARK_GRAY + "/190",
+				"",
+				EnumChatFormatting.GRAY + "When mining hard stone, you have",
+				EnumChatFormatting.GRAY + "a " + EnumChatFormatting.GREEN + finalOutput + "% " + EnumChatFormatting.GRAY +
+					"chance to mine " + EnumChatFormatting.GREEN,
+				EnumChatFormatting.GREEN + "" + Math.round(moleStat) + EnumChatFormatting.GRAY + " adjacent hard stone block" +
+					(moleStat == 1.0 ? "." : "s."),
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(mole + 2, 2.2) + " Gemstone Powder"
+			) : Lists.newArrayList(
 				"Mole",
 				EnumChatFormatting.GRAY + "Level " + mole + EnumChatFormatting.DARK_GRAY + "/190",
 				"",
@@ -3907,7 +4101,17 @@ public class GuiProfileViewer extends GuiScreen {
 			powderBuff,
 			(int) (guiLeft + xStart + 255), (int) (guiTop + yStartTop - 6),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> powderBuff != 0 && powderBuff != 50 ? Lists.newArrayList(
+				"Powder Buff",
+				EnumChatFormatting.GRAY + "Level " + powderBuff + EnumChatFormatting.DARK_GRAY + "/50",
+				"",
+				EnumChatFormatting.GRAY + "Gain " + EnumChatFormatting.GREEN + powderBuff + "% " + EnumChatFormatting.GRAY +
+					"more Mithril",
+				EnumChatFormatting.GRAY + "Powder and Gemstone Powder§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(powderBuff + 2, 3.2) + " Gemstone Powder"
+			) : Lists.newArrayList(
 				"Powder Buff",
 				EnumChatFormatting.GRAY + "Level " + powderBuff + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
@@ -3960,7 +4164,16 @@ public class GuiProfileViewer extends GuiScreen {
 			seasonMine,
 			(int) (guiLeft + xStart + 231), (int) (guiTop + yStartTop + 66),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> seasonMine != 0 && seasonMine != 100 ? Lists.newArrayList(
+				"Seasoned Mineman",
+				"§7Level " + seasonMine + "§8/100",
+				"",
+				"§7Increases your Mining",
+				"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(seasonMine + 2, 2.3) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Seasoned Mineman",
 				"§7Level " + seasonMine + "§8/100",
 				"",
@@ -3986,7 +4199,7 @@ public class GuiProfileViewer extends GuiScreen {
 			lonesomeMiner,
 			(int) (guiLeft + xStart + 207), (int) (guiTop + yStartTop + 18),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> lonesomeMiner != 0 && lonesomeMiner != 45 ? Lists.newArrayList(
 				"Lonesome Miner",
 				"§7Level " + lonesomeMiner + EnumChatFormatting.DARK_GRAY + "/45",
 				"",
@@ -3994,7 +4207,18 @@ public class GuiProfileViewer extends GuiScreen {
 				"§9Chance, §9☠ Crit Damage, §a❈",
 				"§aDefense, and §c❤ Health",
 				"§c§7statistics gain by " + EnumChatFormatting.GREEN + lonesomeMinerStat + "%§7",
-				"§7while in the Crystal Hollows."
+				"§7while in the Crystal Hollows.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(lonesomeMiner + 2, 3.07) + " Gemstone Powder"
+			) : Lists.newArrayList(
+				"Lonesome Miner",
+				"§7Level " + lonesomeMiner + EnumChatFormatting.DARK_GRAY + "/45",
+				"",
+				"§7Increases §c❁ Strength, §9☣ Crit",
+				"§9Chance, §9☠ Crit Damage, §a❈",
+				"§aDefense, and §c❤ Health",
+				"§c§7statistics gain by " + EnumChatFormatting.GREEN + lonesomeMinerStat + "%§7"
 			),
 			45
 		);
@@ -4003,7 +4227,16 @@ public class GuiProfileViewer extends GuiScreen {
 			professional,
 			(int) (guiLeft + xStart + 231), (int) (guiTop + yStartTop + 18),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> professional != 0 && professional != 140 ? Lists.newArrayList(
+				"Professional",
+				"§7Level " + professional + EnumChatFormatting.DARK_GRAY + "/140",
+				"",
+				"§7Gain §a+" + professionalStat + "§6 ⸕ Mining",
+				"§6Speed§7 when mining Gemstones.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(professional + 2, 2.3) + " Gemstone Powder"
+			) : Lists.newArrayList(
 				"Professional",
 				"§7Level " + professional + EnumChatFormatting.DARK_GRAY + "/140",
 				"",
@@ -4017,7 +4250,16 @@ public class GuiProfileViewer extends GuiScreen {
 			miningSpeed2,
 			(int) (guiLeft + xStart + 207), (int) (guiTop + yStartTop - 6),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> miningSpeed2 != 0 && miningSpeed2 != 50 ? Lists.newArrayList(
+				"Mining Speed 2",
+				"§7Level " + miningSpeed2 + EnumChatFormatting.DARK_GRAY + "/50",
+				"",
+				"§7Grants " + EnumChatFormatting.GREEN + "+" + miningSpeed2Stat + EnumChatFormatting.GOLD + " ⸕ Mining",
+				"§6Speed§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(miningSpeed2 + 2, 3.2) + " Gemstone Powder"
+			) : Lists.newArrayList(
 				"Mining Speed 2",
 				"§7Level " + miningSpeed2 + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
@@ -4031,7 +4273,16 @@ public class GuiProfileViewer extends GuiScreen {
 			quickForge,
 			(int) (guiLeft + xStart + 279), (int) (guiTop + yStartTop + 114),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> quickForge != 0 && quickForge != 20 ? Lists.newArrayList(
+				"Quick Forge",
+				"§7Level " + quickForge + EnumChatFormatting.DARK_GRAY + "/20",
+				"",
+				"§7Decreases the time it takes to",
+				"§7forge by §a" + (quickForgeStat < 20 ? quickForgeStat : 30) + "%§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(quickForge + 2, 4) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Quick Forge",
 				"§7Level " + quickForge + EnumChatFormatting.DARK_GRAY + "/20",
 				"",
@@ -4045,7 +4296,16 @@ public class GuiProfileViewer extends GuiScreen {
 			fortunate,
 			(int) (guiLeft + xStart + 279), (int) (guiTop + yStartTop + 18),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> fortunate != 0 && fortunate != 20 ? Lists.newArrayList(
+				"Fortunate",
+				"§7Level " + fortunate + EnumChatFormatting.DARK_GRAY + "/20",
+				"",
+				"§7Gain " + EnumChatFormatting.GREEN + "+" + fortunateStat + " §6☘ Mining",
+				"§6Fortune§7 when mining Gemstone.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(fortunate + 2, 3.05) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Fortunate",
 				"§7Level " + fortunate + EnumChatFormatting.DARK_GRAY + "/20",
 				"",
@@ -4059,7 +4319,16 @@ public class GuiProfileViewer extends GuiScreen {
 			greatExplorer,
 			(int) (guiLeft + xStart + 303), (int) (guiTop + yStartTop + 18),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> greatExplorer != 0 && greatExplorer != 20 ? Lists.newArrayList(
+				"Great Explorer",
+				"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
+				"",
+				"§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY + "chance to",
+				"§7find treasure.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(greatExplorer + 2, 4) + " Gemstone Powder"
+			) : Lists.newArrayList(
 				"Great Explorer",
 				"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
 				"",
@@ -4073,7 +4342,15 @@ public class GuiProfileViewer extends GuiScreen {
 			miningFortune2,
 			(int) (guiLeft + xStart + 303), (int) (guiTop + yStartTop - 6),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> miningFortune2 != 0 && miningFortune2 != 50 ? Lists.newArrayList(
+				"Mining Fortune 2",
+				"§7Level " + miningFortune2 + EnumChatFormatting.DARK_GRAY + "/50",
+				"",
+				"§7Grants §a+§a" + miningFortune2Stat + "§7 §6☘ Mining", "§6Fortune§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(miningFortune2 + 2, 3.2) + " Gemstone Powder"
+			) : Lists.newArrayList(
 				"Mining Fortune 2",
 				"§7Level " + miningFortune2 + EnumChatFormatting.DARK_GRAY + "/50",
 				"",
@@ -4086,7 +4363,17 @@ public class GuiProfileViewer extends GuiScreen {
 			orbit,
 			(int) (guiLeft + xStart + 279), (int) (guiTop + yStartTop + 66),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> orbit != 0 && orbit != 80 ? Lists.newArrayList(
+				"Orbiter",
+				"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
+				"",
+				"§7When mining ores, you have a",
+				EnumChatFormatting.GREEN + "" + orbitStat + "%" + EnumChatFormatting.GRAY + " chance to get a random",
+				"§7amount of experience orbs.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) ((orbit + 1) * 70) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Orbiter",
 				"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
 				"",
@@ -4142,7 +4429,18 @@ public class GuiProfileViewer extends GuiScreen {
 			crystallized,
 			(int) (guiLeft + xStart + 303), (int) (guiTop + yStartTop + 90),
 			mouseX, mouseY,
-			() -> Lists.newArrayList(
+			() -> crystallized != 0 && crystallized != 30 ? Lists.newArrayList(
+				"Crystallized",
+				"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
+				"",
+				"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining",
+				"§6Speed §7and a §a" + crystallizedStat + "%§7 §7chance",
+				"§7to deal §a+1 §7extra damage near",
+				"§7§5Fallen Stars§7.",
+				"",
+				EnumChatFormatting.GRAY + "Cost",
+				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(crystallized + 2, 2.4) + " Mithril Powder"
+			) : Lists.newArrayList(
 				"Crystallized",
 				"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
 				"",
@@ -4350,31 +4648,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		return null;
 	}
-
-	private int backgroundClickedX = -1;
-
-	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
-
-	public static String shortNumberFormat(double n, int iteration) {
-		if (n < 1000) {
-			if (n % 1 == 0) {
-				return Integer.toString((int) n);
-			} else {
-				return String.format("%.2f", n);
-			}
-		}
-
-		double d = ((long) n / 100) / 10.0;
-		boolean isRound = (d * 10) % 10 == 0;
-		return (d < 1000 ?
-			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
-				(int) d * 10 / 10 : d + ""
-			) + "" + c[iteration])
-			: shortNumberFormat(d, iteration + 1));
-	}
-
-	private boolean loadingProfile = false;
-	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
 
 	private void drawBasicPage(int mouseX, int mouseY, float partialTicks) {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -4909,89 +5182,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
-
-	public static void drawEntityOnScreen(
-		int posX,
-		int posY,
-		int scale,
-		float mouseX,
-		float mouseY,
-		EntityLivingBase ent
-	) {
-		GlStateManager.enableColorMaterial();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate((float) posX, (float) posY, 50.0F);
-		GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
-		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-		float renderYawOffset = ent.renderYawOffset;
-		float f1 = ent.rotationYaw;
-		float f2 = ent.rotationPitch;
-		float f3 = ent.prevRotationYawHead;
-		float f4 = ent.rotationYawHead;
-		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
-		RenderHelper.enableStandardItemLighting();
-		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(25, 1.0F, 0.0F, 0.0F);
-		ent.renderYawOffset = (float) Math.atan(mouseX / 40.0F) * 20.0F;
-		ent.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
-		ent.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
-		ent.rotationYawHead = ent.rotationYaw;
-		ent.prevRotationYawHead = ent.rotationYaw;
-		RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
-		rendermanager.setPlayerViewY(180.0F);
-		rendermanager.setRenderShadow(false);
-		rendermanager.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
-
-        /*{
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(770, 771);
-            rendermanager.renderEngine.bindTexture(shadowTextures);
-            GlStateManager.depthMask(false);
-            float f = 0.5f;
-
-            if (ent instanceof EntityLiving) {
-                EntityLiving entityliving = (EntityLiving)ent;
-                f *= entityliving.getRenderSizeModifier();
-
-                if (entityliving.isChild())
-                {
-                    f *= 0.5F;
-                }
-            }
-
-            /*Tessellator tessellator = Tessellator.getInstance();
-            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-
-            GlStateManager.color(1, 1, 1, 0.5f);
-            Utils.drawTexturedRect(-0.5f*tl.x, -0.5f*tl.x, 1*tl.x, 1*tl.x);
-
-            /*for (BlockPos blockpos : BlockPos.getAllInBoxMutable(new BlockPos(i, k, i1), new BlockPos(j, l, j1))) {
-                Block block = world.getBlockState(blockpos.down()).getBlock();
-
-                if (block.getRenderType() != -1 && world.getLightFromNeighbors(blockpos) > 3) {
-                    this.func_180549_a(block, x, y, z, blockpos, shadowAlpha, f, d2, d3, d4);
-                }
-            }
-
-            GlStateManager.disableBlend();
-            GlStateManager.depthMask(true);
-        }*/
-
-		ent.renderYawOffset = renderYawOffset;
-		ent.rotationYaw = f1;
-		ent.rotationPitch = f2;
-		ent.prevRotationYawHead = f3;
-		ent.rotationYawHead = f4;
-		GlStateManager.popMatrix();
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-		GlStateManager.disableTexture2D();
-		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-	}
-
 	public void resetCache() {
 		bestWeapons = null;
 		bestRods = null;
@@ -5010,11 +5200,6 @@ public class GuiProfileViewer extends GuiScreen {
 		sortedPetsStack = null;
 		selectedPet = -1;
 	}
-
-	Shader blurShaderHorz = null;
-	Framebuffer blurOutputHorz = null;
-	Shader blurShaderVert = null;
-	Framebuffer blurOutputVert = null;
 
 	/**
 	 * Creates a projection matrix that projects from our coordinate space [0->width; 0->height] to OpenGL coordinate
@@ -5035,14 +5220,6 @@ public class GuiProfileViewer extends GuiScreen {
 		projMatrix.m23 = -1.0001999F;
 		return projMatrix;
 	}
-
-	/**
-	 * Renders whatever is currently in the Minecraft framebuffer to our two framebuffers, applying a horizontal
-	 * and vertical blur separately in order to significantly save computation time.
-	 * This is only possible if framebuffers are supported by the system, so this method will exit prematurely
-	 * if framebuffers are not available. (Apple machines, for example, have poor framebuffer support).
-	 */
-	private double lastBgBlurFactor = -1;
 
 	private void blurBackground() {
 		if (!OpenGlHelper.isFramebufferEnabled()) return;
@@ -5123,5 +5300,45 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawTexturedRect(x, y, blurWidth, blurHeight, uMin, uMax, vMin, vMax);
 		//Utils.setScreen(width, height, f);
 		blurOutputVert.unbindFramebufferTexture();
+	}
+
+	public enum ProfileViewerPage {
+		LOADING(-1, null),
+		INVALID_NAME(-1, null),
+		NO_SKYBLOCK(-1, null),
+		BASIC(0, new ItemStack(Items.paper)),
+		DUNGEON(1, new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
+		EXTRA(2, new ItemStack(Items.book)),
+		INVENTORIES(3, new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
+		COLLECTIONS(4, new ItemStack(Items.painting)),
+		PETS(5, new ItemStack(Items.bone)),
+		MINING(6, new ItemStack(Items.iron_pickaxe)),
+		BINGO(7, new ItemStack(Items.filled_map));
+
+		public final ItemStack stack;
+		public final int id;
+
+		ProfileViewerPage(int id, ItemStack stack) {
+			this.id = id;
+			this.stack = stack;
+		}
+
+		public static ProfileViewerPage getById(int id) {
+			for (ProfileViewerPage page : values()) {
+				if (page.id == id) {
+					return page;
+				}
+			}
+			return null;
+		}
+	}
+
+	public static class PetLevel {
+		public float level;
+		public float currentLevelRequirement;
+		public float maxXP;
+		public float levelPercentage;
+		public float levelXp;
+		public float totalXp;
 	}
 }

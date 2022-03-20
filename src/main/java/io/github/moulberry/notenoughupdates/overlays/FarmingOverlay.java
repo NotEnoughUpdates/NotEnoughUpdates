@@ -175,18 +175,17 @@ public class FarmingOverlay extends TextOverlay {
 		}
 
 		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice || internalname != null && (internalname.equals(
-			"TREECAPITATOR_AXE"))
-			|| internalname != null && (internalname.equals("JUNGLE_AXE"))) {
-			if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS") ||
-				(internalname != null && internalname.equals("COCO_CHOPPER"))) {
+			"TREECAPITATOR_AXE")) || internalname != null && (internalname.equals("JUNGLE_AXE"))) {
+			if ((internalname != null && internalname.equals("COCO_CHOPPER"))) {
 				Coins = 3;
 			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO") ||
-				(internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT"))
-				|| (internalname != null && internalname.equals("CACTUS_KNIFE")) ||
+				(internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT")) ||
+				(internalname != null && internalname.equals("CACTUS_KNIFE")) ||
 				(internalname != null && internalname.startsWith("THEORETICAL_HOE_WHEAT"))) {
 				Coins = 1;
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE") ||
-				(internalname != null && internalname.equals("TREECAPITATOR_AXE"))
+			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE")
+				|| (internalname != null && internalname.equals("TREECAPITATOR_AXE"))
+				|| (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS"))
 				|| (internalname != null && internalname.equals("JUNGLE_AXE"))) {
 				Coins = 2;
 			} else if ((internalname != null && internalname.equals("PUMPKIN_DICER")) ||
