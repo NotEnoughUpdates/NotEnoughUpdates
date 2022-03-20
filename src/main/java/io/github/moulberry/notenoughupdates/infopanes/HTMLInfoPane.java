@@ -68,6 +68,13 @@ public class HTMLInfoPane extends TextInfoPane {
 		conf.addTokenTag("infobox", new IgnoreTag("infobox"));
 		conf.addTokenTag("tabber", new IgnoreTag("tabber"));
 		conf.addTokenTag("kbd", new HTMLTag("kbd"));
+		conf.addTokenTag("td", new AllowEmptyHTMLTag("td"));
+		conf.addTokenTag("tbody", new AllowEmptyHTMLTag("tbody"));
+		conf.addTokenTag("style", new AllowEmptyHTMLTag("style"));
+		conf.addTokenTag("article", new AllowEmptyHTMLTag("article"));
+		conf.addTokenTag("section", new AllowEmptyHTMLTag("section"));
+		conf.addTokenTag("link", new AllowEmptyHTMLTag("link"));
+		conf.addTokenTag("wbr", new AllowEmptyHTMLTag("wbr"));
 		wikiModel = new WikiModel(conf, "https://hypixel-skyblock.fandom.com/wiki/Special:Filepath/${image}",
 			"https://hypixel-skyblock.fandom.com/wiki/${title}"
 		) {
@@ -161,7 +168,7 @@ public class HTMLInfoPane extends TextInfoPane {
 			); // hide beta box
 			wiki = wiki.replaceAll("<h1 id=\"section_0\">.*</h1>", ""); // hide title
 			wiki = wiki.replace("src=\"/", "src=\"https://wiki.hypixel.net/");
-			wiki = wiki.replace("\uD83D\uDDF8", "\u2713"); // replace checkmark with one that renders
+			wiki = wiki.replace("\uD83D\uDDF8", "✓"); // replace checkmark with one that renders
 			wiki = wiki.replace("\uD83E\uDC10", "\u27F5"); // replace left arrow with one that renders
 			wiki = wiki.replace("\uD83E\uDC12", "\u27F6"); // replace right arrow with one that renders
 		} else {
@@ -175,17 +182,15 @@ public class HTMLInfoPane extends TextInfoPane {
 			out.println(wiki);
 		} catch (IOException ignored) {
 		}
-		String html = wiki;
-		if (!isOfficialWiki) {
-			try {
-				html = wikiModel.render(wiki);
-			} catch (IOException e) {
-				return new HTMLInfoPane(overlay, manager, "error", "error", "Could not render wiki.", false);
-			}
-			try (PrintWriter out = new PrintWriter(new File(manager.configLocation, "debug/html.txt"))) {
-				out.println(html);
-			} catch (IOException ignored) {
-			}
+		String html;
+		try {
+			html = wikiModel.render(wiki);
+		} catch (IOException e) {
+			return new HTMLInfoPane(overlay, manager, "error", "error", "Could not render wiki.", false);
+		}
+		try (PrintWriter out = new PrintWriter(new File(manager.configLocation, "debug/html.txt"))) {
+			out.println(html);
+		} catch (IOException ignored) {
 		}
 		return new HTMLInfoPane(overlay, manager, name, filename, html, isOfficialWiki);
 	}
@@ -320,9 +325,6 @@ public class HTMLInfoPane extends TextInfoPane {
 			html = "<div id=\"WikiaArticle\" class=\"WikiaArticle\">" + html + "</div>";
 			html = "<link rel=\"stylesheet\" href=\"file:///" + cssFile.getAbsolutePath().replaceAll("^/", "") + "\">\n" +
 				html;
-			System.out.println(isOfficial);
-			if (isOfficial)
-				html = "<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>\n" + html;
 
 			try (
 				PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
