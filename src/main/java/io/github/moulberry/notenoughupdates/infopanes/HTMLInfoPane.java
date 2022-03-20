@@ -75,6 +75,9 @@ public class HTMLInfoPane extends TextInfoPane {
 		conf.addTokenTag("section", new AllowEmptyHTMLTag("section"));
 		conf.addTokenTag("link", new AllowEmptyHTMLTag("link"));
 		conf.addTokenTag("wbr", new AllowEmptyHTMLTag("wbr"));
+		conf.addTokenTag("dl", new AllowEmptyHTMLTag("dl"));
+		conf.addTokenTag("dd", new AllowEmptyHTMLTag("dd"));
+		conf.addTokenTag("dt", new AllowEmptyHTMLTag("dt"));
 		wikiModel = new WikiModel(conf, "https://hypixel-skyblock.fandom.com/wiki/Special:Filepath/${image}",
 			"https://hypixel-skyblock.fandom.com/wiki/${title}"
 		) {
