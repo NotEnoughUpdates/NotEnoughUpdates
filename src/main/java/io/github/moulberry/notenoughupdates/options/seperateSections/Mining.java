@@ -641,6 +641,42 @@ public class Mining {
 	@ConfigAccordionId(id = 6)
 	public int crystalHollowNoneColor = 12;
 
+	@ConfigOption(
+		name = "Wishing Compass Solver",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 7)
+	public boolean wishingCompassSolverAccordion = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Solver",
+		desc = "Show wishing compass target coordinates based on two samples"
+	)
+	@ConfigAccordionId(id = 7)
+	@ConfigEditorBoolean
+	public boolean wishingCompassSolver = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Skytils Waypoints",
+		desc = "Automatically create Skytils waypoints for well-known targets"
+	)
+	@ConfigAccordionId(id = 7)
+	@ConfigEditorBoolean
+	public boolean wishingCompassAutocreateKnownWaypoints = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Waypoint Type",
+		desc = "Skytils Waypoint name type. Skytils Built-in will be overwritten by Skytils when the waypoint is nearby."
+	)
+	@ConfigAccordionId(id = 7)
+	@ConfigEditorDropdown(
+		values = {"NEU", "Skytils"}
+	)
+	public int wishingCompassWaypointNameType = 0;
+
 	@Expose
 	@ConfigOption(
 		name = "Puzzler Solver",
@@ -665,19 +701,11 @@ public class Mining {
 	@ConfigEditorBoolean
 	public boolean titaniumAlertMustBeVisible = false;
 
-	@Expose
-	@ConfigOption(
-		name = "Wishing Compass Solver",
-		desc = "Show wishing compass target coordinates based on two samples"
-	)
-	@ConfigEditorBoolean
-	public boolean wishingCompassSolver = true;
-
 	@ConfigOption(
 		name = "Custom Textures",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 7)
+	@ConfigEditorAccordion(id = 8)
 	public boolean texturesAccordion = false;
 
 	@Expose
@@ -685,7 +713,7 @@ public class Mining {
 		name = "Dwarven Mines Textures",
 		desc = "Allows texture packs to retexture blocks in the Dwarven Mines. If you don't have a texture pack that does this, you should leave this off"
 	)
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigEditorBoolean
 	public boolean dwarvenTextures = false;
 	@Expose
@@ -693,7 +721,7 @@ public class Mining {
 		name = "Crystal Hollows Textures",
 		desc = "Allows texture packs to retexture blocks in the Crystal Hollows. If you don't have a texture pack that does this, you should leave this off"
 	)
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigEditorBoolean
 	public boolean crystalHollowTextures = false;
 
@@ -702,7 +730,7 @@ public class Mining {
 		name = "Replace Gemstone sounds",
 		desc = "Replace the break sounds of crystals in the Crystal Hollows. Requires a texture pack with this feature"
 	)
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigEditorBoolean
 	public boolean gemstoneSounds = false;
 
@@ -711,7 +739,7 @@ public class Mining {
 		name = "Replace Mithril sounds",
 		desc = "Replace the break sounds of mithril and titanium in the Dwarven mines. Requires a texture pack with this feature"
 	)
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigEditorBoolean
 	public boolean mithrilSounds = false;
 
