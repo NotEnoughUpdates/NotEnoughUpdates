@@ -456,7 +456,7 @@ public class CrystalMetalDetectorSolver {
 	private static boolean treasureAllowed(BlockPos pos) {
 		boolean airAbove = isAirAbove(pos);
 		boolean allowedBlockType = isAllowedBlockType(pos);
-		return airAbove & (isKnownOffset(pos) | allowedBlockType);
+		return isKnownOffset(pos) || (airAbove && allowedBlockType);
 	}
 
 	static private String getDiagnosticMessage() {

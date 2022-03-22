@@ -386,6 +386,7 @@ class CrystalWishingCompassSolverTest {
 
 	@Test
 	void first_compass_without_particles_sets_solver_state_to_processing_first_use() {
+		// Arrange
 		CompassUse compassUse = new CompassUse(minesOfDivanCompassUse1);
 		compassUse.particles.clear();
 		compassUse.expectedSolverState = SolverState.PROCESSING_FIRST_USE;
@@ -396,6 +397,30 @@ class CrystalWishingCompassSolverTest {
 
 		// Act & Assert
 		checkSolution(solution);
+	}
+
+	@Test
+	void new_compass_resets_processing_first_use_state_after_timeout() {
+		// Arrange
+		CompassUse processingFirstUseCompassUse = new CompassUse(minesOfDivanCompassUse1);
+		processingFirstUseCompassUse.particles.clear();
+		processingFirstUseCompassUse.expectedSolverState = SolverState.PROCESSING_FIRST_USE;
+		Solution processingFirstUseSolution = new Solution(
+			new ArrayList<>(Collections.singletonList(processingFirstUseCompassUse)),
+			Vec3i.NULL_VECTOR);
+		checkSolution(processingFirstUseSolution);
+		Assertions.assertEquals(SolverState.PROCESSING_FIRST_USE, solver.getSolverState());
+
+		CompassUse resetStateCompassUse = new CompassUse(jungleCompassUse1);
+		resetStateCompassUse.timeIncrementMillis = ALL_PARTICLES_MAX_MILLIS + 1;
+		resetStateCompassUse.expectedHandleCompassUseResult = HandleCompassResult.NO_PARTICLES_FOR_PREVIOUS_COMPASS;
+		resetStateCompassUse.expectedSolverState = SolverState.FAILED_TIMEOUT_NO_REPEATING;
+		Solution goodSolution = new Solution(
+			new ArrayList<>(Collections.singletonList(resetStateCompassUse)),
+			Vec3i.NULL_VECTOR);
+
+		// Act & Assert
+		checkSolution(goodSolution);
 	}
 
 	@Test
@@ -423,14 +448,20 @@ class CrystalWishingCompassSolverTest {
 	@Test
 	void use_while_handling_previous_returns_still_processing_first_use() {
 		// Arrange
-		CompassUse compassUse1 = new CompassUse(minesOfDivanCompassUse1);
-		compassUse1.particles.clear();
-		compassUse1.expectedSolverState = SolverState.PROCESSING_FIRST_USE;
+		CompassUse compassUse1 = new CompassUse(
+			1647528732979L,
+			new BlockPos(754, 137, 239),
+			new ArrayList<>(Collections.singletonList(
+				new ParticleSpawn(new Vec3Comparable(754.358459, 138.536407, 239.200928), 137)
+			)),
+			HandleCompassResult.SUCCESS,
+			SolverState.PROCESSING_FIRST_USE);
 
 		// STILL_PROCESSING_FIRST_USE is expected instead of LOCATION_TOO_CLOSE since the solver
 		// isn't ready for the second compass use, which includes the location check
 		CompassUse compassUse2 = new CompassUse(compassUse1);
-		compassUse2.expectedHandleCompassUseResult = HandleCompassResult.STILL_PROCESSING_FIRST_USE;
+		compassUse2.expectedHandleCompassUseResult = HandleCompassResult.STILL_PROCESSING_PRIOR_USE;
+		compassUse2.timeIncrementMillis = 500;
 
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(compassUse1, compassUse2)),

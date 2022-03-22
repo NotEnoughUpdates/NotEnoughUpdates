@@ -39,6 +39,7 @@ public class CrystalWishingCompassSolver {
 		SOLVED,
 		FAILED_EXCEPTION,
 		FAILED_TIMEOUT_NO_REPEATING,
+		FAILED_TIMEOUT_NO_PARTICLES,
 		FAILED_INTERSECTION_CALCULATION,
 		FAILED_INVALID_SOLUTION,
 	}
@@ -168,7 +169,7 @@ public class CrystalWishingCompassSolver {
 			switch (result) {
 				case SUCCESS:
 					return;
-				case STILL_PROCESSING_FIRST_USE:
+				case STILL_PROCESSING_PRIOR_USE:
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
 						"[NEU] Wait a little longer before using the wishing compass again."));
 					event.setCanceled(true);
@@ -182,6 +183,10 @@ public class CrystalWishingCompassSolver {
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
 						"[NEU] Possible wishing compass targets have changed. Solver has been reset."));
 					event.setCanceled(true);
+					break;
+				case NO_PARTICLES_FOR_PREVIOUS_COMPASS:
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
+						"[NEU] No particles detected for prior compass use. Need another position to solve."));
 					break;
 				case PLAYER_IN_NUCLEUS:
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
@@ -201,13 +206,26 @@ public class CrystalWishingCompassSolver {
 	}
 
 	public HandleCompassResult handleCompassUse(BlockPos playerPos) {
-			switch (solverState) {
-				case PROCESSING_FIRST_USE:
+		long lastCompassUsedMillis = 0;
+		switch (solverState) {
 				case PROCESSING_SECOND_USE:
-					return HandleCompassResult.STILL_PROCESSING_FIRST_USE;
+					if (secondCompass != null) {
+						lastCompassUsedMillis = secondCompass.whenUsedMillis;
+					}
+				case PROCESSING_FIRST_USE:
+					if (lastCompassUsedMillis == 0 && firstCompass != null) {
+						lastCompassUsedMillis = firstCompass.whenUsedMillis;
+					}
+					if (lastCompassUsedMillis != 0 &&
+						(currentTimeMillis.getAsLong() > lastCompassUsedMillis + ALL_PARTICLES_MAX_MILLIS)) {
+						return HandleCompassResult.NO_PARTICLES_FOR_PREVIOUS_COMPASS;
+					}
+
+					return HandleCompassResult.STILL_PROCESSING_PRIOR_USE;
 				case SOLVED:
 				case FAILED_EXCEPTION:
 				case FAILED_TIMEOUT_NO_REPEATING:
+				case FAILED_TIMEOUT_NO_PARTICLES:
 				case FAILED_INTERSECTION_CALCULATION:
 				case FAILED_INVALID_SOLUTION:
 					resetForNewTarget();
@@ -288,7 +306,12 @@ public class CrystalWishingCompassSolver {
 						break;
 					case FAILED_TIMEOUT_NO_REPEATING:
 						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-							"[NEU] Timed out waiting for second set of wishing compass particles."));
+							"[NEU] Timed out waiting for repeat set of compass particles."));
+						logDiagnosticData(false);
+						break;
+					case FAILED_TIMEOUT_NO_PARTICLES:
+						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
+							"[NEU] Timed out waiting for compass particles."));
 						logDiagnosticData(false);
 						break;
 					case FAILED_INTERSECTION_CALCULATION:
@@ -335,6 +358,9 @@ public class CrystalWishingCompassSolver {
 
 		currentCompass.processParticle(x, y, z, currentTimeMillis);
 		switch (currentCompass.compassState) {
+			case FAILED_TIMEOUT_NO_PARTICLES:
+				solverState = SolverState.FAILED_TIMEOUT_NO_PARTICLES;
+				return;
 			case FAILED_TIMEOUT_NO_REPEATING:
 				solverState = SolverState.FAILED_TIMEOUT_NO_REPEATING;
 				return;
@@ -800,13 +826,15 @@ public class CrystalWishingCompassSolver {
 		COMPUTING_LAST_PARTICLE,
 		COMPLETED,
 		FAILED_TIMEOUT_NO_REPEATING,
+		FAILED_TIMEOUT_NO_PARTICLES,
 	}
 
 	enum HandleCompassResult {
 		SUCCESS,
 		LOCATION_TOO_CLOSE,
-		STILL_PROCESSING_FIRST_USE,
+		STILL_PROCESSING_PRIOR_USE,
 		POSSIBLE_TARGETS_CHANGED,
+		NO_PARTICLES_FOR_PREVIOUS_COMPASS,
 		PLAYER_IN_NUCLEUS
 	}
 
@@ -853,6 +881,7 @@ public class CrystalWishingCompassSolver {
 
 		public void processParticle(double x, double y, double z, long particleTimeMillis) {
 			if (compassState == CompassState.FAILED_TIMEOUT_NO_REPEATING ||
+					compassState == CompassState.FAILED_TIMEOUT_NO_PARTICLES ||
 					compassState == CompassState.COMPLETED) {
 				throw new UnsupportedOperationException("processParticle should not be called in a failed or completed state");
 			}
