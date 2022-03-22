@@ -79,15 +79,14 @@ public class CrystalWishingCompassSolver {
 	private static final AxisAlignedBB GOBLIN_HOLDOUT_BB = new AxisAlignedBB(201, 64, 513, 512, 189, 824);
 	private static final AxisAlignedBB JUNGLE_BB = new AxisAlignedBB(201, 64, 201, 512, 189, 512);
 	private static final AxisAlignedBB MAGMA_FIELDS_BB = new AxisAlignedBB(201, 30, 201, 824, 63, 824);
-	private static final double MAX_COMPASS_PARTICLE_SPREAD = 16;
+	private static final double MAX_DISTANCE_BETWEEN_PARTICLES = 0.6;
+	private static final double MAX_DISTANCE_FROM_USE_TO_FIRST_PARTICLE = 2.0;
 
 	// 64.0 is an arbitrary value but seems to work well
 	private static final double MINIMUM_DISTANCE_SQ_BETWEEN_COMPASSES = 64.0;
 
 	// All particles typically arrive in < 3500, so 5000 should be enough buffer
 	public static final long ALL_PARTICLES_MAX_MILLIS = 5000L;
-	// The first, non-repeating set of particles typically arrive in < 1000, so 2000 should be enough buffer
-	public static final long FIRST_SET_OF_PARTICLES_MAX_MILLIS = 2000L;
 
 	public LongSupplier currentTimeMillis = System::currentTimeMillis;
 	public BooleanSupplier kingsScentPresent = this::isKingsScentPresent;
@@ -169,7 +168,6 @@ public class CrystalWishingCompassSolver {
 			switch (result) {
 				case SUCCESS:
 					return;
-				case USED_TOO_SOON:
 				case STILL_PROCESSING_FIRST_USE:
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
 						"[NEU] Wait a little longer before using the wishing compass again."));
@@ -224,10 +222,6 @@ public class CrystalWishingCompassSolver {
 					possibleTargets = calculatePossibleTargets(playerPos);
 					return HandleCompassResult.SUCCESS;
 				case NEED_SECOND_COMPASS:
-					if (currentTimeMillis.getAsLong() - firstCompass.whenUsedMillis < FIRST_SET_OF_PARTICLES_MAX_MILLIS) {
-						return HandleCompassResult.USED_TOO_SOON;
-					}
-
 					if (firstCompass.whereUsed.distanceSq(playerPos) < MINIMUM_DISTANCE_SQ_BETWEEN_COMPASSES) {
 						return HandleCompassResult.LOCATION_TOO_CLOSE;
 					}
@@ -327,23 +321,19 @@ public class CrystalWishingCompassSolver {
 	 * @param z Particle z coordinate
 	 */
 	public void solveUsingParticle(double x, double y, double z, long currentTimeMillis) {
-		Compass previousCompass = null;
 		Compass currentCompass;
 		switch (solverState) {
 			case PROCESSING_FIRST_USE:
-			// Enables capturing remaining particles from the first set even after it is solved
-			case NEED_SECOND_COMPASS:
 				currentCompass = firstCompass;
 				break;
 			case PROCESSING_SECOND_USE:
 				currentCompass = secondCompass;
-				previousCompass = firstCompass;
 				break;
 			default:
 				return;
 		}
 
-		currentCompass.processParticle(x, y, z, currentTimeMillis, previousCompass);
+		currentCompass.processParticle(x, y, z, currentTimeMillis);
 		switch (currentCompass.compassState) {
 			case FAILED_TIMEOUT_NO_REPEATING:
 				solverState = SolverState.FAILED_TIMEOUT_NO_REPEATING;
@@ -599,14 +589,18 @@ public class CrystalWishingCompassSolver {
 
 	private String getFriendlyNameForCompassTarget(CompassTarget compassTarget) {
 		switch (compassTarget) {
-			case BAL: return "§cBal";
-			case ODAWA: return "§aOdawa";
-			case JUNGLE_TEMPLE: return "§bthe §aJungle Temple";
-			case GOBLIN_KING: return "§6King Yolkar";
-			case GOBLIN_QUEEN: return "§bthe §eGoblin Queen";
-			case PRECURSOR_CITY: return "§bthe §fPrecursor City";
-			case MINES_OF_DIVAN: return "§bthe §9Mines of Divan";
-			default: return "§fan undetermined location";
+			case BAL: return EnumChatFormatting.RED + "Bal";
+			case ODAWA: return EnumChatFormatting.GREEN + "Odawa";
+			case JUNGLE_TEMPLE: return EnumChatFormatting.AQUA + "the " +
+				EnumChatFormatting.GREEN + "Jungle Temple";
+			case GOBLIN_KING: return EnumChatFormatting.GOLD + "King Yolkar";
+			case GOBLIN_QUEEN: return EnumChatFormatting.AQUA + "the " +
+				EnumChatFormatting.YELLOW + "Goblin Queen";
+			case PRECURSOR_CITY: return EnumChatFormatting.AQUA + "the " +
+				EnumChatFormatting.WHITE + "Precursor City";
+			case MINES_OF_DIVAN: return EnumChatFormatting.AQUA + "the " +
+				EnumChatFormatting.BLUE + "Mines of Divan";
+			default: return EnumChatFormatting.WHITE + "an undetermined location";
 		}
 	}
 
@@ -812,7 +806,6 @@ public class CrystalWishingCompassSolver {
 		SUCCESS,
 		LOCATION_TOO_CLOSE,
 		STILL_PROCESSING_FIRST_USE,
-		USED_TOO_SOON,
 		POSSIBLE_TARGETS_CHANGED,
 		PLAYER_IN_NUCLEUS
 	}
@@ -824,6 +817,7 @@ public class CrystalWishingCompassSolver {
 		private final BlockPos whereUsed;
 		private final long whenUsedMillis;
 		private Vec3Comparable firstParticle = null;
+		private Vec3Comparable previousParticle = null;
 		private Vec3Comparable lastParticle = null;
 		private final ArrayList<ProcessedParticle> processedParticles;
 
@@ -857,57 +851,44 @@ public class CrystalWishingCompassSolver {
 			return firstParticle.distanceTo(lastParticle);
 		}
 
-		public void processParticle(double x, double y, double z, long particleTimeMillis, Compass previousCompass) {
-			if (compassState == CompassState.FAILED_TIMEOUT_NO_REPEATING) {
-				throw new UnsupportedOperationException("processParticle should not be called in a failed state");
+		public void processParticle(double x, double y, double z, long particleTimeMillis) {
+			if (compassState == CompassState.FAILED_TIMEOUT_NO_REPEATING ||
+					compassState == CompassState.COMPLETED) {
+				throw new UnsupportedOperationException("processParticle should not be called in a failed or completed state");
 			}
 
-			Vec3Comparable particleVec3c = new Vec3Comparable(x, y, z);
-			if (previousCompass != null &&
-				previousCompass.processedParticles.stream().anyMatch(
-					(previousCompassParticle) -> particleVec3c.equals(previousCompassParticle.coords))) {
-				return;
-			}
-			// This captures particles from the first set even after the compass is solved, so they
-			// can be excluded as valid particles for the subsequent compass.
-			if (particleTimeMillis - this.whenUsedMillis < FIRST_SET_OF_PARTICLES_MAX_MILLIS) {
-				processedParticles.add(new ProcessedParticle(particleVec3c, particleTimeMillis));
-			}
-
-			if (compassState == CompassState.COMPLETED) {
-				return;
-			}
-
-			if (particleTimeMillis - this.whenUsedMillis > ALL_PARTICLES_MAX_MILLIS &&
-				compassState != CompassState.COMPLETED) {
+			if (particleTimeMillis - this.whenUsedMillis > ALL_PARTICLES_MAX_MILLIS) {
 				// Assume we have failed if we're still trying to process particles
 				compassState = CompassState.FAILED_TIMEOUT_NO_REPEATING;
 				return;
 			}
 
-			Vec3Comparable particleVec = new Vec3Comparable(x, y, z);
+			Vec3Comparable currentParticle = new Vec3Comparable(x, y, z);
 			if (compassState == CompassState.WAITING_FOR_FIRST_PARTICLE) {
-				firstParticle = particleVec;
-				compassState = CompassState.COMPUTING_LAST_PARTICLE;
+				if (currentParticle.distanceTo(new Vec3Comparable(whereUsed)) < MAX_DISTANCE_FROM_USE_TO_FIRST_PARTICLE) {
+					processedParticles.add(new ProcessedParticle(currentParticle, particleTimeMillis));
+					firstParticle = currentParticle;
+					previousParticle = currentParticle;
+					compassState = CompassState.COMPUTING_LAST_PARTICLE;
+				}
 				return;
 			}
 
-			// State is COMPUTING_LAST_PARTICLE
-			double distanceFromFirst = particleVec.distanceTo(firstParticle);
-			// ignore particles that are too far away
-			if (distanceFromFirst > MAX_COMPASS_PARTICLE_SPREAD) {
+			// State is COMPUTING_LAST_PARTICLE, keep updating the previousParticle until
+			// the first particle in the second sequence is seen.
+			if (currentParticle.distanceTo(previousParticle) <= MAX_DISTANCE_BETWEEN_PARTICLES) {
+				processedParticles.add(new ProcessedParticle(currentParticle, particleTimeMillis));
+				previousParticle = currentParticle;
 				return;
 			}
 
-			if (distanceFromFirst >= particleSpread()) {
-				lastParticle = particleVec;
+			if (currentParticle.distanceTo(firstParticle) > MAX_DISTANCE_BETWEEN_PARTICLES) {
 				return;
 			}
 
-			// We get here when the second repetition of particles begins.
-			// Since the second repetition overlaps with the last few particles
-			// of the first repetition, the last particle we capture isn't truly the last.
-			// But that's OK since subsequent particles would not change the resulting line.
+			// It's a repeating particle
+			processedParticles.add(new ProcessedParticle(currentParticle, particleTimeMillis));
+			lastParticle = previousParticle;
 			line = new Line(firstParticle, lastParticle);
 			compassState = CompassState.COMPLETED;
 		}

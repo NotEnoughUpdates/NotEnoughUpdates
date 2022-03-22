@@ -1,5 +1,6 @@
 package io.github.moulberry.notenoughupdates.core.util;
 
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
 
@@ -16,6 +17,11 @@ public class Vec3Comparable extends Vec3 implements Comparable<Vec3Comparable> {
 
 	public Vec3Comparable(Vec3 source) {
 		super(source.xCoord, source.yCoord, source.zCoord);
+	}
+
+	public Vec3Comparable(BlockPos source) {
+
+		super(source.getX(), source.getY(), source.getZ());
 	}
 
 	public Vec3Comparable(Vec3Comparable source) {

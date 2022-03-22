@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver.*;
 
 class CrystalWishingCompassSolverTest {
 	private static final CrystalWishingCompassSolver solver = getInstance();
 	long systemTimeMillis;
+	private final long DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE = 500L;
 
 	private final CompassUse minesOfDivanCompassUse1 = new CompassUse(
 		1647528732979L,
@@ -53,7 +53,7 @@ class CrystalWishingCompassSolverTest {
 		SolverState.NEED_SECOND_COMPASS);
 
 	private final CompassUse minesOfDivanCompassUse2 = new CompassUse(
-		FIRST_SET_OF_PARTICLES_MAX_MILLIS,
+		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
 		new BlockPos(760, 134, 266),
 		new ArrayList<>(Arrays.asList(
 			new ParticleSpawn(new Vec3Comparable(759.686951, 135.524994, 266.190704), 129),
@@ -112,7 +112,7 @@ class CrystalWishingCompassSolverTest {
 		SolverState.NEED_SECOND_COMPASS);
 
 	private final CompassUse goblinHoldoutCompassUse2 = new CompassUse(
-		FIRST_SET_OF_PARTICLES_MAX_MILLIS,
+		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
 		new BlockPos(439, 85, 777),
 		new ArrayList<>(Arrays.asList(
 			new ParticleSpawn(new Vec3Comparable(439.068848, 86.624870, 776.043701), 136),
@@ -173,7 +173,7 @@ class CrystalWishingCompassSolverTest {
 		SolverState.NEED_SECOND_COMPASS);
 
 	private final CompassUse precursorCityCompassUse2 = new CompassUse(
-		FIRST_SET_OF_PARTICLES_MAX_MILLIS,
+		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
 		new BlockPos(591, 136, 579),
 		new ArrayList<>(Arrays.asList(
 			new ParticleSpawn(new Vec3Comparable(590.847961, 137.589584, 579.776672), 192),
@@ -233,7 +233,7 @@ class CrystalWishingCompassSolverTest {
 		SolverState.NEED_SECOND_COMPASS);
 
 	private final CompassUse jungleCompassUse2 = new CompassUse(
-		FIRST_SET_OF_PARTICLES_MAX_MILLIS,
+		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
 		new BlockPos(438, 126, 468),
 		new ArrayList<>(Arrays.asList(
 			new ParticleSpawn(new Vec3Comparable(437.701721, 127.395279, 467.455048), 139),
@@ -297,7 +297,7 @@ class CrystalWishingCompassSolverTest {
 		SolverState.NEED_SECOND_COMPASS);
 
 	private final CompassUse magmaCompassUse2 = new CompassUse(
-		FIRST_SET_OF_PARTICLES_MAX_MILLIS,
+		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
 		new BlockPos(449, 53, 556),
 		new ArrayList<>(Arrays.asList(
 			new ParticleSpawn(new Vec3Comparable(449.120911, 54.624340, 556.108948), 204),
@@ -459,8 +459,8 @@ class CrystalWishingCompassSolverTest {
 	void compasses_too_close_returns_location_too_close_and_solver_state_is_still_need_second_compass() {
 		// Arrange
 		CompassUse secondCompassUse = new CompassUse(
-			FIRST_SET_OF_PARTICLES_MAX_MILLIS,
-			minesOfDivanCompassUse1.playerPos = minesOfDivanCompassUse1.playerPos.add(2, 2, 2),
+			DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
+			minesOfDivanCompassUse1.playerPos.add(2, 2, 2),
 			null,
 			HandleCompassResult.LOCATION_TOO_CLOSE,
 			SolverState.NEED_SECOND_COMPASS
@@ -468,26 +468,6 @@ class CrystalWishingCompassSolverTest {
 
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(minesOfDivanCompassUse1, secondCompassUse)),
-			Vec3i.NULL_VECTOR);
-
-		// Act & Assert
-		checkSolution(solution);
-	}
-
-	@Test
-	void compasses_too_soon_returns_used_too_soon_and_solver_state_is_still_need_second_compass() {
-		// Arrange
-		AtomicLong firstCompassParticlesDelaySum = new AtomicLong();
-		minesOfDivanCompassUse1.particles.iterator().forEachRemaining((particleSpawn -> {
-			firstCompassParticlesDelaySum.addAndGet(particleSpawn.timeIncrementMillis);
-		}));
-		CompassUse compassUse2 = new CompassUse(minesOfDivanCompassUse2);
-		compassUse2.timeIncrementMillis =  FIRST_SET_OF_PARTICLES_MAX_MILLIS - firstCompassParticlesDelaySum.get() - 1;
-		compassUse2.expectedHandleCompassUseResult = HandleCompassResult.USED_TOO_SOON;
-		compassUse2.expectedSolverState = SolverState.NEED_SECOND_COMPASS;
-
-		Solution solution = new Solution(
-			new ArrayList<>(Arrays.asList(minesOfDivanCompassUse1, compassUse2)),
 			Vec3i.NULL_VECTOR);
 
 		// Act & Assert
@@ -540,11 +520,16 @@ class CrystalWishingCompassSolverTest {
 	private void execInvalidParticlesInvalidSolution() {
 		// Arrange
 		CompassUse compassUse2 = new CompassUse(minesOfDivanCompassUse2);
-		// trim the repeat particle off
+
+		// reverse the direction of the particles, moving the repeat particle
+		// to "new" end
 		compassUse2.particles.remove(compassUse2.particles.size()-1);
 		Collections.reverse(compassUse2.particles);
 		// add a new repeat particle
 		compassUse2.particles.add(new ParticleSpawn(compassUse2.particles.get(0)));
+
+		// Adjust the player position
+		compassUse2.playerPos = new BlockPos(compassUse2.particles.get(0).spawnLocation);
 		compassUse2.expectedSolverState = SolverState.FAILED_INVALID_SOLUTION;
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(minesOfDivanCompassUse1, compassUse2)),
@@ -566,15 +551,18 @@ class CrystalWishingCompassSolverTest {
 		CompassUse compassUse1 = new CompassUse(minesOfDivanCompassUse1);
 		CompassUse compassUse2 = new CompassUse(minesOfDivanCompassUse2);
 		Vec3 offset = new Vec3(0.0, 200.0, 0.0);
-		compassUse1.playerPos.add(offset.xCoord, offset.yCoord, offset.zCoord);
+
+		compassUse1.playerPos = compassUse1.playerPos.add(offset.xCoord, offset.yCoord, offset.zCoord);
 		for (ParticleSpawn particle : compassUse1.particles) {
 			particle.spawnLocation = particle.spawnLocation.add(offset);
 		}
-		compassUse2.playerPos.add(offset.xCoord, offset.yCoord, offset.zCoord);
+
+		compassUse2.playerPos = compassUse2.playerPos.add(offset.xCoord, offset.yCoord, offset.zCoord);
 		for (ParticleSpawn particle : compassUse2.particles) {
 			particle.spawnLocation = particle.spawnLocation.add(offset);
 		}
 		compassUse2.expectedSolverState = SolverState.FAILED_INVALID_SOLUTION;
+
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(compassUse1, compassUse2)),
 			Vec3i.NULL_VECTOR);
