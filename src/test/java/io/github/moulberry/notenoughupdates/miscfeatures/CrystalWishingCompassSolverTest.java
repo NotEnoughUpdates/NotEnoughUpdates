@@ -769,7 +769,7 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	@Test
-	void possible_targets_only_contains_temple_or_odawa_and_nucleus_when_in_jungle_without_crystal() {
+	void possible_targets_only_contains_king_and_odawa_and_nucleus_when_in_jungle_without_crystal_or_key() {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(jungleCompassUse1)),
@@ -780,10 +780,10 @@ class CrystalWishingCompassSolverTest {
 		EnumSet<CompassTarget> targets = solver.getPossibleTargets();
 
 		// Assert
-		Assertions.assertTrue(targets.contains(CompassTarget.JUNGLE_TEMPLE) ||
-			targets.contains(CompassTarget.ODAWA));
+		Assertions.assertTrue(targets.contains(CompassTarget.GOBLIN_KING));
+		Assertions.assertTrue(targets.contains(CompassTarget.ODAWA));
 		Assertions.assertTrue(targets.contains(CompassTarget.CRYSTAL_NUCLEUS));
-		Assertions.assertEquals(2, targets.size());
+		Assertions.assertEquals(3, targets.size());
 	}
 
 	@Test

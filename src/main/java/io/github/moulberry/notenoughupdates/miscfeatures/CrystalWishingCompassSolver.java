@@ -426,76 +426,6 @@ public class CrystalWishingCompassSolver {
 		return SBInfo.getInstance().footer.getUnformattedText().contains("King's Scent I");
 	}
 
-	private void filterCandidatesUsingCrystalsAndZone(
-		BlockPos playerPos,
-		EnumSet<CompassTarget> candidateTargets,
-		EnumSet<Crystal> foundCrystals) {
-		Vec3Comparable playerPosVec = new Vec3Comparable(playerPos);
-
-		// If the current zone's crystal hasn't been found then remove
-		// all non-nucleus candidates. The nucleus is kept since it will
-		// be returned if the structure for the current zone is missing
-		if (GOBLIN_HOLDOUT_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.AMBER)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.GOBLIN_KING);
-			candidateTargets.add(CompassTarget.GOBLIN_QUEEN);
-			return;
-		}
-
-		if (JUNGLE_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.AMETHYST)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.ODAWA);
-			candidateTargets.add(CompassTarget.JUNGLE_TEMPLE);
-			return;
-		}
-
-		if (MITHRIL_DEPOSITS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.JADE)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.MINES_OF_DIVAN);
-			return;
-		}
-
-		if (PRECURSOR_REMNANTS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.SAPPHIRE)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.PRECURSOR_CITY);
-			return;
-		}
-
-		if (MAGMA_FIELDS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.TOPAZ)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.BAL);
-			return;
-		}
-
-		// Filter out crystal-based targets outside the current zone
-		if (foundCrystals.contains(Crystal.AMBER)) {
-			candidateTargets.remove(CompassTarget.GOBLIN_KING);
-			candidateTargets.remove(CompassTarget.GOBLIN_QUEEN);
-		}
-
-		if (foundCrystals.contains(Crystal.AMETHYST)) {
-			candidateTargets.remove(CompassTarget.ODAWA);
-			candidateTargets.remove(CompassTarget.JUNGLE_TEMPLE);
-		}
-
-		if (foundCrystals.contains(Crystal.JADE)) {
-			candidateTargets.remove(CompassTarget.MINES_OF_DIVAN);
-		}
-
-		if (foundCrystals.contains(Crystal.TOPAZ)) {
-			candidateTargets.remove(CompassTarget.BAL);
-		}
-
-		if (foundCrystals.contains(Crystal.SAPPHIRE)) {
-			candidateTargets.remove(CompassTarget.PRECURSOR_CITY);
-		}
-	}
-
 	private	EnumSet<Crystal> getFoundCrystals() {
 		EnumSet<Crystal> foundCrystals = EnumSet.noneOf(Crystal.class);
 		NEUConfig.HiddenProfileSpecific perProfileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
@@ -604,12 +534,84 @@ public class CrystalWishingCompassSolver {
 	}
 
 	private EnumSet<CompassTarget> calculatePossibleTargets(BlockPos playerPos) {
+		boolean targetsBasedOnZoneWithoutCrystal = false;
 		EnumSet<CompassTarget> candidateTargets = EnumSet.allOf(CompassTarget.class);
 		EnumSet<Crystal> foundCrystals = this.foundCrystals.getAsCrystalEnumSet();
+		Vec3Comparable playerPosVec = new Vec3Comparable(playerPos);
 
-		filterCandidatesUsingCrystalsAndZone(playerPos, candidateTargets, foundCrystals);
+		// If the current zone's crystal hasn't been found then remove all non-nucleus candidates other
+		// than the ones in the current zone. The one exception is that the king is kept when in the jungle
+		// since the compass can point to the king if odawa is missing (which often happens).
+		// The nucleus is kept since it can be returned if the structure for the current zone is missing.
+		if (GOBLIN_HOLDOUT_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.AMBER)) {
+			candidateTargets.clear();
+			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
+			candidateTargets.add(CompassTarget.GOBLIN_KING);
+			candidateTargets.add(CompassTarget.GOBLIN_QUEEN);
+			targetsBasedOnZoneWithoutCrystal = true;
+		}
+
+		if (JUNGLE_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.AMETHYST)) {
+			candidateTargets.clear();
+			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
+			candidateTargets.add(CompassTarget.ODAWA);
+			candidateTargets.add(CompassTarget.JUNGLE_TEMPLE);
+			if (!keyInInventory.getAsBoolean() && !kingsScentPresent.getAsBoolean()) {
+				// If Odawa is missing then the king may be returned
+				candidateTargets.add(CompassTarget.GOBLIN_KING);
+			}
+			targetsBasedOnZoneWithoutCrystal = true;
+		}
+
+		if (MITHRIL_DEPOSITS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.JADE)) {
+			candidateTargets.clear();
+			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
+			candidateTargets.add(CompassTarget.MINES_OF_DIVAN);
+			targetsBasedOnZoneWithoutCrystal = true;
+		}
+
+		if (PRECURSOR_REMNANTS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.SAPPHIRE)) {
+			candidateTargets.clear();
+			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
+			candidateTargets.add(CompassTarget.PRECURSOR_CITY);
+			targetsBasedOnZoneWithoutCrystal = true;
+		}
+
+		if (MAGMA_FIELDS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.TOPAZ)) {
+			candidateTargets.clear();
+			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
+			candidateTargets.add(CompassTarget.BAL);
+			targetsBasedOnZoneWithoutCrystal = true;
+		}
+
+		if (!targetsBasedOnZoneWithoutCrystal) {
+			// Filter out crystal-based targets outside the current zone
+			if (foundCrystals.contains(Crystal.AMBER)) {
+				candidateTargets.remove(CompassTarget.GOBLIN_KING);
+				candidateTargets.remove(CompassTarget.GOBLIN_QUEEN);
+			}
+
+			if (foundCrystals.contains(Crystal.AMETHYST)) {
+				candidateTargets.remove(CompassTarget.ODAWA);
+				candidateTargets.remove(CompassTarget.JUNGLE_TEMPLE);
+			}
+
+			if (foundCrystals.contains(Crystal.JADE)) {
+				candidateTargets.remove(CompassTarget.MINES_OF_DIVAN);
+			}
+
+			if (foundCrystals.contains(Crystal.TOPAZ)) {
+				candidateTargets.remove(CompassTarget.BAL);
+			}
+
+			if (foundCrystals.contains(Crystal.SAPPHIRE)) {
+				candidateTargets.remove(CompassTarget.PRECURSOR_CITY);
+			}
+		}
+
 		candidateTargets.remove(kingsScentPresent.getAsBoolean() ? CompassTarget.GOBLIN_KING : CompassTarget.GOBLIN_QUEEN);
 		candidateTargets.remove(keyInInventory.getAsBoolean() ? CompassTarget.ODAWA : CompassTarget.JUNGLE_TEMPLE);
+
 		return candidateTargets;
 	}
 
