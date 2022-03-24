@@ -81,7 +81,7 @@ public class CrystalWishingCompassSolver {
 	private static final AxisAlignedBB JUNGLE_BB = new AxisAlignedBB(201, 64, 201, 512, 189, 512);
 	private static final AxisAlignedBB MAGMA_FIELDS_BB = new AxisAlignedBB(201, 30, 201, 824, 63, 824);
 	private static final double MAX_DISTANCE_BETWEEN_PARTICLES = 0.6;
-	private static final double MAX_DISTANCE_FROM_USE_TO_FIRST_PARTICLE = 2.0;
+	private static final double MAX_DISTANCE_FROM_USE_TO_FIRST_PARTICLE = 9.0;
 
 	// 64.0 is an arbitrary value but seems to work well
 	private static final double MINIMUM_DISTANCE_SQ_BETWEEN_COMPASSES = 64.0;
