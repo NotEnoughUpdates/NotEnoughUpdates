@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -1956,6 +1957,12 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
+		NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+		NBTTagCompound display = new NBTTagCompound();
+		display.setString("Name", skillName);
+		nbt.setTag("display", display);
+		stack.setTagCompound(nbt);
+
 		GL11.glTranslatef((x), (y - 6f), 0);
 		GL11.glScalef(0.7f, 0.7f, 1);
 		Utils.drawItemStackLinear(stack, 0, 0);
@@ -1964,11 +1971,32 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	private ItemStack getQuestionmarkSkull() {
-		return Utils.createSkull(
-			EnumChatFormatting.RED + "Unknown Pet",
-			"Unknown Pet",
-			"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM4ZWExZjUxZjI1M2ZmNTE0MmNhMTFhZTQ1MTkzYTRhZDhjM2FiNWU5YzZlZWM4YmE3YTRmY2I3YmFjNDAifX19"
-		);
+		String textureLink = "bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40";
+
+		String b64Decoded =
+			"{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + textureLink + "\"}}}";
+		String b64Encoded = new String(Base64.getEncoder().encode(b64Decoded.getBytes()));
+
+		ItemStack stack = new ItemStack(Items.skull, 1, 3);
+		NBTTagCompound nbt = new NBTTagCompound();
+		NBTTagCompound skullOwner = new NBTTagCompound();
+		NBTTagCompound properties = new NBTTagCompound();
+		NBTTagList textures = new NBTTagList();
+		NBTTagCompound textures_0 = new NBTTagCompound();
+
+		String uuid = UUID.nameUUIDFromBytes(b64Encoded.getBytes()).toString();
+		skullOwner.setString("Id", uuid);
+		skullOwner.setString("Name", uuid);
+
+		textures_0.setString("Value", b64Encoded);
+		textures.appendTag(textures_0);
+
+		properties.setTag("textures", textures);
+		skullOwner.setTag("Properties", properties);
+		nbt.setTag("SkullOwner", skullOwner);
+		stack.setTagCompound(nbt);
+		stack.setStackDisplayName(EnumChatFormatting.RED + "Unknown Pet");
+		return stack;
 	}
 
 	private void drawPetsPage(int mouseX, int mouseY, float partialTicks) {
@@ -5303,24 +5331,37 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	public enum ProfileViewerPage {
-		LOADING(-1, null),
-		INVALID_NAME(-1, null),
-		NO_SKYBLOCK(-1, null),
-		BASIC(0, new ItemStack(Items.paper)),
-		DUNGEON(1, new ItemStack(Item.getItemFromBlock(Blocks.deadbush))),
-		EXTRA(2, new ItemStack(Items.book)),
-		INVENTORIES(3, new ItemStack(Item.getItemFromBlock(Blocks.ender_chest))),
-		COLLECTIONS(4, new ItemStack(Items.painting)),
-		PETS(5, new ItemStack(Items.bone)),
-		MINING(6, new ItemStack(Items.iron_pickaxe)),
-		BINGO(7, new ItemStack(Items.filled_map));
+		LOADING(),
+		INVALID_NAME(),
+		NO_SKYBLOCK(),
+		BASIC(0, Items.paper, "Your Skills"),
+		DUNGEON(1, Item.getItemFromBlock(Blocks.deadbush), "Dungeoneering"),
+		EXTRA(2, Items.book, "Profile Stats"),
+		INVENTORIES(3, Item.getItemFromBlock(Blocks.ender_chest), "Storage"),
+		COLLECTIONS(4, Items.painting, "Collections"),
+		PETS(5, Items.bone, "Pets"),
+		MINING(6, Items.iron_pickaxe, "Heart of the Mountain"),
+		BINGO(7, Items.filled_map, "Bingo");
 
 		public final ItemStack stack;
 		public final int id;
 
-		ProfileViewerPage(int id, ItemStack stack) {
+		ProfileViewerPage() {
+			this(-1, null, null);
+		}
+
+		ProfileViewerPage(int id, Item item, String name) {
 			this.id = id;
-			this.stack = stack;
+			if (item == null) {
+				stack = null;
+			} else {
+				stack = new ItemStack(item);
+				NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+				NBTTagCompound display = new NBTTagCompound();
+				display.setString("Name", name);
+				nbt.setTag("display", display);
+				stack.setTagCompound(nbt);
+			}
 		}
 
 		public static ProfileViewerPage getById(int id) {
@@ -5331,6 +5372,11 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 			return null;
 		}
+
+		public Optional<ItemStack> getItem() {
+			return Optional.ofNullable(stack);
+		}
+
 	}
 
 	public static class PetLevel {
