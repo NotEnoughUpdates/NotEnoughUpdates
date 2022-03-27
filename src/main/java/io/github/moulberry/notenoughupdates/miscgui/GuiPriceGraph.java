@@ -407,10 +407,7 @@ public class GuiPriceGraph extends GuiScreen {
 			HashMap<String, Data> prices = new HashMap<>();
 			if (file.exists())
 				prices = load(file);
-			if (prices == null) {
-				file.delete();
-				return;
-			}
+			if (prices == null) return;
 			for (Map.Entry<String, JsonElement> item : items.entrySet()) {
 				if (prices.containsKey(item.getKey())) {
 					if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has(
