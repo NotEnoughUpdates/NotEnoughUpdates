@@ -323,6 +323,8 @@ public class SBInfo {
 					slayer = "Sven";
 				} else if (line.contains("Voidgloom Seraph")) {
 					slayer = "Enderman";
+				} else if (line.contains("Inferno Demonlord")) {
+					slayer = "Blaze";
 				}
 				if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
 					lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {

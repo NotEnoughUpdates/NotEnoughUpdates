@@ -27,7 +27,7 @@ import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.*;
 public class ChatListener {
 	private final NotEnoughUpdates neu;
 	private static final Pattern SLAYER_XP = Pattern.compile(
-		"   (Spider|Zombie|Wolf|Enderman) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
+		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
 	AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
