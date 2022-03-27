@@ -13,8 +13,6 @@ import java.util.function.Consumer;
 public class NEUDebugLogger {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	public static Consumer<String> logMethod = NEUDebugLogger::chatLogger;
-	// Used to prevent accessing NEUConfig in unit tests
-	public static boolean allFlagsEnabled = false;
 
 	private static void chatLogger(String message) {
 		mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU DEBUG] " + message));
@@ -25,13 +23,7 @@ public class NEUDebugLogger {
 	}
 
 	public static void log(NEUDebugFlag flag, String message) {
-		if (logMethod != null && (allFlagsEnabled || isFlagEnabled(flag))) {
-			logAlways(message);
-		}
-	}
-
-	public static void logAlways(String message) {
-		if (logMethod != null) {
+		if (logMethod != null && isFlagEnabled(flag)) {
 			logMethod.accept(message);
 		}
 	}

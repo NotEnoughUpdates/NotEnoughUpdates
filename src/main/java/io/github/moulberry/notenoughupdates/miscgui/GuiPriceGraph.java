@@ -117,12 +117,11 @@ public class GuiPriceGraph extends GuiScreen {
 			Utils.drawStringCentered("Loading...", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 166, guiTop + 116, false, 0xffffff00
 			);
-		else if (dataPoints == null || dataPoints.get() == null || dataPoints.get().size() <= 1)
+		else if (dataPoints == null || dataPoints.get() == null || dataPoints.get().size() <= 1 || lowestValue == null)
 			Utils.drawStringCentered("No data found.", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 166, guiTop + 116, false, 0xffff0000
 			);
 		else {
-
 			int graphColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor);
 			int graphColor2 = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor2);
 			Integer lowestDist = null;
@@ -399,15 +398,17 @@ public class GuiPriceGraph extends GuiScreen {
 					if (!file.getName().endsWith(".gz")) continue;
 					if (file.lastModified() <
 						System.currentTimeMillis() - NotEnoughUpdates.INSTANCE.config.ahGraph.dataRetention * 86400000L)
+						//noinspection ResultOfMethodCallIgnored
 						file.delete();
 				}
 			Date date = new Date();
 			Long epochSecond = date.toInstant().getEpochSecond();
 			File file = new File(dir, "prices_" + format.format(date) + ".gz");
 			HashMap<String, Data> prices = new HashMap<>();
-			if (file.exists())
-				prices = load(file);
-			if (prices == null) return;
+			if (file.exists()) {
+				HashMap<String, Data> tempPrices = load(file);
+				if (tempPrices != null) prices = tempPrices;
+			}
 			for (Map.Entry<String, JsonElement> item : items.entrySet()) {
 				if (prices.containsKey(item.getKey())) {
 					if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has(
@@ -417,7 +418,7 @@ public class GuiPriceGraph extends GuiScreen {
 							item.getValue().getAsJsonObject().get("curr_sell").getAsFloat()
 						));
 					else if (!bazaar)
-						prices.get(item.getKey()).ah.put(epochSecond, item.getValue().getAsInt());
+						prices.get(item.getKey()).ah.put(epochSecond, item.getValue().getAsBigDecimal().intValue());
 				} else {
 					TreeMap<Long, Object> mapData = new TreeMap<>();
 					if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has(
@@ -493,7 +494,10 @@ public class GuiPriceGraph extends GuiScreen {
 				))
 			) {
 				return GSON.fromJson(reader, type);
-			} catch (Exception ignored) {
+			} catch (Exception e) {
+				System.out.println("Deleting " + file.getName() + " because it is probably corrupted.");
+				//noinspection ResultOfMethodCallIgnored
+				file.delete();
 			}
 		}
 		return null;

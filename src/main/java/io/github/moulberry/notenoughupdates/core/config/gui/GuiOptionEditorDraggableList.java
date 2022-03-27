@@ -24,7 +24,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 	private static final ResourceLocation DELETE = new ResourceLocation("notenoughupdates:core/delete.png");
 
 	private final String[] exampleText;
-	private final boolean allowRemovingElements;
+	private final boolean enableDeleting;
 	private final List<Integer> activeText;
 	private int currentDragging = -1;
 	private int dragStartIndex = -1;
@@ -39,11 +39,11 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 	public GuiOptionEditorDraggableList(
 		ConfigProcessor.ProcessedOption option,
 		String[] exampleText,
-		boolean allowRemovingElements
+		boolean disableDeleting
 	) {
 		super(option);
 
-		this.allowRemovingElements = allowRemovingElements;
+		this.enableDeleting = disableDeleting;
 		this.exampleText = exampleText;
 		this.activeText = (List<Integer>) option.get();
 	}
@@ -84,7 +84,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			GlStateManager.color(1, greenBlue, greenBlue, 1);
 		}
 
-		if (allowRemovingElements) {
+		if (enableDeleting) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(DELETE);
 			Utils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
 		}
@@ -215,7 +215,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-			if (allowRemovingElements) {
+			if (enableDeleting) {
 				activeText.remove(dragStartIndex);
 			}
 			currentDragging = -1;
@@ -226,13 +226,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 		if (!Mouse.isButtonDown(0) || dropdownOpen) {
 			currentDragging = -1;
 			dragStartIndex = -1;
-			if (trashHoverTime > 0 && allowRemovingElements) trashHoverTime = -System.currentTimeMillis();
+			if (trashHoverTime > 0 && enableDeleting) trashHoverTime = -System.currentTimeMillis();
 		} else if (currentDragging >= 0 &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-			if (trashHoverTime < 0 && allowRemovingElements) trashHoverTime = System.currentTimeMillis();
+			if (trashHoverTime < 0 && enableDeleting) trashHoverTime = System.currentTimeMillis();
 		} else {
-			if (trashHoverTime > 0 && allowRemovingElements) trashHoverTime = -System.currentTimeMillis();
+			if (trashHoverTime > 0 && enableDeleting) trashHoverTime = -System.currentTimeMillis();
 		}
 
 		if (Mouse.getEventButtonState()) {

@@ -147,7 +147,7 @@ public class ConfigProcessor {
 							if (optionField.isAnnotationPresent(ConfigEditorDraggableList.class)) {
 								ConfigEditorDraggableList configEditorAnnotation =
 									optionField.getAnnotation(ConfigEditorDraggableList.class);
-								editor = new GuiOptionEditorDraggableList(option, configEditorAnnotation.exampleText(), configEditorAnnotation.allowRemovingElements());
+								editor = new GuiOptionEditorDraggableList(option, configEditorAnnotation.exampleText(), configEditorAnnotation.allowDeleting());
 							}
 						}
 						if (optionType.isAssignableFrom(String.class)) {

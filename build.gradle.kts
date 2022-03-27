@@ -67,7 +67,6 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
     implementation("info.bliki.wiki:bliki-core:3.1.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
 
@@ -75,10 +74,6 @@ dependencies {
 
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
-}
-
-tasks.named<Test>("test") {
-    useJUnitPlatform()
 }
 
 tasks.withType(Jar::class) {

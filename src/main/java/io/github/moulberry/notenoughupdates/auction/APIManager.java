@@ -41,6 +41,9 @@ public class APIManager {
 	private final HashSet<String> playerBids = new HashSet<>();
 	private final HashSet<String> playerBidsNotified = new HashSet<>();
 	private final HashSet<String> playerBidsFinishedNotified = new HashSet<>();
+	private final int LOWEST_BIN_UPDATE_INTERVAL = 2 * 60 * 1000; // 2 minutes
+	private final int AUCTION_AVG_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
+	private final int BAZAAR_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 	private JsonObject lowestBins = null;
 	private JsonObject auctionPricesAvgLowestBinJson = null;
@@ -203,15 +206,16 @@ public class APIManager {
 				}
 			}
 		}
-		if (currentTime - lastAuctionAvgUpdate > 5 * 60 * 1000) { //5 minutes
-			lastAuctionAvgUpdate = currentTime - 4 * 60 * 1000; //Try again in 1 minute if updateAvgPrices doesn't succeed
+		if (currentTime - lastAuctionAvgUpdate > AUCTION_AVG_UPDATE_INTERVAL) {
+			lastAuctionAvgUpdate = currentTime - AUCTION_AVG_UPDATE_INTERVAL + 60 * 1000; // Try again in 1 minute on failure
 			updateAvgPrices();
 		}
-		if (currentTime - lastBazaarUpdate > 5 * 60 * 1000) { //5 minutes
-			lastBazaarUpdate = currentTime;
+		if (currentTime - lastBazaarUpdate > BAZAAR_UPDATE_INTERVAL) {
+			lastBazaarUpdate = currentTime - BAZAAR_UPDATE_INTERVAL + 60 * 1000; // Try again in 1 minute on failure
 			updateBazaar();
 		}
-		if (currentTime - lastLowestBinUpdate > 2 * 60 * 1000) {
+		if (currentTime - lastLowestBinUpdate >  LOWEST_BIN_UPDATE_INTERVAL) {
+			lastLowestBinUpdate = currentTime - LOWEST_BIN_UPDATE_INTERVAL + 30 * 1000;  // Try again in 30 seconds on failure
 			updateLowestBin();
 		}
 	}

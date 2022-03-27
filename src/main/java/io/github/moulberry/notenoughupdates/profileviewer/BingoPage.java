@@ -298,12 +298,14 @@ public class BingoPage {
 		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
 			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
 			"resources/skyblock/bingo",
-			args
-		).thenAccept(jsonObject -> {
-			if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-				bingoGoals = jsonArrayToJsonObjectList(jsonObject.get("goals").getAsJsonArray());
-				currentEventId = jsonObject.get("id").getAsInt();
-			}
-		});
+			args,
+			jsonObject -> {
+				if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					bingoGoals = jsonArrayToJsonObjectList(jsonObject.get("goals").getAsJsonArray());
+					currentEventId = jsonObject.get("id").getAsInt();
+				}
+			},
+			() -> {}
+		);
 	}
 }
