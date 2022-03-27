@@ -35,8 +35,6 @@ public class PackDevCommand extends ClientCommandBase {
 						EnumChatFormatting.RED + "Invalid distance! Must be a number, defaulting to a radius of 5."));
 				}
 			}
-			sender.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.RED + "Debug: distSq = " + distSq));
 
 			switch (args[0].toLowerCase()) {
 				case "getnpc":
