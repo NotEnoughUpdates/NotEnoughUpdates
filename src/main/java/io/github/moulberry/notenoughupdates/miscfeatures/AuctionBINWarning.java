@@ -37,7 +37,9 @@ public class AuctionBINWarning extends GuiElement {
 	private String sellingName;
 	private int sellingPrice;
 	private int lowestPrice;
+	private int buyPercentage;
 	private int sellStackAmount;
+	private boolean isALoss = true;
 
 	private boolean shouldPerformCheck() {
 		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableBINWarning ||
@@ -110,14 +112,13 @@ public class AuctionBINWarning extends GuiElement {
 			float undercutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.warningThreshold / 100;
 			if (undercutFactor < 0) undercutFactor = 0;
 			if (undercutFactor > 1) undercutFactor = 1;
-			float overcutFactor = 1 + NotEnoughUpdates.INSTANCE.config.ahTweaks.overcutWarningThreshold / 100;
+			float overcutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.overcutWarningThreshold / 100;
 			if (overcutFactor < 0) overcutFactor = 0;
+			if (overcutFactor > 1) overcutFactor = 1;
 
-			if (
-				(sellingPrice > 0 && lowestPrice > 0 &&
-					((sellingPrice > sellStackAmount * lowestPrice * overcutFactor) ||
-						sellingPrice < sellStackAmount * lowestPrice * undercutFactor))
-					|| lowestPrice == -1) {
+			if ((sellingPrice > 0 && lowestPrice > 0 && sellingPrice < sellStackAmount * lowestPrice * undercutFactor)
+				|| (sellingPrice > 0 && lowestPrice > 0 && sellingPrice > sellStackAmount * lowestPrice * (overcutFactor + 1))
+				|| lowestPrice == -1) {
 				showWarning = true;
 				return true;
 			} else {
@@ -180,9 +181,7 @@ public class AuctionBINWarning extends GuiElement {
 			width / 2, height / 2 - 45 + 25, false, 170, 0xffffffff
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
-			(lowestPrice > 0
-				? "has a lowest BIN of \u00a76" + lowestPriceStr + "\u00a7r coins"
-				: "\u00a7cWarning: No lowest BIN found!"),
+			(lowestPrice > 0 ? "has a lowest BIN of \u00a76" + lowestPriceStr + "\u00a7r coins" : "\u00a7cWarning: No lowest BIN found!"),
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2,
 			height / 2 - 45 + 34,
@@ -191,15 +190,15 @@ public class AuctionBINWarning extends GuiElement {
 			0xffa0a0a0
 		);
 
-		boolean isALoss = false;
-		int buyPercentage = 0;
 		if (sellingPrice > lowestPrice * sellStackAmount) {
-			buyPercentage = sellingPrice * 100 / (lowestPrice * sellStackAmount) - 100;
+			buyPercentage = sellingPrice * 100 / (lowestPrice * sellStackAmount);
 			isALoss = false;
 		} else if (sellingPrice < lowestPrice * sellStackAmount) {
-			buyPercentage = 100 - sellingPrice * 100 / (lowestPrice * sellStackAmount);
+			 buyPercentage = 100 - sellingPrice * 100 / (lowestPrice * sellStackAmount);
+			if (buyPercentage <= 0) buyPercentage = 1;
 			isALoss = true;
 		}
+
 
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			"Continue selling it for",
@@ -211,10 +210,7 @@ public class AuctionBINWarning extends GuiElement {
 			0xffa0a0a0
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
-			"\u00a76" + sellingPriceStr + "\u00a7r coins?" +
-				((lowestPrice > 0 && buyPercentage > 0)
-					? "(\u00a7" + (isALoss ? "c-" : "a+") + buyPercentage + "%\u00a7r)"
-					: ""),
+			"\u00a76" + sellingPriceStr + "\u00a7r coins?" + (lowestPrice > 0 ? "(\u00a7" + (isALoss ? "c-" : "a+") + buyPercentage + "%\u00a7r)" : ""),
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2,
 			height / 2 - 45 + 59,

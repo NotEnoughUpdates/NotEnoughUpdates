@@ -1,13 +1,7 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.annotations.*;
 
 public class Misc {
 	@Expose
@@ -113,6 +107,7 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+
 		name = "Edit Enchant Colours",
 		desc = "Change the colours of certain skyblock enchants (/neuec)"
 	)
@@ -147,4 +142,14 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean disableNPCRetexturing = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Wiki",
+		desc = "The wiki to use in the wiki renderer."
+	)
+	@ConfigEditorDropdown(values = {
+		"Hypixel",
+		"Fandom"
+	})
+	public int wiki = 0;
 }

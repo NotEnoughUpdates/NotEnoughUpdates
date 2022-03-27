@@ -27,14 +27,22 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.DISCORD;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.GITHUB;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.PATREON;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.TWITCH;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.TWITTER;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.YOUTUBE;
 
 public class NEUConfigEditor extends GuiElement {
-	public static NEUConfigEditor editor = new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config);
-
 	private static final ResourceLocation[] socialsIco = new ResourceLocation[]{
 		DISCORD,
 		GITHUB,
@@ -51,27 +59,25 @@ public class NEUConfigEditor extends GuiElement {
 		"https://patreon.com/moulberry",
 		"https://www.twitch.tv/moulberry2"
 	};
-
 	private static final ResourceLocation SEARCH_ICON = new ResourceLocation("notenoughupdates:core/search.png");
-
+	public static NEUConfigEditor editor = new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config);
 	private final long openedMillis;
-
-	private String selectedCategory = null;
-
 	private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);
 	private final LerpingInteger categoryScroll = new LerpingInteger(0, 150);
-
 	private final LinkedHashMap<String, ConfigProcessor.ProcessedCategory> processedConfig;
 	private final TreeMap<String, Set<ConfigProcessor.ProcessedOption>> searchOptionMap = new TreeMap<>();
 	private final HashMap<ConfigProcessor.ProcessedOption, ConfigProcessor.ProcessedCategory> categoryForOption =
 		new HashMap<>();
-
+	private final LerpingInteger minimumSearchSize = new LerpingInteger(0, 150);
+	private final GuiElementTextField searchField = new GuiElementTextField("", 0, 20, 0);
+	private String selectedCategory = null;
 	private Set<ConfigProcessor.ProcessedCategory> searchedCategories = null;
 	private Map<ConfigProcessor.ProcessedCategory, Set<Integer>> searchedAccordions = null;
 	private Set<ConfigProcessor.ProcessedOption> searchedOptions = null;
-
-	private final LerpingInteger minimumSearchSize = new LerpingInteger(0, 150);
-	private final GuiElementTextField searchField = new GuiElementTextField("", 0, 20, 0);
+	private float optionsBarStart;
+	private float optionsBarend;
+	private int lastMouseX = 0;
+	private int keyboardScrollXCutoff = 0;
 
 	public NEUConfigEditor(Config config) {
 		this(config, null);
@@ -160,13 +166,13 @@ public class NEUConfigEditor extends GuiElement {
 		return selectedCategory;
 	}
 
-	public String getSelectedCategoryName() {
-		return processedConfig.get(selectedCategory).name;
-	}
-
 	private void setSelectedCategory(String category) {
 		selectedCategory = category;
 		optionsScroll.setValue(0);
+	}
+
+	public String getSelectedCategoryName() {
+		return processedConfig.get(selectedCategory).name;
 	}
 
 	public void search() {
@@ -215,6 +221,7 @@ public class NEUConfigEditor extends GuiElement {
 	public void render() {
 		optionsScroll.tick();
 		categoryScroll.tick();
+		handleKeyboardPresses();
 
 		List<String> tooltipToDisplay = null;
 
@@ -486,10 +493,10 @@ public class NEUConfigEditor extends GuiElement {
 		}
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
-		float barStart = optionsScroll.getValue() / (float) (optionY + optionsScroll.getValue());
-		float barEnd = barStart + barSize;
-		if (barEnd > 1) {
-			barEnd = 1;
+		optionsBarStart = optionsScroll.getValue() / (float) (optionY + optionsScroll.getValue());
+		optionsBarend = optionsBarStart + barSize;
+		if (optionsBarend > 1) {
+			optionsBarend = 1;
 			if (optionsScroll.getTarget() / (float) (optionY + optionsScroll.getValue()) + barSize < 1) {
 				int target = optionsScroll.getTarget();
 				optionsScroll.setValue((int) Math.ceil(
@@ -504,9 +511,9 @@ public class NEUConfigEditor extends GuiElement {
 		Gui.drawRect(innerRight - 10, innerTop + 5, innerRight - 5, innerBottom - 5, 0xff101010);
 		Gui.drawRect(
 			innerRight - 9,
-			innerTop + 6 + (int) (dist * barStart),
+			innerTop + 6 + (int) (dist * optionsBarStart),
 			innerRight - 6,
-			innerTop + 6 + (int) (dist * barEnd),
+			innerTop + 6 + (int) (dist * optionsBarend),
 			0xff303030
 		);
 
@@ -533,6 +540,7 @@ public class NEUConfigEditor extends GuiElement {
 	}
 
 	public boolean mouseInput(int mouseX, int mouseY) {
+		lastMouseX = mouseX;
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
@@ -551,7 +559,40 @@ public class NEUConfigEditor extends GuiElement {
 		int innerLeft = x + 149 + innerPadding;
 		int innerRight = x + xSize - 5 - innerPadding;
 
+		int dist = innerBottom - innerTop - 12;
+		int optionsBarStartY = innerTop + 6 + (int) (dist * optionsBarStart);
+		int optionsBarEndY = innerTop + 6 + (int) (dist * optionsBarend);
+		int optionsBarStartX = innerRight - 12;
+		int optionsBarEndX = innerRight - 3;
+
+		int categoryY = -categoryScroll.getValue();
+		categoryY += 15 * getCurrentConfigEditing().size();
+		int catDist = innerBottom - innerTop - 12;
+		float catBarStart = categoryScroll.getValue() / (float) (categoryY + categoryScroll.getValue());
+		float categoryBarSize = LerpUtils.clampZeroOne(
+			(float) (innerBottom - innerTop - 2) / (categoryY + 5 + categoryScroll.getValue()));
+		float catBarEnd = catBarStart + categoryBarSize;
+		int categoryBarStartY = innerTop + 6 + (int) (catDist * catBarStart);
+		int categoryBarEndY = innerTop + 6 + (int) (catDist * catBarEnd);
+		int categoryBarStartX = x + innerPadding + 7;
+		int categoryBarEndX = x + innerPadding + 12;
+		keyboardScrollXCutoff = innerLeft - 10;
 		if (Mouse.getEventButtonState()) {
+			if ((mouseY < optionsBarStartY || mouseY > optionsBarEndY) &&
+				(mouseX >= optionsBarStartX && mouseX <= optionsBarEndX) && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
+				optionsScroll.setTimeToReachTarget(200);
+				optionsScroll.resetTimer();
+				optionsScroll.setTarget(mouseY - innerTop);
+				return true;
+			} else if ((mouseY < categoryBarStartY || mouseY > categoryBarEndY) &&
+				(mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 &&
+				mouseY < innerBottom - 6) {
+				categoryScroll.setTimeToReachTarget(200);
+				categoryScroll.resetTimer();
+				categoryScroll.setTarget(mouseY - innerTop);
+				return true;
+			}
+
 			searchField.setFocus(mouseX >= innerRight - 20 && mouseX <= innerRight - 2 &&
 				mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9);
 
@@ -831,5 +872,20 @@ public class NEUConfigEditor extends GuiElement {
 		}
 
 		return true;
+	}
+
+	private void handleKeyboardPresses() {
+		LerpingInteger target = lastMouseX < keyboardScrollXCutoff ? categoryScroll : optionsScroll;
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+			target.setTimeToReachTarget(50);
+			target.resetTimer();
+			target.setTarget(target.getTarget() + 5);
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+			target.setTimeToReachTarget(50);
+			target.resetTimer();
+			if (target.getTarget() >= 0) {
+				target.setTarget(target.getTarget() - 5);
+			}
+		}
 	}
 }

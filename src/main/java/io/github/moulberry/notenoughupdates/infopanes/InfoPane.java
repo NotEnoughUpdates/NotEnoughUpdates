@@ -61,10 +61,10 @@ public abstract class InfoPane extends Gui {
 				return HTMLInfoPane.createFromWikiUrl(overlay, manager, name, infoText);
 			case "WIKI":
 				return CompletableFuture.completedFuture(
-					HTMLInfoPane.createFromWikiText(overlay, manager, name, internalName, infoText));
+					HTMLInfoPane.createFromWikiText(overlay, manager, name, internalName, infoText, false));
 			case "HTML":
 				return CompletableFuture.completedFuture(
-					new HTMLInfoPane(overlay, manager, name, internalName, infoText));
+					new HTMLInfoPane(overlay, manager, name, internalName, infoText, false));
 			default:
 				return CompletableFuture.completedFuture(
 					new TextInfoPane(overlay, manager, name, infoText));
