@@ -17,8 +17,10 @@ public class DiagCommand extends ClientCommandBase {
 
 	private static final String USAGE_TEXT = EnumChatFormatting.WHITE +
 		"Usage: /neudiag <metal | wishing | debug>\n\n" +
-		"/neudiag metal           Metal Detector Solver diagnostics\n" +
-		"/neudiag wishing         Wishing Compass Solver diagnostics\n" +
+		"/neudiag metal          Metal Detector Solver diagnostics\n" +
+		"  <no sub-command>           Show current solution diags\n" +
+		"  center=<off | on>          Disable / enable using center\n" +
+		"/neudiag wishing        Wishing Compass Solver diagnostics\n" +
 		"/neudiag debug\n" +
 		"  <no sub-command>           Show current flags\n" +
 		"  <enable | disable> <flag>  Enable/disable flag\n";
@@ -37,7 +39,26 @@ public class DiagCommand extends ClientCommandBase {
 		String command = args[0].toLowerCase();
 		switch (command) {
 			case "metal":
-				CrystalMetalDetectorSolver.logDiagnosticData(true);
+				if (args.length == 1) {
+					CrystalMetalDetectorSolver.logDiagnosticData(true);
+					return;
+				}
+
+				String subCommand = args[1].toLowerCase();
+				if (subCommand.equals("center=off")) {
+					CrystalMetalDetectorSolver.setDebugDoNotUseCenter(true);
+					sender.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
+						"Center coordinates-based solutions disabled"));
+				}
+				else if (subCommand.equals("center=on")) {
+					CrystalMetalDetectorSolver.setDebugDoNotUseCenter(false);
+					sender.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
+						"Center coordinates-based solutions enabled"));
+				} else {
+					showUsage(sender);
+					return;
+				}
+
 				break;
 			case "wishing":
 				CrystalWishingCompassSolver.getInstance().logDiagnosticData(true);
