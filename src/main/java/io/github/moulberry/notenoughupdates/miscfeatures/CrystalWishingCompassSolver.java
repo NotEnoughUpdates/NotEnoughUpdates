@@ -24,6 +24,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -63,6 +64,15 @@ public class CrystalWishingCompassSolver {
 		TOPAZ,
 	}
 
+	enum HollowsZone {
+		NUCLEUS,
+		JUNGLE,
+		MITHRIL_DEPOSITS,
+		GOBLIN_HOLDOUT,
+		PRECURSOR_REMNANTS,
+		MAGMA_FIELDS,
+	}
+
 	private static final CrystalWishingCompassSolver INSTANCE = new CrystalWishingCompassSolver();
 	public static CrystalWishingCompassSolver getInstance() {
 		return INSTANCE;
@@ -70,16 +80,39 @@ public class CrystalWishingCompassSolver {
 
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static boolean isSkytilsPresent = false;
+	private static final ArrayDeque<ParticleData> seenParticles = new ArrayDeque<>();
 
-	// NOTE: There is a small set of breakable blocks above the nucleus at Y > 181. While this zone is reported
-	//       as the Crystal Nucleus by Hypixel, for wishing compass purposes it is in the appropriate quadrant.
+	// There is a small set of breakable blocks above the nucleus at Y > 181. While this zone is reported
+	// as the Crystal Nucleus by Hypixel, for wishing compass purposes it is in the appropriate quadrant.
 	private static final AxisAlignedBB NUCLEUS_BB = new AxisAlignedBB(462, 63, 461, 564, 181, 565);
+	// Bounding box around all breakable blocks in the crystal hollows, appears as bedrock in-game
 	private static final AxisAlignedBB HOLLOWS_BB = new AxisAlignedBB(201, 30, 201, 824, 189, 824);
-	private static final AxisAlignedBB PRECURSOR_REMNANTS_BB = new AxisAlignedBB(513, 64, 513, 824, 189, 824);
-	private static final AxisAlignedBB MITHRIL_DEPOSITS_BB = new AxisAlignedBB(513, 64, 201, 824, 189, 512);
-	private static final AxisAlignedBB GOBLIN_HOLDOUT_BB = new AxisAlignedBB(201, 64, 513, 512, 189, 824);
-	private static final AxisAlignedBB JUNGLE_BB = new AxisAlignedBB(201, 64, 201, 512, 189, 512);
-	private static final AxisAlignedBB MAGMA_FIELDS_BB = new AxisAlignedBB(201, 30, 201, 824, 63, 824);
+
+	private static final AxisAlignedBB PRECURSOR_REMNANTS_BB = new AxisAlignedBB(512, 63, 512, 824, 189, 824);
+	private static final AxisAlignedBB MITHRIL_DEPOSITS_BB = new AxisAlignedBB(512, 63, 201, 824, 189, 513);
+	private static final AxisAlignedBB GOBLIN_HOLDOUT_BB = new AxisAlignedBB(201, 63, 512, 513, 189, 824);
+	private static final AxisAlignedBB JUNGLE_BB = new AxisAlignedBB(201, 63, 201, 513, 189, 513);
+	private static final AxisAlignedBB MAGMA_FIELDS_BB = new AxisAlignedBB(201, 30, 201, 824, 64, 824);
+
+	// Structure bounding boxes (size + 2 in each dimension to make it an actual bounding box)
+	private static final AxisAlignedBB PRECURSOR_CITY_BB = new AxisAlignedBB(0, 0, 0, 107, 122, 107);
+	private static final AxisAlignedBB GOBLIN_KING_BB = new AxisAlignedBB(0, 0, 0, 59, 53, 56);
+	private static final AxisAlignedBB GOBLIN_QUEEN_BB = new AxisAlignedBB(0, 0, 0, 108, 114, 108);
+	private static final AxisAlignedBB JUNGLE_TEMPLE_BB = new AxisAlignedBB(0, 0, 0, 108, 120, 108);
+	private static final AxisAlignedBB ODAWA_BB = new AxisAlignedBB(0, 0, 0, 53, 46, 54);
+	private static final AxisAlignedBB MINES_OF_DIVAN_BB = new AxisAlignedBB(0, 0, 0, 108, 125, 108);
+	private static final AxisAlignedBB KHAZAD_DUM_BB = new AxisAlignedBB(0, 0, 0, 110, 46, 108);
+
+	// Solution offsets from the lowest X Y Z of the structure itself (not the bounding box)
+	private static final Vec3i GOBLIN_KING_OFFSET = new Vec3i(24, 18, 12);
+	private static final Vec3i AMBER_CRYSTAL_OFFSET = new Vec3i(50, 62, 52);
+	private static final Vec3i AMETHYST_CRYSTAL_OFFSET = new Vec3i(92, 9, 60);
+	private static final Vec3i ODAWA_OFFSET = new Vec3i(102, 10, 15);
+	private static final Vec3i JADE_CRYSTAL_OFFSET = new Vec3i(52, 34, 52);
+	private static final Vec3i TOPAZ_CRYSTAL_OFFSET = new Vec3i(37, 11, 40);
+	private static final Vec3i SAPPHIRE_CRYSTAL_OFFSET = new Vec3i(19, 59, 85);
+	private static final Vec3Comparable JUNGLE_DOOR_OFFSET_FROM_CRYSTAL = new Vec3Comparable(-57, 36, -21);
+
 	private static final double MAX_DISTANCE_BETWEEN_PARTICLES = 0.6;
 	private static final double MAX_DISTANCE_FROM_USE_TO_FIRST_PARTICLE = 9.0;
 
@@ -116,6 +149,20 @@ public class CrystalWishingCompassSolver {
 
 	public EnumSet<CompassTarget> getPossibleTargets() {
 		return possibleTargets;
+	}
+
+	public static HollowsZone getZoneForCoords(BlockPos blockPos) {
+		return getZoneForCoords(new Vec3Comparable(blockPos));
+	}
+
+	public static HollowsZone getZoneForCoords(Vec3Comparable coords) {
+		if (NUCLEUS_BB.isVecInside(coords)) return HollowsZone.NUCLEUS;
+		if (JUNGLE_BB.isVecInside(coords)) return HollowsZone.JUNGLE;
+		if (MITHRIL_DEPOSITS_BB.isVecInside(coords)) return HollowsZone.MITHRIL_DEPOSITS;
+		if (GOBLIN_HOLDOUT_BB.isVecInside(coords)) return HollowsZone.GOBLIN_HOLDOUT;
+		if (PRECURSOR_REMNANTS_BB.isVecInside(coords)) return HollowsZone.PRECURSOR_REMNANTS;
+		if (MAGMA_FIELDS_BB.isVecInside(coords)) return HollowsZone.MAGMA_FIELDS;
+		throw new IllegalArgumentException("Coordinates do not fall in known zone: " + coords.toString());
 	}
 
 	private void resetForNewTarget() {
@@ -236,6 +283,7 @@ public class CrystalWishingCompassSolver {
 					}
 
 					firstCompass = new Compass(playerPos, currentTimeMillis.getAsLong());
+					seenParticles.clear();
 					solverState = SolverState.PROCESSING_FIRST_USE;
 					possibleTargets = calculatePossibleTargets(playerPos);
 					return HandleCompassResult.SUCCESS;
@@ -244,7 +292,10 @@ public class CrystalWishingCompassSolver {
 						return HandleCompassResult.LOCATION_TOO_CLOSE;
 					}
 
-					if (!possibleTargets.equals(calculatePossibleTargets(playerPos))) {
+					HollowsZone firstCompassZone = getZoneForCoords(firstCompass.whereUsed);
+					HollowsZone playerZone = getZoneForCoords(playerPos);
+					if (!possibleTargets.equals(calculatePossibleTargets(playerPos)) ||
+							firstCompassZone != playerZone) {
 						resetForNewTarget();
 						return HandleCompassResult.POSSIBLE_TARGETS_CHANGED;
 					}
@@ -289,6 +340,13 @@ public class CrystalWishingCompassSolver {
 			particleType != EnumParticleTypes.VILLAGER_HAPPY ||
 			!SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
 			return;
+		}
+
+		// Capture particles for two minutes after first compass use for troubleshooting
+		// This list is reset each time the first compass is used from a NOT_STARTED state.
+		if (firstCompass != null && !solverState.equals(SolverState.SOLVED) &&
+				System.currentTimeMillis() < firstCompass.whenUsedMillis + 2*60*1000) {
+			seenParticles.add(new ParticleData(new Vec3Comparable(x, y, z), System.currentTimeMillis()));
 		}
 
 		try {
@@ -399,13 +457,17 @@ public class CrystalWishingCompassSolver {
 			return;
 		}
 
-		solutionPossibleTargets = getSolutionTargets(possibleTargets, solution);
+		solutionPossibleTargets = getSolutionTargets(
+			getZoneForCoords(firstCompass.whereUsed),
+			foundCrystals.getAsCrystalEnumSet(),
+			possibleTargets,
+			solution);
 
 		// Adjust the Jungle Temple solution coordinates
 		if (solutionPossibleTargets.size() == 1 &&
 			solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE)) {
 			originalSolution = solution;
-			solution = solution.addVector(-57, 36, -21);
+			solution = solution.add(JUNGLE_DOOR_OFFSET_FROM_CRYSTAL);
 		}
 
 		solverState = SolverState.SOLVED;
@@ -441,14 +503,10 @@ public class CrystalWishingCompassSolver {
 		return foundCrystals;
 	}
 
-	// Returns candidates based on seen Y coordinates and quadrants that
-	// are not adjacent to the solution's quadrant. If the solution is
+	// Returns candidates based on seen Y coordinates and the offset
+	// into other zones based on structure size. If the solution is
 	// the nucleus then a copy of the original possible targets is
 	// returned.
-	//
-	// NOTE: Adjacent quadrant filtering could be improved based on
-	//       structure sizes in the future to only allow a certain
-	//       distance into the adjacent quadrant.
 	//
 	// |----------|------------|
 	// |  Jungle  |  Mithril   |
@@ -458,159 +516,157 @@ public class CrystalWishingCompassSolver {
 	// |  Holdout |  Deposits  |
 	// |----------|------------|
 	static public EnumSet<CompassTarget> getSolutionTargets(
+		HollowsZone compassUsedZone,
+			EnumSet<Crystal> foundCrystals,
 			EnumSet<CompassTarget> possibleTargets,
 			Vec3Comparable solution) {
 		EnumSet<CompassTarget> solutionPossibleTargets;
 		solutionPossibleTargets = possibleTargets.clone();
 
-		if (NUCLEUS_BB.isVecInside(solution)) {
+		HollowsZone solutionZone = getZoneForCoords(solution);
+		if (solutionZone == HollowsZone.NUCLEUS) {
 			return solutionPossibleTargets;
 		}
 
 		solutionPossibleTargets.remove(CompassTarget.CRYSTAL_NUCLEUS);
 
-		// Eliminate non-adjacent zones first
-		if (MITHRIL_DEPOSITS_BB.isVecInside(solution)) {
+		// Y coordinates are 43-71 from 13 samples
+		// Y=41/74 is the absolute min/max based on structure size if
+		// the center of the topaz crystal has to be in magma fields.
+		if (solutionPossibleTargets.contains(CompassTarget.BAL) &&
+				solution.yCoord > 75) {
+			solutionPossibleTargets.remove(CompassTarget.BAL);
+		}
+
+		// Y coordinates are 93-157 from 15 samples.
+		// Y=83/167 is the absolute min/max based on structure size
+		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_KING) &&
+				solution.yCoord < 82 || solution.yCoord > 168) {
 			solutionPossibleTargets.remove(CompassTarget.GOBLIN_KING);
+		}
+
+		// Y coordinates are 129-139 from 10 samples
+		// Y=126/139 is the absolute min/max based on structure size
+		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_QUEEN) &&
+				(solution.yCoord < 125 || solution.yCoord > 140)) {
 			solutionPossibleTargets.remove(CompassTarget.GOBLIN_QUEEN);
-		} else if (PRECURSOR_REMNANTS_BB.isVecInside(solution)) {
-			solutionPossibleTargets.remove(CompassTarget.ODAWA);
+		}
+
+		// Y coordinates are 72-80 from 10 samples
+		// Y=73/80 is the absolute min/max based on structure size
+		if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
+				(solution.yCoord < 72 || solution.yCoord > 81)) {
 			solutionPossibleTargets.remove(CompassTarget.JUNGLE_TEMPLE);
-		} else if (GOBLIN_HOLDOUT_BB.isVecInside(solution)) {
-			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
-		} else if (JUNGLE_BB.isVecInside(solution)) {
+		}
+
+		// Y coordinates are 87-155 from 7 samples
+		// Y=74/155 is the absolute min/max solution based on structure size
+		if (solutionPossibleTargets.contains(CompassTarget.ODAWA) &&
+			(solution.yCoord < 73 || solution.yCoord > 155)) {
+			solutionPossibleTargets.remove(CompassTarget.ODAWA);
+		}
+
+		// Y coordinates are 122-129 from 8 samples
+		// Y=122/129 is the absolute min/max based on structure size
+		if (solutionPossibleTargets.contains(CompassTarget.PRECURSOR_CITY) &&
+				(solution.yCoord < 121 || solution.yCoord > 130)) {
 			solutionPossibleTargets.remove(CompassTarget.PRECURSOR_CITY);
 		}
 
-		// If there's only 1 possible target then don't remove based
-		// on Y coordinates since assumptions about Y coordinates could
-		// be wrong.
-		if (solutionPossibleTargets.size() > 1) {
-			// Y coordinates are 43-70 from 11 samples
-			if (solutionPossibleTargets.contains(CompassTarget.BAL) &&
-					solution.yCoord > 72) {
-				solutionPossibleTargets.remove(CompassTarget.BAL);
-			}
+		// Y coordinates are 98-102 from 15 samples
+		// Y=98/100 is the absolute min/max based on structure size,
+		// but 102 has been seen - possibly with earlier code that rounded up
+		if (solutionPossibleTargets.contains(CompassTarget.MINES_OF_DIVAN) &&
+				(solution.yCoord < 97 || solution.yCoord > 102)) {
+			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
+		}
 
-			// Y coordinates are 93-157 from 10 samples, may be able to filter
-			// more based on the offset of the King within the structure
-			if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_KING) &&
-					solution.yCoord < 64) {
-				solutionPossibleTargets.remove(CompassTarget.GOBLIN_KING);
-			}
+		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_KING) &&
+			(solution.xCoord > GOBLIN_HOLDOUT_BB.maxX + GOBLIN_KING_BB.maxX ||
+			solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_KING_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.GOBLIN_KING);
+		}
 
-			// Y coordinates are 129-139 from 10 samples
-			if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_QUEEN) &&
-					(solution.yCoord < 127 || solution.yCoord > 141)) {
-				solutionPossibleTargets.remove(CompassTarget.GOBLIN_QUEEN);
-			}
+		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_QUEEN) &&
+			(solution.xCoord > GOBLIN_HOLDOUT_BB.maxX + GOBLIN_QUEEN_BB.maxX ||
+			solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_QUEEN_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.GOBLIN_QUEEN);
+		}
 
-			// Y coordinates are 72-80 from 10 samples
-			if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
-					(solution.yCoord < 70 || solution.yCoord > 82)) {
-				solutionPossibleTargets.remove(CompassTarget.JUNGLE_TEMPLE);
-			}
+		if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
+			(solution.xCoord > JUNGLE_BB.maxX + JUNGLE_TEMPLE_BB.maxX ||
+			solution.zCoord > JUNGLE_BB.maxZ + JUNGLE_TEMPLE_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.JUNGLE_TEMPLE);
+		}
 
-			// Y coordinates are 110-128 from 3 samples, not enough data to use
-			if (solutionPossibleTargets.contains(CompassTarget.ODAWA) &&
-					solution.yCoord < 64) {
-				solutionPossibleTargets.remove(CompassTarget.ODAWA);
-			}
+		if (solutionPossibleTargets.contains(CompassTarget.ODAWA) &&
+			(solution.xCoord > JUNGLE_BB.maxX + ODAWA_BB.maxX ||
+				solution.zCoord > JUNGLE_BB.maxZ + ODAWA_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.ODAWA);
+		}
 
-			// Y coordinates are 122-129 from 8 samples
-			if (solutionPossibleTargets.contains(CompassTarget.PRECURSOR_CITY) &&
-					(solution.yCoord < 119 || solution.yCoord > 132)) {
-				solutionPossibleTargets.remove(CompassTarget.PRECURSOR_CITY);
-			}
+		if (solutionPossibleTargets.contains(CompassTarget.MINES_OF_DIVAN) &&
+			(solution.xCoord < MITHRIL_DEPOSITS_BB.minX - MINES_OF_DIVAN_BB.maxX ||
+				solution.zCoord > MITHRIL_DEPOSITS_BB.maxZ + MINES_OF_DIVAN_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
+		}
 
-			// Y coordinates are 98-102 from 15 samples
-			if (solutionPossibleTargets.contains(CompassTarget.MINES_OF_DIVAN) &&
-					(solution.yCoord < 96 || solution.yCoord > 104)) {
-				solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
-			}
+		if (solutionPossibleTargets.contains(CompassTarget.PRECURSOR_CITY) &&
+			(solution.xCoord < PRECURSOR_REMNANTS_BB.minX - PRECURSOR_CITY_BB.maxX ||
+				solution.zCoord < PRECURSOR_REMNANTS_BB.minZ - PRECURSOR_CITY_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.PRECURSOR_CITY);
+		}
+
+		// Since the Jungle Temple often conflicts with Bal and a lobby with a
+		// missing Jungle Temple has not been observed, remove Bal if:
+		//  1. The solution contains Bal & the Jungle Temple
+		//  2. The Amethyst crystal has not been acquired
+		//  3. The zone that the compass was used in is the Jungle
+		if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
+			solutionPossibleTargets.contains(CompassTarget.BAL) &&
+			!foundCrystals.contains(Crystal.AMETHYST) &&
+			compassUsedZone == HollowsZone.JUNGLE) {
+			solutionPossibleTargets.remove(CompassTarget.BAL);
 		}
 
 		return solutionPossibleTargets;
 	}
 
 	private EnumSet<CompassTarget> calculatePossibleTargets(BlockPos playerPos) {
-		boolean targetsBasedOnZoneWithoutCrystal = false;
-		EnumSet<CompassTarget> candidateTargets = EnumSet.allOf(CompassTarget.class);
+		EnumSet<CompassTarget> candidateTargets = EnumSet.of(CompassTarget.CRYSTAL_NUCLEUS);
 		EnumSet<Crystal> foundCrystals = this.foundCrystals.getAsCrystalEnumSet();
-		Vec3Comparable playerPosVec = new Vec3Comparable(playerPos);
 
-		// If the current zone's crystal hasn't been found then remove all non-nucleus candidates other
-		// than the ones in the current zone. The one exception is that the king is kept when in the jungle
-		// since the compass can point to the king if odawa is missing (which often happens).
-		// The nucleus is kept since it can be returned if the structure for the current zone is missing.
-		if (GOBLIN_HOLDOUT_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.AMBER)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.GOBLIN_KING);
-			candidateTargets.add(CompassTarget.GOBLIN_QUEEN);
-			targetsBasedOnZoneWithoutCrystal = true;
-		}
-
-		if (JUNGLE_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.AMETHYST)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.ODAWA);
-			candidateTargets.add(CompassTarget.JUNGLE_TEMPLE);
-			if (!keyInInventory.getAsBoolean() && !kingsScentPresent.getAsBoolean()) {
-				// If Odawa is missing then the king may be returned
-				candidateTargets.add(CompassTarget.GOBLIN_KING);
-			}
-			targetsBasedOnZoneWithoutCrystal = true;
-		}
-
-		if (MITHRIL_DEPOSITS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.JADE)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.MINES_OF_DIVAN);
-			targetsBasedOnZoneWithoutCrystal = true;
-		}
-
-		if (PRECURSOR_REMNANTS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.SAPPHIRE)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.PRECURSOR_CITY);
-			targetsBasedOnZoneWithoutCrystal = true;
-		}
-
-		if (MAGMA_FIELDS_BB.isVecInside(playerPosVec) && !foundCrystals.contains(Crystal.TOPAZ)) {
-			candidateTargets.clear();
-			candidateTargets.add(CompassTarget.CRYSTAL_NUCLEUS);
-			candidateTargets.add(CompassTarget.BAL);
-			targetsBasedOnZoneWithoutCrystal = true;
-		}
-
-		if (!targetsBasedOnZoneWithoutCrystal) {
-			// Filter out crystal-based targets outside the current zone
-			if (foundCrystals.contains(Crystal.AMBER)) {
-				candidateTargets.remove(CompassTarget.GOBLIN_KING);
-				candidateTargets.remove(CompassTarget.GOBLIN_QUEEN);
+		// Add targets based on missing crystals.
+		// NOTE:
+		//   We used to assume that only the adjacent zone's targets could be returned. That turned
+		//   out to be incorrect (e.g. a compass in the jungle pointed to the Precursor City when
+		//   the king would have been a valid target). Now we assume that any structure could be
+		//   missing (because Hypixel) and  depend on the solution coordinates to filter the list.
+		for (Crystal crystal : Crystal.values()) {
+			if (foundCrystals.contains(crystal)) {
+				continue;
 			}
 
-			if (foundCrystals.contains(Crystal.AMETHYST)) {
-				candidateTargets.remove(CompassTarget.ODAWA);
-				candidateTargets.remove(CompassTarget.JUNGLE_TEMPLE);
-			}
-
-			if (foundCrystals.contains(Crystal.JADE)) {
-				candidateTargets.remove(CompassTarget.MINES_OF_DIVAN);
-			}
-
-			if (foundCrystals.contains(Crystal.TOPAZ)) {
-				candidateTargets.remove(CompassTarget.BAL);
-			}
-
-			if (foundCrystals.contains(Crystal.SAPPHIRE)) {
-				candidateTargets.remove(CompassTarget.PRECURSOR_CITY);
+			switch (crystal) {
+				case JADE:
+					candidateTargets.add(CompassTarget.MINES_OF_DIVAN);
+					break;
+				case AMBER:
+					candidateTargets.add(
+						kingsScentPresent.getAsBoolean() ? CompassTarget.GOBLIN_QUEEN : CompassTarget.GOBLIN_KING);
+					break;
+				case TOPAZ:
+					candidateTargets.add(CompassTarget.BAL);
+					break;
+				case AMETHYST:
+					candidateTargets.add(
+						keyInInventory.getAsBoolean() ? CompassTarget.JUNGLE_TEMPLE : CompassTarget.ODAWA);
+					break;
+				case SAPPHIRE:
+					candidateTargets.add(CompassTarget.PRECURSOR_CITY);
+					break;
 			}
 		}
-
-		candidateTargets.remove(kingsScentPresent.getAsBoolean() ? CompassTarget.GOBLIN_KING : CompassTarget.GOBLIN_QUEEN);
-		candidateTargets.remove(keyInInventory.getAsBoolean() ? CompassTarget.ODAWA : CompassTarget.JUNGLE_TEMPLE);
 
 		return candidateTargets;
 	}
@@ -802,6 +858,14 @@ public class CrystalWishingCompassSolver {
 		diagsMessage.append((solutionPossibleTargets == null) ? "<NONE>" : solutionPossibleTargets.toString());
 		diagsMessage.append("\n");
 
+		diagsMessage.append(EnumChatFormatting.AQUA);
+		diagsMessage.append("Seen particles:\n");
+		for (ParticleData particleData : seenParticles) {
+			diagsMessage.append(EnumChatFormatting.WHITE);
+			diagsMessage.append(particleData);
+			diagsMessage.append("\n");
+		}
+
 		return diagsMessage.toString();
 	}
 
@@ -982,6 +1046,20 @@ public class CrystalWishingCompassSolver {
 			public String toString() {
 				return coords.toString() + " " + particleTimeMillis;
 			}
+		}
+	}
+
+	private static class ParticleData {
+		Vec3Comparable particleLocation;
+		long systemTime;
+
+		public ParticleData(Vec3Comparable particleLocation, long systemTime) {
+			this.particleLocation = particleLocation;
+			this.systemTime = systemTime;
+		}
+
+		public String toString() {
+			return "Location: " + particleLocation.toString() + ", systemTime: " + systemTime;
 		}
 	}
 }
