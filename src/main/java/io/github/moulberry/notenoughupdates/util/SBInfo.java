@@ -18,6 +18,8 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -57,7 +59,7 @@ public class SBInfo {
 	public String slayer = "";
 	public boolean stranded = false;
 
-	public String mode = "";
+	public String mode = null;
 
 	public Date currentTimeDate = null;
 
@@ -118,6 +120,16 @@ public class SBInfo {
 				updateProfileInformation(container);
 			}
 		}
+	}
+
+	public boolean checkForSkyblockLocation() {
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() || getLocation() == null) {
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
+				"[NEU] This command is not available outside SkyBlock"));
+			return false;
+		}
+
+		return true;
 	}
 
 	private static final Pattern PROFILE_PATTERN =
@@ -293,7 +305,7 @@ public class SBInfo {
 
 				String cleanLine = Utils.cleanColour(line);
 
-				if (cleanLine.contains("Dungeon") && cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
+				if (cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
 					tempIsInDungeon = true;
 				}
 
@@ -311,6 +323,8 @@ public class SBInfo {
 					slayer = "Sven";
 				} else if (line.contains("Voidgloom Seraph")) {
 					slayer = "Enderman";
+				} else if (line.contains("Inferno Demonlord")) {
+					slayer = "Blaze";
 				}
 				if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
 					lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {

@@ -66,6 +66,9 @@ public class SlayerOverlay extends TextOverlay {
 			case "Enderman":
 				if (!locrawLocation.equals("combat_3")) return false;
 				break;
+			case "Blaze":
+				if (!locrawLocation.equals("crimson_isle")) return false;
+				break;
 			default:
 				//A new slayer would need an update (see SBInfo)
 				return false;
@@ -97,10 +100,11 @@ public class SlayerOverlay extends TextOverlay {
 			slayerIntXP = 0;
 			isSlayerNine = false;
 		}
-		//System.out.println(slayerEXP);
+
 		if (SBInfo.getInstance().slayer.equals("Tarantula") || SBInfo.getInstance().slayer.equals("Revenant")) {
 			useSmallXpNext = true;
-		} else if (SBInfo.getInstance().slayer.equals("Sven") || SBInfo.getInstance().slayer.equals("Enderman")) {
+		} else if (SBInfo.getInstance().slayer.equals("Sven") || SBInfo.getInstance().slayer.equals("Enderman") ||
+			SBInfo.getInstance().slayer.equals("Blaze")) {
 			useSmallXpNext = false;
 		}
 		switch (slayerLVL) {
@@ -185,7 +189,7 @@ public class SlayerOverlay extends TextOverlay {
 			HashMap<Integer, String> lineMap = new HashMap<>();
 
 			NumberFormat format = NumberFormat.getIntegerInstance();
-			//System.out.println(SBInfo.getInstance().isSlain);
+
 			overlayStrings = new ArrayList<>();
 			lineMap.put(
 				0,

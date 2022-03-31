@@ -11,7 +11,7 @@ public class CataCommand extends ViewProfileCommand {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
-		GuiProfileViewer.currentPage = GuiProfileViewer.ProfileViewerPage.DUNG;
+		GuiProfileViewer.currentPage = GuiProfileViewer.ProfileViewerPage.DUNGEON;
 		super.processCommand(sender, args);
 	}
 }

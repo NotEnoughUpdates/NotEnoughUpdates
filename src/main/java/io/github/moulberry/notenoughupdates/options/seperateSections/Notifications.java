@@ -22,11 +22,11 @@ public class Notifications {
 	@ConfigEditorBoolean
 	public boolean doRamNotif = true;
 
-	/*@Expose
+	@Expose
 	@ConfigOption(
-		name = "Wrong Pet",
-		desc = "Gives a notification in chat whenever you're using a pet that doesnt match the same xp you're gathering."
+		name = "OldAnimations warning",
+		desc = "Warning when an unsupported OldAnimations mod is used"
 	)
 	@ConfigEditorBoolean
-	public boolean showWrongPetMsg = false;*/
+	public boolean doOamNotif = true;
 }

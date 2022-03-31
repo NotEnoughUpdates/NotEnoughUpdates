@@ -107,6 +107,7 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+
 		name = "Edit Enchant Colours",
 		desc = "Change the colours of certain skyblock enchants (/neuec)"
 	)
@@ -141,4 +142,14 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean disableNPCRetexturing = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Wiki",
+		desc = "The wiki to use in the wiki renderer."
+	)
+	@ConfigEditorDropdown(values = {
+		"Hypixel",
+		"Fandom"
+	})
+	public int wiki = 0;
 }

@@ -2313,7 +2313,7 @@ public class StorageOverlay extends GuiElement {
 				"\u00a77ESC > Options > Video Settings > Performance > Fast Render",
 				"\u00a77This can't be fixed.",
 				"\u00a77",
-				"\u00a77Press X on your keyboard to close this notifcation"
+				"\u00a77Press X on your keyboard to close this notification"
 			), true, true);
 			return;
 		}

@@ -21,15 +21,14 @@ import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
 public class HypixelApi {
+	private static final int FAILS_BEFORE_SWITCH = 3;
 	private final Gson gson = new Gson();
 	private final ExecutorService es = Executors.newFixedThreadPool(3);
-
-	private static final int FAILS_BEFORE_SWITCH = 3;
-	private int currentUrl = 0;
-	private long lastPrimaryUrl = 0;
 	private final String[] myApiURLs = {"https://moulberry.codes/"};
 	//, "http://moulberry.codes/", "http://51.79.51.21/"};//, "http://51.75.78.252/" };
 	private final Integer[] myApiSuccesses = {0, 0, 0, 0};
+	private int currentUrl = 0;
+	private long lastPrimaryUrl = 0;
 
 	public CompletableFuture<JsonObject> getHypixelApiAsync(String apiKey, String method, HashMap<String, String> args) {
 		return getApiAsync(generateApiUrl(apiKey, method, args));
@@ -167,7 +166,7 @@ public class HypixelApi {
 
 	public String generateApiUrl(String apiKey, String method, HashMap<String, String> args) {
 		if (apiKey != null)
-			args.put("key", apiKey.trim().replace("-", ""));
+			args.put("key", apiKey.trim());
 		StringBuilder url = new StringBuilder("https://api.hypixel.net/" + method);
 		boolean first = true;
 		for (Map.Entry<String, String> entry : args.entrySet()) {

@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import java.io.*;
@@ -1032,11 +1033,12 @@ public class NEUManager {
 			} catch (IOException e) {
 				return null;
 			}
-			try (
-				BufferedInputStream inStream = new BufferedInputStream(new URL(
-					url + "?action=raw&templates=expand").openStream());
-				FileOutputStream fileOutputStream = new FileOutputStream(f)
-			) {
+			try {
+				HttpsURLConnection con = (HttpsURLConnection) new URL(url + "?action=raw&templates=expand").openConnection();
+				con.setRequestMethod("GET");
+				con.setRequestProperty("User-Agent", "NotEnoughUpdates");
+				BufferedInputStream inStream = new BufferedInputStream(con.getInputStream());
+				FileOutputStream fileOutputStream = new FileOutputStream(f);
 				byte[] dataBuffer = new byte[1024];
 				int bytesRead;
 				while ((bytesRead = inStream.read(dataBuffer, 0, 1024)) != -1) {

@@ -27,12 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ProfileViewer {
-	private final NEUManager manager;
-
-	public ProfileViewer(NEUManager manager) {
-		this.manager = manager;
-	}
-
 	private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {{
 		put("COMMON", "0");
 		put("UNCOMMON", "1");
@@ -41,7 +35,6 @@ public class ProfileViewer {
 		put("LEGENDARY", "4");
 		put("MYTHIC", "5");
 	}};
-
 	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
 		new LinkedHashMap<String, ItemStack>() {{
 			put("skill_taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
@@ -72,7 +65,6 @@ public class ProfileViewer {
 			put("slayer_wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
 			put("slayer_enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
 		}};
-
 	private static final ItemStack CAT_FARMING =
 		Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
 	private static final ItemStack CAT_MINING =
@@ -83,7 +75,6 @@ public class ProfileViewer {
 		Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging");
 	private static final ItemStack CAT_FISHING =
 		Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing");
-
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap =
 		new LinkedHashMap<ItemStack, List<String>>() {{
 			put(CAT_FARMING, Utils.createList("WHEAT", "CARROT_ITEM", "POTATO_ITEM", "PUMPKIN", "MELON", "SEEDS",
@@ -103,7 +94,6 @@ public class ProfileViewer {
 			));
 
 		}};
-
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap =
 		new LinkedHashMap<ItemStack, List<String>>() {{
 			put(CAT_FARMING, Utils.createList("WHEAT", "CARROT", "POTATO", "PUMPKIN", "MELON", null, "MUSHROOM",
@@ -120,7 +110,6 @@ public class ProfileViewer {
 			put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
 
 		}};
-
 	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap =
 		new LinkedHashMap<String, ItemStack>() {{
 			/* FARMING COLLECTIONS */
@@ -244,6 +233,17 @@ public class ProfileViewer {
 			put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sack"));
 			put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
 		}};
+	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
+	private static JsonObject resourceCollection = null;
+	private final NEUManager manager;
+	private final HashMap<String, JsonObject> nameToHypixelProfile = new HashMap<>();
+	private final HashMap<String, JsonObject> uuidToHypixelProfile = new HashMap<>();
+	private final HashMap<String, Profile> uuidToProfileMap = new HashMap<>();
+	private final HashMap<String, String> nameToUuid = new HashMap<>();
+
+	public ProfileViewer(NEUManager manager) {
+		this.manager = manager;
+	}
 
 	public static LinkedHashMap<ItemStack, List<String>> getCollectionCatToMinionMap() {
 		return collectionCatToMinionMap;
@@ -259,13 +259,6 @@ public class ProfileViewer {
 
 	public static Map<String, ItemStack> getSkillToSkillDisplayMap() {
 		return Collections.unmodifiableMap(skillToSkillDisplayMap);
-	}
-
-	public static class Level {
-		public float level = 0;
-		public float maxXpForLevel = 0;
-		public boolean maxed = false;
-		public double totalXp;
 	}
 
 	public static Level getLevel(JsonArray levelingArray, float xp, int levelCap, boolean cumulative) {
@@ -299,14 +292,135 @@ public class ProfileViewer {
 		return levelObj;
 	}
 
+	public static JsonObject getResourceCollectionInformation() {
+		if (resourceCollection != null) return resourceCollection;
+		if (updatingResourceCollection.get()) return null;
+
+		updatingResourceCollection.set(true);
+
+		HashMap<String, String> args = new HashMap<>();
+		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+			"resources/skyblock/collections",
+			args,
+			jsonObject -> {
+				updatingResourceCollection.set(false);
+				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					resourceCollection = jsonObject.get("collections").getAsJsonObject();
+				}
+			},
+			() -> updatingResourceCollection.set(false)
+		);
+
+		return null;
+	}
+
+	public void getHypixelProfile(String name, Consumer<JsonObject> callback) {
+		String nameF = name.toLowerCase();
+		HashMap<String, String> args = new HashMap<>();
+		args.put("name", "" + nameF);
+		manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiKey.apiKey, "player",
+			args, jsonObject -> {
+				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()
+					&& jsonObject.get("player").isJsonObject()) {
+					nameToUuid.put(nameF, jsonObject.get("player").getAsJsonObject().get("uuid").getAsString());
+					uuidToHypixelProfile.put(
+						jsonObject.get("player").getAsJsonObject().get("uuid").getAsString(),
+						jsonObject.get("player").getAsJsonObject()
+					);
+					if (callback != null) callback.accept(jsonObject);
+				} else {
+					if (callback != null) callback.accept(null);
+				}
+			}
+		);
+	}
+
+	public void putNameUuid(String name, String uuid) {
+		nameToUuid.put(name, uuid);
+	}
+
+	public void getPlayerUUID(String name, Consumer<String> uuidCallback) {
+		String nameF = name.toLowerCase();
+		if (nameToUuid.containsKey(nameF)) {
+			uuidCallback.accept(nameToUuid.get(nameF));
+			return;
+		}
+
+		manager.hypixelApi.getApiAsync("https://api.mojang.com/users/profiles/minecraft/" + nameF,
+			(jsonObject) -> {
+				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
+					((JsonPrimitive) jsonObject.get("id")).isString()) {
+					String uuid = jsonObject.get("id").getAsString();
+					nameToUuid.put(nameF, uuid);
+					uuidCallback.accept(uuid);
+					return;
+				}
+				uuidCallback.accept(null);
+			}, () -> uuidCallback.accept(null)
+		);
+	}
+
+	public void getProfileByName(String name, Consumer<Profile> callback) {
+		String nameF = name.toLowerCase();
+
+		if (nameToUuid.containsKey(nameF) && nameToUuid.get(nameF) == null) {
+			callback.accept(null);
+			return;
+		}
+
+		getPlayerUUID(nameF, (uuid) -> {
+			if (uuid == null) {
+				getHypixelProfile(nameF, jsonObject -> {
+					if (jsonObject != null) {
+						callback.accept(getProfileReset(nameToUuid.get(nameF), ignored -> {
+						}));
+					} else {
+						callback.accept(null);
+						nameToUuid.put(nameF, null);
+					}
+				});
+			} else {
+				if (!uuidToHypixelProfile.containsKey(uuid)) {
+					getHypixelProfile(nameF, jsonObject -> {
+					});
+				}
+				callback.accept(getProfileReset(uuid, ignored -> {
+				}));
+			}
+		});
+
+		return;
+	}
+
+	public Profile getProfileRaw(String uuid) {
+		return uuidToProfileMap.get(uuid);
+	}
+
+	public Profile getProfile(String uuid, Consumer<Profile> callback) {
+		Profile profile = uuidToProfileMap.computeIfAbsent(uuid, k -> new Profile(uuid));
+		if (profile.playerInformation != null) {
+			callback.accept(profile);
+		} else {
+			profile.getPlayerInformation(() -> callback.accept(profile));
+		}
+		return profile;
+	}
+
+	public Profile getProfileReset(String uuid, Consumer<Profile> callback) {
+		if (uuidToProfileMap.containsKey(uuid)) uuidToProfileMap.get(uuid).resetCache();
+		return getProfile(uuid, callback);
+	}
+
+	public static class Level {
+		public float level = 0;
+		public float maxXpForLevel = 0;
+		public boolean maxed = false;
+		public double totalXp;
+	}
+
 	public class Profile {
 		private final String uuid;
-		private String latestProfile = null;
-
-		private JsonArray playerInformation = null;
-		private JsonObject guildInformation = null;
-		private JsonObject basicInfo = null;
-
 		private final HashMap<String, JsonObject> profileMap = new HashMap<>();
 		private final HashMap<String, JsonObject> petsInfoMap = new HashMap<>();
 		private final HashMap<String, List<JsonObject>> coopProfileMap = new HashMap<>();
@@ -314,27 +428,37 @@ public class ProfileViewer {
 		private final HashMap<String, JsonObject> inventoryInfoMap = new HashMap<>();
 		private final HashMap<String, JsonObject> collectionInfoMap = new HashMap<>();
 		private final List<String> profileIds = new ArrayList<>();
-		private JsonObject playerStatus = null;
 		private final HashMap<String, PlayerStats.Stats> stats = new HashMap<>();
 		private final HashMap<String, PlayerStats.Stats> passiveStats = new HashMap<>();
 		private final HashMap<String, Long> networth = new HashMap<>();
+		private final AtomicBoolean updatingPlayerInfoState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingGuildStatusState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
+		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?[0-9]+)");
+		private String latestProfile = null;
+		private JsonArray playerInformation = null;
+		private JsonObject guildInformation = null;
+		private JsonObject basicInfo = null;
+		private JsonObject playerStatus = null;
+		private JsonObject bingoInformation = null;
+		private long lastPlayerInfoState = 0;
+		private long lastStatusInfoState = 0;
+		private long lastGuildInfoState = 0;
+		private long lastBingoInfoState = 0;
 
 		public Profile(String uuid) {
 			this.uuid = uuid;
 		}
 
-		private final AtomicBoolean updatingPlayerInfoState = new AtomicBoolean(false);
-		private long lastPlayerInfoState = 0;
-		private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
-		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
-		private long lastGuildInfoState = 0;
-		private final AtomicBoolean updatingGuildStatusState = new AtomicBoolean(false);
-
 		public JsonObject getPlayerStatus() {
 			if (playerStatus != null) return playerStatus;
 			if (updatingPlayerStatusState.get()) return null;
 
-			updatingPlayerStatusState.set(true);
+			long currentTime = System.currentTimeMillis();
+			if (currentTime - lastStatusInfoState < 15 * 1000) return null;
+			lastStatusInfoState = currentTime;
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
@@ -349,6 +473,33 @@ public class ProfileViewer {
 				}, () -> updatingPlayerStatusState.set(false)
 			);
 
+			return null;
+		}
+
+		public JsonObject getBingoInformation() {
+			if (bingoInformation != null) return bingoInformation;
+			if (updatingBingoInfo.get()) return null;
+
+			long currentTime = System.currentTimeMillis();
+			if (currentTime - lastBingoInfoState < 15 * 1000) return null;
+			lastBingoInfoState = currentTime;
+
+			HashMap<String, String> args = new HashMap<>();
+			args.put("uuid", "" + uuid);
+			NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+				NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+				"skyblock/bingo",
+				args,
+				jsonObject -> {
+					if (jsonObject == null) return;
+					updatingBingoInfo.set(false);
+					if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+						bingoInformation = jsonObject;
+					} else {
+						bingoInformation = null;
+					}
+				}, () -> updatingBingoInfo.set(false)
+			);
 			return null;
 		}
 
@@ -441,11 +592,6 @@ public class ProfileViewer {
 				}
 			}
 			if (networth == 0) return -1;
-
-			//System.out.println(profileId);
-			//for (Map.Entry<String, Long> entry : mostExpensiveInternal.entrySet()) {
-			//System.out.println(entry.getKey() + ":" + entry.getValue());
-			//}
 
 			networth = (int) (networth * 1.3f);
 
@@ -554,9 +700,9 @@ public class ProfileViewer {
 
 			long currentTime = System.currentTimeMillis();
 
-			if (currentTime - lastGuildInfoState < 15 * 1000 && updatingGuildInfoState.get()) return null;
-
+			if (currentTime - lastGuildInfoState < 15 * 1000) return null;
 			lastGuildInfoState = currentTime;
+
 			updatingGuildInfoState.set(true);
 
 			HashMap<String, String> args = new HashMap<>();
@@ -1054,8 +1200,6 @@ public class ProfileViewer {
 			return null;
 		}
 
-		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?[0-9]+)");
-
 		public JsonObject getCollectionInfo(String profileId) {
 			JsonObject profileInfo = getProfileInformation(profileId);
 			if (profileInfo == null) return null;
@@ -1064,8 +1208,12 @@ public class ProfileViewer {
 			if (profileId == null) profileId = latestProfile;
 			if (collectionInfoMap.containsKey(profileId)) return collectionInfoMap.get(profileId);
 
+			List<JsonObject> coopMembers = getCoopProfileInformation(profileId);
 			JsonElement unlocked_coll_tiers_element = Utils.getElement(profileInfo, "unlocked_coll_tiers");
 			JsonElement crafted_generators_element = Utils.getElement(profileInfo, "crafted_generators");
+			JsonObject fakeMember = new JsonObject();
+			fakeMember.add("crafted_generators", crafted_generators_element);
+			coopMembers.add(coopMembers.size(), fakeMember);
 			JsonElement collectionInfoElement = Utils.getElement(profileInfo, "collection");
 
 			if (unlocked_coll_tiers_element == null || collectionInfoElement == null) {
@@ -1116,17 +1264,15 @@ public class ProfileViewer {
 					}
 				}
 			}
-
-			if (crafted_generators_element != null && crafted_generators_element.isJsonArray()) {
-				JsonArray crafted_generators = crafted_generators_element.getAsJsonArray();
-				for (int i = 0; i < crafted_generators.size(); i++) {
-					String unlocked = crafted_generators.get(i).getAsString();
-
+			for (JsonObject current_member_info : coopMembers) {
+				if (!current_member_info.has("crafted_generators") || !current_member_info.get("crafted_generators").isJsonArray()) continue;
+				JsonArray crafted_generators = Utils.getElement(current_member_info, "crafted_generators").getAsJsonArray();
+				for (int j = 0; j < crafted_generators.size(); j++) {
+					String unlocked = crafted_generators.get(j).getAsString();
 					Matcher matcher = COLL_TIER_PATTERN.matcher(unlocked);
-
 					if (matcher.find()) {
-						String tier_str = matcher.group(1);
-						int tier = Integer.parseInt(tier_str);
+						String tierString = matcher.group(1);
+						int tier = Integer.parseInt(tierString);
 						String coll = unlocked.substring(0, unlocked.length() - (matcher.group().length()));
 						if (!minionTiers.has(coll) || minionTiers.get(coll).getAsInt() < tier) {
 							minionTiers.addProperty(coll, tier);
@@ -1220,134 +1366,5 @@ public class ProfileViewer {
 			if (uuidToHypixelProfile.containsKey(uuid)) return uuidToHypixelProfile.get(uuid);
 			return null;
 		}
-	}
-
-	private final HashMap<String, JsonObject> nameToHypixelProfile = new HashMap<>();
-	private final HashMap<String, JsonObject> uuidToHypixelProfile = new HashMap<>();
-	private final HashMap<String, Profile> uuidToProfileMap = new HashMap<>();
-
-	public void getHypixelProfile(String name, Consumer<JsonObject> callback) {
-		String nameF = name.toLowerCase();
-		HashMap<String, String> args = new HashMap<>();
-		args.put("name", "" + nameF);
-		manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiKey.apiKey, "player",
-			args, jsonObject -> {
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()
-					&& jsonObject.get("player").isJsonObject()) {
-					nameToUuid.put(nameF, jsonObject.get("player").getAsJsonObject().get("uuid").getAsString());
-					uuidToHypixelProfile.put(
-						jsonObject.get("player").getAsJsonObject().get("uuid").getAsString(),
-						jsonObject.get("player").getAsJsonObject()
-					);
-					if (callback != null) callback.accept(jsonObject);
-				} else {
-					if (callback != null) callback.accept(null);
-				}
-			}
-		);
-	}
-
-	private final HashMap<String, String> nameToUuid = new HashMap<>();
-
-	public void putNameUuid(String name, String uuid) {
-		nameToUuid.put(name, uuid);
-	}
-
-	public void getPlayerUUID(String name, Consumer<String> uuidCallback) {
-		String nameF = name.toLowerCase();
-		if (nameToUuid.containsKey(nameF)) {
-			uuidCallback.accept(nameToUuid.get(nameF));
-			return;
-		}
-
-		manager.hypixelApi.getApiAsync("https://api.mojang.com/users/profiles/minecraft/" + nameF,
-			(jsonObject) -> {
-				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
-					((JsonPrimitive) jsonObject.get("id")).isString()) {
-					String uuid = jsonObject.get("id").getAsString();
-					nameToUuid.put(nameF, uuid);
-					uuidCallback.accept(uuid);
-					return;
-				}
-				uuidCallback.accept(null);
-			}, () -> uuidCallback.accept(null)
-		);
-	}
-
-	public void getProfileByName(String name, Consumer<Profile> callback) {
-		String nameF = name.toLowerCase();
-
-		if (nameToUuid.containsKey(nameF) && nameToUuid.get(nameF) == null) {
-			callback.accept(null);
-			return;
-		}
-
-		getPlayerUUID(nameF, (uuid) -> {
-			if (uuid == null) {
-				getHypixelProfile(nameF, jsonObject -> {
-					if (jsonObject != null) {
-						callback.accept(getProfileReset(nameToUuid.get(nameF), ignored -> {
-						}));
-					} else {
-						callback.accept(null);
-						nameToUuid.put(nameF, null);
-					}
-				});
-			} else {
-				if (!uuidToHypixelProfile.containsKey(uuid)) {
-					getHypixelProfile(nameF, jsonObject -> {
-					});
-				}
-				callback.accept(getProfileReset(uuid, ignored -> {
-				}));
-			}
-		});
-
-		return;
-	}
-
-	public Profile getProfileRaw(String uuid) {
-		return uuidToProfileMap.get(uuid);
-	}
-
-	public Profile getProfile(String uuid, Consumer<Profile> callback) {
-		Profile profile = uuidToProfileMap.computeIfAbsent(uuid, k -> new Profile(uuid));
-		if (profile.playerInformation != null) {
-			callback.accept(profile);
-		} else {
-			profile.getPlayerInformation(() -> callback.accept(profile));
-		}
-		return profile;
-	}
-
-	public Profile getProfileReset(String uuid, Consumer<Profile> callback) {
-		if (uuidToProfileMap.containsKey(uuid)) uuidToProfileMap.get(uuid).resetCache();
-		return getProfile(uuid, callback);
-	}
-
-	private static JsonObject resourceCollection = null;
-	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
-
-	public static JsonObject getResourceCollectionInformation() {
-		if (resourceCollection != null) return resourceCollection;
-		if (updatingResourceCollection.get()) return null;
-
-		updatingResourceCollection.set(true);
-
-		HashMap<String, String> args = new HashMap<>();
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
-			"resources/skyblock/collections",
-			args,
-			jsonObject -> {
-				updatingResourceCollection.set(false);
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					resourceCollection = jsonObject.get("collections").getAsJsonObject();
-				}
-			},
-			() -> updatingResourceCollection.set(false)
-		);
-
-		return null;
 	}
 }
