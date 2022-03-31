@@ -348,7 +348,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Pickaxe Ability Cooldown",
-		desc = "Show the cooldown duration off the pickaxe ability as the durability."
+		desc = "Show the cooldown duration of the pickaxe ability as the durability."
 	)
 	@ConfigEditorBoolean
 	public boolean pickaxeAbility = true;
