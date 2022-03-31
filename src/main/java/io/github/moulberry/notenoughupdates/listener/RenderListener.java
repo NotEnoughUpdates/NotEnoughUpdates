@@ -13,7 +13,13 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
-import io.github.moulberry.notenoughupdates.miscgui.*;
+import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
+import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
@@ -32,9 +38,12 @@ import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -42,7 +51,11 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -984,6 +997,40 @@ public class RenderListener {
 	 */
 	@SubscribeEvent
 	public void onGuiScreenKeyboard(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
+			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+				return;
+			}
+			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+			IInventory lower = cc.getLowerChestInventory();
+			try {
+				for (int i = 0; i < 54; i++) {
+					ItemStack stack = lower.getStackInSlot(i);
+					if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
+						stack.getItem() != Items.arrow) {
+						if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
+							NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+							int costIndex = 10000;
+							String id = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
+							for (int j = 0; j < lore.tagCount(); j++) {
+								String entry = lore.getStringTagAt(j);
+								if (entry.equals("§7Cost")) {
+									costIndex = j;
+								}
+								if (j >= costIndex) {
+									System.out.println(entry);
+								}
+							}
+						}
+					}
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
