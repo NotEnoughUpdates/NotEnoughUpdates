@@ -669,7 +669,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Waypoint Names",
-		desc = "NOTE: Skytils overwrite waypoint coordinates with less accurate values for Skytils names."
+		desc = "NOTE: Skytils overwrites waypoint coordinates with less accurate values for Skytils names."
 	)
 	@ConfigAccordionId(id = 7)
 	@ConfigEditorDropdown(
