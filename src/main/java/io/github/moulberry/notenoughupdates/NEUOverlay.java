@@ -1390,7 +1390,12 @@ public class NEUOverlay extends Gui {
 				"DUNGEON HELMET",
 				"DUNGEON CHESTPLATE",
 				"DUNGEON LEGGINGS",
-				"DUNGEON BOOTS"
+				"DUNGEON BOOTS",
+				"BELT",
+				"GLOVES",
+				"CLOAK",
+				"NECKLACE",
+				"BRACELET"
 			) >= 0;
 		} else if (getSortMode() == SORT_MODE_ACCESSORY) {
 			return checkItemType(item.get("lore").getAsJsonArray(), "ACCESSORY", "HATCCESSORY", "DUNGEON ACCESSORY") >= 0;
