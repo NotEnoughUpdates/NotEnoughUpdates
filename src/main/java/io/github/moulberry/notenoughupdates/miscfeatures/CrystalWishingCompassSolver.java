@@ -693,7 +693,7 @@ public class CrystalWishingCompassSolver {
 	}
 
 	private String getNameForCompassTarget(CompassTarget compassTarget) {
-		boolean useSkytilsNames = (NotEnoughUpdates.INSTANCE.config.mining.wishingCompassWaypointNameType == 1);
+		boolean useSkytilsNames = (NotEnoughUpdates.INSTANCE.config.mining.wishingCompassWaypointNames == 1);
 		switch (compassTarget) {
 			case BAL: return useSkytilsNames ? "internal_bal" : "Bal";
 			case ODAWA: return "Odawa";

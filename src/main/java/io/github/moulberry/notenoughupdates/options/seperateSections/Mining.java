@@ -668,14 +668,14 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
-		name = "Waypoint Type",
-		desc = "Skytils Waypoint name type. Skytils Built-in will be overwritten by Skytils when the waypoint is nearby."
+		name = "Waypoint Names",
+		desc = "NOTE: Skytils overwrite waypoint coordinates with less accurate values for Skytils names."
 	)
 	@ConfigAccordionId(id = 7)
 	@ConfigEditorDropdown(
 		values = {"NEU", "Skytils"}
 	)
-	public int wishingCompassWaypointNameType = 0;
+	public int wishingCompassWaypointNames = 0;
 
 	@Expose
 	@ConfigOption(
