@@ -29,9 +29,12 @@ import java.util.stream.Collectors;
 
 public class FairySouls {
 	private static final String unknownProfile = "unknown";
-	private static List<BlockPos> currentSoulList = null;
-	private static List<BlockPos> currentSoulListClose = null;
+	private static boolean enabledForThisLocation = false;
+	private static List<BlockPos> allSoulsInCurrentLocation = null;
+	private static List<BlockPos> closestMissingSouls = null;
 	private static HashMap<String, HashMap<String, Set<Integer>>> loadedFoundSouls = new HashMap<>();
+	private static String currentLocation = null;
+	private static TreeMap<Double, BlockPos> missingSoulsDistanceSqMap = null;
 
 	private static HashMap<String, Set<Integer>> getFoundSoulsForProfile() {
 		String profile = SBInfo.getInstance().currentProfile;
@@ -55,6 +58,68 @@ public class FairySouls {
 			}
 		}
 		return new HashMap<>();
+	}
+
+	private void disableForCurrentLocation() {
+		allSoulsInCurrentLocation = null;
+		missingSoulsDistanceSqMap = null;
+		currentLocation = null;
+	}
+
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Unload event) {
+		// TODO: see how many times this runs when warping
+		String currentLocation = SBInfo.getInstance().getLocation();
+		if (currentLocation == null) {
+			disableForCurrentLocation();
+			return;
+		}
+
+		JsonObject fairySoulList = Constants.FAIRYSOULS;
+		if (fairySoulList == null) {
+			disableForCurrentLocation();
+			return;
+		}
+
+		if (fairySoulList.has(currentLocation) && fairySoulList.get(currentLocation).isJsonArray()) {
+			JsonArray locations = fairySoulList.get(currentLocation).getAsJsonArray();
+			allSoulsInCurrentLocation = new ArrayList<>();
+			for (int i = 0; i < locations.size(); i++) {
+				try {
+					String coord = locations.get(i).getAsString();
+
+					String[] split = coord.split(",");
+					if (split.length == 3) {
+						String xS = split[0];
+						String yS = split[1];
+						String zS = split[2];
+
+						int x = Integer.parseInt(xS);
+						int y = Integer.parseInt(yS);
+						int z = Integer.parseInt(zS);
+
+						allSoulsInCurrentLocation.add(new BlockPos(x, y, z));
+					}
+				} catch (Exception ignored) {
+				}
+			}
+		}
+
+		TreeMap<Double, BlockPos> missingSoulsDistanceSqMap = new TreeMap<>();
+
+		Set<Integer> foundSouls = getFoundSoulsForProfile()
+			.computeIfAbsent(currentLocation, k -> new HashSet<>());
+
+		for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
+			if (foundSouls.contains(i)) continue;
+
+			BlockPos pos = allSoulsInCurrentLocation.get(i);
+			double distSq = pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition());
+			missingSoulsDistanceSqMap.put(distSq, pos);
+		}
+
+		enabledForThisLocation = true;
+
 	}
 
 	public static void load(File file, Gson gson) {
@@ -103,67 +168,14 @@ public class FairySouls {
 
 	public static void tick() {
 		if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
+		if (allSoulsInCurrentLocation == null || ) return;
 
-		if (Minecraft.getMinecraft().theWorld == null) {
-			currentSoulList = null;
-			return;
-		}
-
-		JsonObject fairySouls = Constants.FAIRYSOULS;
-		if (fairySouls == null) return;
-
-		String location = SBInfo.getInstance().getLocation();
-		if (location == null) {
-			currentSoulList = null;
-			return;
-		}
-
-		if (currentSoulList == null) {
-			if (fairySouls.has(location) && fairySouls.get(location).isJsonArray()) {
-				JsonArray locations = fairySouls.get(location).getAsJsonArray();
-				currentSoulList = new ArrayList<>();
-				for (int i = 0; i < locations.size(); i++) {
-					try {
-						String coord = locations.get(i).getAsString();
-
-						String[] split = coord.split(",");
-						if (split.length == 3) {
-							String xS = split[0];
-							String yS = split[1];
-							String zS = split[2];
-
-							int x = Integer.parseInt(xS);
-							int y = Integer.parseInt(yS);
-							int z = Integer.parseInt(zS);
-
-							currentSoulList.add(new BlockPos(x, y, z));
-						}
-					} catch (Exception ignored) {
-					}
-				}
-			}
-		}
-
-		if (currentSoulList != null && !currentSoulList.isEmpty()) {
-			TreeMap<Double, BlockPos> distanceSqMap = new TreeMap<>();
-
-			HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
-
-			Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
-
-			for (int i = 0; i < currentSoulList.size(); i++) {
-				if (found.contains(i)) continue;
-
-				BlockPos pos = currentSoulList.get(i);
-				double distSq = pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition());
-				distanceSqMap.put(distSq, pos);
-			}
-
+		if (allSoulsInCurrentLocation != null && !allSoulsInCurrentLocation.isEmpty()) {
 			int maxSouls = 15;
 			int souls = 0;
-			currentSoulListClose = new ArrayList<>();
-			for (BlockPos pos : distanceSqMap.values()) {
-				currentSoulListClose.add(pos);
+			closestMissingSouls = new ArrayList<>();
+			for (BlockPos pos : missingSoulsDistanceSqMap.values()) {
+				closestMissingSouls.add(pos);
 				if (++souls >= maxSouls) break;
 			}
 		}
@@ -194,12 +206,12 @@ public class FairySouls {
 
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload event) {
-		currentSoulList = null;
+		allSoulsInCurrentLocation = null;
 	}
 
 	@SubscribeEvent
 	public void onChatReceived(ClientChatReceivedEvent event) {
-		if (currentSoulList == null) return;
+		if (allSoulsInCurrentLocation == null) return;
 
 		if (event.message.getFormattedText().equals("\u00A7r\u00A7dYou have already found that Fairy Soul!\u00A7r") ||
 			event.message.getFormattedText().equals(
@@ -209,8 +221,8 @@ public class FairySouls {
 
 			int closestIndex = -1;
 			double closestDistSq = 10 * 10;
-			for (int i = 0; i < currentSoulList.size(); i++) {
-				BlockPos pos = currentSoulList.get(i);
+			for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
+				BlockPos pos = allSoulsInCurrentLocation.get(i);
 
 				double distSq = pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition());
 
@@ -233,10 +245,10 @@ public class FairySouls {
 
 		String location = SBInfo.getInstance().getLocation();
 		if (location == null) return;
-		if (currentSoulList == null || currentSoulList.isEmpty()) return;
+		if (allSoulsInCurrentLocation == null || allSoulsInCurrentLocation.isEmpty()) return;
 
 		int rgb = 0xa839ce;
-		for (BlockPos currentSoul : currentSoulListClose) {
+		for (BlockPos currentSoul : closestMissingSouls) {
 			RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
 		}
 	}
@@ -276,12 +288,12 @@ public class FairySouls {
 					return;
 				case "clear": {
 					String location = SBInfo.getInstance().getLocation();
-					if (currentSoulList == null || location == null) {
+					if (allSoulsInCurrentLocation == null || location == null) {
 						print(EnumChatFormatting.RED + "No fairy souls found in your current world");
 					} else {
 						HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
 						Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
-						for (int i = 0; i < currentSoulList.size(); i++) {
+						for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
 							found.add(i);
 						}
 						String profileName = SBInfo.getInstance().currentProfile;

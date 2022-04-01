@@ -65,7 +65,7 @@ public class CrystalWishingCompassSolver {
 	}
 
 	enum HollowsZone {
-		NUCLEUS,
+		CRYSTAL_NUCLEUS,
 		JUNGLE,
 		MITHRIL_DEPOSITS,
 		GOBLIN_HOLDOUT,
@@ -88,6 +88,7 @@ public class CrystalWishingCompassSolver {
 	// Bounding box around all breakable blocks in the crystal hollows, appears as bedrock in-game
 	private static final AxisAlignedBB HOLLOWS_BB = new AxisAlignedBB(201, 30, 201, 824, 189, 824);
 
+	// Zone bounding boxes
 	private static final AxisAlignedBB PRECURSOR_REMNANTS_BB = new AxisAlignedBB(512, 63, 512, 824, 189, 824);
 	private static final AxisAlignedBB MITHRIL_DEPOSITS_BB = new AxisAlignedBB(512, 63, 201, 824, 189, 513);
 	private static final AxisAlignedBB GOBLIN_HOLDOUT_BB = new AxisAlignedBB(201, 63, 512, 513, 189, 824);
@@ -103,14 +104,6 @@ public class CrystalWishingCompassSolver {
 	private static final AxisAlignedBB MINES_OF_DIVAN_BB = new AxisAlignedBB(0, 0, 0, 108, 125, 108);
 	private static final AxisAlignedBB KHAZAD_DUM_BB = new AxisAlignedBB(0, 0, 0, 110, 46, 108);
 
-	// Solution offsets from the lowest X Y Z of the structure itself (not the bounding box)
-	private static final Vec3i GOBLIN_KING_OFFSET = new Vec3i(24, 18, 12);
-	private static final Vec3i AMBER_CRYSTAL_OFFSET = new Vec3i(50, 62, 52);
-	private static final Vec3i AMETHYST_CRYSTAL_OFFSET = new Vec3i(92, 9, 60);
-	private static final Vec3i ODAWA_OFFSET = new Vec3i(102, 10, 15);
-	private static final Vec3i JADE_CRYSTAL_OFFSET = new Vec3i(52, 34, 52);
-	private static final Vec3i TOPAZ_CRYSTAL_OFFSET = new Vec3i(37, 11, 40);
-	private static final Vec3i SAPPHIRE_CRYSTAL_OFFSET = new Vec3i(19, 59, 85);
 	private static final Vec3Comparable JUNGLE_DOOR_OFFSET_FROM_CRYSTAL = new Vec3Comparable(-57, 36, -21);
 
 	private static final double MAX_DISTANCE_BETWEEN_PARTICLES = 0.6;
@@ -156,7 +149,7 @@ public class CrystalWishingCompassSolver {
 	}
 
 	public static HollowsZone getZoneForCoords(Vec3Comparable coords) {
-		if (NUCLEUS_BB.isVecInside(coords)) return HollowsZone.NUCLEUS;
+		if (NUCLEUS_BB.isVecInside(coords)) return HollowsZone.CRYSTAL_NUCLEUS;
 		if (JUNGLE_BB.isVecInside(coords)) return HollowsZone.JUNGLE;
 		if (MITHRIL_DEPOSITS_BB.isVecInside(coords)) return HollowsZone.MITHRIL_DEPOSITS;
 		if (GOBLIN_HOLDOUT_BB.isVecInside(coords)) return HollowsZone.GOBLIN_HOLDOUT;
@@ -342,7 +335,7 @@ public class CrystalWishingCompassSolver {
 			return;
 		}
 
-		// Capture particles for two minutes after first compass use for troubleshooting
+		// Capture particle troubleshooting info for two minutes starting when the first compass is used.
 		// This list is reset each time the first compass is used from a NOT_STARTED state.
 		if (firstCompass != null && !solverState.equals(SolverState.SOLVED) &&
 				System.currentTimeMillis() < firstCompass.whenUsedMillis + 2*60*1000) {
@@ -503,10 +496,24 @@ public class CrystalWishingCompassSolver {
 		return foundCrystals;
 	}
 
-	// Returns candidates based on seen Y coordinates and the offset
-	// into other zones based on structure size. If the solution is
-	// the nucleus then a copy of the original possible targets is
-	// returned.
+	// Returns candidates based on:
+	//  - Structure Y levels observed in various lobbies. It is assumed
+	//    that structures other than Khazad Dum cannot have any portion
+	//    in the Magma Fields.
+	//
+	//  - Structure sizes & offsets into other zones that assume at least
+	//    one block must be in the correct zone.
+	//
+	//  - An assumption that any structure could be missing with a
+	//    special exception for the Jungle Temple since it often conflicts
+	//    with Bal and a lobby with a missing Jungle Temple has not been
+	//    observed. This exception will remove Bal as a target if:
+	//      - Target candidates include both Bal & the Jungle Temple.
+	//      - The Amethyst crystal has not been acquired.
+	//      - The zone that the compass was used in is the Jungle.
+	//
+	// 	- If the solution is the Crystal Nucleus then a copy of the
+	// 	  passed in possible targets is returned.
 	//
 	// |----------|------------|
 	// |  Jungle  |  Mithril   |
@@ -516,7 +523,7 @@ public class CrystalWishingCompassSolver {
 	// |  Holdout |  Deposits  |
 	// |----------|------------|
 	static public EnumSet<CompassTarget> getSolutionTargets(
-		HollowsZone compassUsedZone,
+			HollowsZone compassUsedZone,
 			EnumSet<Crystal> foundCrystals,
 			EnumSet<CompassTarget> possibleTargets,
 			Vec3Comparable solution) {
@@ -524,7 +531,7 @@ public class CrystalWishingCompassSolver {
 		solutionPossibleTargets = possibleTargets.clone();
 
 		HollowsZone solutionZone = getZoneForCoords(solution);
-		if (solutionZone == HollowsZone.NUCLEUS) {
+		if (solutionZone == HollowsZone.CRYSTAL_NUCLEUS) {
 			return solutionPossibleTargets;
 		}
 
@@ -581,6 +588,7 @@ public class CrystalWishingCompassSolver {
 			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
 		}
 
+		// Now filter by structure offset
 		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_KING) &&
 			(solution.xCoord > GOBLIN_HOLDOUT_BB.maxX + GOBLIN_KING_BB.maxX ||
 			solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_KING_BB.maxZ)) {
@@ -605,23 +613,19 @@ public class CrystalWishingCompassSolver {
 			solutionPossibleTargets.remove(CompassTarget.ODAWA);
 		}
 
-		if (solutionPossibleTargets.contains(CompassTarget.MINES_OF_DIVAN) &&
-			(solution.xCoord < MITHRIL_DEPOSITS_BB.minX - MINES_OF_DIVAN_BB.maxX ||
-				solution.zCoord > MITHRIL_DEPOSITS_BB.maxZ + MINES_OF_DIVAN_BB.maxZ)) {
-			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
-		}
-
 		if (solutionPossibleTargets.contains(CompassTarget.PRECURSOR_CITY) &&
 			(solution.xCoord < PRECURSOR_REMNANTS_BB.minX - PRECURSOR_CITY_BB.maxX ||
 				solution.zCoord < PRECURSOR_REMNANTS_BB.minZ - PRECURSOR_CITY_BB.maxZ)) {
 			solutionPossibleTargets.remove(CompassTarget.PRECURSOR_CITY);
 		}
 
-		// Since the Jungle Temple often conflicts with Bal and a lobby with a
-		// missing Jungle Temple has not been observed, remove Bal if:
-		//  1. The solution contains Bal & the Jungle Temple
-		//  2. The Amethyst crystal has not been acquired
-		//  3. The zone that the compass was used in is the Jungle
+		if (solutionPossibleTargets.contains(CompassTarget.MINES_OF_DIVAN) &&
+			(solution.xCoord < MITHRIL_DEPOSITS_BB.minX - MINES_OF_DIVAN_BB.maxX ||
+				solution.zCoord > MITHRIL_DEPOSITS_BB.maxZ + MINES_OF_DIVAN_BB.maxZ)) {
+			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
+		}
+
+		// Special case the Jungle Temple
 		if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
 			solutionPossibleTargets.contains(CompassTarget.BAL) &&
 			!foundCrystals.contains(Crystal.AMETHYST) &&
