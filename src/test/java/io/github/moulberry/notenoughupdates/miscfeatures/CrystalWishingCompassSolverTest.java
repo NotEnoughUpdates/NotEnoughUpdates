@@ -23,6 +23,7 @@ class CrystalWishingCompassSolverTest {
 	private static final CrystalWishingCompassSolver solver = getInstance();
 	long systemTimeMillis;
 	private final long DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE = 500L;
+	private final int CH_LOWEST_VALID_Y = 30;
 
 	private final CompassUse minesOfDivanCompassUse1 = new CompassUse(
 		1647528732979L,
@@ -326,7 +327,8 @@ class CrystalWishingCompassSolverTest {
 
 	Vec3i magmaSolution = new Vec3i(737, 56, 444);
 
-	Vec3Comparable kingMinesOrNucleusCoordsInRemnants = new Vec3Comparable(604, 100, 681);
+	Vec3Comparable kingOdawaMinesOrNucleusCoordsInRemnants = new Vec3Comparable(566, 100, 566);
+	Vec3Comparable queenKingOdawaOrCityNucleusCoordsInMithrilDeposits = new Vec3Comparable(566, 130, 466);
 	Vec3Comparable odawaSolution = new Vec3Comparable(349, 110, 390);
 
 	private final CompassUse nucleusCompass = new CompassUse(
@@ -473,6 +475,7 @@ class CrystalWishingCompassSolverTest {
 
 	@Test
 	void missing_repeating_particles_sets_state_to_failed_timeout_no_repeating() {
+		// Arrange
 		CompassUse compassUse = new CompassUse(minesOfDivanCompassUse1);
 		compassUse.particles.remove(compassUse.particles.size()-1);
 		compassUse.particles.get(compassUse.particles.size()-1).timeIncrementMillis += ALL_PARTICLES_MAX_MILLIS;
@@ -581,7 +584,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		CompassUse compassUse1 = new CompassUse(minesOfDivanCompassUse1);
 		CompassUse compassUse2 = new CompassUse(minesOfDivanCompassUse2);
-		Vec3 offset = new Vec3(0.0, 200.0, 0.0);
+		double invalidYOffset = -(minesOfDivanSolution.getY() - (CH_LOWEST_VALID_Y -1));
+		Vec3 offset = new Vec3(0.0, invalidYOffset, 0.0);
 
 		compassUse1.playerPos = compassUse1.playerPos.add(offset.xCoord, offset.yCoord, offset.zCoord);
 		for (ParticleSpawn particle : compassUse1.particles) {
@@ -717,96 +721,35 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	@Test
-	void possible_targets_only_contains_city_and_nucleus_when_in_remnants_without_sapphire_crystal() {
+	void possible_targets_contains_all_valid_targets_when_all_crystals_missing() {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(precursorCityCompassUse1)),
 			Vec3i.NULL_VECTOR);
+		solver.foundCrystals = () -> EnumSet.noneOf(Crystal.class);
+		solver.keyInInventory = () -> false;
+		solver.kingsScentPresent = () -> false;
 
 		// Act
 		checkSolution(solution);
 		EnumSet<CompassTarget> targets = solver.getPossibleTargets();
 
 		// Assert
-		Assertions.assertTrue(targets.contains(CompassTarget.PRECURSOR_CITY));
 		Assertions.assertTrue(targets.contains(CompassTarget.CRYSTAL_NUCLEUS));
-		Assertions.assertEquals(2, targets.size());
-	}
-
-	@Test
-	void possible_targets_only_contains_mines_and_nucleus_when_in_deposits_without_jade_crystal() {
-		// Arrange
-		Solution solution = new Solution(
-			new ArrayList<>(Collections.singletonList(minesOfDivanCompassUse1)),
-			Vec3i.NULL_VECTOR);
-
-		// Act
-		checkSolution(solution);
-		EnumSet<CompassTarget> targets = solver.getPossibleTargets();
-
-		// Assert
-		Assertions.assertTrue(targets.contains(CompassTarget.MINES_OF_DIVAN));
-		Assertions.assertTrue(targets.contains(CompassTarget.CRYSTAL_NUCLEUS));
-		Assertions.assertEquals(2, targets.size());
-	}
-
-	@Test
-	void possible_targets_only_contains_king_or_queen_and_nucleus_when_in_holdout_without_crystal() {
-		// Arrange
-		Solution solution = new Solution(
-			new ArrayList<>(Collections.singletonList(goblinHoldoutCompassUse1)),
-			Vec3i.NULL_VECTOR);
-
-		// Act
-		checkSolution(solution);
-		EnumSet<CompassTarget> targets = solver.getPossibleTargets();
-
-		// Assert
-		Assertions.assertTrue(targets.contains(CompassTarget.GOBLIN_KING) ||
-			targets.contains(CompassTarget.GOBLIN_QUEEN));
-		Assertions.assertTrue(targets.contains(CompassTarget.CRYSTAL_NUCLEUS));
-		Assertions.assertEquals(2, targets.size());
-	}
-
-	@Test
-	void possible_targets_only_contains_king_and_odawa_and_nucleus_when_in_jungle_without_crystal_or_key() {
-		// Arrange
-		Solution solution = new Solution(
-			new ArrayList<>(Collections.singletonList(jungleCompassUse1)),
-			Vec3i.NULL_VECTOR);
-
-		// Act
-		checkSolution(solution);
-		EnumSet<CompassTarget> targets = solver.getPossibleTargets();
-
-		// Assert
-		Assertions.assertTrue(targets.contains(CompassTarget.GOBLIN_KING));
 		Assertions.assertTrue(targets.contains(CompassTarget.ODAWA));
-		Assertions.assertTrue(targets.contains(CompassTarget.CRYSTAL_NUCLEUS));
-		Assertions.assertEquals(3, targets.size());
-	}
-
-	@Test
-	void possible_targets_only_contains_bal_and_nucleus_when_in_magma_fields_without_crystal() {
-		// Arrange
-		Solution solution = new Solution(
-			new ArrayList<>(Collections.singletonList(magmaCompassUse1)),
-			Vec3i.NULL_VECTOR);
-
-		// Act
-		checkSolution(solution);
-		EnumSet<CompassTarget> targets = solver.getPossibleTargets();
-
-		// Assert
+		Assertions.assertTrue(targets.contains(CompassTarget.MINES_OF_DIVAN));
+		Assertions.assertTrue(targets.contains(CompassTarget.GOBLIN_KING));
+		Assertions.assertTrue(targets.contains(CompassTarget.PRECURSOR_CITY));
 		Assertions.assertTrue(targets.contains(CompassTarget.BAL));
-		Assertions.assertTrue(targets.contains(CompassTarget.CRYSTAL_NUCLEUS));
-		Assertions.assertEquals(2, targets.size());
+		// No key or king's scent, so these should be false
+		Assertions.assertFalse(targets.contains(CompassTarget.JUNGLE_TEMPLE));
+		Assertions.assertFalse(targets.contains(CompassTarget.GOBLIN_QUEEN));
 	}
 
 	private void CheckExcludedTargetsForCrystals(
-		CompassUse compassUseToExecute,
-		ArrayList<CompassTarget> excludedTargets,
-		EnumSet<Crystal> foundCrystals) {
+			CompassUse compassUseToExecute,
+			ArrayList<CompassTarget> excludedTargets,
+			EnumSet<Crystal> foundCrystals) {
 		// Arrange
 		EnumSet<CompassTarget> targets;
 		Solution solution = new Solution(
@@ -838,39 +781,54 @@ class CrystalWishingCompassSolverTest {
 
 	@Test
 	void possible_targets_excludes_king_and_queen_when_amber_crystal_found() {
+		// Arrange
 		ArrayList<CompassTarget> excludedTargets = new ArrayList<>(Arrays.asList(
 			CompassTarget.GOBLIN_KING,
 			CompassTarget.GOBLIN_QUEEN
 		));
+
+		// Act & Assert
 		CheckExcludedTargetsForCrystals(goblinHoldoutCompassUse1, excludedTargets, EnumSet.of(Crystal.AMBER));
 	}
 
 	@Test
 	void possible_targets_excludes_odawa_and_temple_when_amethyst_crystal_found() {
+		// Arrange
 		ArrayList<CompassTarget> excludedTargets = new ArrayList<>(Arrays.asList(
 			CompassTarget.ODAWA,
 			CompassTarget.JUNGLE_TEMPLE));
+
+		// Act & Assert
 		CheckExcludedTargetsForCrystals(jungleCompassUse1, excludedTargets, EnumSet.of(Crystal.AMETHYST));
 	}
 
 	@Test
 	void possible_targets_excludes_mines_when_jade_crystal_found() {
+		// Arrange
 		ArrayList<CompassTarget> excludedTargets = new ArrayList<>(Collections.singletonList(
 			CompassTarget.MINES_OF_DIVAN));
+
+		// Act & Assert
 		CheckExcludedTargetsForCrystals(minesOfDivanCompassUse1, excludedTargets, EnumSet.of(Crystal.JADE));
 	}
 
 	@Test
 	void possible_targets_excludes_city_when_sapphire_crystal_found() {
+		// Arrange
 		ArrayList<CompassTarget> excludedTargets = new ArrayList<>(Collections.singletonList(
 			CompassTarget.PRECURSOR_CITY));
+
+		// Act & Assert
 		CheckExcludedTargetsForCrystals(precursorCityCompassUse1, excludedTargets, EnumSet.of(Crystal.SAPPHIRE));
 	}
 
 	@Test
 	void possible_targets_excludes_bal_when_topaz_crystal_found() {
+		// Arrange
 		ArrayList<CompassTarget> excludedTargets = new ArrayList<>(Collections.singletonList(
 			CompassTarget.BAL));
+
+		// Act & Assert
 		CheckExcludedTargetsForCrystals(magmaCompassUse1, excludedTargets, EnumSet.of(Crystal.TOPAZ));
 	}
 
@@ -893,7 +851,7 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	@Test
-	void solver_resets_when_possible_targets_change_based_on_location() {
+	void solver_resets_when_player_location_changes_zones() {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(minesOfDivanCompassUse1)),
@@ -904,6 +862,44 @@ class CrystalWishingCompassSolverTest {
 		systemTimeMillis += minesOfDivanCompassUse2.timeIncrementMillis;
 		BlockPos newLocation = minesOfDivanCompassUse2.playerPos.add(-400, 0 ,0);
 		HandleCompassResult handleCompassResult = solver.handleCompassUse(newLocation);
+
+		// Assert
+		Assertions.assertEquals(HandleCompassResult.POSSIBLE_TARGETS_CHANGED, handleCompassResult);
+		Assertions.assertEquals(SolverState.NOT_STARTED, solver.getSolverState());
+	}
+
+	@Test
+	void solver_resets_based_on_jungle_key_presence() {
+		// Arrange
+		Solution solution = new Solution(
+			new ArrayList<>(Collections.singletonList(jungleCompassUse1)),
+			Vec3i.NULL_VECTOR);
+
+		// Act
+		solver.keyInInventory = () -> false;
+		checkSolution(solution);
+		systemTimeMillis += jungleCompassUse2.timeIncrementMillis;
+		solver.keyInInventory = () -> true;
+		HandleCompassResult handleCompassResult = solver.handleCompassUse(jungleCompassUse2.playerPos);
+
+		// Assert
+		Assertions.assertEquals(HandleCompassResult.POSSIBLE_TARGETS_CHANGED, handleCompassResult);
+		Assertions.assertEquals(SolverState.NOT_STARTED, solver.getSolverState());
+	}
+
+	@Test
+	void solver_resets_based_on_kings_scent_presence() {
+		// Arrange
+		Solution solution = new Solution(
+			new ArrayList<>(Collections.singletonList(goblinHoldoutCompassUse1)),
+			Vec3i.NULL_VECTOR);
+
+		// Act
+		solver.kingsScentPresent = () -> false;
+		checkSolution(solution);
+		systemTimeMillis += goblinHoldoutCompassUse2.timeIncrementMillis;
+		solver.kingsScentPresent = () -> true;
+		HandleCompassResult handleCompassResult = solver.handleCompassUse(goblinHoldoutCompassUse2.playerPos);
 
 		// Assert
 		Assertions.assertEquals(HandleCompassResult.POSSIBLE_TARGETS_CHANGED, handleCompassResult);
@@ -923,7 +919,7 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	@Test
-	void jungle_temple_solution_with_key_in_inventory_is_solved() {
+	void jungle_temple_solution_with_key_in_inventory_is_solved_successfully_excluding_bal() {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(jungleCompassUse1, jungleCompassUse2)),
@@ -984,11 +980,17 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	EnumSet<CompassTarget> GetSolutionTargetsHelper(
+			HollowsZone compassUsedZone,
+			EnumSet<Crystal> foundCrystals,
 			EnumSet<CompassTarget> possibleTargets,
 			Vec3Comparable solutionCoords,
 			int expectedSolutionCount) {
 		EnumSet<CompassTarget> solutionTargets =
-			CrystalWishingCompassSolver.getSolutionTargets(possibleTargets, solutionCoords);
+			CrystalWishingCompassSolver.getSolutionTargets(
+				compassUsedZone,
+				foundCrystals,
+				possibleTargets,
+				solutionCoords);
 		Assertions.assertEquals(expectedSolutionCount, solutionTargets.size());
 		return solutionTargets;
 	}
@@ -997,133 +999,229 @@ class CrystalWishingCompassSolverTest {
 	void solutionPossibleTargets_removes_nucleus_when_coords_not_in_nucleus() {
 		// Arrange & Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.MITHRIL_DEPOSITS,
+			EnumSet.noneOf(Crystal.class),
 			EnumSet.allOf(CompassTarget.class),
 			new Vec3Comparable(minesOfDivanSolution),
-			2);
+			1);
 
-		//Assert
+		// Assert
 		Assertions.assertFalse(solutionTargets.contains(CompassTarget.CRYSTAL_NUCLEUS));
 	}
 
 	@Test
-	void solutionPossibleTargets_includes_adjacent_zones() {
-		// Arrange & Act
+	void solutionPossibleTargets_includes_jungle_temple_and_bal_from_other_zones_when_overlapping() {
+		// Arrange
+		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
+		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
-			EnumSet.allOf(CompassTarget.class),
-			kingMinesOrNucleusCoordsInRemnants,
+			HollowsZone.GOBLIN_HOLDOUT,
+			EnumSet.of(Crystal.AMBER),
+			possibleTargets,
+			new Vec3Comparable(202, 72, 513), // upper left of Goblin Holdout
 			2);
 
-		//Assert
-		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_KING));
-		Assertions.assertTrue(solutionTargets.contains(CompassTarget.MINES_OF_DIVAN));
+		// Assert
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.JUNGLE_TEMPLE));
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.BAL));
 	}
 
 	@Test
-	void solutionPossibleTargets_skips_y_filtering_when_single_possible_target() {
+	void solutionPossibleTargets_includes_king_odawa_and_mines_of_divan_from_other_zones_when_overlapping() {
 		// Arrange & Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
-			EnumSet.of(CompassTarget.GOBLIN_QUEEN),
-			new Vec3Comparable(goblinHoldoutKingSolution), // Coords not valid for queen
-			1);
+			HollowsZone.PRECURSOR_REMNANTS,
+			EnumSet.noneOf(Crystal.class),
+			EnumSet.allOf(CompassTarget.class),
+			kingOdawaMinesOrNucleusCoordsInRemnants,
+			3);
 
-		//Assert
-		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_QUEEN));
+		// Assert
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_KING));
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.MINES_OF_DIVAN));
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.ODAWA));
 	}
 
 	@Test
-	void solutionPossibleTargets_still_filters_non_adjacent_when_single_possible_target() {
-		// Arrange, Act and Assert
-		GetSolutionTargetsHelper(
-			EnumSet.of(CompassTarget.ODAWA),
-			kingMinesOrNucleusCoordsInRemnants,
+	void solutionPossibleTargets_includes_city_and_queen_from_other_zones_when_overlapping() {
+		// Arrange
+		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
+		possibleTargets.remove(CompassTarget.GOBLIN_KING);
+		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act
+		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.MITHRIL_DEPOSITS,
+			EnumSet.noneOf(Crystal.class),
+			possibleTargets,
+			queenKingOdawaOrCityNucleusCoordsInMithrilDeposits,
+			2);
+
+		// Assert
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_QUEEN));
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.PRECURSOR_CITY));
+	}
+
+	@Test
+	void solutionPossibleTargets_excludes_jungle_temple_from_other_zone_when_not_overlapping() {
+		// Arrange
+		Vec3Comparable notOverlapping = new Vec3Comparable(202, 72, 513+110); // upper left of Goblin Holdout
+		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
+		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act
+		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.GOBLIN_HOLDOUT,
+			EnumSet.of(Crystal.AMBER),
+			possibleTargets,
+			notOverlapping,
+			1);
+
+		// Assert
+		Assertions.assertTrue(solutionTargets.contains(CompassTarget.BAL));
+	}
+
+	@Test
+	void solutionPossibleTargets_excludes_king_odawa_and_mines_of_divan_from_other_zones_when_not_overlapping() {
+		// Arrange
+		Vec3Comparable notOverlapping = kingOdawaMinesOrNucleusCoordsInRemnants.addVector(100, 0, 100);
+
+		// Act & Assert
+		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.PRECURSOR_REMNANTS,
+			EnumSet.noneOf(Crystal.class),
+			EnumSet.allOf(CompassTarget.class),
+			notOverlapping,
+			0);
+	}
+
+	@Test
+	void solutionPossibleTargets_excludes_city_and_queen_from_other_zones_when_not_overlapping() {
+		// Arrange
+		Vec3Comparable notOverlapping = queenKingOdawaOrCityNucleusCoordsInMithrilDeposits.addVector(100, 0, -100);
+		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
+		possibleTargets.remove(CompassTarget.GOBLIN_KING);
+		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act & Assert
+		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.MITHRIL_DEPOSITS,
+			EnumSet.noneOf(Crystal.class),
+			possibleTargets,
+			notOverlapping,
 			0);
 	}
 
 	@Test
 	void solutionPossibleTargets_includes_king_based_on_y_coordinate() {
-		// Arrange & Act
+		// Arrange
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.GOBLIN_HOLDOUT,
+			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(goblinHoldoutKingSolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_KING));
 	}
 
 	@Test
 	void solutionPossibleTargets_includes_odawa_based_on_y_coordinate() {
-		// Arrange & Act
-		// Arrange & Act
+		// Arrange
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.GOBLIN_KING);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.JUNGLE,
+			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(odawaSolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.ODAWA));
 	}
 
 	@Test
 	void solutionPossibleTargets_includes_mines_based_on_y_coordinate() {
-		// Arrange & Act
+		// Arrange
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.MITHRIL_DEPOSITS,
+			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(minesOfDivanSolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.MINES_OF_DIVAN));
 	}
 
 	@Test
 	void solutionPossibleTargets_includes_temple_based_on_y_coordinate() {
-		// Arrange & Act
+		// Arrange
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.BAL);
 		possibleTargets.remove(CompassTarget.ODAWA);
 		possibleTargets.remove(CompassTarget.GOBLIN_KING);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.JUNGLE,
+			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(jungleSolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.JUNGLE_TEMPLE));
 	}
 
 	@Test
 	void solutionPossibleTargets_includes_queen_based_on_y_coordinate() {
-		// Arrange & Act
+		// Arrange
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.GOBLIN_KING);
 		possibleTargets.remove(CompassTarget.ODAWA);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.GOBLIN_HOLDOUT,
+			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(goblinHoldoutQueenSolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_QUEEN));
 	}
 
 	@Test
 	void solutionPossibleTargets_includes_city_based_on_y_coordinate() {
-		// Arrange & Act
+		// Arrange
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.GOBLIN_KING);
+
+		// Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.PRECURSOR_REMNANTS,
+			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(precursorCitySolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.PRECURSOR_CITY));
 	}
 
@@ -1131,11 +1229,13 @@ class CrystalWishingCompassSolverTest {
 	void solutionPossibleTargets_includes_bal_based_on_y_coordinate() {
 		// Arrange & Act
 		EnumSet<CompassTarget> solutionTargets = GetSolutionTargetsHelper(
+			HollowsZone.MAGMA_FIELDS,
+			EnumSet.noneOf(Crystal.class),
 			EnumSet.allOf(CompassTarget.class),
 			new Vec3Comparable(magmaSolution),
 			1);
 
-		//Assert
+		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.BAL));
 	}
 
