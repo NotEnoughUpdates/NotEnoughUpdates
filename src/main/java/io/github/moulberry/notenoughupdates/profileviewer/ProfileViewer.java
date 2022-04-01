@@ -20,7 +20,13 @@ import net.minecraft.util.EnumChatFormatting;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -477,12 +483,15 @@ public class ProfileViewer {
 		}
 
 		public JsonObject getBingoInformation() {
-			if (bingoInformation != null) return bingoInformation;
-			if (updatingBingoInfo.get()) return null;
-
 			long currentTime = System.currentTimeMillis();
-			if (currentTime - lastBingoInfoState < 15 * 1000) return null;
+			if (bingoInformation != null && currentTime - lastBingoInfoState < 15 * 1000) return bingoInformation;
+			if (updatingBingoInfo.get() && bingoInformation != null) return bingoInformation;
+			System.out.println("here!");
+			if (updatingBingoInfo.get() && bingoInformation == null) return null;
+
 			lastBingoInfoState = currentTime;
+			updatingBingoInfo.set(true);
+			System.out.println("UPDATING");
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
@@ -492,15 +501,15 @@ public class ProfileViewer {
 				args,
 				jsonObject -> {
 					if (jsonObject == null) return;
-					updatingBingoInfo.set(false);
 					if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
 						bingoInformation = jsonObject;
 					} else {
 						bingoInformation = null;
 					}
+					updatingBingoInfo.set(false);
 				}, () -> updatingBingoInfo.set(false)
 			);
-			return null;
+			return bingoInformation != null ? bingoInformation : null;
 		}
 
 		public long getNetWorth(String profileId) {
