@@ -1053,7 +1053,7 @@ public class RenderListener {
 										int index = entry.lastIndexOf('x');
 										String item, amountString;
 										if (index < 0) {
-											item = entry.trim();
+											item = entry.trim() + " x1";
 											amountString = "x1";
 										} else {
 											amountString = entry.substring(index);
