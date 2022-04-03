@@ -486,12 +486,10 @@ public class ProfileViewer {
 			long currentTime = System.currentTimeMillis();
 			if (bingoInformation != null && currentTime - lastBingoInfoState < 15 * 1000) return bingoInformation;
 			if (updatingBingoInfo.get() && bingoInformation != null) return bingoInformation;
-			System.out.println("here!");
 			if (updatingBingoInfo.get() && bingoInformation == null) return null;
 
 			lastBingoInfoState = currentTime;
 			updatingBingoInfo.set(true);
-			System.out.println("UPDATING");
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
