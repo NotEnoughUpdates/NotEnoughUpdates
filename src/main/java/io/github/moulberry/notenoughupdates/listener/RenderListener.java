@@ -1067,7 +1067,7 @@ public class RenderListener {
 											newEntry.add("type", new JsonPrimitive(type));
 											newEntry.add(String.valueOf(stars), new JsonPrimitive(amount));
 										} else {
-											String itemString = item + " x" + amount;
+											String itemString = item + " §8x" + amount;
 											if (!newEntry.has("items")) {
 												newEntry.add("items", new JsonObject());
 											}
