@@ -1,7 +1,12 @@
 package io.github.moulberry.notenoughupdates.listener;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -65,7 +70,15 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -74,6 +87,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.dungeon_chest_worth;
 
@@ -997,37 +1011,106 @@ public class RenderListener {
 	 */
 	@SubscribeEvent
 	public void onGuiScreenKeyboard(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
-			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
-				return;
-			}
-			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
-			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-			IInventory lower = cc.getLowerChestInventory();
-			try {
-				for (int i = 0; i < 54; i++) {
-					ItemStack stack = lower.getStackInSlot(i);
-					if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
-						stack.getItem() != Items.arrow) {
-						if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
-							NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
-							int costIndex = 10000;
-							String id = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
-							for (int j = 0; j < lore.tagCount(); j++) {
-								String entry = lore.getStringTagAt(j);
-								if (entry.equals("§7Cost")) {
-									costIndex = j;
+		if (Keyboard.isKeyDown(Keyboard.KEY_B) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+				GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+				ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+				IInventory lower = cc.getLowerChestInventory();
+
+				try {
+					File file = new File(
+						Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
+						"config/notenoughupdates/repo/constants/essencecosts.json"
+					);
+					String fileContent;
+					fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+						.lines()
+						.collect(Collectors.joining(System.lineSeparator()));
+					String id = null;
+					JsonObject jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+					JsonObject newEntry = new JsonObject();
+					for (int i = 0; i < 54; i++) {
+						ItemStack stack = lower.getStackInSlot(i);
+						if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
+							stack.getItem() != Items.arrow) {
+							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
+								int stars = Utils.getNumberOfStars(stack);
+								if (stars == 0) continue;
+
+								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+								int costIndex = 10000;
+								id = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
+								if (jsonObject.has(id)) {
+									jsonObject.remove(id);
 								}
-								if (j >= costIndex) {
-									System.out.println(entry);
+								for (int j = 0; j < lore.tagCount(); j++) {
+									String entry = lore.getStringTagAt(j);
+									if (entry.equals("§7Cost")) {
+										costIndex = j;
+									}
+									if (j > costIndex) {
+										entry = entry.trim();
+										int index = entry.lastIndexOf('x');
+										String item, amountString;
+										if (index < 0) {
+											item = entry.trim();
+											amountString = "x1";
+										} else {
+											amountString = entry.substring(index);
+											item = entry.substring(0, index).trim();
+										}
+										item = item.substring(0, item.length() - 3);
+										int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
+										if (item.endsWith("Essence")) {
+											int index2 = entry.indexOf("Essence");
+											String type = item.substring(0, index2).trim().substring(2);
+											newEntry.add("type", new JsonPrimitive(type));
+											newEntry.add(String.valueOf(stars), new JsonPrimitive(amount));
+										} else {
+											String itemString = item + " x" + amount;
+											if (!newEntry.has("items")) {
+												newEntry.add("items", new JsonObject());
+											}
+											if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
+												newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
+											}
+											newEntry
+												.get("items")
+												.getAsJsonObject()
+												.get(String.valueOf(stars))
+												.getAsJsonArray()
+												.add(new JsonPrimitive(itemString));
+										}
+									}
 								}
+								jsonObject.add(id, newEntry);
 							}
 						}
 					}
-
+					JsonObject itemsObj = jsonObject.get(id).getAsJsonObject().get("items").getAsJsonObject();
+					jsonObject.get(id).getAsJsonObject().remove("items");
+					jsonObject.get(id).getAsJsonObject().add("items", itemsObj);
+					Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					try {
+						try (
+							BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+								new FileOutputStream(file),
+								StandardCharsets.UTF_8
+							))
+						) {
+							writer.write(gson.toJson(jsonObject));
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + id));
+						}
+					} catch (IOException ignored) {
+						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+							EnumChatFormatting.RED + "Error while writing file."));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details."));
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 

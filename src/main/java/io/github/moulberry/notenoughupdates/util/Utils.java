@@ -2,7 +2,11 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import net.minecraft.client.Minecraft;
@@ -30,14 +34,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.play.client.C0DPacketCloseWindow;
-import net.minecraft.util.*;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Matrix4f;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +56,11 @@ import java.lang.reflect.Method;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1797,5 +1810,21 @@ public class Utils {
 	public static boolean isWithinRect(int x, int y, int left, int top, int width, int height) {
 		return left <= x && x <= left + width &&
 			top <= y && y <= top + height;
+	}
+
+	public static int getNumberOfStars(ItemStack stack) {
+		if (stack != null && stack.hasTagCompound()) {
+			NBTTagCompound tag = stack.getTagCompound();
+
+			if (tag.hasKey("ExtraAttributes", 10)) {
+				NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
+				if (ea.hasKey("upgrade_level", 99)) {
+					return ea.getInteger("upgrade_level");
+				} else if (ea.hasKey("dungeon_item_level")) {
+					return ea.getInteger("dungeon_item_level");
+				}
+			}
+		}
+		return 0;
 	}
 }

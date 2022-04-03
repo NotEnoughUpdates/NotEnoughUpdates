@@ -1,7 +1,13 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -87,6 +93,14 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
 	public int disablePriceKeyKeybind = Keyboard.KEY_NONE;
+
+	@Expose
+	@ConfigOption(
+		name = "Always show required dungeon items",
+		desc = "Always show the required items to upgrade to the next star if more than just Essence is needed"
+	)
+	@ConfigEditorBoolean
+	public boolean alwaysShowRequiredItems = false;
 
 	@Expose
 	@ConfigOption(
