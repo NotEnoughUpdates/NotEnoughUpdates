@@ -1827,4 +1827,34 @@ public class Utils {
 		}
 		return 0;
 	}
+
+	public static String getStarsString(int stars, String displayName) {
+		//ignore master stars
+		if (displayName.contains("§c")) {
+			return null;
+		}
+
+		String colorCode = null;
+		int amount = 0;
+		if (stars > 5 && stars < 11) {
+			colorCode = "§d";
+			amount = stars - 5;
+			stars = 5;
+		}
+		if (stars > 10) {
+			colorCode = "§b";
+			amount = stars - 10;
+			stars = 5;
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i = 0; i < stars; i++) {
+			if (i < amount) {
+				stringBuilder.append(colorCode).append('\u272A');
+			} else {
+				stringBuilder.append(EnumChatFormatting.GOLD).append(EnumChatFormatting.BOLD).append('\u272A');
+			}
+		}
+		return stringBuilder.toString();
+	}
 }
