@@ -21,7 +21,6 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public class PackDevCommand extends ClientCommandBase {
@@ -30,51 +29,44 @@ public class PackDevCommand extends ClientCommandBase {
 		super("neupackdev");
 	}
 
-	@SuppressWarnings("unchecked")
-	private static final HashMap<String, Command> commands = new HashMap<String, Command>() {{
+	private static final HashMap<String, Command<?, ?>> commands = new HashMap<String, Command<?, ?>>() {{
 		put("getnpc",
-			new Command<AbstractClientPlayer>(
+			new Command<>(
 				"NPC",
-				PackDevCommand::npcDataBuilder,
-				() -> (List) mc.theWorld.playerEntities,
+				() -> mc.theWorld.playerEntities,
 				true,
 				AbstractClientPlayer.class
 			));
 		put("getnpcs",
-			new Command<AbstractClientPlayer>(
+			new Command<>(
 				"NPC",
-				PackDevCommand::npcDataBuilder,
-				() -> (List) mc.theWorld.playerEntities,
+				() -> mc.theWorld.playerEntities,
 				false,
 				AbstractClientPlayer.class
 			));
 		put("getmob",
-			new Command<EntityLiving>(
+			new Command<>(
 				"mob",
-				PackDevCommand::livingBaseDataBuilder,
-				() -> (List) mc.theWorld.loadedEntityList,
+				() -> mc.theWorld.loadedEntityList,
 				true,
 				EntityLiving.class
 			));
 		put("getmobs",
-			new Command<EntityLiving>(
+			new Command<>(
 				"mob",
-				PackDevCommand::livingBaseDataBuilder,
-				() -> (List) mc.theWorld.loadedEntityList,
+				() -> mc.theWorld.loadedEntityList,
 				false,
 				EntityLiving.class
 			));
 		put("getarmorstand",
-			new Command<EntityArmorStand>("armor stand",
-				PackDevCommand::livingBaseDataBuilder,
-				() -> (List) mc.theWorld.loadedEntityList,
+			new Command<>("armor stand",
+				() -> mc.theWorld.loadedEntityList,
 				true,
 				EntityArmorStand.class
 			));
 		put("getarmorstands",
-			new Command<EntityArmorStand>("armor stand",
-				PackDevCommand::livingBaseDataBuilder,
-				() -> (List) mc.theWorld.loadedEntityList,
+			new Command<>("armor stand",
+				() -> mc.theWorld.loadedEntityList,
 				false,
 				EntityArmorStand.class
 			));
@@ -116,7 +108,7 @@ public class PackDevCommand extends ClientCommandBase {
 		StringBuilder output;
 		String subCommand = args[0].toLowerCase();
 		if (commands.containsKey(subCommand)) {
-			Command command = commands.get(subCommand);
+			Command<?,?> command = commands.get(subCommand);
 			output = command.getData(dist);
 		} else if (subCommand.equals("getall")) {
 			output = getAll(dist);
@@ -151,10 +143,22 @@ public class PackDevCommand extends ClientCommandBase {
 
 	public static <T extends EntityLivingBase> StringBuilder livingBaseDataBuilder(T entity, Class<T> clazz) {
 		StringBuilder entityData = new StringBuilder();
+		if (EntityPlayer.class.isAssignableFrom(entity.getClass())) {
+			EntityPlayer entityPlayer = (EntityPlayer) entity;
+
+			// NPC Information
+			String skinResourcePath = ((AbstractClientPlayer) entityPlayer).getLocationSkin().getResourcePath();
+			entityData
+				.append("Player Id: ")
+				.append(entityPlayer.getUniqueID() != null ? entityPlayer.getUniqueID().toString() : "null")
+				.append(entityPlayer.getCustomNameTag() != null ? entityPlayer.getCustomNameTag() : "null")
+				.append("\nEntity Texture Id: ")
+				.append(skinResourcePath != null ? skinResourcePath.replace("skins/", "") : "null");
+		}
+
 		if (!clazz.isAssignableFrom(entity.getClass())) {
 			return entityData;
 		}
-		T entityLivingBase = (T) entity;
 
 		//Entity Information
 		entityData
@@ -166,16 +170,16 @@ public class PackDevCommand extends ClientCommandBase {
 			.append(entity.getCustomNameTag() != null ? entity.getCustomNameTag() : "null");
 
 		//Held Item
-		if (entityLivingBase.getHeldItem() != null) {
+		if (entity.getHeldItem() != null) {
 			entityData
 				.append("\nItem: ")
-				.append(entityLivingBase.getHeldItem())
+				.append(entity.getHeldItem())
 				.append("\nItem Display Name: ")
-				.append(entityLivingBase.getHeldItem().getDisplayName() != null
-					? entityLivingBase.getHeldItem().getDisplayName()
+				.append(entity.getHeldItem().getDisplayName() != null
+					? entity.getHeldItem().getDisplayName()
 					: "null")
 				.append("\nItem Tag Compound: ");
-			NBTTagCompound heldItemTagCompound = entityLivingBase.getHeldItem().getTagCompound();
+			NBTTagCompound heldItemTagCompound = entity.getHeldItem().getTagCompound();
 			if (heldItemTagCompound != null) {
 				String heldItemString = heldItemTagCompound.toString();
 				NBTBase extraAttrTag = heldItemTagCompound.getTag("ExtraAttributes");
@@ -196,26 +200,6 @@ public class PackDevCommand extends ClientCommandBase {
 		return entityData;
 	}
 
-	public static <T extends EntityLivingBase> StringBuilder npcDataBuilder(T entity, Class<T> clazz) {
-		StringBuilder entityData = new StringBuilder();
-		if (!EntityPlayer.class.isAssignableFrom(entity.getClass())) {
-			return entityData;
-		}
-		EntityPlayer entityPlayer = (EntityPlayer) entity;
-
-		// NPC Information
-		String skinResourcePath = ((AbstractClientPlayer) entityPlayer).getLocationSkin().getResourcePath();
-		entityData
-			.append("Player Id: ")
-			.append(entityPlayer.getUniqueID() != null ? entityPlayer.getUniqueID().toString() : "null")
-			.append(entityPlayer.getCustomNameTag() != null ? entityPlayer.getCustomNameTag() : "null")
-			.append("\nEntity Texture Id: ")
-			.append(skinResourcePath != null ? skinResourcePath.replace("skins/", "") : "null");
-
-		entityData.append(livingBaseDataBuilder(entity, clazz));
-		return entityData;
-	}
-
 	private static final String[] armorPieceTypes = {"Boots", "Leggings", "Chestplate", "Helmet"};
 	public static <T extends EntityLivingBase> StringBuilder armorDataBuilder (T entity) {
 		StringBuilder armorData = new StringBuilder();
@@ -231,40 +215,39 @@ public class PackDevCommand extends ClientCommandBase {
 		return armorData;
 	}
 
-	static class Command<T extends Entity> {
+	static class Command<T extends EntityLivingBase, U extends Entity> {
 		String typeFriendlyName;
-		BiFunction<T, Class, StringBuilder> dataBuilder;
-		Supplier<List<T>> entitySupplier;
+		Supplier<List<U>> entitySupplier;
 		Class<T> clazz;
 		boolean single;
 
 		Command(String typeFriendlyName,
-						BiFunction<T, Class, StringBuilder> dataBuilder,
-						Supplier<List<T>> entitySupplier,
+						Supplier<List<U>> entitySupplier,
 						boolean single,
 						Class<T> clazz) {
 			this.typeFriendlyName = typeFriendlyName;
-			this.dataBuilder = dataBuilder;
 			this.entitySupplier = entitySupplier;
 			this.single = single;
 			this.clazz = clazz;
 		}
 
+		@SuppressWarnings("unchecked")
 		public StringBuilder getData(double dist) {
 			StringBuilder result = new StringBuilder();
 			double distSq = dist * dist;
 			T closest = null;
-			for (T entity : entitySupplier.get()) {
+			for (Entity entity : entitySupplier.get()) {
 				if (!clazz.isAssignableFrom(entity.getClass()) || entity == mc.thePlayer) {
 					continue;
 				}
-				double entitydistanceSq = entity.getDistanceSq(mc.thePlayer.posX,	mc.thePlayer.posY, mc.thePlayer.posZ);
-				if (entitydistanceSq <	distSq) {
+				T entityT = (T) entity;
+				double entityDistanceSq = entity.getDistanceSq(mc.thePlayer.posX,	mc.thePlayer.posY, mc.thePlayer.posZ);
+				if (entityDistanceSq <	distSq) {
 					if (single) {
-						distSq = entitydistanceSq;
-						closest = entity;
+						distSq = entityDistanceSq;
+						closest = entityT;
 					} else {
-						result.append(dataBuilder.apply(entity, clazz));
+						result.append(livingBaseDataBuilder(entityT, clazz));
 					}
 				}
 			}
@@ -275,7 +258,7 @@ public class PackDevCommand extends ClientCommandBase {
 			} else {
 				mc.thePlayer.addChatMessage(new ChatComponentText(
 					EnumChatFormatting.GREEN + "Copied " + typeFriendlyName + " data to clipboard"));
-				return single ? dataBuilder.apply(closest, clazz) : result;
+				return single ? livingBaseDataBuilder(closest, clazz) : result;
 			}
 
 			return result;
