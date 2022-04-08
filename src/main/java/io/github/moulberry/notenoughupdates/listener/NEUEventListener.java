@@ -212,7 +212,7 @@ public class NEUEventListener {
 
 		if (longUpdate) {
 			CrystalOverlay.tick();
-			FairySouls.tick();
+			FairySouls.getInstance().tick();
 			XPInformation.getInstance().tick();
 			ProfileApiSyncer.getInstance().tick();
 			ItemCustomizeManager.tick();
