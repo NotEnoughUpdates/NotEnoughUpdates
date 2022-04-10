@@ -130,7 +130,8 @@ public class ConfigProcessor {
 						}
 						if (optionType.isAssignableFrom(boolean.class) &&
 							optionField.isAnnotationPresent(ConfigEditorBoolean.class)) {
-							editor = new GuiOptionEditorBoolean(option);
+							ConfigEditorBoolean configEditorAnnotation = optionField.getAnnotation(ConfigEditorBoolean.class);
+							editor = new GuiOptionEditorBoolean(option, configEditorAnnotation.runnableId(), config);
 						}
 						if (optionType.isAssignableFrom(boolean.class) &&
 							optionField.isAnnotationPresent(ConfigEditorAccordion.class)) {

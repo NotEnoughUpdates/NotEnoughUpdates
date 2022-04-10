@@ -8,6 +8,7 @@ import io.github.moulberry.notenoughupdates.core.config.Config;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.Category;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
@@ -78,6 +79,8 @@ public class NEUConfig extends Config {
 		}
 
 		switch (runnableId) {
+			case -1:
+				return;
 			case 0:
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neumap");
 				return;
@@ -129,6 +132,10 @@ public class NEUConfig extends Config {
 			case 14:
 				editOverlay(activeConfigCategory, OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
 				return;
+			case 15:
+				String command = NotEnoughUpdates.INSTANCE.config.misc.fariySoul ? "/neusouls on" : "/neusouls off";
+				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command);
+				return;
 			case 16:
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls clear");
 				return;
@@ -140,7 +147,9 @@ public class NEUConfig extends Config {
 				return;
 			case 19:
 				editOverlay(activeConfigCategory, OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
-
+				return;
+			case 20:
+				FairySouls.getInstance().setTrackFairySouls(NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls);
 		}
 	}
 

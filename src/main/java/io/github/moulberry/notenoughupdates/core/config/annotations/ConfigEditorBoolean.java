@@ -7,4 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConfigEditorBoolean {}
+public @interface ConfigEditorBoolean {
+	int runnableId() default -1;
+}

@@ -165,6 +165,11 @@ public class FairySouls {
 		showSouls = enabled;
 	}
 
+	public void setTrackFairySouls(boolean enabled) {
+		NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls = enabled;
+		trackSouls = enabled;
+	}
+
 	public void markClosestSoulFound() {
 		if (!trackSouls) return;
 		int closestIndex = -1;
@@ -396,6 +401,10 @@ public class FairySouls {
 					break;
 				case "on":
 				case "enable":
+					if (!FairySouls.instance.trackSouls) {
+						print(EnumChatFormatting.RED + "Fairy soul tracking is off, enable it using /neu before using this command");
+						return;
+					}
 					print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
 					FairySouls.getInstance().setShowFairySouls(true);
 					break;

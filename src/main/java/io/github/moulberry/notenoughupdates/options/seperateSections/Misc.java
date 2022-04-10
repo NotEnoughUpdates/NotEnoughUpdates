@@ -37,18 +37,20 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Track Fairy Souls",
-		desc = "Track found fairy souls (Lobby change required to take effect)"
+		desc = "Track Found Fairy Souls"
 	)
-	@ConfigEditorBoolean
+	@ConfigEditorBoolean(runnableId = 20)
 	@ConfigAccordionId(id = 0)
 	public boolean trackFairySouls = true;
 
 	@Expose
 	@ConfigOption(
 		name = "Show Waypoints",
-		desc = "Shows waypoints to fairy souls (Requires fairy soul tracking)"
+		desc = "Show Fairy Soul Waypoints (Requires fairy soul tracking)"
 	)
-	@ConfigEditorBoolean
+	@ConfigEditorBoolean(
+		runnableId = 15
+	)
 	@ConfigAccordionId(id = 0)
 	public boolean fariySoul = false;
 

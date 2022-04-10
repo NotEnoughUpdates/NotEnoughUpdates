@@ -1,15 +1,24 @@
 package io.github.moulberry.notenoughupdates.core.config.gui;
 
 import io.github.moulberry.notenoughupdates.core.GuiElementBoolean;
+import io.github.moulberry.notenoughupdates.core.config.Config;
 import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor;
 
 public class GuiOptionEditorBoolean extends GuiOptionEditor {
+
 	private final GuiElementBoolean bool;
+	private final Config config;
+	private final int runnableId;
 
-	public GuiOptionEditorBoolean(ConfigProcessor.ProcessedOption option) {
+	public GuiOptionEditorBoolean(
+		ConfigProcessor.ProcessedOption option,
+		int runnableId,
+		Config config
+	) {
 		super(option);
-
-		bool = new GuiElementBoolean(0, 0, (boolean) option.get(), 10, option::set);
+		this.config = config;
+		this.runnableId = runnableId;
+		bool = new GuiElementBoolean(0, 0, (boolean) option.get(),10,	(value) -> onUpdate(option, value));
 	}
 
 	@Override
@@ -33,5 +42,11 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
 	@Override
 	public boolean keyboardInput() {
 		return false;
+	}
+
+	private void onUpdate(ConfigProcessor.ProcessedOption option, boolean value) {
+		if (option.set(value)) {
+			config.executeRunnable(runnableId);
+		}
 	}
 }
