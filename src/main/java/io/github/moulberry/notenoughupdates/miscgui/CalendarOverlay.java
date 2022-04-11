@@ -1000,6 +1000,21 @@ public class CalendarOverlay {
 						GlStateManager.translate(0, 0, -100);
 					}
 				}
+			} else if (!enabled && NotEnoughUpdates.INSTANCE.config.calendar.showEventTimerInInventory) {
+				FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+				GlStateManager.disableFog();
+				GlStateManager.disableLighting();
+				GlStateManager.disableColorMaterial();
+
+				renderBlurredBackground(10, width, height, guiLeft + 3, guiTop + 3, xSize - 6, ySize - 6);
+
+				Minecraft.getMinecraft().getTextureManager().bindTexture(DISPLAYBAR);
+				Utils.drawTexturedRect(guiLeft, guiTop, xSize, 20, GL11.GL_NEAREST);
+
+				String nextS = EnumChatFormatting.RED + "Open calendar to see events";
+				fr.drawString(nextS, guiLeft + 8, guiTop + 6, -1, false);
 			}
 		}
 		GlStateManager.translate(0, 0, -10);
