@@ -274,7 +274,8 @@ public class FairySouls {
 
 					locationSouls.add(new BlockPos(x, y, z));
 				}
-			} catch (Exception ignored) {
+			} catch (Exception e) {
+				e.printStackTrace();
 				return null;
 			}
 		}
@@ -294,6 +295,7 @@ public class FairySouls {
 				.lines()
 				.collect(Collectors.joining(System.lineSeparator()));
 		} catch (FileNotFoundException e) {
+			// it is possible that the collected_fairy_souls.json won't exist
 			return;
 		}
 
@@ -326,7 +328,8 @@ public class FairySouls {
 			) {
 				writer.write(gson.toJson(allProfilesFoundSouls));
 			}
-		} catch (IOException ignored) {
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
