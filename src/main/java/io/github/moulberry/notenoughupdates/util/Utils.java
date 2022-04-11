@@ -1825,7 +1825,7 @@ public class Utils {
 				}
 			}
 		}
-		return 0;
+		return -1;
 	}
 
 	public static String getStarsString(int stars, String displayName) {

@@ -318,7 +318,7 @@ public class ItemPriceInformation {
 
 						int dungeonItemLevel = Utils.getNumberOfStars(stack);
 
-						if (dungeonItemLevel == 0) {
+						if (dungeonItemLevel == -1) {
 							int dungeonizeCost = 0;
 							if (itemCosts.has("dungeonize")) {
 								dungeonizeCost = itemCosts.get("dungeonize").getAsInt();
