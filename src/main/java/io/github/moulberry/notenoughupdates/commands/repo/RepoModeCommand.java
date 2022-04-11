@@ -20,32 +20,28 @@ public class RepoModeCommand extends ClientCommandBase {
 			NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing =
 				!NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing;
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Toggled NEU repo dev mode."));
-		} else if (args.length == 2 && args[0].equalsIgnoreCase("setrepourl")) {
-			if (args[1].equalsIgnoreCase("reset")) {
-				NotEnoughUpdates.INSTANCE.config.hidden.repoURL = "https://github.com/Moulberry/NotEnoughUpdates-REPO/archive/master.zip";
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"\u00a75You reset the repo URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoURL));
-			} else {
-				NotEnoughUpdates.INSTANCE.config.hidden.repoURL = args[1];
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"\u00a75You set the repo URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoURL));
+		} else if (args.length >= 2 && args[0].equalsIgnoreCase("setrepourl")) {
+			String githubUser = "Moulberry";
+			String githubRepo = "NotEnoughUpdates-REPO";
+			String githubBranch = "master";
+			if (!args[1].equalsIgnoreCase("reset")) {
+				githubUser = args[1];
+				if (args.length >= 3) {
+					githubRepo = args[2];
+				}
+				if (args.length >= 4) {
+					githubBranch = args[3];
+				}
 			}
+			NotEnoughUpdates.INSTANCE.config.hidden.repoURL = "https://github.com/" + githubUser + "/" + githubRepo + "/archive/" + githubBranch + ".zip";
+			NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL = "https://api.github.com/repos/" + githubUser + "/" + githubRepo + "/commits/" + githubBranch;
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Set NEU repo URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoURL +
+			"\n\u00a75Set NEU repo commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
 
-		} else if (args.length == 2 && args[0].equalsIgnoreCase("setcommitsurl")) {
-			if (args[1].equalsIgnoreCase("reset")) {
-				NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL = "https://api.github.com/repos/Moulberry/NotEnoughUpdates-REPO/commits/master";
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"\u00a75You reset the commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
-			} else {
-				NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL = args[1];
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"\u00a75You set the commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
-			}
 		} else {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a7cUsage:" +
 				"\n\u00a75/neurepomode <toggle> Toggles on/off dev mode and item editing." +
-				"\n\u00a75/neurepomode <setRepoURL> [reset] Sets the repo URL for downloading from." +
-				"\n\u00a75/neurepomode <setCommitsUrl> [reset] Sets the commits URL."));
+				"\n\u00a75/neurepomode <setRepoURL> <githubuser> [reponame] [branch] Sets the repo URL for downloading from."));
 		}
 	}
 }
