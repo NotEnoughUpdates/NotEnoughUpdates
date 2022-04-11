@@ -907,100 +907,100 @@ public class CalendarOverlay {
 				}
 			}
 
-			if (nextEvent != null) {
-				GlStateManager.translate(0, 0, 50);
-				boolean toastRendered = renderToast(nextEvent, timeUntilNext);
-				GlStateManager.translate(0, 0, -50);
-				if (!toastRendered && !enabled && NotEnoughUpdates.INSTANCE.config.calendar.showEventTimerInInventory) {
-					List<String> tooltipToDisplay = null;
-					FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+			//if (nextEvent != null) {
+			GlStateManager.translate(0, 0, 50);
+			boolean toastRendered = renderToast(nextEvent, timeUntilNext);
+			GlStateManager.translate(0, 0, -50);
+			if (!toastRendered && !enabled && NotEnoughUpdates.INSTANCE.config.calendar.showEventTimerInInventory) {
+				List<String> tooltipToDisplay = null;
+				FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 
-					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-					GlStateManager.disableFog();
-					GlStateManager.disableLighting();
-					GlStateManager.disableColorMaterial();
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+				GlStateManager.disableFog();
+				GlStateManager.disableLighting();
+				GlStateManager.disableColorMaterial();
 
-					renderBlurredBackground(10, width, height, guiLeft + 3, guiTop + 3, xSize - 6, ySize - 6);
+				renderBlurredBackground(10, width, height, guiLeft + 3, guiTop + 3, xSize - 6, ySize - 6);
 
-					Minecraft.getMinecraft().getTextureManager().bindTexture(DISPLAYBAR);
-					Utils.drawTexturedRect(guiLeft, guiTop, xSize, 20, GL11.GL_NEAREST);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(DISPLAYBAR);
+				Utils.drawTexturedRect(guiLeft, guiTop, xSize, 20, GL11.GL_NEAREST);
 
-					String nextS = EnumChatFormatting.YELLOW + "Next: ";
-					int nextSLen = fr.getStringWidth(nextS);
-					fr.drawString(nextS, guiLeft + 8, guiTop + 6, -1, false);
+				String nextS = EnumChatFormatting.YELLOW + "Next: ";
+				int nextSLen = fr.getStringWidth(nextS);
+				fr.drawString(nextS, guiLeft + 8, guiTop + 6, -1, false);
 
-					String until = " " + EnumChatFormatting.YELLOW + prettyTime(timeUntilNext, false);
-					int untilLen = fr.getStringWidth(until);
+				String until = " " + EnumChatFormatting.YELLOW + prettyTime(timeUntilNext, false);
+				int untilLen = fr.getStringWidth(until);
 
-					fr.drawString(until, guiLeft + xSize - 8 - untilLen, guiTop + 6, -1, false);
+				fr.drawString(until, guiLeft + xSize - 8 - untilLen, guiTop + 6, -1, false);
 
-					int eventTitleLen = xSize - 16 - untilLen - nextSLen;
-					int displayWidth = fr.getStringWidth(nextEvent.display);
-					int spaceLen = fr.getCharWidth(' ');
-					if (displayWidth > eventTitleLen) {
-						GL11.glEnable(GL11.GL_SCISSOR_TEST);
-						GL11.glScissor(
-							(guiLeft + 8 + nextSLen) * scaledResolution.getScaleFactor(),
-							0,
-							eventTitleLen * scaledResolution.getScaleFactor(),
-							Minecraft.getMinecraft().displayHeight
-						);
-						fr.drawString(nextEvent.display + " " + nextEvent.display,
-							guiLeft + 8 + nextSLen - (float) (currentTime / 50.0 % (displayWidth + spaceLen)), guiTop + 6, -1, false
-						);
-						GL11.glDisable(GL11.GL_SCISSOR_TEST);
+				int eventTitleLen = xSize - 16 - untilLen - nextSLen;
+				int displayWidth = fr.getStringWidth(nextEvent.display);
+				int spaceLen = fr.getCharWidth(' ');
+				if (displayWidth > eventTitleLen) {
+					GL11.glEnable(GL11.GL_SCISSOR_TEST);
+					GL11.glScissor(
+						(guiLeft + 8 + nextSLen) * scaledResolution.getScaleFactor(),
+						0,
+						eventTitleLen * scaledResolution.getScaleFactor(),
+						Minecraft.getMinecraft().displayHeight
+					);
+					fr.drawString(nextEvent.display + " " + nextEvent.display,
+						guiLeft + 8 + nextSLen - (float) (currentTime / 50.0 % (displayWidth + spaceLen)), guiTop + 6, -1, false
+					);
+					GL11.glDisable(GL11.GL_SCISSOR_TEST);
+				} else {
+					if (guiLeft + xSize - 8 - untilLen > (width + displayWidth) / 2) {
+						Utils.drawStringCentered(nextEvent.display, fr, width / 2f, guiTop + 10, false, -1);
 					} else {
-						if (guiLeft + xSize - 8 - untilLen > (width + displayWidth) / 2) {
-							Utils.drawStringCentered(nextEvent.display, fr, width / 2f, guiTop + 10, false, -1);
-						} else {
-							fr.drawString(nextEvent.display, guiLeft + 8 + nextSLen, guiTop + 6, -1, false);
-						}
-					}
-
-					if (mouseX > guiLeft && mouseX < guiLeft + 168) {
-						if (mouseY > guiTop && mouseY < guiTop + 20) {
-							tooltipToDisplay = new ArrayList<>();
-							for (int i = 0; i < nextFavourites.size(); i++) {
-								SBEvent sbEvent = nextFavourites.get(i);
-								long timeUntil = nextFavouritesTime.get(i);
-
-								tooltipToDisplay.add(sbEvent.display);
-								tooltipToDisplay.add(
-									EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntil, false));
-								if (sbEvent.lastsFor >= 0) {
-									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-										prettyTime(sbEvent.lastsFor, true));
-								}
-								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
-									tooltipToDisplay.addAll(sbEvent.desc);
-								}
-								if (nextMajorEvent != null || i < nextFavourites.size() - 1) {
-									tooltipToDisplay.add("");
-								}
-							}
-							if (nextMajorEvent != null) {
-								tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Major:");
-								tooltipToDisplay.add(nextMajorEvent.display);
-								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
-									prettyTime(timeUntilMajor, false));
-								if (nextMajorEvent.lastsFor >= 0) {
-									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-										prettyTime(nextMajorEvent.lastsFor, true));
-								}
-							}
-
-						}
-					}
-
-					drawTimerForeground = false;
-					if (tooltipToDisplay != null) {
-						drawTimerForeground = true;
-						GlStateManager.translate(0, 0, 100);
-						Utils.drawHoveringText(tooltipToDisplay, mouseX, Math.max(17, mouseY), width, height, -1, fr);
-						GlStateManager.translate(0, 0, -100);
+						fr.drawString(nextEvent.display, guiLeft + 8 + nextSLen, guiTop + 6, -1, false);
 					}
 				}
+
+				if (mouseX > guiLeft && mouseX < guiLeft + 168) {
+					if (mouseY > guiTop && mouseY < guiTop + 20) {
+						tooltipToDisplay = new ArrayList<>();
+						for (int i = 0; i < nextFavourites.size(); i++) {
+							SBEvent sbEvent = nextFavourites.get(i);
+							long timeUntil = nextFavouritesTime.get(i);
+
+							tooltipToDisplay.add(sbEvent.display);
+							tooltipToDisplay.add(
+								EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntil, false));
+							if (sbEvent.lastsFor >= 0) {
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
+									prettyTime(sbEvent.lastsFor, true));
+							}
+							if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
+								tooltipToDisplay.addAll(sbEvent.desc);
+							}
+							if (nextMajorEvent != null || i < nextFavourites.size() - 1) {
+								tooltipToDisplay.add("");
+							}
+						}
+						if (nextMajorEvent != null) {
+							tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Major:");
+							tooltipToDisplay.add(nextMajorEvent.display);
+							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
+								prettyTime(timeUntilMajor, false));
+							if (nextMajorEvent.lastsFor >= 0) {
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
+									prettyTime(nextMajorEvent.lastsFor, true));
+							}
+						}
+
+					}
+				}
+
+				drawTimerForeground = false;
+				if (tooltipToDisplay != null) {
+					drawTimerForeground = true;
+					GlStateManager.translate(0, 0, 100);
+					Utils.drawHoveringText(tooltipToDisplay, mouseX, Math.max(17, mouseY), width, height, -1, fr);
+					GlStateManager.translate(0, 0, -100);
+				}
 			}
+			//}
 		}
 		GlStateManager.translate(0, 0, -10);
 		GlStateManager.popMatrix();
