@@ -17,6 +17,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.util.*;
 
@@ -325,7 +326,7 @@ public class EnchantingSolvers {
 						if (chronomatronReplayIndex < chronomatronOrder.size()) {
 							String chronomatronCurrent = chronomatronOrder.get(chronomatronReplayIndex);
 							if (!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
-								chronomatronCurrent.equals(displayName)) {
+								chronomatronCurrent.equals(displayName) || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT) {
 								chronomatronReplayIndex++;
 								Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
 									2, mode, Minecraft.getMinecraft().thePlayer
@@ -356,7 +357,7 @@ public class EnchantingSolvers {
 						long currentTime = System.currentTimeMillis();
 						if (currentTime - millisLastClick > 150 &&
 							(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
-								current.containerIndex == slotId)) {
+								current.containerIndex == slotId || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT)) {
 							ultrasequencerReplayIndex++;
 							Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
 								2, mode, Minecraft.getMinecraft().thePlayer
