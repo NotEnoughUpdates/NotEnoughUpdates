@@ -1899,6 +1899,7 @@ public class GuiCustomEnchant extends Gui {
 		}
 
 		return Keyboard.getEventKey() != Keyboard.KEY_ESCAPE &&
+			Keyboard.getEventKey() != Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode() &&
 			(!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking ||
 				Keyboard.getEventKey() != NotEnoughUpdates.INSTANCE.config.slotLocking.slotLockKey);
 	}
