@@ -309,10 +309,10 @@ public class ItemPriceInformation {
 						}
 						JsonObject itemCosts = essenceCosts.get(internalname).getAsJsonObject();
 						String essenceType = itemCosts.get("type").getAsString();
-						boolean items = false;
+						boolean requiresItems = false;
 						JsonObject itemsObject = null;
 						if (itemCosts.has("items")) {
-							items = true;
+							requiresItems = true;
 							itemsObject = itemCosts.get("items").getAsJsonObject();
 						}
 
@@ -329,24 +329,25 @@ public class ItemPriceInformation {
 									EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + dungeonizeCost + " " + essenceType);
 							}
 						} else if (dungeonItemLevel >= 0) {
-							String costType = (dungeonItemLevel + 1) + "";
+							String nextStarLevelString = (dungeonItemLevel + 1) + "";
+							int nextStarLevelInt = Integer.parseInt(nextStarLevelString);
 
-							if (itemCosts.has(costType)) {
-								int upgradeCost = itemCosts.get(costType).getAsInt();
-								String star = Utils.getStarsString(Integer.parseInt(costType), stack.getDisplayName());
+							if (itemCosts.has(nextStarLevelString)) {
+								int upgradeCost = itemCosts.get(nextStarLevelString).getAsInt();
+								String star = Utils.getStarsString(nextStarLevelInt, stack.getDisplayName());
 								if (star == null) {
 									break;
 								}
 								tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Upgrade to " +
 									star + EnumChatFormatting.YELLOW + EnumChatFormatting.BOLD + ": " +
 									EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + upgradeCost + " " + essenceType);
-								if (items && itemsObject.has(costType)) {
+								if (requiresItems && itemsObject.has(nextStarLevelString)) {
 									boolean shouldShow = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
 										NotEnoughUpdates.INSTANCE.config.tooltipTweaks.alwaysShowRequiredItems;
 
 									if (shouldShow) {
 										tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Required Items:");
-										for (JsonElement item : itemsObject.get(costType).getAsJsonArray()) {
+										for (JsonElement item : itemsObject.get(nextStarLevelString).getAsJsonArray()) {
 											tooltip.add("  - " + item.getAsString());
 										}
 									} else {

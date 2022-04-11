@@ -1834,15 +1834,17 @@ public class Utils {
 			return null;
 		}
 
-		String colorCode = null;
+		EnumChatFormatting colorCode = null;
+		EnumChatFormatting defaultColorCode = EnumChatFormatting.GOLD;
 		int amount = 0;
 		if (stars > 5 && stars < 11) {
-			colorCode = "§d";
+			colorCode = EnumChatFormatting.LIGHT_PURPLE;
 			amount = stars - 5;
 			stars = 5;
 		}
 		if (stars > 10) {
-			colorCode = "§b";
+			colorCode = EnumChatFormatting.AQUA;
+			defaultColorCode = EnumChatFormatting.LIGHT_PURPLE;
 			amount = stars - 10;
 			stars = 5;
 		}
@@ -1852,7 +1854,7 @@ public class Utils {
 			if (i < amount) {
 				stringBuilder.append(colorCode).append('\u272A');
 			} else {
-				stringBuilder.append(EnumChatFormatting.GOLD).append(EnumChatFormatting.BOLD).append('\u272A');
+				stringBuilder.append(defaultColorCode).append('\u272A');
 			}
 		}
 		return stringBuilder.toString();
