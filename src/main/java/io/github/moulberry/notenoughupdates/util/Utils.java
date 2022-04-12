@@ -1828,12 +1828,7 @@ public class Utils {
 		return -1;
 	}
 
-	public static String getStarsString(int stars, String displayName) {
-		//ignore master stars
-		if (displayName.contains("§c")) {
-			return null;
-		}
-
+	public static String getStarsString(int stars) {
 		EnumChatFormatting colorCode = null;
 		EnumChatFormatting defaultColorCode = EnumChatFormatting.GOLD;
 		int amount = 0;

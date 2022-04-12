@@ -334,12 +334,9 @@ public class ItemPriceInformation {
 
 							if (itemCosts.has(nextStarLevelString)) {
 								int upgradeCost = itemCosts.get(nextStarLevelString).getAsInt();
-								String star = Utils.getStarsString(nextStarLevelInt, stack.getDisplayName());
-								if (star == null) {
-									break;
-								}
+								String starString = Utils.getStarsString(nextStarLevelInt);
 								tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Upgrade to " +
-									star + EnumChatFormatting.YELLOW + EnumChatFormatting.BOLD + ": " +
+									starString + EnumChatFormatting.YELLOW + EnumChatFormatting.BOLD + ": " +
 									EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + upgradeCost + " " + essenceType);
 								if (requiresItems && itemsObject.has(nextStarLevelString)) {
 									boolean shouldShow = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
