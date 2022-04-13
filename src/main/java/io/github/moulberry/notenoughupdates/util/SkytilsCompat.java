@@ -2,12 +2,10 @@ package io.github.moulberry.notenoughupdates.util;
 
 import net.minecraft.item.ItemStack;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.cert.TrustAnchor;
+
 
 public class SkytilsCompat {
 	// Defer static initialization
@@ -59,6 +57,13 @@ public class SkytilsCompat {
 
 	}
 
+	public static boolean isSkytilsFullyLoaded() {
+		return Holder.isSkytilsFullyPresent;
+	}
+
+	public static boolean isSkytilsPresent() {
+		return Holder.isSkytilsPresent;
+	}
 	public static void renderSkytilsRarity(ItemStack stack, int x, int y) {
 		renderSkytilsRarity(stack, x, y, false);
 	}
