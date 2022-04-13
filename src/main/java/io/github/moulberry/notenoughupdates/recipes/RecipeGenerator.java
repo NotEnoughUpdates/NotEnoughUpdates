@@ -165,7 +165,7 @@ public class RecipeGenerator {
 
                 }
             }
-            recipes.add(new MobLootRecipe(drops, level, coins, xp, combatXp, name, null));
+            recipes.add(new MobLootRecipe(drops, level, coins, xp, combatXp, name, null, new ArrayList<>()));
         }
         boolean saved = false;
         try {

@@ -1570,4 +1570,10 @@ public class NEUManager {
 			}
 		}
 	}
+
+	public ItemStack createItem(String internalname) {
+		JsonObject jsonObject = itemMap.get(internalname);
+		if (jsonObject == null) return null;
+		return jsonToStack(jsonObject);
+	}
 }
