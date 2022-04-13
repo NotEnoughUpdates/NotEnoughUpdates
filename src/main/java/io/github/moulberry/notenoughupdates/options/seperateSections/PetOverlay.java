@@ -62,7 +62,7 @@ public class PetOverlay {
 		desc = "Change the style of the Pet Info overlay"
 	)
 	@ConfigEditorDropdown(
-		values = {"Background", "No Shadow", "Shadow Only", "Full Shadow"}
+		values = {"Background", "No Shadow", "Shadow", "Full Shadow"}
 	)
 	public int petInfoOverlayStyle = 0;
 
@@ -84,11 +84,11 @@ public class PetOverlay {
 
 	@Expose
 	@ConfigOption(
-		name = "GUI Colour",
+		name = "GUI Style",
 		desc = "Change the colour of the GUI"
 	)
 	@ConfigEditorDropdown(
-		values = {"Vanilla", "Grey", "Dark", "Transparent", "FSR"}
+		values = {"Minecraft", "Grey", "PacksHQ Dark", "Transparent", "FSR"}
 	)
 	public int colourStyle = 0;
 

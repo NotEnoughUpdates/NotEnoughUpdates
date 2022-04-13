@@ -929,7 +929,7 @@ public class ItemTooltipListener {
 		} else if (NotEnoughUpdates.INSTANCE.packDevEnabled) {
 			event.toolTip.add("");
 			event.toolTip.add(EnumChatFormatting.AQUA + "NEU Pack Dev Info:");
-			event.toolTip.add("Press " + EnumChatFormatting.GOLD + "[KEY]" + EnumChatFormatting.GRAY + " to copy line");
+			event.toolTip.add(EnumChatFormatting.GRAY + "Press " + EnumChatFormatting.GOLD + "[KEY]" + EnumChatFormatting.GRAY + " to copy line");
 
 			String internal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
 

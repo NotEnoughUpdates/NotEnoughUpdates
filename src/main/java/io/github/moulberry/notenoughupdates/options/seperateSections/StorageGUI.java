@@ -54,7 +54,7 @@ public class StorageGUI {
 		desc = "Change the visual style of the overlay"
 	)
 	@ConfigEditorDropdown(
-		values = {"Transparent", "Minecraft", "Dark", "Custom"}
+		values = {"Transparent", "Minecraft", "Grey", "Custom"}
 	)
 	@ConfigAccordionId(id = 1)
 	public int displayStyle = 0;

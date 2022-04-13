@@ -27,7 +27,7 @@ public class AHGraph {
 		desc = "Change the style of the graph GUI"
 	)
 	@ConfigEditorDropdown(
-		values = {"Minecraft", "Dark", "PacksHQ Dark", "FSR"}
+		values = {"Minecraft", "Grey", "PacksHQ Dark", "FSR"}
 	)
 	public int graphStyle = 0;
 

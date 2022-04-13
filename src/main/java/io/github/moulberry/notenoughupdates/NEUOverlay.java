@@ -775,8 +775,8 @@ public class NEUOverlay extends Gui {
 			displayInformationPane(new TextInfoPane(
 				this,
 				manager,
-				"Loading",
-				"Loading your requested information about " + name + "."
+				EnumChatFormatting.GRAY + "Loading",
+				EnumChatFormatting.GRAY + "Loading your requested information about " + name + EnumChatFormatting.GRAY + "."
 			));
 			infoPaneLoadingJob = InfoPane.create(this, manager, infoType, name, internalname, infoText)
 																	 .thenAccept(this::displayInformationPane);
