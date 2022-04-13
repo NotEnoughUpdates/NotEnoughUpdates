@@ -117,7 +117,7 @@ public class GuiItemRecipe extends GuiScreen {
 
 		List<RecipeSlot> slots = getAllRenderedSlots();
 		for (RecipeSlot slot : slots) {
-			Utils.drawItemStack(slot.getItemStack(), slot.getX(this), slot.getY(this));
+			Utils.drawItemStack(slot.getItemStack(), slot.getX(this), slot.getY(this), true);
 		}
 
 		drawArrows(currentRecipe, mouseX, mouseY);
