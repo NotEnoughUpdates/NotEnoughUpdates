@@ -14,8 +14,8 @@ public class HorseModifier extends EntityViewerModifier {
 		if (!(base instanceof EntityHorse))
 			return null;
 		EntityHorse horse = (EntityHorse) base;
-		if (info.has("type")) {
-			String type = info.get("type").getAsString().intern();
+		if (info.has("kind")) {
+			String type = info.get("kind").getAsString().intern();
 			switch (type) {
 				case "skeleton":
 					horse.setHorseType(4);
@@ -37,7 +37,7 @@ public class HorseModifier extends EntityViewerModifier {
 			}
 		}
 		if (info.has("armor")) {
-			JsonElement el = info.get("type");
+			JsonElement el = info.get("armor");
 			if (el.isJsonNull()) {
 				horse.setHorseArmorStack(null);
 			} else {
