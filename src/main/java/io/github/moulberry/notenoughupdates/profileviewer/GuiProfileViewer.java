@@ -2222,7 +2222,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		Panorama.drawPanorama(-backgroundRotation, guiLeft + 212, guiTop + 44, 81, 108, -0.37f, 0.6f,
-			getPanoramasForLocation(location == null ? "dynamic" : location, panoramaIdentifier)
+			Panorama.getPanoramasForLocation(location == null ? "dynamic" : location, panoramaIdentifier)
 		);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_pets);
@@ -3112,38 +3112,6 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public EntityOtherPlayerMP getEntityPlayer() {
 		return entityPlayer;
-	}
-
-	public ResourceLocation[] getPanoramasForLocation(String location, String identifier) {
-		if (panoramasMap.containsKey(location + identifier)) return panoramasMap.get(location + identifier);
-		try {
-			ResourceLocation[] panoramasArray = new ResourceLocation[6];
-			for (int i = 0; i < 6; i++) {
-				panoramasArray[i] =
-					new ResourceLocation("notenoughupdates:panoramas/" + location + "_" + identifier + "/panorama_" + i + ".jpg");
-				Minecraft.getMinecraft().getResourceManager().getResource(panoramasArray[i]);
-			}
-			panoramasMap.put(location + identifier, panoramasArray);
-			return panoramasArray;
-		} catch (IOException e) {
-			try {
-				ResourceLocation[] panoramasArray = new ResourceLocation[6];
-				for (int i = 0; i < 6; i++) {
-					panoramasArray[i] =
-						new ResourceLocation("notenoughupdates:panoramas/" + location + "/panorama_" + i + ".jpg");
-					Minecraft.getMinecraft().getResourceManager().getResource(panoramasArray[i]);
-				}
-				panoramasMap.put(location + identifier, panoramasArray);
-				return panoramasArray;
-			} catch (IOException e2) {
-				ResourceLocation[] panoramasArray = new ResourceLocation[6];
-				for (int i = 0; i < 6; i++) {
-					panoramasArray[i] = new ResourceLocation("notenoughupdates:panoramas/unknown/panorama_" + i + ".jpg");
-				}
-				panoramasMap.put(location + identifier, panoramasArray);
-				return panoramasArray;
-			}
-		}
 	}
 
 	private void drawExtraPage(int mouseX, int mouseY, float partialTicks) {
@@ -4717,7 +4685,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		Panorama.drawPanorama(-backgroundRotation - extraRotation, guiLeft + 23, guiTop + 44, 81, 108, 0.37f, 0.8f,
-			getPanoramasForLocation(location == null ? "unknown" : location, panoramaIdentifier)
+			Panorama.getPanoramasForLocation(location == null ? "unknown" : location, panoramaIdentifier)
 		);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_basic);

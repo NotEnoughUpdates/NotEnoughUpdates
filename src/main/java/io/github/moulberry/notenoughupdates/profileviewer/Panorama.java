@@ -15,6 +15,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 public class Panorama {
 	private static final TexLoc tl = new TexLoc(97, 19, Keyboard.KEY_P);
 	private static final TexLoc tl2 = new TexLoc(37, 80, Keyboard.KEY_L);
@@ -23,6 +26,41 @@ public class Panorama {
 
 	private static int lastWidth = 0;
 	private static int lastHeight = 0;
+
+
+	private static final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
+
+	public static synchronized ResourceLocation[] getPanoramasForLocation(String location, String identifier) {
+		if (panoramasMap.containsKey(location + identifier)) return panoramasMap.get(location + identifier);
+		try {
+			ResourceLocation[] panoramasArray = new ResourceLocation[6];
+			for (int i = 0; i < 6; i++) {
+				panoramasArray[i] =
+					new ResourceLocation("notenoughupdates:panoramas/" + location + "_" + identifier + "/panorama_" + i + ".jpg");
+				Minecraft.getMinecraft().getResourceManager().getResource(panoramasArray[i]);
+			}
+			panoramasMap.put(location + identifier, panoramasArray);
+			return panoramasArray;
+		} catch (IOException e) {
+			try {
+				ResourceLocation[] panoramasArray = new ResourceLocation[6];
+				for (int i = 0; i < 6; i++) {
+					panoramasArray[i] =
+						new ResourceLocation("notenoughupdates:panoramas/" + location + "/panorama_" + i + ".jpg");
+					Minecraft.getMinecraft().getResourceManager().getResource(panoramasArray[i]);
+				}
+				panoramasMap.put(location + identifier, panoramasArray);
+				return panoramasArray;
+			} catch (IOException e2) {
+				ResourceLocation[] panoramasArray = new ResourceLocation[6];
+				for (int i = 0; i < 6; i++) {
+					panoramasArray[i] = new ResourceLocation("notenoughupdates:panoramas/unknown/panorama_" + i + ".jpg");
+				}
+				panoramasMap.put(location + identifier, panoramasArray);
+				return panoramasArray;
+			}
+		}
+	}
 
 	public static void drawPanorama(
 		float angle,

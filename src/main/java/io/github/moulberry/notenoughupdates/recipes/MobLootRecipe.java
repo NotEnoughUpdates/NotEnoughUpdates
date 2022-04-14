@@ -1,5 +1,6 @@
 package io.github.moulberry.notenoughupdates.recipes;
 
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,10 +9,12 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.EntityViewer;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.profileviewer.Panorama;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
@@ -23,31 +26,35 @@ import java.util.stream.Collectors;
 public class MobLootRecipe implements NeuRecipe {
 
 	private static final int MOB_POS_X = 38, MOB_POS_Y = 100;
-	private static final int SLOT_POS_X = 82, SLOT_POS_Y = 23;
+	private static final int SLOT_POS_X = 82, SLOT_POS_Y = 24;
 
 	public static class MobDrop {
 		public final Ingredient drop;
 		public final String chance;
 		public final List<String> extra;
 
+		private ItemStack itemStack;
+
 		public MobDrop(Ingredient drop, String chance, List<String> extra) {
 			this.drop = drop;
 			this.chance = chance;
 			this.extra = extra;
 		}
-	}
 
-	public static ResourceLocation[] PANORAMAS = new ResourceLocation[6];
-
-	static {
-		for (int i = 0; i < 6; i++)
-			PANORAMAS[i] = new ResourceLocation("notenoughupdates:panoramas/unknown/panorama_" + i + ".jpg");
+		public ItemStack getItemStack() {
+			if (itemStack == null) {
+				itemStack = drop.getItemStack().copy();
+				ItemUtils.appendLore(itemStack, extra);
+			}
+			return itemStack;
+		}
 	}
 
 	public static ResourceLocation BACKGROUND = new ResourceLocation(
 		"notenoughupdates",
 		"textures/gui/mob_loot_tall.png"
 	);
+	private final Ingredient mobIngredient;
 	private final List<MobDrop> drops;
 	private final int coins;
 	private final int combatXp;
@@ -58,7 +65,12 @@ public class MobLootRecipe implements NeuRecipe {
 	private final List<String> extra;
 	private EntityLivingBase entityLivingBase;
 
+	private final String panoName;
+
+	private ResourceLocation[] panos = null;
+
 	public MobLootRecipe(
+		Ingredient mobIngredient,
 		List<MobDrop> drops,
 		int level,
 		int coins,
@@ -66,8 +78,10 @@ public class MobLootRecipe implements NeuRecipe {
 		int combatXp,
 		String name,
 		String render,
-		List<String> extra
+		List<String> extra,
+		String panoName
 	) {
+		this.mobIngredient = mobIngredient;
 		this.drops = drops;
 		this.level = level;
 		this.coins = coins;
@@ -76,6 +90,7 @@ public class MobLootRecipe implements NeuRecipe {
 		this.combatXp = combatXp;
 		this.name = name;
 		this.render = render;
+		this.panoName = panoName;
 	}
 
 	public String getName() {
@@ -92,6 +107,10 @@ public class MobLootRecipe implements NeuRecipe {
 
 	public int getCombatXp() {
 		return combatXp;
+	}
+
+	public Ingredient getMob() {
+		return mobIngredient;
 	}
 
 	public int getXp() {
@@ -116,7 +135,7 @@ public class MobLootRecipe implements NeuRecipe {
 
 	@Override
 	public Set<Ingredient> getIngredients() {
-		return Collections.emptySet();
+		return Sets.newHashSet(mobIngredient);
 	}
 
 	@Override
@@ -134,7 +153,7 @@ public class MobLootRecipe implements NeuRecipe {
 			slots.add(new RecipeSlot(
 				SLOT_POS_X + x * 16,
 				SLOT_POS_Y + y * 16,
-				mobDrop.drop.getItemStack()
+				mobDrop.getItemStack()
 			));
 		}
 		return slots;
@@ -162,6 +181,9 @@ public class MobLootRecipe implements NeuRecipe {
 
 	@Override
 	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
+		if (panos == null) {
+			panos = Panorama.getPanoramasForLocation(panoName, "day");
+		}
 		Panorama.drawPanorama(
 			((System.nanoTime() / 20000000000F) % 1) * 360,
 			gui.guiLeft + PANORAMA_POS_X,
@@ -170,7 +192,7 @@ public class MobLootRecipe implements NeuRecipe {
 			PANORAMA_HEIGHT,
 			0F,
 			0F,
-			PANORAMAS
+			panos
 		);
 		if (getRenderEntity() != null)
 			EntityViewer.renderEntity(entityLivingBase, gui.guiLeft + MOB_POS_X, gui.guiTop + MOB_POS_Y, mouseX, mouseY);
@@ -187,7 +209,7 @@ public class MobLootRecipe implements NeuRecipe {
 			PANORAMA_HEIGHT
 		)) {
 			List<String> stuff = new ArrayList<>(extra);
-			stuff.add(0, "[Lvl " + level + "] " + name);
+			stuff.add(0, (level > 0 ? "[Lv " + level + "] " : "") + name);
 			Utils.drawHoveringText(
 				stuff,
 				mouseX,
@@ -215,15 +237,12 @@ public class MobLootRecipe implements NeuRecipe {
 		recipe.addProperty("name", name);
 		recipe.addProperty("render", render);
 		recipe.addProperty("type", getType().getId());
+		recipe.addProperty("panorama", "unknown");
 		recipe.add("extra", JsonUtils.transformListToJsonArray(extra, JsonPrimitive::new));
 		recipe.add("drops", JsonUtils.transformListToJsonArray(drops, drop -> {
 			JsonObject dropObject = new JsonObject();
 			dropObject.addProperty("id", drop.drop.serialize());
-			JsonArray extraText = new JsonArray();
-			for (String extraLine : drop.extra) {
-				extraText.add(new JsonPrimitive(extraLine));
-			}
-			dropObject.add("extra", extraText);
+			dropObject.add("extra", JsonUtils.transformListToJsonArray(drop.extra, JsonPrimitive::new));
 			dropObject.addProperty("chance", drop.chance);
 			return dropObject;
 		}));
@@ -252,6 +271,7 @@ public class MobLootRecipe implements NeuRecipe {
 		}
 
 		return new MobLootRecipe(
+			new Ingredient(manager, outputItemJson.get("internalname").getAsString(), 1),
 			drops,
 			recipe.has("level") ? recipe.get("level").getAsInt() : 0,
 			recipe.has("coins") ? recipe.get("coins").getAsInt() : 0,
@@ -259,7 +279,8 @@ public class MobLootRecipe implements NeuRecipe {
 			recipe.has("combat_xp") ? recipe.get("combat_xp").getAsInt() : 0,
 			recipe.get("name").getAsString(),
 			recipe.has("render") && !recipe.get("render").isJsonNull() ? recipe.get("render").getAsString() : null,
-			JsonUtils.getJsonArrayOrEmpty(recipe, "extra", JsonElement::getAsString)
+			JsonUtils.getJsonArrayOrEmpty(recipe, "extra", JsonElement::getAsString),
+			recipe.has("panorama") ? recipe.get("panorama").getAsString() : "unknown"
 		);
 	}
 }
