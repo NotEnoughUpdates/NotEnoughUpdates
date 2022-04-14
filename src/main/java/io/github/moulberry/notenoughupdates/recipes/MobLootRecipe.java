@@ -44,7 +44,9 @@ public class MobLootRecipe implements NeuRecipe {
 		public ItemStack getItemStack() {
 			if (itemStack == null) {
 				itemStack = drop.getItemStack().copy();
-				ItemUtils.appendLore(itemStack, extra);
+				List<String> arrayList = new ArrayList<>(extra);
+				arrayList.add("§r§fDrop Chance: §6" + chance);
+				ItemUtils.appendLore(itemStack, arrayList);
 			}
 			return itemStack;
 		}
