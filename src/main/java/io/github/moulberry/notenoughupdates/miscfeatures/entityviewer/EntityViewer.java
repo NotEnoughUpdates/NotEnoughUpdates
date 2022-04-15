@@ -58,6 +58,7 @@ public class EntityViewer extends GuiScreen {
         put("MagmaCube", () -> new EntityMagmaCube(null));
         put("Wither", () -> new EntityWither(null));
         put("Enderman", () -> new EntityEnderman(null));
+				put("Mooshroom", ()-> new EntityMooshroom(null));
         put("WitherSkeleton", () -> {
             EntitySkeleton skeleton = new EntitySkeleton(null);
             skeleton.setSkeletonType(1);

@@ -1,4 +1,4 @@
-package io.github.moulberry.notenoughupdates.commands.dev;
+	package io.github.moulberry.notenoughupdates.commands.dev;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;

@@ -14,6 +14,7 @@ import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -21,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MobLootRecipe implements NeuRecipe {
 
@@ -142,21 +145,31 @@ public class MobLootRecipe implements NeuRecipe {
 
 	@Override
 	public Set<Ingredient> getOutputs() {
-		return drops.stream().map(it -> it.drop).collect(Collectors.toSet());
+		return Stream.concat(drops.stream().map(it -> it.drop), Stream.of(mobIngredient)).collect(Collectors.toSet());
 	}
 
 	@Override
 	public List<RecipeSlot> getSlots() {
 		List<RecipeSlot> slots = new ArrayList<>();
-		for (int i = 0; i < drops.size(); i++) {
-			MobDrop mobDrop = drops.get(i);
-			int x = i % 5;
-			int y = i / 5;
-			slots.add(new RecipeSlot(
-				SLOT_POS_X + x * 16,
-				SLOT_POS_Y + y * 16,
-				mobDrop.getItemStack()
+		BiConsumer<Integer, ItemStack> addSlot = (sl, is) -> slots.add(
+			new RecipeSlot(
+				SLOT_POS_X + (sl % 5) * 16,
+				SLOT_POS_Y + (sl / 5) * 16,
+				is
 			));
+		int i = 0;
+		for (; i < drops.size(); i++) {
+			MobDrop mobDrop = drops.get(i);
+			addSlot.accept(i, mobDrop.getItemStack());
+		}
+		if (coins > 0) {
+			addSlot.accept(i++, ItemUtils.getCoinItemStack(coins));
+		}
+		if (xp > 0) {
+			addSlot.accept(i++, Utils.createItemStack(Items.experience_bottle, "§a" + xp + " Experience"));
+		}
+		if (combatXp > 0) {
+			addSlot.accept(i++, Utils.createItemStack(Items.iron_sword, "§2" + combatXp + " Combat Experience"));
 		}
 		return slots;
 	}
@@ -211,7 +224,7 @@ public class MobLootRecipe implements NeuRecipe {
 			PANORAMA_HEIGHT
 		)) {
 			List<String> stuff = new ArrayList<>(extra);
-			stuff.add(0, (level > 0 ? "[Lv " + level + "] " : "") + name);
+			stuff.add(0, (level > 0 ? "§8[§7Lv " + level + "§8] §c" : "§c") + name);
 			Utils.drawHoveringText(
 				stuff,
 				mouseX,

@@ -191,8 +191,7 @@ public class GuiItemRecipe extends GuiScreen {
 				0, textureOffset,
 				TAB_TEXTURE_SIZE_X, TAB_SIZE_Y
 			);
-			Minecraft.getMinecraft().getTextureManager().bindTexture(recipeType.getIcon());
-			drawTexturedModalRect(tabPosX + 7, tabPosY + 7, 6, 0, 16, 16);
+			Utils.drawItemStack(recipeType.getIcon(), tabPosX + 7, tabPosY + 7);
 		}
 	}
 

@@ -110,7 +110,7 @@ public class VillagerTradeRecipe implements NeuRecipe {
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
             Utils.drawStringCenteredScaledMaxWidth(
                     minCost + " - " + maxCost, fontRenderer,
-                    gui.guiLeft + 50, gui.guiTop + 85, false, 75, 0xff00ff);
+                    gui.guiLeft + 50, gui.guiTop + 90, false, 75, 0xff00ff);
 
         }
     }

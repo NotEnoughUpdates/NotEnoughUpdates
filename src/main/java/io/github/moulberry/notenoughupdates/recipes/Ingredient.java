@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.recipes;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -75,9 +76,7 @@ public class Ingredient {
 	public ItemStack getItemStack() {
 		if (itemStack != null) return itemStack;
 		if (isCoins()) {
-			itemStack = new ItemStack(Items.gold_nugget);
-			itemStack.setStackDisplayName("\u00A7r\u00A76" + Utils.formatNumberWithDots(getCount()) + " Coins");
-			return itemStack;
+			return ItemUtils.getCoinItemStack(count);
 		}
 		JsonObject itemInfo = manager.getItemInformation().get(internalItemId);
 		itemStack = manager.jsonToStack(itemInfo);

@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -773,6 +774,9 @@ public class Utils {
 
 	public static ItemStack createItemStack(Item item, String displayname, String... lore) {
 		return createItemStack(item, displayname, 0, lore);
+	}
+	public static ItemStack createItemStack(Block item, String displayname, String... lore) {
+		return createItemStack(Item.getItemFromBlock(item), displayname, lore);
 	}
 
 	public static ItemStack createItemStack(Item item, String displayname, int damage, String... lore) {
