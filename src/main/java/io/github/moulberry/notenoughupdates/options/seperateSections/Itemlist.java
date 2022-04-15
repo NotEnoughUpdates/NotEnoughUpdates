@@ -107,4 +107,14 @@ public class Itemlist {
 	)
 	@ConfigEditorColour
 	public String backgroundColour = "15:6:0:0:255";
+
+	@Expose
+	@ConfigOption(
+		name = "Always show Monsters",
+		desc = "Always show Monster Items in the item list"
+	)
+	@ConfigEditorBoolean(
+		runnableId = 21
+	)
+	public boolean alwaysShowMonsters = false;
 }

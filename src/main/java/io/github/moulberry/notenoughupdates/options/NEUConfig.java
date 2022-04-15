@@ -150,6 +150,10 @@ public class NEUConfig extends Config {
 				return;
 			case 20:
 				FairySouls.getInstance().setTrackFairySouls(NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls);
+				return;
+			case 21:
+				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
+				return;
 		}
 	}
 

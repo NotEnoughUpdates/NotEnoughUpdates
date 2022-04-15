@@ -1358,7 +1358,7 @@ public class NEUOverlay extends Gui {
 		}
 
 		if (getSortMode() == SORT_MODE_ALL) {
-			return !internalname.matches(mobRegex);
+			return NotEnoughUpdates.INSTANCE.config.itemlist.alwaysShowMonsters || !internalname.matches(mobRegex);
 		} else if (getSortMode() == SORT_MODE_MOB) {
 			return internalname.matches(mobRegex);
 		} else if (getSortMode() == SORT_MODE_PET) {
