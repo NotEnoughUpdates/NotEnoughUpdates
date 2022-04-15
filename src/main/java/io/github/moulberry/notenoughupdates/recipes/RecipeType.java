@@ -8,8 +8,8 @@ import net.minecraft.item.ItemStack;
 
 public enum RecipeType {
 	CRAFTING("crafting", "Crafting", CraftingRecipe::parseCraftingRecipe, new ItemStack(Blocks.crafting_table)),
-	FORGE("forge", "Forge", ForgeRecipe::parseForgeRecipe, new ItemStack(Blocks.anvil)),
-	TRADE("trade", "Trade", VillagerTradeRecipe::parseStaticRecipe, new ItemStack(Items.emerald)),
+	FORGE("forge", "Forging", ForgeRecipe::parseForgeRecipe, new ItemStack(Blocks.anvil)),
+	TRADE("trade", "Trading", VillagerTradeRecipe::parseStaticRecipe, new ItemStack(Items.emerald)),
 	MOB_LOOT("drops", "Mob Loot", MobLootRecipe::parseRecipe, new ItemStack(Items.diamond_sword));
 
 	private final String id;

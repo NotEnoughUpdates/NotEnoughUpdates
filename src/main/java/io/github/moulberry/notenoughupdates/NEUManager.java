@@ -895,12 +895,12 @@ public class NEUManager {
 		String clickcommand = item.get("clickcommand").getAsString();
 		switch (clickcommand.intern()) {
 			case "viewrecipe":
-				displayGuiItemRecipe(internalName, null);
+				displayGuiItemRecipe(internalName);
 				break;
 			case "viewoption":
 				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
 		}
-		displayGuiItemRecipe(internalName, "");
+		displayGuiItemRecipe(internalName);
 	}
 
 	public void showRecipe(String internalName) {
@@ -990,16 +990,16 @@ public class NEUManager {
 		List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
 		if (usages.isEmpty()) return false;
 		Minecraft.getMinecraft().displayGuiScreen(
-			new GuiItemRecipe("Item Usages", usages, this));
+			new GuiItemRecipe(usages, this));
 		return true;
 	}
 
-	public boolean displayGuiItemRecipe(String internalName, String text) {
+	public boolean displayGuiItemRecipe(String internalName) {
 		if (!recipesMap.containsKey(internalName)) return false;
 		List<NeuRecipe> recipes = getAvailableRecipesFor(internalName);
 		if (recipes.isEmpty()) return false;
 		Minecraft.getMinecraft().displayGuiScreen(
-			new GuiItemRecipe(text != null ? text : "Item Recipe", recipes, this));
+			new GuiItemRecipe(recipes, this));
 		return true;
 	}
 
@@ -1010,7 +1010,7 @@ public class NEUManager {
 	public boolean failViewItem(String text) {
 		if (viewItemAttemptID != null && !viewItemAttemptID.isEmpty()) {
 			if (System.currentTimeMillis() - viewItemAttemptTime < 500) {
-				return displayGuiItemRecipe(viewItemAttemptID, text);
+				return displayGuiItemRecipe(viewItemAttemptID);
 			}
 		}
 		return false;

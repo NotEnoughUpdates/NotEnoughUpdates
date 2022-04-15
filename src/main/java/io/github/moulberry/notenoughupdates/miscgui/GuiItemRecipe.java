@@ -49,7 +49,6 @@ public class GuiItemRecipe extends GuiScreen {
 	private int currentIndex = 0;
 	private int currentTab = 0;
 
-	private final String title;
 	private final Map<RecipeType, List<NeuRecipe>> craftingRecipes = new HashMap<>();
 	private final List<RecipeType> tabs = new ArrayList<>();
 	private final NEUManager manager;
@@ -59,9 +58,8 @@ public class GuiItemRecipe extends GuiScreen {
 	public int xSize = 176;
 	public int ySize = 222;
 
-	public GuiItemRecipe(String title, List<NeuRecipe> unsortedRecipes, NEUManager manager) {
+	public GuiItemRecipe(List<NeuRecipe> unsortedRecipes, NEUManager manager) {
 		this.manager = manager;
-		this.title = title;
 
 		for (NeuRecipe recipe : unsortedRecipes) {
 			craftingRecipes.computeIfAbsent(recipe.getType(), ignored -> new ArrayList<>()).add(recipe);
@@ -123,7 +121,7 @@ public class GuiItemRecipe extends GuiScreen {
 		drawArrows(currentRecipe, mouseX, mouseY);
 
 		Utils.drawStringScaledMaxWidth(
-			title,
+			currentRecipe.getTitle(),
 			fontRendererObj,
 			guiLeft + TITLE_X,
 			guiTop + TITLE_Y,
@@ -286,7 +284,7 @@ public class GuiItemRecipe extends GuiScreen {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
 				ItemStack itemStack = slot.getItemStack();
 				if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
-					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), null);
+					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack));
 				} else if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
 				}
@@ -350,7 +348,7 @@ public class GuiItemRecipe extends GuiScreen {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
 				ItemStack itemStack = slot.getItemStack();
 				if (mouseButton == 0) {
-					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack), null);
+					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack));
 				} else if (mouseButton == 1) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
 				}

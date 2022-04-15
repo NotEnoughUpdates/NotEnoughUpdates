@@ -103,7 +103,7 @@ public class CraftingOverlay {
 					if (Keyboard.getEventKey() == Keyboard.KEY_R)
 						manager.showRecipe(recipeIngredient.getInternalItemId());
 					if (Keyboard.getEventKey() == Keyboard.KEY_U)
-						manager.displayGuiItemRecipe(recipeIngredient.getInternalItemId(), null);
+						manager.displayGuiItemRecipe(recipeIngredient.getInternalItemId());
 				}
 			});
 		});

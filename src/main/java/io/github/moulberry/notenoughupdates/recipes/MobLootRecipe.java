@@ -149,6 +149,15 @@ public class MobLootRecipe implements NeuRecipe {
 	}
 
 	@Override
+	public String getTitle() {
+		return getFullMobName();
+	}
+
+	public String getFullMobName() {
+		return (level > 0 ? "§8[§7Lv " + level + "§8] §c" : "§c") + name;
+	}
+
+	@Override
 	public List<RecipeSlot> getSlots() {
 		List<RecipeSlot> slots = new ArrayList<>();
 		BiConsumer<Integer, ItemStack> addSlot = (sl, is) -> slots.add(
@@ -215,7 +224,7 @@ public class MobLootRecipe implements NeuRecipe {
 			PANORAMA_HEIGHT
 		)) {
 			List<String> stuff = new ArrayList<>();
-			stuff.add((level > 0 ? "§8[§7Lv " + level + "§8] §c" : "§c") + name);
+			stuff.add(getFullMobName());
 			stuff.add("");
 			if (coins > 0)
 				stuff.add("§r§6Coins: " + coins);

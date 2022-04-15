@@ -17,6 +17,10 @@ public interface NeuRecipe {
 
 	RecipeType getType();
 
+	default String getTitle() {
+		return getType().getLabel();
+	}
+
 	default void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
 	}
 
