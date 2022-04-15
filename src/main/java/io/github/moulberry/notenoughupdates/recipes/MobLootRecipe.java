@@ -48,7 +48,7 @@ public class MobLootRecipe implements NeuRecipe {
 			if (itemStack == null) {
 				itemStack = drop.getItemStack().copy();
 				List<String> arrayList = new ArrayList<>(extra);
-				arrayList.add("§r§fDrop Chance: §6" + chance);
+				arrayList.add("§r§e§lDrop Chance: §6" + chance);
 				ItemUtils.appendLore(itemStack, arrayList);
 			}
 			return itemStack;
@@ -162,15 +162,6 @@ public class MobLootRecipe implements NeuRecipe {
 			MobDrop mobDrop = drops.get(i);
 			addSlot.accept(i, mobDrop.getItemStack());
 		}
-		if (coins > 0) {
-			addSlot.accept(i++, ItemUtils.getCoinItemStack(coins));
-		}
-		if (xp > 0) {
-			addSlot.accept(i++, Utils.createItemStack(Items.experience_bottle, "§a" + xp + " Experience"));
-		}
-		if (combatXp > 0) {
-			addSlot.accept(i++, Utils.createItemStack(Items.iron_sword, "§2" + combatXp + " Combat Experience"));
-		}
 		return slots;
 	}
 
@@ -223,8 +214,16 @@ public class MobLootRecipe implements NeuRecipe {
 			PANORAMA_WIDTH,
 			PANORAMA_HEIGHT
 		)) {
-			List<String> stuff = new ArrayList<>(extra);
-			stuff.add(0, (level > 0 ? "§8[§7Lv " + level + "§8] §c" : "§c") + name);
+			List<String> stuff = new ArrayList<>();
+			stuff.add((level > 0 ? "§8[§7Lv " + level + "§8] §c" : "§c") + name);
+			stuff.add("");
+			if (coins > 0)
+				stuff.add("§r§6Coins: " + coins);
+			if (xp > 0)
+				stuff.add("§r§aExperience: " + xp);
+			if (combatXp > 0)
+				stuff.add("§r§bCombat Experience: " + xp);
+			stuff.addAll(extra);
 			Utils.drawHoveringText(
 				stuff,
 				mouseX,
