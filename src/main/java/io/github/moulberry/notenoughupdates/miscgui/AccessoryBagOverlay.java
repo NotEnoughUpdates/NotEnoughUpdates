@@ -836,7 +836,7 @@ public class AccessoryBagOverlay {
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.trim().startsWith("Accessory Bag") && !containerName.contains("Thaumaturgy")) {
+			if (containerName.trim().startsWith("Accessory Bag") && !containerName.contains("Thaumaturgy") && !containerName.contains("Upgrades")) {
 				inAccessoryBag = true;
 				try {
 					int xSize = (int) Utils.getField(GuiContainer.class, eventGui, "xSize", "field_146999_f");
