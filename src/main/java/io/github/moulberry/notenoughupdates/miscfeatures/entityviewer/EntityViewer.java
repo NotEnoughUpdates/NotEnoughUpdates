@@ -164,6 +164,7 @@ public class EntityViewer extends GuiScreen {
         EntityLivingBase stack = entity;
         while (true) {
 
+						stack.ticksExisted = Minecraft.getMinecraft().thePlayer.ticksExisted;
             GuiInventory.drawEntityOnScreen(posX, (int) (posY - bottomOffset * scale), scale, posX - mouseX, (int) (posY - stack.getEyeHeight() * scale - mouseY), stack);
             bottomOffset += stack.getMountedYOffset();
             if (!(stack.riddenByEntity instanceof EntityLivingBase)) {
