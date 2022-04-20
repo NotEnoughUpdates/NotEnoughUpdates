@@ -81,9 +81,9 @@ public class ItemTooltipListener {
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
 		if (internalname == null) {
-			onItemToolTipInternalNameNull(event);
 			return;
 		}
+		petToolTipXPExtendPetMenu(event);
 
 		boolean hasEnchantments = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(
 			"enchantments",
@@ -741,10 +741,6 @@ public class ItemTooltipListener {
 		}
 	}
 
-	private void onItemToolTipInternalNameNull(ItemTooltipEvent event) {
-		petToolTipXPExtendPetMenu(event);
-	}
-
 	private List<String> petToolTipXPExtend(ItemTooltipEvent event) {
 		List<String> tooltipText = new ArrayList<>();
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.petExtendExp) {
@@ -929,7 +925,9 @@ public class ItemTooltipListener {
 		} else if (NotEnoughUpdates.INSTANCE.packDevEnabled) {
 			event.toolTip.add("");
 			event.toolTip.add(EnumChatFormatting.AQUA + "NEU Pack Dev Info:");
-			event.toolTip.add(EnumChatFormatting.GRAY + "Press " + EnumChatFormatting.GOLD + "[KEY]" + EnumChatFormatting.GRAY + " to copy line");
+			event.toolTip.add(
+				EnumChatFormatting.GRAY + "Press " + EnumChatFormatting.GOLD + "[KEY]" + EnumChatFormatting.GRAY +
+					" to copy line");
 
 			String internal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
 
