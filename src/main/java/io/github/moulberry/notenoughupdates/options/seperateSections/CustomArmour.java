@@ -17,8 +17,8 @@ public class CustomArmour {
 
 	@Expose
 	@ConfigOption(
-		name = "Click To Open Wardrobe",
-		desc = "Click on the hud to open /wardrobe"
+		name = "Click To Open equipment menu",
+		desc = "Click on the hud to open /equipment"
 	)
 	@ConfigEditorBoolean
 	public boolean sendWardrobeCommand = true;

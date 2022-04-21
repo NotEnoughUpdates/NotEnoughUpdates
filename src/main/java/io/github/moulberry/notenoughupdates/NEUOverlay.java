@@ -1871,9 +1871,7 @@ public class NEUOverlay extends Gui {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
-			if (containerName.contains(guiName)) {
-				wardrobeOpen = true;
-			} else wardrobeOpen = false;
+			wardrobeOpen = containerName.contains(guiName);
 		}
 		if (guiScreen instanceof GuiInventory) {
 			wardrobeOpen = false;
@@ -1881,27 +1879,6 @@ public class NEUOverlay extends Gui {
 		return wardrobeOpen;
 	}
 
-	private int wardrobePage = -1;
-
-	private int getWardrobePage() {
-		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (guiScreen instanceof GuiChest) {
-			if (isInNamedGui("Wardrobe")) {
-				GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-				ContainerChest container = (ContainerChest) chest.inventorySlots;
-				IInventory lower = container.getLowerChestInventory();
-				String containerName = lower.getDisplayName().getUnformattedText();
-				try {
-					wardrobePage = Integer.parseInt(containerName.substring(10, 11));
-				} catch (NumberFormatException e) {
-					System.out.println(containerName.charAt(10));
-					System.out.println("Did hypixel change the wardrobe string?");
-					wardrobePage = -1;
-				}
-			} else wardrobePage = -1;
-		}
-		return wardrobePage;
-	}
 
 	private ItemStack getChestSlotsAsItemStack(int slot) {
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -1913,61 +1890,13 @@ public class NEUOverlay extends Gui {
 		}
 	}
 
-	private int selectedArmor = 9;
-
-	private int getEquippedArmor() {
-		if (isInNamedGui("Wardrobe")) {
-			ItemStack nullTest1 = getChestSlotsAsItemStack(8);
-			ItemStack nullTest2 = getChestSlotsAsItemStack(17);
-			ItemStack nullTest3 = getChestSlotsAsItemStack(26);
-			ItemStack nullTest4 = getChestSlotsAsItemStack(35);
-			ItemStack nullTest5 = getChestSlotsAsItemStack(44);
-			if (nullTest1 != null || nullTest2 != null || nullTest3 != null || nullTest4 != null || nullTest5 != null) {
-				selectedArmor = 9;
-			}
-			for (int ii = 1; ii < 5; ii++) {
-				if (ii == 1 || selectedArmor == 9) {
-					if (getWardrobePage() == ii) {
-						for (int i = 8; i < 54; i += 9) {
-							ItemStack stack1 = getChestSlotsAsItemStack(i);
-							if (stack1 != null) {
-								String[] lore1 = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack1.getTagCompound());
-								for (String line : lore1) {
-									//System.out.println(line);
-									if (line.contains("to unequip this armor")) {
-										selectedArmor = i;
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return selectedArmor;
-	}
 
 	private ItemStack getWardrobeSlot(int armourSlot) {
-		if (isInNamedGui("Wardrobe")) {
-			if (getChestSlotsAsItemStack(getEquippedArmor() - armourSlot) != null && getEquippedArmor() != 9) {
-				return getChestSlotsAsItemStack(getEquippedArmor() - armourSlot);
-			} else return null;
+		if (isInNamedGui("Your Equipment")) {
+				return getChestSlotsAsItemStack(armourSlot);
 		} else return null;
 	}
 
-	public boolean isWardrobeSystemOnMainServer() {
-		JsonElement alphaWardrobeElement = Utils.getElement(Constants.DISABLE, "wardrobeFeature");
-		if (alphaWardrobeElement == null || !alphaWardrobeElement.isJsonObject()) {
-			return true;
-		}
-		JsonObject isWardrobe = alphaWardrobeElement.getAsJsonObject();
-		if (isWardrobe.has("enableNewWardrob")) {
-			return isWardrobe.get("enableNewWardrob").getAsBoolean();
-		} else {
-			return true;
-		}
-	}
 
 	public ItemStack slot1 = null;
 	public ItemStack slot2 = null;
@@ -2019,16 +1948,15 @@ public class NEUOverlay extends Gui {
 
 		if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud &&
 			NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
-			&& NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && isWardrobeSystemOnMainServer()) {
-			if (getWardrobeSlot(1) != null) {
-				slot1 = getWardrobeSlot(4);
-				slot2 = getWardrobeSlot(3);
-				slot3 = getWardrobeSlot(2);
-				slot4 = getWardrobeSlot(1);
+			&& NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			if (getWardrobeSlot(10) != null) {
+				slot1 = getWardrobeSlot(10);
+				slot2 = getWardrobeSlot(19);
+				slot3 = getWardrobeSlot(28);
+				slot4 = getWardrobeSlot(37);
 			}
 			if (guiScreen instanceof GuiInventory) {
 				renderingArmorHud = true;
-				selectedArmor = 9;
 
 				List<String> tooltipToDisplay = null;
 				if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 0) {
@@ -2070,7 +1998,7 @@ public class NEUOverlay extends Gui {
 
 					tooltipToDisplay = Lists.newArrayList(
 						EnumChatFormatting.RED + "Warning",
-						EnumChatFormatting.GREEN + "You need to open /wardrobe",
+						EnumChatFormatting.GREEN + "You need to open /equipment",
 						EnumChatFormatting.GREEN + "To cache your armour"
 					);
 					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
@@ -2078,9 +2006,9 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
 							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
 								if (Mouse.getEventButtonState()) {
-									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/wardrobe") ==
+									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/equipment") ==
 										0) {
-										NotEnoughUpdates.INSTANCE.sendChatMessage("/wardrobe");
+										NotEnoughUpdates.INSTANCE.sendChatMessage("/equipment");
 									}
 								}
 							}
@@ -2098,9 +2026,9 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
 							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
 								if (Mouse.getEventButtonState()) {
-									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/wardrobe") ==
+									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/equipment") ==
 										0) {
-										NotEnoughUpdates.INSTANCE.sendChatMessage("/wardrobe");
+										NotEnoughUpdates.INSTANCE.sendChatMessage("/equipment");
 									}
 								}
 							}
@@ -2172,7 +2100,7 @@ public class NEUOverlay extends Gui {
 
 				if (guiScreen instanceof GuiInventory) {
 					GL11.glTranslatef(0, 0, 401);
-					if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !isWardrobeSystemOnMainServer()) {
+					if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
 						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
 							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY);
 						}

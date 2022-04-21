@@ -812,7 +812,7 @@ public class PetInfoOverlay extends TextOverlay {
 								if (currentTime - lastPetSelect > 500) {
 									boolean foundDespawn = false;
 									for (String line : lore) {
-										if (line.equals("\u00a77\u00a7cClick to despawn.")) {
+										if (line.startsWith("\u00a77\u00a7cClick to despawn")) {
 											config.selectedPet = petIndex;
 											foundDespawn = true;
 											break;
