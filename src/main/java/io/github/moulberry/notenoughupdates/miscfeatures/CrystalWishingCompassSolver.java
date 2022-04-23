@@ -758,7 +758,6 @@ public class CrystalWishingCompassSolver {
 			getNameForCompassTarget(solutionPossibleTargets.iterator().next()) :
 			"WishingTarget";
 		String skytilsCommand = String.format("/sthw add %s %s", getSolutionCoordsText(), targetNameForSkytils);
-		System.out.println(skytilsCommand);
 		if (NotEnoughUpdates.INSTANCE.config.mining.wishingCompassAutocreateKnownWaypoints &&
 				solutionPossibleTargets.size() == 1) {
 			mc.thePlayer.addChatMessage(new ChatComponentText(destinationMessage));
