@@ -16,7 +16,6 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -36,8 +35,15 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,9 +96,8 @@ public class ItemTooltipListener {
 			10
 		);
 		Set<String> enchantIds = new HashSet<>();
-		if (hasEnchantments)
-			enchantIds =
-				event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").getCompoundTag("enchantments").getKeySet();
+		if (hasEnchantments) enchantIds = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").getCompoundTag(
+			"enchantments").getKeySet();
 
 		JsonObject enchantsConst = Constants.ENCHANTS;
 		JsonArray allItemEnchs = null;
@@ -845,23 +850,13 @@ public class ItemTooltipListener {
 
 	/**
 	 * This method does the following:
-	 * Move the pet inventory display tooltip to the left to avoid conflicts
 	 * Remove reforge stats for Legendary items from Hypixel if enabled
 	 * Show NBT data when holding LCONTROL
 	 */
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
-		if (event.toolTip == null || event.itemStack.getTagCompound() == null) return;
-
-		if (event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY") || event.itemStack.getTagCompound().getBoolean(
-			"NEUARMORINVDISPLAY")) {
-			if (event.toolTip.get(0).equals("§o§7Empty Equipment Slot§r")) {
-				event.toolTip.clear();
-			} else {
-				GlStateManager.translate(-200, 0, 0);
-			}
-		}
+		if (event.toolTip == null) return;
 
 		if (event.toolTip.size() > 2 && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.hideDefaultReforgeStats) {
 			String secondLine = StringUtils.stripControlCodes(event.toolTip.get(1));

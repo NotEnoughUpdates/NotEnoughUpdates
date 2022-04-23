@@ -2363,10 +2363,6 @@ public class NEUOverlay extends Gui {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_FSR);
 				}
 
-				if (slot1 != null) slot1.getTagCompound().setBoolean("NEUARMORINVDISPLAY", true);
-				if (slot2 != null) slot2.getTagCompound().setBoolean("NEUARMORINVDISPLAY", true);
-				if (slot3 != null) slot3.getTagCompound().setBoolean("NEUARMORINVDISPLAY", true);
-				if (slot4 != null) slot4.getTagCompound().setBoolean("NEUARMORINVDISPLAY", true);
 				GlStateManager.color(1, 1, 1, 1);
 				GL11.glTranslatef(0, 0, 401);
 				float yNumber = (float) (height - 167) / 2f;
@@ -2421,29 +2417,30 @@ public class NEUOverlay extends Gui {
 							}
 						}
 						//top slot
+						int tooltipXModifier = -175;
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
 							tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-							tooltipToDisplay = null;
-							GL11.glTranslatef(0, 0, -401);
+							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
+								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+							}
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
 							tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-							tooltipToDisplay = null;
-							GL11.glTranslatef(0, 0, -401);
+							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
+								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+							}
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
 							tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-							tooltipToDisplay = null;
-							GL11.glTranslatef(0, 0, -401);
+							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
+								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+							}
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
 							tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-							tooltipToDisplay = null;
-							GL11.glTranslatef(0, 0, -401);
+							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
+								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+							}
 						}
 					}
 					GL11.glTranslatef(0, 0, -401);
@@ -2479,9 +2476,8 @@ public class NEUOverlay extends Gui {
 							PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
 				}
 				if (petSlot == null) {
-					System.out.println("lol");
+					return;
 				}
-				petSlot.getTagCompound().setBoolean("NEUPETINVDISPLAY", true);
 				petSlot.getTagCompound().setBoolean(
 					"NEUHIDEPETTOOLTIP",
 					NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip
@@ -2546,8 +2542,7 @@ public class NEUOverlay extends Gui {
 									}
 								}
 								tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-								Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-								tooltipToDisplay = null;
+								Utils.drawHoveringText(tooltipToDisplay, mouseX - 200, mouseY, width, height, -1, fr);
 								GL11.glTranslatef(0, 0, -80);
 							}
 						}
@@ -2556,6 +2551,10 @@ public class NEUOverlay extends Gui {
 				}
 			}
 		}
+	}
+
+	private boolean shouldShowEquipmentTooltip(List<String> toolTip) {
+		return !toolTip.get(0).equals("§o§7Empty Equipment Slot§r");
 	}
 
 	/**
