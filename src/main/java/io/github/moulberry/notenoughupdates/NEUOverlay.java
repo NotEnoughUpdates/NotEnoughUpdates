@@ -21,6 +21,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
@@ -86,36 +87,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.ascending_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.close;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.descending_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.itemPaneTabArrow;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_haschild;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_mask;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.quickcommand_background;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.settings;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool_active;
-
 public class NEUOverlay extends Gui {
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
 		"notenoughupdates:supersecretassets/bald.png");
@@ -170,17 +141,27 @@ public class NEUOverlay extends Gui {
 	private final String petRegex = ".*?;[0-5]$";
 
 	private final ResourceLocation[] sortIcons = new ResourceLocation[]{
-		sort_all, sort_mob, sort_pet, sort_tool, sort_armor, sort_accessory
+		GuiTextures.sort_all,
+		GuiTextures.sort_mob,
+		GuiTextures.sort_pet,
+		GuiTextures.sort_tool,
+		GuiTextures.sort_armor,
+		GuiTextures.sort_accessory
 	};
 	private final ResourceLocation[] sortIconsActive = new ResourceLocation[]{
-		sort_all_active, sort_mob_active, sort_pet_active, sort_tool_active, sort_armor_active, sort_accessory_active
+		GuiTextures.sort_all_active,
+		GuiTextures.sort_mob_active,
+		GuiTextures.sort_pet_active,
+		GuiTextures.sort_tool_active,
+		GuiTextures.sort_armor_active,
+		GuiTextures.sort_accessory_active
 	};
 
 	private final ResourceLocation[] orderIcons = new ResourceLocation[]{
-		order_alphabetical, order_rarity, order_value
+		GuiTextures.order_alphabetical, GuiTextures.order_rarity, GuiTextures.order_value
 	};
 	private final ResourceLocation[] orderIconsActive = new ResourceLocation[]{
-		order_alphabetical_active, order_rarity_active, order_value_active
+		GuiTextures.order_alphabetical_active, GuiTextures.order_rarity_active, GuiTextures.order_value_active
 	};
 
 	//Various constants used for GUI structure
@@ -449,13 +430,13 @@ public class NEUOverlay extends Gui {
 				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableSettingsButton) {
 					return;
 				}
-				Minecraft.getMinecraft().getTextureManager().bindTexture(quickcommand_background);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.quickcommand_background);
 				GlStateManager.color(1, 1, 1, 1);
 				Utils.drawTexturedRect(x, y,
 					searchYSize + paddingUnscaled * 2, searchYSize + paddingUnscaled * 2, GL11.GL_NEAREST
 				);
 
-				Minecraft.getMinecraft().getTextureManager().bindTexture(settings);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.settings);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				Utils.drawTexturedRect((int) x + paddingUnscaled, (int) y + paddingUnscaled,
 					searchYSize, searchYSize
@@ -507,13 +488,13 @@ public class NEUOverlay extends Gui {
 					return;
 				}
 
-				Minecraft.getMinecraft().getTextureManager().bindTexture(quickcommand_background);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.quickcommand_background);
 				GlStateManager.color(1, 1, 1, 1);
 				Utils.drawTexturedRect(x, y,
 					searchYSize + paddingUnscaled * 2, searchYSize + paddingUnscaled * 2, GL11.GL_NEAREST
 				);
 
-				Minecraft.getMinecraft().getTextureManager().bindTexture(help);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				Utils.drawTexturedRect((int) x + paddingUnscaled, (int) y + paddingUnscaled,
 					getSearchBarYSize(), getSearchBarYSize()
@@ -609,7 +590,7 @@ public class NEUOverlay extends Gui {
 					tag.setString("qc_id", quickCommandStrSplit[0].toLowerCase().trim());
 					render.setTagCompound(tag);
 
-					Minecraft.getMinecraft().getTextureManager().bindTexture(quickcommand_background);
+					Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.quickcommand_background);
 					GlStateManager.color(1, 1, 1, 1);
 					Utils.drawTexturedRect(x, y,
 						bigItemSize + paddingUnscaled * 2, bigItemSize + paddingUnscaled * 2, GL11.GL_NEAREST
@@ -1679,12 +1660,12 @@ public class NEUOverlay extends Gui {
 
 		drawRect(leftSide - 1, top, leftSide - 1 + buttonXSize, top + ySize, fg.getRGB());
 		GlStateManager.color(1f, 1f, 1f, 1f);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(rightarrow);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.rightarrow);
 		Utils.drawTexturedRect(leftSide - 1 + leftPressed,
 			top + leftPressed,
 			buttonXSize, ySize, 1, 0, 0, 1
 		);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(rightarrow_overlay);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.rightarrow_overlay);
 		Utils.drawTexturedRect(leftSide - 1,
 			top,
 			buttonXSize, ySize, 1 - leftPressed, leftPressed, 1 - leftPressed, leftPressed
@@ -1698,12 +1679,12 @@ public class NEUOverlay extends Gui {
 
 		drawRect(rightSide + 1 - buttonXSize, top, rightSide + 1, top + ySize, fg.getRGB());
 		GlStateManager.color(1f, 1f, 1f, 1f);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(rightarrow);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.rightarrow);
 		Utils.drawTexturedRect(rightSide + 1 - buttonXSize + rightPressed,
 			top + rightPressed,
 			buttonXSize, ySize
 		);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(rightarrow_overlay);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.rightarrow_overlay);
 		Utils.drawTexturedRect(rightSide + 1 - buttonXSize,
 			top,
 			buttonXSize, ySize, 1 - rightPressed, rightPressed, 1 - rightPressed, rightPressed
@@ -2014,7 +1995,7 @@ public class NEUOverlay extends Gui {
 
 		//Tab
 		if (NotEnoughUpdates.INSTANCE.config.itemlist.tabOpen) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(itemPaneTabArrow);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.itemPaneTabArrow);
 			GlStateManager.color(1f, 1f, 1f, 0.3f);
 			Utils.drawTexturedRect(width - itemPaneTabOffset.getValue() * 64 / 20f, height / 2f - 32, 64, 64);
 			GlStateManager.bindTexture(0);
@@ -2076,8 +2057,8 @@ public class NEUOverlay extends Gui {
 				Utils.drawTexturedRect(orderIconX, iconTop, scaledITEM_SIZE, scaledITEM_SIZE, 0, 1, 0, 1, GL11.GL_NEAREST);
 
 				Minecraft.getMinecraft().getTextureManager().bindTexture(getCompareAscending().get(i)
-					? ascending_overlay
-					: descending_overlay);
+					? GuiTextures.ascending_overlay
+					: GuiTextures.descending_overlay);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				Utils.drawTexturedRect(orderIconX, iconTop, scaledITEM_SIZE, scaledITEM_SIZE, 0, 1, 0, 1, GL11.GL_NEAREST);
 				GlStateManager.bindTexture(0);
@@ -2261,7 +2242,7 @@ public class NEUOverlay extends Gui {
 			activeInfoPane.render(width, height, bg, fg, Utils.peekGuiScale(), mouseX, mouseY);
 
 			GlStateManager.color(1f, 1f, 1f, 1f);
-			Minecraft.getMinecraft().getTextureManager().bindTexture(close);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.close);
 			Utils.drawTexturedRect(rightSide - getBoxPadding() - 8, getBoxPadding() - 8, 16, 16);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		}
@@ -2768,7 +2749,7 @@ public class NEUOverlay extends Gui {
 					return;
 				}
 
-				Minecraft.getMinecraft().getTextureManager().bindTexture(item_mask);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.item_mask);
 				if (getFavourites().contains(json.get("internalname").getAsString())) {
 					if (NotEnoughUpdates.INSTANCE.config.itemlist.itemStyle == 0) {
 						GlStateManager.color(fgFavourite2.getRed() / 255f, fgFavourite2.getGreen() / 255f,
@@ -2850,7 +2831,7 @@ public class NEUOverlay extends Gui {
 
 				GlStateManager.translate(0, 0, 50);
 				if (searchedItemsSubgroup.containsKey(json.get("internalname").getAsString())) {
-					Minecraft.getMinecraft().getTextureManager().bindTexture(item_haschild);
+					Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.item_haschild);
 					GlStateManager.color(1, 1, 1, 1);
 					Utils.drawTexturedRect(x - 1, y - 1, ITEM_SIZE + 2, ITEM_SIZE + 2, GL11.GL_NEAREST);
 				}
