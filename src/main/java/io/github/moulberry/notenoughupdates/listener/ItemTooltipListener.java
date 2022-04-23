@@ -852,10 +852,15 @@ public class ItemTooltipListener {
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
-		if (event.toolTip == null) return;
-		//Render the pet inventory display tooltip to the left to avoid things from other mods rendering over the tooltip
-		if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
-			GlStateManager.translate(-200, 0, 0);
+		if (event.toolTip == null || event.itemStack.getTagCompound() == null) return;
+
+		if (event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY") || event.itemStack.getTagCompound().getBoolean(
+			"NEUARMORINVDISPLAY")) {
+			if (event.toolTip.get(0).equals("§o§7Empty Equipment Slot§r")) {
+				event.toolTip.clear();
+			} else {
+				GlStateManager.translate(-200, 0, 0);
+			}
 		}
 
 		if (event.toolTip.size() > 2 && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.hideDefaultReforgeStats) {
