@@ -2379,10 +2379,9 @@ public class NEUOverlay extends Gui {
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
 							Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-							GL11.glTranslatef(0, 0, -401);
 						}
 					}
-
+					GL11.glTranslatef(0, 0, -401);
 				}
 				if (slot1 != null && slot2 != null && slot3 != null && slot4 != null) {
 					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
