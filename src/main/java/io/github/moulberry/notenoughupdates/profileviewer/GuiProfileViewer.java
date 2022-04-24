@@ -5013,7 +5013,7 @@ public class GuiProfileViewer extends GuiScreen {
 				);
 
 				if (mouseX > guiLeft + 132 && mouseX < guiLeft + 212) {
-					if (mouseY > guiTop + 27 + 11f * i && mouseY < guiTop + 37 + 11f * i) {
+					if (mouseY > guiTop + 21 + 11f * i && mouseY < guiTop + 37 + 11f * i) {
 						List<String> split = splitter.splitToList(statNamePretty);
 						PlayerStats.Stats baseStats = PlayerStats.getBaseStats();
 						tooltipToDisplay = new ArrayList<>();
