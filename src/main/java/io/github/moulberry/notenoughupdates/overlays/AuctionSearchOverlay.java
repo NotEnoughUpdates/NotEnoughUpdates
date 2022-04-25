@@ -35,6 +35,7 @@ public class AuctionSearchOverlay {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay_tab_completed.png");
 	private static final ResourceLocation STAR = new ResourceLocation("notenoughupdates:auc_search/star.png");
+	private static final ResourceLocation MASTER_STAR = new ResourceLocation("notenoughupdates:auc_search/master_star.png");
 	private static final ResourceLocation STAR_BOARD = new ResourceLocation("notenoughupdates:auc_search/star_board.png");
 
 	private static final GuiElementTextField textField = new GuiElementTextField("", 200, 20, 0);
@@ -114,12 +115,16 @@ public class AuctionSearchOverlay {
 		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, h, 0, 203 / 512f, 0, h / 256f, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR_BOARD);
-		Utils.drawTexturedRect(width / 2 + 105, topY + 27, 55, 13, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(width / 2 + 105, topY + 27, 105, 13, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR);
 		GlStateManager.color(1, 1, 1, 1);
 		int stars = atLeast && selectedStars > 0 ? 10 : selectedStars;
 		for (int i = 0; i < stars; i++) {
+			if (i >= 5) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(MASTER_STAR);
+				GlStateManager.color(1, 1, 1, 1);
+			}
 			if (i >= selectedStars) {
 				GlStateManager.color(1, 1, 1, 0.3f);
 			}
