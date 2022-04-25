@@ -95,6 +95,10 @@ public class ItemTooltipListener {
 			"enchantments",
 			10
 		);
+		boolean hasAttributes = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(
+			"attributes",
+			10
+		);
 		Set<String> enchantIds = new HashSet<>();
 		if (hasEnchantments) enchantIds = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").getCompoundTag(
 			"enchantments").getKeySet();
@@ -352,6 +356,8 @@ public class ItemTooltipListener {
 						}
 					}
 				}
+			}
+			if (hasEnchantments || hasAttributes) {
 				for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
 					List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
 					String enchantName = GuiEnchantColour.getColourOpIndex(colourOps, 0);
@@ -392,8 +398,9 @@ public class ItemTooltipListener {
 					//9([a-zA-Z ]+?) ([0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X))(,|$)
 					Pattern pattern;
 					try {
-						pattern = Pattern.compile("(\\u00A79|\\u00A7(9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
-							"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
+						pattern = Pattern.compile(
+							"(\\u00A7b|\\u00A79|\\u00A7(b|9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
+								"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
 					} catch (Exception e) {
 						continue;
 					} //malformed regex
@@ -510,8 +517,13 @@ public class ItemTooltipListener {
 
 							if (!colourCode.equals("z")) {
 								line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
+								line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
 								line = line.replace(
 									"\u00A79\u00A7d\u00A7l" + enchantText,
+									"\u00A7" + colourCode + extraMods + enchantText
+								);
+								line = line.replace(
+									"\u00A7b\u00A7d\u00A7l" + enchantText,
 									"\u00A7" + colourCode + extraMods + enchantText
 								);
 								line = line.replace(
