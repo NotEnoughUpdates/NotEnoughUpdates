@@ -36,6 +36,7 @@ public class GuiElementTextField {
 	private int y;
 
 	private String prependText = "";
+	private String masterStarUnicode = "";
 	private int customTextColour = 0xffffffff;
 
 	private final GuiTextField textField = new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj,
@@ -393,6 +394,55 @@ public class GuiElementTextField {
 							}
 							textField.setText(before + "\u272A" + after);
 							textField.setCursorPosition(pos + 1);
+						}
+					}
+				} else {
+					for (int i = 0; i < 10; i++) {
+						if (typedChar == Integer.toString(i + 1).charAt(0)) {
+							int pos = textField.getCursorPosition() - 2;
+							if (pos >= 0 && pos < textField.getText().length()) {
+								if (textField.getText().charAt(pos) == '*') {
+									switch (i) {
+										case 0:
+											masterStarUnicode = "\u278A";
+											break;
+										case 1:
+											masterStarUnicode = "\u278B";
+											break;
+										case 2:
+											masterStarUnicode = "\u278C";
+											break;
+										case 3:
+											masterStarUnicode = "\u278D";
+											break;
+										case 4:
+											masterStarUnicode = "\u278E";
+											break;
+										case 5:
+											masterStarUnicode = "\u278F";
+											break;
+										case 6:
+											masterStarUnicode = "\u2790";
+											break;
+										case 7:
+											masterStarUnicode = "\u2791";
+											break;
+										case 8:
+											masterStarUnicode = "\u2792";
+											break;
+										case 9:
+											masterStarUnicode = "\u2793";
+											break;
+									}
+									String before = textField.getText().substring(0, pos);
+									String after = "";
+									if (pos + 2 < textField.getText().length()) {
+										after = textField.getText().substring(pos + 2);
+									}
+									textField.setText(before + masterStarUnicode + after);
+									textField.setCursorPosition(pos + 1);
+								}
+							}
 						}
 					}
 				}
