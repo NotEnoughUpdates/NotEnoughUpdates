@@ -20,7 +20,7 @@ public class LocationEdit {
 	@Expose
 	@ConfigOption(
 		name = "Edit Pet Info Position",
-		desc = "The position of the pet info overlay."
+		desc = "Change the position of the pet info overlay"
 	)
 	@ConfigEditorButton(
 		runnableId = 4,
@@ -37,13 +37,12 @@ public class LocationEdit {
 		runnableId = 5,
 		buttonText = "Edit"
 	)
-	@ConfigAccordionId(id = 0)
 	public Position todoPosition = new Position(100, 0);
 
 	@Expose
 	@ConfigOption(
 		name = "Edit Bonemerang Overlay Position",
-		desc = "The position of the Bonemerang overlay."
+		desc = "Change the position of the Bonemerang overlay"
 	)
 	@ConfigEditorButton(
 		runnableId = 9,
@@ -72,7 +71,7 @@ public class LocationEdit {
 	@Expose
 	@ConfigOption(
 		name = "Edit Toolbar Positions",
-		desc = "Edit the position of the QuickCommands / Search Bar"
+		desc = "Change the position of the QuickCommands / Search Bar"
 	)
 	@ConfigAccordionId(id = 1)
 	@ConfigEditorButton(runnableId = 6, buttonText = "Edit")
@@ -109,7 +108,7 @@ public class LocationEdit {
 	@Expose
 	@ConfigOption(
 		name = "Edit Crystal Overlay Position",
-		desc = "Change the position of the Crystal Hollows Overlay."
+		desc = "Change the position of the Crystal Hollows Overlay"
 	)
 	@ConfigEditorButton(
 		runnableId = 10,
@@ -121,7 +120,7 @@ public class LocationEdit {
 	@Expose
 	@ConfigOption(
 		name = "Edit Fuel Bar Position",
-		desc = "Set the position of the drill fuel bar"
+		desc = "Change the position of the drill fuel bar"
 	)
 	@ConfigEditorButton(
 		runnableId = 2,

@@ -7,7 +7,7 @@ public class Toolbar {
 	@Expose
 	@ConfigOption(
 		name = "Edit Toolbar Positions",
-		desc = "Edit the position of the QuickCommands / Search Bar"
+		desc = "Change the position of the QuickCommands / Search Bar"
 	)
 	@ConfigEditorButton(runnableId = 6, buttonText = "Edit")
 	public boolean positionButton = true;

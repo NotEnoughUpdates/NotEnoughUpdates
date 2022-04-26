@@ -136,7 +136,7 @@ public class DungeonMapConfig {
 	@Expose
 	@ConfigOption(
 		name = "Position",
-		desc = "The position of the map"
+		desc = "Change the position of the map"
 	)
 	public Position dmPosition = new Position(10, 10);
 }
