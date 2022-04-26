@@ -3,32 +3,32 @@
 
 <p align="center">
     <!-- release -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates-REPO/releases/latest" target="_blank">
-        <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates-REPO?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/releases/latest" target="_blank">
+        <img src="https://img.shields.io/github/v/release/NotEnoughUpdates/NotEnoughUpdates-REPO?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- downloads -->
-    <!-- <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
-        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?logo=GitHub&color=informational" alt="downloads">
+    <!-- <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/NotEnoughUpdates/NotEnoughUpdates/total?logo=GitHub&color=informational" alt="downloads">
     </a> -->
     <!-- lines -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/graphs/code-frequency" target="_blank">
-        <img src="https://img.shields.io/tokei/lines/github/Moulberry/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
+        <img src="https://img.shields.io/tokei/lines/github/NotEnoughUpdates/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
     </a>
     <!-- license -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/blob/master/LICENSE" target="_blank">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/master/LICENSE" target="_blank">
         <img src="https://img.shields.io/badge/license-CC%20BY--NC%203.0-informational" alt="license">
     </a>
     <!-- contributors -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/graphs/contributors" target="_blank">
-        <img src="https://img.shields.io/github/contributors/Moulberry/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/contributors" target="_blank">
+        <img src="https://img.shields.io/github/contributors/NotEnoughUpdates/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
     </a>
     <!-- discord -->
     <a href="https://discord.gg/moulberry" target="_blank">
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
-        <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases" target="_blank">
+        <img src="https://img.shields.io/github/downloads/NotEnoughUpdates/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </p>
 
@@ -47,7 +47,7 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 
 <u>**Installing the NotEnoughUpdates mod:**</u>
 
-1. Download the latest mod [release](https://github.com/Moulberry/NotEnoughUpdates/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
+1. Download the latest mod [release](https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases). If it says `this file may harm your computer`, click `allow anyways` as all java files will be flagged by Chrome.
 2. Add the NEU mod:
    - If you have java installed, double click the file, click `install`
    - If not, press the windows key + R; type `%appdata%`; click on the folder called `.minecraft`; click on the folder called `mods` and drag the mods file in here.
@@ -59,7 +59,7 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 
 ## Features
 
-- An [item list](https://github.com/Moulberry/NotEnoughUpdates-REPO) containing information and recipes about every item in skyblock.
+- An [item list](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) containing information and recipes about every item in skyblock.
 - A dungeons minimap.
 - Dungeon loot profit checker.
 - Item overlays for Treecapitator, Builder's Wand, Block Zapper, and Bonemerang.
