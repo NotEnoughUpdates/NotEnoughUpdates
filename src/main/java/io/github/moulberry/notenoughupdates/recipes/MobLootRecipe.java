@@ -1,7 +1,6 @@
 package io.github.moulberry.notenoughupdates.recipes;
 
 import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -14,7 +13,6 @@ import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class MobLootRecipe implements NeuRecipe {
 
@@ -144,8 +141,13 @@ public class MobLootRecipe implements NeuRecipe {
 	}
 
 	@Override
+	public Set<Ingredient> getCatalystItems() {
+		return Sets.newHashSet(mobIngredient);
+	}
+
+	@Override
 	public Set<Ingredient> getOutputs() {
-		return Stream.concat(drops.stream().map(it -> it.drop), Stream.of(mobIngredient)).collect(Collectors.toSet());
+		return drops.stream().map(it -> it.drop).collect(Collectors.toSet());
 	}
 
 	@Override

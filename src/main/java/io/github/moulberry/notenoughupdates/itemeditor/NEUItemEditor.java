@@ -14,7 +14,11 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -27,7 +31,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.*;
+import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.COLOUR;
+import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.FORCE_CAPS;
+import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.MULTILINE;
+import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.NO_SPACE;
+import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.NUM_ONLY;
 
 public class NEUItemEditor extends GuiScreen {
 	private final NEUManager manager;
@@ -52,6 +60,7 @@ public class NEUItemEditor extends GuiScreen {
 	private final Supplier<String> clickcommand;
 	private final Supplier<String> damage;
 	private NBTTagCompound nbttag;
+	private boolean hasChanges = false;
 
 	public NEUItemEditor(NEUManager manager, String internalname, JsonObject item) {
 		this.manager = manager;
@@ -295,6 +304,11 @@ public class NEUItemEditor extends GuiScreen {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) {
+		if (keyCode == Keyboard.KEY_ESCAPE && !hasChanges) {
+			Minecraft.getMinecraft().displayGuiScreen(null);
+			return;
+		}
+
 		for (GuiElement gui : options) {
 			gui.keyTyped(typedChar, keyCode);
 		}

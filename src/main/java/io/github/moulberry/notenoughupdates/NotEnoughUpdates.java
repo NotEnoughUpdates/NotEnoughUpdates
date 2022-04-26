@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
+import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
@@ -138,6 +139,7 @@ public class NotEnoughUpdates {
 	public NEUManager manager;
 	public NEUOverlay overlay;
 	public NEUConfig config;
+	public Navigation navigation = new Navigation(this);
 	public GuiScreen openGui = null;
 	public long lastOpenedGui = 0;
 	public Commands commands;
@@ -236,6 +238,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
 		MinecraftForge.EVENT_BUS.register(new RenderListener(this));
 		MinecraftForge.EVENT_BUS.register(new OldAnimationChecker());
+		MinecraftForge.EVENT_BUS.register(navigation);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

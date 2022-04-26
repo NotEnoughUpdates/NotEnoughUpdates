@@ -436,6 +436,10 @@ public class NEUManager {
 		for (Ingredient input : recipe.getIngredients()) {
 			usagesMap.computeIfAbsent(input.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
 		}
+		for (Ingredient catalystItem : recipe.getCatalystItems()) {
+			recipesMap.computeIfAbsent(catalystItem.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
+			usagesMap.computeIfAbsent(catalystItem.getInternalItemId(), ignored -> new HashSet<>()).add(recipe);
+		}
 	}
 
 	public Set<NeuRecipe> getRecipesFor(String internalName) {
