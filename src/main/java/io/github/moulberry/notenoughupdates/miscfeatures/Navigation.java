@@ -133,16 +133,15 @@ public class Navigation {
 		);
 		island = currentlyTrackedWaypoint.get("island").getAsString();
 		displayName = currentlyTrackedWaypoint.get("displayname").getAsString();
-		recalculateNextTeleporter();
+		recalculateNextTeleporter(SBInfo.getInstance().mode);
 	}
 
 	@SubscribeEvent
 	public void onLocationChange(LocationChangeEvent event) {
-		recalculateNextTeleporter();
+		recalculateNextTeleporter(event.newLocation);
 	}
 
-	public Teleporter recalculateNextTeleporter() {
-		String from = SBInfo.getInstance().mode;
+	public Teleporter recalculateNextTeleporter(String from) {
 		String to = island;
 		if (from == null || to == null) return null;
 		List<Teleporter> nextTeleporter = findNextTeleporter0(from, to, new HashSet<>());
@@ -166,7 +165,7 @@ public class Navigation {
 			if (nextTeleporter0 == null) continue;
 			if (minPath == null || nextTeleporter0.size() < minPathLength) {
 				minPathLength = nextTeleporter0.size();
-				nextTeleporter0.add(teleporter);
+				nextTeleporter0.add(0, teleporter);
 				minPath = nextTeleporter0;
 			}
 		}
