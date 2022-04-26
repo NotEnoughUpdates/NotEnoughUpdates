@@ -21,7 +21,6 @@ public class ReloadRepoCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		NotEnoughUpdates.INSTANCE.manager.reloadRepository();
-		Constants.reload();
 
 		NotEnoughUpdates.INSTANCE.newConfigFile();
 		if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
