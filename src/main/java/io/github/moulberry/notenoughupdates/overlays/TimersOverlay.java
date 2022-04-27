@@ -14,7 +14,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -794,7 +793,6 @@ public class TimersOverlay extends TextOverlay {
 						);
 				}
 
-
 				overlayStrings = new ArrayList<>();
 				for (int index : NotEnoughUpdates.INSTANCE.config.miscOverlays.todoText2) {
 						if (map.containsKey(index)) {
@@ -867,4 +865,3 @@ public class TimersOverlay extends TextOverlay {
 				ALWAYS,
 		}
 }
-
