@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.util;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
@@ -367,7 +368,9 @@ public class SBInfo {
 				//Replaced with for loop because in crystal hollows with events the line it's on can shift.
 				for (String line : lines) {
 					if (line.contains("⏣")) {
-						location = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
+						String l = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
+						if(!l.equals(location)) { new ScoreboardLocationChangeListener(location, l); }
+						location = l;
 						break;
 					}
 				}

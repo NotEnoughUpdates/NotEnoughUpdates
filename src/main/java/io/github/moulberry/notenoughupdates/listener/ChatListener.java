@@ -6,6 +6,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSol
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
+import io.github.moulberry.notenoughupdates.overlays.TimersOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -122,6 +123,7 @@ public class ChatListener {
 	public void onGuiChat(ClientChatReceivedEvent e) {
 		if (e.type == 2) {
 			CrystalMetalDetectorSolver.process(e.message);
+				TimersOverlay.processActionBar(e.message.getUnformattedText());
 			e.message = processChatComponent(e.message);
 			return;
 		} else if (e.type == 0) {
