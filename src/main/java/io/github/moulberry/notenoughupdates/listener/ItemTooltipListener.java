@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class ItemTooltipListener {
 	private static final String petToolTipRegex =
@@ -389,9 +390,9 @@ public class ItemTooltipListener {
 					try {
 						pattern = Pattern.compile("(\\u00A79|\\u00A7(9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
 							"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
-					} catch (Exception e) {
+					} catch (PatternSyntaxException e) {
 						continue;
-					} //malformed regex
+					}
 					Matcher matcher = pattern.matcher(line);
 					int matchCount = 0;
 					while (matcher.find() && matchCount < 5) {
@@ -400,73 +401,8 @@ public class ItemTooltipListener {
 						matchCount++;
 						int level = -1;
 						String levelStr = matcher.group("level");
-						if (levelStr == null) continue;
-						try {
-							level = Integer.parseInt(levelStr);
-						} catch (Exception e) {
-							switch (levelStr) {
-								case "I":
-									level = 1;
-									break;
-								case "II":
-									level = 2;
-									break;
-								case "III":
-									level = 3;
-									break;
-								case "IV":
-									level = 4;
-									break;
-								case "V":
-									level = 5;
-									break;
-								case "VI":
-									level = 6;
-									break;
-								case "VII":
-									level = 7;
-									break;
-								case "VIII":
-									level = 8;
-									break;
-								case "IX":
-									level = 9;
-									break;
-								case "X":
-									level = 10;
-									break;
-								case "XI":
-									level = 11;
-									break;
-								case "XII":
-									level = 12;
-									break;
-								case "XIII":
-									level = 13;
-									break;
-								case "XIV":
-									level = 14;
-									break;
-								case "XV":
-									level = 15;
-									break;
-								case "XVI":
-									level = 16;
-									break;
-								case "XVII":
-									level = 17;
-									break;
-								case "XVIII":
-									level = 18;
-									break;
-								case "XIX":
-									level = 19;
-									break;
-								case "XX":
-									level = 20;
-									break;
-							}
-						}
+						if (levelStr == null || levelStr.isEmpty()) continue;
+						level = Utils.parseIntOrRomanNumeral(levelStr);
 						boolean matches = false;
 						if (level > 0) {
 							switch (comparator) {
