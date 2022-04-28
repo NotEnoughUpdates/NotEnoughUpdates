@@ -42,6 +42,7 @@ import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
@@ -216,6 +217,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new CalendarOverlay());
 		MinecraftForge.EVENT_BUS.register(SBInfo.getInstance());
 		MinecraftForge.EVENT_BUS.register(CustomItemEffects.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(new Constants());
 		MinecraftForge.EVENT_BUS.register(new DungeonMap());
 		MinecraftForge.EVENT_BUS.register(new SunTzu());
 		MinecraftForge.EVENT_BUS.register(new MiningStuff());
