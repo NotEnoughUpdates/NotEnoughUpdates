@@ -268,9 +268,13 @@ public class FishingHelper {
 		double dY = particleY - hook.posY;
 		double tolerance = 0.5F;
 		if (hook.worldObj != null) {
-			IBlockState state = hook.worldObj.getBlockState(new BlockPos(particleX, particleY-1, particleZ));
-			if (state != null && (state.getBlock() == Blocks.flowing_lava || state.getBlock() == Blocks.flowing_water))
-				tolerance = 2.0F;
+			for (int i = -2; i < 2; i++) {
+				IBlockState state = hook.worldObj.getBlockState(new BlockPos(particleX, particleY + i, particleZ));
+				if (state != null && (state.getBlock() == Blocks.flowing_lava
+					|| state.getBlock() == Blocks.flowing_water
+					|| state.getBlock() == Blocks.lava))
+					tolerance = 2.0F;
+			}
 		}
 		if (Math.abs(dY) > tolerance) {
 			return HookPossibleRet.NOT_POSSIBLE;
