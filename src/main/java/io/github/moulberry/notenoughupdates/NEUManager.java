@@ -195,9 +195,6 @@ public class NEUManager {
 	}
 
 	public CompletableFuture<Boolean> fetchRepository() {
-		if (!NotEnoughUpdates.INSTANCE.config.hidden.autoupdate) {
-			return CompletableFuture.completedFuture(false);
-		}
 		return CompletableFuture.<Boolean>supplyAsync(() -> {
 			JDialog dialog = null;
 			try {
@@ -287,9 +284,10 @@ public class NEUManager {
 	 * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
 	 */
 	public void loadItemInformation() {
-		fetchRepository().thenAccept(i -> {
-			reloadRepository();
-		});
+		if (!NotEnoughUpdates.INSTANCE.config.hidden.autoupdate)
+			fetchRepository().thenAccept(i -> {
+				reloadRepository();
+			});
 	}
 
 	/**

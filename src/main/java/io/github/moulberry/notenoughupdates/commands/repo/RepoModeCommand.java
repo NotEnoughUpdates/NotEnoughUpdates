@@ -36,7 +36,8 @@ public class RepoModeCommand extends ClientCommandBase {
 			NotEnoughUpdates.INSTANCE.config.hidden.repoURL = "https://github.com/" + githubUser + "/" + githubRepo + "/archive/" + githubBranch + ".zip";
 			NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL = "https://api.github.com/repos/" + githubUser + "/" + githubRepo + "/commits/" + githubBranch;
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Set NEU repo URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoURL +
-			"\n\u00a75Set NEU repo commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
+				"\n\u00a75Set NEU repo commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Run </neureloadrepo fetch> to redownload your repo."));
 
 		} else {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a7cUsage:" +
