@@ -79,6 +79,7 @@ public class NEUManager {
 	public final APIManager auctionManager;
 
 	private final TreeMap<String, JsonObject> itemMap = new TreeMap<>();
+	private boolean hasBeenLoadedBefore = false;
 
 	private final TreeMap<String, HashMap<String, List<Integer>>> titleWordMap = new TreeMap<>();
 	private final TreeMap<String, HashMap<String, List<Integer>>> loreWordMap = new TreeMap<>();
@@ -1523,7 +1524,8 @@ public class NEUManager {
 				}
 			}
 
-			new RepositoryReloadEvent(repoLocation).post();
+			new RepositoryReloadEvent(repoLocation, !hasBeenLoadedBefore).post();
+			hasBeenLoadedBefore = true;
 		});
 	}
 

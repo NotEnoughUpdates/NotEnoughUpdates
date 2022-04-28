@@ -17,16 +17,23 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Navigation {
 
 	private List<Teleporter> teleporters = new ArrayList<>();
 	private Map<String, String> areaNames = new HashMap<>();
+	private Map<String, JsonObject> waypoints = new HashMap<>();
+
+	public Map<String, JsonObject> getWaypoints() {
+		return waypoints;
+	}
 
 	public static class Teleporter {
 		public final double x, y, z;
@@ -52,16 +59,21 @@ public class Navigation {
 	private BlockPos position = null;
 	private String island = null;
 	private String displayName = null;
+	private String internalname = null;
 
 	private Teleporter nextTeleporter = null;
 
+	private boolean isValidWaypoint(JsonObject object) {
+		return object.has("x")
+			&& object.has("y")
+			&& object.has("z")
+			&& object.has("island")
+			&& object.has("displayname")
+			&& object.has("internalname");
+	}
+
 	public void trackWaypoint(JsonObject trackNow) {
-		if (trackNow != null && (
-			!trackNow.has("x")
-				|| !trackNow.has("y")
-				|| !trackNow.has("z")
-				|| !trackNow.has("island")
-				|| !trackNow.has("displayname"))) {
+		if (trackNow != null && !isValidWaypoint(trackNow)) {
 			showError("Could not track waypoint. This is likely due to an outdated or broken repository.");
 			return;
 		}
@@ -88,6 +100,10 @@ public class Navigation {
 			}
 		}
 		this.teleporters = teleporters;
+		this.waypoints = NotEnoughUpdates.INSTANCE.manager
+			.getItemInformation().values().stream()
+			.filter(this::isValidWaypoint)
+			.collect(Collectors.toMap(it -> it.get("internalname").getAsString(), it -> it));
 		this.areaNames = JsonUtils.transformJsonObjectToMap(obj.getAsJsonObject("area_names"), JsonElement::getAsString);
 	}
 
@@ -119,18 +135,25 @@ public class Navigation {
 		return position;
 	}
 
+	public String getInternalname() {
+		return internalname;
+	}
+
 	private void updateData() {
 		if (currentlyTrackedWaypoint == null) {
 			position = null;
 			island = null;
 			displayName = null;
 			nextTeleporter = null;
+			internalname = null;
+			return;
 		}
 		position = new BlockPos(
 			currentlyTrackedWaypoint.get("x").getAsDouble(),
 			currentlyTrackedWaypoint.get("y").getAsDouble(),
 			currentlyTrackedWaypoint.get("z").getAsDouble()
 		);
+		internalname = currentlyTrackedWaypoint.get("internalname").getAsString();
 		island = currentlyTrackedWaypoint.get("island").getAsString();
 		displayName = currentlyTrackedWaypoint.get("displayname").getAsString();
 		recalculateNextTeleporter(SBInfo.getInstance().mode);
