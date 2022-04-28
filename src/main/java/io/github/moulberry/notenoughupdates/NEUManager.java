@@ -284,10 +284,13 @@ public class NEUManager {
 	 * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
 	 */
 	public void loadItemInformation() {
-		if (NotEnoughUpdates.INSTANCE.config.hidden.autoupdate)
+		if (NotEnoughUpdates.INSTANCE.config.hidden.autoupdate) {
 			fetchRepository().thenAccept(i -> {
 				reloadRepository();
 			});
+		} else {
+			reloadRepository();
+		}
 	}
 
 	/**
