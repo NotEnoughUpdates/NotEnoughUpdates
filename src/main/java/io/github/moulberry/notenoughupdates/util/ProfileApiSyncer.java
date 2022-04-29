@@ -8,66 +8,71 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class ProfileApiSyncer {
-    private static final ProfileApiSyncer INSTANCE = new ProfileApiSyncer();
+	private static final ProfileApiSyncer INSTANCE = new ProfileApiSyncer();
 
-    private final HashMap<String, Long> resyncTimes = new HashMap<>();
-    private final HashMap<String, Runnable> syncingCallbacks = new HashMap<>();
-    private final HashMap<String, Consumer<ProfileViewer.Profile>> finishSyncCallbacks = new HashMap<>();
-    private long lastResync;
+	private final HashMap<String, Long> resyncTimes = new HashMap<>();
+	private final HashMap<String, Runnable> syncingCallbacks = new HashMap<>();
+	private final HashMap<String, Consumer<ProfileViewer.Profile>> finishSyncCallbacks = new HashMap<>();
+	private long lastResync;
 
-    public static ProfileApiSyncer getInstance() {
-        return INSTANCE;
-    }
+	public static ProfileApiSyncer getInstance() {
+		return INSTANCE;
+	}
 
-    public void requestResync(String id, long timeBetween) {
-        requestResync(id, timeBetween, null);
-    }
+	public void requestResync(String id, long timeBetween) {
+		requestResync(id, timeBetween, null);
+	}
 
-    public void requestResync(String id, long timeBetween, Runnable syncingCallback) {
-        requestResync(id, timeBetween, null, null);
-    }
+	public void requestResync(String id, long timeBetween, Runnable syncingCallback) {
+		requestResync(id, timeBetween, null, null);
+	}
 
-    public void requestResync(String id, long timeBetween, Runnable syncingCallback, Consumer<ProfileViewer.Profile> finishSyncCallback) {
-        resyncTimes.put(id, timeBetween);
-        syncingCallbacks.put(id, syncingCallback);
-        finishSyncCallbacks.put(id, finishSyncCallback);
-    }
+	public void requestResync(
+		String id,
+		long timeBetween,
+		Runnable syncingCallback,
+		Consumer<ProfileViewer.Profile> finishSyncCallback
+	) {
+		resyncTimes.put(id, timeBetween);
+		syncingCallbacks.put(id, syncingCallback);
+		finishSyncCallbacks.put(id, finishSyncCallback);
+	}
 
-    public long getCurrentResyncTime() {
-        long time = -1;
-        for (long l : resyncTimes.values()) {
-            if (l > 0 && (l < time || time == -1)) time = l;
-        }
-        return time;
-    }
+	public long getCurrentResyncTime() {
+		long time = -1;
+		for (long l : resyncTimes.values()) {
+			if (l > 0 && (l < time || time == -1)) time = l;
+		}
+		return time;
+	}
 
-    public void tick() {
-        if (Minecraft.getMinecraft().thePlayer == null) return;
+	public void tick() {
+		if (Minecraft.getMinecraft().thePlayer == null) return;
 
-        long resyncTime = getCurrentResyncTime();
+		long resyncTime = getCurrentResyncTime();
 
-        if (resyncTime < 0) return;
+		if (resyncTime < 0) return;
 
-        long currentTime = System.currentTimeMillis();
+		long currentTime = System.currentTimeMillis();
 
-        if (currentTime - lastResync > resyncTime) {
-            lastResync = currentTime;
-            resyncTimes.clear();
+		if (currentTime - lastResync > resyncTime) {
+			lastResync = currentTime;
+			resyncTimes.clear();
 
-            for (Runnable r : syncingCallbacks.values()) r.run();
-            syncingCallbacks.clear();
+			for (Runnable r : syncingCallbacks.values()) r.run();
+			syncingCallbacks.clear();
 
-            forceResync();
-        }
-    }
+			forceResync();
+		}
+	}
 
-    private void forceResync() {
-        if (Minecraft.getMinecraft().thePlayer == null) return;
+	private void forceResync() {
+		if (Minecraft.getMinecraft().thePlayer == null) return;
 
-        String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-        NotEnoughUpdates.profileViewer.getProfileReset(uuid, (profile) -> {
-            for (Consumer<ProfileViewer.Profile> c : finishSyncCallbacks.values()) c.accept(profile);
-            finishSyncCallbacks.clear();
-        });
-    }
+		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
+		NotEnoughUpdates.profileViewer.getProfileReset(uuid, (profile) -> {
+			for (Consumer<ProfileViewer.Profile> c : finishSyncCallbacks.values()) c.accept(profile);
+			finishSyncCallbacks.clear();
+		});
+	}
 }

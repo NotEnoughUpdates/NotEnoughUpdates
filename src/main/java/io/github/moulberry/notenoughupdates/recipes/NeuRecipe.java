@@ -9,31 +9,54 @@ import java.util.List;
 import java.util.Set;
 
 public interface NeuRecipe {
-    Set<Ingredient> getIngredients();
+	Set<Ingredient> getIngredients();
 
-    Set<Ingredient> getOutputs();
+	Set<Ingredient> getOutputs();
 
-    List<RecipeSlot> getSlots();
+	List<RecipeSlot> getSlots();
 
-    void drawExtraInfo(GuiItemRecipe gui);
+	RecipeType getType();
 
-    default void drawExtraBackground(GuiItemRecipe gui) {
-    }
+	default String getTitle() {
+		return getType().getLabel();
+	}
 
-    default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
-    }
+	default void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
+	}
 
-    JsonObject serialize();
+	default void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
+	}
 
-    ResourceLocation getBackground();
+	default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
+	}
 
-    static NeuRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject output) {
-        if (recipe.has("type")) {
-            switch (recipe.get("type").getAsString().intern()) {
-                case "forge":
-                    return ForgeRecipe.parseForgeRecipe(manager, recipe, output);
-            }
-        }
-        return CraftingRecipe.parseCraftingRecipe(manager, recipe, output);
-    }
+	boolean hasVariableCost();
+
+	JsonObject serialize();
+
+	ResourceLocation getBackground();
+
+	static NeuRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject output) {
+		RecipeType recipeType = RecipeType.CRAFTING;
+		if (recipe.has("type")) {
+			recipeType = RecipeType.getRecipeTypeForId(recipe.get("type").getAsString());
+		}
+		if (recipeType == null) return null;
+		return recipeType.createRecipe(manager, recipe, output);
+	}
+
+	default boolean shouldUseForCraftCost() {
+		return true;
+	}
+
+	default boolean isAvailable() {
+		return true;
+	}
+
+	/**
+	 * @return an array of length two in the format [leftmost x, topmost y] of the page buttons
+	 */
+	default int[] getPageFlipPositionLeftTopCorner() {
+		return new int[]{110, 90};
+	}
 }

@@ -11,57 +11,63 @@ import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class InfoPane extends Gui {
-    final NEUOverlay overlay;
-    final NEUManager manager;
+	final NEUOverlay overlay;
+	final NEUManager manager;
 
-    public InfoPane(NEUOverlay overlay, NEUManager manager) {
-        this.overlay = overlay;
-        this.manager = manager;
-    }
+	public InfoPane(NEUOverlay overlay, NEUManager manager) {
+		this.overlay = overlay;
+		this.manager = manager;
+	}
 
-    public void reset() {}
+	public void reset() {}
 
-    public void tick() {}
+	public void tick() {}
 
-    public abstract void render(int width, int height, Color bg, Color fg, ScaledResolution scaledresolution, int mouseX,
-                                int mouseY);
+	public abstract void render(
+		int width, int height, Color bg, Color fg, ScaledResolution scaledresolution, int mouseX,
+		int mouseY
+	);
 
-    public abstract void mouseInput(int width, int height, int mouseX, int mouseY, boolean mouseDown);
+	public abstract void mouseInput(int width, int height, int mouseX, int mouseY, boolean mouseDown);
 
-    public void mouseInputOutside() {}
+	public void mouseInputOutside() {}
 
-    public abstract boolean keyboardInput();
+	public abstract boolean keyboardInput();
 
-    public void renderDefaultBackground(int width, int height, Color bg) {
-        int paneWidth = (int) (width / 3 * overlay.getWidthMult());
-        int rightSide = (int) (width * overlay.getInfoPaneOffsetFactor());
-        int leftSide = rightSide - paneWidth;
+	public void renderDefaultBackground(int width, int height, Color bg) {
+		int paneWidth = (int) (width / 3 * overlay.getWidthMult());
+		int rightSide = (int) (width * overlay.getInfoPaneOffsetFactor());
+		int leftSide = rightSide - paneWidth;
 
-        int boxLeft = leftSide + overlay.getBoxPadding() - 5;
-        int boxRight = rightSide - overlay.getBoxPadding() + 5;
+		int boxLeft = leftSide + overlay.getBoxPadding() - 5;
+		int boxRight = rightSide - overlay.getBoxPadding() + 5;
 
-        BackgroundBlur.renderBlurredBackground(NotEnoughUpdates.INSTANCE.config.itemlist.bgBlurFactor,
-                width, height,
-                boxLeft, overlay.getBoxPadding() - 5,
-                boxRight - boxLeft, height - overlay.getBoxPadding() * 2 + 10, true);
-        drawRect(boxLeft, overlay.getBoxPadding() - 5, boxRight,
-                height - overlay.getBoxPadding() + 5, bg.getRGB());
-    }
+		BackgroundBlur.renderBlurredBackground(NotEnoughUpdates.INSTANCE.config.itemlist.bgBlurFactor,
+			width, height,
+			boxLeft, overlay.getBoxPadding() - 5,
+			boxRight - boxLeft, height - overlay.getBoxPadding() * 2 + 10, true
+		);
+		drawRect(boxLeft, overlay.getBoxPadding() - 5, boxRight,
+			height - overlay.getBoxPadding() + 5, bg.getRGB()
+		);
+	}
 
-    public static CompletableFuture<? extends InfoPane> create(NEUOverlay overlay, NEUManager manager, String infoType,
-                                                               String name, String internalName, String infoText) {
-        switch (infoType.intern()) {
-            case "WIKI_URL":
-                return HTMLInfoPane.createFromWikiUrl(overlay, manager, name, infoText);
-            case "WIKI":
-                return CompletableFuture.completedFuture(
-                        HTMLInfoPane.createFromWikiText(overlay, manager, name, internalName, infoText));
-            case "HTML":
-                return CompletableFuture.completedFuture(
-                        new HTMLInfoPane(overlay, manager, name, internalName, infoText));
-            default:
-                return CompletableFuture.completedFuture(
-                        new TextInfoPane(overlay, manager, name, infoText));
-        }
-    }
+	public static CompletableFuture<? extends InfoPane> create(
+		NEUOverlay overlay, NEUManager manager, String infoType,
+		String name, String internalName, String infoText
+	) {
+		switch (infoType.intern()) {
+			case "WIKI_URL":
+				return HTMLInfoPane.createFromWikiUrl(overlay, manager, name, infoText);
+			case "WIKI":
+				return CompletableFuture.completedFuture(
+					HTMLInfoPane.createFromWikiText(overlay, manager, name, internalName, infoText, false));
+			case "HTML":
+				return CompletableFuture.completedFuture(
+					new HTMLInfoPane(overlay, manager, name, internalName, infoText, false));
+			default:
+				return CompletableFuture.completedFuture(
+					new TextInfoPane(overlay, manager, name, infoText));
+		}
+	}
 }

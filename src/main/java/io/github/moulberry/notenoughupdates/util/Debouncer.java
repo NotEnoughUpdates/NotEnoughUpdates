@@ -7,28 +7,28 @@ package io.github.moulberry.notenoughupdates.util;
  * within {@link #getDelayInNanoSeconds()} nanoseconds.
  */
 public class Debouncer {
-    private long lastPinged = 0L;
-    private final long delay;
+	private long lastPinged = 0L;
+	private final long delay;
 
-    public Debouncer(long minimumDelayInNanoSeconds) {
-        this.delay = minimumDelayInNanoSeconds;
-    }
+	public Debouncer(long minimumDelayInNanoSeconds) {
+		this.delay = minimumDelayInNanoSeconds;
+	}
 
-    public long getDelayInNanoSeconds() {
-        return delay;
-    }
+	public long getDelayInNanoSeconds() {
+		return delay;
+	}
 
-    public synchronized long timePassed() {
-        // longs are technically not atomic reads since they use two 32 bit registers
-        // so, yes, this technically has to be synchronized
-        return System.nanoTime() - lastPinged;
-    }
+	public synchronized long timePassed() {
+		// longs are technically not atomic reads since they use two 32 bit registers
+		// so, yes, this technically has to be synchronized
+		return System.nanoTime() - lastPinged;
+	}
 
-    public synchronized boolean trigger() {
-        long newPingTime = System.nanoTime();
-        long newDelay = newPingTime - lastPinged;
-        lastPinged = newPingTime;
-        return newDelay >= this.delay;
-    }
+	public synchronized boolean trigger() {
+		long newPingTime = System.nanoTime();
+		long newDelay = newPingTime - lastPinged;
+		lastPinged = newPingTime;
+		return newDelay >= this.delay;
+	}
 
 }

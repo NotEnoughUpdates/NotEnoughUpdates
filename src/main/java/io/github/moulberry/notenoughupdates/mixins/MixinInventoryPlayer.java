@@ -10,17 +10,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryPlayer.class)
 public class MixinInventoryPlayer {
-    @Inject(method = "changeCurrentItem", at = @At("RETURN"))
-    public void changeCurrentItemReturn(int direction, CallbackInfo ci) {
-        InventoryPlayer $this = (InventoryPlayer) (Object) this;
+	@Inject(method = "changeCurrentItem", at = @At("RETURN"))
+	public void changeCurrentItemReturn(int direction, CallbackInfo ci) {
+		InventoryPlayer $this = (InventoryPlayer) (Object) this;
 
-        $this.currentItem = InventoryStorageSelector.getInstance().onScroll(direction, $this.currentItem);
-    }
+		$this.currentItem = InventoryStorageSelector.getInstance().onScroll(direction, $this.currentItem);
+	}
 
-    @Inject(method = "changeCurrentItem", at = @At("HEAD"))
-    public void changeCurrentItemHead(int direction, CallbackInfo ci) {
-        InventoryPlayer $this = (InventoryPlayer) (Object) this;
+	@Inject(method = "changeCurrentItem", at = @At("HEAD"))
+	public void changeCurrentItemHead(int direction, CallbackInfo ci) {
+		InventoryPlayer $this = (InventoryPlayer) (Object) this;
 
-        SlotLocking.getInstance().changedSlot($this.currentItem);
-    }
+		SlotLocking.getInstance().changedSlot($this.currentItem);
+	}
 }

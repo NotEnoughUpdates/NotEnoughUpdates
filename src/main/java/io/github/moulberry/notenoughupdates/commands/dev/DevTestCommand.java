@@ -1,0 +1,141 @@
+	package io.github.moulberry.notenoughupdates.commands.dev;
+
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
+import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraftforge.common.MinecraftForge;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class DevTestCommand extends ClientCommandBase {
+
+	private static final List<String> DEV_TESTERS =
+		Arrays.asList("moulberry", "lucycoconut", "ironm00n", "ariyio", "throwpo", "lrg89", "dediamondpro", "lulonaut", "craftyoldminer");
+
+	private static final String[] DEV_FAIL_STRINGS = {
+		"No.",
+		"I said no.",
+		"You aren't allowed to use this.",
+		"Are you sure you want to use this? Type 'Yes' in chat.",
+		"Are you sure you want to use this? Type 'Yes' in chat.",
+		"Lmao you thought",
+		"Ok please stop",
+		"What do you want from me?",
+		"This command almost certainly does nothing useful for you",
+		"Ok, this is the last message, after this it will repeat",
+		"No.",
+		"I said no.",
+		"Dammit. I thought that would work. Uhh...",
+		"\u00a7dFrom \u00a7c[ADMIN] Minikloon\u00a77: If you use that command again, I'll have to ban you",
+		"",
+		"Ok, this is actually the last message, use the command again and you'll crash I promise"
+	};
+	private int devFailIndex = 0;
+
+	public DevTestCommand() {
+		super("neudevtest");
+	}
+
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		if (!DEV_TESTERS.contains(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
+			if (devFailIndex >= DEV_FAIL_STRINGS.length) {
+				throw new Error("L") {
+					@Override
+					public void printStackTrace() {
+						throw new Error("L");
+					}
+				};
+			}
+			if (devFailIndex == DEV_FAIL_STRINGS.length - 2) {
+				devFailIndex++;
+
+				ChatComponentText component = new ChatComponentText("\u00a7cYou are permanently banned from this server!");
+				component.appendText("\n");
+				component.appendText("\n\u00a77Reason: \u00a7rI told you not to run the command - Moulberry");
+				component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal");
+				component.appendText("\n");
+				component.appendText("\n\u00a77Ban ID: \u00a7r#49871982");
+				component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!");
+				Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(component);
+				return;
+			}
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
+				DEV_FAIL_STRINGS[devFailIndex++]));
+			return;
+		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
+			String currentProfile = SBInfo.getInstance().currentProfile;
+			SBInfo.Gamemode gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile);
+			sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD +
+				"You are on Profile " +
+				currentProfile +
+				" with the mode " +
+				gamemode));
+		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
+			if (args.length == 1) {
+				NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
+			} else {
+				NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
+			}
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("zone")) {
+			BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+			if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
+			SpecialBlockZone zone = CustomBiomes.INSTANCE.getSpecialZone(target);
+			Arrays.asList(
+				new ChatComponentText("Showing Zone Info for: " + target),
+				new ChatComponentText("Zone: " + (zone != null ? zone.name() : "null")),
+				new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
+				new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
+			).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
+			MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo
+				.getInstance()
+				.getLocation()));
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("positiontest")) {
+			NotEnoughUpdates.INSTANCE.openGui = new GuiPositionEditor();
+			return;
+		}
+
+		if (args.length == 2 && args[0].equalsIgnoreCase("pt")) {
+			EnumParticleTypes t = EnumParticleTypes.valueOf(args[1]);
+			FishingHelper.type = t;
+			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("dev")) {
+			NotEnoughUpdates.INSTANCE.config.hidden.dev = true;
+			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("saveconfig")) {
+			NotEnoughUpdates.INSTANCE.saveConfig();
+			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("searchmode")) {
+			NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA +
+				"I would never search"));
+			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("center")) {
+			double x = Math.floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f;
+			double z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f;
+			Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z);
+		}
+	}
+}

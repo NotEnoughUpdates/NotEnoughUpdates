@@ -17,10 +17,10 @@ import java.util.Set;
 
 public class CraftingRecipe implements NeuRecipe {
 
-    public static final ResourceLocation BACKGROUND = new ResourceLocation("textures/gui/container/crafting_table.png");
+    public static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates","textures/gui/crafting_table_tall.png");
 
     private static final int EXTRA_STRING_X = 132;
-    private static final int EXTRA_STRING_Y = 25;
+    private static final int EXTRA_STRING_Y = 50;
 
     private final NEUManager manager;
     private final Ingredient[] inputs;
@@ -42,6 +42,16 @@ public class CraftingRecipe implements NeuRecipe {
         Set<Ingredient> ingredients = Sets.newHashSet(inputs);
         ingredients.remove(null);
         return ingredients;
+    }
+
+    @Override
+    public RecipeType getType() {
+        return RecipeType.CRAFTING;
+    }
+
+    @Override
+    public boolean hasVariableCost() {
+        return false;
     }
 
     @Override
@@ -68,10 +78,10 @@ public class CraftingRecipe implements NeuRecipe {
                 if (input == null) continue;
                 ItemStack item = input.getItemStack();
                 if (item == null) continue;
-                slots.add(new RecipeSlot(30 + x * GuiItemRecipe.SLOT_SPACING, 17 + y * GuiItemRecipe.SLOT_SPACING, item));
+                slots.add(new RecipeSlot(30 + x * GuiItemRecipe.SLOT_SPACING, 48 + y * GuiItemRecipe.SLOT_SPACING, item));
             }
         }
-        slots.add(new RecipeSlot(124, 35, outputIngredient.getItemStack()));
+        slots.add(new RecipeSlot(124, 66, outputIngredient.getItemStack()));
         return slots;
     }
 
@@ -85,7 +95,7 @@ public class CraftingRecipe implements NeuRecipe {
     }
 
     @Override
-    public void drawExtraInfo(GuiItemRecipe gui) {
+    public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 
         String craftingText = getCraftText();

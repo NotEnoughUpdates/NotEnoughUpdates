@@ -6,11 +6,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.commands.SimpleCommand;
+import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -20,301 +21,410 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class FairySouls {
-    private static final String unknownProfile = "unknown";
-    private static List<BlockPos> currentSoulList = null;
-    private static List<BlockPos> currentSoulListClose = null;
-    private static HashMap<String, HashMap<String, Set<Integer>>> loadedFoundSouls = new HashMap<>();
+	private static FairySouls instance = null;
+	private static final String unknownProfile = "unknown";
 
-    private static final SimpleCommand.ProcessCommandRunnable fairysoulRunnable = new SimpleCommand.ProcessCommandRunnable() {
-        @Override
-        public void processCommand(ICommandSender sender, String[] args) {
-            if (args.length != 1) {
-                printHelp();
-                return;
-            }
-            String subcommand = args[0].toLowerCase();
+	private boolean trackSouls;
+	private boolean showSouls;
+	private HashMap<String, HashMap<String, Set<Integer>>> allProfilesFoundSouls = new HashMap<>();
+	private List<BlockPos> allSoulsInCurrentLocation;
+	private Set<Integer> foundSoulsInLocation;
+	private TreeMap<Double, BlockPos> missingSoulsDistanceSqMap;
+	private List<BlockPos> closestMissingSouls;
+	private String currentLocation;
+	private BlockPos lastPlayerPos;
 
-            switch (subcommand) {
-                case "help":
-                    printHelp();
-                    return;
-                case "on":
-                case "enable":
-                    print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
-                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = true;
-                    return;
-                case "off":
-                case "disable":
-                    print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
-                    NotEnoughUpdates.INSTANCE.config.misc.fariySoul = false;
-                    return;
-                case "clear": {
-                    String location = SBInfo.getInstance().getLocation();
-                    if (currentSoulList == null || location == null) {
-                        print(EnumChatFormatting.RED + "No fairy souls found in your current world");
-                    } else {
-                        HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
-                        Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
-                        for (int i = 0; i < currentSoulList.size(); i++) {
-                            found.add(i);
-                        }
-                        String profileName = SBInfo.getInstance().currentProfile;
-                        if (profileName == null) {
-                            if (loadedFoundSouls.containsKey(unknownProfile)) {
-                                loadedFoundSouls.get(unknownProfile).put(location, found);
-                            }
-                        } else {
-                            profileName = profileName.toLowerCase();
-                            if (!loadedFoundSouls.containsKey(profileName)) {
-                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
-                                loadedFoundSouls.put(profileName, profileData);
-                            }
-                            loadedFoundSouls.get(profileName).put(location, found);
-                        }
-                        print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as found");
-                    }
-                }
-                return;
-                case "unclear":
-                    String location = SBInfo.getInstance().getLocation();
-                    if (location == null) {
-                        print(EnumChatFormatting.RED + "No fairy souls found in your current world");
-                    } else {
-                        String profileName = SBInfo.getInstance().currentProfile;
-                        if (profileName == null) {
-                            if (loadedFoundSouls.containsKey(unknownProfile)) {
-                                loadedFoundSouls.get(unknownProfile).remove(location);
-                            }
-                        } else {
-                            profileName = profileName.toLowerCase();
-                            if (!loadedFoundSouls.containsKey(profileName)) {
-                                HashMap<String, Set<Integer>> profileData = new HashMap<>();
-                                loadedFoundSouls.put(profileName, profileData);
-                            }
-                            loadedFoundSouls.get(profileName).remove(location);
-                        }
-                        print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as not found");
-                    }
-                    return;
-            }
+	public static FairySouls getInstance() {
+		if (instance == null) {
+			instance = new FairySouls();
+		}
+		return instance;
+	}
 
-            print(EnumChatFormatting.RED + "Unknown subcommand: " + subcommand);
-        }
-    };
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		currentLocation = null;
+		trackSouls = NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls;
+		showSouls = NotEnoughUpdates.INSTANCE.config.misc.fariySoul;
+	}
 
-    private static HashMap<String, Set<Integer>> getFoundSoulsForProfile() {
-        String profile = SBInfo.getInstance().currentProfile;
-        if (profile == null) {
-            if (loadedFoundSouls.containsKey(unknownProfile))
-                return loadedFoundSouls.get(unknownProfile);
-        } else {
-            profile = profile.toLowerCase(Locale.getDefault());
-            if (loadedFoundSouls.containsKey(unknownProfile)) {
-                HashMap<String, Set<Integer>> unknownProfileData = loadedFoundSouls.remove(unknownProfile);
-                loadedFoundSouls.put(profile, unknownProfileData);
-                return unknownProfileData;
-            }
-            if (loadedFoundSouls.containsKey(profile)) {
-                return loadedFoundSouls.get(profile);
-            } else {
-                //create a new entry for this profile
-                HashMap<String, Set<Integer>> profileData = new HashMap<>();
-                loadedFoundSouls.put(profile, profileData);
-                return profileData;
-            }
-        }
-        return new HashMap<>();
-    }
+	public void initializeLocation() {
+		if (!trackSouls || currentLocation == null) {
+			return;
+		}
 
-    public static void load(File file, Gson gson) {
-        loadedFoundSouls = new HashMap<>();
-        String fileContent;
-        try {
-            fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
-                    .lines()
-                    .collect(Collectors.joining(System.lineSeparator()));
-        } catch (FileNotFoundException e) {
-            return;
-        }
+		foundSoulsInLocation = null;
+		closestMissingSouls = new ArrayList<>();
+		missingSoulsDistanceSqMap = new TreeMap<>();
+		lastPlayerPos = BlockPos.ORIGIN;
 
-        try {
-            //noinspection UnstableApiUsage
-            Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {}.getType();
-            loadedFoundSouls = gson.fromJson(fileContent, multiProfileSoulsType);
-        } catch (JsonSyntaxException e) {
-            //The file is in the old format, convert it to the new one and set the profile to unknown
-            try {
-                //noinspection UnstableApiUsage
-                Type singleProfileSoulsType = new TypeToken<HashMap<String, Set<Integer>>>() {}.getType();
-                loadedFoundSouls.put(unknownProfile, gson.fromJson(fileContent, singleProfileSoulsType));
-            } catch (JsonSyntaxException e2) {
-                System.err.println("Can't read file containing collected fairy souls, resetting.");
-            }
-        }
-    }
+		allSoulsInCurrentLocation = loadLocationFairySoulsFromConfig(currentLocation);
+		if (allSoulsInCurrentLocation == null) {
+			return;
+		}
 
-    public static void save(File file, Gson gson) {
-        try {
-            //noinspection ResultOfMethodCallIgnored
-            file.createNewFile();
+		foundSoulsInLocation = getFoundSoulsForProfile()
+			.computeIfAbsent(currentLocation, k -> new HashSet<>());
+		refreshMissingSoulInfo(true);
+	}
 
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-                writer.write(gson.toJson(loadedFoundSouls));
-            }
-        } catch (IOException ignored) {}
-    }
+	private void refreshMissingSoulInfo(boolean force) {
+		if (allSoulsInCurrentLocation == null) return;
 
-    public static void tick() {
-        if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
+		BlockPos currentPlayerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+		if (lastPlayerPos.equals(currentPlayerPos) && !force) {
+			return;
+		}
+		lastPlayerPos = currentPlayerPos;
 
-        if (Minecraft.getMinecraft().theWorld == null) {
-            currentSoulList = null;
-            return;
-        }
+		missingSoulsDistanceSqMap.clear();
+		for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
+			if (foundSoulsInLocation.contains(i)) {
+				continue;
+			}
+			BlockPos pos = allSoulsInCurrentLocation.get(i);
+			double distSq = pos.distanceSq(lastPlayerPos);
+			missingSoulsDistanceSqMap.put(distSq, pos);
+		}
+		closestMissingSouls.clear();
+		if (missingSoulsDistanceSqMap.isEmpty()) {
+			return;
+		}
 
-        JsonObject fairySouls = Constants.FAIRYSOULS;
-        if (fairySouls == null) return;
+		// rebuild the list of the closest ones
+		int maxSouls = 15;
+		int souls = 0;
+		for (BlockPos pos : missingSoulsDistanceSqMap.values()) {
+			closestMissingSouls.add(pos);
+			if (++souls >= maxSouls) break;
+		}
+	}
 
-        String location = SBInfo.getInstance().getLocation();
-        if (location == null) {
-            currentSoulList = null;
-            return;
-        }
+	private int interpolateColors(int color1, int color2, double factor) {
+		int r1 = ((color1 >> 16) & 0xff);
+		int g1 = ((color1 >> 8) & 0xff);
+		int b1 = (color1 & 0xff);
 
-        if (currentSoulList == null) {
-            if (fairySouls.has(location) && fairySouls.get(location).isJsonArray()) {
-                JsonArray locations = fairySouls.get(location).getAsJsonArray();
-                currentSoulList = new ArrayList<>();
-                for (int i = 0; i < locations.size(); i++) {
-                    try {
-                        String coord = locations.get(i).getAsString();
+		int r2 = (color2 >> 16) & 0xff;
+		int g2 = (color2 >> 8) & 0xff;
+		int b2 = color2 & 0xff;
 
-                        String[] split = coord.split(",");
-                        if (split.length == 3) {
-                            String xS = split[0];
-                            String yS = split[1];
-                            String zS = split[2];
+		int r3 = r1 + (int)Math.round(factor * (r2-r1));
+		int g3 = g1 + (int)Math.round(factor * (g2-g1));
+		int b3 = b1 + (int)Math.round(factor * (b2-b1));
 
-                            int x = Integer.parseInt(xS);
-                            int y = Integer.parseInt(yS);
-                            int z = Integer.parseInt(zS);
+		return (r3 & 0xff) << 16 |
+			(g3 & 0xff) << 8 |
+			(b3 & 0xff);	}
 
-                            currentSoulList.add(new BlockPos(x, y, z));
-                        }
-                    } catch (Exception ignored) {}
-                }
-            }
-        }
+	private double normalize(double value, double min, double max) {
+		return ((value - min) / (max - min));
+	}
 
-        if (currentSoulList != null && !currentSoulList.isEmpty()) {
-            TreeMap<Double, BlockPos> distanceSqMap = new TreeMap<>();
+	@SubscribeEvent
+	public void onRenderLast(RenderWorldLastEvent event) {
+		if (!showSouls || !trackSouls || currentLocation == null || closestMissingSouls.isEmpty()) {
+			return;
+		}
 
-            HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
+		int closeColor = 0x772991; // 0xa839ce
+		int farColor = 0xCEB4D1;
+		double farSoulDistSq = lastPlayerPos.distanceSq(closestMissingSouls.get(closestMissingSouls.size()-1));
+		for (BlockPos currentSoul : closestMissingSouls) {
+			double currentDistSq = lastPlayerPos.distanceSq(currentSoul);
+			double factor = normalize(currentDistSq, 0.0, farSoulDistSq);
+			int rgb = interpolateColors(closeColor, farColor, Math.min(0.40, factor));
+			RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
+		}
+	}
 
-            Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
+	public void setShowFairySouls(boolean enabled) {
+		NotEnoughUpdates.INSTANCE.config.misc.fariySoul = enabled;
+		showSouls = enabled;
+	}
 
-            for (int i = 0; i < currentSoulList.size(); i++) {
-                if (found.contains(i)) continue;
+	public void setTrackFairySouls(boolean enabled) {
+		NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls = enabled;
+		trackSouls = enabled;
+	}
 
-                BlockPos pos = currentSoulList.get(i);
-                double distSq = pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition());
-                distanceSqMap.put(distSq, pos);
-            }
+	public void markClosestSoulFound() {
+		if (!trackSouls) return;
+		int closestIndex = -1;
+		double closestDistSq = 10 * 10;
+		for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
+			BlockPos pos = allSoulsInCurrentLocation.get(i);
 
-            int maxSouls = 15;
-            int souls = 0;
-            currentSoulListClose = new ArrayList<>();
-            for (BlockPos pos : distanceSqMap.values()) {
-                currentSoulListClose.add(pos);
-                if (++souls >= maxSouls) break;
-            }
-        }
-    }
+			double distSq = pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition());
 
-    private static void print(String s) {
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(s));
-    }
+			if (distSq < closestDistSq) {
+				closestDistSq = distSq;
+				closestIndex = i;
+			}
+		}
+		if (closestIndex != -1) {
+			foundSoulsInLocation.add(closestIndex);
+			refreshMissingSoulInfo(true);
+		}
+	}
 
-    private static void printHelp() {
-        print("");
-        print(EnumChatFormatting.DARK_PURPLE.toString() + EnumChatFormatting.BOLD + "     NEU Fairy Soul Waypoint Guide");
-        print(EnumChatFormatting.LIGHT_PURPLE + "Shows waypoints for every fairy soul in your world");
-        print(EnumChatFormatting.LIGHT_PURPLE + "Clicking a fairy soul automatically removes it from the list");
-        if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-            print(EnumChatFormatting.DARK_RED + "" + EnumChatFormatting.OBFUSCATED + "Ab" + EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + "!" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " This feature cannot and will not work in Dungeons. " + EnumChatFormatting.DARK_RED + "!" + EnumChatFormatting.OBFUSCATED + "Ab");
-        }
-        print(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "     Commands:");
-        print(EnumChatFormatting.YELLOW + "/neusouls help          - Display this message");
-        print(EnumChatFormatting.YELLOW + "/neusouls on/off        - Enable/disable the waypoint markers");
-        print(EnumChatFormatting.YELLOW + "/neusouls clear/unclear - Marks every waypoint in your current world as completed/uncompleted");
-        print("");
-    }
+	public void markAllAsFound() {
+		if (!trackSouls) {
+			print(EnumChatFormatting.RED + "Fairy soul tracking is turned off, turn it on using /neu");
+			return;
+		}
+		if (allSoulsInCurrentLocation == null) {
+			print(EnumChatFormatting.RED + "No fairy souls found in your current world");
+			return;
+		}
+		for (int i = 0; i < allSoulsInCurrentLocation.size(); i++) {
+			foundSoulsInLocation.add(i);
+		}
+		refreshMissingSoulInfo(true);
 
-    @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload event) {
-        currentSoulList = null;
-    }
+		print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as found");
+	}
 
-    @SubscribeEvent
-    public void onChatReceived(ClientChatReceivedEvent event) {
-        if (currentSoulList == null) return;
+	public void markAllAsMissing() {
+		if (!trackSouls) {
+			print(EnumChatFormatting.RED + "Fairy soul tracking is turned off, turn it on using /neu");
+			return;
+		}
+		if (allSoulsInCurrentLocation == null) {
+			print(EnumChatFormatting.RED + "No fairy souls found in your current world");
+			return;
+		}
+		foundSoulsInLocation.clear();
+		refreshMissingSoulInfo(true);
 
-        if (event.message.getFormattedText().equals("\u00A7r\u00A7dYou have already found that Fairy Soul!\u00A7r") ||
-                event.message.getFormattedText().equals("\u00A7d\u00A7lSOUL! \u00A7fYou found a \u00A7r\u00A7dFairy Soul\u00A7r\u00A7f!\u00A7r")) {
-            String location = SBInfo.getInstance().getLocation();
-            if (location == null) return;
+		print(EnumChatFormatting.DARK_PURPLE + "Marked all fairy souls as not found");
+	}
 
-            int closestIndex = -1;
-            double closestDistSq = 10 * 10;
-            for (int i = 0; i < currentSoulList.size(); i++) {
-                BlockPos pos = currentSoulList.get(i);
+	private HashMap<String, Set<Integer>> getFoundSoulsForProfile() {
+		String profile = SBInfo.getInstance().currentProfile;
+		if (profile == null) {
+			if (allProfilesFoundSouls.containsKey(unknownProfile))
+				return allProfilesFoundSouls.get(unknownProfile);
+		} else {
+			profile = profile.toLowerCase(Locale.getDefault());
+			if (allProfilesFoundSouls.containsKey(unknownProfile)) {
+				HashMap<String, Set<Integer>> unknownProfileData = allProfilesFoundSouls.remove(unknownProfile);
+				allProfilesFoundSouls.put(profile, unknownProfileData);
+				return unknownProfileData;
+			}
+			if (allProfilesFoundSouls.containsKey(profile)) {
+				return allProfilesFoundSouls.get(profile);
+			} else {
+				// Create a new entry for this profile
+				HashMap<String, Set<Integer>> profileData = new HashMap<>();
+				allProfilesFoundSouls.put(profile, profileData);
+				return profileData;
+			}
+		}
+		return new HashMap<>();
+	}
 
-                double distSq = pos.distanceSq(Minecraft.getMinecraft().thePlayer.getPosition());
+	private static List<BlockPos> loadLocationFairySoulsFromConfig(String currentLocation) {
+		JsonObject fairySoulList = Constants.FAIRYSOULS;
+		if (fairySoulList == null) {
+			return null;
+		}
 
-                if (distSq < closestDistSq) {
-                    closestDistSq = distSq;
-                    closestIndex = i;
-                }
-            }
-            if (closestIndex != -1) {
-                HashMap<String, Set<Integer>> foundSouls = getFoundSoulsForProfile();
-                Set<Integer> found = foundSouls.computeIfAbsent(location, k -> new HashSet<>());
-                found.add(closestIndex);
-            }
-        }
-    }
+		if (!fairySoulList.has(currentLocation) || !fairySoulList.get(currentLocation).isJsonArray()) {
+			return null;
+		}
 
-    @SubscribeEvent
-    public void onRenderLast(RenderWorldLastEvent event) {
-        if (!NotEnoughUpdates.INSTANCE.config.misc.fariySoul) return;
+		JsonArray locations = fairySoulList.get(currentLocation).getAsJsonArray();
+		List<BlockPos> locationSouls = new ArrayList<>();
+		for (int i = 0; i < locations.size(); i++) {
+			try {
+				String coord = locations.get(i).getAsString();
 
-        String location = SBInfo.getInstance().getLocation();
-        if (location == null) return;
-        if (currentSoulList == null || currentSoulList.isEmpty()) return;
+				String[] split = coord.split(",");
+				if (split.length == 3) {
+					String xS = split[0];
+					String yS = split[1];
+					String zS = split[2];
 
+					int x = Integer.parseInt(xS);
+					int y = Integer.parseInt(yS);
+					int z = Integer.parseInt(zS);
 
-        int rgb = 0xa839ce;
-        for (BlockPos currentSoul : currentSoulListClose) {
-            RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
-        }
-    }
+					locationSouls.add(new BlockPos(x, y, z));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
 
-    public static class FairySoulsCommandAlt extends SimpleCommand {
-        public FairySoulsCommandAlt() {
-            super("fairysouls", fairysoulRunnable);
-        }
-    }
+		if (locationSouls.size() == 0) {
+			return null;
+		}
 
-    public static class FairySoulsCommand extends SimpleCommand {
-        public FairySoulsCommand() {
-            super("neusouls", fairysoulRunnable);
-        }
-    }
+		return locationSouls;
+	}
+
+	public void loadFoundSoulsForAllProfiles(File file, Gson gson) {
+		allProfilesFoundSouls = new HashMap<>();
+		String fileContent;
+		try {
+			fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+				.lines()
+				.collect(Collectors.joining(System.lineSeparator()));
+		} catch (FileNotFoundException e) {
+			// it is possible that the collected_fairy_souls.json won't exist
+			return;
+		}
+
+		try {
+			//noinspection UnstableApiUsage
+			Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {}.getType();
+			allProfilesFoundSouls = gson.fromJson(fileContent, multiProfileSoulsType);
+		} catch (JsonSyntaxException e) {
+			//The file is in the old format, convert it to the new one and set the profile to unknown
+			try {
+				//noinspection UnstableApiUsage
+				Type singleProfileSoulsType = new TypeToken<HashMap<String, Set<Integer>>>() {}.getType();
+				allProfilesFoundSouls.put(unknownProfile, gson.fromJson(fileContent, singleProfileSoulsType));
+			} catch (JsonSyntaxException e2) {
+				System.err.println("Can't read file containing collected fairy souls, resetting.");
+			}
+		}
+	}
+
+	public void saveFoundSoulsForAllProfiles(File file, Gson gson) {
+		try {
+			//noinspection ResultOfMethodCallIgnored
+			file.createNewFile();
+
+			try (
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(file),
+					StandardCharsets.UTF_8
+				))
+			) {
+				writer.write(gson.toJson(allProfilesFoundSouls));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void tick() {
+		if (!trackSouls) return;
+		String location = SBInfo.getInstance().getLocation();
+		if (location == null || location.isEmpty()) return;
+
+		if (!location.equals(currentLocation)) {
+			currentLocation = location;
+			initializeLocation();
+		}
+
+		refreshMissingSoulInfo(false);
+	}
+
+	private static void print(String s) {
+		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(s));
+	}
+
+	private static void printHelp() {
+		print("");
+		print(EnumChatFormatting.DARK_PURPLE.toString() + EnumChatFormatting.BOLD + "     NEU Fairy Soul Waypoint Guide");
+		print(EnumChatFormatting.LIGHT_PURPLE + "Shows waypoints for every fairy soul in your world");
+		print(EnumChatFormatting.LIGHT_PURPLE + "Clicking a fairy soul automatically removes it from the list");
+		if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+			print(EnumChatFormatting.DARK_RED + "" + EnumChatFormatting.OBFUSCATED + "Ab" + EnumChatFormatting.RESET +
+				EnumChatFormatting.DARK_RED + "!" + EnumChatFormatting.RESET + EnumChatFormatting.RED +
+				" This feature cannot and will not work in Dungeons. " + EnumChatFormatting.DARK_RED + "!" +
+				EnumChatFormatting.OBFUSCATED + "Ab");
+		}
+		print(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "     Commands:");
+		print(EnumChatFormatting.YELLOW + "/neusouls help          - Display this message");
+		print(EnumChatFormatting.YELLOW + "/neusouls on/off        - Enable/disable showing waypoint markers");
+		print(EnumChatFormatting.YELLOW +
+			"/neusouls clear/unclear - Marks every waypoint in your current world as completed/uncompleted");
+		print("");
+	}
+
+	@SubscribeEvent
+	public void onChatReceived(ClientChatReceivedEvent event) {
+		if (!trackSouls || event.type == 2) return;
+
+		if (event.message.getUnformattedText().equals("You have already found that Fairy Soul!") ||
+			event.message.getUnformattedText().equals(
+				"SOUL! You found a Fairy Soul!")) {
+			markClosestSoulFound();
+		}
+	}
+
+	public static class FairySoulsCommand extends ClientCommandBase {
+		public FairySoulsCommand() {
+			super("neusouls");
+		}
+
+		@Override
+		public List<String> getCommandAliases() {
+			return Collections.singletonList("fairysouls");
+		}
+
+		@Override
+		public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+			if (args.length != 1) {
+				printHelp();
+				return;
+			}
+
+			String subcommand = args[0].toLowerCase();
+			switch (subcommand) {
+				case "help":
+					printHelp();
+					break;
+				case "on":
+				case "enable":
+					if (!FairySouls.instance.trackSouls) {
+						print(EnumChatFormatting.RED + "Fairy soul tracking is off, enable it using /neu before using this command");
+						return;
+					}
+					print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
+					FairySouls.getInstance().setShowFairySouls(true);
+					break;
+				case "off":
+				case "disable":
+					FairySouls.getInstance().setShowFairySouls(false);
+					print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
+					break;
+				case "clear":
+					FairySouls.getInstance().markAllAsFound();
+					break;
+				case "unclear":
+					FairySouls.getInstance().markAllAsMissing();
+					break;
+				default:
+					print(EnumChatFormatting.RED + "Unknown subcommand: " + subcommand);
+			}
+		}
+	}
 }

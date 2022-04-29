@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({VboRenderList.class})
 public abstract class MixinVboRenderList {
-    @Inject(method = "renderChunkLayer", at = @At("HEAD"))
-    public void renderChunkLayer(EnumWorldBlockLayer layer, CallbackInfo ci) {
-        if (DungeonBlocks.textureExists()) {
-            DungeonBlocks.bindTextureIfExists();
+	@Inject(method = "renderChunkLayer", at = @At("HEAD"))
+	public void renderChunkLayer(EnumWorldBlockLayer layer, CallbackInfo ci) {
+		if (DungeonBlocks.textureExists()) {
+			DungeonBlocks.bindTextureIfExists();
 
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-        }
-    }
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		}
+	}
 }

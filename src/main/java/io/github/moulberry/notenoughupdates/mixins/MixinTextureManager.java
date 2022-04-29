@@ -10,10 +10,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TextureManager.class)
 public class MixinTextureManager {
-    @Inject(method = "bindTexture", at = @At("HEAD"), cancellable = true)
-    public void bindTexture(ResourceLocation location, CallbackInfo ci) {
-        if (ItemCustomizeManager.disableTextureBinding) {
-            ci.cancel();
-        }
-    }
+	@Inject(method = "bindTexture", at = @At("HEAD"), cancellable = true)
+	public void bindTexture(ResourceLocation location, CallbackInfo ci) {
+		if (ItemCustomizeManager.disableTextureBinding) {
+			ci.cancel();
+		}
+	}
 }
