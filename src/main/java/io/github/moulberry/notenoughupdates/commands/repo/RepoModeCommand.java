@@ -5,7 +5,9 @@ import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
 
 public class RepoModeCommand extends ClientCommandBase {
 
@@ -33,11 +35,17 @@ public class RepoModeCommand extends ClientCommandBase {
 					githubBranch = args[3];
 				}
 			}
-			NotEnoughUpdates.INSTANCE.config.hidden.repoURL = "https://github.com/" + githubUser + "/" + githubRepo + "/archive/" + githubBranch + ".zip";
-			NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL = "https://api.github.com/repos/" + githubUser + "/" + githubRepo + "/commits/" + githubBranch;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Set NEU repo URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoURL +
-				"\n\u00a75Set NEU repo commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Run </neureloadrepo fetch> to redownload your repo."));
+			NotEnoughUpdates.INSTANCE.config.hidden.repoURL =
+				"https://github.com/" + githubUser + "/" + githubRepo + "/archive/" + githubBranch + ".zip";
+			NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL =
+				"https://api.github.com/repos/" + githubUser + "/" + githubRepo + "/commits/" + githubBranch;
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				"\u00a75Set NEU repo URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoURL +
+					"\n\u00a75Set NEU repo commits URL to " + NotEnoughUpdates.INSTANCE.config.hidden.repoCommitsURL));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Run <")
+				.appendSibling(new ChatComponentText("/neureloadrepo fetch").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(
+					ClickEvent.Action.SUGGEST_COMMAND, "/neureloadrepo fetch"))))
+				.appendSibling(new ChatComponentText("\u00a75> to redownload your repo.")));
 
 		} else {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a7cUsage:" +

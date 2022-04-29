@@ -33,6 +33,10 @@ public interface NeuRecipe {
 	default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
 	}
 
+	default void mouseClicked(GuiItemRecipe gui, int mouseX, int mouseY, int mouseButton) {}
+
+	default void handleKeyboardInput() {}
+
 	default Set<Ingredient> getCatalystItems() {
 		return Collections.emptySet();
 	}

@@ -6,13 +6,12 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.miscgui.GuiNavigation;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,18 +25,22 @@ public class ItemShopRecipe implements NeuRecipe {
 
 	private static final int SLOT_IMAGE_U = 176;
 	private static final int SLOT_IMAGE_V = 0;
+
 	private static final int SLOT_IMAGE_SIZE = 18;
 	public static final int RESULT_SLOT_Y = 66;
 	public static final int RESULT_SLOT_X = 124;
 
-	public static final int BUTTON_X = 20;
-	public static final int BUTTON_Y = 100;
+	public static final int BUTTON_X = 130;
+	public static final int BUTTON_Y = 8;
+
+	private static final int COST_SLOT_X = 30;
+	private static final int COST_SLOT_SPACING = 6;
 	private final List<Ingredient> cost;
 	private final Ingredient result;
+	private boolean selected;
 
 	private final Ingredient npcIngredient;
 	private final JsonObject npcObject;
-	private final GuiButton trackButton = new GuiButton(0, 80, 36, 65, 15, "Uninitialized");
 
 	public ItemShopRecipe(Ingredient npcIngredient, List<Ingredient> cost, Ingredient result, JsonObject npcObject) {
 		this.npcIngredient = npcIngredient;
@@ -64,64 +67,68 @@ public class ItemShopRecipe implements NeuRecipe {
 	@Override
 	public List<RecipeSlot> getSlots() {
 		List<RecipeSlot> slots = new ArrayList<>();
-		int rowCount = cost.size() / 3;
-		int startX = 36;
-		int startY = 66 - rowCount * 8;
 		int i = 0;
+		int startY = RESULT_SLOT_Y + 8 - (SLOT_IMAGE_SIZE * cost.size() + COST_SLOT_SPACING * (cost.size() - 1)) / 2;
 		for (Ingredient ingredient : cost) {
-			int x = i % 3;
-			int y = i / 3;
-			slots.add(new RecipeSlot(startX + x * 18, startY + y * 18, ingredient.getItemStack()));
+			slots.add(new RecipeSlot(
+				COST_SLOT_X + 1,
+				startY + i * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING) + 1,
+				ingredient.getItemStack()
+			));
 			i++;
 		}
 		slots.add(new RecipeSlot(RESULT_SLOT_X, RESULT_SLOT_Y, result.getItemStack()));
 		return slots;
 	}
 
-	public GuiButton getAndUpdateTrackButton() {
-		if (NotEnoughUpdates.INSTANCE.navigation.getTrackedWaypoint() == npcObject) {
-			trackButton.displayString = EnumChatFormatting.GREEN + "NPC Tracked";
-			trackButton.enabled = false;
-		} else {
-			trackButton.displayString = "Track NPC";
-			trackButton.enabled = true;
-		}
-		return trackButton;
-	}
-
-	@Override
-	public List<GuiButton> getExtraButtons(GuiItemRecipe guiItemRecipe) {
-		trackButton.xPosition = BUTTON_X + guiItemRecipe.guiLeft;
-		trackButton.yPosition = BUTTON_Y + guiItemRecipe.guiTop;
-		return Arrays.asList(new GuiButton[]{getAndUpdateTrackButton()});
-	}
-
-	@Override
-	public void actionPerformed(GuiButton button) {
-		if (button == trackButton) {
-			NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(npcObject);
-			getAndUpdateTrackButton();
-		}
-	}
-
 	@Override
 	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
-		int rowCount = cost.size() / 3;
-		int startX = 36 - 1;
-		int startY = 66 - rowCount * 8 - 1;
+		int startY = RESULT_SLOT_Y + 8 - (SLOT_IMAGE_SIZE * cost.size() + COST_SLOT_SPACING * (cost.size() - 1)) / 2;
 		for (int i = 0; i < cost.size(); i++) {
-			int x = i % 3;
-			int y = i / 3;
 
 			gui.drawTexturedModalRect(
-				gui.guiLeft + startX + x * 18,
-				gui.guiTop + startY + y * 18,
+				gui.guiLeft + COST_SLOT_X,
+				gui.guiTop + startY + i * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING),
 				SLOT_IMAGE_U, SLOT_IMAGE_V,
 				SLOT_IMAGE_SIZE, SLOT_IMAGE_SIZE
 			);
 		}
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiNavigation.BACKGROUND);
+		selected = npcIngredient.getInternalItemId().equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
+		gui.drawTexturedModalRect(
+			gui.guiLeft + BUTTON_X,
+			gui.guiTop + BUTTON_Y,
+			selected ? GuiNavigation.TICK_POSITION_U : GuiNavigation.PIN_POSITION_U,
+			selected ? GuiNavigation.TICK_POSITION_V : GuiNavigation.PIN_POSITION_V,
+			GuiNavigation.ICON_SIZE,
+			GuiNavigation.ICON_SIZE
+		);
+	}
 
+	@Override
+	public void mouseClicked(GuiItemRecipe gui, int mouseX, int mouseY, int mouseButton) {
+		if (Utils.isWithinRect(
+			mouseX - gui.guiLeft,
+			mouseY - gui.guiTop,
+			BUTTON_X,
+			BUTTON_Y,
+			GuiNavigation.ICON_SIZE,
+			GuiNavigation.ICON_SIZE
+		)) {
+			if (selected) {
+				NotEnoughUpdates.INSTANCE.navigation.untrackWaypoint();
+			} else {
+				NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(npcIngredient.getInternalItemId());
+			}
+			Utils.playPressSound();
+			selected = !selected;
+		}
+	}
+
+	@Override
+	public String getTitle() {
+		return npcObject.get("displayname").getAsString();
 	}
 
 	@Override

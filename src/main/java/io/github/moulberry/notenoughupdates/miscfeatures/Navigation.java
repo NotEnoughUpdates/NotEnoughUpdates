@@ -12,12 +12,12 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,6 +72,19 @@ public class Navigation {
 			&& object.has("internalname");
 	}
 
+	public void trackWaypoint(String trackNow) {
+		if (trackNow == null) {
+			trackWaypoint((JsonObject) null);
+		} else {
+			JsonObject jsonObject = waypoints.get(trackNow);
+			if (jsonObject == null) {
+				showError("Could not track waypoint " + trackNow + ". This is likely due to an outdated or broken repository.");
+				return;
+			}
+			trackWaypoint(jsonObject);
+		}
+	}
+
 	public void trackWaypoint(JsonObject trackNow) {
 		if (trackNow != null && !isValidWaypoint(trackNow)) {
 			showError("Could not track waypoint. This is likely due to an outdated or broken repository.");
@@ -116,7 +129,7 @@ public class Navigation {
 	}
 
 	public void untrackWaypoint() {
-		trackWaypoint(null);
+		trackWaypoint((JsonObject) null);
 	}
 
 	public JsonObject getTrackedWaypoint() {
@@ -199,8 +212,8 @@ public class Navigation {
 	private void showError(String message) {
 		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		if (player != null)
-			player.sendChatMessage(EnumChatFormatting.DARK_RED +
-				"[NEU-Waypoint] " + message);
+			player.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED +
+				"[NEU-Waypoint] " + message));
 		new RuntimeException("[NEU-Waypoint] " + message).printStackTrace();
 	}
 

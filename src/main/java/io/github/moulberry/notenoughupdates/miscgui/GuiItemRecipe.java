@@ -369,10 +369,14 @@ public class GuiItemRecipe extends GuiScreen {
 				ItemStack itemStack = slot.getItemStack();
 				if (mouseButton == 0) {
 					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack));
+					return;
 				} else if (mouseButton == 1) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
+					return;
 				}
 			}
 		}
+
+		currentRecipe.mouseClicked(this, mouseX, mouseY, mouseButton);
 	}
 }
