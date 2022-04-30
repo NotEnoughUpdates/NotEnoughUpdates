@@ -40,6 +40,7 @@ public class ItemShopRecipe implements NeuRecipe {
 	private boolean selected;
 
 	private final Ingredient npcIngredient;
+	private final boolean hasWaypoint;
 	private final JsonObject npcObject;
 
 	public ItemShopRecipe(Ingredient npcIngredient, List<Ingredient> cost, Ingredient result, JsonObject npcObject) {
@@ -47,6 +48,7 @@ public class ItemShopRecipe implements NeuRecipe {
 		this.cost = cost;
 		this.result = result;
 		this.npcObject = npcObject;
+		hasWaypoint = NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(npcObject);
 	}
 
 	@Override
@@ -94,6 +96,7 @@ public class ItemShopRecipe implements NeuRecipe {
 				SLOT_IMAGE_SIZE, SLOT_IMAGE_SIZE
 			);
 		}
+		if (!hasWaypoint) return;
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiNavigation.BACKGROUND);
 		selected = npcIngredient.getInternalItemId().equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
 		gui.drawTexturedModalRect(
@@ -108,7 +111,7 @@ public class ItemShopRecipe implements NeuRecipe {
 
 	@Override
 	public void mouseClicked(GuiItemRecipe gui, int mouseX, int mouseY, int mouseButton) {
-		if (Utils.isWithinRect(
+		if (hasWaypoint && Utils.isWithinRect(
 			mouseX - gui.guiLeft,
 			mouseY - gui.guiTop,
 			BUTTON_X,
