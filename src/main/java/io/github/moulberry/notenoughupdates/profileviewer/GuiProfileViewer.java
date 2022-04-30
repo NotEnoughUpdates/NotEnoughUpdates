@@ -478,7 +478,7 @@ public class GuiProfileViewer extends GuiScreen {
 		this.guiTop = (this.height - this.sizeY) / 2;
 
 		boolean bingo = false;
-		JsonObject currProfileInfo = profile.getProfileInformation(profileId);
+		JsonObject currProfileInfo = profile != null ? profile.getProfileInformation(profileId) : null;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
 			showBingoPage = true;
 		} else {

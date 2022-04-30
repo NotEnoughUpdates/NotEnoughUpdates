@@ -249,7 +249,7 @@ public class APIManager {
 		if (lowestBins != null && lowestBins.has(internalname)) {
 			JsonElement e = lowestBins.get(internalname);
 			if (e.isJsonPrimitive() && e.getAsJsonPrimitive().isNumber()) {
-				return e.getAsInt();
+				return e.getAsBigDecimal().intValue();
 			}
 		}
 		return -1;

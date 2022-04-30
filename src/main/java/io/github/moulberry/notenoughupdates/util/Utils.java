@@ -653,6 +653,41 @@ public class Utils {
 		return (float) Math.round(value * scale) / scale;
 	}
 
+	// Parses Roman numerals, allowing for single character irregular subtractive notation (e.g. IL is 49, IIL is invalid)
+	public static int parseRomanNumeral(String input) {
+		int prevVal = 0;
+		int total = 0;
+		for (int i = input.length()-1; i >= 0; i--) {
+			int val;
+			char ch = input.charAt(i);
+			switch (ch) {
+				case 'I' : val = 1;	break;
+				case 'V' : val = 5; break;
+				case 'X' : val = 10; break;
+				case 'L' : val = 50; break;
+				case 'C' : val = 100; break;
+				case 'D' : val = 500; break;
+				case 'M' : val = 1000; break;
+				default: throw new IllegalArgumentException("Invalid Roman Numeral Character: " + ch);
+			}
+			if (val < prevVal) val = -val;
+			total += val;
+			prevVal = val;
+		}
+
+		return total;
+	}
+
+	public static int parseIntOrRomanNumeral(String input) {
+		// 0 through 9, '-', and '+' come before 'A' in ANSI, UTF8, and UTF16 character sets
+		//
+		if (input.charAt(0) < 'A') {
+			return Integer.parseInt(input);
+		}
+
+		return parseRomanNumeral(input);
+	}
+
 	public static void playPressSound() {
 		playSound(new ResourceLocation("gui.button.press"), true);
 	}
