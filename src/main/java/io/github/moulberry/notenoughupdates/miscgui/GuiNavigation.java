@@ -39,7 +39,7 @@ public class GuiNavigation extends GuiScreen {
 	public static final int TEXT_OFFSET_X = 28;
 	public static final int LIST_COUNT = 6;
 
-	List<JsonObject> searchResults = new ArrayList<>();
+	List<String> searchResults = new ArrayList<>();
 
 	public int xSize = 176;
 	public int ySize = 222;
@@ -50,6 +50,7 @@ public class GuiNavigation extends GuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
+		NotEnoughUpdates.INSTANCE.config.hidden.hasOpenedWaypointMenu = true;
 		guiLeft = (width - xSize) / 2;
 		guiTop = (height - ySize) / 2;
 	}
@@ -65,9 +66,9 @@ public class GuiNavigation extends GuiScreen {
 		for (int i = 0; i < LIST_COUNT; i++) {
 			if (i < searchResults.size()) {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
-				JsonObject thing = searchResults.get(i);
-				boolean selected =
-					thing.get("internalname").getAsString().equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
+				String name = searchResults.get(i);
+				JsonObject json = NotEnoughUpdates.INSTANCE.navigation.getWaypoints().get(name);
+				boolean selected = name.equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
 				int baseX = guiLeft + LIST_START_X;
 				int baseY = guiTop + LIST_START_Y + LIST_OFFSET_Y * i;
 
@@ -79,7 +80,7 @@ public class GuiNavigation extends GuiScreen {
 					ICON_SIZE, ICON_SIZE
 				);
 				Utils.drawStringF(
-					thing.get("displayname").getAsString(),
+					json.get("displayname").getAsString(),
 					Minecraft.getMinecraft().fontRendererObj,
 					baseX + TEXT_OFFSET_X,
 					baseY + LIST_OFFSET_Y / 2F - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2F,
@@ -92,21 +93,24 @@ public class GuiNavigation extends GuiScreen {
 
 	private void refreshResults() {
 		String text = textField.getText().toLowerCase();
-		searchResults = NotEnoughUpdates.INSTANCE.navigation
+		List<String> results = NotEnoughUpdates.INSTANCE.navigation
 			.getWaypoints()
 			.values()
 			.stream()
 			.filter(it ->
 				it.get("internalname").getAsString().toLowerCase().contains(text)
 					|| it.get("displayname").getAsString().toLowerCase().contains(text))
-			.sorted(Comparator
-				.comparing(
-					it -> it.get("internalname").getAsString(),
-					Comparator.comparing(String::length)
-										.thenComparing(String.CASE_INSENSITIVE_ORDER)
-				)
-			)
+			.map(it -> it.get("internalname").getAsString())
+			.sorted(Comparator.comparing(String::length)
+												.thenComparing(String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
+
+		String internalname = NotEnoughUpdates.INSTANCE.navigation.getInternalname();
+		if (internalname != null) {
+			results.remove(internalname);
+			results.add(0, internalname);
+		}
+		searchResults = results;
 	}
 
 	@Override
@@ -135,9 +139,8 @@ public class GuiNavigation extends GuiScreen {
 				int baseX = guiLeft + LIST_START_X;
 				int baseY = guiTop + LIST_START_Y + LIST_OFFSET_Y * i;
 				if (Utils.isWithinRect(mouseX, mouseY, baseX, baseY, ICON_SIZE, ICON_SIZE)) {
-					JsonObject thing = searchResults.get(i);
-					boolean selected =
-						thing.get("internalname").getAsString().equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
+					String thing = searchResults.get(i);
+					boolean selected = thing.equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
 					if (selected) {
 						NotEnoughUpdates.INSTANCE.navigation.untrackWaypoint();
 					} else {

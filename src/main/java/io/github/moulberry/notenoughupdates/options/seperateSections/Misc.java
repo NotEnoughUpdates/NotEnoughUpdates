@@ -1,7 +1,15 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import org.lwjgl.input.Keyboard;
 
 public class Misc {
 	@Expose
@@ -163,4 +171,20 @@ public class Misc {
 		"Fandom"
 	})
 	public int wiki = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Waypoint Keybind",
+		desc = "Press this keybind to show waypoints to various NPCs"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_N)
+	public int keybindWaypoint = Keyboard.KEY_N;
+
+	@Expose
+	@ConfigOption(
+		name = "Untrack close Waypoints",
+		desc = "Automatically untrack waypoints once you get close to them."
+	)
+	@ConfigEditorBoolean
+	public boolean untrackCloseWaypoints = true;
 }

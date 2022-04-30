@@ -6,7 +6,9 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscgui.GuiNavigation;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
+import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -16,8 +18,12 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -90,6 +96,13 @@ public class Navigation {
 			showError("Could not track waypoint. This is likely due to an outdated or broken repository.");
 			return;
 		}
+		if (!neu.config.hidden.hasOpenedWaypointMenu)
+			NotificationHandler.displayNotification(Arrays.asList(
+				"You just tracked a waypoint.",
+				"Press [N] to open the waypoint menu to untrack it",
+				"or to find other waypoints to track.",
+				"Press [X] to close this message."
+			), true, false);
 		currentlyTrackedWaypoint = trackNow;
 		updateData();
 	}
@@ -118,6 +131,14 @@ public class Navigation {
 			.filter(this::isValidWaypoint)
 			.collect(Collectors.toMap(it -> it.get("internalname").getAsString(), it -> it));
 		this.areaNames = JsonUtils.transformJsonObjectToMap(obj.getAsJsonObject("area_names"), JsonElement::getAsString);
+	}
+
+	@SubscribeEvent
+	public void onKeybindPressed(InputEvent.KeyInputEvent event) {
+		int key = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
+		if (neu.config.misc.keybindWaypoint == key) {
+			Minecraft.getMinecraft().displayGuiScreen(new GuiNavigation());
+		}
 	}
 
 	public String getNameForAreaMode(String mode) {
@@ -218,6 +239,17 @@ public class Navigation {
 	}
 
 	@SubscribeEvent
+	public void onEvent(TickEvent.ClientTickEvent event) {
+		if (event.phase == TickEvent.Phase.END && currentlyTrackedWaypoint != null
+			&& NotEnoughUpdates.INSTANCE.config.misc.untrackCloseWaypoints
+			&& island.equals(SBInfo.getInstance().mode)) {
+			EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+			if (thePlayer.getDistanceSq(position) < 16)
+				untrackWaypoint();
+		}
+	}
+
+	@SubscribeEvent
 	public void onRenderLast(RenderWorldLastEvent event) {
 		if (currentlyTrackedWaypoint != null) {
 			if (island.equals(SBInfo.getInstance().mode)) {
@@ -226,7 +258,7 @@ public class Navigation {
 				String to = nextTeleporter.to;
 				String toName = getNameForAreaModeOrUnknown(to);
 				RenderUtils.renderWayPoint(
-					"Teleporter to " + toName + " (towards " + displayName + "§r)",
+					Arrays.asList("Teleporter to " + toName, "(towards " + displayName + "§r)"),
 					new BlockPos(
 						nextTeleporter.x,
 						nextTeleporter.y,

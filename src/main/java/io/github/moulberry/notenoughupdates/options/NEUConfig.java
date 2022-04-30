@@ -417,6 +417,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean npcRetextureOnSelf = false;
 
+		@Expose
+		public boolean hasOpenedWaypointMenu = false;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
