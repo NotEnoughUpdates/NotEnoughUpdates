@@ -1141,7 +1141,9 @@ public class RenderListener {
 					String displayname = lower.getDisplayName().getUnformattedText();
 					File file = new File(
 						Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
-						"config/notenoughupdates/repo/npc/" + displayname.toUpperCase() + ".json"
+						"config" + File.separator + "notenoughupdates" +
+							File.separator + "repo" + File.separator + "npc" + File.separator +
+							displayname.toUpperCase().replace(" ", "_") + ".json"
 					);
 					newNPC.add("itemid", new JsonPrimitive("minecraft:skull"));
 					newNPC.add("displayname", new JsonPrimitive("§9" + displayname + " (NPC)"));
@@ -1151,7 +1153,7 @@ public class RenderListener {
 					JsonArray newArray = new JsonArray();
 					newArray.add(new JsonPrimitive(""));
 					newNPC.add("lore", newArray);
-					newNPC.add("internalname", new JsonPrimitive(displayname.toUpperCase() + "_NPC"));
+					newNPC.add("internalname", new JsonPrimitive(displayname.toUpperCase().replace(" ", "_") + "_NPC"));
 					newNPC.add("clickcommand", new JsonPrimitive("viewrecipe"));
 					newNPC.add("modver", new JsonPrimitive(NotEnoughUpdates.VERSION));
 					newNPC.add("infoType", new JsonPrimitive("WIKI_URL"));
