@@ -513,6 +513,9 @@ public class NEUConfig extends Config {
 		public long dailyGemstonePowderCompleted = 0L;
 		@Expose
 		public long dailyMithrilPowerCompleted = 0L;
+
+		@Expose
+		public HashMap<String, Boolean> unlockedWarpScrolls = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

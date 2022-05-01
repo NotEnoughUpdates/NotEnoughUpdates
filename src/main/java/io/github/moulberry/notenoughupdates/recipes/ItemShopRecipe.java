@@ -11,6 +11,7 @@ import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -119,10 +120,14 @@ public class ItemShopRecipe implements NeuRecipe {
 			GuiNavigation.ICON_SIZE,
 			GuiNavigation.ICON_SIZE
 		)) {
-			if (selected) {
+			boolean shiftPressed = Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+			if (selected && !shiftPressed) {
 				NotEnoughUpdates.INSTANCE.navigation.untrackWaypoint();
 			} else {
 				NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(npcIngredient.getInternalItemId());
+				if (shiftPressed) {
+					NotEnoughUpdates.INSTANCE.navigation.useWarpCommand();
+				}
 			}
 			Utils.playPressSound();
 			selected = !selected;

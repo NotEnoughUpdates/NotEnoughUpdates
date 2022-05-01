@@ -5,6 +5,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ItemUtils {
@@ -47,5 +49,18 @@ public class ItemUtils {
 		display.setTag("Lore", lore);
 		tagCompound.setTag("display", display);
 		is.setTagCompound(tagCompound);
+	}
+
+	public static List<String> getLore(ItemStack is) {
+		NBTTagCompound tagCompound = is.getTagCompound();
+		if (tagCompound == null) {
+			return Collections.emptyList();
+		}
+		NBTTagList tagList = tagCompound.getCompoundTag("display").getTagList("Lore", 8);
+		List<String> list = new ArrayList<>();
+		for (int i = 0; i < tagList.tagCount(); i++) {
+			list.add(tagList.getStringTagAt(i));
+		}
+		return list;
 	}
 }

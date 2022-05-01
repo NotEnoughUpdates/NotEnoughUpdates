@@ -187,4 +187,13 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean untrackCloseWaypoints = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Warp twice",
+		desc = "Warp twice when using SHIFT+N to /warp to a waypoint."
+	)
+	@ConfigEditorBoolean
+	public boolean warpTwice = true;
+
 }

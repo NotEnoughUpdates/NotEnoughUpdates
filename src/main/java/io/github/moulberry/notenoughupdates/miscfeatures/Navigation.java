@@ -5,23 +5,31 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
+import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiNavigation;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3i;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,10 +43,22 @@ public class Navigation {
 
 	private List<Teleporter> teleporters = new ArrayList<>();
 	private Map<String, String> areaNames = new HashMap<>();
+	private Map<String, WarpPoint> warps = new HashMap<>();
 	private Map<String, JsonObject> waypoints = new HashMap<>();
 
 	public Map<String, JsonObject> getWaypoints() {
 		return waypoints;
+	}
+
+	public static class WarpPoint {
+		public final BlockPos blockPos;
+		public final String warpName, modeName;
+
+		public WarpPoint(double x, double y, double z, String warpName, String modeName) {
+			this.blockPos = new BlockPos(x, y, z);
+			this.warpName = warpName;
+			this.modeName = modeName;
+		}
 	}
 
 	public static class Teleporter {
@@ -66,6 +86,9 @@ public class Navigation {
 	private String island = null;
 	private String displayName = null;
 	private String internalname = null;
+	private String warpAgainTo = null;
+	private int lastInvHashcode = 0;
+	private Instant warpAgainTiming = null;
 
 	private Teleporter nextTeleporter = null;
 
@@ -84,7 +107,10 @@ public class Navigation {
 		} else {
 			JsonObject jsonObject = waypoints.get(trackNow);
 			if (jsonObject == null) {
-				showError("Could not track waypoint " + trackNow + ". This is likely due to an outdated or broken repository.");
+				showError(
+					"Could not track waypoint " + trackNow + ". This is likely due to an outdated or broken repository.",
+					true
+				);
 				return;
 			}
 			trackWaypoint(jsonObject);
@@ -93,7 +119,7 @@ public class Navigation {
 
 	public void trackWaypoint(JsonObject trackNow) {
 		if (trackNow != null && !isValidWaypoint(trackNow)) {
-			showError("Could not track waypoint. This is likely due to an outdated or broken repository.");
+			showError("Could not track waypoint. This is likely due to an outdated or broken repository.", true);
 			return;
 		}
 		if (!neu.config.hidden.hasOpenedWaypointMenu)
@@ -122,7 +148,7 @@ public class Navigation {
 		});
 		for (Teleporter teleporter : teleporters) {
 			if (teleporter.from.equals(teleporter.to)) {
-				showError("Found self referencing teleporter: " + teleporter.from);
+				showError("Found self referencing teleporter: " + teleporter.from, true);
 			}
 		}
 		this.teleporters = teleporters;
@@ -131,13 +157,113 @@ public class Navigation {
 			.filter(this::isValidWaypoint)
 			.collect(Collectors.toMap(it -> it.get("internalname").getAsString(), it -> it));
 		this.areaNames = JsonUtils.transformJsonObjectToMap(obj.getAsJsonObject("area_names"), JsonElement::getAsString);
+		this.warps = JsonUtils.getJsonArrayOrEmpty(obj, "island_warps", jsonElement -> {
+			JsonObject warpObject = jsonElement.getAsJsonObject();
+			return new WarpPoint(
+				warpObject.get("x").getAsDouble(),
+				warpObject.get("y").getAsDouble(),
+				warpObject.get("z").getAsDouble(),
+				warpObject.get("warp").getAsString(),
+				warpObject.get("mode").getAsString()
+			);
+		}).stream().collect(Collectors.toMap(it -> it.warpName, it -> it));
 	}
 
 	@SubscribeEvent
 	public void onKeybindPressed(InputEvent.KeyInputEvent event) {
+		if (!Keyboard.getEventKeyState()) return;
 		int key = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
 		if (neu.config.misc.keybindWaypoint == key) {
-			Minecraft.getMinecraft().displayGuiScreen(new GuiNavigation());
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+				if (currentlyTrackedWaypoint != null) {
+					useWarpCommand();
+				}
+			} else {
+				Minecraft.getMinecraft().displayGuiScreen(new GuiNavigation());
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.START) return;
+		if (Minecraft.getMinecraft().theWorld == null) return;
+		if (Minecraft.getMinecraft().thePlayer == null) return;
+
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
+			GuiChest currentScreen = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest container = (ContainerChest) currentScreen.inventorySlots;
+			if (container.getLowerChestInventory().getDisplayName().getUnformattedText().equals("Fast Travel")) {
+				int hashCode = container.getInventory().hashCode();
+				if (hashCode == lastInvHashcode) return;
+				lastInvHashcode = hashCode;
+				for (ItemStack stackInSlot : container.getInventory()) {
+					if (stackInSlot == null) continue;
+					List<String> lore = ItemUtils.getLore(stackInSlot);
+					if (lore.isEmpty())
+						continue;
+					String warpLine = Utils.cleanColour(lore.get(0));
+					if (!warpLine.startsWith("/warp ")) continue;
+					String warpName = warpLine.substring(6);
+					boolean isUnlocked = !lore.contains("§cWarp not unlocked!");
+					neu.config.getProfileSpecific().unlockedWarpScrolls.put(warpName, isUnlocked);
+				}
+			}
+		}
+	}
+
+	public Map<String, WarpPoint> getWarps() {
+		return warps;
+	}
+
+	public WarpPoint getClosestWarp(String mode, Vec3i position, boolean checkAvailable) {
+		double minDistance = -1;
+		HashMap<String, Boolean> unlockedWarpScrolls = neu.config.getProfileSpecific().unlockedWarpScrolls;
+		WarpPoint minWarp = null;
+		for (WarpPoint value : warps.values()) {
+			if (value.modeName.equals(mode)) {
+				if (checkAvailable && !unlockedWarpScrolls.getOrDefault(value.warpName, false))
+					continue;
+				double distance = value.blockPos.distanceSq(position);
+				if (distance < minDistance || minWarp == null) {
+					minDistance = distance;
+					minWarp = value;
+				}
+			}
+		}
+		return minWarp;
+	}
+
+	public void useWarpCommand() {
+		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+		if (currentlyTrackedWaypoint == null || thePlayer == null) return;
+		WarpPoint closestWarp = getClosestWarp(island, position, true);
+		if (closestWarp == null) {
+			showError("Could not find an unlocked warp that could be used.", false);
+			return;
+		}
+
+		if (!island.equals(SBInfo.getInstance().mode)) {
+			warpAgainTiming = Instant.now();
+			warpAgainTo = closestWarp.warpName;
+		} else if (thePlayer.getDistanceSq(position) < closestWarp.blockPos.distanceSq(position)) {
+			showError("You are already on the same island and nearer than the closest unlocked warp scroll.", false);
+			return;
+		}
+		thePlayer.sendChatMessage("/warp " + closestWarp.warpName);
+	}
+
+	@SubscribeEvent
+	public void onTeleportDone(EntityJoinWorldEvent event) {
+		if (neu.config.misc.warpTwice
+			&& event.entity == Minecraft.getMinecraft().thePlayer
+			&& warpAgainTo != null
+			&& warpAgainTiming != null
+			&& warpAgainTiming.plusSeconds(1).isAfter(Instant.now())) {
+			warpAgainTiming = null;
+			String savedWarpAgain = warpAgainTo;
+			warpAgainTo = null;
+			Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp " + savedWarpAgain);
 		}
 	}
 
@@ -230,12 +356,13 @@ public class Navigation {
 		return minPath;
 	}
 
-	private void showError(String message) {
+	private void showError(String message, boolean log) {
 		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		if (player != null)
 			player.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED +
 				"[NEU-Waypoint] " + message));
-		new RuntimeException("[NEU-Waypoint] " + message).printStackTrace();
+		if (log)
+			new RuntimeException("[NEU-Waypoint] " + message).printStackTrace();
 	}
 
 	@SubscribeEvent
