@@ -1,63 +1,9 @@
 package io.github.moulberry.notenoughupdates;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.ascending_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.close;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.descending_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.itemPaneTabArrow;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_haschild;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_mask;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.quickcommand_background;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.settings;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool_active;
-
-import java.awt.Color;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.util.vector.Vector2f;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
@@ -115,6 +61,60 @@ import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ClientCommandHandler;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.util.vector.Vector2f;
+
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.ascending_overlay;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.close;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.descending_overlay;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.itemPaneTabArrow;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_haschild;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_mask;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.quickcommand_background;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow_overlay;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.settings;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool_active;
 
 public class NEUOverlay extends Gui {
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
@@ -230,7 +230,7 @@ public class NEUOverlay extends Gui {
 	private boolean redrawItems = false;
 
 	private boolean searchBarHasFocus = false;
-	private final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
+	private static final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
 
 	private static final int COMPARE_MODE_ALPHABETICAL = 0;
 	private static final int COMPARE_MODE_RARITY = 1;
@@ -996,7 +996,7 @@ public class NEUOverlay extends Gui {
 		return paddingUnscaled;
 	}
 
-	public GuiTextField getTextField() {
+	public static GuiTextField getTextField() {
 		return textField;
 	}
 
