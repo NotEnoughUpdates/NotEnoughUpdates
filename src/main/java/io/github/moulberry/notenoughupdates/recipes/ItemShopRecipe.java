@@ -32,10 +32,11 @@ public class ItemShopRecipe implements NeuRecipe {
 	public static final int RESULT_SLOT_X = 124;
 
 	public static final int BUTTON_X = 130;
-	public static final int BUTTON_Y = 8;
+	public static final int BUTTON_Y = 16;
 
 	private static final int COST_SLOT_X = 30;
 	private static final int COST_SLOT_SPACING = 6;
+	private static final int ROW_SPACING = 18;
 	private final List<Ingredient> cost;
 	private final Ingredient result;
 	private boolean selected;
@@ -70,12 +71,17 @@ public class ItemShopRecipe implements NeuRecipe {
 	@Override
 	public List<RecipeSlot> getSlots() {
 		List<RecipeSlot> slots = new ArrayList<>();
+
 		int i = 0;
-		int startY = RESULT_SLOT_Y + 8 - (SLOT_IMAGE_SIZE * cost.size() + COST_SLOT_SPACING * (cost.size() - 1)) / 2;
+		int colCount = cost.size() / 4;
+		int startX = COST_SLOT_X - 8 * (colCount - 1);
+		int rowSize = cost.size();
+		if (rowSize > 4) rowSize = 4;
+		int startY = RESULT_SLOT_Y + 8 - (SLOT_IMAGE_SIZE * rowSize + COST_SLOT_SPACING * (rowSize - 1)) / 2;
 		for (Ingredient ingredient : cost) {
 			slots.add(new RecipeSlot(
-				COST_SLOT_X + 1,
-				startY + i * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING) + 1,
+				startX + (i / 4) * ROW_SPACING + 1,
+				startY + (i % 4) * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING) + 1,
 				ingredient.getItemStack()
 			));
 			i++;
@@ -87,12 +93,15 @@ public class ItemShopRecipe implements NeuRecipe {
 	@Override
 	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
-		int startY = RESULT_SLOT_Y + 8 - (SLOT_IMAGE_SIZE * cost.size() + COST_SLOT_SPACING * (cost.size() - 1)) / 2;
+		int colCount = cost.size() / 4;
+		int startX = COST_SLOT_X - 8 * (colCount - 1);
+		int rowSize = cost.size();
+		if (rowSize > 4) rowSize = 4;
+		int startY = RESULT_SLOT_Y + 8 - (SLOT_IMAGE_SIZE * rowSize + COST_SLOT_SPACING * (rowSize - 1)) / 2;
 		for (int i = 0; i < cost.size(); i++) {
-
 			gui.drawTexturedModalRect(
-				gui.guiLeft + COST_SLOT_X,
-				gui.guiTop + startY + i * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING),
+				gui.guiLeft + startX + (i / 4) * ROW_SPACING,
+				gui.guiTop + startY + (i % 4) * (SLOT_IMAGE_SIZE + COST_SLOT_SPACING),
 				SLOT_IMAGE_U, SLOT_IMAGE_V,
 				SLOT_IMAGE_SIZE, SLOT_IMAGE_SIZE
 			);
