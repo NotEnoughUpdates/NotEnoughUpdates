@@ -1256,8 +1256,6 @@ public class RenderListener {
 					mc.thePlayer.addChatMessage(new ChatComponentText(
 						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details"));
 				}
-			} else {
-				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not in a valid inventory"));
 			}
 		}
 
