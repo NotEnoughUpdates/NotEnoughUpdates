@@ -70,6 +70,7 @@ public class ProfileViewer {
 			put("slayer_spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
 			put("slayer_wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
 			put("slayer_enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
+			put("slayer_blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
 		}};
 	private static final ItemStack CAT_FARMING =
 		Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
@@ -96,7 +97,7 @@ public class ProfileViewer {
 			));
 			put(CAT_FORAGING, Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
 			put(CAT_FISHING, Utils.createList("RAW_FISH", "RAW_FISH:1", "RAW_FISH:2", "RAW_FISH:3", "PRISMARINE_SHARD",
-				"PRISMARINE_CRYSTALS", "CLAY_BALL", "WATER_LILY", "INK_SACK", "SPONGE"
+				"PRISMARINE_CRYSTALS", "CLAY_BALL", "WATER_LILY", "INK_SACK", "SPONGE", "MAGMA_FISH"
 			));
 
 		}};
@@ -110,7 +111,7 @@ public class ProfileViewer {
 				"MITHRIL", "HARD_STONE", null
 			));
 			put(CAT_COMBAT, Utils.createList("ZOMBIE", "SKELETON", "SPIDER", "CAVESPIDER", "CREEPER", "ENDERMAN",
-				"GHAST", "SLIME", "BLAZE", "MAGMA_CUBE", "REVENANT", "TARANTULA", "VOIDLING"
+				"GHAST", "SLIME", "BLAZE", "MAGMA_CUBE", "REVENANT", "TARANTULA", "VOIDLING", "INFERNO"
 			));
 			put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
 			put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
@@ -238,6 +239,11 @@ public class ProfileViewer {
 			);
 			put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sack"));
 			put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
+			put("MAGMA_FISH",
+				Utils.createSkull(EnumChatFormatting.AQUA + "Magmafish",
+				"5c53195c-5b98-3476-9731-c32647b22723",
+				"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ")
+			);
 		}};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
 	private static JsonObject resourceCollection = null;
@@ -867,6 +873,8 @@ public class ProfileViewer {
 			float experience_slayer_wolf = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.wolf.xp"), 0);
 			float experience_slayer_enderman =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.enderman.xp"), 0);
+			float experience_slayer_blaze =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.blaze.xp"), 0);
 
 			float totalSkillXP = experience_skill_taming + experience_skill_mining + experience_skill_foraging
 				+ experience_skill_enchanting + experience_skill_carpentry + experience_skill_farming
@@ -897,6 +905,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("experience_slayer_spider", experience_slayer_spider);
 			skillInfo.addProperty("experience_slayer_wolf", experience_slayer_wolf);
 			skillInfo.addProperty("experience_slayer_enderman", experience_slayer_enderman);
+			skillInfo.addProperty("experience_slayer_blaze", experience_slayer_blaze);
 
 			JsonArray levelingArray = Utils.getElement(leveling, "leveling_xp").getAsJsonArray();
 			int farmingCap = getCap(leveling, "farming") + (int) Utils.getElementAsFloat(
@@ -933,6 +942,9 @@ public class ProfileViewer {
 			Level level_slayer_enderman = getLevel(Utils.getElement(leveling, "slayer_xp.enderman").getAsJsonArray(),
 				experience_slayer_enderman, 9, true
 			);
+			Level level_slayer_blaze = getLevel(Utils.getElement(leveling, "slayer_xp.blaze").getAsJsonArray(),
+				experience_slayer_blaze, 9, true
+			);
 
 			skillInfo.addProperty("level_skill_taming", level_skill_taming.level);
 			skillInfo.addProperty("level_skill_mining", level_skill_mining.level);
@@ -951,6 +963,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("level_slayer_spider", level_slayer_spider.level);
 			skillInfo.addProperty("level_slayer_wolf", level_slayer_wolf.level);
 			skillInfo.addProperty("level_slayer_enderman", level_slayer_enderman.level);
+			skillInfo.addProperty("level_slayer_blaze", level_slayer_blaze.level);
 
 			skillInfo.addProperty("maxed_skill_taming", level_skill_taming.maxed);
 			skillInfo.addProperty("maxed_skill_mining", level_skill_mining.maxed);
@@ -969,6 +982,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("maxed_slayer_spider", level_slayer_spider.maxed);
 			skillInfo.addProperty("maxed_slayer_wolf", level_slayer_wolf.maxed);
 			skillInfo.addProperty("maxed_slayer_enderman", level_slayer_enderman.maxed);
+			skillInfo.addProperty("maxed_slayer_blaze", level_slayer_blaze.maxed);
 
 			skillInfo.addProperty("maxxp_skill_taming", level_skill_taming.maxXpForLevel);
 			skillInfo.addProperty("maxxp_skill_mining", level_skill_mining.maxXpForLevel);
@@ -987,6 +1001,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("maxxp_slayer_spider", level_slayer_spider.maxXpForLevel);
 			skillInfo.addProperty("maxxp_slayer_wolf", level_slayer_wolf.maxXpForLevel);
 			skillInfo.addProperty("maxxp_slayer_enderman", level_slayer_enderman.maxXpForLevel);
+			skillInfo.addProperty("maxxp_slayer_blaze", level_slayer_blaze.maxXpForLevel);
 
 			return skillInfo;
 		}

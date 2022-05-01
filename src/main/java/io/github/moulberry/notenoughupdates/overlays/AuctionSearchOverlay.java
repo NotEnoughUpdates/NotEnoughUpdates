@@ -35,6 +35,7 @@ public class AuctionSearchOverlay {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay_tab_completed.png");
 	private static final ResourceLocation STAR = new ResourceLocation("notenoughupdates:auc_search/star.png");
+	private static final ResourceLocation MASTER_STAR = new ResourceLocation("notenoughupdates:auc_search/master_star.png");
 	private static final ResourceLocation STAR_BOARD = new ResourceLocation("notenoughupdates:auc_search/star_board.png");
 
 	private static final GuiElementTextField textField = new GuiElementTextField("", 200, 20, 0);
@@ -114,22 +115,26 @@ public class AuctionSearchOverlay {
 		Utils.drawTexturedRect(width / 2 - 100, topY - 1, 203, h, 0, 203 / 512f, 0, h / 256f, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR_BOARD);
-		Utils.drawTexturedRect(width / 2 + 105, topY + 27, 55, 13, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(width / 2 + 105, topY + 27, 105, 13, GL11.GL_NEAREST);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(STAR);
 		GlStateManager.color(1, 1, 1, 1);
-		int stars = atLeast && selectedStars > 0 ? 5 : selectedStars;
+		int stars = atLeast && selectedStars > 0 ? 10 : selectedStars;
 		for (int i = 0; i < stars; i++) {
+			if (i >= 5) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(MASTER_STAR);
+				GlStateManager.color(1, 1, 1, 1);
+			}
 			if (i >= selectedStars) {
 				GlStateManager.color(1, 1, 1, 0.3f);
 			}
 			Utils.drawTexturedRect(width / 2 + 108 + 10 * i, topY + 29, 9, 10, GL11.GL_NEAREST);
 		}
 
-		Gui.drawRect(width / 2 + 106, topY + 42, width / 2 + 115, topY + 51, 0xffffffff);
-		Gui.drawRect(width / 2 + 107, topY + 43, width / 2 + 114, topY + 50, 0xff000000);
-		if (atLeast) Gui.drawRect(width / 2 + 108, topY + 44, width / 2 + 113, topY + 49, 0xffffffff);
-		Minecraft.getMinecraft().fontRendererObj.drawString("At Least?", width / 2 + 117, topY + 43, 0xffffff);
+		if (selectedStars < 6) Gui.drawRect(width / 2 + 106, topY + 42, width / 2 + 115, topY + 51, 0xffffffff);
+		if (selectedStars < 6) Gui.drawRect(width / 2 + 107, topY + 43, width / 2 + 114, topY + 50, 0xff000000);
+		if (atLeast && selectedStars < 6) Gui.drawRect(width / 2 + 108, topY + 44, width / 2 + 113, topY + 49, 0xffffffff);
+		if (selectedStars < 6) Minecraft.getMinecraft().fontRendererObj.drawString("At Least?", width / 2 + 117, topY + 43, 0xffffff);
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Enter Query:", width / 2 - 100, topY - 10, 0xdddddd, true);
 
@@ -507,10 +512,10 @@ public class AuctionSearchOverlay {
 			topY = height / 2 - h / 2 + 5;
 		}
 
-		if (Mouse.getEventButtonState() && mouseX > width / 2 + 105 && mouseX < width / 2 + 105 + 55 &&
+		if (Mouse.getEventButtonState() && mouseX > width / 2 + 105 && mouseX < width / 2 + 105 + 105 &&
 			mouseY > topY + 27 && mouseY < topY + 40) {
-			int starClicked = 5;
-			for (int i = 1; i <= 5; i++) {
+			int starClicked = 10;
+			for (int i = 1; i <= 10; i++) {
 				if (mouseX < width / 2 + 108 + 10 * i) {
 					starClicked = i;
 					break;
@@ -584,9 +589,27 @@ public class AuctionSearchOverlay {
 								searchStringExtra = "";
 								if (essenceCosts != null && essenceCosts.has(str) && selectedStars > 0) {
 									for (int i = 0; i < selectedStars; i++) {
+										if (i > 4) break;
 										searchStringExtra += "\u272A";
 									}
-									if (selectedStars < 5 && !atLeast) {
+									switch (selectedStars) {
+										case 6:
+											searchStringExtra += "\u278A";
+											break;
+										case 7:
+											searchStringExtra += "\u278B";
+											break;
+										case 8:
+											searchStringExtra += "\u278C";
+											break;
+										case 9:
+											searchStringExtra += "\u278D";
+											break;
+										case 10:
+											searchStringExtra += "\u278E";
+											break;
+									}
+									if (selectedStars < 6 && !atLeast) {
 										searchStringExtra += " ";
 										searchStringExtra += stack.getItem().getItemStackDisplayName(stack).substring(0, 1);
 									}

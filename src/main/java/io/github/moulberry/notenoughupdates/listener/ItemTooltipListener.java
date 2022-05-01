@@ -16,7 +16,6 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -36,10 +35,18 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class ItemTooltipListener {
 	private static final String petToolTipRegex =
@@ -81,18 +88,21 @@ public class ItemTooltipListener {
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
 		if (internalname == null) {
-			onItemToolTipInternalNameNull(event);
 			return;
 		}
+		petToolTipXPExtendPetMenu(event);
 
 		boolean hasEnchantments = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(
 			"enchantments",
 			10
 		);
+		boolean hasAttributes = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(
+			"attributes",
+			10
+		);
 		Set<String> enchantIds = new HashSet<>();
-		if (hasEnchantments)
-			enchantIds =
-				event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").getCompoundTag("enchantments").getKeySet();
+		if (hasEnchantments) enchantIds = event.itemStack.getTagCompound().getCompoundTag("ExtraAttributes").getCompoundTag(
+			"enchantments").getKeySet();
 
 		JsonObject enchantsConst = Constants.ENCHANTS;
 		JsonArray allItemEnchs = null;
@@ -347,6 +357,8 @@ public class ItemTooltipListener {
 						}
 					}
 				}
+			}
+			if (hasEnchantments || hasAttributes) {
 				for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
 					List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
 					String enchantName = GuiEnchantColour.getColourOpIndex(colourOps, 0);
@@ -387,11 +399,12 @@ public class ItemTooltipListener {
 					//9([a-zA-Z ]+?) ([0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X))(,|$)
 					Pattern pattern;
 					try {
-						pattern = Pattern.compile("(\\u00A79|\\u00A7(9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
-							"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
+						pattern = Pattern.compile(
+							"(\\u00A7b|\\u00A79|\\u00A7(b|9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
+								"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
 					} catch (Exception e) {
 						continue;
-					} //malformed regex
+					}
 					Matcher matcher = pattern.matcher(line);
 					int matchCount = 0;
 					while (matcher.find() && matchCount < 5) {
@@ -400,73 +413,8 @@ public class ItemTooltipListener {
 						matchCount++;
 						int level = -1;
 						String levelStr = matcher.group("level");
-						if (levelStr == null) continue;
-						try {
-							level = Integer.parseInt(levelStr);
-						} catch (Exception e) {
-							switch (levelStr) {
-								case "I":
-									level = 1;
-									break;
-								case "II":
-									level = 2;
-									break;
-								case "III":
-									level = 3;
-									break;
-								case "IV":
-									level = 4;
-									break;
-								case "V":
-									level = 5;
-									break;
-								case "VI":
-									level = 6;
-									break;
-								case "VII":
-									level = 7;
-									break;
-								case "VIII":
-									level = 8;
-									break;
-								case "IX":
-									level = 9;
-									break;
-								case "X":
-									level = 10;
-									break;
-								case "XI":
-									level = 11;
-									break;
-								case "XII":
-									level = 12;
-									break;
-								case "XIII":
-									level = 13;
-									break;
-								case "XIV":
-									level = 14;
-									break;
-								case "XV":
-									level = 15;
-									break;
-								case "XVI":
-									level = 16;
-									break;
-								case "XVII":
-									level = 17;
-									break;
-								case "XVIII":
-									level = 18;
-									break;
-								case "XIX":
-									level = 19;
-									break;
-								case "XX":
-									level = 20;
-									break;
-							}
-						}
+						if (levelStr == null || levelStr.isEmpty()) continue;
+						level = Utils.parseIntOrRomanNumeral(levelStr);
 						boolean matches = false;
 						if (level > 0) {
 							switch (comparator) {
@@ -505,8 +453,13 @@ public class ItemTooltipListener {
 
 							if (!colourCode.equals("z")) {
 								line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
+								line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
 								line = line.replace(
 									"\u00A79\u00A7d\u00A7l" + enchantText,
+									"\u00A7" + colourCode + extraMods + enchantText
+								);
+								line = line.replace(
+									"\u00A7b\u00A7d\u00A7l" + enchantText,
 									"\u00A7" + colourCode + extraMods + enchantText
 								);
 								line = line.replace(
@@ -741,10 +694,6 @@ public class ItemTooltipListener {
 		}
 	}
 
-	private void onItemToolTipInternalNameNull(ItemTooltipEvent event) {
-		petToolTipXPExtendPetMenu(event);
-	}
-
 	private List<String> petToolTipXPExtend(ItemTooltipEvent event) {
 		List<String> tooltipText = new ArrayList<>();
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.petExtendExp) {
@@ -849,7 +798,6 @@ public class ItemTooltipListener {
 
 	/**
 	 * This method does the following:
-	 * Move the pet inventory display tooltip to the left to avoid conflicts
 	 * Remove reforge stats for Legendary items from Hypixel if enabled
 	 * Show NBT data when holding LCONTROL
 	 */
@@ -857,10 +805,6 @@ public class ItemTooltipListener {
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
-		//Render the pet inventory display tooltip to the left to avoid things from other mods rendering over the tooltip
-		if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUPETINVDISPLAY")) {
-			GlStateManager.translate(-200, 0, 0);
-		}
 
 		if (event.toolTip.size() > 2 && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.hideDefaultReforgeStats) {
 			String secondLine = StringUtils.stripControlCodes(event.toolTip.get(1));
@@ -929,7 +873,9 @@ public class ItemTooltipListener {
 		} else if (NotEnoughUpdates.INSTANCE.packDevEnabled) {
 			event.toolTip.add("");
 			event.toolTip.add(EnumChatFormatting.AQUA + "NEU Pack Dev Info:");
-			event.toolTip.add(EnumChatFormatting.GRAY + "Press " + EnumChatFormatting.GOLD + "[KEY]" + EnumChatFormatting.GRAY + " to copy line");
+			event.toolTip.add(
+				EnumChatFormatting.GRAY + "Press " + EnumChatFormatting.GOLD + "[KEY]" + EnumChatFormatting.GRAY +
+					" to copy line");
 
 			String internal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
 

@@ -33,6 +33,8 @@ public class PlayerStats {
 	public static final String SEA_CREATURE_CHANCE = "sea_creature_chance";
 	public static final String MAGIC_FIND = "magic_find";
 	public static final String PET_LUCK = "pet_luck";
+	public static final String MINING_FORTUNE = "mining_fortune";
+	public static final String MINING_SPEED = "mining_speed";
 
 	public static final String[] defaultStatNames = new String[]{
 		"health",
@@ -245,6 +247,23 @@ public class PlayerStats {
 			return 0;
 		}
 	}
+	private static float hotmFortune(JsonObject profile, JsonObject skillInfo) {
+		int miningLevelFortune =
+			(int) (4 * (float) Math.floor(Utils.getElementAsFloat(Utils.getElement(skillInfo, "level_skill_mining"), 0)));
+		int miningFortuneStat =
+			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) * 5);
+		int miningFortune2Stat =
+			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"), 0)) * 5);
+		return miningFortuneStat + miningFortune2Stat + miningLevelFortune;
+	}
+
+	private static float hotmSpeed(JsonObject profile) {
+		int miningSpeedStat =
+			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) * 20);
+		int miningSpeed2Stat =
+			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) * 40);
+		return miningSpeedStat + miningSpeed2Stat;
+	}
 
 	public static Stats getPassiveBonuses(JsonObject skillInfo, JsonObject profile) {
 		Stats passiveBonuses = new Stats();
@@ -263,6 +282,15 @@ public class PlayerStats {
 		passiveBonuses.add(petBonus);
 
 		return passiveBonuses;
+	}
+
+	public static Stats getHOTMBonuses(JsonObject skillInfo, JsonObject profile) {
+		Stats hotmBonuses = new Stats();
+
+		hotmBonuses.addStat(MINING_FORTUNE, hotmFortune(profile, skillInfo));
+		hotmBonuses.addStat(MINING_SPEED, hotmSpeed(profile));
+
+		return hotmBonuses;
 	}
 
 	private static String getFullset(JsonArray armor, int ignore) {
@@ -637,6 +665,7 @@ public class PlayerStats {
 		JsonArray talisman_bag = Utils.getElement(inventoryInfo, "talisman_bag").getAsJsonArray();
 
 		Stats passiveBonuses = getPassiveBonuses(skillInfo, profile);
+		Stats hotmBonuses = getHOTMBonuses(skillInfo, profile);
 		Stats armorBonuses = getItemBonuses(false, armor);
 		Stats talismanBonuses = getItemBonuses(true, inventory, talisman_bag);
 
@@ -651,7 +680,7 @@ public class PlayerStats {
 
 		Stats petBonus = getPetStatBonuses(petsInfo);
 
-		stats = stats.add(passiveBonuses).add(armorBonuses).add(talismanBonuses).add(petBonus);
+		stats = stats.add(passiveBonuses).add(armorBonuses).add(talismanBonuses).add(petBonus).add(hotmBonuses);
 
 		stats.add(getSetBonuses(stats, inventoryInfo, collectionInfo, skillInfo, profile));
 

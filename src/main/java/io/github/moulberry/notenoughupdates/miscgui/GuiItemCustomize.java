@@ -199,6 +199,7 @@ public class GuiItemCustomize extends GuiScreen {
 				EnumChatFormatting.GREEN + "",
 				EnumChatFormatting.GREEN + "Type \"&&\" to use colour codes",
 				EnumChatFormatting.GREEN + "Type \"**\" for \u272A",
+				EnumChatFormatting.GREEN + "Type \"*1-9\" for \u278A-\u2792",
 				EnumChatFormatting.GREEN + "",
 				EnumChatFormatting.GREEN + "Available colour codes:",
 				Utils.chromaString("\u00B6z = Chroma"),

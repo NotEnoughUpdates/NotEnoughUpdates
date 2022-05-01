@@ -242,7 +242,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Bonemerang Overlay Position",
-		desc = "The position of the Bonemerang overlay."
+		desc = "Change the position of the Bonemerang overlay."
 	)
 	@ConfigEditorButton(
 		runnableId = 9,

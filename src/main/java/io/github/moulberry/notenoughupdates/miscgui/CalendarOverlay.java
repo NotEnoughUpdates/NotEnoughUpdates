@@ -659,6 +659,8 @@ public class CalendarOverlay {
 							}
 						}
 					}
+				} else {
+					Minecraft.getMinecraft().dispatchKeypresses();
 				}
 			}
 		}

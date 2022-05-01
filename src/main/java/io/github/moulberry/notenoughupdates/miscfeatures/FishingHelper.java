@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
@@ -11,8 +12,10 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -21,7 +24,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FishingHelper {
 	private static final FishingHelper INSTANCE = new FishingHelper();
@@ -257,7 +266,17 @@ public class FishingHelper {
 		double angle2
 	) {
 		double dY = particleY - hook.posY;
-		if (Math.abs(dY) > 0.5f) {
+		double tolerance = 0.5F;
+		if (hook.worldObj != null) {
+			for (int i = -2; i < 2; i++) {
+				IBlockState state = hook.worldObj.getBlockState(new BlockPos(particleX, particleY + i, particleZ));
+				if (state != null && (state.getBlock() == Blocks.flowing_lava
+					|| state.getBlock() == Blocks.flowing_water
+					|| state.getBlock() == Blocks.lava))
+					tolerance = 2.0F;
+			}
+		}
+		if (Math.abs(dY) > tolerance) {
 			return HookPossibleRet.NOT_POSSIBLE;
 		}
 

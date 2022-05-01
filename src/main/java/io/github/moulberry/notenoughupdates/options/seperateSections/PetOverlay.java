@@ -20,7 +20,7 @@ public class PetOverlay {
 	@Expose
 	@ConfigOption(
 		name = "Edit Pet Info Position",
-		desc = "The position of the pet info."
+		desc = "Change the position of the pet info overlay"
 	)
 	@ConfigEditorButton(
 		runnableId = 4,

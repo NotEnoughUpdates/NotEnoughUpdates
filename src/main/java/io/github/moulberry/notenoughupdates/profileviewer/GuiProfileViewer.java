@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.GameProfile;
+import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -477,7 +478,7 @@ public class GuiProfileViewer extends GuiScreen {
 		this.guiTop = (this.height - this.sizeY) / 2;
 
 		boolean bingo = false;
-		JsonObject currProfileInfo = profile.getProfileInformation(profileId);
+		JsonObject currProfileInfo = profile != null ? profile.getProfileInformation(profileId) : null;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
 			showBingoPage = true;
 		} else {
@@ -3325,6 +3326,10 @@ public class GuiProfileViewer extends GuiScreen {
 			Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.enderman.boss_kills_tier_2"), 0);
 		float enderman_boss_kills_tier_3 =
 			Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.enderman.boss_kills_tier_3"), 0);
+		float blaze_boss_kills_tier_2 =
+			Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.blaze.boss_kills_tier_2"), 0);
+		float blaze_boss_kills_tier_3 =
+			Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.blaze.boss_kills_tier_3"), 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_AQUA + "Revenant T3",
@@ -3388,6 +3393,20 @@ public class GuiProfileViewer extends GuiScreen {
 			EnumChatFormatting.WHITE.toString() + (int) enderman_boss_kills_tier_3,
 			guiLeft + xStart + xOffset * 2,
 			guiTop + yStartBottom + yOffset * 3,
+			76
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.DARK_AQUA + "Inferno T3",
+			EnumChatFormatting.WHITE.toString() + (int) blaze_boss_kills_tier_2,
+			guiLeft + xStart + xOffset * 2,
+			guiTop + yStartBottom + yOffset * 4,
+			76
+		);
+		Utils.renderAlignedString(
+			EnumChatFormatting.DARK_AQUA + "Inferno T4",
+			EnumChatFormatting.WHITE.toString() + (int) blaze_boss_kills_tier_3,
+			guiLeft + xStart + xOffset * 2,
+			guiTop + yStartBottom + yOffset * 5,
 			76
 		);
 
@@ -4967,7 +4986,7 @@ public class GuiProfileViewer extends GuiScreen {
 			Splitter splitter = Splitter.on(" ").omitEmptyStrings().limit(2);
 			for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
 				String statName = PlayerStats.defaultStatNames[i];
-				if (statName.equals("mining_fortune") || statName.equals("mining_speed")) continue;
+				//if (statName.equals("mining_fortune") || statName.equals("mining_speed")) continue;
 				String statNamePretty = PlayerStats.defaultStatNamesPretty[i];
 
 				int val = Math.round(stats.get(statName));
@@ -4984,12 +5003,12 @@ public class GuiProfileViewer extends GuiScreen {
 					statNamePretty,
 					EnumChatFormatting.WHITE.toString() + val,
 					guiLeft + 132,
-					guiTop + 27 + 11f * i,
+					guiTop + 21 + 11f * i,
 					80
 				);
 
 				if (mouseX > guiLeft + 132 && mouseX < guiLeft + 212) {
-					if (mouseY > guiTop + 27 + 11f * i && mouseY < guiTop + 37 + 11f * i) {
+					if (mouseY > guiTop + 21 + 11f * i && mouseY < guiTop + 37 + 11f * i) {
 						List<String> split = splitter.splitToList(statNamePretty);
 						PlayerStats.Stats baseStats = PlayerStats.getBaseStats();
 						tooltipToDisplay = new ArrayList<>();
@@ -5033,8 +5052,8 @@ public class GuiProfileViewer extends GuiScreen {
 					continue;
 				}
 
-				int yPosition = position % 7;
-				int xPosition = position / 7;
+				int yPosition = position % 8;
+				int xPosition = position / 8;
 
 				String skillName = entry.getValue().getDisplayName();
 
@@ -5042,7 +5061,7 @@ public class GuiProfileViewer extends GuiScreen {
 				int levelFloored = (int) Math.floor(level);
 
 				int x = guiLeft + 237 + 86 * xPosition;
-				int y = guiTop + 31 + 21 * yPosition;
+				int y = guiTop + 24 + 21 * yPosition;
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 

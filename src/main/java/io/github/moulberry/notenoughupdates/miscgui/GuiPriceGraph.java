@@ -36,7 +36,7 @@ public class GuiPriceGraph extends GuiScreen {
 	private final ResourceLocation TEXTURE;
 	private static final int X_SIZE = 364;
 	private static final int Y_SIZE = 215;
-	private Data dataPoints;
+	private ItemData itemData;
 	private float highestValue;
 	private long firstTime;
 	private long lastTime;
@@ -117,7 +117,8 @@ public class GuiPriceGraph extends GuiScreen {
 			Utils.drawStringCentered("Loading...", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 166, guiTop + 116, false, 0xffffff00
 			);
-		else if (dataPoints == null || dataPoints.get() == null || dataPoints.get().size() <= 1 || lowestValue == null)
+		else if (
+			itemData == null || itemData.get() == null || itemData.get().size() <= 1 || lowestValue == null)
 			Utils.drawStringCentered("No data found.", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 166, guiTop + 116, false, 0xffff0000
 			);
@@ -127,16 +128,16 @@ public class GuiPriceGraph extends GuiScreen {
 			Integer lowestDist = null;
 			Long lowestDistTime = null;
 			HashMap<Integer, Integer> secondLineData = new HashMap<>();
-			for (int i = (dataPoints.isBz() ? 1 : 0); i >= 0; i--) {
+			for (int i = (itemData.isBz() ? 1 : 0); i >= 0; i--) {
 				Utils.drawGradientRect(0, guiLeft + 17, guiTop + 35, guiLeft + 315, guiTop + 198,
 					changeAlpha(i == 0 ? graphColor : graphColor2, 120), changeAlpha(i == 0 ? graphColor : graphColor2, 10)
 				);
 				Integer prevX = null;
 				Integer prevY = null;
-				for (Long time : dataPoints.get().keySet()) {
-					float price = dataPoints.isBz()
-						? i == 0 ? dataPoints.bz.get(time).b : dataPoints.bz.get(time).s
-						: dataPoints.ah.get(time);
+				for (Long time : itemData.get().keySet()) {
+					float price = itemData.isBz()
+						? i == 0 ? itemData.bz.get(time).b : itemData.bz.get(time).s
+						: itemData.ah.get(time);
 					int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
 					int yPos = (int) map(price, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198);
 					if (prevX != null) {
@@ -159,7 +160,7 @@ public class GuiPriceGraph extends GuiScreen {
 						);
 						if (i == 0) {
 							Utils.drawLine(prevX, prevY + 0.5f, xPos, yPos + 0.5f, 2, graphColor);
-							if (dataPoints.isBz())
+							if (itemData.isBz())
 								Utils.drawLine(
 									prevX,
 									secondLineData.get(prevX) + 0.5f,
@@ -218,8 +219,8 @@ public class GuiPriceGraph extends GuiScreen {
 				Utils.drawDottedLine(customStart, guiTop + 197, customEnd, guiTop + 197, 2, 10, 0xFFc6c6c6);
 			}
 			if (lowestDist != null && !customSelecting) {
-				float price = dataPoints.isBz() ? dataPoints.bz.get(lowestDistTime).b : dataPoints.ah.get(lowestDistTime);
-				Float price2 = dataPoints.isBz() ? dataPoints.bz.get(lowestDistTime).s : null;
+				float price = itemData.isBz() ? itemData.bz.get(lowestDistTime).b : itemData.ah.get(lowestDistTime);
+				Float price2 = itemData.isBz() ? itemData.bz.get(lowestDistTime).s : null;
 				int xPos = (int) map(lowestDistTime, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
 				int yPos = (int) map(price, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198);
 				int yPos2 = price2 != null
@@ -243,7 +244,7 @@ public class GuiPriceGraph extends GuiScreen {
 				NumberFormat nf = NumberFormat.getInstance();
 				ArrayList<String> text = new ArrayList<>();
 				text.add(displayFormat.format(date));
-				if (dataPoints.isBz()) {
+				if (itemData.isBz()) {
 					text.add(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "Bazaar Insta-Buy: " +
 						EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + nf.format(price));
 					text.add(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "Bazaar Insta-Sell: " +
@@ -320,7 +321,7 @@ public class GuiPriceGraph extends GuiScreen {
 	}
 
 	private void loadData() {
-		dataPoints = null;
+		itemData = null;
 		loaded = false;
 		new Thread(() -> {
 			File dir = new File("config/notenoughupdates/prices");
@@ -329,46 +330,46 @@ public class GuiPriceGraph extends GuiScreen {
 				return;
 			}
 			File[] files = dir.listFiles();
-			Data data = new Data();
+			ItemData itemData = new ItemData();
 			if (files == null) return;
 			for (File file : files) {
 				if (!file.getName().endsWith(".gz")) continue;
-				HashMap<String, Data> data2 = load(file);
+				HashMap<String, ItemData> data2 = load(file);
 				if (data2 == null || !data2.containsKey(itemId)) continue;
 				if (data2.get(itemId).isBz()) {
-					if (data.bz == null) data.bz = data2.get(itemId).bz;
-					else data.bz.putAll(data2.get(itemId).bz);
-				} else if (data.ah == null) data.ah = data2.get(itemId).ah;
-				else data.ah.putAll(data2.get(itemId).ah);
+					if (itemData.bz == null) itemData.bz = data2.get(itemId).bz;
+					else itemData.bz.putAll(data2.get(itemId).bz);
+				} else if (itemData.ah == null) itemData.ah = data2.get(itemId).ah;
+				else itemData.ah.putAll(data2.get(itemId).ah);
 			}
-			if (data.get() != null && !data.get().isEmpty()) {
+			if (itemData.get() != null && !itemData.get().isEmpty()) {
 				if (mode < 3)
-					data = new Data(
-						new TreeMap<>(data.get().entrySet().stream()
-															.filter(e -> e.getKey() > System.currentTimeMillis() / 1000 -
+					itemData = new ItemData(
+						new TreeMap<>(itemData.get().entrySet().stream()
+																	.filter(e -> e.getKey() > System.currentTimeMillis() / 1000 -
 																(mode == 0 ? 3600 : mode == 1 ? 86400 : 604800))
-															.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))),
-						data.isBz()
+																	.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))),
+						itemData.isBz()
 					);
 				else if (mode == 4)
-					data = new Data(
-						new TreeMap<>(data.get().entrySet().stream()
-															.filter(e -> e.getKey() >= customStart && e.getKey() <= customEnd)
-															.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))),
-						data.isBz()
+					itemData = new ItemData(
+						new TreeMap<>(itemData.get().entrySet().stream()
+																	.filter(e -> e.getKey() >= customStart && e.getKey() <= customEnd)
+																	.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))),
+						itemData.isBz()
 					);
-				if (data.get() == null || data.get().isEmpty()) {
+				if (itemData.get() == null || itemData.get().isEmpty()) {
 					loaded = true;
 					return;
 				}
-				dataPoints = trimData(data);
-				firstTime = dataPoints.get().firstKey();
-				lastTime = dataPoints.get().lastKey();
+				this.itemData = trimData(itemData);
+				firstTime = this.itemData.get().firstKey();
+				lastTime = this.itemData.get().lastKey();
 				highestValue = 0;
 				lowestValue = null;
-				for (long key : dataPoints.get().keySet()) {
-					float value1 = dataPoints.isBz() ? dataPoints.bz.get(key).b : dataPoints.ah.get(key);
-					Float value2 = dataPoints.isBz() ? dataPoints.bz.get(key).s : null;
+				for (long key : this.itemData.get().keySet()) {
+					float value1 = this.itemData.isBz() ? this.itemData.bz.get(key).b : this.itemData.ah.get(key);
+					Float value2 = this.itemData.isBz() ? this.itemData.bz.get(key).s : null;
 					if (value1 > highestValue) {
 						highestValue = value1;
 					}
@@ -404,33 +405,13 @@ public class GuiPriceGraph extends GuiScreen {
 			Date date = new Date();
 			Long epochSecond = date.toInstant().getEpochSecond();
 			File file = new File(dir, "prices_" + format.format(date) + ".gz");
-			HashMap<String, Data> prices = new HashMap<>();
+			HashMap<String, ItemData> prices = new HashMap<>();
 			if (file.exists()) {
-				HashMap<String, Data> tempPrices = load(file);
+				HashMap<String, ItemData> tempPrices = load(file);
 				if (tempPrices != null) prices = tempPrices;
 			}
 			for (Map.Entry<String, JsonElement> item : items.entrySet()) {
-				if (prices.containsKey(item.getKey())) {
-					if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has(
-						"curr_sell"))
-						prices.get(item.getKey()).bz.put(epochSecond, new BzData(
-							item.getValue().getAsJsonObject().get("curr_buy").getAsFloat(),
-							item.getValue().getAsJsonObject().get("curr_sell").getAsFloat()
-						));
-					else if (!bazaar)
-						prices.get(item.getKey()).ah.put(epochSecond, item.getValue().getAsBigDecimal().intValue());
-				} else {
-					TreeMap<Long, Object> mapData = new TreeMap<>();
-					if (bazaar && item.getValue().getAsJsonObject().has("curr_buy") && item.getValue().getAsJsonObject().has(
-						"curr_sell"))
-						mapData.put(epochSecond, new BzData(
-							item.getValue().getAsJsonObject().get("curr_buy").getAsFloat(),
-							item.getValue().getAsJsonObject().get("curr_sell").getAsFloat()
-						));
-					else if (!bazaar)
-						mapData.put(epochSecond, item.getValue().getAsLong());
-					prices.put(item.getKey(), new Data(mapData, bazaar));
-				}
+				addOrUpdateItemPriceInfo(item, prices, epochSecond, bazaar);
 			}
 			//noinspection ResultOfMethodCallIgnored
 			file.createNewFile();
@@ -447,16 +428,64 @@ public class GuiPriceGraph extends GuiScreen {
 		}
 	}
 
-	private Data trimData(Data data) {
-		long first = data.get().firstKey();
-		long last = data.get().lastKey();
-		Data trimmed = new Data();
-		if (data.isBz())
+	private static void addOrUpdateItemPriceInfo(Map.Entry<String, JsonElement> item, HashMap<String, ItemData> prices, long timestamp, boolean bazaar) {
+		String itemName = item.getKey();
+		ItemData existingItemData = null;
+		if (prices.containsKey(itemName)) {
+			existingItemData = prices.get(itemName);
+		}
+
+		// Handle transitions from ah to bz (the other direction typically doesn't happen)
+		if (existingItemData != null) {
+			if (existingItemData.isBz() && !bazaar) {
+				return;
+			}
+
+			if (!existingItemData.isBz() && bazaar) {
+				prices.remove(itemName);
+				existingItemData = null;
+			}
+		}
+
+		if (bazaar) {
+			if (!item.getValue().getAsJsonObject().has("curr_buy") ||
+				!item.getValue().getAsJsonObject().has("curr_sell")
+			) {
+				return;
+			}
+
+			BzData bzData = new BzData(
+				item.getValue().getAsJsonObject().get("curr_buy").getAsFloat(),
+				item.getValue().getAsJsonObject().get("curr_sell").getAsFloat());
+
+			if (existingItemData != null) {
+				existingItemData.bz.put(timestamp, bzData);
+			} else {
+				TreeMap<Long, Object> mapData = new TreeMap<>();
+				mapData.put(timestamp, bzData);
+				prices.put(item.getKey(), new ItemData(mapData, true));
+			}
+		} else {
+			if (existingItemData != null) {
+				prices.get(item.getKey()).ah.put(timestamp, item.getValue().getAsBigDecimal().intValue());
+			} else {
+				TreeMap<Long, Object> mapData = new TreeMap<>();
+				mapData.put(timestamp, item.getValue().getAsLong());
+				prices.put(item.getKey(), new ItemData(mapData, false));
+			}
+		}
+	}
+
+	private ItemData trimData(ItemData itemData) {
+		long first = itemData.get().firstKey();
+		long last = itemData.get().lastKey();
+		ItemData trimmed = new ItemData();
+		if (itemData.isBz())
 			trimmed.bz = new TreeMap<>();
 		else
 			trimmed.ah = new TreeMap<>();
 		int zones = NotEnoughUpdates.INSTANCE.config.ahGraph.graphZones;
-		Long[] dataArray = !data.isBz() ? data.ah.keySet().toArray(new Long[0]) : data.bz.keySet().toArray(new Long[0]);
+		Long[] dataArray = !itemData.isBz() ? itemData.ah.keySet().toArray(new Long[0]) : itemData.bz.keySet().toArray(new Long[0]);
 		int prev = 0;
 		for (int i = 0; i < zones; i++) {
 			long lowest = (long) map(i, 0, zones, first, last);
@@ -467,14 +496,14 @@ public class GuiPriceGraph extends GuiScreen {
 			for (int l = prev; l < dataArray.length; l++) {
 				if (dataArray[l] >= lowest && dataArray[l] <= highest) {
 					amount++;
-					sumBuy += data.isBz() ? data.bz.get(dataArray[l]).b : data.ah.get(dataArray[l]);
-					if (data.isBz()) sumSell += data.bz.get(dataArray[l]).s;
+					sumBuy += itemData.isBz() ? itemData.bz.get(dataArray[l]).b : itemData.ah.get(dataArray[l]);
+					if (itemData.isBz()) sumSell += itemData.bz.get(dataArray[l]).s;
 					prev = l + 1;
 				} else if (dataArray[l] > highest)
 					break;
 			}
 			if (amount > 0) {
-				if (data.isBz())
+				if (itemData.isBz())
 					trimmed.bz.put(lowest, new BzData((float) (sumBuy / amount), (float) (sumSell / amount)));
 				else
 					trimmed.ah.put(lowest, (int) (sumBuy / amount));
@@ -483,8 +512,8 @@ public class GuiPriceGraph extends GuiScreen {
 		return trimmed;
 	}
 
-	private static HashMap<String, Data> load(File file) {
-		Type type = new TypeToken<HashMap<String, Data>>() {
+	private static HashMap<String, ItemData> load(File file) {
+		Type type = new TypeToken<HashMap<String, ItemData>>() {
 		}.getType();
 		if (file.exists()) {
 			try (
@@ -525,14 +554,14 @@ public class GuiPriceGraph extends GuiScreen {
 	}
 }
 
-class Data {
+class ItemData {
 	public TreeMap<Long, Integer> ah = null;
 	public TreeMap<Long, BzData> bz = null;
 
-	public Data() {
+	public ItemData() {
 	}
 
-	public Data(TreeMap<Long, ?> map, boolean bz) {
+	public ItemData(TreeMap<Long, ?> map, boolean bz) {
 		if (bz)
 			this.bz = (TreeMap<Long, BzData>) map;
 		else

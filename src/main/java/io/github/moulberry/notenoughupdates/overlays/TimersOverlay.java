@@ -13,6 +13,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -185,6 +186,11 @@ public class TimersOverlay extends TextOverlay {
 				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("PERFECT_AMETHYST_GEM"));
+				break;
+			case "Daily Heavy Pearls":
+				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.get("HEAVY_PEARL"));
 				break;
 		}
 
@@ -529,6 +535,7 @@ public class TimersOverlay extends TextOverlay {
 		}
 
 		long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000; // 12am est
+		long pearlsReset = midnightReset - 14400000; //8pm est
 		long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
 		long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
 		long catacombsDiffNow = catacombsReset + 86400000 - currentTime;
@@ -743,6 +750,49 @@ public class TimersOverlay extends TextOverlay {
 			);
 		}
 
+		//Daily Heavy Pearl Display
+		if (hidden.dailyHeavyPearlCompleted < pearlsReset) {
+			map.put(
+				9,
+				DARK_AQUA + "Daily Heavy Pearls: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+				(hidden.dailyHeavyPearlCompleted < (pearlsReset - TimeEnums.HALFANHOUR.time))) {
+			map.put(
+				9,
+				DARK_AQUA + "Daily Heavy Pearls: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+			(hidden.dailyHeavyPearlCompleted < (pearlsReset - TimeEnums.HOUR.time))) {
+			map.put(
+				9,
+				DARK_AQUA + "Daily Heavy Pearls: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+				(hidden.dailyHeavyPearlCompleted < (pearlsReset - (TimeEnums.HOUR.time * 3)))) {
+			map.put(
+				9,
+				DARK_AQUA + "Daily Heavy Pearls: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >=
+			DISPLAYTYPE.ALWAYS.ordinal()) {
+			map.put(
+				9,
+				DARK_AQUA + "Daily Heavy Pearls: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+			);
+		}
+
 		overlayStrings = new ArrayList<>();
 		for (int index : NotEnoughUpdates.INSTANCE.config.miscOverlays.todoText2) {
 			if (map.containsKey(index)) {
@@ -752,8 +802,40 @@ public class TimersOverlay extends TextOverlay {
 		if (overlayStrings.isEmpty()) overlayStrings = null;
 	}
 
-	public String compactRemaining(int amount) {
-		return (5 - amount) + " remaining";
+	public static int beforePearls = -1;
+	public static int afterPearls = -1;
+	public static int availablePearls = -1;
+	public static int heavyPearlCount() {
+		int heavyPearls = 0;
+
+		List<ItemStack> inventory = Minecraft.getMinecraft().thePlayer.inventoryContainer.getInventory();
+		for (ItemStack item : inventory) {
+			if (item == null) {
+				continue;
+			} else if (!item.hasTagCompound()) {
+				continue;
+			}
+			NBTTagCompound itemData = item.getSubCompound("ExtraAttributes", false);
+			if (itemData == null) {
+				continue;
+			}
+			if (itemData.getString("id").equals("HEAVY_PEARL")) {
+				heavyPearls += item.stackSize;
+			}
+		}
+		return heavyPearls;
+	}
+
+	public static void processActionBar(String msg) {
+		if(SBInfo.getInstance().location.equals("Belly of the Beast")) {
+			try {
+				msg = Utils.cleanColour(msg);
+				msg = msg.substring(msg.indexOf("Pearls Collected: ")+18);
+				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/")+1));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private enum TimeEnums {

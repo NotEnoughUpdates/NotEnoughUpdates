@@ -84,7 +84,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Edit Fuel Bar Position",
-		desc = "Set the position of the drill fuel bar"
+		desc = "Change the position of the drill fuel bar"
 	)
 	@ConfigEditorButton(
 		runnableId = 2,

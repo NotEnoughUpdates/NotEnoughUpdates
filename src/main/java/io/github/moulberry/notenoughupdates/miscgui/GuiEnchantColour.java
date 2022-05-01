@@ -66,7 +66,9 @@ public class GuiEnchantColour extends GuiScreen {
 	private static final Pattern settingPattern = Pattern.compile(".*:[>=<]:[0-9]+:[a-zA-Z0-9]+(:[a-zA-Z0-9]+)?");
 
 	private ItemStack maxedBook;
+	private ItemStack maxedAttBook;
 	private int maxedBookFound = 0;
+	private int maxedAttBookFound = 0;
 
 	private List<String> getEnchantColours() {
 		return NotEnoughUpdates.INSTANCE.config.hidden.enchantColours;
@@ -227,10 +229,34 @@ public class GuiEnchantColour extends GuiScreen {
 		if (maxedBookFound == 1) {
 			Utils.drawItemStack(maxedBook, guiLeft + xSize + 3, guiTopSidebar - 34);
 		}
+		if (maxedAttBookFound == 0) {
+			try {
+				if (NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+					NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("MAXED_ATTRIBUTE_SHARD")).hasDisplayName()) {
+					maxedAttBook = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("MAXED_ATTRIBUTE_SHARD"));
+					maxedAttBookFound = 1;
+				} else {
+					maxedAttBookFound = 2;
+				}
 
-		if (mouseX >= guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 19) {
+			} catch (Exception ignored) {
+				maxedAttBookFound = 2;
+			}
+		}
+		if (maxedAttBookFound == 1) {
+			Utils.drawItemStack(maxedAttBook, guiLeft + xSize + 3, guiTopSidebar - 52);
+		}
+
+		if (mouseX >= guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 39) {
 			if (mouseY >= guiTopSidebar - 34 && mouseY <= guiTopSidebar - 18 && maxedBookFound == 1) {
 				tooltipToDisplay = maxedBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+				tooltipToDisplay = null;
+			}
+			if (mouseY >= guiTopSidebar - 52 && mouseY <= guiTopSidebar - 34 && maxedAttBookFound == 1) {
+				tooltipToDisplay = maxedAttBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
 				tooltipToDisplay = null;
 			}
