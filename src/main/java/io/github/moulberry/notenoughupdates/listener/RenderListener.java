@@ -76,11 +76,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.NumberFormat;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -1104,7 +1104,7 @@ public class RenderListener {
 					try {
 						try (
 							BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-								new FileOutputStream(file),
+								Files.newOutputStream(file.toPath()),
 								StandardCharsets.UTF_8
 							))
 						) {
@@ -1139,6 +1139,10 @@ public class RenderListener {
 				try {
 					JsonObject newNPC = new JsonObject();
 					String displayname = lower.getDisplayName().getUnformattedText();
+					File file = new File(
+						Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
+						"config/notenoughupdates/repo/npc/" + displayname.toUpperCase() + ".json"
+					);
 					newNPC.add("itemid", new JsonPrimitive("minecraft:skull"));
 					newNPC.add("displayname", new JsonPrimitive("§9" + displayname + " (NPC)"));
 					newNPC.add("nbttag", new JsonPrimitive("TODO"));
@@ -1228,6 +1232,23 @@ public class RenderListener {
 					}
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					System.out.println(gson.toJson(newNPC));
+					try {
+						//noinspection ResultOfMethodCallIgnored
+						file.createNewFile();
+						try (
+							BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+								Files.newOutputStream(file.toPath()),
+								StandardCharsets.UTF_8
+							))
+						) {
+							writer.write(gson.toJson(newNPC));
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayname));
+						}
+					} catch (IOException ignored) {
+						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+							EnumChatFormatting.RED + "Error while writing file."));
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					mc.thePlayer.addChatMessage(new ChatComponentText(
