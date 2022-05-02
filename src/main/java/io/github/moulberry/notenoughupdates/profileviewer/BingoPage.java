@@ -99,6 +99,7 @@ public class BingoPage {
 			int y = row == 0 ? initialY + yAdjustment : initialY + (24 * row) + yAdjustment;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
+			y = communityGoal ? y - 1 : y;
 			if (mouseX >= x && mouseX < x + 24) {
 				if (mouseY >= y && mouseY <= y + 24) {
 					Utils.drawHoveringText(
@@ -210,23 +211,6 @@ public class BingoPage {
 					progressToNextTier + EnumChatFormatting.GOLD + "%");
 			tooltip.add(progressBar + EnumChatFormatting.YELLOW + " " + progressString + EnumChatFormatting.GOLD + "/" +
 				EnumChatFormatting.YELLOW + nextTierString);
-			tooltip.add("");
-			tooltip.add(EnumChatFormatting.GRAY + "Contribution Rewards");
-			tooltip.add(
-				"Top " + EnumChatFormatting.YELLOW + "1%" + EnumChatFormatting.DARK_GRAY + " - " + EnumChatFormatting.GOLD +
-					"15 Bingo Points");
-			tooltip.add(
-				"Top " + EnumChatFormatting.YELLOW + "5%" + EnumChatFormatting.DARK_GRAY + " - " + EnumChatFormatting.GOLD +
-					"12 Bingo Points");
-			tooltip.add(
-				"Top " + EnumChatFormatting.YELLOW + "10%" + EnumChatFormatting.DARK_GRAY + " - " + EnumChatFormatting.GOLD +
-					"9 Bingo Points");
-			tooltip.add(
-				"Top " + EnumChatFormatting.YELLOW + "25%" + EnumChatFormatting.DARK_GRAY + " - " + EnumChatFormatting.GOLD +
-					"7 Bingo Points");
-			tooltip.add(
-				"All Contributors" + EnumChatFormatting.DARK_GRAY + " - " + EnumChatFormatting.GOLD + "4 Bingo Points");
-
 			tooltip.add("");
 			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "Community Goals are");
 			tooltip.add(
