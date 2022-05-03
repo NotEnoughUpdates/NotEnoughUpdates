@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
+import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
@@ -241,6 +242,7 @@ public class NotEnoughUpdates {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
 			manager.registerReloadListener(CustomSkulls.getInstance());
 			manager.registerReloadListener(NPCRetexturing.getInstance());
+			manager.registerReloadListener(ShaderManager.getInstance());
 			manager.registerReloadListener(new ItemCustomizeManager.ReloadListener());
 			manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
 		}

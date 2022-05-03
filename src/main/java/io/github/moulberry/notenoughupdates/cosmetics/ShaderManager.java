@@ -1,6 +1,8 @@
 package io.github.moulberry.notenoughupdates.cosmetics;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
@@ -14,7 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-public class ShaderManager {
+public class ShaderManager implements IResourceManagerReloadListener {
 	private final ResourceLocation shaderLocation = new ResourceLocation("notenoughupdates:shaders");
 	private final HashMap<String, Shader> shaderMap = new HashMap<>();
 
@@ -22,6 +24,14 @@ public class ShaderManager {
 
 	public static ShaderManager getInstance() {
 		return INSTANCE;
+	}
+
+	@Override
+	public void onResourceManagerReload(IResourceManager iResourceManager) {
+		shaderMap.values().forEach(it -> {
+			GL20.glDeleteProgram(it.program);
+		});
+		shaderMap.clear();
 	}
 
 	public static class Shader {
