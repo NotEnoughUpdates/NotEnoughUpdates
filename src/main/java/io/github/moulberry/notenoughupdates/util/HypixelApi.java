@@ -5,6 +5,11 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import org.apache.commons.io.IOUtils;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -142,6 +147,7 @@ public class HypixelApi {
 	public JsonObject getApiSync(String urlS) throws IOException {
 		URL url = new URL(urlS);
 		URLConnection connection = url.openConnection();
+		makeCompatible(connection);
 		connection.setConnectTimeout(10000);
 		connection.setReadTimeout(10000);
 
@@ -155,6 +161,7 @@ public class HypixelApi {
 	public JsonObject getApiGZIPSync(String urlS) throws IOException {
 		URL url = new URL(urlS);
 		URLConnection connection = url.openConnection();
+		makeCompatible(connection);
 		connection.setConnectTimeout(10000);
 		connection.setReadTimeout(10000);
 
@@ -183,5 +190,77 @@ public class HypixelApi {
 			}
 		}
 		return url.toString();
+	}
+
+
+	public void makeCompatible(URLConnection connection) {
+		if (!(connection instanceof HttpsURLConnection)) {
+			// we don't need to do anything to make non-https requests compatible
+			return;
+		}
+
+		if (isJavaValid()) {
+			// we don't need to do anything to make requests compatible if we have a recent enough java version
+			return;
+		}
+
+		// try to initialise an SSLSocketFactory that doesn't validate certificates
+		SSLSocketFactory trustingFactory = getNoCertificateVerificationFactory();
+		if (trustingFactory == null) {
+			return;
+		}
+
+		// set the SSLSocketFactory on the connection
+		((HttpsURLConnection) connection).setSSLSocketFactory(trustingFactory);
+	}
+
+	/**
+	 * @return whether the current Java version is higher than 8u141, the version that supports Let's Encrypt certificates.
+	 */
+	public boolean isJavaValid() {
+		String[] splitJavaVersion;
+		try {
+			splitJavaVersion = System.getProperty("java.version").split("_");
+		} catch (SecurityException | IllegalArgumentException | NullPointerException e) {
+			// either we aren't allowed to access the version, or it doesn't exist.
+			return true; // either way, we can't check it, so assume it's new enough
+		}
+		if (splitJavaVersion.length < 2 || !splitJavaVersion[0].contains("1.8")) {
+			// some versions of java don't have a minor version in this property, also this bug only affects Java 8 (1.8)
+			return true;
+		}
+		try {
+			int minorVersion = Integer.parseInt(splitJavaVersion[1]);
+			return minorVersion >= 141;
+		} catch (NumberFormatException e) {
+			// couldn't parse the minor version, so to be on the safe side, we'll assume it's new enough
+			return true;
+		}
+	}
+
+	public SSLSocketFactory getNoCertificateVerificationFactory() {
+		// Create a trust manager that does not validate certificate chains
+		TrustManager[] trustAllCerts = new TrustManager[]{
+			new X509TrustManager() {
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+				public void checkClientTrusted(
+					java.security.cert.X509Certificate[] certs, String authType) {
+				}
+				public void checkServerTrusted(
+					java.security.cert.X509Certificate[] certs, String authType) {
+				}
+			}
+		};
+
+		// Install the all-trusting trust manager
+		try {
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			return sc.getSocketFactory();
+		} catch (Exception ignored) {
+		}
+		return null;
 	}
 }
