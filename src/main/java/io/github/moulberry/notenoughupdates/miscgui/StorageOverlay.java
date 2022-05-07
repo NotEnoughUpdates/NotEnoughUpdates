@@ -2,7 +2,11 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.*;
+import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
+import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.core.GlScissorStack;
+import io.github.moulberry.notenoughupdates.core.GuiElement;
+import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
@@ -38,19 +42,17 @@ import org.lwjgl.util.vector.Vector2f;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 public class StorageOverlay extends GuiElement {
+	public static final ResourceLocation[] STORAGE_PREVIEW_TEXTURES = new ResourceLocation[4];
 	private static final int CHEST_TOP_OFFSET = 17;
 	private static final int CHEST_SLOT_SIZE = 18;
 	private static final int CHEST_BOTTOM_OFFSET = 215;
-
-	private Framebuffer framebuffer = null;
-
-	private final Set<Vector2f> enchantGlintRenderLocations = new HashSet<>();
-
-	public static final ResourceLocation[] STORAGE_PREVIEW_TEXTURES = new ResourceLocation[4];
 	private static final ResourceLocation[] STORAGE_TEXTURES = new ResourceLocation[4];
 	private static final ResourceLocation STORAGE_ICONS_TEXTURE = new ResourceLocation(
 		"notenoughupdates:storage_gui/storage_icons.png");
@@ -58,6 +60,9 @@ public class StorageOverlay extends GuiElement {
 		"notenoughupdates:storage_gui/storage_gui_pane_ctm.png");
 	private static final ResourceLocation[] LOAD_CIRCLE_SEQ = new ResourceLocation[11];
 	private static final ResourceLocation[] NOT_RICKROLL_SEQ = new ResourceLocation[19];
+	private static final StorageOverlay INSTANCE = new StorageOverlay();
+	private static final String CHROMA_STR = "230:255:255:0:0";
+	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
 	static {
 		for (int i = 0; i < STORAGE_TEXTURES.length; i++) {
@@ -81,52 +86,193 @@ public class StorageOverlay extends GuiElement {
 		LOAD_CIRCLE_SEQ[10] = new ResourceLocation("notenoughupdates:loading_circle_seq/1.png");
 	}
 
-	private static final StorageOverlay INSTANCE = new StorageOverlay();
-
-	public static StorageOverlay getInstance() {
-		return INSTANCE;
-	}
-
+	private final Set<Vector2f> enchantGlintRenderLocations = new HashSet<>();
 	private final GuiElementTextField searchBar = new GuiElementTextField("", 88, 10,
 		GuiElementTextField.SCALE_TEXT | GuiElementTextField.DISABLE_BG
 	);
 	private final GuiElementTextField renameStorageField = new GuiElementTextField("", 100, 13,
 		GuiElementTextField.COLOUR
 	);
-
+	private final int[][] isPaneCaches = new int[40][];
+	private final int[][] ctmIndexCaches = new int[40][];
+	private final LerpingInteger scroll = new LerpingInteger(0, 200);
+	private Framebuffer framebuffer = null;
 	private int editingNameId = -1;
-
 	private int guiLeft;
 	private int guiTop;
-
 	private boolean fastRender = false;
-
 	private int loadCircleIndex = 0;
 	private int rollIndex = 0;
 	private int loadCircleRotation = 0;
-
 	private long millisAccumIndex = 0;
 	private long millisAccumRoll = 0;
 	private long millisAccumRotation = 0;
-
 	private long lastMillis = 0;
-
 	private int scrollVelocity = 0;
 	private long lastScroll = 0;
-
-	private final int[][] isPaneCaches = new int[40][];
-	private final int[][] ctmIndexCaches = new int[40][];
-
 	private int desiredHeightSwitch = -1;
 	private int desiredHeightMX = -1;
 	private int desiredHeightMY = -1;
-
 	private boolean dirty = false;
 	private boolean allowTypingInSearchBar = true;
-
 	private int scrollGrabOffset = -1;
 
-	private final LerpingInteger scroll = new LerpingInteger(0, 200);
+	public static StorageOverlay getInstance() {
+		return INSTANCE;
+	}
+
+	private static boolean shouldConnect(int paneIndex1, int paneIndex2) {
+		if (paneIndex1 == 16 || paneIndex2 == 16) return false;
+		if (paneIndex1 < 1 || paneIndex2 < 1) return false;
+		return paneIndex1 == paneIndex2;
+
+	}
+
+	public static int getCTMIndex(StorageManager.StoragePage page, int index, int[] isPaneCache, int[] ctmIndexCache) {
+		if (page.items[index] == null) {
+			ctmIndexCache[index] = -1;
+			return -1;
+		}
+
+		int paneType = getPaneType(page.items[index], index, isPaneCache);
+
+		int upIndex = index - 9;
+		int leftIndex = index % 9 > 0 ? index - 1 : -1;
+		int rightIndex = index % 9 < 8 ? index + 1 : -1;
+		int downIndex = index + 9;
+		int upleftIndex = index % 9 > 0 ? index - 10 : -1;
+		int uprightIndex = index % 9 < 8 ? index - 8 : -1;
+		int downleftIndex = index % 9 > 0 ? index + 8 : -1;
+		int downrightIndex = index % 9 < 8 ? index + 10 : -1;
+
+		boolean up = upIndex >= 0 && upIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[upIndex],
+			upIndex,
+			isPaneCache
+		), paneType);
+		boolean left = leftIndex >= 0 && leftIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[leftIndex],
+			leftIndex,
+			isPaneCache
+		), paneType);
+		boolean down = downIndex >= 0 && downIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[downIndex],
+			downIndex,
+			isPaneCache
+		), paneType);
+		boolean right = rightIndex >= 0 && rightIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[rightIndex],
+			rightIndex,
+			isPaneCache
+		), paneType);
+		boolean upleft = upleftIndex >= 0 && upleftIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[upleftIndex],
+			upleftIndex,
+			isPaneCache
+		), paneType);
+		boolean upright = uprightIndex >= 0 && uprightIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[uprightIndex],
+			uprightIndex,
+			isPaneCache
+		), paneType);
+		boolean downleft = downleftIndex >= 0 && downleftIndex < isPaneCache.length && shouldConnect(getPaneType(
+			page.items[downleftIndex],
+			downleftIndex,
+			isPaneCache
+		), paneType);
+		boolean downright = downrightIndex >= 0 && downrightIndex < isPaneCache.length &&
+			shouldConnect(getPaneType(page.items[downrightIndex], downrightIndex, isPaneCache), paneType);
+
+		int ctmIndex = BetterContainers.getCTMIndex(up, right, down, left, upleft, upright, downright, downleft);
+		ctmIndexCache[index] = ctmIndex;
+		return ctmIndex;
+	}
+
+	public static int getRGBFromPane(int paneType) {
+		int rgb = -1;
+		EnumChatFormatting formatting = EnumChatFormatting.WHITE;
+		switch (paneType) {
+			case 0:
+				formatting = EnumChatFormatting.WHITE;
+				break;
+			case 1:
+				formatting = EnumChatFormatting.GOLD;
+				break;
+			case 2:
+				formatting = EnumChatFormatting.LIGHT_PURPLE;
+				break;
+			case 3:
+				formatting = EnumChatFormatting.BLUE;
+				break;
+			case 4:
+				formatting = EnumChatFormatting.YELLOW;
+				break;
+			case 5:
+				formatting = EnumChatFormatting.GREEN;
+				break;
+			case 6:
+				rgb = 0xfff03c96;
+				break;
+			case 7:
+				formatting = EnumChatFormatting.DARK_GRAY;
+				break;
+			case 8:
+				formatting = EnumChatFormatting.GRAY;
+				break;
+			case 9:
+				formatting = EnumChatFormatting.DARK_AQUA;
+				break;
+			case 10:
+				formatting = EnumChatFormatting.DARK_PURPLE;
+				break;
+			case 11:
+				formatting = EnumChatFormatting.DARK_BLUE;
+				break;
+			case 12:
+				rgb = 0xffA0522D;
+				break;
+			case 13:
+				formatting = EnumChatFormatting.DARK_GREEN;
+				break;
+			case 14:
+				formatting = EnumChatFormatting.DARK_RED;
+				break;
+			case 15:
+				rgb = 0x00000000;
+				break;
+			case 16:
+				rgb = SpecialColour.specialToChromaRGB(CHROMA_STR);
+				break;
+		}
+		if (rgb != -1) return rgb;
+		return 0xff000000 | Minecraft.getMinecraft().fontRendererObj.getColorCode(formatting.toString().charAt(1));
+	}
+
+	public static int getPaneType(ItemStack stack, int index, int[] cache) {
+		if (cache != null && cache[index] != 0) return cache[index];
+
+		if (NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 2) {
+			if (cache != null) cache[index] = -1;
+			return -1;
+		}
+
+		if (stack != null &&
+			(stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) || stack.getItem() == Item.getItemFromBlock(
+				Blocks.glass_pane))) {
+			String internalName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+			if (internalName != null) {
+				if (internalName.startsWith("STAINED_GLASS_PANE")) {
+					if (cache != null) cache[index] = stack.getItemDamage() + 1;
+					return stack.getItemDamage() + 1;
+				} else if (internalName.startsWith("THIN_GLASS")) {
+					if (cache != null) cache[index] = 17;
+					return 17;
+				}
+			}
+		}
+		if (cache != null) cache[index] = -1;
+		return -1;
+	}
 
 	private int getMaximumScroll() {
 		synchronized (StorageManager.getInstance().storageConfig.displayToStorageIdMapRender) {
@@ -194,6 +340,11 @@ public class StorageOverlay extends GuiElement {
 	@Override
 	public void render() {
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
+		if (Keyboard.isRepeatEvent()) {
+			keyboardInput();
+			Utils.sleepOnCurrentThread(15);
+		}
+
 		GuiChest guiChest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest containerChest = (ContainerChest) guiChest.inventorySlots;
 
@@ -1537,161 +1688,6 @@ public class StorageOverlay extends GuiElement {
 		GlStateManager.translate(0, 0, -300);
 	}
 
-	private static boolean shouldConnect(int paneIndex1, int paneIndex2) {
-		if (paneIndex1 == 16 || paneIndex2 == 16) return false;
-		if (paneIndex1 < 1 || paneIndex2 < 1) return false;
-		return paneIndex1 == paneIndex2;
-
-	}
-
-	public static int getCTMIndex(StorageManager.StoragePage page, int index, int[] isPaneCache, int[] ctmIndexCache) {
-		if (page.items[index] == null) {
-			ctmIndexCache[index] = -1;
-			return -1;
-		}
-
-		int paneType = getPaneType(page.items[index], index, isPaneCache);
-
-		int upIndex = index - 9;
-		int leftIndex = index % 9 > 0 ? index - 1 : -1;
-		int rightIndex = index % 9 < 8 ? index + 1 : -1;
-		int downIndex = index + 9;
-		int upleftIndex = index % 9 > 0 ? index - 10 : -1;
-		int uprightIndex = index % 9 < 8 ? index - 8 : -1;
-		int downleftIndex = index % 9 > 0 ? index + 8 : -1;
-		int downrightIndex = index % 9 < 8 ? index + 10 : -1;
-
-		boolean up = upIndex >= 0 && upIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[upIndex],
-			upIndex,
-			isPaneCache
-		), paneType);
-		boolean left = leftIndex >= 0 && leftIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[leftIndex],
-			leftIndex,
-			isPaneCache
-		), paneType);
-		boolean down = downIndex >= 0 && downIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[downIndex],
-			downIndex,
-			isPaneCache
-		), paneType);
-		boolean right = rightIndex >= 0 && rightIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[rightIndex],
-			rightIndex,
-			isPaneCache
-		), paneType);
-		boolean upleft = upleftIndex >= 0 && upleftIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[upleftIndex],
-			upleftIndex,
-			isPaneCache
-		), paneType);
-		boolean upright = uprightIndex >= 0 && uprightIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[uprightIndex],
-			uprightIndex,
-			isPaneCache
-		), paneType);
-		boolean downleft = downleftIndex >= 0 && downleftIndex < isPaneCache.length && shouldConnect(getPaneType(
-			page.items[downleftIndex],
-			downleftIndex,
-			isPaneCache
-		), paneType);
-		boolean downright = downrightIndex >= 0 && downrightIndex < isPaneCache.length &&
-			shouldConnect(getPaneType(page.items[downrightIndex], downrightIndex, isPaneCache), paneType);
-
-		int ctmIndex = BetterContainers.getCTMIndex(up, right, down, left, upleft, upright, downright, downleft);
-		ctmIndexCache[index] = ctmIndex;
-		return ctmIndex;
-	}
-
-	private static final String CHROMA_STR = "230:255:255:0:0";
-
-	public static int getRGBFromPane(int paneType) {
-		int rgb = -1;
-		EnumChatFormatting formatting = EnumChatFormatting.WHITE;
-		switch (paneType) {
-			case 0:
-				formatting = EnumChatFormatting.WHITE;
-				break;
-			case 1:
-				formatting = EnumChatFormatting.GOLD;
-				break;
-			case 2:
-				formatting = EnumChatFormatting.LIGHT_PURPLE;
-				break;
-			case 3:
-				formatting = EnumChatFormatting.BLUE;
-				break;
-			case 4:
-				formatting = EnumChatFormatting.YELLOW;
-				break;
-			case 5:
-				formatting = EnumChatFormatting.GREEN;
-				break;
-			case 6:
-				rgb = 0xfff03c96;
-				break;
-			case 7:
-				formatting = EnumChatFormatting.DARK_GRAY;
-				break;
-			case 8:
-				formatting = EnumChatFormatting.GRAY;
-				break;
-			case 9:
-				formatting = EnumChatFormatting.DARK_AQUA;
-				break;
-			case 10:
-				formatting = EnumChatFormatting.DARK_PURPLE;
-				break;
-			case 11:
-				formatting = EnumChatFormatting.DARK_BLUE;
-				break;
-			case 12:
-				rgb = 0xffA0522D;
-				break;
-			case 13:
-				formatting = EnumChatFormatting.DARK_GREEN;
-				break;
-			case 14:
-				formatting = EnumChatFormatting.DARK_RED;
-				break;
-			case 15:
-				rgb = 0x00000000;
-				break;
-			case 16:
-				rgb = SpecialColour.specialToChromaRGB(CHROMA_STR);
-				break;
-		}
-		if (rgb != -1) return rgb;
-		return 0xff000000 | Minecraft.getMinecraft().fontRendererObj.getColorCode(formatting.toString().charAt(1));
-	}
-
-	public static int getPaneType(ItemStack stack, int index, int[] cache) {
-		if (cache != null && cache[index] != 0) return cache[index];
-
-		if (NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 2) {
-			if (cache != null) cache[index] = -1;
-			return -1;
-		}
-
-		if (stack != null &&
-			(stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) || stack.getItem() == Item.getItemFromBlock(
-				Blocks.glass_pane))) {
-			String internalName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
-			if (internalName != null) {
-				if (internalName.startsWith("STAINED_GLASS_PANE")) {
-					if (cache != null) cache[index] = stack.getItemDamage() + 1;
-					return stack.getItemDamage() + 1;
-				} else if (internalName.startsWith("THIN_GLASS")) {
-					if (cache != null) cache[index] = 17;
-					return 17;
-				}
-			}
-		}
-		if (cache != null) cache[index] = -1;
-		return -1;
-	}
-
 	private List<String> createTooltip(String title, int selectedOption, String... options) {
 		String selPrefix = EnumChatFormatting.DARK_AQUA + " \u25b6 ";
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
@@ -1708,16 +1704,6 @@ public class StorageOverlay extends GuiElement {
 		list.add(0, "");
 		list.add(0, EnumChatFormatting.GREEN + title);
 		return list;
-	}
-
-	private static class IntPair {
-		int x;
-		int y;
-
-		public IntPair(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
 	}
 
 	public IntPair getPageCoords(int displayId) {
@@ -2246,8 +2232,6 @@ public class StorageOverlay extends GuiElement {
 		return true;
 	}
 
-	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-
 	private void renderEnchOverlay(Set<Vector2f> locations) {
 		float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
 		float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
@@ -2319,6 +2303,16 @@ public class StorageOverlay extends GuiElement {
 		}
 
 		this.fastRender = false;
+	}
+
+	private static class IntPair {
+		int x;
+		int y;
+
+		public IntPair(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
 	}
 
 }

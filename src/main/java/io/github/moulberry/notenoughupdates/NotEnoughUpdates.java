@@ -69,6 +69,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -311,6 +312,10 @@ public class NotEnoughUpdates {
 		try {
 			SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
 		} catch (Exception ignored) {
+		}
+
+		if (!Keyboard.areRepeatEventsEnabled()) {
+			Keyboard.enableRepeatEvents(true);
 		}
 	}
 

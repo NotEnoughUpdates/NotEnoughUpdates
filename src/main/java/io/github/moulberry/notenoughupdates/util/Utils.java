@@ -66,13 +66,65 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-	public static boolean hasEffectOverride = false;
-	public static boolean disableCustomDungColours = false;
 	private static final LinkedList<Integer> guiScales = new LinkedList<>();
-	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
 	//Labymod compatibility
 	private static final FloatBuffer projectionMatrixOld = BufferUtils.createFloatBuffer(16);
 	private static final FloatBuffer modelviewMatrixOld = BufferUtils.createFloatBuffer(16);
+	private static final EnumChatFormatting[] rainbow = new EnumChatFormatting[]{
+		EnumChatFormatting.RED,
+		EnumChatFormatting.GOLD,
+		EnumChatFormatting.YELLOW,
+		EnumChatFormatting.GREEN,
+		EnumChatFormatting.AQUA,
+		EnumChatFormatting.LIGHT_PURPLE,
+		EnumChatFormatting.DARK_PURPLE
+	};
+	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
+	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
+	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
+	public static boolean hasEffectOverride = false;
+	public static boolean disableCustomDungColours = false;
+	public static String[] rarityArr = new String[]{
+		"COMMON",
+		"UNCOMMON",
+		"RARE",
+		"EPIC",
+		"LEGENDARY",
+		"MYTHIC",
+		"SPECIAL",
+		"VERY SPECIAL",
+		"SUPREME",
+		"^^ THAT ONE IS DIVINE ^^"
+//, "DIVINE"
+	};
+	public static String[] rarityArrC = new String[]{
+		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
+		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
+		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
+		EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
+		EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
+		EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
+		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
+		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
+		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
+		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
+		//EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
+	};
+	public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
+		put("COMMON", rarityArrC[0]);
+		put("UNCOMMON", rarityArrC[1]);
+		put("RARE", rarityArrC[2]);
+		put("EPIC", rarityArrC[3]);
+		put("LEGENDARY", rarityArrC[4]);
+		put("MYTHIC", rarityArrC[5]);
+		put("SPECIAL", rarityArrC[6]);
+		put("VERY SPECIAL", rarityArrC[7]);
+		put("DIVINE", rarityArrC[8]);
+		// put("DIVINE", rarityArrC[9]);
+	}};
+	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
+	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
+	private static long startTime = 0;
 
 	public static <T> ArrayList<T> createList(T... values) {
 		ArrayList<T> list = new ArrayList<>();
@@ -203,21 +255,9 @@ public class Utils {
 		drawItemStackWithText(stack, x, y, null, skytilsRarity);
 	}
 
-	private static final EnumChatFormatting[] rainbow = new EnumChatFormatting[]{
-		EnumChatFormatting.RED,
-		EnumChatFormatting.GOLD,
-		EnumChatFormatting.YELLOW,
-		EnumChatFormatting.GREEN,
-		EnumChatFormatting.AQUA,
-		EnumChatFormatting.LIGHT_PURPLE,
-		EnumChatFormatting.DARK_PURPLE
-	};
-
 	public static String chromaString(String str) {
 		return chromaString(str, 0, false);
 	}
-
-	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
 
 	public static String chromaStringByColourCode(String str) {
 		if (str.contains("\u00a7z")) {
@@ -239,8 +279,6 @@ public class Utils {
 		}
 		return str;
 	}
-
-	private static long startTime = 0;
 
 	public static String chromaString(String str, float offset, boolean bold) {
 		str = cleanColour(str);
@@ -267,8 +305,6 @@ public class Utils {
 		}
 		return rainbowText.toString();
 	}
-
-	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 
 	public static String shortNumberFormat(double n, int iteration) {
 		double d = ((long) n / 100) / 10.0;
@@ -326,7 +362,7 @@ public class Utils {
 		int startIndex = indexOfFirstNonWhitespaceNonFormatCode(str);
 		int endIndex = lastIndexOfNonWhitespaceNonFormatCode(str);
 		if (startIndex == -1 || endIndex == -1) return "";
-		return str.substring(startIndex, endIndex+1);
+		return str.substring(startIndex, endIndex + 1);
 	}
 
 	private static int indexOfFirstNonWhitespaceNonFormatCode(String str) {
@@ -532,46 +568,6 @@ public class Utils {
 		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
 	}
 
-	public static String[] rarityArr = new String[]{
-		"COMMON",
-		"UNCOMMON",
-		"RARE",
-		"EPIC",
-		"LEGENDARY",
-		"MYTHIC",
-		"SPECIAL",
-		"VERY SPECIAL",
-		"SUPREME",
-		"^^ THAT ONE IS DIVINE ^^"
-//, "DIVINE"
-	};
-
-	public static String[] rarityArrC = new String[]{
-		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
-		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
-		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
-		EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
-		EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
-		EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
-		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
-		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
-		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		//EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
-	};
-	public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
-		put("COMMON", rarityArrC[0]);
-		put("UNCOMMON", rarityArrC[1]);
-		put("RARE", rarityArrC[2]);
-		put("EPIC", rarityArrC[3]);
-		put("LEGENDARY", rarityArrC[4]);
-		put("MYTHIC", rarityArrC[5]);
-		put("SPECIAL", rarityArrC[6]);
-		put("VERY SPECIAL", rarityArrC[7]);
-		put("DIVINE", rarityArrC[8]);
-		// put("DIVINE", rarityArrC[9]);
-	}};
-
 	public static String getRarityFromInt(int rarity) {
 		if (rarity < 0 || rarity >= rarityArr.length) {
 			return rarityArr[0];
@@ -657,18 +653,33 @@ public class Utils {
 	public static int parseRomanNumeral(String input) {
 		int prevVal = 0;
 		int total = 0;
-		for (int i = input.length()-1; i >= 0; i--) {
+		for (int i = input.length() - 1; i >= 0; i--) {
 			int val;
 			char ch = input.charAt(i);
 			switch (ch) {
-				case 'I' : val = 1;	break;
-				case 'V' : val = 5; break;
-				case 'X' : val = 10; break;
-				case 'L' : val = 50; break;
-				case 'C' : val = 100; break;
-				case 'D' : val = 500; break;
-				case 'M' : val = 1000; break;
-				default: throw new IllegalArgumentException("Invalid Roman Numeral Character: " + ch);
+				case 'I':
+					val = 1;
+					break;
+				case 'V':
+					val = 5;
+					break;
+				case 'X':
+					val = 10;
+					break;
+				case 'L':
+					val = 50;
+					break;
+				case 'C':
+					val = 100;
+					break;
+				case 'D':
+					val = 500;
+					break;
+				case 'M':
+					val = 1000;
+					break;
+				default:
+					throw new IllegalArgumentException("Invalid Roman Numeral Character: " + ch);
 			}
 			if (val < prevVal) val = -val;
 			total += val;
@@ -810,6 +821,7 @@ public class Utils {
 	public static ItemStack createItemStack(Item item, String displayname, String... lore) {
 		return createItemStack(item, displayname, 0, lore);
 	}
+
 	public static ItemStack createItemStack(Block item, String displayname, String... lore) {
 		return createItemStack(Item.getItemFromBlock(item), displayname, lore);
 	}
@@ -1346,8 +1358,6 @@ public class Utils {
 		return prim.getAsString();
 	}
 
-	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
-
 	public static JsonElement getElement(JsonElement element, String path) {
 		List<String> path_split = PATH_SPLITTER.splitToList(path);
 		if (element instanceof JsonObject) {
@@ -1428,8 +1438,6 @@ public class Utils {
 		scrollY.setTarget(scrollY.getTarget() + dY / 10f);
 		scrollY.resetTimer();
 	}
-
-	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 
 	public static void drawHoveringText(
 		List<String> textLines,
@@ -1899,5 +1907,12 @@ public class Utils {
 			}
 		}
 		return stringBuilder.toString();
+	}
+
+	public static void sleepOnCurrentThread(long milliSeconds) {
+		try {
+			Thread.sleep(milliSeconds);
+		} catch (InterruptedException ignored) {
+		}
 	}
 }
