@@ -1,6 +1,17 @@
 package io.github.moulberry.notenoughupdates.util;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.locks.ReentrantLock;
@@ -42,7 +53,8 @@ public class Constants {
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
-	public static void reload() {
+	@SubscribeEvent
+	public void reload(RepositoryReloadEvent event) {
 		try {
 			lock.lock();
 
@@ -57,6 +69,8 @@ public class Constants {
 			ESSENCECOSTS = Utils.getConstant("essencecosts", gson);
 			FAIRYSOULS = Utils.getConstant("fairy_souls", gson);
 			REFORGESTONES = Utils.getConstant("reforgestones", gson);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		} finally {
 			lock.unlock();
 		}

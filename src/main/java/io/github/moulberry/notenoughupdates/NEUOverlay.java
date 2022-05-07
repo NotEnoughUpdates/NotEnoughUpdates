@@ -87,6 +87,36 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.ascending_overlay;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.close;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.descending_overlay;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.itemPaneTabArrow;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_haschild;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_mask;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.quickcommand_background;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow_overlay;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.settings;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet_active;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool_active;
+
 public class NEUOverlay extends Gui {
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
 		"notenoughupdates:supersecretassets/bald.png");
@@ -137,7 +167,7 @@ public class NEUOverlay extends Gui {
 
 	private final NEUManager manager;
 
-	private final String mobRegex = ".*?((_MONSTER)|(_ANIMAL)|(_MINIBOSS)|(_BOSS)|(_SC))$";
+	private final String mobRegex = ".*?((_MONSTER)|(_NPC)|(_ANIMAL)|(_MINIBOSS)|(_BOSS)|(_SC))$";
 	private final String petRegex = ".*?;[0-5]$";
 
 	private final ResourceLocation[] sortIcons = new ResourceLocation[]{
@@ -211,7 +241,7 @@ public class NEUOverlay extends Gui {
 	private boolean redrawItems = false;
 
 	private boolean searchBarHasFocus = false;
-	private final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
+	private static final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
 
 	private static final int COMPARE_MODE_ALPHABETICAL = 0;
 	private static final int COMPARE_MODE_RARITY = 1;
@@ -977,7 +1007,7 @@ public class NEUOverlay extends Gui {
 		return paddingUnscaled;
 	}
 
-	public GuiTextField getTextField() {
+	public static GuiTextField getTextField() {
 		return textField;
 	}
 

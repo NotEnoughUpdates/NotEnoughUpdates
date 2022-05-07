@@ -417,6 +417,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean npcRetextureOnSelf = false;
 
+		@Expose
+		public boolean hasOpenedWaypointMenu = false;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
@@ -510,6 +513,8 @@ public class NEUConfig extends Config {
 		public long dailyGemstonePowderCompleted = 0L;
 		@Expose
 		public long dailyMithrilPowerCompleted = 0L;
+		@Expose
+		public HashMap<String, Boolean> unlockedWarpScrolls = new HashMap<>();
 		@Expose
 		public long dailyHeavyPearlCompleted = 0L;
 	}
