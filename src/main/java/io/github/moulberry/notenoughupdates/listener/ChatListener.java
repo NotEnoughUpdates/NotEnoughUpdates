@@ -20,7 +20,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -138,16 +137,6 @@ public class ChatListener {
 		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
 		Matcher matcher = SLAYER_XP.matcher(unformatted);
 		if (unformatted.startsWith("You are playing on profile: ")) {
-			if(NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif) {
-				try {
-					Field footerField = Minecraft.getMinecraft().ingameGUI.getTabList().getClass().getDeclaredField("field_175255_h");
-					footerField.setAccessible(true);
-					String footer = ((IChatComponent) footerField.get(Minecraft.getMinecraft().ingameGUI.getTabList())).getUnformattedText();
-					CookieWarning.checkCookie(footer);
-				} catch (IllegalAccessException | NoSuchFieldException exception) {
-					exception.printStackTrace();
-				}
-			}
 			neu.manager.setCurrentProfile(unformatted
 				.substring("You are playing on profile: ".length())
 				.split(" ")[0].trim());
@@ -198,6 +187,8 @@ public class ChatListener {
 			"Your Slayer Quest has been cancelled!"))) {
 			SlayerOverlay.slayerQuest = false;
 			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
+		} else if (unformatted.startsWith("You consumed a Booster Cookie!")) {
+			CookieWarning.resetNotification();
 		}
 		if (e.message.getFormattedText().contains(
 			EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {

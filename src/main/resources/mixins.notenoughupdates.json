@@ -5,6 +5,7 @@
   "mixins": [
 	"AccessorEntityAgeable",
 	"AccessorEntityArmorStand",
+	"AccessorGuiPlayerTabOverlay",
 	"MixinAbstractClientPlayer",
 	"MixinContainer",
 	"MixinEffectRenderer",
