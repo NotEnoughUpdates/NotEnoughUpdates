@@ -3,8 +3,11 @@ package io.github.moulberry.notenoughupdates.recipes;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -30,9 +33,21 @@ public interface NeuRecipe {
 	default void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
 	}
 
+	default void mouseClicked(GuiItemRecipe gui, int mouseX, int mouseY, int mouseButton) {}
+
+	default void handleKeyboardInput() {}
+
+	default Set<Ingredient> getCatalystItems() {
+		return Collections.emptySet();
+	}
+
 	boolean hasVariableCost();
 
 	JsonObject serialize();
+
+	default List<GuiButton> getExtraButtons(GuiItemRecipe guiItemRecipe) {
+		return new ArrayList<>();
+	}
 
 	ResourceLocation getBackground();
 
@@ -59,4 +74,6 @@ public interface NeuRecipe {
 	default int[] getPageFlipPositionLeftTopCorner() {
 		return new int[]{110, 90};
 	}
+
+	default void actionPerformed(GuiButton button) {}
 }

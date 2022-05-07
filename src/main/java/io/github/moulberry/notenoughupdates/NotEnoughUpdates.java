@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
+import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
@@ -26,6 +27,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
+import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
@@ -42,6 +44,7 @@ import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
@@ -139,6 +142,7 @@ public class NotEnoughUpdates {
 	public NEUManager manager;
 	public NEUOverlay overlay;
 	public NEUConfig config;
+	public Navigation navigation = new Navigation(this);
 	public GuiScreen openGui = null;
 	public long lastOpenedGui = 0;
 	public Commands commands;
@@ -215,6 +219,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new CalendarOverlay());
 		MinecraftForge.EVENT_BUS.register(SBInfo.getInstance());
 		MinecraftForge.EVENT_BUS.register(CustomItemEffects.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(new Constants());
 		MinecraftForge.EVENT_BUS.register(new DungeonMap());
 		MinecraftForge.EVENT_BUS.register(new SunTzu());
 		MinecraftForge.EVENT_BUS.register(new MiningStuff());
@@ -238,11 +243,13 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new RenderListener(this));
 		MinecraftForge.EVENT_BUS.register(new OldAnimationChecker());
 		MinecraftForge.EVENT_BUS.register(new CookieWarning());
+		MinecraftForge.EVENT_BUS.register(navigation);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
 			manager.registerReloadListener(CustomSkulls.getInstance());
 			manager.registerReloadListener(NPCRetexturing.getInstance());
+			manager.registerReloadListener(ShaderManager.getInstance());
 			manager.registerReloadListener(new ItemCustomizeManager.ReloadListener());
 			manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
 		}

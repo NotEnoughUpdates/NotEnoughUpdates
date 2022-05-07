@@ -125,7 +125,7 @@ public class VillagerTradeRecipe implements NeuRecipe {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("type", "trade");
         jsonObject.addProperty("result", result.serialize());
-        jsonObject.addProperty("cost", cost.getInternalItemId());
+        jsonObject.addProperty("cost", cost.serialize());
         if (minCost > 0)
             jsonObject.addProperty("min", minCost);
         if (maxCost > 0)

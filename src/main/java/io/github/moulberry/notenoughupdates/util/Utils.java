@@ -1854,8 +1854,8 @@ public class Utils {
 	}
 
 	public static boolean isWithinRect(int x, int y, int left, int top, int width, int height) {
-		return left <= x && x <= left + width &&
-			top <= y && y <= top + height;
+		return left <= x && x < left + width &&
+			top <= y && y < top + height;
 	}
 
 	public static int getNumberOfStars(ItemStack stack) {

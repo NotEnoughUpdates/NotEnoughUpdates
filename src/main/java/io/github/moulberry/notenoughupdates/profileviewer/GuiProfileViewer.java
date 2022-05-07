@@ -4835,12 +4835,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (profile.getUuid().equals("20934ef9488c465180a78f861586b4cf")) {
 				locationStr = "Ignoring DMs";
 			} else {
-				if (location != null) {
-					JsonObject misc = Constants.MISC;
-					if (misc != null) {
-						locationStr = Utils.getElementAsString(Utils.getElement(misc, "area_names." + location), "Unknown");
-					}
-				}
+				locationStr = NotEnoughUpdates.INSTANCE.navigation.getNameForAreaModeOrUnknown(location);
 			}
 			if (locationStr != null) {
 				statusStr += EnumChatFormatting.GRAY + " - " + EnumChatFormatting.GREEN + locationStr;

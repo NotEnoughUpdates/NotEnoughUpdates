@@ -67,6 +67,7 @@ public class CapeManager {
 		new CapeData("lava", false, false),
 		new CapeData("tunnel", false, false),
 		new CapeData("planets", false, false),
+		new CapeData("screensaver", false, false),
 
 		//Admins
 		new CapeData("nullzee", true, false),
