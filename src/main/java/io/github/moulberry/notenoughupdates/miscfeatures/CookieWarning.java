@@ -33,7 +33,7 @@ public class CookieWarning {
 	 * Checks the tab list for a cookie timer, and sends a chat message if the timer is within the tolerance
 	 */
 	private void checkCookie() {
-		if(!hasNotified) {
+		if(!hasNotified && NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif) {
 			String[] lines = ((AccessorGuiPlayerTabOverlay) Minecraft.getMinecraft().ingameGUI.getTabList()).getFooter().getUnformattedText().split("\n");
 			boolean hasCookie = true;
 			String timeLine = null; // the line that contains the cookie timer
