@@ -1,6 +1,7 @@
 package io.github.moulberry.notenoughupdates.options;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
@@ -517,6 +518,8 @@ public class NEUConfig extends Config {
 		public HashMap<String, Boolean> unlockedWarpScrolls = new HashMap<>();
 		@Expose
 		public long dailyHeavyPearlCompleted = 0L;
+		@Expose
+		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

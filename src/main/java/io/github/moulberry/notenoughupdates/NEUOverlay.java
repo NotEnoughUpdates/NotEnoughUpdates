@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
@@ -86,36 +87,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.ascending_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.close;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.descending_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.itemPaneTabArrow;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_haschild;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.item_mask;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_alphabetical_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_rarity_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.order_value_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.quickcommand_background;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.rightarrow_overlay;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.settings;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_accessory_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_all_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_armor_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_mob_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_pet_active;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool;
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.sort_tool_active;
 
 public class NEUOverlay extends Gui {
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
@@ -1903,8 +1874,24 @@ public class NEUOverlay extends Gui {
 
 	private ItemStack getWardrobeSlot(int armourSlot) {
 		if (isInNamedGui("Your Equipment")) {
-			return getChestSlotsAsItemStack(armourSlot);
-		} else return null;
+			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
+			if (itemStack != null) {
+				JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
+				if (!itemToSave.has("internalname")) {
+					//would crash without internalName when trying to construct the ItemStack again
+					itemToSave.add("internalname", new JsonPrimitive("_"));
+				}
+				NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.put(armourSlot, itemToSave);
+			}
+		} else {
+			if (NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.containsKey(armourSlot)) {
+				//don't use cache since the internalName is identical in most cases
+				return NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment
+					.get(armourSlot)
+					.getAsJsonObject(), false);
+			}
+		}
+		return null;
 	}
 
 	public ItemStack slot1 = null;
