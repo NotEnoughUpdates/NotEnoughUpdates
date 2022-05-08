@@ -40,7 +40,6 @@ public class CookieWarning {
 			} catch(NullPointerException e) {
 				return; // if the footer is null or somehow doesn't exist, stop
 			}
-			System.out.println(String.join(" ", lines));
 			boolean hasCookie = true;
 			String timeLine = null; // the line that contains the cookie timer
 			for(int i = 0; i < lines.length; i++) {
