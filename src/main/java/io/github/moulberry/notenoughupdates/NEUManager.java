@@ -196,15 +196,7 @@ public class NEUManager {
 
 	public CompletableFuture<Boolean> fetchRepository() {
 		return CompletableFuture.<Boolean>supplyAsync(() -> {
-			JDialog dialog = null;
 			try {
-				JOptionPane pane = new JOptionPane("Getting items to download from remote repository.");
-				dialog = pane.createDialog("NotEnoughUpdates Remote Sync");
-				dialog.setModal(false);
-				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) dialog.setVisible(true);
-
-				if (Display.isActive()) dialog.toFront();
-
 				JsonObject currentCommitJSON = getJsonFromFile(new File(configLocation, "currentCommit.json"));
 
 				latestRepoCommit = null;
@@ -221,18 +213,10 @@ public class NEUManager {
 						return false;
 					}
 				}
-
-				if (Display.isActive()) dialog.toFront();
-
 				Utils.recursiveDelete(repoLocation);
 				repoLocation.mkdirs();
 
 				String dlUrl = neu.config.hidden.repoURL;
-
-				pane.setMessage("Downloading NEU Master Archive. (DL# >20)");
-				dialog.pack();
-				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) dialog.setVisible(true);
-				if (Display.isActive()) dialog.toFront();
 
 				File itemsZip = new File(repoLocation, "neu-items-master.zip");
 				try {
@@ -249,16 +233,11 @@ public class NEUManager {
 				try (InputStream is = urlConnection.getInputStream()) {
 					FileUtils.copyInputStreamToFile(is, itemsZip);
 				} catch (IOException e) {
-					dialog.dispose();
 					e.printStackTrace();
 					System.err.println("Failed to download NEU Repo! Please report this issue to the mod creator");
 					return false;
 				}
 
-				pane.setMessage("Unzipping NEU Master Archive.");
-				dialog.pack();
-				//dialog.setVisible(true);
-				if (Display.isActive()) dialog.toFront();
 
 				unzipIgnoreFirstFolder(itemsZip.getAbsolutePath(), repoLocation.getAbsolutePath());
 
@@ -272,8 +251,6 @@ public class NEUManager {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				if (dialog != null) dialog.dispose();
 			}
 			return true;
 		});
