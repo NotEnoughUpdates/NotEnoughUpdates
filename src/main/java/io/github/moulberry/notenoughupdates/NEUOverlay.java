@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -1872,7 +1873,23 @@ public class NEUOverlay extends Gui {
 		}
 	}
 
+	public ItemStack slot1 = null;
+	public ItemStack slot2 = null;
+	public ItemStack slot3 = null;
+	public ItemStack slot4 = null;
+	public ItemStack petSlot = null;
+	private String lastProfile;
+
 	private ItemStack getWardrobeSlot(int armourSlot) {
+		if (!SBInfo.getInstance().currentProfile.equals(lastProfile)) {
+			lastProfile = SBInfo.getInstance().currentProfile;
+			slot1 = null;
+			slot2 = null;
+			slot3 = null;
+			slot4 = null;
+			petSlot = null;
+		}
+
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
@@ -1882,6 +1899,7 @@ public class NEUOverlay extends Gui {
 					itemToSave.add("internalname", new JsonPrimitive("_"));
 				}
 				NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.put(armourSlot, itemToSave);
+				return itemStack;
 			}
 		} else {
 			if (NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.containsKey(armourSlot)) {
@@ -1893,12 +1911,6 @@ public class NEUOverlay extends Gui {
 		}
 		return null;
 	}
-
-	public ItemStack slot1 = null;
-	public ItemStack slot2 = null;
-	public ItemStack slot3 = null;
-	public ItemStack slot4 = null;
-	public ItemStack petSlot = null;
 
 	public static boolean isRenderingArmorHud() {
 		return renderingArmorHud;
