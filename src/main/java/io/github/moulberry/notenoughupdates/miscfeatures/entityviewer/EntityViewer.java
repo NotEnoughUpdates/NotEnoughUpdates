@@ -67,7 +67,7 @@ public class EntityViewer extends GuiScreen {
         put("Cow", () -> new EntityCow(null));
         put("Dragon", ()-> new EntityDragon(null));
         put("Player", () -> new GUIClientPlayer());
-				put("Pig", () -> new EntityPig(null));
+        put("Pig", () -> new EntityPig(null));
     }};
 
     public static Map<String, EntityViewerModifier> validModifiers = new HashMap<String, EntityViewerModifier>() {{
