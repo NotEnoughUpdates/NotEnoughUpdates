@@ -196,4 +196,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean warpTwice = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Rat Protection",
+		desc = "Attempts to prevent your Minecraft Account from being stolen by malicious mods. \u00A7cAlthough it does not gurantee your safety, it is STRONGLY reccomended that you leave this enabled."
+	)
+	@ConfigEditorBoolean
+	public boolean ratProtection = true;
+
 }
