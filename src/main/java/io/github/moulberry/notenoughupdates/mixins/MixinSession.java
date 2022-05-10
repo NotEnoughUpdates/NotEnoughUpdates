@@ -39,7 +39,7 @@ public class MixinSession {
 			this.token = RatProtection.randomToken();
 		}
 		if(!getJarName().equals("")) {
-			JOptionPane.showMessageDialog(null, "Warning! NotEnoughUpdates has detected that the mod: '" + getJarName() + "' could be trying to steal your account.\nYour game was crashed automatically to prevent further damage. It is highly recommended that you remove this mod.");
+			JOptionPane.showMessageDialog(null, "Warning! NotEnoughUpdates has detected that '" + getJarName() + "' is trying to access your Session ID.\nYour game was crashed automatically to prevent further damage. It is highly recommended that you remove this mod.");
 			FMLCommonHandler.instance().exitJava(1, true);
 		}
 	}

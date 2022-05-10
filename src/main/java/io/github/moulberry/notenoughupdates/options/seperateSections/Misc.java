@@ -199,7 +199,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Rat Protection",
-		desc = "Attempts to prevent your Minecraft Account from being stolen by malicious mods. \u00A7cAlthough it does not gurantee your safety, it is STRONGLY reccomended that you leave this enabled."
+		desc = "Attempts to prevent your Minecraft Session ID from being stolen by malicious mods. \u00A7cAlthough your safety is not guaranteed, it is STRONGLY recommended that you leave this feature enabled."
 	)
 	@ConfigEditorBoolean
 	public boolean ratProtection = true;
