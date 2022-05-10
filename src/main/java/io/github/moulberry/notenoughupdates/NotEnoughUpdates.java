@@ -150,6 +150,7 @@ public class NotEnoughUpdates {
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
 	private File configFile;
+	public double startedHoldingDownKey = -1;
 	private long lastChatMessage = 0;
 	private long secondLastChatMessage = 0;
 	private String currChatMessage = null;

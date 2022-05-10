@@ -341,8 +341,11 @@ public class StorageOverlay extends GuiElement {
 	public void render() {
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
 		if (Keyboard.isRepeatEvent()) {
-			keyboardInput();
-			Utils.sleepOnCurrentThread(15);
+			if (Utils.shouldHandleRepeatKeyEvent(30)) {
+				keyboardInput();
+			}
+		} else {
+			NotEnoughUpdates.INSTANCE.startedHoldingDownKey = -1;
 		}
 
 		GuiChest guiChest = (GuiChest) Minecraft.getMinecraft().currentScreen;

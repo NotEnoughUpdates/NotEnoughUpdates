@@ -1862,8 +1862,11 @@ public class NEUOverlay extends Gui {
 			return;
 		}
 		if (Keyboard.isRepeatEvent()) {
-			keyboardInput(false);
-			Utils.sleepOnCurrentThread(15);
+			if (Utils.shouldHandleRepeatKeyEvent(30)) {
+				keyboardInput(false);
+			}
+		} else {
+			NotEnoughUpdates.INSTANCE.startedHoldingDownKey = -1;
 		}
 
 		renderingArmorHud = false;
