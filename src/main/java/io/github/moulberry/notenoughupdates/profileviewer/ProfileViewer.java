@@ -1365,7 +1365,7 @@ public class ProfileViewer {
 		}
 
 		public PlayerStats.Stats getStats(String profileId) {
-			//if(stats.get(profileId) != null) return stats.get(profileId);
+			if(stats.get(profileId) != null) return stats.get(profileId);
 			JsonObject profileInfo = getProfileInformation(profileId);
 			if (profileInfo == null) {
 				return null;

@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.listener;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
@@ -186,6 +187,8 @@ public class ChatListener {
 			"Your Slayer Quest has been cancelled!"))) {
 			SlayerOverlay.slayerQuest = false;
 			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
+		} else if (unformatted.startsWith("You consumed a Booster Cookie!")) {
+			CookieWarning.resetNotification();
 		}
 		if (e.message.getFormattedText().contains(
 			EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {

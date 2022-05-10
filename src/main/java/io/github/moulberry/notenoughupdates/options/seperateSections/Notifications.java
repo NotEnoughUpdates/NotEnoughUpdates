@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class Notifications {
@@ -29,4 +30,24 @@ public class Notifications {
 	)
 	@ConfigEditorBoolean
 	public boolean doOamNotif = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Booster Cookie Warning",
+		desc = "Warning when a booster cookie is about to expire"
+	)
+	@ConfigEditorBoolean
+	public boolean doBoosterNotif = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Booster Cookie Warning Minutes",
+		desc = "Change the minimum time required for the Booster Cookie warning to activate"
+	)
+	@ConfigEditorSlider(
+		minValue = 10,
+		maxValue = 5760,
+		minStep = 25
+	)
+	public int boosterCookieWarningMins = 1440;
 }
