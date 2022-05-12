@@ -212,7 +212,7 @@ public class NEUOverlay extends Gui {
 
 	private boolean redrawItems = false;
 
-	private boolean searchBarHasFocus = false;
+	public static boolean searchBarHasFocus = false;
 	private static final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
 
 	private static final int COMPARE_MODE_ALPHABETICAL = 0;
