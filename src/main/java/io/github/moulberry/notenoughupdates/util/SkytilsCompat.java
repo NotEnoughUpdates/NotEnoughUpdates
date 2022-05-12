@@ -28,19 +28,19 @@ public class SkytilsCompat {
 
 		static {
 			try {
-				skytilsClass = Class.forName("skytils.skytilsmod.Skytils");
+				skytilsClass = Class.forName("gg.skytils.skytilsmod.Skytils");
 				isSkytilsPresent = true;
 			} catch (ClassNotFoundException ignored) {
 			}
 			try {
-				Class<?> skytilsCompanionClass = Class.forName("skytils.skytilsmod.Skytils$Companion");
-				skytilsConfigClass = Class.forName("skytils.skytilsmod.core.Config");
+				Class<?> skytilsCompanionClass = Class.forName("gg.skytils.skytilsmod.Skytils$Companion");
+				skytilsConfigClass = Class.forName("gg.skytils.skytilsmod.core.Config");
 				Field skytilsCompanionField = skytilsClass.getField("Companion");
 				skytilsCompanionObject = skytilsCompanionField.get(null);
 				Method skytilsGetConfigMethod = skytilsCompanionClass.getMethod("getConfig");
 				skytilsConfigObject = skytilsGetConfigMethod.invoke(skytilsCompanionObject);
 				skytilsGetShowItemRarity = skytilsConfigClass.getMethod("getShowItemRarity");
-				renderUtilClass = Class.forName("skytils.skytilsmod.utils.RenderUtil");
+				renderUtilClass = Class.forName("gg.skytils.skytilsmod.utils.RenderUtil");
 				renderRarityMethod = renderUtilClass.getDeclaredMethod(
 					"renderRarity",
 					ItemStack.class,

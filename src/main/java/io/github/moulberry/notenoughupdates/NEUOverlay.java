@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
@@ -24,6 +25,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -88,14 +90,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NEUOverlay extends Gui {
-	public static final int ITEM_PADDING = 4;
-	public static final int ITEM_SIZE = 16;
-	public static final int overlayColourDark = new Color(0, 0, 0, 120).getRGB();
-	public static final int overlayColourLight = new Color(255, 255, 255, 120).getRGB();
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
 		"notenoughupdates:supersecretassets/bald.png");
 	private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
+
 	private static final ResourceLocation ARMOR_DISPLAY = new ResourceLocation(
 		"notenoughupdates:armordisplay/armordisplay.png");
 	private static final ResourceLocation ARMOR_DISPLAY_GREY = new ResourceLocation(
@@ -108,7 +107,9 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:armordisplay/armordisplay_transparent.png");
 	private static final ResourceLocation ARMOR_DISPLAY_TRANSPARENT_PET = new ResourceLocation(
 		"notenoughupdates:armordisplay/armordisplay_transparent_pet.png");
+
 	private static final ResourceLocation QUESTION_MARK = new ResourceLocation("notenoughupdates:pv_unknown.png");
+
 	private static final ResourceLocation PET_DISPLAY = new ResourceLocation(
 		"notenoughupdates:petdisplay/petdisplaysolo.png");
 	private static final ResourceLocation PET_DISPLAY_GREY = new ResourceLocation(
@@ -119,6 +120,7 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:petdisplay/petdisplaysolo_fsr.png");
 	private static final ResourceLocation PET_DISPLAY_TRANSPARENT = new ResourceLocation(
 		"notenoughupdates:petdisplay/petdisplaysolo_transparent.png");
+
 	private static final ResourceLocation PET_ARMOR_DISPLAY = new ResourceLocation(
 		"notenoughupdates:petdisplay/petdisplayarmor.png");
 	private static final ResourceLocation PET_ARMOR_DISPLAY_GREY = new ResourceLocation(
@@ -129,24 +131,17 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:petdisplay/petdisplayarmor_fsr.png");
 	private static final ResourceLocation PET_ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation(
 		"notenoughupdates:petdisplay/petdisplayarmor_transparent.png");
-	private static final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
-	private static final int COMPARE_MODE_ALPHABETICAL = 0;
-	private static final int COMPARE_MODE_RARITY = 1;
-	private static final int COMPARE_MODE_VALUE = 2;
-	private static final int SORT_MODE_ALL = 0;
-	private static final int SORT_MODE_MOB = 1;
-	private static final int SORT_MODE_PET = 2;
-	private static final int SORT_MODE_TOOL = 3;
-	private static final int SORT_MODE_ARMOR = 4;
-	private static final int SORT_MODE_ACCESSORY = 5;
-	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-	public static boolean shouldUseCachedPet;
-	public static long cachedPetTimer;
+
 	private static boolean renderingArmorHud;
 	private static boolean renderingPetHud;
+	public static boolean shouldUseCachedPet;
+	public static long cachedPetTimer;
+
 	private final NEUManager manager;
+
 	private final String mobRegex = ".*?((_MONSTER)|(_NPC)|(_ANIMAL)|(_MINIBOSS)|(_BOSS)|(_SC))$";
 	private final String petRegex = ".*?;[0-5]$";
+
 	private final ResourceLocation[] sortIcons = new ResourceLocation[]{
 		GuiTextures.sort_all,
 		GuiTextures.sort_mob,
@@ -163,79 +158,85 @@ public class NEUOverlay extends Gui {
 		GuiTextures.sort_armor_active,
 		GuiTextures.sort_accessory_active
 	};
+
 	private final ResourceLocation[] orderIcons = new ResourceLocation[]{
 		GuiTextures.order_alphabetical, GuiTextures.order_rarity, GuiTextures.order_value
 	};
 	private final ResourceLocation[] orderIconsActive = new ResourceLocation[]{
 		GuiTextures.order_alphabetical_active, GuiTextures.order_rarity_active, GuiTextures.order_value_active
 	};
+
 	//Various constants used for GUI structure
 	private final int searchBarYOffset = 10;
 	private final int searchBarPadding = 2;
-	private final List<JsonObject> searchedItemsArr = new ArrayList<>();
-	private final LerpingFloat itemPaneOffsetFactor = new LerpingFloat(1);
-	private final LerpingInteger itemPaneTabOffset = new LerpingInteger(20, 50);
-	private final LerpingFloat infoPaneOffsetFactor = new LerpingFloat(0);
-	private final HashMap<String, JsonObject> parentMap = new HashMap<>();
-	private final ExecutorService searchES = Executors.newSingleThreadExecutor();
-	private final Framebuffer[] itemFramebuffers = new Framebuffer[2];
-	public boolean searchMode = false;
-	public MBGuiGroupFloating guiGroup = null;
-	public float yaw = 0;
-	public float pitch = 20;
-	public ItemStack slot1 = null;
-	public ItemStack slot2 = null;
-	public ItemStack slot3 = null;
-	public ItemStack slot4 = null;
-	public ItemStack petSlot = null;
-	boolean mouseDown = false;
-	String[] rarityArr = new String[]{
-		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
-		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
-		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
-		EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
-		EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
-		EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
-		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
-	};
-	Shader blurShaderHorz = null;
-	Framebuffer blurOutputHorz = null;
-	Shader blurShaderVert = null;
-	Framebuffer blurOutputVert = null;
-	int guiScaleLast = 0;
-	/**
-	 * Renders the framebuffer created by #renderItemsToImage to the screen.
-	 * itemRenderOffset is a magic number that makes the z-level of the rendered items equal to the z-level of
-	 * the item glint overlay model, meaning that a depthFunc of GL_EQUAL can correctly render on to the item.
-	 */
-	float itemRenderOffset = 7.5001f;
 	private long lastSearchMode = 0;
+
 	private float oldWidthMult = 0;
+
+	public static final int ITEM_PADDING = 4;
+	public static final int ITEM_SIZE = 16;
+
 	private Color bg = new Color(90, 90, 140, 50);
 	private Color fg = new Color(100, 100, 100, 255);
+
 	private InfoPane activeInfoPane = null;
+
 	private TreeSet<JsonObject> searchedItems = null;
+	private final List<JsonObject> searchedItemsArr = new ArrayList<>();
+
 	private HashMap<String, List<String>> searchedItemsSubgroup = new HashMap<>();
+
 	private long selectedItemMillis = 0;
 	private int selectedItemGroupX = -1;
 	private int selectedItemGroupY = -1;
 	private List<JsonObject> selectedItemGroup = null;
+
 	private boolean itemPaneOpen = false;
+
 	private int page = 0;
+
+	private final LerpingFloat itemPaneOffsetFactor = new LerpingFloat(1);
+	private final LerpingInteger itemPaneTabOffset = new LerpingInteger(20, 50);
+	private final LerpingFloat infoPaneOffsetFactor = new LerpingFloat(0);
+
+	public boolean searchMode = false;
 	private long millisLastLeftClick = 0;
 	private long millisLastMouseMove = 0;
 	private int lastMouseX = 0;
 	private int lastMouseY = 0;
+
+	public static final int overlayColourDark = new Color(0, 0, 0, 120).getRGB();
+	public static final int overlayColourLight = new Color(255, 255, 255, 120).getRGB();
+
+	boolean mouseDown = false;
+
 	private boolean redrawItems = false;
+
 	private boolean searchBarHasFocus = false;
+	private static final GuiTextField textField = new GuiTextField(0, null, 0, 0, 0, 0);
+
+	private static final int COMPARE_MODE_ALPHABETICAL = 0;
+	private static final int COMPARE_MODE_RARITY = 1;
+	private static final int COMPARE_MODE_VALUE = 2;
+
+	private static final int SORT_MODE_ALL = 0;
+	private static final int SORT_MODE_MOB = 1;
+	private static final int SORT_MODE_PET = 2;
+	private static final int SORT_MODE_TOOL = 3;
+	private static final int SORT_MODE_ARMOR = 4;
+	private static final int SORT_MODE_ACCESSORY = 5;
+
 	private boolean disabled = false;
+
 	private int lastScreenWidth;
 	private int lastScreenHeight;
 	private int lastScale;
+
 	private CompletableFuture<Void> infoPaneLoadingJob = CompletableFuture.completedFuture(null);
+
 	private List<String> textToDisplay = null;
-	private boolean showVanillaLast = false;
-	private boolean wardrobeOpen = false;
+
+	public MBGuiGroupFloating guiGroup = null;
 
 	public NEUOverlay(NEUManager manager) {
 		this.manager = manager;
@@ -243,18 +244,6 @@ public class NEUOverlay extends Gui {
 		textField.setCanLoseFocus(false);
 
 		guiGroup = createGuiGroup();
-	}
-
-	public static GuiTextField getTextField() {
-		return textField;
-	}
-
-	public static boolean isRenderingArmorHud() {
-		return renderingArmorHud;
-	}
-
-	public static boolean isRenderingPetHud() {
-		return renderingPetHud;
 	}
 
 	private MBGuiElement createSearchBar() {
@@ -990,6 +979,10 @@ public class NEUOverlay extends Gui {
 		return paddingUnscaled;
 	}
 
+	public static GuiTextField getTextField() {
+		return textField;
+	}
+
 	/**
 	 * Returns searchBarXSize, scaled by 0.8 if gui scale == AUTO.
 	 */
@@ -1051,6 +1044,7 @@ public class NEUOverlay extends Gui {
 	 */
 	public boolean keyboardInput(boolean hoverInv) {
 		if (Minecraft.getMinecraft().currentScreen == null) return false;
+		Keyboard.enableRepeatEvents(true);
 
 		int keyPressed = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
 
@@ -1196,6 +1190,16 @@ public class NEUOverlay extends Gui {
 		}
 		updateSearch();
 	}
+
+	String[] rarityArr = new String[]{
+		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
+		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
+		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
+		EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
+		EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
+		EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
+		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
+	};
 
 	/**
 	 * Finds the rarity from the lore of an item.
@@ -1383,6 +1387,10 @@ public class NEUOverlay extends Gui {
 		return true;
 	}
 
+	private final HashMap<String, JsonObject> parentMap = new HashMap<>();
+
+	private final ExecutorService searchES = Executors.newSingleThreadExecutor();
+
 	/**
 	 * Clears the current item list, creating a new TreeSet if necessary.
 	 * Adds all items that match the search AND match the sort mode to the current item list.
@@ -1525,6 +1533,10 @@ public class NEUOverlay extends Gui {
 	public int getBoxPadding() {
 		double panePadding = Math.max(0, Math.min(20, NotEnoughUpdates.INSTANCE.config.itemlist.panePadding));
 		return (int) (panePadding * 2 / Utils.peekGuiScale().getScaleFactor() + 5);
+	}
+
+	private abstract static class ItemSlotConsumer {
+		public abstract void consume(int x, int y, int id);
 	}
 
 	public void iterateItemSlots(ItemSlotConsumer itemSlotConsumer) {
@@ -1709,6 +1721,9 @@ public class NEUOverlay extends Gui {
 		return getSortMode() == SORT_MODE_MOB;
 	}
 
+	public float yaw = 0;
+	public float pitch = 20;
+
 	/**
 	 * Renders an entity onto the GUI at a certain x and y position.
 	 */
@@ -1783,6 +1798,11 @@ public class NEUOverlay extends Gui {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
+	Shader blurShaderHorz = null;
+	Framebuffer blurOutputHorz = null;
+	Shader blurShaderVert = null;
+	Framebuffer blurOutputVert = null;
+
 	/**
 	 * Creates a projection matrix that projects from our coordinate space [0->width; 0->height] to OpenGL coordinate
 	 * space [-1 -> 1; 1 -> -1] (Note: flipped y-axis).
@@ -1823,6 +1843,11 @@ public class NEUOverlay extends Gui {
 		Utils.pushGuiScale(-1);
 	}
 
+	int guiScaleLast = 0;
+	private boolean showVanillaLast = false;
+
+	private boolean wardrobeOpen = false;
+
 	private boolean isInNamedGui(String guiName) {
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 		if (guiScreen instanceof GuiChest) {
@@ -1848,10 +1873,51 @@ public class NEUOverlay extends Gui {
 		}
 	}
 
+	public ItemStack slot1 = null;
+	public ItemStack slot2 = null;
+	public ItemStack slot3 = null;
+	public ItemStack slot4 = null;
+	public ItemStack petSlot = null;
+	private String lastProfile;
+
 	private ItemStack getWardrobeSlot(int armourSlot) {
+		if (!SBInfo.getInstance().currentProfile.equals(lastProfile)) {
+			lastProfile = SBInfo.getInstance().currentProfile;
+			slot1 = null;
+			slot2 = null;
+			slot3 = null;
+			slot4 = null;
+			petSlot = null;
+		}
+
 		if (isInNamedGui("Your Equipment")) {
-			return getChestSlotsAsItemStack(armourSlot);
-		} else return null;
+			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
+			if (itemStack != null) {
+				JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
+				if (!itemToSave.has("internalname")) {
+					//would crash without internalName when trying to construct the ItemStack again
+					itemToSave.add("internalname", new JsonPrimitive("_"));
+				}
+				NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.put(armourSlot, itemToSave);
+				return itemStack;
+			}
+		} else {
+			if (NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.containsKey(armourSlot)) {
+				//don't use cache since the internalName is identical in most cases
+				return NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment
+					.get(armourSlot)
+					.getAsJsonObject(), false);
+			}
+		}
+		return null;
+	}
+
+	public static boolean isRenderingArmorHud() {
+		return renderingArmorHud;
+	}
+
+	public static boolean isRenderingPetHud() {
+		return renderingPetHud;
 	}
 
 	/**
@@ -1861,14 +1927,6 @@ public class NEUOverlay extends Gui {
 		if (disabled) {
 			return;
 		}
-		if (Keyboard.isRepeatEvent()) {
-			if (Utils.shouldHandleRepeatKeyEvent(30)) {
-				keyboardInput(false);
-			}
-		} else {
-			NotEnoughUpdates.INSTANCE.startedHoldingDownKey = -1;
-		}
-
 		renderingArmorHud = false;
 		renderingPetHud = false;
 		GlStateManager.enableDepth();
@@ -2524,6 +2582,8 @@ public class NEUOverlay extends Gui {
 		redrawItems = true;
 	}
 
+	private final Framebuffer[] itemFramebuffers = new Framebuffer[2];
+
 	/**
 	 * Checks whether the screen size has changed, if so it reconstructs the itemPane framebuffer and marks that the
 	 * itemPane should be redrawn.
@@ -2580,6 +2640,15 @@ public class NEUOverlay extends Gui {
 		cleanupFramebuffer(itemFramebuffers[1], sw, sh);
 		GL11.glPopMatrix();
 	}
+
+	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+
+	/**
+	 * Renders the framebuffer created by #renderItemsToImage to the screen.
+	 * itemRenderOffset is a magic number that makes the z-level of the rendered items equal to the z-level of
+	 * the item glint overlay model, meaning that a depthFunc of GL_EQUAL can correctly render on to the item.
+	 */
+	float itemRenderOffset = 7.5001f;
 
 	private void renderItemsFromImage(int xOffset, int width, int height) {
 		if (itemFramebuffers[0] != null && itemFramebuffers[1] != null) {
@@ -2806,9 +2875,5 @@ public class NEUOverlay extends Gui {
 
 	public float getInfoPaneOffsetFactor() {
 		return infoPaneOffsetFactor.getValue() * getWidthMult();
-	}
-
-	private abstract static class ItemSlotConsumer {
-		public abstract void consume(int x, int y, int id);
 	}
 }
