@@ -35,14 +35,23 @@ import org.lwjgl.opengl.GL14;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.auction_accept;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.auction_price;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.auction_view;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.auction_view_buttons;
 
 public class CustomAH extends Gui {
 	private enum PriceFilter {
@@ -1589,7 +1598,6 @@ public class CustomAH extends Gui {
 			return false;
 		}
 
-		Keyboard.enableRepeatEvents(true);
 		if (isEditingPrice() && Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
 			Minecraft.getMinecraft().displayGuiScreen(null);
 		} else if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {

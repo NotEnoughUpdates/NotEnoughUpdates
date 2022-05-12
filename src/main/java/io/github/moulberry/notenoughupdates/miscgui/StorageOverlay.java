@@ -340,13 +340,6 @@ public class StorageOverlay extends GuiElement {
 	@Override
 	public void render() {
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
-		if (Keyboard.isRepeatEvent()) {
-			if (Utils.shouldHandleRepeatKeyEvent(30)) {
-				keyboardInput();
-			}
-		} else {
-			NotEnoughUpdates.INSTANCE.startedHoldingDownKey = -1;
-		}
 
 		GuiChest guiChest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 		ContainerChest containerChest = (ContainerChest) guiChest.inventorySlots;

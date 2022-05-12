@@ -68,7 +68,6 @@ public class GuiOptionEditorText extends GuiOptionEditor {
 	@Override
 	public boolean keyboardInput() {
 		if (Keyboard.getEventKeyState() && textField.getFocus()) {
-			Keyboard.enableRepeatEvents(true);
 			textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 
 			try {

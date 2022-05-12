@@ -129,8 +129,6 @@ public class GuiPositionEditor extends GuiScreen {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		Keyboard.enableRepeatEvents(true);
-
 		if (keyCode == Keyboard.KEY_R) {
 			position.set(originalPosition);
 		} else if (!clicked) {

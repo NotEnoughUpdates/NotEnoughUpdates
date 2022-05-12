@@ -70,7 +70,6 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -150,7 +149,6 @@ public class NotEnoughUpdates {
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
 	private File configFile;
-	public double startedHoldingDownKey = -1;
 	private long lastChatMessage = 0;
 	private long secondLastChatMessage = 0;
 	private String currChatMessage = null;
@@ -277,7 +275,6 @@ public class NotEnoughUpdates {
 				}
 				tmp.delete();
 			}
-			//saveConfig();
 		}));
 	}
 
@@ -315,10 +312,6 @@ public class NotEnoughUpdates {
 		try {
 			SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
 		} catch (Exception ignored) {
-		}
-
-		if (!Keyboard.areRepeatEventsEnabled()) {
-			Keyboard.enableRepeatEvents(true);
 		}
 	}
 

@@ -1908,16 +1908,4 @@ public class Utils {
 		}
 		return stringBuilder.toString();
 	}
-
-	public static boolean shouldHandleRepeatKeyEvent(long millis) {
-		if (NotEnoughUpdates.INSTANCE.startedHoldingDownKey == -1) {
-			NotEnoughUpdates.INSTANCE.startedHoldingDownKey = System.currentTimeMillis();
-		} else {
-			if (System.currentTimeMillis() - NotEnoughUpdates.INSTANCE.startedHoldingDownKey >= millis) {
-				NotEnoughUpdates.INSTANCE.startedHoldingDownKey = -1;
-				return true;
-			}
-		}
-		return false;
-	}
 }

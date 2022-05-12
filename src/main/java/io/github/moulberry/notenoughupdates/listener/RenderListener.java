@@ -1018,6 +1018,7 @@ public class RenderListener {
 	 */
 	@SubscribeEvent
 	public void onGuiScreenKeyboard(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+		Keyboard.enableRepeatEvents(true);
 		if (typing) {
 			event.setCanceled(true);
 		}

@@ -43,7 +43,6 @@ public class TutorialBase extends GuiScreen {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		Keyboard.enableRepeatEvents(true);
 		super.keyTyped(typedChar, keyCode);
 		if (keyCode == Keyboard.KEY_LEFT) {
 			page--;

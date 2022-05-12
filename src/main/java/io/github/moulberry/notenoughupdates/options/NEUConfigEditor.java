@@ -829,7 +829,6 @@ public class NEUConfigEditor extends GuiElement {
 		int innerWidth = xSize - 154 - innerPadding * 2;
 
 		if (Keyboard.getEventKeyState()) {
-			Keyboard.enableRepeatEvents(true);
 			String old = searchField.getText();
 			searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 			searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(

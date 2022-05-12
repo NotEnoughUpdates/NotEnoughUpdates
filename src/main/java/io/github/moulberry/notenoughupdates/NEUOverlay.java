@@ -1044,7 +1044,6 @@ public class NEUOverlay extends Gui {
 	 */
 	public boolean keyboardInput(boolean hoverInv) {
 		if (Minecraft.getMinecraft().currentScreen == null) return false;
-		Keyboard.enableRepeatEvents(true);
 
 		int keyPressed = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
 

@@ -164,10 +164,6 @@ public class NEUItemEditor extends GuiScreen {
 		);
 	}
 
-	public void onGuiClosed() {
-		Keyboard.enableRepeatEvents(false);
-	}
-
 	public Supplier<String> addTextFieldWithSupplier(String initialText, int options) {
 		GuiElementTextField textField = new GuiElementTextField(initialText, options);
 		this.options.add(textField);
