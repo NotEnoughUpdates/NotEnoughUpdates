@@ -1,6 +1,7 @@
 package io.github.moulberry.notenoughupdates.itemeditor;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
@@ -44,108 +45,135 @@ public class NEUItemEditor extends GuiScreen {
 	private final List<GuiElement> rightOptions = new ArrayList<>();
 
 	private final JsonObject item;
+	private final JsonObject savedRepoItem;
 
 	private static final int PADDING = 10;
 	private static final int SCROLL_AMOUNT = 20;
 
 	private final LerpingInteger scrollHeight = new LerpingInteger(0);
 
-	private final Supplier<String> internalname;
-	private final Supplier<String> itemid;
-	private final Supplier<String> displayname;
+	private final Supplier<String> internalName;
+	private final Supplier<String> itemId;
+	private final Supplier<String> displayName;
 	private final Supplier<String> lore;
-	private final Supplier<String> crafttext;
+	private final Supplier<String> craftText;
 	private final Supplier<String> infoType;
 	private final Supplier<String> info;
-	private final Supplier<String> clickcommand;
+	private final Supplier<String> clickCommand;
 	private final Supplier<String> damage;
-	private NBTTagCompound nbttag;
-	private boolean hasChanges = false;
+	private NBTTagCompound nbtTag;
+	private int saved = 0;
 
-	public NEUItemEditor(NEUManager manager, String internalname, JsonObject item) {
+	public NEUItemEditor(NEUManager manager, String internalName, JsonObject item) {
 		this.manager = manager;
-		this.item = item;
-
 		if (item.has("nbttag")) {
 			try {
-				nbttag = JsonToNBT.getTagFromJson(item.get("nbttag").getAsString());
+				nbtTag = JsonToNBT.getTagFromJson(item.get("nbttag").getAsString());
 			} catch (NBTException ignored) {
 			}
 		}
+		nbtTag.getCompoundTag("ExtraAttributes").removeTag("uuid");
+		nbtTag.getCompoundTag("ExtraAttributes").removeTag("timestamp");
 
-		internalname = internalname == null ? "" : internalname;
+		savedRepoItem = manager.getItemInformation().getOrDefault(internalName, null);
+		if (savedRepoItem != null) {
+			this.item = savedRepoItem;
+		} else {
+			this.item = item;
+		}
+
+		internalName = internalName == null ? "" : internalName;
 		options.add(new GuiElementText("Internal Name: ", Color.WHITE.getRGB()));
-		this.internalname = addTextFieldWithSupplier(internalname, NO_SPACE | FORCE_CAPS);
+		this.internalName = addTextFieldWithSupplier(internalName, NO_SPACE | FORCE_CAPS);
 
 		options.add(new GuiElementText("Item ID: ", Color.WHITE.getRGB()));
 		String itemid = item.has("itemid") ? item.get("itemid").getAsString() : "";
-		this.itemid = addTextFieldWithSupplier(itemid, NO_SPACE);
+		this.itemId = addTextFieldWithSupplier(itemid, NO_SPACE);
 
 		options.add(new GuiElementText("Display name: ", Color.WHITE.getRGB()));
 		String displayname = item.has("displayname") ? item.get("displayname").getAsString() : "";
-		this.displayname = addTextFieldWithSupplier(displayname, COLOUR);
+		this.displayName = addTextFieldWithSupplier(displayname, COLOUR);
 
 		options.add(new GuiElementText("Lore: ", Color.WHITE.getRGB()));
-		JsonArray lore = item.has("lore") ? item.get("lore").getAsJsonArray() : new JsonArray();
+		JsonElement loreElement = getItemInfo("lore");
+		JsonArray lore = loreElement != null ? loreElement.getAsJsonArray() : new JsonArray();
 		String[] loreA = new String[lore.size()];
 		for (int i = 0; i < lore.size(); i++) loreA[i] = lore.get(i).getAsString();
 		this.lore = addTextFieldWithSupplier(String.join("\n", loreA), COLOUR | MULTILINE);
 
 		options.add(new GuiElementText("Craft text: ", Color.WHITE.getRGB()));
-		String crafttext = item.has("crafttext") ? item.get("crafttext").getAsString() : "";
-		this.crafttext = addTextFieldWithSupplier(crafttext, COLOUR);
+		JsonElement craftTextElement = getItemInfo("crafttext");
+		String craftText = craftTextElement != null ? craftTextElement.getAsString() : "";
+		this.craftText = addTextFieldWithSupplier(craftText, COLOUR);
 
 		options.add(new GuiElementText("Info type: ", Color.WHITE.getRGB()));
-		String infoType = item.has("infoType") ? item.get("infoType").getAsString() : "";
+		JsonElement infoTypeElement = getItemInfo("infoType");
+		String infoType = infoTypeElement != null ? infoTypeElement.getAsString() : "";
 		this.infoType = addTextFieldWithSupplier(infoType, NO_SPACE | FORCE_CAPS);
 
 		options.add(new GuiElementText("Additional information: ", Color.WHITE.getRGB()));
-		JsonArray info = item.has("info") ? item.get("info").getAsJsonArray() : new JsonArray();
+		JsonElement infoElement = getItemInfo("info");
+		JsonArray info = infoElement != null ? infoElement.getAsJsonArray() : new JsonArray();
 		String[] infoA = new String[info.size()];
 		for (int i = 0; i < info.size(); i++) infoA[i] = info.get(i).getAsString();
 		this.info = addTextFieldWithSupplier(String.join("\n", infoA), COLOUR | MULTILINE);
 
 		options.add(new GuiElementText("Click-command (viewrecipe or viewpotion): ", Color.WHITE.getRGB()));
-		String clickcommand = item.has("clickcommand") ? item.get("clickcommand").getAsString() : "";
-		this.clickcommand = addTextFieldWithSupplier(clickcommand, NO_SPACE);
+		JsonElement clickCommandElement = getItemInfo("clickcommand");
+		String clickCommand = clickCommandElement != null ? clickCommandElement.getAsString() : "";
+		this.clickCommand = addTextFieldWithSupplier(clickCommand, NO_SPACE);
 
 		options.add(new GuiElementText("Damage: ", Color.WHITE.getRGB()));
-		String damage = item.has("damage") ? item.get("damage").getAsString() : "";
+		JsonElement damageElement = getItemInfo("damage");
+		String damage = damageElement != null ? damageElement.getAsString() : "";
 		this.damage = addTextFieldWithSupplier(damage, NO_SPACE | NUM_ONLY);
 
 		rightOptions.add(new GuiElementButton("Close (discards changes)", Color.LIGHT_GRAY.getRGB(), () ->
 			Minecraft.getMinecraft().displayGuiScreen(null)));
+
+		rightOptions.add(new GuiElementText("", Color.WHITE.getRGB()));
+
 		GuiElementButton button = new Object() { //Used to make the compiler shut the fuck up
 			final GuiElementButton b = new GuiElementButton("Save to local disk", Color.GREEN.getRGB(), new Runnable() {
 				public void run() {
 					if (save()) {
-						b.setText("Save to local disk (SUCCESS)");
+						b.setText(saved == 0 ? "Saved" : "Saved (" + saved + ")");
+						saved++;
 					} else {
-						b.setText("Save to local disk (FAILED)");
+						b.setText("Saving FAILED!");
 					}
 				}
 			});
 		}.b;
 		rightOptions.add(button);
 
-		rightOptions.add(new GuiElementText("", Color.WHITE.getRGB()));
-
 		rightOptions.add(new GuiElementButton("Remove enchants", Color.RED.getRGB(), () -> {
-			nbttag.removeTag("ench");
-			nbttag.getCompoundTag("ExtraAttributes").removeTag("enchantments");
+			nbtTag.removeTag("ench");
+			nbtTag.getCompoundTag("ExtraAttributes").removeTag("enchantments");
 		}));
 		rightOptions.add(new GuiElementButton(
 			"Add enchant glint",
 			Color.ORANGE.getRGB(),
-			() -> nbttag.setTag("ench", new NBTTagList())
+			() -> nbtTag.setTag("ench", new NBTTagList())
 		));
 
-		rightOptions.add(new GuiElementButton("Remove timestamp/uuid", Color.RED.getRGB(), () -> {
-			nbttag.getCompoundTag("ExtraAttributes").removeTag("uuid");
-			nbttag.getCompoundTag("ExtraAttributes").removeTag("timestamp");
-		}));
-
 		resetScrollToTop();
+	}
+
+	/**
+	 * Returns the Element from the item being edited or the already existing item, prioritizing the item currently being edited
+	 *
+	 * @param key The JSON key
+	 * @return the element found, or null
+	 */
+	private JsonElement getItemInfo(String key) {
+		if (item.has(key)) {
+			return item.get(key);
+		} else if (savedRepoItem != null && savedRepoItem.has(key)) {
+			return savedRepoItem.get(key);
+		} else {
+			return null;
+		}
 	}
 
 	public boolean save() {
@@ -159,8 +187,8 @@ public class NEUItemEditor extends GuiScreen {
 		if (infoA.length == 0 || infoA[0].isEmpty()) {
 			infoA = new String[0];
 		}
-		return manager.writeItemJson(item, internalname.get(), itemid.get(), displayname.get(), lore.get().split("\n"),
-			crafttext.get(), infoType.get(), infoA, clickcommand.get(), damageI, nbttag
+		return manager.writeItemJson(item, internalName.get(), itemId.get(), displayName.get(), lore.get().split("\n"),
+			craftText.get(), infoType.get(), infoA, clickCommand.get(), damageI, nbtTag
 		);
 	}
 
@@ -175,7 +203,7 @@ public class NEUItemEditor extends GuiScreen {
 	}
 
 	public void resyncNbttag() {
-		if (nbttag == null) nbttag = new NBTTagCompound();
+		if (nbtTag == null) nbtTag = new NBTTagCompound();
 
 		//Item lore
 		NBTTagList list = new NBTTagList();
@@ -183,17 +211,17 @@ public class NEUItemEditor extends GuiScreen {
 			list.appendTag(new NBTTagString(lore));
 		}
 
-		NBTTagCompound display = nbttag.getCompoundTag("display");
+		NBTTagCompound display = nbtTag.getCompoundTag("display");
 		display.setTag("Lore", list);
 
 		//Name
-		display.setString("Name", displayname.get());
-		nbttag.setTag("display", display);
+		display.setString("Name", displayName.get());
+		nbtTag.setTag("display", display);
 
 		//Internal ID
-		NBTTagCompound ea = nbttag.getCompoundTag("ExtraAttributes");
-		ea.setString("id", internalname.get());
-		nbttag.setTag("ExtraAttributes", ea);
+		NBTTagCompound ea = nbtTag.getCompoundTag("ExtraAttributes");
+		ea.setString("id", internalName.get());
+		nbtTag.setTag("ExtraAttributes", ea);
 	}
 
 	public void resetScrollToTop() {
@@ -247,9 +275,6 @@ public class NEUItemEditor extends GuiScreen {
 		drawRect(0, 0, width, height, backgroundColour.getRGB());
 
 		int yScroll = calculateYScroll();
-		if (yScroll > 0) {
-			//Render scroll bar
-		}
 
 		int currentY = PADDING - yScroll;
 		for (GuiElement gui : options) {
@@ -272,7 +297,7 @@ public class NEUItemEditor extends GuiScreen {
 		drawRect(itemX - 9, itemY - 9, itemX + itemSize + 9, itemY + itemSize + 9, itemBorder.getRGB());
 		drawRect(itemX - 6, itemY - 6, itemX + itemSize + 6, itemY + itemSize + 6, Color.DARK_GRAY.getRGB());
 		drawRect(itemX - 5, itemY - 5, itemX + itemSize + 5, itemY + itemSize + 5, itemBackground.getRGB());
-		ItemStack stack = new ItemStack(Item.itemRegistry.getObject(new ResourceLocation(itemid.get())));
+		ItemStack stack = new ItemStack(Item.itemRegistry.getObject(new ResourceLocation(itemId.get())));
 
 		if (stack.getItem() != null) {
 			try {
@@ -281,18 +306,18 @@ public class NEUItemEditor extends GuiScreen {
 			}
 
 			resyncNbttag();
-			stack.setTagCompound(nbttag);
+			stack.setTagCompound(nbtTag);
 
 			int scaleFactor = itemSize / 16;
 			GL11.glPushMatrix();
 			GlStateManager.scale(scaleFactor, scaleFactor, 1);
-			drawItemStack(stack, itemX / scaleFactor, itemY / scaleFactor, null);
+			drawItemStack(stack, itemX / scaleFactor, itemY / scaleFactor);
 			GL11.glPopMatrix();
 		}
 
 		//Tooltip
 		List<String> text = new ArrayList<>();
-		text.add(displayname.get());
+		text.add(displayName.get());
 		text.addAll(Arrays.asList(lore.get().split("\n")));
 
 		Utils.drawHoveringText(text, itemX - 20, itemY + itemSize + 28, width, height, -1,
@@ -304,6 +329,7 @@ public class NEUItemEditor extends GuiScreen {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) {
+		boolean hasChanges = false;
 		if (keyCode == Keyboard.KEY_ESCAPE && !hasChanges) {
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			return;
@@ -412,7 +438,7 @@ public class NEUItemEditor extends GuiScreen {
 		}
 	}
 
-	private void drawItemStack(ItemStack stack, int x, int y, String altText) {
+	private void drawItemStack(ItemStack stack, int x, int y) {
 		RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
 		FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
 
@@ -420,7 +446,7 @@ public class NEUItemEditor extends GuiScreen {
 		itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 		RenderHelper.disableStandardItemLighting();
 
-		itemRender.renderItemOverlayIntoGUI(font, stack, x, y, altText);
+		itemRender.renderItemOverlayIntoGUI(font, stack, x, y, null);
 	}
 
 }
