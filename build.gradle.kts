@@ -55,6 +55,7 @@ minecraft {
 		version = "1.8.9-11.15.1.2318-1.8.9"
 		runDir = "run"
 		mappings = "stable_22"
+		makeObfSourceJar = false
 		clientJvmArgs.addAll(
 				listOf(
 						"-Dmixin.debug=true",
