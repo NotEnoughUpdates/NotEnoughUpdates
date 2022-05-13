@@ -80,6 +80,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -1881,7 +1882,7 @@ public class NEUOverlay extends Gui {
 	private String lastProfile;
 
 	private ItemStack getWardrobeSlot(int armourSlot) {
-		if (!SBInfo.getInstance().currentProfile.equals(lastProfile)) {
+		if (Objects.equals(SBInfo.getInstance().currentProfile, lastProfile)) {
 			lastProfile = SBInfo.getInstance().currentProfile;
 			slot1 = null;
 			slot2 = null;
