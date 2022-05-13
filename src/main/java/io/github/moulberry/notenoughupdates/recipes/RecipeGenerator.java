@@ -21,7 +21,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -231,6 +236,7 @@ public class RecipeGenerator {
 	Damage: 3s
 }*/
 	public boolean saveRecipes(String relevantItem, List<NeuRecipe> recipes) throws IOException {
+		relevantItem = relevantItem.replace(" ", "_");
 		JsonObject outputJson = neu.manager.readJsonDefaultDir(relevantItem + ".json");
 		if (outputJson == null) return false;
 		outputJson.addProperty("clickcommand", "viewrecipe");
