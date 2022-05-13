@@ -1021,38 +1021,43 @@ public class RenderListener {
 		if (typing) {
 			event.setCanceled(true);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_B) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-				GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
-				ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-				IInventory lower = cc.getLowerChestInventory();
+		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
+			(Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
+				(((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
+					.getLowerChestInventory()
+					.getDisplayName()
+					.toString()
+					.endsWith("Upgrades")))) {
+			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+			IInventory lower = cc.getLowerChestInventory();
 
-				try {
-					File file = new File(
-						Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
-						"config/notenoughupdates/repo/constants/essencecosts.json"
-					);
-					String fileContent;
-					fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
-						.lines()
-						.collect(Collectors.joining(System.lineSeparator()));
-					String id = null;
-					JsonObject jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
-					JsonObject newEntry = new JsonObject();
-					for (int i = 0; i < 54; i++) {
-						ItemStack stack = lower.getStackInSlot(i);
-						if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
-							stack.getItem() != Items.arrow) {
-							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
-								int stars = Utils.getNumberOfStars(stack);
-								if (stars == 0) continue;
+			try {
+				File file = new File(
+					Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
+					"config/notenoughupdates/repo/constants/essencecosts.json"
+				);
+				String fileContent;
+				fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+					.lines()
+					.collect(Collectors.joining(System.lineSeparator()));
+				String id = null;
+				JsonObject jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+				JsonObject newEntry = new JsonObject();
+				for (int i = 0; i < 54; i++) {
+					ItemStack stack = lower.getStackInSlot(i);
+					if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
+						stack.getItem() != Items.arrow) {
+						if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
+							int stars = Utils.getNumberOfStars(stack);
+							if (stars == 0) continue;
 
-								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
-								int costIndex = 10000;
-								id = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
-								if (jsonObject.has(id)) {
-									jsonObject.remove(id);
-								}
+							NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+							int costIndex = 10000;
+							id = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
+							if (jsonObject.has(id)) {
+								jsonObject.remove(id);
+							}
 								for (int j = 0; j < lore.tagCount(); j++) {
 									String entry = lore.getStringTagAt(j);
 									if (entry.equals("§7Cost")) {
@@ -1120,7 +1125,6 @@ public class RenderListener {
 					e.printStackTrace();
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details."));
-				}
 			}
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_RETURN) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			Minecraft mc = Minecraft.getMinecraft();
