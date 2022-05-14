@@ -1022,12 +1022,13 @@ public class RenderListener {
 			event.setCanceled(true);
 		}
 		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
-			(Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
-				(((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
-					.getLowerChestInventory()
-					.getDisplayName()
-					.toString()
-					.endsWith("Upgrades")))) {
+			Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
+			((((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
+				.getLowerChestInventory()
+				.getDisplayName()
+				.getUnformattedText()
+				.endsWith("Upgrades")))) {
+			System.out.println("afsfd");
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			IInventory lower = cc.getLowerChestInventory();
