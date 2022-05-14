@@ -3,7 +3,7 @@ package io.github.moulberry.notenoughupdates.itemeditor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -39,12 +39,10 @@ import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextFiel
 import static io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField.NUM_ONLY;
 
 public class NEUItemEditor extends GuiScreen {
-	private final NEUManager manager;
-
 	private final List<GuiElement> options = new ArrayList<>();
 	private final List<GuiElement> rightOptions = new ArrayList<>();
 
-	private final JsonObject item;
+	private JsonObject item;
 	private final JsonObject savedRepoItem;
 
 	private static final int PADDING = 10;
@@ -64,8 +62,8 @@ public class NEUItemEditor extends GuiScreen {
 	private NBTTagCompound nbtTag;
 	private int saved = 0;
 
-	public NEUItemEditor(NEUManager manager, String internalName, JsonObject item) {
-		this.manager = manager;
+	public NEUItemEditor(String internalName, JsonObject item) {
+		this.item = item;
 		if (item.has("nbttag")) {
 			try {
 				nbtTag = JsonToNBT.getTagFromJson(item.get("nbttag").getAsString());
@@ -75,12 +73,7 @@ public class NEUItemEditor extends GuiScreen {
 		nbtTag.getCompoundTag("ExtraAttributes").removeTag("uuid");
 		nbtTag.getCompoundTag("ExtraAttributes").removeTag("timestamp");
 
-		savedRepoItem = manager.getItemInformation().getOrDefault(internalName, null);
-		if (savedRepoItem != null) {
-			this.item = savedRepoItem;
-		} else {
-			this.item = item;
-		}
+		savedRepoItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().getOrDefault(internalName, null);
 
 		internalName = internalName == null ? "" : internalName;
 		options.add(new GuiElementText("Internal Name: ", Color.WHITE.getRGB()));
@@ -158,6 +151,25 @@ public class NEUItemEditor extends GuiScreen {
 		));
 
 		resetScrollToTop();
+		if (savedRepoItem != null) {
+			this.item = savedRepoItem;
+		} else {
+			this.item = item;
+		}
+	}
+
+	/**
+	 * Creates a new ItemEditor object and instantly saves. This will update the lore/nbt tag and other item infos in the repo without removing things like recipes and wiki URLs and without showing the GUI
+	 *
+	 * @param internalName the internal name for the item
+	 * @param item         the Item as a JsonObject
+	 * @return weather the saving was successful or not
+	 * @see io.github.moulberry.notenoughupdates.NEUManager#getInternalNameForItem(ItemStack)
+	 * @see io.github.moulberry.notenoughupdates.NEUManager#getJsonForItem(ItemStack)
+	 */
+	public static boolean saveOnly(String internalName, JsonObject item) {
+		NEUItemEditor editor = new NEUItemEditor(internalName, item);
+		return editor.save();
 	}
 
 	/**
@@ -187,13 +199,19 @@ public class NEUItemEditor extends GuiScreen {
 		if (infoA.length == 0 || infoA[0].isEmpty()) {
 			infoA = new String[0];
 		}
-		return manager.writeItemJson(item, internalName.get(), itemId.get(), displayName.get(), lore.get().split("\n"),
-			craftText.get(), infoType.get(), infoA, clickCommand.get(), damageI, nbtTag
+		return NotEnoughUpdates.INSTANCE.manager.writeItemJson(
+			item,
+			internalName.get(),
+			itemId.get(),
+			displayName.get(),
+			lore.get().split("\n"),
+			craftText.get(),
+			infoType.get(),
+			infoA,
+			clickCommand.get(),
+			damageI,
+			nbtTag
 		);
-	}
-
-	public void onGuiClosed() {
-		Keyboard.enableRepeatEvents(false);
 	}
 
 	public Supplier<String> addTextFieldWithSupplier(String initialText, int options) {
@@ -448,5 +466,4 @@ public class NEUItemEditor extends GuiScreen {
 
 		itemRender.renderItemOverlayIntoGUI(font, stack, x, y, null);
 	}
-
 }

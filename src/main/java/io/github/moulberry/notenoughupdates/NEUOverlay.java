@@ -1137,8 +1137,9 @@ public class NEUOverlay extends Gui {
 				if (internalname.get() != null) {
 					if (itemstack.get() != null) {
 						if (NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing && Keyboard.getEventCharacter() == 'k') {
-							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(manager,
-								internalname.get(), manager.getJsonForItem(itemstack.get())
+							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(
+								internalname.get(),
+								manager.getJsonForItem(itemstack.get())
 							));
 							return true;
 						}
@@ -1161,9 +1162,7 @@ public class NEUOverlay extends Gui {
 							}
 						} else if (NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing &&
 							Keyboard.getEventCharacter() == 'k') {
-							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(manager,
-								internalname.get(), item
-							));
+							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(internalname.get(), item));
 							return true;
 						} else if (keyPressed == manager.keybindItemSelect.getKeyCode() &&
 							NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
