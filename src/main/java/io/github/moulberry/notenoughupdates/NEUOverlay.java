@@ -1881,7 +1881,7 @@ public class NEUOverlay extends Gui {
 	private String lastProfile;
 
 	private ItemStack getWardrobeSlot(int armourSlot) {
-		if (Objects.equals(SBInfo.getInstance().currentProfile, lastProfile)) {
+		if (!Objects.equals(SBInfo.getInstance().currentProfile, lastProfile)) {
 			lastProfile = SBInfo.getInstance().currentProfile;
 			slot1 = null;
 			slot2 = null;
