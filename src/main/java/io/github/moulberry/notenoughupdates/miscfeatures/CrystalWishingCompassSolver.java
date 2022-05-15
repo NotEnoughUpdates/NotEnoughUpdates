@@ -773,7 +773,7 @@ public class CrystalWishingCompassSolver {
 		ChatComponentText chatMessage = new ChatComponentText(destinationMessage);
 		chatMessage.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND,
 				skytilsCommand,
-				EnumChatFormatting.YELLOW + "Set waypoint for wishing target\n"));
+				EnumChatFormatting.YELLOW + "Set waypoint for wishing target"));
 		mc.thePlayer.addChatMessage(chatMessage);
 	}
 
