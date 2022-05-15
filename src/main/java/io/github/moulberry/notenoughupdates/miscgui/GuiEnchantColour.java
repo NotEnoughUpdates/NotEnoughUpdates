@@ -599,10 +599,12 @@ public class GuiEnchantColour extends GuiScreen {
 						getEnchantOpString(guiElementTextFields.get(yIndex), comparators.get(yIndex), modifiers.get(yIndex))
 					);
 				} else if (mouseX > guiLeft + 160 && mouseX < guiLeft + 160 + 20) {
-					NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.remove(yIndex);
-					guiElementTextFields.remove(yIndex);
-					comparators.remove(yIndex);
-					modifiers.remove(yIndex);
+					if (NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.size() > 0) {
+						NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.remove(yIndex);
+						guiElementTextFields.remove(yIndex);
+						comparators.remove(yIndex);
+						modifiers.remove(yIndex);
+					}
 				}
 			}
 		}
