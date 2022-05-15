@@ -47,10 +47,14 @@ public class RepoModeCommand extends ClientCommandBase {
 					ClickEvent.Action.SUGGEST_COMMAND, "/neureloadrepo fetch"))))
 				.appendSibling(new ChatComponentText("\u00a75> to redownload your repo.")));
 
+		} else if (args.length == 1 && args[0].equalsIgnoreCase("autoupdate")) {
+			NotEnoughUpdates.INSTANCE.config.hidden.autoupdate = !NotEnoughUpdates.INSTANCE.config.hidden.autoupdate;
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Toggled repo auto-updating"));
 		} else {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a7cUsage:" +
 				"\n\u00a75/neurepomode <toggle> Toggles on/off dev mode and item editing." +
-				"\n\u00a75/neurepomode <setRepoURL> <githubuser> [reponame] [branch] Sets the repo URL for downloading from."));
+				"\n\u00a75/neurepomode <setRepoURL> <githubuser> [reponame] [branch] Sets the repo URL for downloading from." +
+				"\n\u00a75/neurepomode <autoupdate> Toggles on/off auto-updating the repo"));
 		}
 	}
 }
