@@ -46,7 +46,7 @@ public class HelpCommand extends ClientCommandBase {
 			"\u00a76/neureloadrepo \u00a7r\u00a77- Debug command with repo.",
 			"",
 			"\u00a76\u00a7lDev commands:",
-			"\u00a76/neupackdev \u00a7r\u00a77- pack creator command - getnpc, getmob(s), getarmorstand(s), getall. Optional radius argument for all.  "
+			"\u00a76/neupackdev \u00a7r\u00a77- pack creator command - getnpc, getmob(s), getarmorstand(s), getall. Optional radius argument for all."
 		);
 		for (String neuHelpMessage : neuHelpMessages) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(neuHelpMessage));
