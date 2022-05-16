@@ -49,7 +49,7 @@ public class RepoModeCommand extends ClientCommandBase {
 
 		} else if (args.length == 1 && args[0].equalsIgnoreCase("autoupdate")) {
 			NotEnoughUpdates.INSTANCE.config.hidden.autoupdate = !NotEnoughUpdates.INSTANCE.config.hidden.autoupdate;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Toggled repo auto-updating"));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a75Toggled repo auto-updating" + (NotEnoughUpdates.INSTANCE.config.hidden.autoupdate ? "on" : "off"));
 		} else {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00a7cUsage:" +
 				"\n\u00a75/neurepomode <toggle> Toggles on/off dev mode and item editing." +
