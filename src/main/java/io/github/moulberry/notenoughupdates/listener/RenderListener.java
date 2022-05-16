@@ -1026,11 +1026,20 @@ public class RenderListener {
 		}
 		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
-			((((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
+			(((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
 				.getLowerChestInventory()
-				.getDisplayName()
-				.getUnformattedText()
-				.endsWith("Upgrades")))) {
+				.getStackInSlot(48)
+				!= null &&
+				((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
+					.getLowerChestInventory()
+					.getStackInSlot(48)
+					.getTooltip(Minecraft.getMinecraft().thePlayer, false).size() == 2 &&
+					(((ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots)
+						.getLowerChestInventory()
+						.getStackInSlot(48)
+						.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+						.get(1)
+						.endsWith("Essence")))) {
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			IInventory lower = cc.getLowerChestInventory();
