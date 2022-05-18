@@ -1,7 +1,13 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class Fishing {
 	@Expose
@@ -204,4 +210,39 @@ public class Fishing {
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 4)
 	public String otherRodColour = "0:255:0:0:0";
+
+	@ConfigOption(
+		name = "Fishing Timer",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 6)
+	public boolean fishingAccordion = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Display a Fishing Timer",
+		desc = "Display a timer above your bobber showing your current time"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 6)
+	public boolean fishingTimer = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Fishing timer color",
+		desc = "Color of the fishing timer"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 6)
+	public String fishingTimerColor = "0:255:0:0:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Fishing timer color (30s)",
+		desc = "Color of the fishing timer after 30 seconds or more have passed"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 6)
+	public String fishingTimerColor30SecPlus = "0:255:0:0:0";
+
 }
