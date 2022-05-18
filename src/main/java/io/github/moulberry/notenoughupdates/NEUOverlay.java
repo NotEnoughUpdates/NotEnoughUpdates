@@ -2376,17 +2376,17 @@ public class NEUOverlay extends Gui {
 				GlStateManager.color(1, 1, 1, 1);
 				GL11.glTranslatef(0, 0, 401);
 				float yNumber = (float) (height - 167) / 2f;
-				Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
+				Utils.drawTexturedRect((float) ((width - 246.1) / 2f), yNumber, 32, 86, GL11.GL_NEAREST);
 				GlStateManager.bindTexture(0);
 
-				Utils.drawItemStack(slot1, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105));
-				Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18);
-				Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36);
-				Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54);
+				Utils.drawItemStack(slot1, (int) ((width - 230) / 2f), (int) ((height + 60) / 2f - 105));
+				Utils.drawItemStack(slot2, (int) ((width - 230) / 2f), (int) ((height + 60) / 2f - 105) + 18);
+				Utils.drawItemStack(slot3, (int) ((width - 230) / 2f), (int) ((height + 60) / 2f - 105) + 36);
+				Utils.drawItemStack(slot4, (int) ((width - 230) / 2f), (int) ((height + 60) / 2f - 105) + 54);
 				if (slot1 == null) {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
 					GlStateManager.color(1, 1, 1, 1);
-					Utils.drawTexturedRect(((width - 208) / 2f), ((height + 60) / 2f - 105), 16, 16, GL11.GL_NEAREST);
+					Utils.drawTexturedRect(((width - 230) / 2f), ((height + 60) / 2f - 105), 16, 16, GL11.GL_NEAREST);
 					GlStateManager.bindTexture(0);
 
 					tooltipToDisplay = Lists.newArrayList(
@@ -2394,7 +2394,7 @@ public class NEUOverlay extends Gui {
 						EnumChatFormatting.GREEN + "You need to open /equipment",
 						EnumChatFormatting.GREEN + "To cache your armour"
 					);
-					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+					if (mouseX >= ((width - 230) / 2f) && mouseX < ((width - 230) / 2f) + 16) {
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 &&
 							NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
 							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
@@ -2413,7 +2413,7 @@ public class NEUOverlay extends Gui {
 					GL11.glTranslatef(0, 0, -401);
 				}
 				if (slot1 != null && slot2 != null && slot3 != null && slot4 != null) {
-					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+					if (mouseX >= ((width - 230) / 2f) && mouseX < ((width - 230) / 2f) + 16) {
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 &&
 							NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
 							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
@@ -2531,15 +2531,15 @@ public class NEUOverlay extends Gui {
 
 					GlStateManager.color(1, 1, 1, 1);
 					float yNumber = (float) (height - 23) / 2f;
-					Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
+					Utils.drawTexturedRect((float) ((width - 246.1) / 2f), yNumber, 32, 32, GL11.GL_NEAREST);
 					GlStateManager.bindTexture(0);
 
-					Utils.drawItemStack(petInfo, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 72);
+					Utils.drawItemStack(petInfo, (int) ((width - 230) / 2f), (int) ((height + 60) / 2f - 105) + 72);
 					renderingPetHud = true;
 
 					List<String> tooltipToDisplay = null;
 					if (petInfo != null) {
-						if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
+						if (mouseX >= ((width - 230) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
 							if (mouseY >= ((height + 60) / 2f - 105) + 72 && mouseY <= ((height + 60) / 2f - 105) + 88 &&
 								NotEnoughUpdates.INSTANCE.config.petOverlay.sendPetsCommand) {
 								if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {

@@ -483,12 +483,12 @@ public class RenderListener {
 					}
 					if (NEUOverlay.isRenderingArmorHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+							x -= 35;
 						}
 					}
 					if (NEUOverlay.isRenderingPetHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+							x -= 35;
 						}
 					}
 
@@ -590,12 +590,12 @@ public class RenderListener {
 					}
 					if (NEUOverlay.isRenderingArmorHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+							x -= 35;
 						}
 					}
 					if (NEUOverlay.isRenderingPetHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+							x -= 35;
 						}
 					}
 
@@ -983,12 +983,12 @@ public class RenderListener {
 					}
 					if (NEUOverlay.isRenderingArmorHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+							x -= 35;
 						}
 					}
 					if (NEUOverlay.isRenderingPetHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+							x -= 35;
 						}
 					}
 
