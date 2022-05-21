@@ -1,10 +1,17 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.common.collect.Lists;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -23,6 +30,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -34,12 +42,26 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -216,7 +238,9 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 		}};
 
-		if (pets == null || pets.isEmpty()) {
+		System.out.println(pets.size());
+		if (pets.isEmpty()) {
+			System.out.println("pets null or empty");
 			return null;
 		}
 
@@ -636,6 +660,9 @@ public class PetInfoOverlay extends TextOverlay {
 										 .replace(" ", "_").toUpperCase();
 		}
 		if (petType == null || rarity == null) {
+			System.out.println(petType);
+			System.out.println(rarity);
+			System.out.println("L");
 			return null;
 		}
 
@@ -711,12 +738,15 @@ public class PetInfoOverlay extends TextOverlay {
 						xpMaxThisLevel
 					);
 				} catch (NumberFormatException ignored) {
+					//TODO
+					ignored.printStackTrace();
 				}
 			} else if (line.equals("\u00a7b\u00a7lMAX LEVEL")) {
 				level = getMaxLevel(Constants.PETS.get("pet_levels").getAsJsonArray(), rarity.petOffset);
 			}
 		}
 
+		System.out.println(level);
 		if (level != null) {
 			Pet pet = new Pet();
 			pet.petItem = heldItem;
@@ -726,10 +756,10 @@ public class PetInfoOverlay extends TextOverlay {
 			JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
 			pet.petXpType =
 				petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
-
 			return pet;
 		}
 
+		System.out.println("levelß");
 		return null;
 	}
 
@@ -761,7 +791,6 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 					}
 				}
-
 				if (isPets) {
 					boolean hasItem = false;
 					for (int i = 0; i < lower.getSizeInventory(); i++) {
@@ -829,6 +858,64 @@ public class PetInfoOverlay extends TextOverlay {
 						}
 					}
 					removeMap.keySet().retainAll(removeSet);
+				} else if (containerName.equals("Your Equipment")) {
+					ItemStack petStack = lower.getStackInSlot(47);
+					if (petStack != null && petStack.getItem() == Items.skull) {
+						NBTTagCompound tag = petStack.getTagCompound();
+
+						if (tag.hasKey("ExtraAttributes", 10)) {
+							NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
+							if (ea.hasKey("petInfo")) {
+								JsonParser jsonParser = new JsonParser();
+
+								JsonObject petInfoObject = jsonParser.parse(ea.getString("petInfo")).getAsJsonObject();
+
+								JsonObject jsonStack = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(petStack);
+								if (jsonStack == null || !jsonStack.has("lore")) {
+									System.out.println("skill issue");
+									return;
+								}
+//						Pet pet = getPetFromStack(petStack.getDisplayName(), );
+//						if (pet != null) {
+								int rarity = NEUOverlay.getRarity(jsonStack.get("lore").getAsJsonArray());
+
+								if (!petInfoObject.has("exp")) {
+									return;
+								}
+								JsonObject petConstants = Constants.PETS;
+								Set<Map.Entry<String, JsonElement>> offsets =
+									petConstants.get("pet_rarity_offset").getAsJsonObject().entrySet();
+								AtomicInteger offset = new AtomicInteger();
+								AtomicInteger rarityIndex = new AtomicInteger(-1);
+								offsets.forEach(entry -> {
+									if (rarityIndex.incrementAndGet() == rarity) {
+										offset.set(entry.getValue().getAsInt());
+									}
+								});
+
+								JsonArray levelingInfo = petConstants.get("pet_levels").getAsJsonArray();
+								float petXp = petInfoObject.get("exp").getAsFloat();
+								double totalXp = 0;
+								int petLevel = 0;
+								for (int i = offset.get(); i < offset.get() + 99; i++) {
+									petLevel++;
+									totalXp += levelingInfo.get(i).getAsDouble();
+									if (totalXp > petXp) {
+										break;
+									}
+								}
+
+								System.out.println(petLevel);
+								String name = StringUtils.cleanColour(petStack.getDisplayName());
+								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase();
+								int index = getClosestPetIndex(name, rarity, "", 0);
+//							System.out.println(index);
+//						} else {
+//							System.out.println("asdh");
+//						}
+							}
+						}
+					}
 				}
 			}
 		}

@@ -1190,7 +1190,7 @@ public class NEUOverlay extends Gui {
 		updateSearch();
 	}
 
-	String[] rarityArr = new String[]{
+	public static String[] rarityArr = new String[]{
 		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
 		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
 		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
@@ -1211,7 +1211,7 @@ public class NEUOverlay extends Gui {
 	 * 5 = MYTHIC
 	 * 6 = SPECIAL
 	 */
-	public int getRarity(JsonArray lore) {
+	public static int getRarity(JsonArray lore) {
 		for (int i = lore.size() - 1; i >= 0; i--) {
 			String line = lore.get(i).getAsString();
 
