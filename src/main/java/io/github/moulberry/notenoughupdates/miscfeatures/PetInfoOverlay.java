@@ -238,9 +238,7 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 		}};
 
-		System.out.println(pets.size());
 		if (pets.isEmpty()) {
-			System.out.println("pets null or empty");
 			return null;
 		}
 
@@ -660,9 +658,6 @@ public class PetInfoOverlay extends TextOverlay {
 										 .replace(" ", "_").toUpperCase();
 		}
 		if (petType == null || rarity == null) {
-			System.out.println(petType);
-			System.out.println(rarity);
-			System.out.println("L");
 			return null;
 		}
 
@@ -738,15 +733,12 @@ public class PetInfoOverlay extends TextOverlay {
 						xpMaxThisLevel
 					);
 				} catch (NumberFormatException ignored) {
-					//TODO
-					ignored.printStackTrace();
 				}
 			} else if (line.equals("\u00a7b\u00a7lMAX LEVEL")) {
 				level = getMaxLevel(Constants.PETS.get("pet_levels").getAsJsonArray(), rarity.petOffset);
 			}
 		}
 
-		System.out.println(level);
 		if (level != null) {
 			Pet pet = new Pet();
 			pet.petItem = heldItem;
@@ -759,7 +751,6 @@ public class PetInfoOverlay extends TextOverlay {
 			return pet;
 		}
 
-		System.out.println("levelß");
 		return null;
 	}
 
@@ -872,11 +863,8 @@ public class PetInfoOverlay extends TextOverlay {
 
 								JsonObject jsonStack = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(petStack);
 								if (jsonStack == null || !jsonStack.has("lore")) {
-									System.out.println("skill issue");
 									return;
 								}
-//						Pet pet = getPetFromStack(petStack.getDisplayName(), );
-//						if (pet != null) {
 								int rarity = NEUOverlay.getRarity(jsonStack.get("lore").getAsJsonArray());
 
 								if (!petInfoObject.has("exp")) {
@@ -905,14 +893,12 @@ public class PetInfoOverlay extends TextOverlay {
 									}
 								}
 
-								System.out.println(petLevel);
 								String name = StringUtils.cleanColour(petStack.getDisplayName());
 								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase();
-								int index = getClosestPetIndex(name, rarity, "", 0);
-//							System.out.println(index);
-//						} else {
-//							System.out.println("asdh");
-//						}
+								int index = getClosestPetIndex(name, rarity, "", petLevel);
+								System.out.println(config.selectedPet);
+								clearPet();
+								setCurrentPet(index);
 							}
 						}
 					}
