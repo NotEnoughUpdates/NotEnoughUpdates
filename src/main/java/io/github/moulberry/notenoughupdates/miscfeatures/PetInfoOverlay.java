@@ -896,7 +896,6 @@ public class PetInfoOverlay extends TextOverlay {
 								String name = StringUtils.cleanColour(petStack.getDisplayName());
 								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase();
 								int index = getClosestPetIndex(name, rarity, "", petLevel);
-								System.out.println(config.selectedPet);
 								clearPet();
 								setCurrentPet(index);
 							}
