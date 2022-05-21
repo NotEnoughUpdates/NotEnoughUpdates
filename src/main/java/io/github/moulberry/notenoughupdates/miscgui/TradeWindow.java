@@ -26,8 +26,14 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -799,7 +805,7 @@ public class TradeWindow {
 			TreeMap<Integer, Set<String>> ourTopItems = new TreeMap<>();
 			TreeMap<String, ItemStack> ourTopItemsStack = new TreeMap<>();
 			TreeMap<String, Integer> ourTopItemsCount = new TreeMap<>();
-			int ourPrice = 0;
+			double ourPrice = 0;
 			for (int i = 0; i < 16; i++) {
 				int x = i % 4;
 				int y = i / 4;
@@ -813,7 +819,7 @@ public class TradeWindow {
 			TreeMap<Integer, Set<String>> theirTopItems = new TreeMap<>();
 			TreeMap<String, ItemStack> theirTopItemsStack = new TreeMap<>();
 			TreeMap<String, Integer> theirTopItemsCount = new TreeMap<>();
-			int theirPrice = 0;
+			double theirPrice = 0;
 			for (int i = 0; i < 16; i++) {
 				int x = i % 4;
 				int y = i / 4;
