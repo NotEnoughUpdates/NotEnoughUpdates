@@ -210,6 +210,20 @@ public class GuiElementTextField extends GuiElement {
 	@Override
 	public void keyTyped(char typedChar, int keyCode) {
 		if (focus) {
+			//allows for pasting formatted text that includes "§"
+			if (GuiScreen.isKeyComboCtrlV(keyCode)) {
+				//The cursor position gets set to the end when using setText
+				int oldCursorPosition = textField.getCursorPosition();
+
+				String clipboardContent = GuiScreen.getClipboardString();
+				StringBuilder stringBuilder = new StringBuilder(getText())
+					.insert(textField.getCursorPosition(), clipboardContent);
+
+				//writeText removes unwanted chars from the String which includes "§"
+				textField.setText(stringBuilder.toString());
+				textField.setCursorPosition(oldCursorPosition + clipboardContent.length());
+			}
+
 			if ((options & MULTILINE) != 0) { //Carriage return
 				Pattern patternControlCode = Pattern.compile("(?i)\\u00A7([^\\u00B6\n])(?!\\u00B6)");
 
