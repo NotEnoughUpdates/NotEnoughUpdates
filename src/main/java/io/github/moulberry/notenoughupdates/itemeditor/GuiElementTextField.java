@@ -217,7 +217,6 @@ public class GuiElementTextField extends GuiElement {
 				int oldCursorPosition = textField.getCursorPosition();
 
 				String clipboardContent = GuiScreen.getClipboardString();
-				System.out.println(clipboardContent);
 				StringBuilder stringBuilder = new StringBuilder(getText())
 					.insert(textField.getCursorPosition(), clipboardContent);
 
