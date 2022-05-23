@@ -224,7 +224,7 @@ public class GuiElementTextField extends GuiElement {
 				//writeText removes unwanted chars from the String which includes "§"
 				textField.setText(stringBuilder.toString());
 				textField.setCursorPosition(oldCursorPosition + clipboardContent.length());
-			}else {
+			} else {
 				textField.setEnabled(true);
 			}
 
