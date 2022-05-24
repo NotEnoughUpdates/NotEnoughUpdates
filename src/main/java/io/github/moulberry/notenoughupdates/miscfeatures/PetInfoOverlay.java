@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -862,42 +861,24 @@ public class PetInfoOverlay extends TextOverlay {
 								JsonObject petInfoObject = jsonParser.parse(ea.getString("petInfo")).getAsJsonObject();
 
 								JsonObject jsonStack = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(petStack);
-								if (jsonStack == null || !jsonStack.has("lore")) {
+								if (jsonStack == null || !jsonStack.has("lore") || !petInfoObject.has("exp")) {
 									return;
 								}
+
 								int rarity = NEUOverlay.getRarity(jsonStack.get("lore").getAsJsonArray());
-
-								if (!petInfoObject.has("exp")) {
-									return;
-								}
-								JsonObject petConstants = Constants.PETS;
-								Set<Map.Entry<String, JsonElement>> offsets =
-									petConstants.get("pet_rarity_offset").getAsJsonObject().entrySet();
-								AtomicInteger offset = new AtomicInteger();
-								AtomicInteger rarityIndex = new AtomicInteger(-1);
-								offsets.forEach(entry -> {
-									if (rarityIndex.incrementAndGet() == rarity) {
-										offset.set(entry.getValue().getAsInt());
-									}
-								});
-
-								JsonArray levelingInfo = petConstants.get("pet_levels").getAsJsonArray();
-								float petXp = petInfoObject.get("exp").getAsFloat();
-								double totalXp = 0;
-								int petLevel = 0;
-								for (int i = offset.get(); i < offset.get() + 99; i++) {
-									petLevel++;
-									totalXp += levelingInfo.get(i).getAsDouble();
-									if (totalXp > petXp) {
-										break;
-									}
-								}
+								String rarityString = Utils.getRarityFromInt(rarity);
 
 								String name = StringUtils.cleanColour(petStack.getDisplayName());
 								name = name.substring(name.indexOf(']') + 1).trim().replace(' ', '_').toUpperCase();
-								int index = getClosestPetIndex(name, rarity, "", petLevel);
-								clearPet();
-								setCurrentPet(index);
+
+								float petXp = petInfoObject.get("exp").getAsFloat();
+
+								double petLevel = XPInformation.getInstance().getPetLevel(name, petXp, rarityString);
+								int index = getClosestPetIndex(name, rarity, "", (float) petLevel);
+								if (index != config.selectedPet) {
+									clearPet();
+									setCurrentPet(index);
+								}
 							}
 						}
 					}
