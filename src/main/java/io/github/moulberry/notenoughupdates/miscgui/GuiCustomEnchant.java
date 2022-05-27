@@ -9,6 +9,7 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -945,7 +946,7 @@ public class GuiCustomEnchant extends Gui {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(guiLeft + 102 - 8, guiTop + 191 - (inventoryStartIndex / 9 * 18 + 89), 0);
 			Slot slot = cc.getSlot(inventoryStartIndex + i);
-			chest.drawSlot(slot);
+			((AccessorGuiContainer)chest).doDrawSlot(slot);
 			GlStateManager.popMatrix();
 
 			if (mouseX >= itemX && mouseX < itemX + 18 &&

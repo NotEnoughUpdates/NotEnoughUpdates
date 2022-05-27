@@ -1,6 +1,7 @@
 package io.github.moulberry.notenoughupdates.recipes;
 
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -49,10 +50,10 @@ public class CraftingOverlay {
 	) {
 		forEachSlot(chest, (recipeIngredient, slot) -> {
 			if (Utils.isWithinRect(
-				mouseX, mouseY,
-				slot.xDisplayPosition + gui.guiLeft,
-				slot.yDisplayPosition + gui.guiTop,
-				16, 16
+							mouseX, mouseY,
+							slot.xDisplayPosition + ((AccessorGuiContainer) gui).getGuiLeft(),
+							slot.yDisplayPosition + ((AccessorGuiContainer) gui).getGuiTop(),
+							16, 16
 			))
 				block.accept(recipeIngredient, slot);
 		});
@@ -80,9 +81,9 @@ public class CraftingOverlay {
 			if (currentRecipe.getCraftText() != null) {
 				FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 				fontRenderer.drawStringWithShadow(
-					currentRecipe.getCraftText(),
-					Utils.peekGuiScale().getScaledWidth() / 2f - fontRenderer.getStringWidth(currentRecipe.getCraftText()) / 2f,
-					guiChest.guiTop - 15f, 0x808080
+								currentRecipe.getCraftText(),
+								Utils.peekGuiScale().getScaledWidth() / 2f - fontRenderer.getStringWidth(currentRecipe.getCraftText()) / 2f,
+								((AccessorGuiContainer) guiChest).getGuiTop() - 15f, 0x808080
 				);
 			}
 			renderTooltip(guiChest, chest);
@@ -140,8 +141,8 @@ public class CraftingOverlay {
 	}
 
 	private void drawItemStack(GuiChest gui, Slot slot, ItemStack item) {
-		int slotX = slot.xDisplayPosition + gui.guiLeft;
-		int slotY = slot.yDisplayPosition + gui.guiTop;
+		int slotX = slot.xDisplayPosition + ((AccessorGuiContainer)gui).getGuiLeft();
+		int slotY = slot.yDisplayPosition + ((AccessorGuiContainer)gui).getGuiTop();
 		Gui.drawRect(slotX, slotY, slotX + 16, slotY + 16, 0x64ff0000);
 		if (item != null)
 			Utils.drawItemStack(item, slotX, slotY);

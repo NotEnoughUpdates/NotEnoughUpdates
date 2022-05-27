@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -57,8 +58,8 @@ public class AuctionSortModeWarning {
 						String warningText = "\u00a7aSort: " + selectedColour + selectedSort;
 						int warningLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth(warningText);
 
-						int centerX = chest.guiLeft + chest.xSize / 2 + 9;
-						int centerY = chest.guiTop + 26;
+						int centerX = ((AccessorGuiContainer)chest).getGuiLeft() + ((AccessorGuiContainer)chest).getXSize() / 2 + 9;
+						int centerY = ((AccessorGuiContainer)chest).getGuiTop() + 26;
 
 						RenderUtils.drawFloatingRectDark(centerX - warningLength / 2 - 4, centerY - 6,
 							warningLength + 8, 12, false

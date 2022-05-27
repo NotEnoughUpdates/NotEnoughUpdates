@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -559,8 +560,7 @@ public class TradeWindow {
 			int y = 104 + 18 * (index / 9);
 			if (index < 9) y = 180;
 
-			chest.drawSlot(new Slot(Minecraft.getMinecraft().thePlayer.inventory, index, guiLeft + x, guiTop + y));
-			//Utils.drawItemStack(stack, guiLeft+x, guiTop+y);
+			((AccessorGuiContainer)chest).doDrawSlot(new Slot(Minecraft.getMinecraft().thePlayer.inventory, index, guiLeft + x, guiTop + y));
 
 			int col = 0x80ffffff;
 			if (SlotLocking.getInstance().isSlotIndexLocked(index)) {

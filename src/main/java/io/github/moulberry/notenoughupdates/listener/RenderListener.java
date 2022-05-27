@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
@@ -333,10 +334,10 @@ public class RenderListener {
 
 			if (event.gui instanceof GuiContainer) {
 				try {
-					int xSize = ((GuiContainer) event.gui).xSize;
-					int ySize = ((GuiContainer) event.gui).ySize;
-					int guiLeft = ((GuiContainer) event.gui).guiLeft;
-					int guiTop = ((GuiContainer) event.gui).guiTop;
+					int xSize = ((AccessorGuiContainer) event.gui).getXSize();
+					int ySize = ((AccessorGuiContainer) event.gui).getYSize();
+					int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
+					int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 					hoverInv = event.getMouseX() > guiLeft && event.getMouseX() < guiLeft + xSize && event.getMouseY() > guiTop &&
 						event.getMouseY() < guiTop + ySize;
@@ -458,10 +459,10 @@ public class RenderListener {
 
 			GlStateManager.translate(0, 0, zOffset);
 
-			int xSize = ((GuiContainer) event.gui).xSize;
-			int ySize = ((GuiContainer) event.gui).ySize;
-			int guiLeft = ((GuiContainer) event.gui).guiLeft;
-			int guiTop = ((GuiContainer) event.gui).guiTop;
+			int xSize = ((AccessorGuiContainer) event.gui).getXSize();
+			int ySize = ((AccessorGuiContainer) event.gui).getYSize();
+			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
+			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 			if (!NEUApi.disableInventoryButtons) {
 				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
@@ -565,10 +566,10 @@ public class RenderListener {
 		if (!doInventoryButtons) return;
 		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && NotificationHandler.shouldRenderOverlay(event.gui) &&
 			event.gui instanceof GuiContainer) {
-			int xSize = ((GuiContainer) event.gui).xSize;
-			int ySize = ((GuiContainer) event.gui).ySize;
-			int guiLeft = ((GuiContainer) event.gui).guiLeft;
-			int guiTop = ((GuiContainer) event.gui).guiTop;
+			int xSize = ((AccessorGuiContainer) event.gui).getXSize();
+			int ySize = ((AccessorGuiContainer) event.gui).getYSize();
+			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
+			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 			if (!NEUApi.disableInventoryButtons) {
 				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
@@ -644,9 +645,9 @@ public class RenderListener {
 
 		if (gui instanceof GuiChest && NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc != 2) {
 			try {
-				int xSize = ((GuiContainer) gui).xSize;
-				int guiLeft = ((GuiContainer) gui).guiLeft;
-				int guiTop = ((GuiContainer) gui).guiTop;
+				int xSize = ((AccessorGuiContainer) gui).getXSize();
+				int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+				int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
 
 				GuiChest eventGui = (GuiChest) gui;
 				ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
@@ -899,8 +900,7 @@ public class RenderListener {
 			GuiChest eventGui = (GuiChest) guiScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.contains(" Profile") && BetterContainers.profileViewerStackIndex != -1 &&
-				eventGui.isMouseOverSlot(cc.inventorySlots.get(BetterContainers.profileViewerStackIndex), mouseX, mouseY) &&
+			if (containerName.contains(" Profile") && BetterContainers.profileViewerStackIndex != -1 && ((AccessorGuiContainer)eventGui).doIsMouseOverSlot(cc.inventorySlots.get(BetterContainers.profileViewerStackIndex), mouseX, mouseY) &&
 				Mouse.getEventButton() >= 0) {
 				event.setCanceled(true);
 				if (Mouse.getEventButtonState() && eventGui.inventorySlots.inventorySlots.get(22).getStack() != null &&
@@ -959,10 +959,10 @@ public class RenderListener {
 		if (!doInventoryButtons) return;
 		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && NotificationHandler.shouldRenderOverlay(event.gui) &&
 			Mouse.getEventButton() >= 0 && event.gui instanceof GuiContainer) {
-			int xSize = ((GuiContainer) event.gui).xSize;
-			int ySize = ((GuiContainer) event.gui).ySize;
-			int guiLeft = ((GuiContainer) event.gui).guiLeft;
-			int guiTop = ((GuiContainer) event.gui).guiTop;
+			int xSize = ((AccessorGuiContainer) event.gui).getXSize();
+			int ySize = ((AccessorGuiContainer) event.gui).getYSize();
+			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
+			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 			if (!NEUApi.disableInventoryButtons) {
 				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
 					if (!button.isActive()) continue;

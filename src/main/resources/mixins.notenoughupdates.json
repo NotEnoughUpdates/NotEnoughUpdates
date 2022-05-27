@@ -1,6 +1,7 @@
 {
   "package": "io.github.moulberry.notenoughupdates.mixins",
   "refmap": "mixins.notenoughupdates.refmap.json",
+  "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 	"AccessorEntityAgeable",
@@ -46,6 +47,8 @@
 	"MixinWorldClient"
   ],
   "client": [
+	"AccessorGuiContainer",
+	"AccessorGuiEditSign",
 	"AccessorMinecraft"
   ]
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -86,7 +87,7 @@ public class AuctionSearchOverlay {
 		if (lastContainer == null) return false;
 		if (!lastContainer.equals("Auctions Browser") && !lastContainer.startsWith("Auctions: ")) return false;
 
-		TileEntitySign tes = ((GuiEditSign) Minecraft.getMinecraft().currentScreen).tileSign;
+		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();
 
 		if (tes == null) return false;
 		if (tes.getPos().getY() != 0) return false;
@@ -289,7 +290,7 @@ public class AuctionSearchOverlay {
 			}
 		}
 
-		TileEntitySign tes = ((GuiEditSign) Minecraft.getMinecraft().currentScreen).tileSign;
+		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();
 
 		String search = searchString.trim();
 		if (searchStringExtra != null && !searchStringExtra.isEmpty()) {

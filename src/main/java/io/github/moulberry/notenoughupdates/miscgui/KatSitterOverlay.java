@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -61,12 +62,12 @@ public class KatSitterOverlay {
 		int currentWidth = font.getStringWidth(currentText);
 		String upgradedText = "Upgraded pet level: " + upgradedLevel;
 		int upgradedWidth = font.getStringWidth(upgradedText);
-		int left = gui.guiLeft - 30 - (upgradedLevel == null ? Math.max(upgradedWidth, currentWidth) : currentWidth);
+		int left = ((AccessorGuiContainer)gui).getGuiLeft() - 30 - (upgradedLevel == null ? Math.max(upgradedWidth, currentWidth) : currentWidth);
 		GlStateManager.disableLighting();
 		GlStateManager.color(1F, 1F, 1F, 1F);
-		Utils.drawStringScaled(currentText, font, left, gui.guiTop + 25, false, 0xFFD700, 1F);
+		Utils.drawStringScaled(currentText, font, left, ((AccessorGuiContainer)gui).getGuiTop() + 25, false, 0xFFD700, 1F);
 		if (upgradedLevel != null)
-			Utils.drawStringScaled(upgradedText, font, left, gui.guiTop + 45, false, 0xFFD700, 1F);
+			Utils.drawStringScaled(upgradedText, font, left, ((AccessorGuiContainer)gui).getGuiTop() + 45, false, 0xFFD700, 1F);
 	}
 
 	public String nextRarity(String currentRarity) {

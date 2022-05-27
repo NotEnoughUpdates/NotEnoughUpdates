@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -200,7 +201,7 @@ public class SlotLocking {
 			int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 			int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-			Slot slot = container.getSlotAtPosition(mouseX, mouseY);
+			Slot slot = ((AccessorGuiContainer) container).doGetSlotAtPosition(mouseX, mouseY);
 			if (slot != null && slot.getSlotIndex() != 8 && slot.inventory == Minecraft.getMinecraft().thePlayer.inventory) {
 				int slotNum = slot.getSlotIndex();
 				if (slotNum >= 0 && slotNum <= 39) {
@@ -280,7 +281,7 @@ public class SlotLocking {
 			int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 			int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-			Slot slot = container.getSlotAtPosition(mouseX, mouseY);
+			Slot slot = ((AccessorGuiContainer) container).doGetSlotAtPosition(mouseX, mouseY);
 			if (slot != null && slot.getSlotIndex() != 8 && slot.inventory == Minecraft.getMinecraft().thePlayer.inventory) {
 				int slotNum = slot.getSlotIndex();
 				if (slotNum >= 0 && slotNum <= 39) {
@@ -378,10 +379,10 @@ public class SlotLocking {
 			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
 				return;
 			}
-			GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+			AccessorGuiContainer container = (AccessorGuiContainer) Minecraft.getMinecraft().currentScreen;
 
-			int x1 = container.guiLeft + pairingSlot.xDisplayPosition + 8;
-			int y1 = container.guiTop + pairingSlot.yDisplayPosition + 8;
+			int x1 = container.getGuiLeft() + pairingSlot.xDisplayPosition + 8;
+			int y1 = container.getGuiTop() + pairingSlot.yDisplayPosition + 8;
 			int x2 = event.mouseX;
 			int y2 = event.mouseY;
 
@@ -514,7 +515,7 @@ public class SlotLocking {
 					return;
 				}
 
-				boolean hoverOverSlot = container.isMouseOverSlot(slot, mouseX, mouseY);
+				boolean hoverOverSlot = ((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY);
 
 				if (hoverOverSlot || slot.getSlotIndex() >= 9) {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(BOUND);
@@ -545,8 +546,8 @@ public class SlotLocking {
 						);
 					}
 				} else if (pairingSlot != null && lockKeyHeld && slot.getSlotIndex() < 8) {
-					int x1 = container.guiLeft + pairingSlot.xDisplayPosition;
-					int y1 = container.guiTop + pairingSlot.yDisplayPosition;
+					int x1 = ((AccessorGuiContainer)container).getGuiLeft() + pairingSlot.xDisplayPosition;
+					int y1 = ((AccessorGuiContainer)container).getGuiTop() + pairingSlot.yDisplayPosition;
 
 					if (mouseX <= x1 || mouseX >= x1 + 16 ||
 						mouseY <= y1 || mouseY >= y1 + 16) {
@@ -634,8 +635,8 @@ public class SlotLocking {
 				int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 				int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-				int x1 = container.guiLeft + pairingSlot.xDisplayPosition;
-				int y1 = container.guiTop + pairingSlot.yDisplayPosition;
+				int x1 = ((AccessorGuiContainer)container).getGuiLeft() + pairingSlot.xDisplayPosition;
+				int y1 = ((AccessorGuiContainer)container).getGuiTop() + pairingSlot.yDisplayPosition;
 
 				if (mouseX <= x1 || mouseX >= x1 + 16 ||
 					mouseY <= y1 || mouseY >= y1 + 16) {

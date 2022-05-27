@@ -2,7 +2,7 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import net.minecraft.client.Minecraft;
-import org.spongepowered.asm.lib.Opcodes;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

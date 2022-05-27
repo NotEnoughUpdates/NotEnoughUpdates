@@ -180,6 +180,7 @@ public class NotEnoughUpdates {
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event) {
 		INSTANCE = this;
+		//SomeRandomTest.fun();
 
 		neuDir = new File(event.getModConfigurationDirectory(), "notenoughupdates");
 		neuDir.mkdirs();
