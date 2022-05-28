@@ -24,17 +24,17 @@ public class ReloadRepoCommand extends ClientCommandBase {
 		} else {
 			NotEnoughUpdates.INSTANCE.manager.reloadRepository();
 		}
-		NotEnoughUpdates.INSTANCE.newConfigFile();
-		if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
-			try (
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(NotEnoughUpdates.INSTANCE.getConfigFile()),
-					StandardCharsets.UTF_8
-				))
-			) {
-				NotEnoughUpdates.INSTANCE.config = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, NEUConfig.class);
-			} catch (Exception ignored) {
-			}
-		}
+//		NotEnoughUpdates.INSTANCE.newConfigFile();
+//		if (NotEnoughUpdates.INSTANCE.getConfigFile().exists()) {
+//			try (
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(
+//					new FileInputStream(NotEnoughUpdates.INSTANCE.getConfigFile()),
+//					StandardCharsets.UTF_8
+//				))
+//			) {
+//				NotEnoughUpdates.INSTANCE.config = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, NEUConfig.class);
+//			} catch (Exception ignored) {
+//			}
+//		}
 	}
 }
