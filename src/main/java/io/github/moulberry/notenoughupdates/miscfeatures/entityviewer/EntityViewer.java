@@ -79,6 +79,7 @@ public class EntityViewer extends GuiScreen {
         put("invisible", new InvisibleModifier());
         put("age", new AgeModifier());
 				put("horse", new HorseModifier());
+				put("name", new NameModifier());
     }};
 
     public int guiLeft = 0;

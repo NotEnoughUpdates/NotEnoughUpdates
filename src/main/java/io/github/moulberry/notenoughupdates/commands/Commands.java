@@ -14,9 +14,6 @@ import io.github.moulberry.notenoughupdates.commands.profile.CataCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PeekCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PvCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
-import io.github.moulberry.notenoughupdates.commands.repo.ReloadRepoCommand;
-import io.github.moulberry.notenoughupdates.commands.repo.RepoModeCommand;
-import io.github.moulberry.notenoughupdates.commands.repo.ResetRepoCommand;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
@@ -41,10 +38,6 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new DevTestCommand());
 		ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
-
-		// Repo Commands
-		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
-		ClientCommandHandler.instance.registerCommand(new RepoModeCommand());
 		ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
 
 		// Profile Commands

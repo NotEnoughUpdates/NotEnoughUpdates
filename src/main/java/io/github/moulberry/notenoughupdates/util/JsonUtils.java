@@ -30,7 +30,7 @@ public class JsonUtils {
 		String name,
 		Function<? super JsonElement, ? extends T> mapper
 	) {
-		if (!rootObject.has(name)) {
+		if (rootObject == null || !rootObject.has(name)) {
 			return Collections.emptyList();
 		}
 		JsonElement jsonElement = rootObject.get(name);

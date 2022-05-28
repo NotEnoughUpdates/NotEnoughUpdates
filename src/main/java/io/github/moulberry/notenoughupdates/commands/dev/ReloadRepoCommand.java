@@ -1,15 +1,10 @@
-package io.github.moulberry.notenoughupdates.commands.repo;
+package io.github.moulberry.notenoughupdates.commands.dev;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import net.minecraft.util.ChatComponentText;
 
 public class ReloadRepoCommand extends ClientCommandBase {
 
@@ -19,10 +14,7 @@ public class ReloadRepoCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		if (args.length > 1 && args[0].equals("fetch")) {
-			NotEnoughUpdates.INSTANCE.manager.fetchRepository();
-		} else {
-			NotEnoughUpdates.INSTANCE.manager.reloadRepository();
-		}
+		NotEnoughUpdates.INSTANCE.manager.reloadRepository();
+		sender.addChatMessage(new ChatComponentText("§e[NEU] Reloaded repository."));
 	}
 }

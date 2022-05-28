@@ -33,7 +33,18 @@ public class GUIClientPlayer extends AbstractClientPlayer {
         }
     };
 
-    @Override
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	public String name;
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
     protected NetworkPlayerInfo getPlayerInfo() {
         return playerInfo;
     }

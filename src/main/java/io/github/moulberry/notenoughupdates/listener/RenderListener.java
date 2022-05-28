@@ -1390,7 +1390,7 @@ public class RenderListener {
 				event.setCanceled(true);
 			}
 		}
-		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing &&
+		if (NotEnoughUpdates.INSTANCE.config.apiKey.repositoryEditing &&
 			Minecraft.getMinecraft().theWorld != null && Keyboard.getEventKey() == Keyboard.KEY_N &&
 			Keyboard.getEventKeyState()) {
 			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
@@ -1447,7 +1447,7 @@ public class RenderListener {
 				System.out.println(essenceJson);
 			}
 		}
-		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && NotEnoughUpdates.INSTANCE.config.hidden.enableItemEditing &&
+		if (NotEnoughUpdates.INSTANCE.config.apiKey.repositoryEditing &&
 			Minecraft.getMinecraft().theWorld != null && Keyboard.getEventKey() == Keyboard.KEY_O &&
 			Keyboard.getEventKeyState()) {
 			GuiScreen gui = Minecraft.getMinecraft().currentScreen;

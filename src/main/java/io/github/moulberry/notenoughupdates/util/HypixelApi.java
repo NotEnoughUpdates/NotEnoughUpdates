@@ -21,14 +21,8 @@ import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
 public class HypixelApi {
-	private static final int FAILS_BEFORE_SWITCH = 3;
 	private final Gson gson = new Gson();
 	private final ExecutorService es = Executors.newFixedThreadPool(3);
-	private final String[] myApiURLs = {"https://moulberry.codes/"};
-	//, "http://moulberry.codes/", "http://51.79.51.21/"};//, "http://51.75.78.252/" };
-	private final Integer[] myApiSuccesses = {0, 0, 0, 0};
-	private int currentUrl = 0;
-	private long lastPrimaryUrl = 0;
 
 	public CompletableFuture<JsonObject> getHypixelApiAsync(String apiKey, String method, HashMap<String, String> args) {
 		return getApiAsync(generateApiUrl(apiKey, method, args));
@@ -55,29 +49,7 @@ public class HypixelApi {
 	}
 
 	private String getMyApiURL() {
-		if (currentUrl == 0) {
-			lastPrimaryUrl = System.currentTimeMillis();
-		} else if (System.currentTimeMillis() - lastPrimaryUrl > 1000 * 60 * 30) { //Try switch back to main url after 30m
-			currentUrl = 0;
-		}
-
-		myApiSuccesses[currentUrl] = Math.min(FAILS_BEFORE_SWITCH, myApiSuccesses[currentUrl] + 1);
-		return myApiURLs[currentUrl];
-	}
-
-	private void myApiError(int index) {
-		myApiSuccesses[index] = myApiSuccesses[index] - 2;
-
-		if (myApiSuccesses[index] < 0) {
-			myApiSuccesses[index] = 0;
-
-			if (index == currentUrl) {
-				currentUrl++;
-				if (currentUrl >= myApiURLs.length) {
-					currentUrl = 0;
-				}
-			}
-		}
+		return String.format("https://%s/", NotEnoughUpdates.INSTANCE.config.apiKey.moulberryCodesApi);
 	}
 
 	public CompletableFuture<JsonObject> getApiAsync(String urlS) {
@@ -104,14 +76,12 @@ public class HypixelApi {
 
 	public void getMyApiAsync(String urlS, Consumer<JsonObject> consumer, Runnable error) {
 		es.submit(() -> {
-			int current = currentUrl;
 			try {
 				consumer.accept(getApiSync(getMyApiURL() + urlS));
 			} catch (Exception e) {
 				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 					e.printStackTrace();
 				}
-				myApiError(current);
 				error.run();
 			}
 		});
@@ -119,11 +89,9 @@ public class HypixelApi {
 
 	public void getMyApiGZIPAsync(String urlS, Consumer<JsonObject> consumer, Runnable error) {
 		es.submit(() -> {
-			int current = currentUrl;
 			try {
 				consumer.accept(getApiGZIPSync(getMyApiURL() + urlS));
 			} catch (Exception e) {
-				myApiError(current);
 				error.run();
 			}
 		});
