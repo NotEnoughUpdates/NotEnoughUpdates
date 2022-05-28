@@ -216,6 +216,14 @@ public class GuiElementTextField extends GuiElement {
 
 				int selectionEnd = textField.getSelectionEnd();
 				int cursorPosition = textField.getCursorPosition();
+
+				if (cursorPosition < selectionEnd) {
+					//swap selectionEnd and cursorPosition
+					selectionEnd = selectionEnd ^ cursorPosition;
+					cursorPosition = selectionEnd ^ cursorPosition;
+					selectionEnd = selectionEnd ^ cursorPosition;
+				}
+
 				String clipboardContent = GuiScreen.getClipboardString();
 
 				StringBuilder stringBuilder = new StringBuilder(getText())
