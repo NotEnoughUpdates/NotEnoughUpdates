@@ -213,16 +213,18 @@ public class GuiElementTextField extends GuiElement {
 			//allows for pasting formatted text that includes "§"
 			if (GuiScreen.isKeyComboCtrlV(keyCode)) {
 				textField.setEnabled(false);
-				//The cursor position gets set to the end when using setText
-				int oldCursorPosition = textField.getCursorPosition();
 
+				int selectionEnd = textField.getSelectionEnd();
+				int cursorPosition = textField.getCursorPosition();
 				String clipboardContent = GuiScreen.getClipboardString();
+
 				StringBuilder stringBuilder = new StringBuilder(getText())
-					.insert(textField.getCursorPosition(), clipboardContent);
+					.replace(selectionEnd, cursorPosition, "")
+					.insert(selectionEnd, clipboardContent);
 
 				//writeText removes unwanted chars from the String which includes "§"
 				textField.setText(stringBuilder.toString());
-				textField.setCursorPosition(oldCursorPosition + clipboardContent.length());
+				textField.setCursorPosition(selectionEnd + clipboardContent.length());
 			} else {
 				textField.setEnabled(true);
 			}
