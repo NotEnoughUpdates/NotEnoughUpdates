@@ -823,9 +823,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-			NotEnoughUpdates.INSTANCE.saveConfig();
-		}
 		super.keyTyped(typedChar, keyCode);
 
 		if (editingButton != null && commandTextField.getFocus()) {
@@ -844,6 +841,11 @@ public class GuiInvButtonEditor extends GuiScreen {
 
 	private final ExecutorService searchES = Executors.newSingleThreadExecutor();
 	private final AtomicInteger searchId = new AtomicInteger(0);
+
+	@Override
+	public void onGuiClosed() {
+		NotEnoughUpdates.INSTANCE.saveConfig();
+	}
 
 	public void search() {
 		final int thisSearchId = searchId.incrementAndGet();
