@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -822,6 +823,9 @@ public class GuiInvButtonEditor extends GuiScreen {
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+			NotEnoughUpdates.INSTANCE.saveConfig();
+		}
 		super.keyTyped(typedChar, keyCode);
 
 		if (editingButton != null && commandTextField.getFocus()) {

@@ -886,5 +886,8 @@ public class NEUConfigEditor extends GuiElement {
 				target.setTarget(target.getTarget() - 5);
 			}
 		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+			NotEnoughUpdates.INSTANCE.saveConfig();
+		}
 	}
 }
