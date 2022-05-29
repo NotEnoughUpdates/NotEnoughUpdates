@@ -158,7 +158,12 @@ public class GuiElementTextField extends GuiElement {
 
 		String textNC = textNoColour.substring(0, cursorIndex);
 		int colorCodes = StringUtils.countMatches(textNC, "\u00B6");
-		String line = text.substring(cursorIndex + (((options & COLOUR) != 0) ? colorCodes * 2 : 0)).split("\n")[0];
+		String[] lines = text.substring(cursorIndex + (((options & COLOUR) != 0) ? colorCodes * 2 : 0)).split("\n");
+		if (lines.length < 1) {
+			return 0;
+		}
+		String line = lines[0];
+
 		int padding = Math.min(5, searchBarXSize - strLenNoColor(line)) / 2;
 		String trimmed = Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(line, xComp - padding);
 		int linePos = strLenNoColor(trimmed);
