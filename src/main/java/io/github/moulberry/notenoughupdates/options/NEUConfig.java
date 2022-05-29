@@ -159,6 +159,7 @@ public class NEUConfig extends Config {
 				return;
 			case 22:
 				String lastCommit = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
+				NotEnoughUpdates.INSTANCE.manager.resetRepo();
 				NotEnoughUpdates.INSTANCE.manager
 					.fetchRepository()
 					.thenRun(NotEnoughUpdates.INSTANCE.manager::reloadRepository)
@@ -174,6 +175,16 @@ public class NEUConfig extends Config {
 										newCommitShortHash + "§e."
 								)
 							), true);
+					})
+					.exceptionally(ex -> {
+						ex.printStackTrace();
+						NotificationHandler.displayNotification(
+							Arrays.asList(
+								"§4Repository not reloaded.",
+								"§4There was an error reloading your repository.",
+								"§4Try restarting your game."
+							), true);
+						return null;
 					});
 				return;
 			case 23:
