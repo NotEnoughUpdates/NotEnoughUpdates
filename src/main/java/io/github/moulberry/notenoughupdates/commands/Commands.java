@@ -39,6 +39,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
 		ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
+		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
 
 		// Profile Commands
 		ClientCommandHandler.instance.registerCommand(new PeekCommand());

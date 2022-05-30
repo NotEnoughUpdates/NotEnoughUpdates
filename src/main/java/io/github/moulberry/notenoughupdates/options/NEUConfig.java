@@ -53,7 +53,6 @@ import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -158,34 +157,11 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.overlay.updateSearch();
 				return;
 			case 22:
-				String lastCommit = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
-				NotEnoughUpdates.INSTANCE.manager.resetRepo();
 				NotEnoughUpdates.INSTANCE.manager
-					.fetchRepository()
-					.thenRun(NotEnoughUpdates.INSTANCE.manager::reloadRepository)
-					.thenRun(() -> {
-						String newCommitHash = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
-						String newCommitShortHash = (newCommitHash == null ? "MISSING" : newCommitHash.substring(0, 7));
-						NotificationHandler.displayNotification(
-							Arrays.asList(
-								"§aRepository reloaded.",
-								(lastCommit == null
-									? "§eYou downloaded the repository version §b" + newCommitShortHash + "§e."
-									: "§eYou updated your repository from §b" + lastCommit.substring(0, 7) + "§e to §b" +
-										newCommitShortHash + "§e."
-								)
-							), true);
-					})
-					.exceptionally(ex -> {
-						ex.printStackTrace();
-						NotificationHandler.displayNotification(
-							Arrays.asList(
-								"§4Repository not reloaded.",
-								"§4There was an error reloading your repository.",
-								"§4Try restarting your game."
-							), true);
-						return null;
-					});
+					.userFacingRepositoryReload()
+					.thenAccept(strings ->
+						NotificationHandler.displayNotification(strings, true, true));
+				Minecraft.getMinecraft().displayGuiScreen(null);
 				return;
 			case 23:
 				NotEnoughUpdates.INSTANCE.config.apiKey.repoUser = "NotEnoughUpdates";

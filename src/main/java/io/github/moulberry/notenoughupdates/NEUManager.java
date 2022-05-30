@@ -53,6 +53,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -208,7 +209,6 @@ public class NEUManager {
 				Utils.recursiveDelete(repoLocation);
 				repoLocation.mkdirs();
 
-
 				File itemsZip = new File(repoLocation, "neu-items-master.zip");
 				try {
 					itemsZip.createNewFile();
@@ -228,7 +228,6 @@ public class NEUManager {
 					System.err.println("Failed to download NEU Repo! Please report this issue to the mod creator");
 					return false;
 				}
-
 
 				unzipIgnoreFirstFolder(itemsZip.getAbsolutePath(), repoLocation.getAbsolutePath());
 
@@ -1474,26 +1473,64 @@ public class NEUManager {
 		}
 	}
 
-	public void reloadRepository() {
-		Minecraft.getMinecraft().addScheduledTask(() -> {
-			File items = new File(repoLocation, "items");
-			if (items.exists()) {
-				recipes.clear();
-				recipesMap.clear();
-				usagesMap.clear();
+	public CompletableFuture<List<String>> userFacingRepositoryReload() {
+		String lastCommit = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
+		NotEnoughUpdates.INSTANCE.manager.resetRepo();
+		return NotEnoughUpdates.INSTANCE.manager
+			.fetchRepository()
+			.thenCompose(ignored -> NotEnoughUpdates.INSTANCE.manager.reloadRepository())
+			.<List<String>>thenApply(ignored -> {
+				String newCommitHash = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
+				String newCommitShortHash = (newCommitHash == null ? "MISSING" : newCommitHash.substring(0, 7));
+				return Arrays.asList(
+					"§aRepository reloaded.",
+					(lastCommit == null
+						? "§eYou downloaded the repository version §b" + newCommitShortHash + "§e."
+						: "§eYou updated your repository from §b" + lastCommit.substring(0, 7) + "§e to §b" +
+							newCommitShortHash + "§e."
+					)
+				);
+			})
+			.exceptionally(ex -> {
+				ex.printStackTrace();
+				return Arrays.asList(
+					"§cRepository not fully reloaded.",
+					"§cThere was an error reloading your repository.",
+					"§cThis might be caused by an outdated version of neu",
+					"§c(or by not using the dangerous repository if you are using a prerelease of neu).",
+					"§aYour repository will still work, but is in a suboptimal state.",
+					"§eJoin §bdiscord.gg/moulberry §efor help."
+				);
+			});
+	}
 
-				File[] itemFiles = new File(repoLocation, "items").listFiles();
-				if (itemFiles != null) {
-					for (File f : itemFiles) {
-						String internalname = f.getName().substring(0, f.getName().length() - 5);
-						loadItem(internalname);
+	public CompletableFuture<Void> reloadRepository() {
+		CompletableFuture<Void> comp = new CompletableFuture<>();
+		Minecraft.getMinecraft().addScheduledTask(() -> {
+			try {
+				File items = new File(repoLocation, "items");
+				if (items.exists()) {
+					recipes.clear();
+					recipesMap.clear();
+					usagesMap.clear();
+
+					File[] itemFiles = new File(repoLocation, "items").listFiles();
+					if (itemFiles != null) {
+						for (File f : itemFiles) {
+							String internalname = f.getName().substring(0, f.getName().length() - 5);
+							loadItem(internalname);
+						}
 					}
 				}
-			}
 
-			new RepositoryReloadEvent(repoLocation, !hasBeenLoadedBefore).post();
-			hasBeenLoadedBefore = true;
+				new RepositoryReloadEvent(repoLocation, !hasBeenLoadedBefore).post();
+				hasBeenLoadedBefore = true;
+				comp.complete(null);
+			} catch (Exception e) {
+				comp.completeExceptionally(e);
+			}
 		});
+		return comp;
 	}
 
 	public ItemStack createItem(String internalname) {
