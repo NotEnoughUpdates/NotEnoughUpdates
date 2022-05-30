@@ -141,7 +141,7 @@ public class HotmInformation {
 	public synchronized void requestUpdate(boolean force) {
 		if (updateTask.isDone() || force) {
 			updateTask = neu.manager.hypixelApi.getHypixelApiAsync(
-				neu.config.apiKey.apiKey,
+				neu.config.apiData.apiKey,
 				"skyblock/profiles",
 				new HashMap<String, String>() {{
 					put("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));

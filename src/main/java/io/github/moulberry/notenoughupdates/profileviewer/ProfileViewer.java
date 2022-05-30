@@ -312,7 +312,7 @@ public class ProfileViewer {
 
 		HashMap<String, String> args = new HashMap<>();
 		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 			"resources/skyblock/collections",
 			args,
 			jsonObject -> {
@@ -331,7 +331,7 @@ public class ProfileViewer {
 		String nameF = name.toLowerCase();
 		HashMap<String, String> args = new HashMap<>();
 		args.put("name", "" + nameF);
-		manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiKey.apiKey, "player",
+		manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "player",
 			args, jsonObject -> {
 				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()
 					&& jsonObject.get("player").isJsonObject()) {
@@ -474,7 +474,7 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiKey.apiKey, "status",
+			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "status",
 				args, jsonObject -> {
 					if (jsonObject == null) return;
 
@@ -500,7 +500,7 @@ public class ProfileViewer {
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
 			NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-				NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 				"skyblock/bingo",
 				args,
 				jsonObject -> {
@@ -657,7 +657,7 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiKey.apiKey, "skyblock/profiles",
+			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "skyblock/profiles",
 				args, jsonObject -> {
 					updatingPlayerInfoState.set(false);
 
@@ -720,7 +720,7 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("player", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiKey.apiKey, "guild",
+			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "guild",
 				args, jsonObject -> {
 					updatingGuildInfoState.set(false);
 

@@ -164,16 +164,16 @@ public class NEUConfig extends Config {
 				Minecraft.getMinecraft().displayGuiScreen(null);
 				return;
 			case 23:
-				NotEnoughUpdates.INSTANCE.config.apiKey.repoUser = "NotEnoughUpdates";
-				NotEnoughUpdates.INSTANCE.config.apiKey.repoName = "NotEnoughUpdates-REPO";
-				NotEnoughUpdates.INSTANCE.config.apiKey.repoBranch = "master";
+				NotEnoughUpdates.INSTANCE.config.apiData.repoUser = "NotEnoughUpdates";
+				NotEnoughUpdates.INSTANCE.config.apiData.repoName = "NotEnoughUpdates-REPO";
+				NotEnoughUpdates.INSTANCE.config.apiData.repoBranch = "master";
 				NotEnoughUpdates.INSTANCE.openGui =
 					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
 				return;
 			case 24:
-				NotEnoughUpdates.INSTANCE.config.apiKey.repoUser = "NotEnoughUpdates";
-				NotEnoughUpdates.INSTANCE.config.apiKey.repoName = "NotEnoughUpdates-REPO";
-				NotEnoughUpdates.INSTANCE.config.apiKey.repoBranch = "dangerous";
+				NotEnoughUpdates.INSTANCE.config.apiData.repoUser = "NotEnoughUpdates";
+				NotEnoughUpdates.INSTANCE.config.apiData.repoName = "NotEnoughUpdates-REPO";
+				NotEnoughUpdates.INSTANCE.config.apiData.repoBranch = "dangerous";
 				NotEnoughUpdates.INSTANCE.openGui =
 					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
 				return;
@@ -376,7 +376,16 @@ public class NEUConfig extends Config {
 		name = "Apis",
 		desc = "Api Data"
 	)
-	public ApiData apiKey = new ApiData();
+	public ApiData apiData = new ApiData();
+
+	@Expose
+	public LegacyApiKey apiKey = null;
+
+	public static class LegacyApiKey {
+		// Blame Ironmoon for this (still better than my idea tho)
+		@Expose
+		public String apiKey = null;
+	}
 
 	@Expose
 	public Hidden hidden = new Hidden();

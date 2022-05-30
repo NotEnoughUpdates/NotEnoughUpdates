@@ -23,8 +23,8 @@ public class ViewProfileCommand extends ClientCommandBase {
 				"Some parts of the profile viewer do not work with OF Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
 
 		}
-		if (NotEnoughUpdates.INSTANCE.config.apiKey.apiKey == null ||
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.trim().isEmpty()) {
+		if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey.trim().isEmpty()) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 				"Can't view profile, apikey is not set. Run /api new and put the result in settings."));
 		} else if (args.length == 0) {

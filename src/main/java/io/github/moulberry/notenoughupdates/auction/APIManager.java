@@ -183,8 +183,8 @@ public class APIManager {
 		customAH.tick();
 		long currentTime = System.currentTimeMillis();
 		if (NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.enableNeuAuctionHouse &&
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey != null &&
-			!NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.isEmpty()) {
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey != null &&
+			!NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isEmpty()) {
 			if (currentTime - lastAuctionUpdate > 60 * 1000) {
 				lastAuctionUpdate = currentTime;
 				updatePageTick();
@@ -675,7 +675,7 @@ public class APIManager {
 
 	public void updateBazaar() {
 		manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 			"skyblock/bazaar",
 			new HashMap<>(),
 			(jsonObject) -> {

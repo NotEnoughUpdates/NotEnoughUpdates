@@ -1135,7 +1135,7 @@ public class NEUOverlay extends Gui {
 				}
 				if (internalname.get() != null) {
 					if (itemstack.get() != null) {
-						if (NotEnoughUpdates.INSTANCE.config.apiKey.repositoryEditing && Keyboard.getEventCharacter() == 'k') {
+						if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing && Keyboard.getEventCharacter() == 'k') {
 							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(
 								internalname.get(),
 								manager.getJsonForItem(itemstack.get())
@@ -1159,7 +1159,7 @@ public class NEUOverlay extends Gui {
 								Minecraft.getMinecraft().thePlayer.inventory.addItemStackToInventory(
 									manager.jsonToStack(item));
 							}
-						} else if (NotEnoughUpdates.INSTANCE.config.apiKey.repositoryEditing &&
+						} else if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing &&
 							Keyboard.getEventCharacter() == 'k') {
 							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(internalname.get(), item));
 							return true;

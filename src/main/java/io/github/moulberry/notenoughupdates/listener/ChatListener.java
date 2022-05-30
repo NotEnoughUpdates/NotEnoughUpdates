@@ -145,7 +145,7 @@ public class ChatListener {
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your new API key is ")) {
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey = unformatted.substring("Your new API key is ".length()).substring(
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey = unformatted.substring("Your new API key is ".length()).substring(
 				0,
 				36
 			);

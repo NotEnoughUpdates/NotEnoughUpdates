@@ -193,7 +193,7 @@ public class NEUManager {
 				JsonObject currentCommitJSON = getJsonFromFile(new File(configLocation, "currentCommit.json"));
 
 				latestRepoCommit = null;
-				try (Reader inReader = new InputStreamReader(new URL(neu.config.apiKey.getCommitApiUrl()).openStream())) {
+				try (Reader inReader = new InputStreamReader(new URL(neu.config.apiData.getCommitApiUrl()).openStream())) {
 					JsonObject commits = gson.fromJson(inReader, JsonObject.class);
 					latestRepoCommit = commits.get("sha").getAsString();
 				} catch (Exception e) {
@@ -216,7 +216,7 @@ public class NEUManager {
 					return false;
 				}
 
-				URL url = new URL(neu.config.apiKey.getDownloadUrl(latestRepoCommit));
+				URL url = new URL(neu.config.apiData.getDownloadUrl(latestRepoCommit));
 				URLConnection urlConnection = url.openConnection();
 				urlConnection.setConnectTimeout(15000);
 				urlConnection.setReadTimeout(30000);
@@ -251,7 +251,7 @@ public class NEUManager {
 	 * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
 	 */
 	public void loadItemInformation() {
-		if (NotEnoughUpdates.INSTANCE.config.apiKey.autoupdate) {
+		if (NotEnoughUpdates.INSTANCE.config.apiData.autoupdate) {
 			fetchRepository().thenRun(this::reloadRepository);
 		} else {
 			reloadRepository();

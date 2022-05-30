@@ -280,7 +280,7 @@ public class BingoPage {
 
 		HashMap<String, String> args = new HashMap<>();
 		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey,
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 			"resources/skyblock/bingo",
 			args,
 			jsonObject -> {

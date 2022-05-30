@@ -49,7 +49,7 @@ public class HypixelApi {
 	}
 
 	private String getMyApiURL() {
-		return String.format("https://%s/", NotEnoughUpdates.INSTANCE.config.apiKey.moulberryCodesApi);
+		return String.format("https://%s/", NotEnoughUpdates.INSTANCE.config.apiData.moulberryCodesApi);
 	}
 
 	public CompletableFuture<JsonObject> getApiAsync(String urlS) {

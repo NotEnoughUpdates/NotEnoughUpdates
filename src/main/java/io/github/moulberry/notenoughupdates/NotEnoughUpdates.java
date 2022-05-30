@@ -208,6 +208,11 @@ public class NotEnoughUpdates {
 		if (config == null) {
 			config = new NEUConfig();
 			saveConfig();
+		} else {
+			if (config.apiKey != null && config.apiKey.apiKey != null) {
+				config.apiData.apiKey = config.apiKey.apiKey;
+				config.apiKey = null;
+			}
 		}
 
 		MinecraftForge.EVENT_BUS.register(this);

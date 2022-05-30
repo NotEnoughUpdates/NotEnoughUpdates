@@ -21,8 +21,8 @@ public class AhCommand extends ClientCommandBase {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 				"You must be on Skyblock to use this feature."));
-		} else if (NotEnoughUpdates.INSTANCE.config.apiKey.apiKey == null ||
-			NotEnoughUpdates.INSTANCE.config.apiKey.apiKey.trim().isEmpty()) {
+		} else if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey.trim().isEmpty()) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 				"Can't open NeuAH, apikey is not set. Run /api new and put the result in settings."));
 		} else {

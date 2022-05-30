@@ -48,7 +48,7 @@ public class RecipeGenerator {
 
 	@SubscribeEvent
 	public void onTick(TickEvent event) {
-		if (!neu.config.apiKey.repositoryEditing) return;
+		if (!neu.config.apiData.repositoryEditing) return;
 		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 		if (currentScreen == null) return;
 		if (!(currentScreen instanceof GuiChest)) return;
