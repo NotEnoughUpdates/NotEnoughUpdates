@@ -41,7 +41,7 @@ jobs:
         distribution: zulu
         cache: gradle
     - name: Build with Gradle
-      run: chmod +x ./gradlew && ./gradlew setupCIWorkspace build --no-daemon
+      run: chmod +x ./gradlew && ./gradlew clean test remapJar --no-daemon
     - uses: actions/upload-artifact@v2
       with:
         path: build/libs/*-dep.jar
