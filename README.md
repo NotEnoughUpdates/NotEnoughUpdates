@@ -36,6 +36,8 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 
 ## Getting Started
 
+<i>If you want to install NEU for development purposes, see [CONTRIBUTING](CONTRIBUTING.md)</i>
+
 <u>**Installing Forge:**</u>
 
 1. Run normal Minecraft 1.8.9 and once it reaches the title screen wait about 5 seconds and close it.
