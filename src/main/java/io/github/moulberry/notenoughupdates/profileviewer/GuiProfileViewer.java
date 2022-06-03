@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.GameProfile;
-import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -1931,18 +1930,22 @@ public class GuiProfileViewer extends GuiScreen {
 		if (levelObj.maxed) {
 			renderGoldBar(x, y + 6, xSize);
 		} else {
-			renderBar(x, y + 6, xSize, level % 1);
+			if (skillName.contains("Catacombs") && levelObj.level >= 50) {
+				renderGoldBar(x, y + 6, xSize);
+			} else {
+				renderBar(x, y + 6, xSize, level % 1);
+			}
 		}
 
 		if (mouseX > x && mouseX < x + 120) {
 			if (mouseY > y - 4 && mouseY < y + 13) {
 				String levelStr;
 				String totalXpStr = null;
+				if (skillName.contains("Catacombs"))
+					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
+						Utils.formatNumberWithDots((long) levelObj.totalXp);
 				if (levelObj.maxed) {
 					levelStr = EnumChatFormatting.GOLD + "MAXED!";
-					if (skillName.contains("Catacombs"))
-						totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-							Utils.formatNumberWithDots((long) levelObj.totalXp);
 				} else {
 					int maxXp = (int) levelObj.maxXpForLevel;
 					levelStr = EnumChatFormatting.DARK_PURPLE + shortNumberFormat(

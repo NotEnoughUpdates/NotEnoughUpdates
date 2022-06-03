@@ -233,7 +233,7 @@ public class MobLootRecipe implements NeuRecipe {
 			if (xp > 0)
 				stuff.add("§r§aExperience: " + xp);
 			if (combatXp > 0)
-				stuff.add("§r§bCombat Experience: " + xp);
+				stuff.add("§r§bCombat Experience: " + combatXp);
 			stuff.addAll(extra);
 			Utils.drawHoveringText(
 				stuff,
