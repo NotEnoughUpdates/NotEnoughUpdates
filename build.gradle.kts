@@ -120,6 +120,7 @@ tasks.withType(Jar::class) {
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 		archiveClassifier.set("dep")
 		from(tasks.shadowJar)
+		input.set(tasks.shadowJar.get().archiveFile)
 }
 
 tasks.shadowJar {
