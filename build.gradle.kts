@@ -129,7 +129,7 @@ tasks.shadowJar {
 				"module-info.class", "LICENSE.txt"
 		)
 		dependencies {
-				include(dependency("org.spongepowered:mixin:0.8.5"))
+				include(dependency("org.spongepowered:mixin"))
 
 				include(dependency("commons-io:commons-io"))
 				include(dependency("org.apache.commons:commons-lang3"))
