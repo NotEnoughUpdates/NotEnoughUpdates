@@ -18,7 +18,7 @@ public class CosmeticsCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		if (!OpenGlHelper.isFramebufferEnabled()) {
+		if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.notifications.doFastRenderNotif) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 				"NEU cosmetics do not work with OF Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
 

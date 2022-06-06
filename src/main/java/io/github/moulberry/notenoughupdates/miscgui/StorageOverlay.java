@@ -738,7 +738,7 @@ public class StorageOverlay extends GuiElement {
 							if (storageId == currentPage) {
 								Utils.hasEffectOverride = true;
 								GlStateManager.translate(storageX - 7, storageY - 17 - 18, 0);
-								((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.getSlot(k + 9));
+								((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.getSlot(k + 9));
 								GlStateManager.translate(-storageX + 7, -storageY + 17 + 18, 0);
 								Utils.hasEffectOverride = false;
 							} else {
@@ -753,7 +753,7 @@ public class StorageOverlay extends GuiElement {
 						} else if (storageId == currentPage) {
 							Utils.hasEffectOverride = true;
 							GlStateManager.translate(storageX - 7, storageY - 17 - 18, 0);
-							((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.getSlot(k + 9));
+							((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.getSlot(k + 9));
 							GlStateManager.translate(-storageX + 7, -storageY + 17 + 18, 0);
 							Utils.hasEffectOverride = false;
 						} else {
@@ -1269,7 +1269,7 @@ public class StorageOverlay extends GuiElement {
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(181 - 8, storageViewSize + 18 - (inventoryStartIndex / 9 * 18 + 31), 0);
-			((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + i));
+			((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + i));
 			GlStateManager.popMatrix();
 
 			if (!searchBar.getText().isEmpty()) {
@@ -1303,7 +1303,7 @@ public class StorageOverlay extends GuiElement {
 			//Utils.drawItemStack(playerItems[i+9], itemX, itemY);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(181 - 8, storageViewSize + 18 - (inventoryStartIndex / 9 * 18 + 31), 0);
-			((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + 9 + i));
+			((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + 9 + i));
 			GlStateManager.popMatrix();
 
 			if (!searchBar.getText().isEmpty()) {
@@ -2184,7 +2184,8 @@ public class StorageOverlay extends GuiElement {
 
 				for (Slot slot : container.inventorySlots.inventorySlots) {
 					if (slot != null &&
-						slot.inventory == Minecraft.getMinecraft().thePlayer.inventory && ((AccessorGuiContainer)container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
+						slot.inventory == Minecraft.getMinecraft().thePlayer.inventory &&
+						((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
 						SlotLocking.getInstance().toggleLock(slot.getSlotIndex());
 						return true;
 					}
@@ -2284,7 +2285,8 @@ public class StorageOverlay extends GuiElement {
 	}
 
 	public void fastRenderCheck() {
-		if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3) {
+		if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.notifications.doFastRenderNotif &&
+			NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3) {
 			this.fastRender = true;
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"\u00a74Fast Render Warning",

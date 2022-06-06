@@ -33,6 +33,14 @@ public class Notifications {
 
 	@Expose
 	@ConfigOption(
+		name = "Fast Render warning",
+		desc = "\u00a7cIf and ONLY if you have Fast Render disabled and are still seeing the warning, you can disable it here.\nDisabling it with Fast Render still on will lead to broken features."
+	)
+	@ConfigEditorBoolean
+	public boolean doFastRenderNotif = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Booster Cookie Warning",
 		desc = "Warning when a booster cookie is about to expire"
 	)
