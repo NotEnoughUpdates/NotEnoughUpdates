@@ -1057,6 +1057,10 @@ public class ProfileViewer {
 				Utils.getElement(profileInfo, "candy_inventory_contents.data"),
 				"Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA="
 			);
+			String equipment_contents_bytes = Utils.getElementAsString(
+				Utils.getElement(profileInfo, "equippment_contents.data"),
+				"Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA="
+			);
 
 			JsonObject inventoryInfo = new JsonObject();
 
@@ -1071,7 +1075,8 @@ public class ProfileViewer {
 				"potion_bag",
 				"inv_contents",
 				"talisman_bag",
-				"candy_inventory_contents"
+				"candy_inventory_contents",
+				"equippment_contents"
 			};
 			String[] inv_bytes = new String[]{
 				inv_armor_bytes,
@@ -1084,7 +1089,8 @@ public class ProfileViewer {
 				potion_bag_bytes,
 				inv_contents_bytes,
 				talisman_bag_bytes,
-				candy_inventory_contents_bytes
+				candy_inventory_contents_bytes,
+				equipment_contents_bytes
 			};
 			for (int i = 0; i < inv_bytes.length; i++) {
 				try {

@@ -245,6 +245,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private ItemStack[] bestWeapons = null;
 	private ItemStack[] bestRods = null;
 	private ItemStack[] armorItems = null;
+	private ItemStack[] equipmentItems = null;
 	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
 	private String selectedInventory = "inv_contents";
 	private int currentInventoryIndex = 0;
@@ -2908,6 +2909,32 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
+		if (equipmentItems == null) {
+			equipmentItems = new ItemStack[4];
+			JsonArray equippment = Utils.getElement(inventoryInfo, "equippment_contents").getAsJsonArray();
+			for (int i = 0; i < equippment.size(); i++) {
+				if (equippment.get(i) == null || !equippment.get(i).isJsonObject()) continue;
+				equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
+			}
+		}
+
+		for (int i = 0; i < equipmentItems.length; i++) {
+			ItemStack stack = equipmentItems[i];
+			if (stack != null) {
+				Utils.drawItemStack(stack, guiLeft + 193, guiTop + 67 - 18 * i);
+				if (stack != fillerStack) {
+					if (mouseX >= guiLeft + 193 - 1 && mouseX <= guiLeft + 193 + 16 + 1) {
+						if (mouseY >= guiTop + 67 - 18 * i - 1 && mouseY <= guiTop + 67 - 18 * i + 16 + 1) {
+							tooltipToDisplay = stack.getTooltip(
+								Minecraft.getMinecraft().thePlayer,
+								Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+							);
+						}
+					}
+				}
+			}
+		}
+
 		ItemStack[][][] inventories = getItemsForInventory(inventoryInfo, selectedInventory);
 		if (currentInventoryIndex >= inventories.length) currentInventoryIndex = inventories.length - 1;
 		if (currentInventoryIndex < 0) currentInventoryIndex = 0;
@@ -5208,6 +5235,7 @@ public class GuiProfileViewer extends GuiScreen {
 		bestWeapons = null;
 		bestRods = null;
 		armorItems = null;
+		equipmentItems = null;
 		inventoryItems = new HashMap<>();
 		currentInventoryIndex = 0;
 		arrowCount = -1;
