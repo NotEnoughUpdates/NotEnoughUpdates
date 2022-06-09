@@ -11,16 +11,16 @@
         <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?logo=GitHub&color=informational" alt="downloads">
     </a> -->
     <!-- lines -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/graphs/code-frequency" target="_blank">
-        <img src="https://img.shields.io/tokei/lines/github/Moulberry/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
+        <img src="https://img.shields.io/tokei/lines/github/NotEnoughUpdate/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
     </a>
     <!-- license -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/blob/master/LICENSE" target="_blank">
-        <img src="https://img.shields.io/badge/license-CC%20BY--NC%203.0-informational" alt="license">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/master/LICENSE.md" target="_blank">
+        <img src="https://img.shields.io/github/license/NotEnoughUpdates/NotEnoughUpdates?color=informational" alt="license">
     </a>
     <!-- contributors -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/graphs/contributors" target="_blank">
-        <img src="https://img.shields.io/github/contributors/Moulberry/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/contributors" target="_blank">
+        <img src="https://img.shields.io/github/contributors/NotEnoughUpdates/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
     </a>
     <!-- discord -->
     <a href="https://discord.gg/moulberry" target="_blank">
