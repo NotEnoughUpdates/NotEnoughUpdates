@@ -5119,9 +5119,6 @@ public class GuiProfileViewer extends GuiScreen {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
 							int maxXp = (int) skillInfo.get("maxxp_" + entry.getKey()).getAsFloat();
-							System.out.println(level);
-							System.out.println(level % 1);
-							System.out.println(maxXp);
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE +
 								shortNumberFormat(Math.round((level % 1) * maxXp), 0) + "/" + shortNumberFormat(maxXp, 0));
 						}
