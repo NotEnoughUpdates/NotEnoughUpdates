@@ -5112,12 +5112,16 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (mouseX > x && mouseX < x + 80) {
 					if (mouseY > y - 4 && mouseY < y + 13) {
+						System.out.println(entry.getKey());
 						tooltipToDisplay = new ArrayList<>();
 						tooltipToDisplay.add(skillName);
 						if (skillInfo.get("maxed_" + entry.getKey()).getAsBoolean()) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
 							int maxXp = (int) skillInfo.get("maxxp_" + entry.getKey()).getAsFloat();
+							System.out.println(level);
+							System.out.println(level % 1);
+							System.out.println(maxXp);
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE +
 								shortNumberFormat(Math.round((level % 1) * maxXp), 0) + "/" + shortNumberFormat(maxXp, 0));
 						}

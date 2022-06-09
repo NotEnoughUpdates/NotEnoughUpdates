@@ -65,6 +65,7 @@ public class ProfileViewer {
 				"skill_runecrafting",
 				Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting")
 			);
+			put("skill_social2", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
 			// put("skill_catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
 			put("slayer_zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
 			put("slayer_spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
@@ -861,6 +862,8 @@ public class ProfileViewer {
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_alchemy"), 0);
 			float experience_skill_runecrafting =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_runecrafting"), 0);
+			float experience_skill_social =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_social2"), 0);
 			float experience_skill_hotm = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
 
 			float experience_skill_catacombs =
@@ -879,7 +882,7 @@ public class ProfileViewer {
 			float totalSkillXP = experience_skill_taming + experience_skill_mining + experience_skill_foraging
 				+ experience_skill_enchanting + experience_skill_carpentry + experience_skill_farming
 				+ experience_skill_combat + experience_skill_fishing + experience_skill_alchemy
-				+ experience_skill_runecrafting;
+				+ experience_skill_runecrafting + experience_skill_social;
 
 			if (totalSkillXP <= 0) {
 				return null;
@@ -897,6 +900,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("experience_skill_fishing", experience_skill_fishing);
 			skillInfo.addProperty("experience_skill_alchemy", experience_skill_alchemy);
 			skillInfo.addProperty("experience_skill_runecrafting", experience_skill_runecrafting);
+			skillInfo.addProperty("experience_skill_social2", experience_skill_social);
 			skillInfo.addProperty("experience_skill_hotm", experience_skill_hotm);
 
 			skillInfo.addProperty("experience_skill_catacombs", experience_skill_catacombs);
@@ -925,6 +929,9 @@ public class ProfileViewer {
 			Level level_skill_hotm = getLevel(levelingArray, experience_skill_hotm, getCap(leveling, "HOTM"), false);
 			Level level_skill_runecrafting = getLevel(Utils.getElement(leveling, "runecrafting_xp").getAsJsonArray(),
 				experience_skill_runecrafting, getCap(leveling, "runecrafting"), false
+			);
+			Level level_skill_social = getLevel(Utils.getElement(leveling, "social_xp").getAsJsonArray(),
+				experience_skill_runecrafting, getCap(leveling, "social"), false
 			);
 			Level level_skill_catacombs = getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
 				experience_skill_catacombs, getCap(leveling, "catacombs"), false
@@ -956,6 +963,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("level_skill_fishing", level_skill_fishing.level);
 			skillInfo.addProperty("level_skill_alchemy", level_skill_alchemy.level);
 			skillInfo.addProperty("level_skill_runecrafting", level_skill_runecrafting.level);
+			skillInfo.addProperty("level_skill_social2", level_skill_social.level);
 
 			skillInfo.addProperty("level_skill_catacombs", level_skill_catacombs.level);
 
@@ -975,6 +983,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("maxed_skill_fishing", level_skill_fishing.maxed);
 			skillInfo.addProperty("maxed_skill_alchemy", level_skill_alchemy.maxed);
 			skillInfo.addProperty("maxed_skill_runecrafting", level_skill_runecrafting.maxed);
+			skillInfo.addProperty("maxed_skill_social2", level_skill_social.maxed);
 
 			skillInfo.addProperty("maxed_skill_catacombs", level_skill_catacombs.maxed);
 
@@ -994,6 +1003,7 @@ public class ProfileViewer {
 			skillInfo.addProperty("maxxp_skill_fishing", level_skill_fishing.maxXpForLevel);
 			skillInfo.addProperty("maxxp_skill_alchemy", level_skill_alchemy.maxXpForLevel);
 			skillInfo.addProperty("maxxp_skill_runecrafting", level_skill_runecrafting.maxXpForLevel);
+			skillInfo.addProperty("maxxp_skill_social2", level_skill_social.maxXpForLevel);
 
 			skillInfo.addProperty("maxxp_skill_catacombs", level_skill_catacombs.maxXpForLevel);
 
