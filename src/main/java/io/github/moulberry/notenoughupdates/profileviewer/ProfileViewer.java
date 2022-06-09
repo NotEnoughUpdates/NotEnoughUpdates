@@ -930,7 +930,7 @@ public class ProfileViewer {
 			Level level_skill_runecrafting = getLevel(Utils.getElement(leveling, "runecrafting_xp").getAsJsonArray(),
 				experience_skill_runecrafting, getCap(leveling, "runecrafting"), false
 			);
-			Level level_skill_social = getLevel(Utils.getElement(leveling, "social_xp").getAsJsonArray(),
+			Level level_skill_social = getLevel(Utils.getElement(leveling, "social").getAsJsonArray(),
 				experience_skill_social, getCap(leveling, "social"), false
 			);
 			Level level_skill_catacombs = getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
