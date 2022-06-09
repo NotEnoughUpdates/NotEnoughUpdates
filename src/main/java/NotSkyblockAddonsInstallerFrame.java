@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +25,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;

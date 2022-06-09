@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.util;
 
 import net.minecraft.item.ItemStack;
@@ -5,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 
 public class SkytilsCompat {
 	// Defer static initialization
@@ -49,7 +67,7 @@ public class SkytilsCompat {
 				);
 				isSkytilsFullyPresent = true;
 			} catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException |
-							 InvocationTargetException e) {
+				InvocationTargetException e) {
 				System.err.println("Failed to get Skytils class even tho Skytils mod is present. This is (probably) a NEU bug");
 				e.printStackTrace();
 			}
@@ -64,6 +82,7 @@ public class SkytilsCompat {
 	public static boolean isSkytilsPresent() {
 		return Holder.isSkytilsPresent;
 	}
+
 	public static void renderSkytilsRarity(ItemStack stack, int x, int y) {
 		renderSkytilsRarity(stack, x, y, false);
 	}

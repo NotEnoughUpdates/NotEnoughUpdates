@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.dungeons;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -14,7 +33,12 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -200,11 +224,16 @@ public class DungeonWin {
 					displayWin();
 				} else {
 					if (unformatted.trim().length() > 0) {
-						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") || unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains("Total Damage")
-							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains("Deaths") || unformatted.contains("Secrets Found")) {
+						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") ||
+							unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains(
+							"Total Damage")
+							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains(
+							"Deaths") || unformatted.contains("Secrets Found")) {
 							text.add(e.message.getFormattedText().substring(6).trim());
 						} else {
-							System.out.println("These messages would of showed on neu dungeon overlay but didnt, They are either bugged or i missed them: \"" + e.message.getFormattedText().substring(6).trim() + "\"");
+							System.out.println(
+								"These messages would of showed on neu dungeon overlay but didnt, They are either bugged or i missed them: \"" +
+									e.message.getFormattedText().substring(6).trim() + "\"");
 						}
 					}
 				}

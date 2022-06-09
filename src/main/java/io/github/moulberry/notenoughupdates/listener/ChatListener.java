@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.listener;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -24,7 +43,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.*;
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.RNGMeter;
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.slayerXp;
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.timeSinceLastBoss;
+import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.timeSinceLastBoss2;
 
 public class ChatListener {
 	private final NotEnoughUpdates neu;
@@ -124,7 +146,7 @@ public class ChatListener {
 	public void onGuiChat(ClientChatReceivedEvent e) {
 		if (e.type == 2) {
 			CrystalMetalDetectorSolver.process(e.message);
-				TimersOverlay.processActionBar(e.message.getUnformattedText());
+			TimersOverlay.processActionBar(e.message.getUnformattedText());
 			e.message = processChatComponent(e.message);
 			return;
 		} else if (e.type == 0) {
@@ -145,10 +167,11 @@ public class ChatListener {
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your new API key is ")) {
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey = unformatted.substring("Your new API key is ".length()).substring(
-				0,
-				36
-			);
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey =
+				unformatted.substring("Your new API key is ".length()).substring(
+					0,
+					36
+				);
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 				EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
 		} else if (unformatted.startsWith("Player List Info is now disabled!")) {

@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
@@ -738,7 +757,7 @@ public class StorageOverlay extends GuiElement {
 							if (storageId == currentPage) {
 								Utils.hasEffectOverride = true;
 								GlStateManager.translate(storageX - 7, storageY - 17 - 18, 0);
-								((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.getSlot(k + 9));
+								((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.getSlot(k + 9));
 								GlStateManager.translate(-storageX + 7, -storageY + 17 + 18, 0);
 								Utils.hasEffectOverride = false;
 							} else {
@@ -753,7 +772,7 @@ public class StorageOverlay extends GuiElement {
 						} else if (storageId == currentPage) {
 							Utils.hasEffectOverride = true;
 							GlStateManager.translate(storageX - 7, storageY - 17 - 18, 0);
-							((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.getSlot(k + 9));
+							((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.getSlot(k + 9));
 							GlStateManager.translate(-storageX + 7, -storageY + 17 + 18, 0);
 							Utils.hasEffectOverride = false;
 						} else {
@@ -1269,7 +1288,7 @@ public class StorageOverlay extends GuiElement {
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(181 - 8, storageViewSize + 18 - (inventoryStartIndex / 9 * 18 + 31), 0);
-			((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + i));
+			((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + i));
 			GlStateManager.popMatrix();
 
 			if (!searchBar.getText().isEmpty()) {
@@ -1303,7 +1322,7 @@ public class StorageOverlay extends GuiElement {
 			//Utils.drawItemStack(playerItems[i+9], itemX, itemY);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(181 - 8, storageViewSize + 18 - (inventoryStartIndex / 9 * 18 + 31), 0);
-			((AccessorGuiContainer)guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + 9 + i));
+			((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + 9 + i));
 			GlStateManager.popMatrix();
 
 			if (!searchBar.getText().isEmpty()) {
@@ -2184,7 +2203,8 @@ public class StorageOverlay extends GuiElement {
 
 				for (Slot slot : container.inventorySlots.inventorySlots) {
 					if (slot != null &&
-						slot.inventory == Minecraft.getMinecraft().thePlayer.inventory && ((AccessorGuiContainer)container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
+						slot.inventory == Minecraft.getMinecraft().thePlayer.inventory &&
+						((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
 						SlotLocking.getInstance().toggleLock(slot.getSlotIndex());
 						return true;
 					}

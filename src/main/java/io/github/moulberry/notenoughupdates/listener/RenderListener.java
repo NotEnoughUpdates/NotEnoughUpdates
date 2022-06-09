@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.listener;
 
 import com.google.common.collect.Lists;
@@ -900,7 +919,12 @@ public class RenderListener {
 			GuiChest eventGui = (GuiChest) guiScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.contains(" Profile") && BetterContainers.profileViewerStackIndex != -1 && ((AccessorGuiContainer)eventGui).doIsMouseOverSlot(cc.inventorySlots.get(BetterContainers.profileViewerStackIndex), mouseX, mouseY) &&
+			if (containerName.contains(" Profile") && BetterContainers.profileViewerStackIndex != -1 &&
+				((AccessorGuiContainer) eventGui).doIsMouseOverSlot(
+					cc.inventorySlots.get(BetterContainers.profileViewerStackIndex),
+					mouseX,
+					mouseY
+				) &&
 				Mouse.getEventButton() >= 0) {
 				event.setCanceled(true);
 				if (Mouse.getEventButtonState() && eventGui.inventorySlots.inventorySlots.get(22).getStack() != null &&
@@ -1047,7 +1071,10 @@ public class RenderListener {
 						"config/notenoughupdates/repo/constants/essencecosts.json"
 					);
 					String fileContent;
-					fileContent = new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8))
+					fileContent = new BufferedReader(new InputStreamReader(
+						Files.newInputStream(file.toPath()),
+						StandardCharsets.UTF_8
+					))
 						.lines()
 						.collect(Collectors.joining(System.lineSeparator()));
 					String id = null;

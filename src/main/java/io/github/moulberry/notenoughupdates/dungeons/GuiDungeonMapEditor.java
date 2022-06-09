@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.dungeons;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -29,10 +48,16 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_tex;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_button;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_off_large;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_on_large;
 
 public class GuiDungeonMapEditor extends GuiScreen {
 	public static final ResourceLocation BACKGROUND = new ResourceLocation(

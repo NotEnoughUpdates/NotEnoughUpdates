@@ -1,8 +1,33 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.*;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,13 +191,13 @@ public class MiscOverlays {
 
 	@Expose
 	@ConfigOption(
-					name = "Daily Heavy Pearl Display",
-					desc = "Change the way the daily heavy pearl displays\n" +
-									"Only when ready, When very Soon, When soon, When kinda soon or always."
+		name = "Daily Heavy Pearl Display",
+		desc = "Change the way the daily heavy pearl displays\n" +
+			"Only when ready, When very Soon, When soon, When kinda soon or always."
 	)
 	@ConfigAccordionId(id = 1)
 	@ConfigEditorDropdown(
-					values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
+		values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
 	)
 
 	public int dailyHeavyPearlDisplay = 0;

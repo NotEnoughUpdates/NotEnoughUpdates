@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonArray;
@@ -239,10 +258,13 @@ public class ProfileViewer {
 			);
 			put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sack"));
 			put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
-			put("MAGMA_FISH",
-				Utils.createSkull(EnumChatFormatting.AQUA + "Magmafish",
-				"5c53195c-5b98-3476-9731-c32647b22723",
-				"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ")
+			put(
+				"MAGMA_FISH",
+				Utils.createSkull(
+					EnumChatFormatting.AQUA + "Magmafish",
+					"5c53195c-5b98-3476-9731-c32647b22723",
+					"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ"
+				)
 			);
 		}};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
@@ -1287,7 +1309,8 @@ public class ProfileViewer {
 				}
 			}
 			for (JsonObject current_member_info : coopMembers) {
-				if (!current_member_info.has("crafted_generators") || !current_member_info.get("crafted_generators").isJsonArray()) continue;
+				if (!current_member_info.has("crafted_generators") ||
+					!current_member_info.get("crafted_generators").isJsonArray()) continue;
 				JsonArray crafted_generators = Utils.getElement(current_member_info, "crafted_generators").getAsJsonArray();
 				for (int j = 0; j < crafted_generators.size(); j++) {
 					String unlocked = crafted_generators.get(j).getAsString();
@@ -1365,7 +1388,7 @@ public class ProfileViewer {
 		}
 
 		public PlayerStats.Stats getStats(String profileId) {
-			if(stats.get(profileId) != null) return stats.get(profileId);
+			if (stats.get(profileId) != null) return stats.get(profileId);
 			JsonObject profileInfo = getProfileInformation(profileId);
 			if (profileInfo == null) {
 				return null;
