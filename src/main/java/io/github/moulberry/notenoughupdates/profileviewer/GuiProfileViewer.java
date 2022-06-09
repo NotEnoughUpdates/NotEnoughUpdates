@@ -5112,7 +5112,6 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (mouseX > x && mouseX < x + 80) {
 					if (mouseY > y - 4 && mouseY < y + 13) {
-						System.out.println(entry.getKey());
 						tooltipToDisplay = new ArrayList<>();
 						tooltipToDisplay.add(skillName);
 						if (skillInfo.get("maxed_" + entry.getKey()).getAsBoolean()) {
