@@ -2940,9 +2940,9 @@ public class GuiProfileViewer extends GuiScreen {
 		for (int i = 0; i < equipmentItems.length; i++) {
 			ItemStack stack = equipmentItems[i];
 			if (stack != null) {
-				Utils.drawItemStack(stack, guiLeft + 193, guiTop + 67 - 18 * i);
+				Utils.drawItemStack(stack, guiLeft + 192, guiTop + 67 - 18 * i);
 				if (stack != fillerStack) {
-					if (mouseX >= guiLeft + 193 - 1 && mouseX <= guiLeft + 193 + 16 + 1) {
+					if (mouseX >= guiLeft + 192 - 1 && mouseX <= guiLeft + 192 + 16 + 1) {
 						if (mouseY >= guiTop + 67 - 18 * i - 1 && mouseY <= guiTop + 67 - 18 * i + 16 + 1) {
 							tooltipToDisplay = stack.getTooltip(
 								Minecraft.getMinecraft().thePlayer,
