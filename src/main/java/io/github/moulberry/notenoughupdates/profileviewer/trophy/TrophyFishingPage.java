@@ -37,6 +37,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -92,7 +93,7 @@ public class TrophyFishingPage {
 			}
 		};
 
-	public static Map<Integer, Pair<Integer, Integer>> slotLocations = new HashMap<Integer, Pair<Integer, Integer>>() {
+	private static Map<Integer, Pair<Integer, Integer>> slotLocations = new HashMap<Integer, Pair<Integer, Integer>>() {
 		{
 			put(0, Pair.of(277, 46));
 			put(1, Pair.of(253, 58));
@@ -114,23 +115,27 @@ public class TrophyFishingPage {
 			put(17, Pair.of(277, 142));
 		}
 	};
-	public static long totalCount = 0;
+	private static long totalCount = 0;
+	private static int guiLeft;
+	private static int guiTop;
 
 	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation(
 		"notenoughupdates:pv_trophy_fish_tab.png");
-	public static final Map<String, TrophyFish> trophyFishList = new HashMap<>();
+	private static final Map<String, TrophyFish> trophyFishList = new HashMap<>();
 
-	public static final Map<String, Integer> total = new HashMap<>();
+	private static final Map<String, Integer> total = new HashMap<>();
 
 	public static void renderPage(int mouseX, int mouseY) {
+		guiLeft = GuiProfileViewer.getGuiLeft();
+		guiTop = GuiProfileViewer.getGuiTop();
 		JsonObject trophyInformation = getTrophyInformation(null);
+		if (trophyInformation == null) {
+			return;
+		}
 
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
 		int height = scaledResolution.getScaledHeight();
-
-		int guiLeft = GuiProfileViewer.getGuiLeft();
-		int guiTop = GuiProfileViewer.getGuiTop();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TROPHY_FISH_TEXTURE);
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
@@ -252,7 +257,8 @@ public class TrophyFishingPage {
 			}
 			i.set(i.get() + 10);
 		}
-		Utils.drawStringF(EnumChatFormatting.AQUA + "Total Caught: §f" + totalCount,
+		Utils.drawStringF(
+			EnumChatFormatting.AQUA + "Total Caught: §f" + totalCount,
 			Minecraft.getMinecraft().fontRendererObj,
 			guiLeft + 25,
 			guiTop + 24,
@@ -274,7 +280,8 @@ public class TrophyFishingPage {
 			jawbusKills = stats.getAsJsonObject().get("kills_lord_jawbus").getAsInt();
 		}
 
-		Utils.drawStringF(EnumChatFormatting.AQUA + "Thunder Kills: §f" + thunderKills,
+		Utils.drawStringF(
+			EnumChatFormatting.AQUA + "Thunder Kills: §f" + thunderKills,
 			Minecraft.getMinecraft().fontRendererObj,
 			guiLeft + 18,
 			guiTop + 105,
@@ -282,7 +289,8 @@ public class TrophyFishingPage {
 			0
 		);
 
-		Utils.drawStringF(EnumChatFormatting.AQUA + "Lord Jawbus Kills: §f" + jawbusKills,
+		Utils.drawStringF(
+			EnumChatFormatting.AQUA + "Lord Jawbus Kills: §f" + jawbusKills,
 			Minecraft.getMinecraft().fontRendererObj,
 			guiLeft + 18,
 			guiTop + 115,
@@ -295,7 +303,8 @@ public class TrophyFishingPage {
 
 	private static List<String> getTooltip(TrophyFish fish) {
 		List<String> tooltip = new ArrayList<>();
-		tooltip.add(internalTrophyFish.get(fish.getInternalName()) + WordUtils.capitalize(fish.getName().replace("_", " ")));
+		tooltip.add(
+			internalTrophyFish.get(fish.getInternalName()) + WordUtils.capitalize(fish.getName().replace("_", " ")));
 		Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap = fish.getTrophyFishRarityIntegerMap();
 		tooltip.add(" ");
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.DIAMOND, EnumChatFormatting.AQUA));
@@ -350,16 +359,26 @@ public class TrophyFishingPage {
 	}
 
 	private static JsonObject getTrophyInformation(String profileId) {
-		TrophyFishingPage.trophyFishList.clear();
+		trophyFishList.clear();
 
 		JsonObject trophyFishInformation = GuiProfileViewer.getProfile().getProfileInformation(profileId);
+		if (!trophyFishInformation.has("trophy_fish")) {
+			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found for player",
+				Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + 431 / 2f,
+				guiTop + 101,
+				true,
+				0
+			);
+			return null;
+		}
 		JsonObject trophyObject = trophyFishInformation.get("trophy_fish").getAsJsonObject();
 		Map<String, List<Pair<TrophyFish.TrophyFishRarity, Integer>>> trophyFishRarityIntegerMap = new HashMap<>();
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : trophyObject.entrySet()) {
 			String key = stringJsonElementEntry.getKey();
 			if (key.equalsIgnoreCase("rewards") || key.equalsIgnoreCase("total_caught")) {
 				if (key.equalsIgnoreCase("total_caught")) {
-					TrophyFishingPage.totalCount = stringJsonElementEntry.getValue().getAsInt();
+					totalCount = stringJsonElementEntry.getValue().getAsInt();
 				}
 				continue;
 			}
@@ -375,7 +394,7 @@ public class TrophyFishingPage {
 			try {
 				trophyFishRarity = TrophyFish.TrophyFishRarity.valueOf(type.toUpperCase());
 			} catch (IllegalArgumentException ignored) {
-				TrophyFishingPage.total.put(WordUtils.capitalize(key), value);
+				total.put(WordUtils.capitalize(key), value);
 				continue;
 			}
 
@@ -400,9 +419,9 @@ public class TrophyFishingPage {
 
 					trophyFish.add(pair1.getKey(), pair1.getValue());
 				}
-				TrophyFishingPage.trophyFishList.put(name, trophyFish);
+				trophyFishList.put(name, trophyFish);
 			} else {
-				TrophyFish trophyFish = TrophyFishingPage.trophyFishList.get(name);
+				TrophyFish trophyFish = trophyFishList.get(name);
 				for (Pair<TrophyFish.TrophyFishRarity, Integer> pair1 : pair) {
 					trophyFish.add(pair1.getKey(), pair1.getValue());
 				}
@@ -410,8 +429,6 @@ public class TrophyFishingPage {
 		});
 		return trophyFishInformation;
 	}
-
-
 
 	private static List<String> fixStringName(List<String> list) {
 		List<String> fixedList = new ArrayList<>();
