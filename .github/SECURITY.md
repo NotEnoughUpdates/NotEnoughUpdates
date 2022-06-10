@@ -12,4 +12,5 @@ The following versions of the mod support security updates.
 
 ## Reporting a Vulnerability
 
-Please report vulnerablilties in our [discord server](https://discord.gg/moulberry) by creating a new ticket in #bot-commands with the command `/new <reason>`.
+Please report vulnerablilties in our [discord server](https://discord.gg/moulberry) by creating a new
+ticket in #bot-commands with the command `/new <reason>`.
