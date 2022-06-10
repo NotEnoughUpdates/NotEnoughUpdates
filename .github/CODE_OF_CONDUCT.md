@@ -1,3 +1,3 @@
-# Contributor Covenant Code of Conduct
+# Contributor Code of Conduct
 
 Don't be a jerk.
