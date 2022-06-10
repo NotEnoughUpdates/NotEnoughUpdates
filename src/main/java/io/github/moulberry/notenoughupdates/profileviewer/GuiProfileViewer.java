@@ -29,6 +29,7 @@ import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishingPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -199,7 +200,7 @@ public class GuiProfileViewer extends GuiScreen {
 			"personal_vault_contents",
 			Utils.editItemStackInfo(NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 				.getItemInformation()
-				.get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal vault", true)
+				.get("IRON_CHEST")), EnumChatFormatting.GRAY + "Personal Vault", true)
 		);
 		put("talisman_bag", Utils.createItemStack(Items.golden_apple, EnumChatFormatting.GRAY + "Accessory Bag"));
 		put("wardrobe_contents", Utils.createItemStack(Items.leather_chestplate, EnumChatFormatting.GRAY + "Wardrobe"));
@@ -707,6 +708,9 @@ public class GuiProfileViewer extends GuiScreen {
 				break;
 			case BINGO:
 				BingoPage.renderPage(mouseX, mouseY);
+				break;
+			case TROPHY_FISH:
+				TrophyFishingPage.renderPage(mouseX, mouseY);
 				break;
 			case LOADING:
 				String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
@@ -5354,7 +5358,8 @@ public class GuiProfileViewer extends GuiScreen {
 		COLLECTIONS(4, Items.painting, "Collections"),
 		PETS(5, Items.bone, "Pets"),
 		MINING(6, Items.iron_pickaxe, "Heart of the Mountain"),
-		BINGO(7, Items.filled_map, "Bingo");
+		BINGO(7, Items.filled_map, "Bingo"),
+		TROPHY_FISH(8, Items.fishing_rod, "Trophy Fish");
 
 		public final ItemStack stack;
 		public final int id;
