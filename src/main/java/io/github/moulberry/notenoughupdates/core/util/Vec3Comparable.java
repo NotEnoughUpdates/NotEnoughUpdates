@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.core.util;
 
 import net.minecraft.util.BlockPos;
@@ -54,7 +73,7 @@ public class Vec3Comparable extends Vec3 implements Comparable<Vec3Comparable> {
 	}
 
 	@Override
-	public Vec3Comparable add(Vec3 other)	{
+	public Vec3Comparable add(Vec3 other) {
 		return new Vec3Comparable(super.add(other));
 	}
 
@@ -89,19 +108,19 @@ public class Vec3Comparable extends Vec3 implements Comparable<Vec3Comparable> {
 	}
 
 	@Override
-	public boolean equals(Object other)	{
-		if (this == other)		{
+	public boolean equals(Object other) {
+		if (this == other) {
 			return true;
-		}	else if (!(other instanceof Vec3Comparable)) {
+		} else if (!(other instanceof Vec3Comparable)) {
 			return false;
-		}	else {
+		} else {
 			Vec3Comparable vec3c = (Vec3Comparable) other;
 			return this.xCoord == vec3c.xCoord && this.yCoord == vec3c.yCoord && this.zCoord == vec3c.zCoord;
 		}
 	}
 
 	@Override
-	public int hashCode()	{
+	public int hashCode() {
 		long bits = 1L;
 		bits = 31L * bits + doubleToLongBits(xCoord);
 		bits = 31L * bits + doubleToLongBits(yCoord);
@@ -112,9 +131,9 @@ public class Vec3Comparable extends Vec3 implements Comparable<Vec3Comparable> {
 	public int compareTo(Vec3Comparable other) {
 		return this.yCoord == other.yCoord ?
 			(this.zCoord == other.zCoord ?
-				(int)(this.xCoord - other.xCoord)
-				: (int)(this.zCoord - other.zCoord))
-			: (int)(this.yCoord - other.yCoord);
+				(int) (this.xCoord - other.xCoord)
+				: (int) (this.zCoord - other.zCoord))
+			: (int) (this.yCoord - other.yCoord);
 	}
 
 	public boolean signumEquals(Vec3 other) {

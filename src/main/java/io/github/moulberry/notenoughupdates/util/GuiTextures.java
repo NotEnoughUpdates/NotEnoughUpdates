@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.util;
 
 import net.minecraft.util.ResourceLocation;
@@ -8,8 +27,6 @@ public class GuiTextures {
 
 	public static final ResourceLocation itemPaneTabArrow =
 		new ResourceLocation("notenoughupdates:item_pane_tab_arrow.png");
-	//public static final ResourceLocation prev = new ResourceLocation("notenoughupdates:prev.png");
-	//public static final ResourceLocation next = new ResourceLocation("notenoughupdates:next.png");
 	public static final ResourceLocation rightarrow_overlay =
 		new ResourceLocation("notenoughupdates:rightarrow_overlay.png");
 	public static final ResourceLocation rightarrow = new ResourceLocation("notenoughupdates:rightarrow.png");
@@ -19,8 +36,6 @@ public class GuiTextures {
 	public static final ResourceLocation off = new ResourceLocation("notenoughupdates:off.png");
 	public static final ResourceLocation on = new ResourceLocation("notenoughupdates:on.png");
 	public static final ResourceLocation help = new ResourceLocation("notenoughupdates:help.png");
-	public static final ResourceLocation slider_off = new ResourceLocation("notenoughupdates:slider_off.png");
-	public static final ResourceLocation slider_on = new ResourceLocation("notenoughupdates:slider_on.png");
 	public static final ResourceLocation slider_off_large = new ResourceLocation("notenoughupdates:slider_off_large.png");
 	public static final ResourceLocation slider_on_large = new ResourceLocation("notenoughupdates:slider_on_large.png");
 	public static final ResourceLocation slider_button = new ResourceLocation("notenoughupdates:slider_button.png");
@@ -34,35 +49,16 @@ public class GuiTextures {
 
 	public static final ResourceLocation item_mask = new ResourceLocation("notenoughupdates:item_mask.png");
 	public static final ResourceLocation item_haschild = new ResourceLocation("notenoughupdates:item_haschild.png");
+	public static final ResourceLocation button_white = new ResourceLocation("notenoughupdates:button_white.png");
 	public static final ResourceLocation button_tex = new ResourceLocation("notenoughupdates:button.png");
 	public static final ResourceLocation button_fsr =
 		new ResourceLocation("notenoughupdates:FSR_do_not_texture_this_please.png");
-
-	public static final ResourceLocation setting_border = new ResourceLocation("notenoughupdates:setting_border.png");
-
-	public static final ResourceLocation button_white = new ResourceLocation("notenoughupdates:button_white.png");
-	public static final ResourceLocation colour_selector_dot =
-		new ResourceLocation("notenoughupdates:colour_selector_dot.png");
-	public static final ResourceLocation colour_selector_bar =
-		new ResourceLocation("notenoughupdates:colour_selector_bar.png");
-	public static final ResourceLocation colour_selector_bar_alpha =
-		new ResourceLocation("notenoughupdates:colour_selector_bar_alpha.png");
-	public static final ResourceLocation colour_selector_chroma =
-		new ResourceLocation("notenoughupdates:colour_selector_chroma.png");
 
 	public static final ResourceLocation accessory_bag_overlay =
 		new ResourceLocation("notenoughupdates:accessory_bag_overlay.png");
 
 	public static final ResourceLocation quickcommand_background =
 		new ResourceLocation("notenoughupdates:quickcommand_background.png");
-
-	public static final ResourceLocation gamemodes = new ResourceLocation("notenoughupdates:gamemodes.png");
-	public static final ResourceLocation radial_square_off =
-		new ResourceLocation("notenoughupdates:radial_square_off.png");
-	public static final ResourceLocation radial_square_on = new ResourceLocation("notenoughupdates:radial_square_on.png");
-	public static final ResourceLocation radial_circle_off =
-		new ResourceLocation("notenoughupdates:radial_circle_off.png");
-	public static final ResourceLocation radial_circle_on = new ResourceLocation("notenoughupdates:radial_circle_on.png");
 
 	public static final ResourceLocation dungeon_chest_worth =
 		new ResourceLocation("notenoughupdates:dungeon_chest_worth.png");
@@ -72,10 +68,6 @@ public class GuiTextures {
 	public static final ResourceLocation auction_price = new ResourceLocation("notenoughupdates:auction_price.png");
 	public static final ResourceLocation auction_view_buttons =
 		new ResourceLocation("notenoughupdates:auction_view_buttons.png");
-
-	public static final ResourceLocation logo = new ResourceLocation("notenoughupdates:logo.png");
-	public static final ResourceLocation logo_fg = new ResourceLocation("notenoughupdates:logo_fg.png");
-	public static final ResourceLocation logo_bg = new ResourceLocation("notenoughupdates:logo_bg.png");
 
 	public static final ResourceLocation sort_all = new ResourceLocation("notenoughupdates:sort_all.png");
 	public static final ResourceLocation sort_mob = new ResourceLocation("notenoughupdates:sort_mob.png");

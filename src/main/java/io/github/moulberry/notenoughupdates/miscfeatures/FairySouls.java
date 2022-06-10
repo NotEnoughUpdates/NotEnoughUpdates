@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.common.reflect.TypeToken;
@@ -131,13 +150,14 @@ public class FairySouls {
 		int g2 = (color2 >> 8) & 0xff;
 		int b2 = color2 & 0xff;
 
-		int r3 = r1 + (int)Math.round(factor * (r2-r1));
-		int g3 = g1 + (int)Math.round(factor * (g2-g1));
-		int b3 = b1 + (int)Math.round(factor * (b2-b1));
+		int r3 = r1 + (int) Math.round(factor * (r2 - r1));
+		int g3 = g1 + (int) Math.round(factor * (g2 - g1));
+		int b3 = b1 + (int) Math.round(factor * (b2 - b1));
 
 		return (r3 & 0xff) << 16 |
 			(g3 & 0xff) << 8 |
-			(b3 & 0xff);	}
+			(b3 & 0xff);
+	}
 
 	private double normalize(double value, double min, double max) {
 		return ((value - min) / (max - min));
@@ -151,7 +171,7 @@ public class FairySouls {
 
 		int closeColor = 0x772991; // 0xa839ce
 		int farColor = 0xCEB4D1;
-		double farSoulDistSq = lastPlayerPos.distanceSq(closestMissingSouls.get(closestMissingSouls.size()-1));
+		double farSoulDistSq = lastPlayerPos.distanceSq(closestMissingSouls.get(closestMissingSouls.size() - 1));
 		for (BlockPos currentSoul : closestMissingSouls) {
 			double currentDistSq = lastPlayerPos.distanceSq(currentSoul);
 			double factor = normalize(currentDistSq, 0.0, farSoulDistSq);
@@ -405,7 +425,8 @@ public class FairySouls {
 				case "on":
 				case "enable":
 					if (!FairySouls.instance.trackSouls) {
-						print(EnumChatFormatting.RED + "Fairy soul tracking is off, enable it using /neu before using this command");
+						print(
+							EnumChatFormatting.RED + "Fairy soul tracking is off, enable it using /neu before using this command");
 						return;
 					}
 					print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");

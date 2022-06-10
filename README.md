@@ -11,16 +11,16 @@
         <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?logo=GitHub&color=informational" alt="downloads">
     </a> -->
     <!-- lines -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/graphs/code-frequency" target="_blank">
-        <img src="https://img.shields.io/tokei/lines/github/Moulberry/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
+        <img src="https://img.shields.io/tokei/lines/github/NotEnoughUpdates/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
     </a>
     <!-- license -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/blob/master/LICENSE" target="_blank">
-        <img src="https://img.shields.io/badge/license-CC%20BY--NC%203.0-informational" alt="license">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/master/COPYING.LESSER" target="_blank">
+        <img src="https://img.shields.io/github/license/NotEnoughUpdates/NotEnoughUpdates?color=informational" alt="license">
     </a>
     <!-- contributors -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates/graphs/contributors" target="_blank">
-        <img src="https://img.shields.io/github/contributors/Moulberry/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
+    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/contributors" target="_blank">
+        <img src="https://img.shields.io/github/contributors/NotEnoughUpdates/NotEnoughUpdates?color=informational&logo=GitHub" alt="contributors">
     </a>
     <!-- discord -->
     <a href="https://discord.gg/moulberry" target="_blank">
@@ -57,7 +57,7 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 4. Then, hop onto Skyblock and run the command `/api new`. Your api key is automatically filled out and all features should work.
 5. Type `/neu`. If you see the NotEnoughUpdates menu, you have done this correctly!
 
-*If you need further assistance feel free to join the [discord](https://discord.gg/moulberry) and ask for help in [#neu-support](discord://discord.com/channels/516977525906341928/714332750156660756)*
+_If you need further assistance feel free to join the [discord](https://discord.gg/moulberry) and ask for help in [#neu-support](discord://discord.com/channels/516977525906341928/714332750156660756)_
 
 ## Features
 

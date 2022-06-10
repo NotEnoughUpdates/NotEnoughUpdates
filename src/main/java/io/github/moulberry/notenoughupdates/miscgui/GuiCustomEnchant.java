@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
@@ -39,7 +58,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -946,7 +970,7 @@ public class GuiCustomEnchant extends Gui {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(guiLeft + 102 - 8, guiTop + 191 - (inventoryStartIndex / 9 * 18 + 89), 0);
 			Slot slot = cc.getSlot(inventoryStartIndex + i);
-			((AccessorGuiContainer)chest).doDrawSlot(slot);
+			((AccessorGuiContainer) chest).doDrawSlot(slot);
 			GlStateManager.popMatrix();
 
 			if (mouseX >= itemX && mouseX < itemX + 18 &&

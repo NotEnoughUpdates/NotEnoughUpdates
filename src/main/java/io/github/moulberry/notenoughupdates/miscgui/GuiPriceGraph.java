@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.reflect.TypeToken;
@@ -17,14 +36,26 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -347,7 +378,7 @@ public class GuiPriceGraph extends GuiScreen {
 					itemData = new ItemData(
 						new TreeMap<>(itemData.get().entrySet().stream()
 																	.filter(e -> e.getKey() > System.currentTimeMillis() / 1000 -
-																(mode == 0 ? 3600 : mode == 1 ? 86400 : 604800))
+																		(mode == 0 ? 3600 : mode == 1 ? 86400 : 604800))
 																	.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))),
 						itemData.isBz()
 					);
@@ -428,7 +459,12 @@ public class GuiPriceGraph extends GuiScreen {
 		}
 	}
 
-	private static void addOrUpdateItemPriceInfo(Map.Entry<String, JsonElement> item, HashMap<String, ItemData> prices, long timestamp, boolean bazaar) {
+	private static void addOrUpdateItemPriceInfo(
+		Map.Entry<String, JsonElement> item,
+		HashMap<String, ItemData> prices,
+		long timestamp,
+		boolean bazaar
+	) {
 		String itemName = item.getKey();
 		ItemData existingItemData = null;
 		if (prices.containsKey(itemName)) {
@@ -456,7 +492,8 @@ public class GuiPriceGraph extends GuiScreen {
 
 			BzData bzData = new BzData(
 				item.getValue().getAsJsonObject().get("curr_buy").getAsFloat(),
-				item.getValue().getAsJsonObject().get("curr_sell").getAsFloat());
+				item.getValue().getAsJsonObject().get("curr_sell").getAsFloat()
+			);
 
 			if (existingItemData != null) {
 				existingItemData.bz.put(timestamp, bzData);
@@ -485,7 +522,8 @@ public class GuiPriceGraph extends GuiScreen {
 		else
 			trimmed.ah = new TreeMap<>();
 		int zones = NotEnoughUpdates.INSTANCE.config.ahGraph.graphZones;
-		Long[] dataArray = !itemData.isBz() ? itemData.ah.keySet().toArray(new Long[0]) : itemData.bz.keySet().toArray(new Long[0]);
+		Long[] dataArray =
+			!itemData.isBz() ? itemData.ah.keySet().toArray(new Long[0]) : itemData.bz.keySet().toArray(new Long[0]);
 		int prev = 0;
 		for (int i = 0; i < zones; i++) {
 			long lowest = (long) map(i, 0, zones, first, last);
