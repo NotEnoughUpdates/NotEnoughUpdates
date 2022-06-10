@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.recipes;
 
 import io.github.moulberry.notenoughupdates.NEUManager;
@@ -50,10 +69,10 @@ public class CraftingOverlay {
 	) {
 		forEachSlot(chest, (recipeIngredient, slot) -> {
 			if (Utils.isWithinRect(
-							mouseX, mouseY,
-							slot.xDisplayPosition + ((AccessorGuiContainer) gui).getGuiLeft(),
-							slot.yDisplayPosition + ((AccessorGuiContainer) gui).getGuiTop(),
-							16, 16
+				mouseX, mouseY,
+				slot.xDisplayPosition + ((AccessorGuiContainer) gui).getGuiLeft(),
+				slot.yDisplayPosition + ((AccessorGuiContainer) gui).getGuiTop(),
+				16, 16
 			))
 				block.accept(recipeIngredient, slot);
 		});
@@ -81,9 +100,9 @@ public class CraftingOverlay {
 			if (currentRecipe.getCraftText() != null) {
 				FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 				fontRenderer.drawStringWithShadow(
-								currentRecipe.getCraftText(),
-								Utils.peekGuiScale().getScaledWidth() / 2f - fontRenderer.getStringWidth(currentRecipe.getCraftText()) / 2f,
-								((AccessorGuiContainer) guiChest).getGuiTop() - 15f, 0x808080
+					currentRecipe.getCraftText(),
+					Utils.peekGuiScale().getScaledWidth() / 2f - fontRenderer.getStringWidth(currentRecipe.getCraftText()) / 2f,
+					((AccessorGuiContainer) guiChest).getGuiTop() - 15f, 0x808080
 				);
 			}
 			renderTooltip(guiChest, chest);
@@ -141,8 +160,8 @@ public class CraftingOverlay {
 	}
 
 	private void drawItemStack(GuiChest gui, Slot slot, ItemStack item) {
-		int slotX = slot.xDisplayPosition + ((AccessorGuiContainer)gui).getGuiLeft();
-		int slotY = slot.yDisplayPosition + ((AccessorGuiContainer)gui).getGuiTop();
+		int slotX = slot.xDisplayPosition + ((AccessorGuiContainer) gui).getGuiLeft();
+		int slotY = slot.yDisplayPosition + ((AccessorGuiContainer) gui).getGuiTop();
 		Gui.drawRect(slotX, slotY, slotX + 16, slotY + 16, 0x64ff0000);
 		if (item != null)
 			Utils.drawItemStack(item, slotX, slotY);

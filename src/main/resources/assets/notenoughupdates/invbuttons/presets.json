@@ -1,2739 +1,2739 @@
 {
-   "Empty":[
-      {
-         "x":87,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":108,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":129,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":150,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":87,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":108,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":129,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":150,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":143,
-         "y":35,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":60,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":60,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":2,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      }
-   ],
-   "Empty (Dark)":[
-      {
-         "x":87,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":108,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":129,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":150,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":87,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":108,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":129,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":150,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":143,
-         "y":35,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":60,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":60,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":2,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":1,
-         "command":""
-      }
-   ],
-   "Simple":[
-      {
-         "x":87,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/warp home",
-         "icon":"skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56"
-      },
-      {
-         "x":108,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/warp hub",
-         "icon":"skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8"
-      },
-      {
-         "x":129,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/enderchest",
-         "icon":"ENDER_CHEST"
-      },
-      {
-         "x":150,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/pets",
-         "icon":"extra:pet_gold"
-      },
-      {
-         "x":87,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":108,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":129,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":150,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":143,
-         "y":35,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":60,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":2,
-         "command":"/wardrobe",
-         "icon":"extra:baubles_gold"
-      },
-      {
-         "x":60,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":"BONE"
-      },
-      {
-         "x":2,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      }
-   ],
-   "All Warps":[
-      {
-         "x": 87,
-         "y": 63,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "pets",
-         "icon": "extra:pet_gold"
-      },
-      {
-         "x": 108,
-         "y": 63,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "/wardrobe",
-         "icon": "extra:armor"
-      },
-      {
-         "x": 129,
-         "y": 63,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "/enderchest",
-         "icon": "ENDER_CHEST"
-      },
-      {
-         "x": 150,
-         "y": 63,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "hotm",
-         "icon": "skull:86f06eaa3004aeed09b3d5b45d976de584e691c0e9cade133635de93d23b9edb"
-      },
-      {
-         "x": 87,
-         "y": 5,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "",
-         "icon": "GOLD_BLOCK"
-      },
-      {
-         "x": 108,
-         "y": 5,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 129,
-         "y": 5,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 150,
-         "y": 5,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "/pv",
-         "icon": "PAINTING"
-      },
-      {
-         "x": 87,
-         "y": 25,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 105,
-         "y": 25,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 87,
-         "y": 43,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 105,
-         "y": 43,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 143,
-         "y": 35,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 60,
-         "y": 8,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "",
-         "icon": "extra:baubles_gold"
-      },
-      {
-         "x": 60,
-         "y": 60,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 26,
-         "y": 8,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 26,
-         "y": 60,
-         "playerInvOnly": true,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 2,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "/ah",
-         "icon": "GOLD_BLOCK"
-      },
-      {
-         "x": 2,
-         "y": 22,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "/bz",
-         "icon": "GOLD_BARDING"
-      },
-      {
-         "x": 2,
-         "y": 42,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 2,
-         "y": 62,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": "warp museum",
-         "icon": "skull:438cf3f8e54afc3b3f91d20a49f324dca1486007fe545399055524c17941f4dc"
-      },
-      {
-         "x": 2,
-         "y": -84,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp home",
-         "icon": "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56"
-      },
-      {
-         "x": 2,
-         "y": -64,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp hub",
-         "icon": "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8"
-      },
-      {
-         "x": 2,
-         "y": -44,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp dungeon_hub",
-         "icon": "skull:9b56895b9659896ad647f58599238af532d46db9c1b0389b8bbeb70999dab33d"
-      },
-      {
-         "x": 2,
-         "y": -24,
-         "playerInvOnly": false,
-         "anchorRight": true,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp end",
-         "icon": "skull:7840b87d52271d2a755dedc82877e0ed3df67dcc42ea479ec146176b02779a5"
-      },
-      {
-         "x": 4,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 25,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 46,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 67,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 88,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 109,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 130,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": 151,
-         "y": -19,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": 22,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": 42,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": 62,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": false,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": -84,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": -64,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": ""
-      },
-      {
-         "x": -19,
-         "y": -44,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "warp barn",
-         "icon": "skull:4d3a6bd98ac1833c664c4909ff8d2dc62ce887bdcf3cc5b3848651ae5af6b"
-      },
-      {
-         "x": -19,
-         "y": -24,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "warp desert",
-         "icon": "skull:51539dddf9ed255ece6348193cd75012c82c93aec381f05572cecf7379711b3b"
-      },
-      {
-         "x": 4,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp gold",
-         "icon": "skull:73bc965d579c3c6039f0a17eb7c2e6faf538c7a5de8e60ec7a719360d0a857a9"
-      },
-      {
-         "x": 25,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp deep",
-         "icon": "skull:569a1f114151b4521373f34bc14c2963a5011cdc25a6554c48c708cd96ebfc"
-      },
-      {
-         "x": 46,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp crystals",
-         "icon": "skull:21dbe30b027acbceb612563bd877cd7ebb719ea6ed1399027dcee58bb9049d4a"
-      },
-      {
-         "x": 67,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp forge",
-         "icon": "skull:5cbd9f5ec1ed007259996491e69ff649a3106cf920227b1bb3a71ee7a89863f"
-      },
-      {
-         "x": 88,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp mines",
-         "icon": "skull:6b20b23c1aa2be0270f016b4c90d6ee6b8330a17cfef87869d6ad60b2ffbf3b5"
-      },
-      {
-         "x": 109,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp park",
-         "icon": "skull:a221f813dacee0fef8c59f76894dbb26415478d9ddfc44c2e708a6d3b7549b"
-      },
-      {
-         "x": 130,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp spider",
-         "icon": "skull:9d7e3b19ac4f3dee9c5677c135333b9d35a7f568b63d1ef4ada4b068b5a25"
-      },
-      {
-         "x": 151,
-         "y": 2,
-         "playerInvOnly": false,
-         "anchorRight": false,
-         "anchorBottom": true,
-         "backgroundIndex": 0,
-         "command": "/warp nether",
-         "icon": "skull:c3687e25c632bce8aa61e0d64c24e694c3eea629ea944f4cf30dcfb4fbce071"
-      }
-   ],
-   "More Buttons":[
-      {
-         "x":87,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/sbmenu",
-         "icon":"SKYBLOCK_MENU"
-      },
-      {
-         "x":108,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"enderchest",
-         "icon":"ENDER_CHEST"
-      },
-      {
-         "x":129,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"pets",
-         "icon":"BONE"
-      },
-      {
-         "x":150,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"effects",
-         "icon":"POTION"
-      },
-      {
-         "x":87,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/recipes",
-         "icon":"extra:recipe"
-      },
-      {
-         "x":108,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/collections",
-         "icon":"PAINTING"
-      },
-      {
-         "x":129,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/scg",
-         "icon":"BOOK"
-      },
-      {
-         "x":150,
-         "y":5,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/calendar",
-         "icon":"BOOK_AND_QUILL"
-      },
-      {
-         "x":87,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":"CHEST"
-      },
-      {
-         "x":105,
-         "y":25,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":87,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":105,
-         "y":43,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":143,
-         "y":35,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"craft",
-         "icon":"WORKBENCH"
-      },
-      {
-         "x":60,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":2,
-         "command":"/wardrobe",
-         "icon":"extra:baubles_gold"
-      },
-      {
-         "x":60,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":8,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":26,
-         "y":60,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/warp hub",
-         "icon":"skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8"
-      },
-      {
-         "x":2,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/warp home",
-         "icon":"skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56"
-      },
-      {
-         "x":2,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-         "x":2,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":"BONE"
-      },
-      {
-         "x":2,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":2,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":true,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":-19,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/ah",
-         "icon":"GOLD_BLOCK"
-      },
-      {
-         "x":-19,
-         "y":22,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"/bz",
-         "icon":"GOLD_BARDING"
-      },
-      {
-         "x":-19,
-         "y":42,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":62,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-84,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-64,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-44,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":-19,
-         "y":-24,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":4,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":25,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":46,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":67,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":88,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":109,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":130,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      },
-      {
-         "x":151,
-         "y":2,
-         "playerInvOnly":false,
-         "anchorRight":false,
-         "anchorBottom":true,
-         "backgroundIndex":0,
-         "command":""
-      }
-   ],
-   "Dungeons":[
-      {
-         "x":87,
-         "y":63,
-         "playerInvOnly":true,
-         "anchorRight":false,
-         "anchorBottom":false,
-         "backgroundIndex":0,
-         "command":"",
-         "icon":""
-      },
-      {
-        "x": 108,
-        "y": 63,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "warp dungeon_hub",
-        "icon": "skull:9b56895b9659896ad647f58599238af532d46db9c1b0389b8bbeb70999dab33d"
-      },
-      {
-        "x": 129,
-        "y": 63,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "reparty",
-        "icon": "COMMAND"
-      },
-      {
-        "x": 150,
-        "y": 63,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "pets",
-        "icon": "extra:pet_gold"
-      },
-      {
-        "x": 87,
-        "y": 5,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 108,
-        "y": 5,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 129,
-        "y": 5,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 150,
-        "y": 5,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 87,
-        "y": 25,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 105,
-        "y": 25,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 87,
-        "y": 43,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 105,
-        "y": 43,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 143,
-        "y": 35,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 60,
-        "y": 8,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 2,
-        "command": "/wardrobe",
-        "icon": "extra:baubles_gold"
-      },
-      {
-        "x": 60,
-        "y": 60,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 26,
-        "y": 8,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 26,
-        "y": 60,
-        "playerInvOnly": true,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": 22,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": 42,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": 62,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": -84,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": -64,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": "",
-        "icon": ""
-      },
-      {
-        "x": 2,
-        "y": -44,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 2,
-        "y": -24,
-        "playerInvOnly": false,
-        "anchorRight": true,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 4,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 1",
-        "icon": "DIAMOND_BONZO_HEAD"
-      },
-      {
-        "x": 25,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 2",
-        "icon": "DIAMOND_SCARF_HEAD"
-      },
-      {
-        "x": 46,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 3",
-        "icon": "DIAMOND_PROFESSOR_HEAD"
-      },
-      {
-        "x": 67,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 4",
-        "icon": "DIAMOND_THORN_HEAD"
-      },
-      {
-        "x": 88,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 5",
-        "icon": "DIAMOND_LIVID_HEAD"
-      },
-      {
-        "x": 109,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 6",
-        "icon": "DIAMOND_SADAN_HEAD"
-      },
-      {
-        "x": 130,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon master_catacombs 7",
-        "icon": "DIAMOND_NECRON_HEAD"
-      },
-      {
-        "x": 151,
-        "y": -19,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": -19,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon catacombs 1",
-        "icon": "GOLD_BONZO_HEAD"
-      },
-      {
-        "x": -19,
-        "y": 22,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon catacombs 2",
-        "icon": "GOLD_SCARF_HEAD"
-      },
-      {
-        "x": -19,
-        "y": 42,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon catacombs 3",
-        "icon": "GOLD_PROFESSOR_HEAD"
-      },
-      {
-        "x": -19,
-        "y": 62,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": false,
-        "backgroundIndex": 0,
-        "command": "joindungeon catacombs 4",
-        "icon": "GOLD_THORN_HEAD"
-      },
-      {
-        "x": -19,
-        "y": -84,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": "joindungeon catacombs 5",
-        "icon": "GOLD_LIVID_HEAD"
-      },
-      {
-        "x": -19,
-        "y": -64,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": "/joindungeon catacombs 6",
-        "icon": "GOLD_SADAN_HEAD"
-      },
-      {
-        "x": -19,
-        "y": -44,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": "joindungeon catacombs 7",
-        "icon": "GOLD_NECRON_HEAD"
-      },
-      {
-        "x": -19,
-        "y": -24,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 4,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 25,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 46,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 67,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 88,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 109,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 130,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      },
-      {
-        "x": 151,
-        "y": 2,
-        "playerInvOnly": false,
-        "anchorRight": false,
-        "anchorBottom": true,
-        "backgroundIndex": 0,
-        "command": ""
-      }
-   ]
+  "Empty": [
+    {
+      "x": 87,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 108,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 129,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 150,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 87,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 108,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 129,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 150,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 143,
+      "y": 35,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 60,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 60,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 2,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    }
+  ],
+  "Empty (Dark)": [
+    {
+      "x": 87,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 108,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 129,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 150,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 87,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 108,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 129,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 150,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 143,
+      "y": 35,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 60,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 60,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 2,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 1,
+      "command": ""
+    }
+  ],
+  "Simple": [
+    {
+      "x": 87,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/warp home",
+      "icon": "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56"
+    },
+    {
+      "x": 108,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/warp hub",
+      "icon": "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8"
+    },
+    {
+      "x": 129,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/enderchest",
+      "icon": "ENDER_CHEST"
+    },
+    {
+      "x": 150,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/pets",
+      "icon": "extra:pet_gold"
+    },
+    {
+      "x": 87,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 108,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 129,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 150,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 143,
+      "y": 35,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 60,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 2,
+      "command": "/wardrobe",
+      "icon": "extra:baubles_gold"
+    },
+    {
+      "x": 60,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": "BONE"
+    },
+    {
+      "x": 2,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    }
+  ],
+  "All Warps": [
+    {
+      "x": 87,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "pets",
+      "icon": "extra:pet_gold"
+    },
+    {
+      "x": 108,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/wardrobe",
+      "icon": "extra:armor"
+    },
+    {
+      "x": 129,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/enderchest",
+      "icon": "ENDER_CHEST"
+    },
+    {
+      "x": 150,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "hotm",
+      "icon": "skull:86f06eaa3004aeed09b3d5b45d976de584e691c0e9cade133635de93d23b9edb"
+    },
+    {
+      "x": 87,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": "GOLD_BLOCK"
+    },
+    {
+      "x": 108,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 129,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 150,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/pv",
+      "icon": "PAINTING"
+    },
+    {
+      "x": 87,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 143,
+      "y": 35,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 60,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": "extra:baubles_gold"
+    },
+    {
+      "x": 60,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/ah",
+      "icon": "GOLD_BLOCK"
+    },
+    {
+      "x": 2,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/bz",
+      "icon": "GOLD_BARDING"
+    },
+    {
+      "x": 2,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "warp museum",
+      "icon": "skull:438cf3f8e54afc3b3f91d20a49f324dca1486007fe545399055524c17941f4dc"
+    },
+    {
+      "x": 2,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp home",
+      "icon": "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56"
+    },
+    {
+      "x": 2,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp hub",
+      "icon": "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8"
+    },
+    {
+      "x": 2,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp dungeon_hub",
+      "icon": "skull:9b56895b9659896ad647f58599238af532d46db9c1b0389b8bbeb70999dab33d"
+    },
+    {
+      "x": 2,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp end",
+      "icon": "skull:7840b87d52271d2a755dedc82877e0ed3df67dcc42ea479ec146176b02779a5"
+    },
+    {
+      "x": 4,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "warp barn",
+      "icon": "skull:4d3a6bd98ac1833c664c4909ff8d2dc62ce887bdcf3cc5b3848651ae5af6b"
+    },
+    {
+      "x": -19,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "warp desert",
+      "icon": "skull:51539dddf9ed255ece6348193cd75012c82c93aec381f05572cecf7379711b3b"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp gold",
+      "icon": "skull:73bc965d579c3c6039f0a17eb7c2e6faf538c7a5de8e60ec7a719360d0a857a9"
+    },
+    {
+      "x": 25,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp deep",
+      "icon": "skull:569a1f114151b4521373f34bc14c2963a5011cdc25a6554c48c708cd96ebfc"
+    },
+    {
+      "x": 46,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp crystals",
+      "icon": "skull:21dbe30b027acbceb612563bd877cd7ebb719ea6ed1399027dcee58bb9049d4a"
+    },
+    {
+      "x": 67,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp forge",
+      "icon": "skull:5cbd9f5ec1ed007259996491e69ff649a3106cf920227b1bb3a71ee7a89863f"
+    },
+    {
+      "x": 88,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp mines",
+      "icon": "skull:6b20b23c1aa2be0270f016b4c90d6ee6b8330a17cfef87869d6ad60b2ffbf3b5"
+    },
+    {
+      "x": 109,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp park",
+      "icon": "skull:a221f813dacee0fef8c59f76894dbb26415478d9ddfc44c2e708a6d3b7549b"
+    },
+    {
+      "x": 130,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp spider",
+      "icon": "skull:9d7e3b19ac4f3dee9c5677c135333b9d35a7f568b63d1ef4ada4b068b5a25"
+    },
+    {
+      "x": 151,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/warp nether",
+      "icon": "skull:c3687e25c632bce8aa61e0d64c24e694c3eea629ea944f4cf30dcfb4fbce071"
+    }
+  ],
+  "More Buttons": [
+    {
+      "x": 87,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/sbmenu",
+      "icon": "SKYBLOCK_MENU"
+    },
+    {
+      "x": 108,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "enderchest",
+      "icon": "ENDER_CHEST"
+    },
+    {
+      "x": 129,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "pets",
+      "icon": "BONE"
+    },
+    {
+      "x": 150,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "effects",
+      "icon": "POTION"
+    },
+    {
+      "x": 87,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/recipes",
+      "icon": "extra:recipe"
+    },
+    {
+      "x": 108,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/collections",
+      "icon": "PAINTING"
+    },
+    {
+      "x": 129,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/scg",
+      "icon": "BOOK"
+    },
+    {
+      "x": 150,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/calendar",
+      "icon": "BOOK_AND_QUILL"
+    },
+    {
+      "x": 87,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": "CHEST"
+    },
+    {
+      "x": 105,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 143,
+      "y": 35,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "craft",
+      "icon": "WORKBENCH"
+    },
+    {
+      "x": 60,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 2,
+      "command": "/wardrobe",
+      "icon": "extra:baubles_gold"
+    },
+    {
+      "x": 60,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/warp hub",
+      "icon": "skull:d7cc6687423d0570d556ac53e0676cb563bbdd9717cd8269bdebed6f6d4e7bf8"
+    },
+    {
+      "x": 2,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/warp home",
+      "icon": "skull:c9c8881e42915a9d29bb61a16fb26d059913204d265df5b439b3d792acd56"
+    },
+    {
+      "x": 2,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 2,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": "BONE"
+    },
+    {
+      "x": 2,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/ah",
+      "icon": "GOLD_BLOCK"
+    },
+    {
+      "x": -19,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "/bz",
+      "icon": "GOLD_BARDING"
+    },
+    {
+      "x": -19,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    }
+  ],
+  "Dungeons": [
+    {
+      "x": 87,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 108,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "warp dungeon_hub",
+      "icon": "skull:9b56895b9659896ad647f58599238af532d46db9c1b0389b8bbeb70999dab33d"
+    },
+    {
+      "x": 129,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "reparty",
+      "icon": "COMMAND"
+    },
+    {
+      "x": 150,
+      "y": 63,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "pets",
+      "icon": "extra:pet_gold"
+    },
+    {
+      "x": 87,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 108,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 129,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 150,
+      "y": 5,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 25,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 87,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 105,
+      "y": 43,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 143,
+      "y": 35,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 60,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 2,
+      "command": "/wardrobe",
+      "icon": "extra:baubles_gold"
+    },
+    {
+      "x": 60,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 8,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 26,
+      "y": 60,
+      "playerInvOnly": true,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "",
+      "icon": ""
+    },
+    {
+      "x": 2,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 2,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": true,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 1",
+      "icon": "DIAMOND_BONZO_HEAD"
+    },
+    {
+      "x": 25,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 2",
+      "icon": "DIAMOND_SCARF_HEAD"
+    },
+    {
+      "x": 46,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 3",
+      "icon": "DIAMOND_PROFESSOR_HEAD"
+    },
+    {
+      "x": 67,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 4",
+      "icon": "DIAMOND_THORN_HEAD"
+    },
+    {
+      "x": 88,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 5",
+      "icon": "DIAMOND_LIVID_HEAD"
+    },
+    {
+      "x": 109,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 6",
+      "icon": "DIAMOND_SADAN_HEAD"
+    },
+    {
+      "x": 130,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon master_catacombs 7",
+      "icon": "DIAMOND_NECRON_HEAD"
+    },
+    {
+      "x": 151,
+      "y": -19,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": -19,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon catacombs 1",
+      "icon": "GOLD_BONZO_HEAD"
+    },
+    {
+      "x": -19,
+      "y": 22,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon catacombs 2",
+      "icon": "GOLD_SCARF_HEAD"
+    },
+    {
+      "x": -19,
+      "y": 42,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon catacombs 3",
+      "icon": "GOLD_PROFESSOR_HEAD"
+    },
+    {
+      "x": -19,
+      "y": 62,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": false,
+      "backgroundIndex": 0,
+      "command": "joindungeon catacombs 4",
+      "icon": "GOLD_THORN_HEAD"
+    },
+    {
+      "x": -19,
+      "y": -84,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "joindungeon catacombs 5",
+      "icon": "GOLD_LIVID_HEAD"
+    },
+    {
+      "x": -19,
+      "y": -64,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "/joindungeon catacombs 6",
+      "icon": "GOLD_SADAN_HEAD"
+    },
+    {
+      "x": -19,
+      "y": -44,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": "joindungeon catacombs 7",
+      "icon": "GOLD_NECRON_HEAD"
+    },
+    {
+      "x": -19,
+      "y": -24,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 25,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 46,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 67,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 88,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 109,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 130,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    },
+    {
+      "x": 151,
+      "y": 2,
+      "playerInvOnly": false,
+      "anchorRight": false,
+      "anchorBottom": true,
+      "backgroundIndex": 0,
+      "command": ""
+    }
+  ]
 }

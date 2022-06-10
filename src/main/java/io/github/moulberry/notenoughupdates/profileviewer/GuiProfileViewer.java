@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.common.base.Splitter;
@@ -2921,9 +2940,9 @@ public class GuiProfileViewer extends GuiScreen {
 		for (int i = 0; i < equipmentItems.length; i++) {
 			ItemStack stack = equipmentItems[i];
 			if (stack != null) {
-				Utils.drawItemStack(stack, guiLeft + 193, guiTop + 13 + 18 * i);
+				Utils.drawItemStack(stack, guiLeft + 192, guiTop + 13 + 18 * i);
 				if (stack != fillerStack) {
-					if (mouseX >= guiLeft + 193 - 1 && mouseX <= guiLeft + 193 + 16 + 1) {
+					if (mouseX >= guiLeft + 192 - 1 && mouseX <= guiLeft + 192 + 16 + 1) {
 						if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
 							tooltipToDisplay = stack.getTooltip(
 								Minecraft.getMinecraft().thePlayer,

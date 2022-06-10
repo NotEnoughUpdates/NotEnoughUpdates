@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.overlays;
 
 import com.google.common.base.Splitter;
@@ -25,7 +44,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,7 +59,8 @@ public class AuctionSearchOverlay {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay_tab_completed.png");
 	private static final ResourceLocation STAR = new ResourceLocation("notenoughupdates:auc_search/star.png");
-	private static final ResourceLocation MASTER_STAR = new ResourceLocation("notenoughupdates:auc_search/master_star.png");
+	private static final ResourceLocation MASTER_STAR =
+		new ResourceLocation("notenoughupdates:auc_search/master_star.png");
 	private static final ResourceLocation STAR_BOARD = new ResourceLocation("notenoughupdates:auc_search/star_board.png");
 
 	private static final GuiElementTextField textField = new GuiElementTextField("", 200, 20, 0);
@@ -135,7 +159,12 @@ public class AuctionSearchOverlay {
 		if (selectedStars < 6) Gui.drawRect(width / 2 + 106, topY + 42, width / 2 + 115, topY + 51, 0xffffffff);
 		if (selectedStars < 6) Gui.drawRect(width / 2 + 107, topY + 43, width / 2 + 114, topY + 50, 0xff000000);
 		if (atLeast && selectedStars < 6) Gui.drawRect(width / 2 + 108, topY + 44, width / 2 + 113, topY + 49, 0xffffffff);
-		if (selectedStars < 6) Minecraft.getMinecraft().fontRendererObj.drawString("At Least?", width / 2 + 117, topY + 43, 0xffffff);
+		if (selectedStars < 6) Minecraft.getMinecraft().fontRendererObj.drawString(
+			"At Least?",
+			width / 2 + 117,
+			topY + 43,
+			0xffffff
+		);
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Enter Query:", width / 2 - 100, topY - 10, 0xdddddd, true);
 

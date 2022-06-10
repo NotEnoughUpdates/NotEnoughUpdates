@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.Gson;
@@ -30,7 +49,13 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -546,8 +571,8 @@ public class SlotLocking {
 						);
 					}
 				} else if (pairingSlot != null && lockKeyHeld && slot.getSlotIndex() < 8) {
-					int x1 = ((AccessorGuiContainer)container).getGuiLeft() + pairingSlot.xDisplayPosition;
-					int y1 = ((AccessorGuiContainer)container).getGuiTop() + pairingSlot.yDisplayPosition;
+					int x1 = ((AccessorGuiContainer) container).getGuiLeft() + pairingSlot.xDisplayPosition;
+					int y1 = ((AccessorGuiContainer) container).getGuiTop() + pairingSlot.yDisplayPosition;
 
 					if (mouseX <= x1 || mouseX >= x1 + 16 ||
 						mouseY <= y1 || mouseY >= y1 + 16) {
@@ -635,8 +660,8 @@ public class SlotLocking {
 				int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 				int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-				int x1 = ((AccessorGuiContainer)container).getGuiLeft() + pairingSlot.xDisplayPosition;
-				int y1 = ((AccessorGuiContainer)container).getGuiTop() + pairingSlot.yDisplayPosition;
+				int x1 = ((AccessorGuiContainer) container).getGuiLeft() + pairingSlot.xDisplayPosition;
+				int y1 = ((AccessorGuiContainer) container).getGuiTop() + pairingSlot.yDisplayPosition;
 
 				if (mouseX <= x1 || mouseX >= x1 + 16 ||
 					mouseY <= y1 || mouseY >= y1 + 16) {

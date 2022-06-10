@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.gson.JsonArray;
@@ -33,8 +52,14 @@ import org.lwjgl.opengl.GL14;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +80,8 @@ public class AccessoryBagOverlay {
 		Utils.createItemStack(Items.diamond_sword, EnumChatFormatting.DARK_AQUA + "Total Stat Bonuses",
 			0
 		),
-		Utils.createItemStack(Item.getItemFromBlock(Blocks.anvil),
+		Utils.createItemStack(
+			Item.getItemFromBlock(Blocks.anvil),
 			EnumChatFormatting.DARK_AQUA + "Total Stat Bonuses (from reforges)",
 			0
 		),
@@ -211,7 +237,8 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth("# By Rarity",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"# By Rarity",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 12,
@@ -244,7 +271,8 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth("Total Stats",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Total Stats",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 12,
@@ -291,7 +319,8 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth("Reforge Stats",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Reforge Stats",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 12,
@@ -334,7 +363,8 @@ public class AccessoryBagOverlay {
 		if (duplicates == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				Utils.drawStringCenteredScaledMaxWidth("Duplicates: ERROR",
+				Utils.drawStringCenteredScaledMaxWidth(
+					"Duplicates: ERROR",
 					Minecraft.getMinecraft().fontRendererObj,
 					x + 40,
 					y + 12,
@@ -346,7 +376,8 @@ public class AccessoryBagOverlay {
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				Utils.drawStringCenteredScaledMaxWidth("Duplicates: ERROR",
+				Utils.drawStringCenteredScaledMaxWidth(
+					"Duplicates: ERROR",
 					Minecraft.getMinecraft().fontRendererObj,
 					x + 40,
 					y + 12,
@@ -388,7 +419,8 @@ public class AccessoryBagOverlay {
 			}
 		}
 		if (duplicates.isEmpty()) {
-			Utils.drawStringCenteredScaledMaxWidth("No Duplicates",
+			Utils.drawStringCenteredScaledMaxWidth(
+				"No Duplicates",
 				Minecraft.getMinecraft().fontRendererObj,
 				x + 40,
 				y + 12,
@@ -397,7 +429,8 @@ public class AccessoryBagOverlay {
 				new Color(80, 80, 80).getRGB()
 			);
 		} else {
-			Utils.drawStringCenteredScaledMaxWidth("Duplicates: " + duplicates.size(),
+			Utils.drawStringCenteredScaledMaxWidth(
+				"Duplicates: " + duplicates.size(),
 				Minecraft.getMinecraft().fontRendererObj,
 				x + 40,
 				y + 12,
@@ -432,7 +465,8 @@ public class AccessoryBagOverlay {
 		if (missing == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				Utils.drawStringCenteredScaledMaxWidth("Duplicates: ERROR",
+				Utils.drawStringCenteredScaledMaxWidth(
+					"Duplicates: ERROR",
 					Minecraft.getMinecraft().fontRendererObj,
 					x + 40,
 					y + 12,
@@ -444,7 +478,8 @@ public class AccessoryBagOverlay {
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				Utils.drawStringCenteredScaledMaxWidth("Duplicates: ERROR",
+				Utils.drawStringCenteredScaledMaxWidth(
+					"Duplicates: ERROR",
 					Minecraft.getMinecraft().fontRendererObj,
 					x + 40,
 					y + 12,
@@ -519,7 +554,8 @@ public class AccessoryBagOverlay {
 			}
 		}
 		if (missing.isEmpty()) {
-			Utils.drawStringCenteredScaledMaxWidth("No Missing",
+			Utils.drawStringCenteredScaledMaxWidth(
+				"No Missing",
 				Minecraft.getMinecraft().fontRendererObj,
 				x + 40,
 				y + 12,
@@ -528,7 +564,8 @@ public class AccessoryBagOverlay {
 				new Color(80, 80, 80).getRGB()
 			);
 		} else {
-			Utils.drawStringCenteredScaledMaxWidth("Missing: " + missing.size(),
+			Utils.drawStringCenteredScaledMaxWidth(
+				"Missing: " + missing.size(),
 				Minecraft.getMinecraft().fontRendererObj,
 				x + 40,
 				y + 12,
@@ -653,7 +690,8 @@ public class AccessoryBagOverlay {
 	private static int mainWeapon = 1;
 
 	public static void renderOptimizerOverlay(int x, int y) {
-		Utils.drawStringCenteredScaledMaxWidth("Optimizer",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Optimizer",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 12,
@@ -686,7 +724,8 @@ public class AccessoryBagOverlay {
 			dark
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth("Force 100% CC",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Force 100% CC",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 27,
@@ -698,7 +737,8 @@ public class AccessoryBagOverlay {
 			Minecraft.getMinecraft().fontRendererObj, x + 20, y + 37,
 			true, 30, new Color(80, 80, 80).getRGB()
 		);
-		Utils.drawStringCenteredScaledMaxWidth((forceCC ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
+		Utils.drawStringCenteredScaledMaxWidth(
+			(forceCC ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 60,
 			y + 37,
@@ -707,7 +747,8 @@ public class AccessoryBagOverlay {
 			new Color(80, 80, 80).getRGB()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth("Force 100% ATKSPEED",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Force 100% ATKSPEED",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 47,
@@ -715,7 +756,8 @@ public class AccessoryBagOverlay {
 			70,
 			new Color(80, 80, 80).getRGB()
 		);
-		Utils.drawStringCenteredScaledMaxWidth((forceAS ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
+		Utils.drawStringCenteredScaledMaxWidth(
+			(forceAS ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 20,
 			y + 57,
@@ -723,7 +765,8 @@ public class AccessoryBagOverlay {
 			30,
 			new Color(80, 80, 80).getRGB()
 		);
-		Utils.drawStringCenteredScaledMaxWidth((forceAS ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
+		Utils.drawStringCenteredScaledMaxWidth(
+			(forceAS ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 60,
 			y + 57,
@@ -732,7 +775,8 @@ public class AccessoryBagOverlay {
 			new Color(80, 80, 80).getRGB()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth("Use God Potion",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Use God Potion",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 67,
@@ -740,7 +784,8 @@ public class AccessoryBagOverlay {
 			70,
 			new Color(80, 80, 80).getRGB()
 		);
-		Utils.drawStringCenteredScaledMaxWidth((useGodPot ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
+		Utils.drawStringCenteredScaledMaxWidth(
+			(useGodPot ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 20,
 			y + 77,
@@ -748,7 +793,8 @@ public class AccessoryBagOverlay {
 			30,
 			new Color(80, 80, 80).getRGB()
 		);
-		Utils.drawStringCenteredScaledMaxWidth((useGodPot ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
+		Utils.drawStringCenteredScaledMaxWidth(
+			(useGodPot ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 60,
 			y + 77,
@@ -757,7 +803,8 @@ public class AccessoryBagOverlay {
 			new Color(80, 80, 80).getRGB()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth("Use God Potion",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Use God Potion",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 87,
@@ -774,7 +821,8 @@ public class AccessoryBagOverlay {
 			true, 30, new Color(80, 80, 80).getRGB()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth("Main Weapon",
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Main Weapon",
 			Minecraft.getMinecraft().fontRendererObj,
 			x + 40,
 			y + 107,
@@ -836,7 +884,8 @@ public class AccessoryBagOverlay {
 			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.trim().startsWith("Accessory Bag") && !containerName.contains("Thaumaturgy") && !containerName.contains("Upgrades")) {
+			if (containerName.trim().startsWith("Accessory Bag") && !containerName.contains("Thaumaturgy") &&
+				!containerName.contains("Upgrades")) {
 				inAccessoryBag = true;
 				try {
 					int xSize = (int) Utils.getField(GuiContainer.class, eventGui, "xSize", "field_146999_f");

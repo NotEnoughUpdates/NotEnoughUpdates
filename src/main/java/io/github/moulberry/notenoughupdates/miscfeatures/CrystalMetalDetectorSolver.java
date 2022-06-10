@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -52,56 +71,56 @@ public class CrystalMetalDetectorSolver {
 	private static final String EMERALD_STRING = "emerald";
 	private static final String GOLD_STRING = "gold";
 	private static final HashMap<String, Vec3i> keeperOffsets = new HashMap<String, Vec3i>() {{
-		put(DIAMOND_STRING, new Vec3i(33,0,3));
-		put(LAPIS_STRING, new Vec3i(-33,0,-3));
-		put(EMERALD_STRING, new Vec3i(-3,0,33));
-		put(GOLD_STRING, new Vec3i(3,0,-33));
+		put(DIAMOND_STRING, new Vec3i(33, 0, 3));
+		put(LAPIS_STRING, new Vec3i(-33, 0, -3));
+		put(EMERALD_STRING, new Vec3i(-3, 0, 33));
+		put(GOLD_STRING, new Vec3i(3, 0, -33));
 	}};
 
 	// Chest offsets from center
 	private static final HashSet<Long> knownChestOffsets = new HashSet<>(Arrays.asList(
-		-10171958951910L,	// x=-38, y=-22, z=26
-		10718829084646L,	// x=38, y=-22, z=-26
-		-10721714765806L,	// x=-40, y=-22, z=18
-		-10996458455018L,	// x=-41, y=-20, z=22
-		-1100920913904L,	// x=-5, y=-21, z=16
-		11268584898530L,	// x=40, y=-22, z=-30
-		-11271269253148L,	// x=-42, y=-20, z=-28
-		-11546281377832L,	// x=-43, y=-22, z=-40
-		11818542038999L,	// x=42, y=-19, z=-41
-		12093285728240L,	// x=43, y=-21, z=-16
-		-1409286164L,			// x=-1, y=-22, z=-20
-		1922736062492L,		// x=6, y=-21, z=28
-		2197613969419L,		// x=7, y=-21, z=11
-		2197613969430L,		// x=7, y=-21, z=22
-		-3024999153708L,	// x=-12, y=-21, z=-44
-		3571936395295L,		// x=12, y=-22, z=31
-		3572003504106L,		// x=12, y=-22, z=-22
-		3572003504135L,		// x=12, y=-21, z=7
-		3572070612949L,		// x=12, y=-21, z=-43
-		-3574822076373L,	// x=-14, y=-21, z=43
-		-3574822076394L,	// x=-14, y=-21, z=22
-		-4399455797228L,	// x=-17, y=-21, z=20
-		-5224156626944L,	// x=-20, y=-22, z=0
-		548346527764L,		// x=1, y=-21, z=20
-		5496081743901L,		// x=19, y=-22, z=29
-		5770959650816L,		// x=20, y=-22, z=0
-		5771093868518L,		// x=20, y=-21, z=-26
-		-6048790347736L,	// x=-23, y=-22, z=40
-		6320849682418L,		// x=22, y=-21, z=-14
-		-6323668254708L,	// x=-24, y=-22, z=12
-		6595593371674L,		// x=23, y=-22, z=26
-		6595660480473L,		// x=23, y=-22, z=-39
-		6870471278619L,		// x=24, y=-22, z=27
-		7145349185553L,		// x=25, y=-22, z=17
-		8244995030996L,		// x=29, y=-21, z=-44
-		-8247679385612L,	// x=-31, y=-21, z=-12
-		-8247679385640L,	// x=-31, y=-21, z=-40
-		8519872937959L,		// x=30, y=-21, z=-25
-		-8522557292584L,	// x=-32, y=-21, z=-40
-		-9622068920278L,	// x=-36, y=-20, z=42
-		-9896946827278L,	// x=-37, y=-21, z=-14
-		-9896946827286L		// x=-37, y=-21, z=-22
+		-10171958951910L,  // x=-38, y=-22, z=26
+		10718829084646L,  // x=38, y=-22, z=-26
+		-10721714765806L,  // x=-40, y=-22, z=18
+		-10996458455018L,  // x=-41, y=-20, z=22
+		-1100920913904L,  // x=-5, y=-21, z=16
+		11268584898530L,  // x=40, y=-22, z=-30
+		-11271269253148L,  // x=-42, y=-20, z=-28
+		-11546281377832L,  // x=-43, y=-22, z=-40
+		11818542038999L,  // x=42, y=-19, z=-41
+		12093285728240L,  // x=43, y=-21, z=-16
+		-1409286164L,      // x=-1, y=-22, z=-20
+		1922736062492L,    // x=6, y=-21, z=28
+		2197613969419L,    // x=7, y=-21, z=11
+		2197613969430L,    // x=7, y=-21, z=22
+		-3024999153708L,  // x=-12, y=-21, z=-44
+		3571936395295L,    // x=12, y=-22, z=31
+		3572003504106L,    // x=12, y=-22, z=-22
+		3572003504135L,    // x=12, y=-21, z=7
+		3572070612949L,    // x=12, y=-21, z=-43
+		-3574822076373L,  // x=-14, y=-21, z=43
+		-3574822076394L,  // x=-14, y=-21, z=22
+		-4399455797228L,  // x=-17, y=-21, z=20
+		-5224156626944L,  // x=-20, y=-22, z=0
+		548346527764L,    // x=1, y=-21, z=20
+		5496081743901L,    // x=19, y=-22, z=29
+		5770959650816L,    // x=20, y=-22, z=0
+		5771093868518L,    // x=20, y=-21, z=-26
+		-6048790347736L,  // x=-23, y=-22, z=40
+		6320849682418L,    // x=22, y=-21, z=-14
+		-6323668254708L,  // x=-24, y=-22, z=12
+		6595593371674L,    // x=23, y=-22, z=26
+		6595660480473L,    // x=23, y=-22, z=-39
+		6870471278619L,    // x=24, y=-22, z=27
+		7145349185553L,    // x=25, y=-22, z=17
+		8244995030996L,    // x=29, y=-21, z=-44
+		-8247679385612L,  // x=-31, y=-21, z=-12
+		-8247679385640L,  // x=-31, y=-21, z=-40
+		8519872937959L,    // x=30, y=-21, z=-25
+		-8522557292584L,  // x=-32, y=-21, z=-40
+		-9622068920278L,  // x=-36, y=-20, z=42
+		-9896946827278L,  // x=-37, y=-21, z=-14
+		-9896946827286L    // x=-37, y=-21, z=-22
 	));
 
 	static Predicate<BlockPos> treasureAllowedPredicate = CrystalMetalDetectorSolver::treasureAllowed;
@@ -153,9 +172,11 @@ public class CrystalMetalDetectorSolver {
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Found solution."));
 					if (NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.METAL) &&
 						(previousState == SolutionState.INVALID || previousState == SolutionState.FAILED)) {
-						NEUDebugLogger.log(NEUDebugFlag.METAL,
+						NEUDebugLogger.log(
+							NEUDebugFlag.METAL,
 							EnumChatFormatting.AQUA + "Solution coordinates: " +
-								EnumChatFormatting.WHITE + possibleBlocks.iterator().next().toString());
+								EnumChatFormatting.WHITE + possibleBlocks.iterator().next().toString()
+						);
 					}
 					break;
 				case INVALID:
@@ -184,9 +205,9 @@ public class CrystalMetalDetectorSolver {
 	}
 
 	static void findPossibleSolutions(double distToTreasure, Vec3Comparable playerPos, boolean centerNewlyDiscovered) {
-		if (prevDistToTreasure == distToTreasure &&	prevPlayerPos.equals(playerPos) &&
-				!evaluatedPlayerPositions.containsKey(playerPos)) {
-				evaluatedPlayerPositions.put(playerPos, distToTreasure);
+		if (prevDistToTreasure == distToTreasure && prevPlayerPos.equals(playerPos) &&
+			!evaluatedPlayerPositions.containsKey(playerPos)) {
+			evaluatedPlayerPositions.put(playerPos, distToTreasure);
 			if (possibleBlocks.size() == 0) {
 				for (int zOffset = (int) Math.floor(-distToTreasure); zOffset <= Math.ceil(distToTreasure); zOffset++) {
 					for (int y = 65; y <= 75; y++) {
@@ -259,7 +280,7 @@ public class CrystalMetalDetectorSolver {
 			if (minesCenter != Vec3i.NULL_VECTOR) {
 				BlockPos relativeOffset = blockPos.subtract(minesCenter);
 				sb.append(", Relative: ");
-				sb.append(relativeOffset.toString() );
+				sb.append(relativeOffset.toString());
 				sb.append(" (" + relativeOffset.toLong() + ")");
 			}
 			sb.append("\n");
@@ -296,7 +317,7 @@ public class CrystalMetalDetectorSolver {
 		if (chestFound) {
 			prevPlayerPos = null;
 			prevDistToTreasure = 0;
-		  if (possibleBlocks.size() == 1) {
+			if (possibleBlocks.size() == 1) {
 				openedChestPositions.add(possibleBlocks.iterator().next().getImmutable());
 			}
 		}
@@ -360,11 +381,11 @@ public class CrystalMetalDetectorSolver {
 
 		EntityArmorStand keeperEntity = keeperEntities.get(0);
 		String keeperName = keeperEntity.getCustomNameTag();
-		NEUDebugLogger.log(NEUDebugFlag.METAL,"Locating center using Keeper: " +
+		NEUDebugLogger.log(NEUDebugFlag.METAL, "Locating center using Keeper: " +
 			EnumChatFormatting.WHITE + keeperEntity);
 		String keeperType = keeperName.substring(keeperName.indexOf(KEEPER_OF_STRING) + KEEPER_OF_STRING.length());
-		minesCenter =  keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase()));
-		NEUDebugLogger.log(NEUDebugFlag.METAL,"Mines center: " +
+		minesCenter = keeperEntity.getPosition().add(keeperOffsets.get(keeperType.toLowerCase()));
+		NEUDebugLogger.log(NEUDebugFlag.METAL, "Mines center: " +
 			EnumChatFormatting.WHITE + minesCenter.toString());
 		mc.thePlayer.addChatMessage(new ChatComponentText(
 			EnumChatFormatting.YELLOW + "[NEU] Faster treasure hunting is now enabled based on Keeper location."));
@@ -538,8 +559,7 @@ public class CrystalMetalDetectorSolver {
 			return;
 		}
 
-		if (!NotEnoughUpdates.INSTANCE.config.mining.metalDetectorEnabled)
-		{
+		if (!NotEnoughUpdates.INSTANCE.config.mining.metalDetectorEnabled) {
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 				"[NEU] Metal Detector Solver is not enabled."));
 			return;

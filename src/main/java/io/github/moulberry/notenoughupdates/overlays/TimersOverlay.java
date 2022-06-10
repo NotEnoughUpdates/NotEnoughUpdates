@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -805,6 +824,7 @@ public class TimersOverlay extends TextOverlay {
 	public static int beforePearls = -1;
 	public static int afterPearls = -1;
 	public static int availablePearls = -1;
+
 	public static int heavyPearlCount() {
 		int heavyPearls = 0;
 
@@ -827,12 +847,12 @@ public class TimersOverlay extends TextOverlay {
 	}
 
 	public static void processActionBar(String msg) {
-		if(SBInfo.getInstance().location.equals("Belly of the Beast")) {
+		if (SBInfo.getInstance().location.equals("Belly of the Beast")) {
 			try {
 				msg = Utils.cleanColour(msg);
-				msg = msg.substring(msg.indexOf("Pearls Collected: ")+18);
-				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/")+1));
-			} catch(Exception e) {
+				msg = msg.substring(msg.indexOf("Pearls Collected: ") + 18);
+				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/") + 1));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

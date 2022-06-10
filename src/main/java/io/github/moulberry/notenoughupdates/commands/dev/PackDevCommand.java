@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.commands.dev;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -25,51 +44,66 @@ import java.util.function.Supplier;
 
 public class PackDevCommand extends ClientCommandBase {
 	static Minecraft mc = Minecraft.getMinecraft();
+
 	public PackDevCommand() {
 		super("neupackdev");
 	}
 
 	private static final HashMap<String, Command<?, ?>> commands = new HashMap<String, Command<?, ?>>() {{
-		put("getnpc",
+		put(
+			"getnpc",
 			new Command<>(
 				"NPC",
 				() -> mc.theWorld.playerEntities,
 				true,
 				AbstractClientPlayer.class
-			));
-		put("getnpcs",
+			)
+		);
+		put(
+			"getnpcs",
 			new Command<>(
 				"NPC",
 				() -> mc.theWorld.playerEntities,
 				false,
 				AbstractClientPlayer.class
-			));
-		put("getmob",
+			)
+		);
+		put(
+			"getmob",
 			new Command<>(
 				"mob",
 				() -> mc.theWorld.loadedEntityList,
 				true,
 				EntityLiving.class
-			));
-		put("getmobs",
+			)
+		);
+		put(
+			"getmobs",
 			new Command<>(
 				"mob",
 				() -> mc.theWorld.loadedEntityList,
 				false,
 				EntityLiving.class
-			));
-		put("getarmorstand",
-			new Command<>("armor stand",
+			)
+		);
+		put(
+			"getarmorstand",
+			new Command<>(
+				"armor stand",
 				() -> mc.theWorld.loadedEntityList,
 				true,
 				EntityArmorStand.class
-			));
-		put("getarmorstands",
-			new Command<>("armor stand",
+			)
+		);
+		put(
+			"getarmorstands",
+			new Command<>(
+				"armor stand",
 				() -> mc.theWorld.loadedEntityList,
 				false,
 				EntityArmorStand.class
-			));
+			)
+		);
 	}};
 
 	@Override
@@ -108,7 +142,7 @@ public class PackDevCommand extends ClientCommandBase {
 		StringBuilder output;
 		String subCommand = args[0].toLowerCase();
 		if (commands.containsKey(subCommand)) {
-			Command<?,?> command = commands.get(subCommand);
+			Command<?, ?> command = commands.get(subCommand);
 			output = command.getData(dist);
 		} else if (subCommand.equals("getall")) {
 			output = getAll(dist);
@@ -184,7 +218,7 @@ public class PackDevCommand extends ClientCommandBase {
 				String heldItemString = heldItemTagCompound.toString();
 				NBTBase extraAttrTag = heldItemTagCompound.getTag("ExtraAttributes");
 				entityData
-					.append(heldItemString != null ? heldItemString	: "null")
+					.append(heldItemString != null ? heldItemString : "null")
 					.append("\nItem Tag Compound Extra Attributes: ")
 					.append(extraAttrTag != null ? extraAttrTag : "null");
 			} else {
@@ -201,12 +235,13 @@ public class PackDevCommand extends ClientCommandBase {
 	}
 
 	private static final String[] armorPieceTypes = {"Boots", "Leggings", "Chestplate", "Helmet"};
-	public static <T extends EntityLivingBase> StringBuilder armorDataBuilder (T entity) {
+
+	public static <T extends EntityLivingBase> StringBuilder armorDataBuilder(T entity) {
 		StringBuilder armorData = new StringBuilder();
-		for (int i=0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			ItemStack currentArmor = entity.getCurrentArmor(0);
 			armorData.append(String.format("\n%s: ", armorPieceTypes[i]));
-		 	if (currentArmor == null) {
+			if (currentArmor == null) {
 				armorData.append("null");
 			} else {
 				armorData.append(currentArmor.getTagCompound() != null ? currentArmor.getTagCompound().toString() : "null");
@@ -221,10 +256,12 @@ public class PackDevCommand extends ClientCommandBase {
 		Class<T> clazz;
 		boolean single;
 
-		Command(String typeFriendlyName,
-						Supplier<List<U>> entitySupplier,
-						boolean single,
-						Class<T> clazz) {
+		Command(
+			String typeFriendlyName,
+			Supplier<List<U>> entitySupplier,
+			boolean single,
+			Class<T> clazz
+		) {
 			this.typeFriendlyName = typeFriendlyName;
 			this.entitySupplier = entitySupplier;
 			this.single = single;
@@ -241,8 +278,8 @@ public class PackDevCommand extends ClientCommandBase {
 					continue;
 				}
 				T entityT = (T) entity;
-				double entityDistanceSq = entity.getDistanceSq(mc.thePlayer.posX,	mc.thePlayer.posY, mc.thePlayer.posZ);
-				if (entityDistanceSq <	distSq) {
+				double entityDistanceSq = entity.getDistanceSq(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
+				if (entityDistanceSq < distSq) {
 					if (single) {
 						distSq = entityDistanceSq;
 						closest = entityT;

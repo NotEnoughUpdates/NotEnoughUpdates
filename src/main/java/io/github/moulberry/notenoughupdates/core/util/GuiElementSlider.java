@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.core.util;
 
 import io.github.moulberry.notenoughupdates.core.GuiElement;
@@ -10,7 +29,13 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.function.Consumer;
 
-import static io.github.moulberry.notenoughupdates.util.GuiTextures.*;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_button_new;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_off_cap;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_off_notch;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_off_segment;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_on_cap;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_on_notch;
+import static io.github.moulberry.notenoughupdates.util.GuiTextures.slider_on_segment;
 
 public class GuiElementSlider extends GuiElement {
 	public int x;
