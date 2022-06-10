@@ -190,6 +190,7 @@ public class TrophyFishingPage {
 			clonedList.addAll(internalTrophyFish.keySet());
 			clonedList.removeAll(fixStringName(new ArrayList<>(trophyFishList.keySet())));
 			for (String difference : clonedList) {
+				RenderHelper.enableGUIStandardItemLighting();
 				x.set(
 					guiLeft + slotLocations.get(clonedList.indexOf(difference) + (trophyFishList.keySet().size())).getLeft());
 				y.set(
@@ -257,11 +258,16 @@ public class TrophyFishingPage {
 			}
 			i.set(i.get() + 10);
 		}
+
+		ItemStack fishing_rod = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("FISHING_ROD"));
+
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(fishing_rod, guiLeft + 20, guiTop+21);
+
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Total Caught: §f" + totalCount,
 			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 25,
-			guiTop + 24,
+			guiLeft + 38,
+			guiTop + 25,
 			true,
 			0
 		);
@@ -276,28 +282,36 @@ public class TrophyFishingPage {
 
 		int jawbusKills = 0;
 
+
+
 		if (stats.has("kills_lord_jawbus")) {
 			jawbusKills = stats.getAsJsonObject().get("kills_lord_jawbus").getAsInt();
 		}
+		ItemStack thunder_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("THUNDER_SC"));
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(thunder_sc, guiLeft + 16, guiTop+108);
+
 
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Thunder Kills: §f" + thunderKills,
 			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 18,
-			guiTop + 105,
+			guiLeft + 36,
+			guiTop + 112,
 			true,
 			0
 		);
+
+
+		ItemStack lord_jawbus_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LORD_JAWBUS_SC"));
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(lord_jawbus_sc, guiLeft + 16, guiTop+120);
 
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Lord Jawbus Kills: §f" + jawbusKills,
 			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 18,
-			guiTop + 115,
+			guiLeft + 36,
+			guiTop + 124,
 			true,
 			0
 		);
-
 		GlStateManager.enableLighting();
 	}
 
@@ -310,10 +324,7 @@ public class TrophyFishingPage {
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.DIAMOND, EnumChatFormatting.AQUA));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.GOLD, EnumChatFormatting.GOLD));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.SILVER, EnumChatFormatting.GRAY));
-		tooltip.add(display(
-			trophyFishRarityIntegerMap,
-			TrophyFish.TrophyFishRarity.BRONZE,
-			EnumChatFormatting.DARK_GRAY
+		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.BRONZE, EnumChatFormatting.DARK_GRAY
 		));
 		return tooltip;
 	}
