@@ -1,3 +1,5 @@
+# Contributing
+
 ## Before you contribute
 
 - Please check your feature / bug isn't already fixed in one of our pre-releases or on [the development branch](https://github.com/NotEnoughUpdates/NotEnoughUpdates/tree/master/).
