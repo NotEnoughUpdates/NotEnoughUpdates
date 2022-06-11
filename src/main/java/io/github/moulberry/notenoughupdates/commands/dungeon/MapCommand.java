@@ -52,7 +52,7 @@ public class MapCommand extends ClientCommandBase {
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.RED + "[NEU] The map does not work right now. You can use the map from other mods, for example: SkyblockAddons, DungeonsGuide, Skytils "));
+				EnumChatFormatting.RED + "[NEU] The map does not work right now. You can use the map from other mods, for example: SkyblockAddons, DungeonsGuide, or Skytils "));
 			return;
 		}
 
