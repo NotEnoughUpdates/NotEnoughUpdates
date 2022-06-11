@@ -224,7 +224,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private static int floorTime = 7;
 	private static int guiLeft;
 	private static int guiTop;
-	private static ProfileViewer.Profile profile = null;
+	private static ProfileViewer.Profile profile;
 	private final GuiElementTextField playerNameTextField;
 	private final HashMap<String, ProfileViewer.Level> levelObjCatas = new HashMap<>();
 	private final HashMap<String, ProfileViewer.Level> levelObjhotms = new HashMap<>();
@@ -252,7 +252,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private long lastTime = 0;
 	private long startTime = 0;
 	private List<String> tooltipToDisplay = null;
-	private String profileId = null;
+	private static String profileId = null;
 	private boolean profileDropdownSelected = false;
 	private ItemStack selectedCollectionCategory = null;
 	private int floorLevelTo = -1;
@@ -283,9 +283,10 @@ public class GuiProfileViewer extends GuiScreen {
 	private boolean showBingoPage;
 
 	public GuiProfileViewer(ProfileViewer.Profile profile) {
-		this.profile = profile;
+		GuiProfileViewer.profile = profile;
+		GuiProfileViewer.profileId = profile.getLatestProfile();
 		String name = "";
-		if (profile != null && profile.getHypixelProfile() != null) {
+		if (profile.getHypixelProfile() != null) {
 			name = profile.getHypixelProfile().get("displayname").getAsString();
 		}
 		playerNameTextField = new GuiElementTextField(
@@ -465,6 +466,10 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public static ProfileViewer.Profile getProfile() {
 		return profile;
+	}
+
+	public static String getProfileId() {
+		return profileId;
 	}
 
 	@Override

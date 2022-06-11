@@ -37,7 +37,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -46,8 +45,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TrophyFishingPage {
-
-	// i know i use a lot of maps and lists and pairs don't tell me :)
 
 	public static Map<String, EnumChatFormatting> internalTrophyFish = new HashMap<String, EnumChatFormatting>() {
 		{
@@ -71,9 +68,6 @@ public class TrophyFishingPage {
 			put("steaming_hot_flounder", EnumChatFormatting.WHITE);
 		}
 	};
-
-	//16,48
-	//
 
 	private static LinkedHashMap<ItemStack, Pair<String, Integer>> armorHelmets =
 		new LinkedHashMap<ItemStack, Pair<String, Integer>>() {
@@ -128,8 +122,15 @@ public class TrophyFishingPage {
 	public static void renderPage(int mouseX, int mouseY) {
 		guiLeft = GuiProfileViewer.getGuiLeft();
 		guiTop = GuiProfileViewer.getGuiTop();
-		JsonObject trophyInformation = getTrophyInformation(null);
+		JsonObject trophyInformation = getTrophyInformation();
 		if (trophyInformation == null) {
+			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found",
+				Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + 431 / 2f,
+				guiTop + 101,
+				true,
+				0
+			);
 			return;
 		}
 
@@ -369,18 +370,11 @@ public class TrophyFishingPage {
 		return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonItem);
 	}
 
-	private static JsonObject getTrophyInformation(String profileId) {
+	private static JsonObject getTrophyInformation() {
 		trophyFishList.clear();
 
-		JsonObject trophyFishInformation = GuiProfileViewer.getProfile().getProfileInformation(profileId);
-		if (!trophyFishInformation.has("trophy_fish")) {
-			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found for player",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 431 / 2f,
-				guiTop + 101,
-				true,
-				0
-			);
+		JsonObject trophyFishInformation = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		if (trophyFishInformation == null || !trophyFishInformation.has("trophy_fish")) {
 			return null;
 		}
 		JsonObject trophyObject = trophyFishInformation.get("trophy_fish").getAsJsonObject();
