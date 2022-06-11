@@ -1,3 +1,11 @@
 /src/main/java/io/github/moulberry/notenoughupdates/recipes/* @romangraef
 /src/main/java/io/github/moulberry/notenoughupdates/miscgui/GuiItemRecipe.java @romangraef
 /*gradle* @romangraef
+/README.md @IRONM00N
+/CONTRIBUTING.md @romangraef @IRONM00N
+/.editorconfig @IRONM00N
+/.github/CODE_OF_CONDUCT.md @IRONM00N
+/.github/SECURITY.md @IRONM00N
+/.github/SUPPORT.md @IRONM00N
+/.idea/codeStyles/* @IRONM00N
+/.idea/copyright/* @IRONM00N

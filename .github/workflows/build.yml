@@ -3,20 +3,20 @@ name: Build
 on:
   push:
     branches:
-      - '*'
+      - "*"
     paths-ignore:
-      - 'README.md'
-      - 'LICENSE.md'
-      - 'LICENSE-GPLv3.md'
-      - '.gitignore'
+      - "README.md"
+      - "COPYING"
+      - "COPYING.LESSER"
+      - ".gitignore"
   pull_request:
     branches:
-      - '*'
+      - "*"
     paths-ignore:
-      - 'README.md'
-      - 'LICENSE.md'
-      - 'LICENSE-GPLv3.md'
-      - '.gitignore'
+      - "README.md"
+      - "COPYING"
+      - "COPYING.LESSER"
+      - ".gitignore"
   workflow_dispatch:
 jobs:
   build:
@@ -28,36 +28,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Send discord notification
-      id: sendmsg
-      if: ${{ env.WEBHOOK_URL }}
-      run: |
-        ./.github/workflows/send_webhook_update.sh
-      env:
-        STATUS: WORKING
-    - name: Set up JDK 17
-      uses: actions/setup-java@v2
-      with:
-        java-version: 17
-        distribution: temurin
-        cache: gradle
-    - name: Build with Gradle
-      run: chmod +x ./gradlew && ./gradlew clean test remapJar --no-daemon
-    - uses: actions/upload-artifact@v2
-      with:
-        path: build/libs/*-dep.jar
-    - name: Update discord notification
-      if: ${{ env.WEBHOOK_URL && success() }}
-      run: |
-        ./.github/workflows/send_webhook_update.sh
-      env:
-        STATUS: SUCCESS
-        MESSAGE_ID: ${{ steps.sendmsg.outputs.MESSAGE_ID }}
-    - name: Update discord notification
-      if: ${{ env.WEBHOOK_URL && failure() }}
-      run: |
-        ./.github/workflows/send_webhook_update.sh
-      env:
-        STATUS: FAILURE
-        MESSAGE_ID: ${{ steps.sendmsg.outputs.MESSAGE_ID }}
+      - uses: actions/checkout@v2
+      - name: Send discord notification
+        id: sendmsg
+        if: ${{ env.WEBHOOK_URL }}
+        run: |
+          ./.github/workflows/send_webhook_update.sh
+        env:
+          STATUS: WORKING
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: gradle
+      - name: Build with Gradle
+        run: chmod +x ./gradlew && ./gradlew clean test remapJar --no-daemon
+      - uses: actions/upload-artifact@v2
+        with:
+          path: build/libs/*-dep.jar
+      - name: Update discord notification
+        if: ${{ env.WEBHOOK_URL && success() }}
+        run: |
+          ./.github/workflows/send_webhook_update.sh
+        env:
+          STATUS: SUCCESS
+          MESSAGE_ID: ${{ steps.sendmsg.outputs.MESSAGE_ID }}
+      - name: Update discord notification
+        if: ${{ env.WEBHOOK_URL && failure() }}
+        run: |
+          ./.github/workflows/send_webhook_update.sh
+        env:
+          STATUS: FAILURE
+          MESSAGE_ID: ${{ steps.sendmsg.outputs.MESSAGE_ID }}

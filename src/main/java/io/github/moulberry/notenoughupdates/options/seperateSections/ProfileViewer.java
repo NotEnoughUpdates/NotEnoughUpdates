@@ -20,11 +20,7 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.annotations.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,10 +67,11 @@ public class ProfileViewer {
 			"\u00a7ePets",
 			"\u00a7eMining",
 			"\u00a7eBingo",
+			"\u00a7eTrophy Fish",
 		},
 		allowDeleting = false
 	)
-	public List<Integer> pageLayout = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
+	public List<Integer> pageLayout = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 
 	@Expose
 	@ConfigOption(
