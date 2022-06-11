@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.core.util.Vec3Comparable;
@@ -17,7 +36,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver.*;
+import static io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver.ALL_PARTICLES_MAX_MILLIS;
+import static io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver.Crystal;
+import static io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver.HollowsZone;
+import static io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver.getInstance;
 
 class CrystalWishingCompassSolverTest {
 	private static final CrystalWishingCompassSolver solver = getInstance();
@@ -51,7 +73,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(754.333618, 138.527710, 239.197800), 55)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.NEED_SECOND_COMPASS);
+		SolverState.NEED_SECOND_COMPASS
+	);
 
 	private final CompassUse minesOfDivanCompassUse2 = new CompassUse(
 		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
@@ -80,7 +103,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(759.636658, 135.522827, 266.186371), 0)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.SOLVED);
+		SolverState.SOLVED
+	);
 
 	Vec3i minesOfDivanSolution = new Vec3i(735, 98, 451);
 
@@ -110,7 +134,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(454.183441, 88.616600, 775.803040), 54)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.NEED_SECOND_COMPASS);
+		SolverState.NEED_SECOND_COMPASS
+	);
 
 	private final CompassUse goblinHoldoutCompassUse2 = new CompassUse(
 		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
@@ -139,7 +164,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(439.108551, 86.620811, 776.031067), 0)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.SOLVED);
+		SolverState.SOLVED
+	);
 
 	Vec3i goblinHoldoutKingSolution = new Vec3i(377, 87, 550);
 	Vec3i goblinHoldoutQueenSolution = new Vec3i(322, 139, 769);
@@ -171,7 +197,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(570.372192, 121.631874, 565.694946), 0)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.NEED_SECOND_COMPASS);
+		SolverState.NEED_SECOND_COMPASS
+	);
 
 	private final CompassUse precursorCityCompassUse2 = new CompassUse(
 		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
@@ -200,7 +227,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(590.766357, 137.556885, 579.791565), 0)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.SOLVED);
+		SolverState.SOLVED
+	);
 
 	Vec3i precursorCitySolution = new Vec3i(604, 124, 681);
 
@@ -231,7 +259,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(453.975647, 122.920158, 458.668488), 0)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.NEED_SECOND_COMPASS);
+		SolverState.NEED_SECOND_COMPASS
+	);
 
 	private final CompassUse jungleCompassUse2 = new CompassUse(
 		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
@@ -260,13 +289,15 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(437.732666, 127.385803, 467.381592), 1)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.SOLVED);
+		SolverState.SOLVED
+	);
 
 	Vec3i jungleSolution = new Vec3i(343, 72, 424);
 	Vec3i jungleSolutionTempleDoor = new Vec3i(
 		jungleSolution.getX() - 57,
 		jungleSolution.getY() + 36,
-		jungleSolution.getZ() -21);
+		jungleSolution.getZ() - 21
+	);
 
 	private final CompassUse magmaCompassUse1 = new CompassUse(
 		1647745029814L,
@@ -295,7 +326,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(462.221954, 59.614719, 550.019165), 0)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.NEED_SECOND_COMPASS);
+		SolverState.NEED_SECOND_COMPASS
+	);
 
 	private final CompassUse magmaCompassUse2 = new CompassUse(
 		DELAY_AFTER_FIRST_COMPASS_LAST_PARTICLE,
@@ -323,7 +355,8 @@ class CrystalWishingCompassSolverTest {
 			new ParticleSpawn(new Vec3Comparable(449.110443, 54.623035, 556.079163), 49)
 		)),
 		HandleCompassResult.SUCCESS,
-		SolverState.SOLVED);
+		SolverState.SOLVED
+	);
 
 	Vec3i magmaSolution = new Vec3i(737, 56, 444);
 
@@ -336,7 +369,8 @@ class CrystalWishingCompassSolverTest {
 		new BlockPos(512, 106, 512),
 		null,
 		HandleCompassResult.PLAYER_IN_NUCLEUS,
-		SolverState.NOT_STARTED);
+		SolverState.NOT_STARTED
+	);
 
 	private void resetSolverState() {
 		solver.initWorld();
@@ -351,7 +385,7 @@ class CrystalWishingCompassSolverTest {
 
 	@BeforeEach
 	void setUp() {
-		NEUDebugLogger.logMethod = 	CrystalWishingCompassSolverTest::neuDebugLog;
+		NEUDebugLogger.logMethod = CrystalWishingCompassSolverTest::neuDebugLog;
 		NEUDebugLogger.allFlagsEnabled = true;
 		resetSolverState();
 	}
@@ -361,9 +395,11 @@ class CrystalWishingCompassSolverTest {
 		for (CompassUse compassUse : solution.compassUses) {
 			systemTimeMillis += compassUse.timeIncrementMillis;
 			HandleCompassResult handleCompassResult = solver.handleCompassUse(compassUse.playerPos);
-			Assertions.assertEquals(compassUse.expectedHandleCompassUseResult,
+			Assertions.assertEquals(
+				compassUse.expectedHandleCompassUseResult,
 				handleCompassResult,
-				"CompassUse index " + index);
+				"CompassUse index " + index
+			);
 
 			for (ParticleSpawn particle : compassUse.particles) {
 				systemTimeMillis += particle.timeIncrementMillis;
@@ -371,15 +407,20 @@ class CrystalWishingCompassSolverTest {
 					particle.spawnLocation.xCoord,
 					particle.spawnLocation.yCoord,
 					particle.spawnLocation.zCoord,
-					systemTimeMillis);
+					systemTimeMillis
+				);
 			}
 
-			Assertions.assertEquals(compassUse.expectedSolverState,
+			Assertions.assertEquals(
+				compassUse.expectedSolverState,
 				solver.getSolverState(),
-				"CompassUse index " + index);
+				"CompassUse index " + index
+			);
 			if (compassUse.expectedSolverState == SolverState.SOLVED) {
-				Assertions.assertEquals(solution.expectedSolutionCoords,
-					solver.getSolutionCoords());
+				Assertions.assertEquals(
+					solution.expectedSolutionCoords,
+					solver.getSolutionCoords()
+				);
 			}
 
 			index++;
@@ -395,7 +436,8 @@ class CrystalWishingCompassSolverTest {
 
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(compassUse)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -409,7 +451,8 @@ class CrystalWishingCompassSolverTest {
 		processingFirstUseCompassUse.expectedSolverState = SolverState.PROCESSING_FIRST_USE;
 		Solution processingFirstUseSolution = new Solution(
 			new ArrayList<>(Collections.singletonList(processingFirstUseCompassUse)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 		checkSolution(processingFirstUseSolution);
 		Assertions.assertEquals(SolverState.PROCESSING_FIRST_USE, solver.getSolverState());
 
@@ -419,7 +462,8 @@ class CrystalWishingCompassSolverTest {
 		resetStateCompassUse.expectedSolverState = SolverState.FAILED_TIMEOUT_NO_REPEATING;
 		Solution goodSolution = new Solution(
 			new ArrayList<>(Collections.singletonList(resetStateCompassUse)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(goodSolution);
@@ -430,7 +474,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(minesOfDivanCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -441,7 +486,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(nucleusCompass)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -457,7 +503,8 @@ class CrystalWishingCompassSolverTest {
 				new ParticleSpawn(new Vec3Comparable(754.358459, 138.536407, 239.200928), 137)
 			)),
 			HandleCompassResult.SUCCESS,
-			SolverState.PROCESSING_FIRST_USE);
+			SolverState.PROCESSING_FIRST_USE
+		);
 
 		// STILL_PROCESSING_FIRST_USE is expected instead of LOCATION_TOO_CLOSE since the solver
 		// isn't ready for the second compass use, which includes the location check
@@ -467,7 +514,8 @@ class CrystalWishingCompassSolverTest {
 
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(compassUse1, compassUse2)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -477,13 +525,14 @@ class CrystalWishingCompassSolverTest {
 	void missing_repeating_particles_sets_state_to_failed_timeout_no_repeating() {
 		// Arrange
 		CompassUse compassUse = new CompassUse(minesOfDivanCompassUse1);
-		compassUse.particles.remove(compassUse.particles.size()-1);
-		compassUse.particles.get(compassUse.particles.size()-1).timeIncrementMillis += ALL_PARTICLES_MAX_MILLIS;
+		compassUse.particles.remove(compassUse.particles.size() - 1);
+		compassUse.particles.get(compassUse.particles.size() - 1).timeIncrementMillis += ALL_PARTICLES_MAX_MILLIS;
 		compassUse.expectedSolverState = SolverState.FAILED_TIMEOUT_NO_REPEATING;
 
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(compassUse)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -498,11 +547,12 @@ class CrystalWishingCompassSolverTest {
 			null,
 			HandleCompassResult.LOCATION_TOO_CLOSE,
 			SolverState.NEED_SECOND_COMPASS
-			);
+		);
 
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(minesOfDivanCompassUse1, secondCompassUse)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -557,7 +607,7 @@ class CrystalWishingCompassSolverTest {
 
 		// reverse the direction of the particles, moving the repeat particle
 		// to "new" end
-		compassUse2.particles.remove(compassUse2.particles.size()-1);
+		compassUse2.particles.remove(compassUse2.particles.size() - 1);
 		Collections.reverse(compassUse2.particles);
 		// add a new repeat particle
 		compassUse2.particles.add(new ParticleSpawn(compassUse2.particles.get(0)));
@@ -567,7 +617,8 @@ class CrystalWishingCompassSolverTest {
 		compassUse2.expectedSolverState = SolverState.FAILED_INVALID_SOLUTION;
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(minesOfDivanCompassUse1, compassUse2)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -584,7 +635,7 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		CompassUse compassUse1 = new CompassUse(minesOfDivanCompassUse1);
 		CompassUse compassUse2 = new CompassUse(minesOfDivanCompassUse2);
-		double invalidYOffset = -(minesOfDivanSolution.getY() - (CH_LOWEST_VALID_Y -1));
+		double invalidYOffset = -(minesOfDivanSolution.getY() - (CH_LOWEST_VALID_Y - 1));
 		Vec3 offset = new Vec3(0.0, invalidYOffset, 0.0);
 
 		compassUse1.playerPos = compassUse1.playerPos.add(offset.xCoord, offset.yCoord, offset.zCoord);
@@ -600,7 +651,8 @@ class CrystalWishingCompassSolverTest {
 
 		Solution solution = new Solution(
 			new ArrayList<>(Arrays.asList(compassUse1, compassUse2)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -646,7 +698,8 @@ class CrystalWishingCompassSolverTest {
 		compassUse.particles.get(2).spawnLocation.addVector(100.0, 100.0, 100.0);
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(minesOfDivanCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act & Assert
 		checkSolution(solution);
@@ -657,7 +710,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(goblinHoldoutCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 		solver.kingsScentPresent = () -> true;
 
 		// Act
@@ -674,7 +728,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(goblinHoldoutCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 		solver.kingsScentPresent = () -> false;
 
 		// Act
@@ -691,7 +746,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(jungleCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 		solver.keyInInventory = () -> true;
 
 		// Act
@@ -708,7 +764,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(jungleCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 		solver.keyInInventory = () -> false;
 
 		// Act
@@ -725,7 +782,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(precursorCityCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 		solver.foundCrystals = () -> EnumSet.noneOf(Crystal.class);
 		solver.keyInInventory = () -> false;
 		solver.kingsScentPresent = () -> false;
@@ -747,14 +805,16 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	private void CheckExcludedTargetsForCrystals(
-			CompassUse compassUseToExecute,
-			ArrayList<CompassTarget> excludedTargets,
-			EnumSet<Crystal> foundCrystals) {
+		CompassUse compassUseToExecute,
+		ArrayList<CompassTarget> excludedTargets,
+		EnumSet<Crystal> foundCrystals
+	) {
 		// Arrange
 		EnumSet<CompassTarget> targets;
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(compassUseToExecute)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act
 		checkSolution(solution);
@@ -796,7 +856,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		ArrayList<CompassTarget> excludedTargets = new ArrayList<>(Arrays.asList(
 			CompassTarget.ODAWA,
-			CompassTarget.JUNGLE_TEMPLE));
+			CompassTarget.JUNGLE_TEMPLE
+		));
 
 		// Act & Assert
 		CheckExcludedTargetsForCrystals(jungleCompassUse1, excludedTargets, EnumSet.of(Crystal.AMETHYST));
@@ -837,7 +898,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(minesOfDivanCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act
 		checkSolution(solution);
@@ -855,12 +917,13 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(minesOfDivanCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act
 		checkSolution(solution);
 		systemTimeMillis += minesOfDivanCompassUse2.timeIncrementMillis;
-		BlockPos newLocation = minesOfDivanCompassUse2.playerPos.add(-400, 0 ,0);
+		BlockPos newLocation = minesOfDivanCompassUse2.playerPos.add(-400, 0, 0);
 		HandleCompassResult handleCompassResult = solver.handleCompassUse(newLocation);
 
 		// Assert
@@ -873,7 +936,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(jungleCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act
 		solver.keyInInventory = () -> false;
@@ -892,7 +956,8 @@ class CrystalWishingCompassSolverTest {
 		// Arrange
 		Solution solution = new Solution(
 			new ArrayList<>(Collections.singletonList(goblinHoldoutCompassUse1)),
-			Vec3i.NULL_VECTOR);
+			Vec3i.NULL_VECTOR
+		);
 
 		// Act
 		solver.kingsScentPresent = () -> false;
@@ -980,17 +1045,19 @@ class CrystalWishingCompassSolverTest {
 	}
 
 	EnumSet<CompassTarget> GetSolutionTargetsHelper(
-			HollowsZone compassUsedZone,
-			EnumSet<Crystal> foundCrystals,
-			EnumSet<CompassTarget> possibleTargets,
-			Vec3Comparable solutionCoords,
-			int expectedSolutionCount) {
+		HollowsZone compassUsedZone,
+		EnumSet<Crystal> foundCrystals,
+		EnumSet<CompassTarget> possibleTargets,
+		Vec3Comparable solutionCoords,
+		int expectedSolutionCount
+	) {
 		EnumSet<CompassTarget> solutionTargets =
 			CrystalWishingCompassSolver.getSolutionTargets(
 				compassUsedZone,
 				foundCrystals,
 				possibleTargets,
-				solutionCoords);
+				solutionCoords
+			);
 		Assertions.assertEquals(expectedSolutionCount, solutionTargets.size());
 		return solutionTargets;
 	}
@@ -1003,7 +1070,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			EnumSet.allOf(CompassTarget.class),
 			new Vec3Comparable(minesOfDivanSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertFalse(solutionTargets.contains(CompassTarget.CRYSTAL_NUCLEUS));
@@ -1021,7 +1089,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.of(Crystal.AMBER),
 			possibleTargets,
 			new Vec3Comparable(202, 72, 513), // upper left of Goblin Holdout
-			2);
+			2
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.JUNGLE_TEMPLE));
@@ -1036,7 +1105,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			EnumSet.allOf(CompassTarget.class),
 			kingOdawaMinesOrNucleusCoordsInRemnants,
-			3);
+			3
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_KING));
@@ -1057,7 +1127,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			queenKingOdawaOrCityNucleusCoordsInMithrilDeposits,
-			2);
+			2
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_QUEEN));
@@ -1067,7 +1138,7 @@ class CrystalWishingCompassSolverTest {
 	@Test
 	void solutionPossibleTargets_excludes_jungle_temple_from_other_zone_when_not_overlapping() {
 		// Arrange
-		Vec3Comparable notOverlapping = new Vec3Comparable(202, 72, 513+110); // upper left of Goblin Holdout
+		Vec3Comparable notOverlapping = new Vec3Comparable(202, 72, 513 + 110); // upper left of Goblin Holdout
 		EnumSet<CompassTarget> possibleTargets = EnumSet.allOf(CompassTarget.class);
 		possibleTargets.remove(CompassTarget.ODAWA);
 
@@ -1077,7 +1148,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.of(Crystal.AMBER),
 			possibleTargets,
 			notOverlapping,
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.BAL));
@@ -1094,7 +1166,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			EnumSet.allOf(CompassTarget.class),
 			notOverlapping,
-			0);
+			0
+		);
 	}
 
 	@Test
@@ -1111,7 +1184,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			notOverlapping,
-			0);
+			0
+		);
 	}
 
 	@Test
@@ -1126,7 +1200,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(goblinHoldoutKingSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_KING));
@@ -1144,7 +1219,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(odawaSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.ODAWA));
@@ -1162,7 +1238,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(minesOfDivanSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.MINES_OF_DIVAN));
@@ -1182,7 +1259,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(jungleSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.JUNGLE_TEMPLE));
@@ -1201,7 +1279,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(goblinHoldoutQueenSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.GOBLIN_QUEEN));
@@ -1219,7 +1298,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			possibleTargets,
 			new Vec3Comparable(precursorCitySolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.PRECURSOR_CITY));
@@ -1233,7 +1313,8 @@ class CrystalWishingCompassSolverTest {
 			EnumSet.noneOf(Crystal.class),
 			EnumSet.allOf(CompassTarget.class),
 			new Vec3Comparable(magmaSolution),
-			1);
+			1
+		);
 
 		// Assert
 		Assertions.assertTrue(solutionTargets.contains(CompassTarget.BAL));
@@ -1269,11 +1350,13 @@ class CrystalWishingCompassSolverTest {
 		HandleCompassResult expectedHandleCompassUseResult;
 		SolverState expectedSolverState;
 
-		CompassUse(long timeIncrementMillis,
-							 BlockPos playerPos,
-							 ArrayList<ParticleSpawn> particles,
-							 HandleCompassResult expectedHandleCompassUseResult,
-							 SolverState expectedState) {
+		CompassUse(
+			long timeIncrementMillis,
+			BlockPos playerPos,
+			ArrayList<ParticleSpawn> particles,
+			HandleCompassResult expectedHandleCompassUseResult,
+			SolverState expectedState
+		) {
 			this.timeIncrementMillis = timeIncrementMillis;
 			this.playerPos = playerPos;
 			this.particles = particles != null ? particles : new ArrayList<>();
@@ -1296,7 +1379,11 @@ class CrystalWishingCompassSolverTest {
 
 		Solution(ArrayList<CompassUse> compassUses, Vec3i expectedSolutionCoords) {
 			this.compassUses = compassUses;
-			this.expectedSolutionCoords = new Vec3i(expectedSolutionCoords.getX(), expectedSolutionCoords.getY(), expectedSolutionCoords.getZ());
+			this.expectedSolutionCoords = new Vec3i(
+				expectedSolutionCoords.getX(),
+				expectedSolutionCoords.getY(),
+				expectedSolutionCoords.getZ()
+			);
 		}
 	}
 

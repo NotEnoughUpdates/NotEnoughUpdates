@@ -1,49 +1,49 @@
 {
   "entity": "Player",
   "modifiers": [
-	{
-	  "type": "playerdata",
-	  "skin": "notenoughupdates:dreamskin.png"
-	},
-	{
-	  "type": "riding",
-	  "entity": "ArmorStand",
-	  "modifiers": [
-		{
-		  "type": "age",
-		  "baby": true
-		},
-		{
-		  "type": "riding",
-		  "entity": "Zombie",
-		  "modifiers": [
-			{
-			  "type": "equipment",
-			  "hand": "BOW",
-			  "feet": "DIAMOND_BOOTS"
-			},
-			{
-			  "type": "age",
-			  "baby": true
-			},
-			{
-			  "type": "riding",
-			  "entity": "Sheep",
-			  "modifiers": [
-				{
-				  "type": "age",
-				  "baby": true
-				}
-			  ]
-			}
-		  ]
-		}
-	  ]
-	},
-	{
-	  "type": "equipment",
-	  "hand": "DIAMOND_SWORD",
-	  "feet": "DIAMOND_BOOTS"
-	}
+    {
+      "type": "playerdata",
+      "skin": "notenoughupdates:dreamskin.png"
+    },
+    {
+      "type": "riding",
+      "entity": "ArmorStand",
+      "modifiers": [
+        {
+          "type": "age",
+          "baby": true
+        },
+        {
+          "type": "riding",
+          "entity": "Zombie",
+          "modifiers": [
+            {
+              "type": "equipment",
+              "hand": "BOW",
+              "feet": "DIAMOND_BOOTS"
+            },
+            {
+              "type": "age",
+              "baby": true
+            },
+            {
+              "type": "riding",
+              "entity": "Sheep",
+              "modifiers": [
+                {
+                  "type": "age",
+                  "baby": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "equipment",
+      "hand": "DIAMOND_SWORD",
+      "feet": "DIAMOND_BOOTS"
+    }
   ]
 }

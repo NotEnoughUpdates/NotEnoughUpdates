@@ -1,11 +1,41 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.commands;
 
-import io.github.moulberry.notenoughupdates.commands.dev.*;
+import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.NullzeeSphereCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.ReloadRepoCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.ResetRepoCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.StatsCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DhCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DnCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.JoinDungeonCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.MapCommand;
-import io.github.moulberry.notenoughupdates.commands.help.*;
+import io.github.moulberry.notenoughupdates.commands.help.FeaturesCommand;
+import io.github.moulberry.notenoughupdates.commands.help.HelpCommand;
+import io.github.moulberry.notenoughupdates.commands.help.LinksCommand;
+import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
+import io.github.moulberry.notenoughupdates.commands.help.StorageViewerWhyCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.AhCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CosmeticsCommand;

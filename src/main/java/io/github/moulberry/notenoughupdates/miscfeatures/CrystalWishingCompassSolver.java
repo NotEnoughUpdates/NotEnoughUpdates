@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -74,6 +93,7 @@ public class CrystalWishingCompassSolver {
 	}
 
 	private static final CrystalWishingCompassSolver INSTANCE = new CrystalWishingCompassSolver();
+
 	public static CrystalWishingCompassSolver getInstance() {
 		return INSTANCE;
 	}
@@ -118,9 +138,11 @@ public class CrystalWishingCompassSolver {
 	public LongSupplier currentTimeMillis = System::currentTimeMillis;
 	public BooleanSupplier kingsScentPresent = this::isKingsScentPresent;
 	public BooleanSupplier keyInInventory = this::isKeyInInventory;
+
 	public interface CrystalEnumSetSupplier {
 		EnumSet<Crystal> getAsCrystalEnumSet();
 	}
+
 	public CrystalEnumSetSupplier foundCrystals = this::getFoundCrystals;
 
 	private SolverState solverState;
@@ -159,7 +181,7 @@ public class CrystalWishingCompassSolver {
 	}
 
 	private void resetForNewTarget() {
-		NEUDebugLogger.log(NEUDebugFlag.WISHING,"Resetting for new target");
+		NEUDebugLogger.log(NEUDebugFlag.WISHING, "Resetting for new target");
 		solverState = SolverState.NOT_STARTED;
 		firstCompass = null;
 		secondCompass = null;
@@ -188,7 +210,7 @@ public class CrystalWishingCompassSolver {
 			event.entityPlayer != mc.thePlayer ||
 			(event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR &&
 				event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)
-			) {
+		) {
 			return;
 		}
 
@@ -248,57 +270,57 @@ public class CrystalWishingCompassSolver {
 	public HandleCompassResult handleCompassUse(BlockPos playerPos) {
 		long lastCompassUsedMillis = 0;
 		switch (solverState) {
-				case PROCESSING_SECOND_USE:
-					if (secondCompass != null) {
-						lastCompassUsedMillis = secondCompass.whenUsedMillis;
-					}
-				case PROCESSING_FIRST_USE:
-					if (lastCompassUsedMillis == 0 && firstCompass != null) {
-						lastCompassUsedMillis = firstCompass.whenUsedMillis;
-					}
-					if (lastCompassUsedMillis != 0 &&
-						(currentTimeMillis.getAsLong() > lastCompassUsedMillis + ALL_PARTICLES_MAX_MILLIS)) {
-						return HandleCompassResult.NO_PARTICLES_FOR_PREVIOUS_COMPASS;
-					}
+			case PROCESSING_SECOND_USE:
+				if (secondCompass != null) {
+					lastCompassUsedMillis = secondCompass.whenUsedMillis;
+				}
+			case PROCESSING_FIRST_USE:
+				if (lastCompassUsedMillis == 0 && firstCompass != null) {
+					lastCompassUsedMillis = firstCompass.whenUsedMillis;
+				}
+				if (lastCompassUsedMillis != 0 &&
+					(currentTimeMillis.getAsLong() > lastCompassUsedMillis + ALL_PARTICLES_MAX_MILLIS)) {
+					return HandleCompassResult.NO_PARTICLES_FOR_PREVIOUS_COMPASS;
+				}
 
-					return HandleCompassResult.STILL_PROCESSING_PRIOR_USE;
-				case SOLVED:
-				case FAILED_EXCEPTION:
-				case FAILED_TIMEOUT_NO_REPEATING:
-				case FAILED_TIMEOUT_NO_PARTICLES:
-				case FAILED_INTERSECTION_CALCULATION:
-				case FAILED_INVALID_SOLUTION:
+				return HandleCompassResult.STILL_PROCESSING_PRIOR_USE;
+			case SOLVED:
+			case FAILED_EXCEPTION:
+			case FAILED_TIMEOUT_NO_REPEATING:
+			case FAILED_TIMEOUT_NO_PARTICLES:
+			case FAILED_INTERSECTION_CALCULATION:
+			case FAILED_INVALID_SOLUTION:
+				resetForNewTarget();
+				// falls through, NOT_STARTED is the state when resetForNewTarget returns
+			case NOT_STARTED:
+				if (NUCLEUS_BB.isVecInside(new Vec3Comparable(playerPos.getX(), playerPos.getY(), playerPos.getZ()))) {
+					return HandleCompassResult.PLAYER_IN_NUCLEUS;
+				}
+
+				firstCompass = new Compass(playerPos, currentTimeMillis.getAsLong());
+				seenParticles.clear();
+				solverState = SolverState.PROCESSING_FIRST_USE;
+				possibleTargets = calculatePossibleTargets(playerPos);
+				return HandleCompassResult.SUCCESS;
+			case NEED_SECOND_COMPASS:
+				if (firstCompass.whereUsed.distanceSq(playerPos) < MINIMUM_DISTANCE_SQ_BETWEEN_COMPASSES) {
+					return HandleCompassResult.LOCATION_TOO_CLOSE;
+				}
+
+				HollowsZone firstCompassZone = getZoneForCoords(firstCompass.whereUsed);
+				HollowsZone playerZone = getZoneForCoords(playerPos);
+				if (!possibleTargets.equals(calculatePossibleTargets(playerPos)) ||
+					firstCompassZone != playerZone) {
 					resetForNewTarget();
-					// falls through, NOT_STARTED is the state when resetForNewTarget returns
-				case NOT_STARTED:
-					if (NUCLEUS_BB.isVecInside(new Vec3Comparable(playerPos.getX(), playerPos.getY(), playerPos.getZ()))) {
-						return HandleCompassResult.PLAYER_IN_NUCLEUS;
-					}
+					return HandleCompassResult.POSSIBLE_TARGETS_CHANGED;
+				}
 
-					firstCompass = new Compass(playerPos, currentTimeMillis.getAsLong());
-					seenParticles.clear();
-					solverState = SolverState.PROCESSING_FIRST_USE;
-					possibleTargets = calculatePossibleTargets(playerPos);
-					return HandleCompassResult.SUCCESS;
-				case NEED_SECOND_COMPASS:
-					if (firstCompass.whereUsed.distanceSq(playerPos) < MINIMUM_DISTANCE_SQ_BETWEEN_COMPASSES) {
-						return HandleCompassResult.LOCATION_TOO_CLOSE;
-					}
+				secondCompass = new Compass(playerPos, currentTimeMillis.getAsLong());
+				solverState = SolverState.PROCESSING_SECOND_USE;
+				return HandleCompassResult.SUCCESS;
+		}
 
-					HollowsZone firstCompassZone = getZoneForCoords(firstCompass.whereUsed);
-					HollowsZone playerZone = getZoneForCoords(playerPos);
-					if (!possibleTargets.equals(calculatePossibleTargets(playerPos)) ||
-							firstCompassZone != playerZone) {
-						resetForNewTarget();
-						return HandleCompassResult.POSSIBLE_TARGETS_CHANGED;
-					}
-
-					secondCompass = new Compass(playerPos, currentTimeMillis.getAsLong());
-					solverState = SolverState.PROCESSING_SECOND_USE;
-					return HandleCompassResult.SUCCESS;
-			}
-
-		throw new IllegalStateException("Unexpected compass state" );
+		throw new IllegalStateException("Unexpected compass state");
 	}
 
 	/*
@@ -338,7 +360,7 @@ public class CrystalWishingCompassSolver {
 		// Capture particle troubleshooting info for two minutes starting when the first compass is used.
 		// This list is reset each time the first compass is used from a NOT_STARTED state.
 		if (firstCompass != null && !solverState.equals(SolverState.SOLVED) &&
-				System.currentTimeMillis() < firstCompass.whenUsedMillis + 2*60*1000) {
+			System.currentTimeMillis() < firstCompass.whenUsedMillis + 2 * 60 * 1000) {
 			seenParticles.add(new ParticleData(new Vec3Comparable(x, y, z), System.currentTimeMillis()));
 		}
 
@@ -376,9 +398,9 @@ public class CrystalWishingCompassSolver {
 						logDiagnosticData(false);
 						break;
 					case NEED_SECOND_COMPASS:
-							mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-								"[NEU] Need another position to determine wishing compass target."));
-							break;
+						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
+							"[NEU] Need another position to determine wishing compass target."));
+						break;
 				}
 			}
 		} catch (Exception e) {
@@ -389,7 +411,6 @@ public class CrystalWishingCompassSolver {
 	}
 
 	/**
-	 *
 	 * @param x Particle x coordinate
 	 * @param y Particle y coordinate
 	 * @param z Particle z coordinate
@@ -454,7 +475,8 @@ public class CrystalWishingCompassSolver {
 			getZoneForCoords(firstCompass.whereUsed),
 			foundCrystals.getAsCrystalEnumSet(),
 			possibleTargets,
-			solution);
+			solution
+		);
 
 		// Adjust the Jungle Temple solution coordinates
 		if (solutionPossibleTargets.size() == 1 &&
@@ -466,9 +488,8 @@ public class CrystalWishingCompassSolver {
 		solverState = SolverState.SOLVED;
 	}
 
-	private boolean isKeyInInventory()
-	{
-		for (ItemStack item : mc.thePlayer.inventory.mainInventory){
+	private boolean isKeyInInventory() {
+		for (ItemStack item : mc.thePlayer.inventory.mainInventory) {
 			if (item != null && item.getDisplayName().contains("Jungle Key")) {
 				return true;
 			}
@@ -476,12 +497,11 @@ public class CrystalWishingCompassSolver {
 		return false;
 	}
 
-	private boolean isKingsScentPresent()
-	{
+	private boolean isKingsScentPresent() {
 		return SBInfo.getInstance().footer.getUnformattedText().contains("King's Scent I");
 	}
 
-	private	EnumSet<Crystal> getFoundCrystals() {
+	private EnumSet<Crystal> getFoundCrystals() {
 		EnumSet<Crystal> foundCrystals = EnumSet.noneOf(Crystal.class);
 		NEUConfig.HiddenProfileSpecific perProfileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (perProfileConfig == null) return foundCrystals;
@@ -523,10 +543,11 @@ public class CrystalWishingCompassSolver {
 	// |  Holdout |  Deposits  |
 	// |----------|------------|
 	static public EnumSet<CompassTarget> getSolutionTargets(
-			HollowsZone compassUsedZone,
-			EnumSet<Crystal> foundCrystals,
-			EnumSet<CompassTarget> possibleTargets,
-			Vec3Comparable solution) {
+		HollowsZone compassUsedZone,
+		EnumSet<Crystal> foundCrystals,
+		EnumSet<CompassTarget> possibleTargets,
+		Vec3Comparable solution
+	) {
 		EnumSet<CompassTarget> solutionPossibleTargets;
 		solutionPossibleTargets = possibleTargets.clone();
 
@@ -541,28 +562,28 @@ public class CrystalWishingCompassSolver {
 		// Y=41/74 is the absolute min/max based on structure size if
 		// the center of the topaz crystal has to be in magma fields.
 		if (solutionPossibleTargets.contains(CompassTarget.BAL) &&
-				solution.yCoord > 75) {
+			solution.yCoord > 75) {
 			solutionPossibleTargets.remove(CompassTarget.BAL);
 		}
 
 		// Y coordinates are 93-157 from 15 samples.
 		// Y=83/167 is the absolute min/max based on structure size
 		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_KING) &&
-				solution.yCoord < 82 || solution.yCoord > 168) {
+			solution.yCoord < 82 || solution.yCoord > 168) {
 			solutionPossibleTargets.remove(CompassTarget.GOBLIN_KING);
 		}
 
 		// Y coordinates are 129-139 from 10 samples
 		// Y=126/139 is the absolute min/max based on structure size
 		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_QUEEN) &&
-				(solution.yCoord < 125 || solution.yCoord > 140)) {
+			(solution.yCoord < 125 || solution.yCoord > 140)) {
 			solutionPossibleTargets.remove(CompassTarget.GOBLIN_QUEEN);
 		}
 
 		// Y coordinates are 72-80 from 10 samples
 		// Y=73/80 is the absolute min/max based on structure size
 		if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
-				(solution.yCoord < 72 || solution.yCoord > 81)) {
+			(solution.yCoord < 72 || solution.yCoord > 81)) {
 			solutionPossibleTargets.remove(CompassTarget.JUNGLE_TEMPLE);
 		}
 
@@ -576,7 +597,7 @@ public class CrystalWishingCompassSolver {
 		// Y coordinates are 122-129 from 8 samples
 		// Y=122/129 is the absolute min/max based on structure size
 		if (solutionPossibleTargets.contains(CompassTarget.PRECURSOR_CITY) &&
-				(solution.yCoord < 121 || solution.yCoord > 130)) {
+			(solution.yCoord < 121 || solution.yCoord > 130)) {
 			solutionPossibleTargets.remove(CompassTarget.PRECURSOR_CITY);
 		}
 
@@ -584,26 +605,26 @@ public class CrystalWishingCompassSolver {
 		// Y=98/100 is the absolute min/max based on structure size,
 		// but 102 has been seen - possibly with earlier code that rounded up
 		if (solutionPossibleTargets.contains(CompassTarget.MINES_OF_DIVAN) &&
-				(solution.yCoord < 97 || solution.yCoord > 102)) {
+			(solution.yCoord < 97 || solution.yCoord > 102)) {
 			solutionPossibleTargets.remove(CompassTarget.MINES_OF_DIVAN);
 		}
 
 		// Now filter by structure offset
 		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_KING) &&
 			(solution.xCoord > GOBLIN_HOLDOUT_BB.maxX + GOBLIN_KING_BB.maxX ||
-			solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_KING_BB.maxZ)) {
+				solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_KING_BB.maxZ)) {
 			solutionPossibleTargets.remove(CompassTarget.GOBLIN_KING);
 		}
 
 		if (solutionPossibleTargets.contains(CompassTarget.GOBLIN_QUEEN) &&
 			(solution.xCoord > GOBLIN_HOLDOUT_BB.maxX + GOBLIN_QUEEN_BB.maxX ||
-			solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_QUEEN_BB.maxZ)) {
+				solution.zCoord < GOBLIN_HOLDOUT_BB.minZ - GOBLIN_QUEEN_BB.maxZ)) {
 			solutionPossibleTargets.remove(CompassTarget.GOBLIN_QUEEN);
 		}
 
 		if (solutionPossibleTargets.contains(CompassTarget.JUNGLE_TEMPLE) &&
 			(solution.xCoord > JUNGLE_BB.maxX + JUNGLE_TEMPLE_BB.maxX ||
-			solution.zCoord > JUNGLE_BB.maxZ + JUNGLE_TEMPLE_BB.maxZ)) {
+				solution.zCoord > JUNGLE_BB.maxZ + JUNGLE_TEMPLE_BB.maxZ)) {
 			solutionPossibleTargets.remove(CompassTarget.JUNGLE_TEMPLE);
 		}
 
@@ -677,38 +698,54 @@ public class CrystalWishingCompassSolver {
 
 	private String getFriendlyNameForCompassTarget(CompassTarget compassTarget) {
 		switch (compassTarget) {
-			case BAL: return EnumChatFormatting.RED + "Bal";
-			case ODAWA: return EnumChatFormatting.GREEN + "Odawa";
-			case JUNGLE_TEMPLE: return EnumChatFormatting.AQUA + "the " +
-				EnumChatFormatting.GREEN + "Jungle Temple";
-			case GOBLIN_KING: return EnumChatFormatting.GOLD + "King Yolkar";
-			case GOBLIN_QUEEN: return EnumChatFormatting.AQUA + "the " +
-				EnumChatFormatting.YELLOW + "Goblin Queen";
-			case PRECURSOR_CITY: return EnumChatFormatting.AQUA + "the " +
-				EnumChatFormatting.WHITE + "Precursor City";
-			case MINES_OF_DIVAN: return EnumChatFormatting.AQUA + "the " +
-				EnumChatFormatting.BLUE + "Mines of Divan";
-			default: return EnumChatFormatting.WHITE + "an undetermined location";
+			case BAL:
+				return EnumChatFormatting.RED + "Bal";
+			case ODAWA:
+				return EnumChatFormatting.GREEN + "Odawa";
+			case JUNGLE_TEMPLE:
+				return EnumChatFormatting.AQUA + "the " +
+					EnumChatFormatting.GREEN + "Jungle Temple";
+			case GOBLIN_KING:
+				return EnumChatFormatting.GOLD + "King Yolkar";
+			case GOBLIN_QUEEN:
+				return EnumChatFormatting.AQUA + "the " +
+					EnumChatFormatting.YELLOW + "Goblin Queen";
+			case PRECURSOR_CITY:
+				return EnumChatFormatting.AQUA + "the " +
+					EnumChatFormatting.WHITE + "Precursor City";
+			case MINES_OF_DIVAN:
+				return EnumChatFormatting.AQUA + "the " +
+					EnumChatFormatting.BLUE + "Mines of Divan";
+			default:
+				return EnumChatFormatting.WHITE + "an undetermined location";
 		}
 	}
 
 	private String getNameForCompassTarget(CompassTarget compassTarget) {
 		boolean useSkytilsNames = (NotEnoughUpdates.INSTANCE.config.mining.wishingCompassWaypointNames == 1);
 		switch (compassTarget) {
-			case BAL: return useSkytilsNames ? "internal_bal" : "Bal";
-			case ODAWA: return "Odawa";
-			case JUNGLE_TEMPLE: return useSkytilsNames ? "internal_temple" : "Temple";
-			case GOBLIN_KING: return useSkytilsNames ? "internal_king" : "King";
-			case GOBLIN_QUEEN: return useSkytilsNames ? "internal_den" : "Queen";
-			case PRECURSOR_CITY: return useSkytilsNames ? "internal_city" : "City";
-			case MINES_OF_DIVAN: return useSkytilsNames ? "internal_mines" : "Mines";
-			default: return "WishingTarget";
+			case BAL:
+				return useSkytilsNames ? "internal_bal" : "Bal";
+			case ODAWA:
+				return "Odawa";
+			case JUNGLE_TEMPLE:
+				return useSkytilsNames ? "internal_temple" : "Temple";
+			case GOBLIN_KING:
+				return useSkytilsNames ? "internal_king" : "King";
+			case GOBLIN_QUEEN:
+				return useSkytilsNames ? "internal_den" : "Queen";
+			case PRECURSOR_CITY:
+				return useSkytilsNames ? "internal_city" : "City";
+			case MINES_OF_DIVAN:
+				return useSkytilsNames ? "internal_mines" : "Mines";
+			default:
+				return "WishingTarget";
 		}
 	}
 
 	private String getSolutionCoordsText() {
 		return solution == null ? "" :
-			String.format("%.0f %.0f %.0f", solution.xCoord, solution.yCoord,	solution.zCoord);
+			String.format("%.0f %.0f %.0f", solution.xCoord, solution.yCoord, solution.zCoord);
 	}
 
 	private String getWishingCompassDestinationsMessage() {
@@ -759,21 +796,23 @@ public class CrystalWishingCompassSolver {
 			"WishingTarget";
 		String skytilsCommand = String.format("/sthw add %s %s", getSolutionCoordsText(), targetNameForSkytils);
 		if (NotEnoughUpdates.INSTANCE.config.mining.wishingCompassAutocreateKnownWaypoints &&
-				solutionPossibleTargets.size() == 1) {
+			solutionPossibleTargets.size() == 1) {
 			mc.thePlayer.addChatMessage(new ChatComponentText(destinationMessage));
 			int commandResult = ClientCommandHandler.instance.executeCommand(mc.thePlayer, skytilsCommand);
-			if (commandResult == 1)
-			{
+			if (commandResult == 1) {
 				return;
 			}
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "[NEU] Failed to automatically run /sthw"));
+			mc.thePlayer.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.RED + "[NEU] Failed to automatically run /sthw"));
 		}
 
 		destinationMessage += EnumChatFormatting.YELLOW + " [Add Skytils Waypoint]";
 		ChatComponentText chatMessage = new ChatComponentText(destinationMessage);
-		chatMessage.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND,
-				skytilsCommand,
-				EnumChatFormatting.YELLOW + "Set waypoint for wishing target"));
+		chatMessage.setChatStyle(Utils.createClickStyle(
+			ClickEvent.Action.RUN_COMMAND,
+			skytilsCommand,
+			EnumChatFormatting.YELLOW + "Set waypoint for wishing target"
+		));
 		mc.thePlayer.addChatMessage(chatMessage);
 	}
 
@@ -878,8 +917,7 @@ public class CrystalWishingCompassSolver {
 			return;
 		}
 
-		if (!NotEnoughUpdates.INSTANCE.config.mining.wishingCompassSolver)
-		{
+		if (!NotEnoughUpdates.INSTANCE.config.mining.wishingCompassSolver) {
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
 				"[NEU] Wishing Compass Solver is not enabled."));
 			return;
@@ -951,8 +989,8 @@ public class CrystalWishingCompassSolver {
 
 		public void processParticle(double x, double y, double z, long particleTimeMillis) {
 			if (compassState == CompassState.FAILED_TIMEOUT_NO_REPEATING ||
-					compassState == CompassState.FAILED_TIMEOUT_NO_PARTICLES ||
-					compassState == CompassState.COMPLETED) {
+				compassState == CompassState.FAILED_TIMEOUT_NO_PARTICLES ||
+				compassState == CompassState.COMPLETED) {
 				throw new UnsupportedOperationException("processParticle should not be called in a failed or completed state");
 			}
 

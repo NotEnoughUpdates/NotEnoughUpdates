@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.core.util;
 
 import net.minecraft.util.Vec3;
@@ -16,9 +35,11 @@ public class Line {
 	}
 
 	public Vec3 getMidpoint() {
-		return new Vec3((point1.xCoord + point2.xCoord) / 2.0,
+		return new Vec3(
+			(point1.xCoord + point2.xCoord) / 2.0,
 			(point1.yCoord + point2.yCoord) / 2.0,
-			(point1.zCoord + point2.zCoord) / 2.0);
+			(point1.zCoord + point2.zCoord) / 2.0
+		);
 	}
 
 	/**
@@ -27,8 +48,7 @@ public class Line {
 	 *
 	 * @return The intersection {@link Line} or {@code null} if no solution found
 	 */
-	public Line getIntersectionLineSegment(Line other)
-	{
+	public Line getIntersectionLineSegment(Line other) {
 		Vec3 p1 = this.point1;
 		Vec3 p2 = this.point2;
 		Vec3 p3 = other.point1;
@@ -61,14 +81,17 @@ public class Line {
 		double mub = (d1343 + d4321 * (mua)) / d4343;
 
 		Line resultSegment = new Line(
-			new Vec3 (
-				(float)(p1.xCoord + mua * p21.xCoord),
-				(float)(p1.yCoord + mua * p21.yCoord),
-				(float)(p1.zCoord + mua * p21.zCoord)),
-			new Vec3 (
-				(float)(p3.xCoord + mub * p43.xCoord),
-				(float)(p3.yCoord + mub * p43.yCoord),
-				(float)(p3.zCoord + mub * p43.zCoord)));
+			new Vec3(
+				(float) (p1.xCoord + mua * p21.xCoord),
+				(float) (p1.yCoord + mua * p21.yCoord),
+				(float) (p1.zCoord + mua * p21.zCoord)
+			),
+			new Vec3(
+				(float) (p3.xCoord + mub * p43.xCoord),
+				(float) (p3.yCoord + mub * p43.yCoord),
+				(float) (p3.zCoord + mub * p43.zCoord)
+			)
+		);
 
 		return resultSegment;
 	}
@@ -82,9 +105,11 @@ public class Line {
 	}
 
 	public String toString() {
-		return String.format("point1 = %s, point2 = %s, midpoint = %s",
+		return String.format(
+			"point1 = %s, point2 = %s, midpoint = %s",
 			point1 == null ? "NULL" : point1.toString(),
 			point2 == null ? "NULL" : point2.toString(),
-			(point1 == null || point2 == null) ? "NULL" : getMidpoint());
+			(point1 == null || point2 == null) ? "NULL" : getMidpoint()
+		);
 	}
 }

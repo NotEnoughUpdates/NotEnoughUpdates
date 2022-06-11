@@ -6,14 +6,16 @@ on:
       - '*'
     paths-ignore:
       - 'README.md'
-      - 'LICENSE'
+      - 'LICENSE.md'
+      - 'LICENSE-GPLv3.md'
       - '.gitignore'
   pull_request:
     branches:
       - '*'
     paths-ignore:
       - 'README.md'
-      - 'LICENSE'
+      - 'LICENSE.md'
+      - 'LICENSE-GPLv3.md'
       - '.gitignore'
   workflow_dispatch:
 jobs:

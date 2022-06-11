@@ -13,6 +13,7 @@ out
 *.iml
 .idea/*
 !.idea/codeStyles
+!.idea/copyright
 
 # gradle
 build

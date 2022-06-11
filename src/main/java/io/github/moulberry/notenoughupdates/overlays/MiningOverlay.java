@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.overlays;
 
 import com.google.common.collect.ComparisonChain;
@@ -26,12 +45,24 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static net.minecraft.util.EnumChatFormatting.*;
+import static net.minecraft.util.EnumChatFormatting.BLUE;
+import static net.minecraft.util.EnumChatFormatting.BOLD;
+import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
+import static net.minecraft.util.EnumChatFormatting.GOLD;
+import static net.minecraft.util.EnumChatFormatting.GREEN;
+import static net.minecraft.util.EnumChatFormatting.RED;
+import static net.minecraft.util.EnumChatFormatting.RESET;
+import static net.minecraft.util.EnumChatFormatting.YELLOW;
 
 public class MiningOverlay extends TextOverlay {
 	public MiningOverlay(
@@ -219,7 +250,7 @@ public class MiningOverlay extends TextOverlay {
 
 		// Get commission and forge info even if the overlay isn't going to be rendered since it is used elsewhere
 		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
-		if(SBInfo.getInstance().getLocation() == null) return;
+		if (SBInfo.getInstance().getLocation() == null) return;
 		if (SBInfo.getInstance().getLocation().equals("mining_3") ||
 			SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
 			commissionProgress.clear();

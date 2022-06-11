@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2022 NotEnoughUpdates contributors
+ *
+ * This file is part of NotEnoughUpdates.
+ *
+ * NotEnoughUpdates is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * NotEnoughUpdates is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -16,7 +35,10 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,11 +101,14 @@ public class CrystalHollowOverlay extends TextOverlay {
 			Matcher hotmCrystalNotPlacedMatcher = hotmCrystalNotPlacedPattern.matcher(cleanLine);
 			Matcher hotmCrystalNotFoundMatcher = hotmCrystalNotFoundPattern.matcher(cleanLine);
 			Matcher hotmCrystalPlacedMatcher = hotmCrystalPlacedPattern.matcher(cleanLine);
-			if (hotmCrystalNotFoundMatcher.matches() && perProfileConfig.crystals.containsKey(hotmCrystalNotFoundMatcher.group("crystal"))) {
+			if (hotmCrystalNotFoundMatcher.matches() &&
+				perProfileConfig.crystals.containsKey(hotmCrystalNotFoundMatcher.group("crystal"))) {
 				perProfileConfig.crystals.put(hotmCrystalNotFoundMatcher.group("crystal"), 0);
-			} else if (hotmCrystalNotPlacedMatcher.matches() && perProfileConfig.crystals.containsKey(hotmCrystalNotPlacedMatcher.group("crystal"))) {
+			} else if (hotmCrystalNotPlacedMatcher.matches() && perProfileConfig.crystals.containsKey(
+				hotmCrystalNotPlacedMatcher.group("crystal"))) {
 				perProfileConfig.crystals.put(hotmCrystalNotPlacedMatcher.group("crystal"), 1);
-			} else if (hotmCrystalPlacedMatcher.matches() && perProfileConfig.crystals.containsKey(hotmCrystalPlacedMatcher.group("crystal"))) {
+			} else if (hotmCrystalPlacedMatcher.matches() &&
+				perProfileConfig.crystals.containsKey(hotmCrystalPlacedMatcher.group("crystal"))) {
 				perProfileConfig.crystals.put(hotmCrystalPlacedMatcher.group("crystal"), 2);
 			}
 		}
