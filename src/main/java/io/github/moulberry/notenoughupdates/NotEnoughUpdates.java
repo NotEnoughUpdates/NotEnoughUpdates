@@ -233,7 +233,8 @@ public class NotEnoughUpdates {
 				config.apiKey = null;
 			}
 
-			if (config.dungeonMap.dmEnable) {
+			if (config.dungeonMap.dmEnable &&
+				!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				config.dungeonMap.dmEnable = false;
 			}
 
