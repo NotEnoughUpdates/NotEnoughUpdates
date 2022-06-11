@@ -3,7 +3,7 @@
 
 <div align="center">
     <!-- release -->
-    <a href="https://github.com/Moulberry/NotEnoughUpdates-REPO/releases/latest" target="_blank">
+    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases/latest" target="_blank">
         <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates-REPO?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- lines -->
@@ -23,7 +23,7 @@
         <img src="https://img.shields.io/discord/516977525906341928?label=discord&color=informational&logo=Discord&logoColor=FFFFFF" alt="discord">
     </a>
     <!-- downloads -->
-    <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/releases" target="_blank">
+    <a href="https://github.com/Moulberry/NotEnoughUpdates/releases" target="_blank">
         <img src="https://img.shields.io/github/downloads/Moulberry/NotEnoughUpdates/total?label=downloads&color=informational&logo=GitHub" alt="downloads">
     </a>
 </div>
@@ -78,7 +78,7 @@ If you need assistance installing or using the mod, feel free to join the [disco
 
 ## Contributing
 
-If you would like to contribute to the project, look at our [contribution guide](.github/CONTRIBUTING.md) for more information how to install NEU for development purposes.
+If you would like to contribute to the project, look at our [contribution guide](CONTRIBUTING.md) for more information how to install NEU for development purposes.
 
 ## Security
 
