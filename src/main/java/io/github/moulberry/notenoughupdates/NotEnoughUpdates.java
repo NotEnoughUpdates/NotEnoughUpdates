@@ -232,6 +232,16 @@ public class NotEnoughUpdates {
 				config.apiData.apiKey = config.apiKey.apiKey;
 				config.apiKey = null;
 			}
+
+			if (config.dungeonMap.dmEnable) {
+				config.dungeonMap.dmEnable = false;
+			}
+
+			//add the trophy fishing tab to the config
+			if (config.profileViewer.pageLayout.size() == 8) {
+				config.profileViewer.pageLayout.add(8);
+			}
+			saveConfig();
 		}
 
 		MinecraftForge.EVENT_BUS.register(this);

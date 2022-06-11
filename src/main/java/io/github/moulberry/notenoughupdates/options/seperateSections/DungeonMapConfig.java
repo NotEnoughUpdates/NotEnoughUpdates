@@ -73,7 +73,7 @@ public class DungeonMapConfig {
 		name = "Show Dungeon Map",
 		desc = "Show/hide the NEU dungeon map"
 	)
-	public boolean dmEnable = true;
+	public boolean dmEnable = false;
 
 	@Expose
 	@ConfigOption(
