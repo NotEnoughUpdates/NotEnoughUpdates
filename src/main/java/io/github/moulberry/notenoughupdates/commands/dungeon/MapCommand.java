@@ -50,6 +50,12 @@ public class MapCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.RED + "The map does not work right now."));
+			return;
+		}
+
 		if (NotEnoughUpdates.INSTANCE.colourMap == null) {
 			try (
 				BufferedReader reader = new BufferedReader(new InputStreamReader(Minecraft
