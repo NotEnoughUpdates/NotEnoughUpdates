@@ -3264,6 +3264,7 @@ public class GuiProfileViewer extends GuiScreen {
 					if (entry.getKey().contains("runecrafting")) continue;
 					if (entry.getKey().contains("carpentry")) continue;
 					if (entry.getKey().contains("catacombs")) continue;
+					if (entry.getKey().contains("social")) continue;
 
 					totalSkillLVL += entry.getValue().getAsFloat();
 					totalTrueSkillLVL += Math.floor(entry.getValue().getAsFloat());
