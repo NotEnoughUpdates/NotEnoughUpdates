@@ -28,7 +28,7 @@ public class CustomArmour {
 
 	@Expose
 	@ConfigOption(
-		name = "Enable Custom Armour Hud",
+		name = "Enable Equipment Hud",
 		desc = "Shows an overlay in your inventory showing your 4 extra armour slots"
 	)
 	@ConfigEditorBoolean
@@ -36,7 +36,7 @@ public class CustomArmour {
 
 	@Expose
 	@ConfigOption(
-		name = "Click To Open equipment menu",
+		name = "Click To Open Equipment Menu",
 		desc = "Click on the hud to open /equipment"
 	)
 	@ConfigEditorBoolean

@@ -336,8 +336,8 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Custom Armour Hud",
-		desc = "Custom Armour Hud"
+		name = "Equipment Hud",
+		desc = "Equipment Hud"
 	)
 	public CustomArmour customArmour = new CustomArmour();
 
