@@ -114,6 +114,7 @@ public class TrophyFishingPage {
 
 	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation(
 		"notenoughupdates:pv_trophy_fish_tab.png");
+	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final Map<String, TrophyFish> trophyFishList = new HashMap<>();
 
 	private static final Map<String, Integer> total = new HashMap<>();
@@ -197,18 +198,30 @@ public class TrophyFishingPage {
 		);
 
 		ArrayList<TrophyFish> arrayList = new ArrayList<>(trophyFishList.values());
-		arrayList.sort((c1, c2) -> {
-			if (c1.getTotal() > c2.getTotal()) return -1;
-			if (c1.getTotal() < c2.getTotal()) return 1;
-			return 0;
-		});
+		arrayList.sort((c1, c2) -> Integer.compare(c2.getTotal(), c1.getTotal()));
 
 		int x;
 		int y;
 		for (TrophyFish value : arrayList) {
-			RenderHelper.enableGUIStandardItemLighting();
 			x = guiLeft + slotLocations.get(arrayList.indexOf(value)).getLeft();
 			y = guiTop + slotLocations.get(arrayList.indexOf(value)).getRight();
+			RenderHelper.enableGUIStandardItemLighting();
+			Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+			Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap = value.getTrophyFishRarityIntegerMap();
+			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.BRONZE)) {
+				GlStateManager.color(255/255f, 130/255f, 0/255f, 1);
+			}
+			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.SILVER)) {
+				GlStateManager.color(192/255f, 192/255f, 192/255f, 1);
+			}
+			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.GOLD)) {
+				GlStateManager.color(1, 0.82F, 0, 1);
+			}
+			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.DIAMOND)) {
+				GlStateManager.color(31/255f, 216/255f, 241/255f, 1);
+			}
+			Utils.drawTexturedRect(x - 2 , y - 2, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
+			GlStateManager.color(1, 1, 1, 1);
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
 				getItem(value.getName()),
 				x,
@@ -255,9 +268,11 @@ public class TrophyFishingPage {
 							-1,
 							Minecraft.getMinecraft().fontRendererObj
 						);
+						GlStateManager.color(1, 1, 1, 1);
 					}
-
 				}
+				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+				Utils.drawTexturedRect(x - 2 , y - 2, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 			}
 		}
 
