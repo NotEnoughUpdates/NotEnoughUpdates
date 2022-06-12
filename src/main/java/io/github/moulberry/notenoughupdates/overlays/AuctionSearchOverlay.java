@@ -326,7 +326,7 @@ public class AuctionSearchOverlay {
 
 		StringBuilder stringBuilder = new StringBuilder(searchString.trim());
 		if (!searchStringExtra.isEmpty()) {
-			stringBuilder.append(searchStringExtra.trim());
+			stringBuilder.append(searchStringExtra);
 		}
 		if (onlyLevel100) {
 			stringBuilder.insert(0, "[Lvl 100] ");
@@ -631,7 +631,7 @@ public class AuctionSearchOverlay {
 								}
 
 								JsonObject essenceCosts = Constants.ESSENCECOSTS;
-								searchStringExtra = "";
+								searchStringExtra = " ";
 								if (essenceCosts != null && essenceCosts.has(str) && selectedStars > 0) {
 									for (int i = 0; i < selectedStars; i++) {
 										if (i > 4) break;
