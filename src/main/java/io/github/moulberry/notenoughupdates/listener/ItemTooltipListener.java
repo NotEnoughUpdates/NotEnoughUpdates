@@ -155,7 +155,7 @@ public class ItemTooltipListener {
 							for (int j = 0; j < Utils.rarityArrC.length; j++) {
 								for (Map.Entry<String, JsonElement> entry : enchantsObj.entrySet()) {
 									if (line.contains(Utils.rarityArrC[j] + " " + entry.getKey()) || line.contains(
-										Utils.rarityArrC[j] + " DUNGEON " + entry.getKey())) {
+										Utils.rarityArrC[j] + " DUNGEON " + entry.getKey()) || line.contains("SHINY " + Utils.rarityArrC[j].replaceAll("§.§.","") + " DUNGEON " + entry.getKey())) {
 										allItemEnchs = entry.getValue().getAsJsonArray();
 										break out;
 									}
