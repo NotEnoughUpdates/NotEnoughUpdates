@@ -37,8 +37,7 @@ val baseVersion = "2.1"
 val buildExtra = mutableListOf<String>()
 val buildVersion = properties["BUILD_VERSION"] as? String
 if (buildVersion != null) buildExtra.add(buildVersion)
-val githubCi = properties["GITHUB_ACTIONS"] as? String
-if (githubCi == "true") buildExtra.add("ci")
+if (properties["CI"] as? String == "true") buildExtra.add("ci")
 
 val stdout = ByteArrayOutputStream()
 val execResult = exec {

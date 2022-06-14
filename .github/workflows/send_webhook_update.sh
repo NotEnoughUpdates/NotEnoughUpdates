@@ -88,7 +88,7 @@ function make_request() {
   curl -X $1 -H "Content-Type: multipart/form-data" -F "payload_json=$json" "$upload_arg" "$upload_name=@$to_upload" "$WEBHOOK_URL$2?wait=true"
 }
 
-echo "Should replace message with id: $MESSAGE_ID"
+echo "Should replace message with id: <$MESSAGE_ID>"
 if [ "$MESSAGE_ID" != "" ]; then
   discord_output=$(make_request PATCH "/messages/$MESSAGE_ID")
   RESULT=$?

@@ -24,3 +24,5 @@ gradle.properties
 eclipse
 run
 .vscode
+infer-out/
+ciwork/
