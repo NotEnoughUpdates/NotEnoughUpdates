@@ -323,6 +323,9 @@ public class FairySouls {
 			//noinspection UnstableApiUsage
 			Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {}.getType();
 			allProfilesFoundSouls = gson.fromJson(fileContent, multiProfileSoulsType);
+			if (allProfilesFoundSouls == null){
+				allProfilesFoundSouls = new HashMap<>();
+			}
 		} catch (JsonSyntaxException e) {
 			//The file is in the old format, convert it to the new one and set the profile to unknown
 			try {
