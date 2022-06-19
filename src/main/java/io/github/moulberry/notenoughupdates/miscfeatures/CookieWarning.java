@@ -36,7 +36,7 @@ public class CookieWarning {
 	}
 
 	/**
-	 * Checks the tab list for a cookie timer, and sends a chat message if the timer is within the tolerance
+	 * Checks the tab list for a cookie timer, and sends a notification if the timer is within the tolerance
 	 */
 	public static void checkCookie() {
 		if (!hasNotified && NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
