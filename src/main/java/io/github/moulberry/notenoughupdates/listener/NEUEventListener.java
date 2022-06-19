@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonBlocks;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
@@ -239,6 +240,7 @@ public class NEUEventListener {
 			BackgroundBlur.markDirty();
 			NPCRetexturing.getInstance().tick();
 			StorageOverlay.getInstance().markDirty();
+			CookieWarning.checkCookie();
 
 			if (neu.hasSkyblockScoreboard()) {
 				for (TextOverlay overlay : OverlayManager.textOverlays) {
