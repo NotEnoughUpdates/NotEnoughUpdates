@@ -38,7 +38,8 @@ public class BestiaryData {
 					"bdee7687-9c85-4e7a-b789-b55e90d21d68",
 					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzljODg4MWU0MjkxNWE5ZDI5YmI2MWExNmZiMjZkMDU5OTEzMjA0ZDI2NWRmNWI0MzliM2Q3OTJhY2Q1NiJ9fX0="
 				),
-				Utils.createList("family_cave_spider",
+				Utils.createList(
+					"family_cave_spider",
 					"family_enderman_private",
 					"family_skeleton",
 					"family_slime",
@@ -53,7 +54,8 @@ public class BestiaryData {
 					"88208736-41cd-4ed8-8ed7-53179140a7fa",
 					"eyJ0aW1lc3RhbXAiOjE1NTkyMTU0MTY5MDksInByb2ZpbGVJZCI6IjQxZDNhYmMyZDc0OTQwMGM5MDkwZDU0MzRkMDM4MzFiIiwicHJvZmlsZU5hbWUiOiJNZWdha2xvb24iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q3Y2M2Njg3NDIzZDA1NzBkNTU2YWM1M2UwNjc2Y2I1NjNiYmRkOTcxN2NkODI2OWJkZWJlZDZmNmQ0ZTdiZjgifX19"
 				),
-				Utils.createList("family_unburried_zombie",
+				Utils.createList(
+					"family_unburried_zombie",
 					"family_old_wolf",
 					"family_ruin_wolf",
 					"family_zombie_villager"
@@ -63,7 +65,8 @@ public class BestiaryData {
 				EnumChatFormatting.AQUA + "Spiders Den",
 				"acbeaf98-2081-40c5-b5a3-221a2957d532",
 				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc1NDMxOGEzMzc2ZjQ3MGU0ODFkZmNkNmM4M2E1OWFhNjkwYWQ0YjRkZDc1NzdmZGFkMWMyZWYwOGQ4YWVlNiJ9fX0"
-			), Utils.createList("family_arachne",
+			), Utils.createList(
+				"family_arachne",
 				"family_arachne_brood",
 				"family_arachne_keeper",
 				"family_brood_mother_spider",
@@ -71,7 +74,7 @@ public class BestiaryData {
 				"family_respawning_skeleton",
 				"family_random_slime",
 				"family_spider_jockey",
-				"family_weaver_spider",
+				"family_splitter_spider",
 				"family_voracious_spider",
 				"family_weaver_spider"
 			));
@@ -79,7 +82,8 @@ public class BestiaryData {
 				EnumChatFormatting.AQUA + "The End",
 				"e39ea8b1-a267-48a9-907a-1b97b85342bc",
 				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg0MGI4N2Q1MjI3MWQyYTc1NWRlZGM4Mjg3N2UwZWQzZGY2N2RjYzQyZWE0NzllYzE0NjE3NmIwMjc3OWE1In19fQ"
-			), Utils.createList("family_dragon",
+			), Utils.createList(
+				"family_dragon",
 				"family_enderman",
 				"family_endermite",
 				"family_corrupted_protector",
@@ -93,7 +97,8 @@ public class BestiaryData {
 				EnumChatFormatting.AQUA + "Crimson Isles",
 				"d8489bfe-dcd7-41f0-bfbd-fb482bf61ecb",
 				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM2ODdlMjVjNjMyYmNlOGFhNjFlMGQ2NGMyNGU2OTRjM2VlYTYyOWVhOTQ0ZjRjZjMwZGNmYjRmYmNlMDcxIn19fQ"
-			), Utils.createList("family_ashfang",
+			), Utils.createList(
+				"family_ashfang",
 				"family_barbarian_duke_x",
 				"family_bladesoul",
 				"family_blaze",
@@ -112,7 +117,8 @@ public class BestiaryData {
 				EnumChatFormatting.AQUA + "Deep Caverns",
 				"896b5137-a2dd-4de2-8c63-d5a5649bfc70",
 				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY5YTFmMTE0MTUxYjQ1MjEzNzNmMzRiYzE0YzI5NjNhNTAxMWNkYzI1YTY1NTRjNDhjNzA4Y2Q5NmViZmMifX19"
-			), Utils.createList("family_automaton",
+			), Utils.createList(
+				"family_automaton",
 				"family_butterfly",
 				"family_emerald_slime",
 				"family_caverns_ghost",
@@ -137,7 +143,8 @@ public class BestiaryData {
 			), Utils.createList("family_howling_spirit", "family_pack_spirit", "family_soul_of_the_alpha"
 			));
 			put(Utils.createItemStack(Item.getItemFromBlock(Blocks.lit_pumpkin), EnumChatFormatting.AQUA + "Spooky"
-			), Utils.createList("family_batty_witch",
+			), Utils.createList(
+				"family_batty_witch",
 				"family_headless_horseman",
 				"family_phantom_spirit",
 				"family_scary_jerry",
@@ -149,7 +156,8 @@ public class BestiaryData {
 				EnumChatFormatting.AQUA + "Catacombs",
 				"00b3837d-9275-304c-8bf9-656659087e6b",
 				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTY0ZTFjM2UzMTVjOGQ4ZmZmYzM3OTg1YjY2ODFjNWJkMTZhNmY5N2ZmZDA3MTk5ZThhMDVlZmJlZjEwMzc5MyJ9fX0"
-			), Utils.createList("family_diamond_guy",
+			), Utils.createList(
+				"family_diamond_guy",
 				"family_cellar_spider",
 				"family_crypt_dreadlord",
 				"family_crypt_lurker",
@@ -242,7 +250,10 @@ public class BestiaryData {
 			);
 
 			// Hub
-			put("family_unburried_zombie", Utils.createItemStack(Items.golden_sword, EnumChatFormatting.AQUA + "§aCrypt Ghoul"));
+			put(
+				"family_unburried_zombie",
+				Utils.createItemStack(Items.golden_sword, EnumChatFormatting.AQUA + "§aCrypt Ghoul")
+			);
 			put(
 				"family_old_wolf",
 				Utils.createSkull(
@@ -334,7 +345,7 @@ public class BestiaryData {
 				)
 			);
 			put(
-				"family_weaver_spider",
+				"family_splitter_spider",
 				Utils.createSkull(
 					EnumChatFormatting.AQUA + "§aSplitter Spider",
 					"50010472-fa22-3519-b941-2d6d22f47bf1",
@@ -608,7 +619,10 @@ public class BestiaryData {
 					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI4ZDlmZjU0MTg4YTFhZmVlNjViOTRmM2JmY2NlMzIxYzY0M2EzNDU5MGMxNGIxOTJiMmUzZWMyZjUyNWQzIn19fQ=="
 				)
 			);
-			put("family_redstone_pigman", Utils.createItemStack(Items.redstone, EnumChatFormatting.AQUA + "§aRedstone Pigman"));
+			put(
+				"family_redstone_pigman",
+				Utils.createItemStack(Items.redstone, EnumChatFormatting.AQUA + "§aRedstone Pigman")
+			);
 			put(
 				"family_sludge",
 				Utils.createSkull(
@@ -968,12 +982,108 @@ public class BestiaryData {
 
 			// Spiders Den
 			put("family_arachne", "BOSS");
+			put("family_arachne_brood", "MOB");
+			put("family_arachne_keeper", "MOB");
+			put("family_brood_mother_spider", "BOSS");
+			put("family_dasher_spider", "MOB");
+			put("family_respawning_skeleton", "MOB");
+			put("family_random_slime", "MOB");
+			put("family_spider_jockey", "MOB");
+			put("family_splitter_spider", "MOB");
+			put("family_voracious_spider", "MOB");
+			put("family_weaver_spider", "MOB");
+
+			// The End
+			put("family_dragon", "BOSS");
+			put("family_enderman", "MOB");
+			put("family_endermite", "MOB");
+			put("family_corrupted_protector", "BOSS");
+			put("family_obsidian_wither", "MOB");
+			put("family_voidling_extremist", "MOB");
+			put("family_voidling_fanatic", "MOB");
+			put("family_watcher", "MOB");
+			put("family_zealot_enderman", "MOB");
+
+			// Crimson Isles
+			put("family_ashfang", "MOB");
+			put("family_barbarian_duke_x", "MOB");
+			put("family_bladesoul", "MOB");
+			put("family_blaze", "MOB");
+			put("family_flaming_spider", "MOB");
+			put("family_ghast", "MOB");
+			put("family_mage_outlaw", "MOB");
+			put("family_magma_cube", "MOB");
+			put("family_magma_cube_boss", "BOSS");
+			put("family_matcho", "MOB");
+			put("family_charging_mushroom_cow", "MOB");
+			put("family_pigman", "MOB");
+			put("family_wither_skeleton", "MOB");
+			put("family_wither_spectre", "MOB");
+
+			// Deep Caverns
+			put("family_automaton", "MOB");
+			put("family_butterfly", "MOB");
+			put("family_emerald_slime", "MOB");
+			put("family_caverns_ghost", "MOB");
+			put("family_goblin", "MOB");
+			put("family_team_treasurite", "MOB");
+			put("family_ice_walker", "MOB");
+			put("family_lapis_zombie", "MOB");
+			put("family_diamond_skeleton", "MOB");
+			put("family_diamond_zombie", "MOB");
+			put("family_redstone_pigman", "MOB");
+			put("family_sludge", "MOB");
+			put("family_invisible_creeper", "MOB");
+			put("family_thyst", "MOB");
+			put("family_treasure_hoarder", "MOB");
+			put("family_worms", "MOB");
+			put("family_yog", "MOB");
+
+			// The Park
+			put("family_howling_spirit", "MOB");
+			put("family_pack_spirit", "MOB");
+			put("family_soul_of_the_alpha", "MOB");
+
+			// Spooky
+			put("family_batty_witch", "MOB");
+			put("family_headless_horseman", "BOSS");
+			put("family_phantom_spirit", "MOB");
+			put("family_scary_jerry", "MOB");
+			put("family_trick_or_treater", "MOB");
+			put("family_wither_gourd", "MOB");
+			put("family_wraith", "MOB");
+
+			// Catacombs
+			put("family_diamond_guy", "MOB");
+			put("family_cellar_spider", "MOB");
+			put("family_crypt_dreadlord", "MOB");
+			put("family_crypt_lurker", "MOB");
+			put("family_crypt_souleater", "MOB");
+			put("family_king_midas", "MOB");
+			put("family_lonely_spider", "MOB");
+			put("family_lost_adventurer", "MOB");
+			put("family_scared_skeleton", "MOB");
+			put("family_shadow_assassin", "MOB");
+			put("family_skeleton_grunt", "MOB");
+			put("family_skeleton_master", "MOB");
+			put("family_skeleton_soldier", "MOB");
+			put("family_skeletor", "MOB");
+			put("family_sniper_skeleton", "MOB");
+			put("family_super_archer", "MOB");
+			put("family_super_tank_zombie", "MOB");
+			put("family_crypt_tank_zombie", "MOB");
+			put("family_watcher_summon_undead", "MOB");
+			put("family_dungeon_respawning_skeleton", "MOB");
+			put("family_crypt_witherskeleton", "MOB");
+			put("family_zombie_commander", "MOB");
+			put("family_zombie_grunt", "MOB");
+			put("family_zombie_knight", "MOB");
+			put("family_zombie_soldier", "MOB");
 
 		}};
 
 	public static LinkedHashMap<String, String> getMobType() {
 		return mobTypeMap;
 	}
-
 
 }
