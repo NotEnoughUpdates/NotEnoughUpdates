@@ -104,7 +104,7 @@ public class BestiaryData {
 				"family_magma_cube_boss",
 				"family_matcho",
 				"family_charging_mushroom_cow",
-				"pigman",
+				"family_pigman",
 				"family_wither_skeleton",
 				"family_wither_spectre"
 			));
@@ -514,7 +514,7 @@ public class BestiaryData {
 				)
 			);
 			put(
-				"pigman",
+				"family_pigman",
 				Utils.createSkull(
 					EnumChatFormatting.AQUA + "§aPigman",
 					"3fc29372-e78e-3ad6-b0b0-05ca0a84babd",
@@ -948,4 +948,32 @@ public class BestiaryData {
 	public static LinkedHashMap<String, ItemStack> getBestiaryMobs() {
 		return bestiaryMobs;
 	}
+
+	private static final LinkedHashMap<String, String> mobTypeMap =
+		new LinkedHashMap<String, String>() {{
+			// Island
+			put("family_cave_spider", "ISLAND");
+			put("family_enderman_private", "ISLAND");
+			put("family_skeleton", "ISLAND");
+			put("family_slime", "ISLAND");
+			put("family_spider", "ISLAND");
+			put("family_witch", "ISLAND");
+			put("family_zombie", "ISLAND");
+
+			// Hub
+			put("family_unburried_zombie", "MOB");
+			put("family_old_wolf", "MOB");
+			put("family_ruin_wolf", "MOB");
+			put("family_zombie_villager", "MOB");
+
+			// Spiders Den
+			put("family_arachne", "BOSS");
+
+		}};
+
+	public static LinkedHashMap<String, String> getMobType() {
+		return mobTypeMap;
+	}
+
+
 }

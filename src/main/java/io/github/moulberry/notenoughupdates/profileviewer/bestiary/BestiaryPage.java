@@ -19,8 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.bestiary;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -35,6 +38,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class BestiaryPage {
 
@@ -98,25 +102,8 @@ public class BestiaryPage {
 						float x = 39 + COLLS_XPADDING + (COLLS_XPADDING + 20) * xIndex;
 						float y = 7 + COLLS_YPADDING + (COLLS_YPADDING + 20) * yIndex;
 
-						String tierString = "";
-//						int tier = (int) Utils.getElementAsFloat(collectionTiers.get(collection), 0);
-//						if (tier > 20 || tier < 0) {
-//							tierString = String.valueOf(tier);
-//						} else {
-//							tierString = romans[tier];
-//						}
-//						float amount = Utils.getElementAsFloat(totalAmounts.get(collection), 0);
-//						float maxAmount = Utils.getElementAsFloat(maxAmounts.get(collection), 0);
 						Color color = new Color(128, 128, 128, 255);
-						int tierStringColour = color.getRGB();
 						float completedness = 0;
-//						if (maxAmount > 0) {
-//							completedness = amount / maxAmount;
-//						}
-//						completedness = Math.min(1, completedness);
-//						if (maxAmounts.has(mob) && completedness >= 1) {
-//							tierStringColour = new Color(255, 215, 0).getRGB();
-//						}
 
 						GlStateManager.color(1, 1, 1, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
@@ -134,8 +121,22 @@ public class BestiaryPage {
 
 						if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
 							if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
+								String type;
+								String tierString = "I";
+								if (BestiaryData.getMobType().get(mob) != null) {
+									type = BestiaryData.getMobType().get(mob);
+								} else {
+									type = "MOB";
+								}
+
+								JsonObject leveling = Constants.LEVELING;
+								JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
+								int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
+								ProfileViewer.Level level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+
+
 								tooltipToDisplay = new ArrayList<>();
-								tooltipToDisplay.add(mobItem.getDisplayName() + " I");
+								tooltipToDisplay.add(mobItem.getDisplayName() + " " + (int) Math.floor(level.level));
 								tooltipToDisplay.add("Kills: " + numberFormat.format(kills));
 								tooltipToDisplay.add("Deaths: " + numberFormat.format(deaths));
 								//tooltipToDisplay.add("Total Collected: " + numberFormat.format(amount));
