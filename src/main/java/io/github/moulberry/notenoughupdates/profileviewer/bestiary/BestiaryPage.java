@@ -26,7 +26,9 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -44,6 +46,8 @@ public class BestiaryPage {
 
 	private static int guiLeft;
 	private static int guiTop;
+	private static final ResourceLocation BESTIARY_TEXTURE = new ResourceLocation(
+		"notenoughupdates:pv_bestiary_tab.png");
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static ItemStack selectedBestiaryLocation = null;
 	private static final String[] romans = new String[]{
@@ -86,7 +90,16 @@ public class BestiaryPage {
 				yIndex++;
 			}
 		}
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+		width = scaledResolution.getScaledWidth();
+		height = scaledResolution.getScaledHeight();
 
+		Minecraft.getMinecraft().getTextureManager().bindTexture(BESTIARY_TEXTURE);
+		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
+
+		GlStateManager.color(1, 1, 1, 1);
+		GlStateManager.disableLighting();
+		RenderHelper.enableGUIStandardItemLighting();
 
 		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
 		if (mobs != null) {
@@ -99,8 +112,8 @@ public class BestiaryPage {
 						int xIndex = i % COLLS_XCOUNT;
 						int yIndex = i / COLLS_XCOUNT;
 
-						float x = 39 + COLLS_XPADDING + (COLLS_XPADDING + 20) * xIndex;
-						float y = 7 + COLLS_YPADDING + (COLLS_YPADDING + 20) * yIndex;
+						float x = 23 + COLLS_XPADDING + (COLLS_XPADDING + 20) * xIndex;
+						float y = 20 + COLLS_YPADDING + (COLLS_YPADDING + 20) * yIndex;
 
 						Color color = new Color(128, 128, 128, 255);
 						float completedness = 0;

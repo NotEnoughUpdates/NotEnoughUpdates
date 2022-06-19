@@ -602,7 +602,7 @@ public class BestiaryData {
 				"family_ice_walker",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.packed_ice), EnumChatFormatting.AQUA + "§aIce Walker")
 			);
-			put("family_lapis_zombie", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "§aIce Walker", 4));
+			put("family_lapis_zombie", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "§aLapis Zombie", 4));
 			put(
 				"family_diamond_skeleton",
 				Utils.createSkull(
