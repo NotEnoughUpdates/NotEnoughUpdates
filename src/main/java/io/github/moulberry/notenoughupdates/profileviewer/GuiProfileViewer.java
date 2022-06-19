@@ -715,7 +715,7 @@ public class GuiProfileViewer extends GuiScreen {
 				TrophyFishingPage.renderPage(mouseX, mouseY);
 				break;
 			case BESTIARY:
-				BestiaryPage.renderPage(mouseX, mouseY);
+				BestiaryPage.renderPage(mouseX, mouseY, width, height);
 				break;
 			case LOADING:
 				String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
