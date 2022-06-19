@@ -26,6 +26,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -900,6 +901,11 @@ public class ItemTooltipListener {
 			boolean k = Keyboard.isKeyDown(Keyboard.KEY_K);
 			boolean m = Keyboard.isKeyDown(Keyboard.KEY_M);
 			boolean n = Keyboard.isKeyDown(Keyboard.KEY_N);
+			boolean f = Keyboard.isKeyDown(Keyboard.KEY_F);
+
+			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
+			}
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +
@@ -938,7 +944,7 @@ public class ItemTooltipListener {
 				}
 			}
 
-			copied = k || m || n;
+			copied = k || m || n || f;
 		}
 	}
 }

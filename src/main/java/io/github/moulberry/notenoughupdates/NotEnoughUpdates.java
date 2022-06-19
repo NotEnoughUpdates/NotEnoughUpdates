@@ -242,6 +242,9 @@ public class NotEnoughUpdates {
 			if (config.profileViewer.pageLayout.size() == 8) {
 				config.profileViewer.pageLayout.add(8);
 			}
+			if (config.profileViewer.pageLayout.size() == 9) {
+				config.profileViewer.pageLayout.add(9);
+			}
 			saveConfig();
 		}
 
