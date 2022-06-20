@@ -1391,6 +1391,11 @@ public class Utils {
 		}
 	}
 
+	public static JsonElement getElementOrDefault(JsonElement element, String path, JsonElement def) {
+		JsonElement result = getElement(element, path);
+		return result != null ? result : def;
+	}
+
 	public static ChatStyle createClickStyle(ClickEvent.Action action, String value) {
 		ChatStyle style = new ChatStyle();
 		style.setChatClickEvent(new ClickEvent(action, value));
@@ -1926,5 +1931,20 @@ public class Utils {
 			}
 		}
 		return stringBuilder.toString();
+	}
+
+	public static void showOutdatedRepoNotification() {
+		NotificationHandler.displayNotification(Lists.newArrayList(
+				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Outdated repo",
+				EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
+				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+					EnumChatFormatting.RED + " to see if that fixes the issue.",
+				EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
+					"discord.gg/moulberry" +
+					EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
+					"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
+			),
+			true, true
+		);
 	}
 }
