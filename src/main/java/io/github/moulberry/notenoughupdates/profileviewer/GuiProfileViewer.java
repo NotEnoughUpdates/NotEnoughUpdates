@@ -1325,7 +1325,7 @@ public class GuiProfileViewer extends GuiScreen {
 			dungeonLevelTextField.setCustomBorderColour(0xffffffff);
 			floorLevelTo = Integer.parseInt(dungeonLevelTextField.getText());
 
-			JsonArray levelingArray = Utils.getElement(leveling, "catacombs").getAsJsonArray();
+			JsonArray levelingArray = Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray();
 
 			float remaining = -((levelObjCata.level % 1) * levelObjCata.maxXpForLevel);
 
@@ -1374,7 +1374,7 @@ public class GuiProfileViewer extends GuiScreen {
 					profileInfo,
 					"dungeons.dungeon_types.catacombs.experience"
 				), 0);
-				levelObjCata = ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+				levelObjCata = ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 					cataXp, 99, false
 				);
 				levelObjCata.totalXp = cataXp;
@@ -1853,7 +1853,7 @@ public class GuiProfileViewer extends GuiScreen {
 						"dungeons.player_classes." + skillName.toLowerCase() + ".experience"
 					), 0);
 					ProfileViewer.Level levelObj =
-						ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+						ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 							cataXp, 50, false
 						);
 					levelObjClasses.put(skillName, levelObj);
@@ -3617,7 +3617,7 @@ public class GuiProfileViewer extends GuiScreen {
 		ProfileViewer.Level levelObjhotm = levelObjhotms.get(profileId);
 		if (levelObjhotm == null) {
 			float hotmXp = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
-			levelObjhotm = ProfileViewer.getLevel(Utils.getElement(leveling, "HOTM").getAsJsonArray(),
+			levelObjhotm = ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "HOTM", new JsonArray()).getAsJsonArray(),
 				hotmXp, 7, false
 			);
 			levelObjhotms.put(profileId, levelObjhotm);
