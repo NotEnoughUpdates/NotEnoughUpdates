@@ -29,7 +29,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -40,7 +39,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class BestiaryPage {
 
@@ -50,17 +48,13 @@ public class BestiaryPage {
 		"notenoughupdates:pv_bestiary_tab.png");
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static ItemStack selectedBestiaryLocation = null;
-	private static final String[] romans = new String[]{
-		"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
-		"XII", "XIII", "XIV", "XV", "XVI", "XVII", "XIX", "XX"
-	};
 	private static List<String> tooltipToDisplay = null;
 	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-	private static final int COLLS_XCOUNT = 7;
-	private static final int COLLS_YCOUNT = 4;
-	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
-	private static final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
-	public static void renderPage(int mouseX, int mouseY, int width, int height) {
+	private static final int XCOUNT = 7;
+	private static final int YCOUNT = 5;
+	private static final float XPADDING = (190 - XCOUNT * 20) / (float) (XCOUNT + 1);
+	private static final float YPADDING = (202 - YCOUNT * 20) / (float) (YCOUNT + 1);
+	public static void renderPage(int mouseX, int mouseY) {
 		guiLeft = GuiProfileViewer.getGuiLeft();
 		guiTop = GuiProfileViewer.getGuiTop();
 		JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
@@ -91,8 +85,8 @@ public class BestiaryPage {
 			}
 		}
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		width = scaledResolution.getScaledWidth();
-		height = scaledResolution.getScaledHeight();
+		int width = scaledResolution.getScaledWidth();
+		int height = scaledResolution.getScaledHeight();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BESTIARY_TEXTURE);
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
@@ -109,11 +103,11 @@ public class BestiaryPage {
 				if (mob != null) {
 					ItemStack mobItem = BestiaryData.getBestiaryMobs().get(mob);
 					if (mobItem != null) {
-						int xIndex = i % COLLS_XCOUNT;
-						int yIndex = i / COLLS_XCOUNT;
+						int xIndex = i % XCOUNT;
+						int yIndex = i / XCOUNT;
 
-						float x = 23 + COLLS_XPADDING + (COLLS_XPADDING + 20) * xIndex;
-						float y = 20 + COLLS_YPADDING + (COLLS_YPADDING + 20) * yIndex;
+						float x = 23 + XPADDING + (XPADDING + 20) * xIndex;
+						float y = 30 + YPADDING + (YPADDING + 20) * yIndex;
 
 						Color color = new Color(128, 128, 128, 255);
 						float completedness = 0;
@@ -143,13 +137,19 @@ public class BestiaryPage {
 								}
 
 								JsonObject leveling = Constants.LEVELING;
-								JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
-								int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-								ProfileViewer.Level level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+								ProfileViewer.Level level = null;
+								if (leveling != null) {
+									JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
+									int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
+									level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+								}
 
-
+								float levelNum = 0;
 								tooltipToDisplay = new ArrayList<>();
-								tooltipToDisplay.add(mobItem.getDisplayName() + " " + (int) Math.floor(level.level));
+								if (level != null) {
+									levelNum = level.level;
+								}
+								tooltipToDisplay.add(mobItem.getDisplayName() + " " + (int) Math.floor(levelNum));
 								tooltipToDisplay.add("Kills: " + numberFormat.format(kills));
 								tooltipToDisplay.add("Deaths: " + numberFormat.format(deaths));
 								//tooltipToDisplay.add("Total Collected: " + numberFormat.format(amount));
