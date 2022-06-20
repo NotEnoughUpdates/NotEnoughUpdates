@@ -958,6 +958,7 @@ public class GuiProfileViewer extends GuiScreen {
 			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
 			for (int i = 0; i < configList.size(); i++) {
 				ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+				if (page == null) continue;
 				if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
