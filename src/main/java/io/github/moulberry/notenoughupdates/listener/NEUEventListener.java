@@ -69,11 +69,6 @@ public class NEUEventListener {
 	private final NotEnoughUpdates neu;
 	private final ExecutorService itemPreloader = Executors.newFixedThreadPool(10);
 	private final List<ItemStack> toPreload = new ArrayList<>();
-	/**
-	 * When opening a GuiContainer, will reset the overlay and load the config.
-	 * When closing a GuiContainer, will save the config.
-	 * Also includes a dev feature used for automatically acquiring crafting information from the "Crafting Table" GUI.
-	 */
 	private boolean joinedSB = false;
 
 	private boolean preloadedItems = false;
