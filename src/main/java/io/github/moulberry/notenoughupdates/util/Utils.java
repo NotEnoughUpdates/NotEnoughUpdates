@@ -1935,7 +1935,7 @@ public class Utils {
 
 	public static void showOutdatedRepoNotification() {
 		NotificationHandler.displayNotification(Lists.newArrayList(
-				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Outdated repo",
+				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
 				EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
 				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
 					EnumChatFormatting.RED + " to see if that fixes the issue.",
