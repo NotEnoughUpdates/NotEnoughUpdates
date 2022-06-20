@@ -416,7 +416,6 @@ public class TrophyFishingPage {
 			trophyFishRarityIntegerMap.put(name, pairs);
 		}
 
-
 		trophyFishRarityIntegerMap.forEach((name, pair) -> {
 			if (!TrophyFishingPage.trophyFishList.containsKey(name)) {
 				TrophyFish trophyFish = new TrophyFish(name, new HashMap<>());
