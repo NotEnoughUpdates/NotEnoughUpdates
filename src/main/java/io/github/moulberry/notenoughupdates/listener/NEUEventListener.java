@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.listener;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
@@ -37,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -61,11 +63,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static io.github.moulberry.notenoughupdates.util.NotificationHandler.notificationLines;
-
 public class NEUEventListener {
 
-	private static long notificationDisplayMillis = 0;
 	private final NotEnoughUpdates neu;
 	private final ExecutorService itemPreloader = Executors.newFixedThreadPool(10);
 	private final List<ItemStack> toPreload = new ArrayList<>();
@@ -275,8 +274,6 @@ public class NEUEventListener {
 				if (!joinedSB) {
 					joinedSB = true;
 
-					//SBGamemodes.loadFromFile();
-
 					if (NotEnoughUpdates.INSTANCE.config.notifications.showUpdateMsg) {
 						displayUpdateMessageIfOutOfDate();
 					}
@@ -284,19 +281,18 @@ public class NEUEventListener {
 					if (NotEnoughUpdates.INSTANCE.config.notifications.doRamNotif) {
 						long maxMemoryMB = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
 						if (maxMemoryMB > 4100) {
-							notificationDisplayMillis = System.currentTimeMillis();
-							notificationLines = new ArrayList<>();
-							notificationLines.add(EnumChatFormatting.GRAY + "Too much memory allocated!");
-							notificationLines.add(String.format(
-								EnumChatFormatting.DARK_GRAY + "NEU has detected %03dMB of memory allocated to Minecraft!",
-								maxMemoryMB
-							));
-							notificationLines.add(EnumChatFormatting.GRAY + "It is recommended to allocated between 2-4GB of memory");
-							notificationLines.add(
-								EnumChatFormatting.GRAY + "More than 4GB MAY cause FPS issues, EVEN if you have 16GB+ available");
-							notificationLines.add("");
-							notificationLines.add(
-								EnumChatFormatting.GRAY + "For more information, visit #ram-info in discord.gg/moulberry");
+							NotificationHandler.displayNotification(Lists.newArrayList(
+								EnumChatFormatting.GRAY + "Too much memory allocated!",
+								String.format(
+									EnumChatFormatting.DARK_GRAY + "NEU has detected %03dMB of memory allocated to Minecraft!",
+									maxMemoryMB
+								),
+								EnumChatFormatting.GRAY + "It is recommended to allocated between 2-4GB of memory",
+								EnumChatFormatting.GRAY + "More than 4GB MAY cause FPS issues, EVEN if you have 16GB+ available",
+								EnumChatFormatting.GRAY + "For more information, visit #ram-info in discord.gg/moulberry",
+								"",
+								EnumChatFormatting.GRAY + "Press X on your keyboard to close this notification"
+							), false);
 						}
 					}
 

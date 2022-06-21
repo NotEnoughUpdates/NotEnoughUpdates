@@ -33,13 +33,15 @@ public class CookieWarning {
 
 	public static void resetNotification() {
 		hasNotified = false;
+		NotificationHandler.cancelNotification();
 	}
 
 	/**
 	 * Checks the tab list for a cookie timer, and sends a notification if the timer is within the tolerance
 	 */
 	public static void checkCookie() {
-		if (!hasNotified && NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+		if (NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif &&
+			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			String[] lines;
 			try {
 				lines = ((AccessorGuiPlayerTabOverlay) Minecraft.getMinecraft().ingameGUI.getTabList())
@@ -103,8 +105,12 @@ public class CookieWarning {
 						"\u00a77Press X on your keyboard to close this notification"
 					), true, true);
 					hasNotified = true;
+				} else if (hasNotified) {
+					NotificationHandler.cancelNotification();
+					hasNotified = false;
 				}
 			}
 		}
+
 	}
 }
