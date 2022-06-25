@@ -62,13 +62,15 @@ public class CookieWarning {
 				}
 			}
 			if (!hasCookie) {
-				NotificationHandler.displayNotification(Lists.newArrayList(
-					"\u00a7cBooster Cookie Ran Out!",
-					"\u00a77Your Booster Cookie expired!",
-					"\u00a77",
-					"\u00a77Press X on your keyboard to close this notification"
-				), true, true);
-				hasNotified = true;
+				if (!hasNotified) {
+					NotificationHandler.displayNotification(Lists.newArrayList(
+						"\u00a7cBooster Cookie Ran Out!",
+						"\u00a77Your Booster Cookie expired!",
+						"\u00a77",
+						"\u00a77Press X on your keyboard to close this notification"
+					), true, true);
+					hasNotified = true;
+				}
 				return;
 			}
 			if (timeLine != null) {
@@ -97,7 +99,7 @@ public class CookieWarning {
 							"NEU ran into an issue when retrieving the Booster Cookie Timer. Check the logs for details."));
 					hasNotified = true;
 				}
-				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins) {
+				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 					NotificationHandler.displayNotification(Lists.newArrayList(
 						"\u00a7cBooster Cookie Running Low!",
 						"\u00a77Your Booster Cookie will expire in " + timeLine,
@@ -105,9 +107,6 @@ public class CookieWarning {
 						"\u00a77Press X on your keyboard to close this notification"
 					), true, true);
 					hasNotified = true;
-				} else if (hasNotified) {
-					NotificationHandler.cancelNotification();
-					hasNotified = false;
 				}
 			}
 		}
