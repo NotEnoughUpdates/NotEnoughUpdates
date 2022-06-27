@@ -54,7 +54,6 @@ NotEnoughUpdates (NEU) is a feature rich 1.8.9 Minecraft forge mod for Hypixel S
 ## Features
 
 - An [item list](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) containing information and recipes about every item in skyblock.
-- A dungeons minimap.
 - Dungeon loot profit checker.
 - Item overlays for Treecapitator, Builder's Wand, Block Zapper, and Bonemerang.
 - An in-game skyblock profile viewer accessed with `/pv [player]`.

@@ -3481,8 +3481,6 @@ public class GuiProfileViewer extends GuiScreen {
 			Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_treasure"), 0);
 		float items_fished_large_treasure =
 			Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_large_treasure"), 0);
-		float items_fished_trophy_fish =
-			Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_trophy_fish"), 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GREEN + "Ores Mined",
@@ -3518,13 +3516,6 @@ public class GuiProfileViewer extends GuiScreen {
 			EnumChatFormatting.WHITE.toString() + (int) items_fished_large_treasure,
 			guiLeft + xStart + xOffset * 2,
 			guiTop + yStartTop + yOffset * 5,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.GREEN + "Trophy Fish Fished",
-			EnumChatFormatting.WHITE.toString() + (int) items_fished_trophy_fish,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartTop + yOffset * 6,
 			76
 		);
 
