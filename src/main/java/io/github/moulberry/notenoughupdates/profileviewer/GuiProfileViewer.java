@@ -1934,7 +1934,7 @@ public class GuiProfileViewer extends GuiScreen {
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs"))
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						Utils.formatNumberWithDots((long) levelObj.totalXp);
+						Utils.formatNumberWithCommas((long) levelObj.totalXp);
 				if (levelObj.maxed) {
 					levelStr = EnumChatFormatting.GOLD + "MAXED!";
 				} else {
