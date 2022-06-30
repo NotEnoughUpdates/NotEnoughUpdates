@@ -249,6 +249,10 @@ public class XPInformation {
 	}
 
 	public double getPetLevel(String petId, double exp, String rarity) {
+		if(!Constants.PETS.has("pet_levels")) {
+			Utils.showOutdatedRepoNotification();
+			return 0;
+		}
 		Stream<JsonElement> pet_levels =
 			StreamSupport.stream(Constants.PETS.get("pet_levels").getAsJsonArray().spliterator(), false);
 		int pet_rarity_offset = Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity).getAsInt();
