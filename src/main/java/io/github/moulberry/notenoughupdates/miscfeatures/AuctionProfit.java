@@ -132,8 +132,8 @@ public class AuctionProfit {
 
 		}
 		int a = guiLeft + xSize + 4;
-		String firstString = EnumChatFormatting.DARK_GREEN + "" + unclaimedAuctions + EnumChatFormatting.GRAY + " unclaimed auctions";
-		String secondString = EnumChatFormatting.RED + "" + expiredAuctions + EnumChatFormatting.GRAY + " expired auctions";
+		String firstString = EnumChatFormatting.DARK_GREEN + "" + unclaimedAuctions + EnumChatFormatting.GRAY + " Unclaimed auctions";
+		String secondString = EnumChatFormatting.RED + "" + expiredAuctions + EnumChatFormatting.GRAY + " Expired auctions";
 
 		Utils.drawStringScaled(firstString, Minecraft.getMinecraft().fontRendererObj, a + 7, guiTop + 6, true, 0, 1);
 		Utils.drawStringScaled(secondString, Minecraft.getMinecraft().fontRendererObj, a + 7, guiTop + 16, true, 0, 1);
