@@ -151,8 +151,11 @@ public class BestiaryPage {
 								tooltipToDisplay.add(mobItem.getDisplayName() + " " + (int) Math.floor(levelNum));
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + numberFormat.format(kills));
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths));
-								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.AQUA +
-									GuiProfileViewer.shortNumberFormat(Math.round((level.level % 1) * level.maxXpForLevel), 0) + "/" + GuiProfileViewer.shortNumberFormat(level.maxXpForLevel, 0));
+								if (level != null) {
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.AQUA +
+										GuiProfileViewer.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel), 0) + "/" +
+										GuiProfileViewer.shortNumberFormat(level.maxXpForLevel, 0));
+								}
 							}
 						}
 
