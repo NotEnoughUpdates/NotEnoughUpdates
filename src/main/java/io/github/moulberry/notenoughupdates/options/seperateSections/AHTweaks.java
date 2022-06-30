@@ -137,4 +137,13 @@ public class AHTweaks {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
 	public boolean enableSortWarning = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable AH Sell Value",
+		desc = "Display profit information (coins to collect, value if all sold, expired and unclaimed auctions)"
+	)
+	@ConfigEditorBoolean
+	public boolean enableAhSellValue = false;
+
 }

@@ -33,6 +33,7 @@ import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
@@ -263,6 +264,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new ItemCooldowns());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
 		MinecraftForge.EVENT_BUS.register(new FuelBar());
+		MinecraftForge.EVENT_BUS.register(new AuctionProfit());
 		MinecraftForge.EVENT_BUS.register(XPInformation.getInstance());
 		MinecraftForge.EVENT_BUS.register(OverlayManager.petInfoOverlay);
 		MinecraftForge.EVENT_BUS.register(OverlayManager.timersOverlay);
