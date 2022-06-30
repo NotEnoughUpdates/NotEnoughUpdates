@@ -456,8 +456,8 @@ public class BestiaryData {
 				"family_bladesoul",
 				Utils.createSkull(
 					EnumChatFormatting.AQUA + "§aBladesoul",
-					"0e9463ed-9d9b-5931-a361-97015065b546",
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTYzMDA5NGYyN2IxMWEyZTkwMmUyNmMxNmZlNWRmZTM1ZmI0OTMxYWI1Zjk0N2JiYzlhY2NhYjJlZTUwMTcwNCJ9fX0="
+					"9a1699a4-9b61-37a5-be7a-ca23a1f092a1",
+					"ewogICJ0aW1lc3RhbXAiIDogMTY0NDA4Mjg1NzcxMCwKICAicHJvZmlsZUlkIiA6ICIwNTVhOTk2NTk2M2E0YjRmOGMwMjRmMTJmNDFkMmNmMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVWb3hlbGxlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdmNWYzMzg0Mzg0ZDdmMDNiZjk3YTczMDk5YjBiYWZiNzJjNTM4ZmMwNDE1YWM4NjEzYjY2NGY4NzU3OWEzNzkiCiAgICB9CiAgfQp9"
 				)
 			);
 			put(
@@ -472,8 +472,8 @@ public class BestiaryData {
 				"family_flaming_spider",
 				Utils.createSkull(
 					EnumChatFormatting.AQUA + "§aFlaming Spider",
-					"7c63f3cf-a963-311a-aeca-3a075b417806",
-					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q1NDE1NDFkYWFmZjUwODk2Y2QyNThiZGJkZDRjZjgwYzNiYTgxNjczNTcyNjA3OGJmZTM5MzkyN2U1N2YxIn19fQ="
+					"d27e14a2-f35e-3c7b-8062-089fa201a533",
+					"ewogICJ0aW1lc3RhbXAiIDogMTY0NDQ5OTUzOTQ2NywKICAicHJvZmlsZUlkIiA6ICJhYTZhNzUwNWVkYmU0NjNiYjk1NWYyMWY0MjNiYTM1NCIsCiAgInByb2ZpbGVOYW1lIiA6ICJub3RhbmR5d2FyaG9sIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzVhNjVlZjIzZWEzNTA0NzE1MGQzMzg4MDQ3M2E0N2ZlNjM1ZjBjMGUzYzgyM2JkNzZkYzg0OWNiMDI0NDE2NTUiLAogICAgICAibWV0YWRhdGEiIDogewogICAgICAgICJtb2RlbCIgOiAic2xpbSIKICAgICAgfQogICAgfQogIH0KfQ=="
 				)
 			);
 			put(
@@ -1005,13 +1005,13 @@ public class BestiaryData {
 			put("family_zealot_enderman", "MOB");
 
 			// Crimson Isles
-			put("family_ashfang", "MOB");
-			put("family_barbarian_duke_x", "MOB");
-			put("family_bladesoul", "MOB");
+			put("family_ashfang", "BOSS");
+			put("family_barbarian_duke_x", "BOSS");
+			put("family_bladesoul", "BOSS");
 			put("family_blaze", "MOB");
 			put("family_flaming_spider", "MOB");
 			put("family_ghast", "MOB");
-			put("family_mage_outlaw", "MOB");
+			put("family_mage_outlaw", "BOSS");
 			put("family_magma_cube", "MOB");
 			put("family_magma_cube_boss", "BOSS");
 			put("family_matcho", "MOB");

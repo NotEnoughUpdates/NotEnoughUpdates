@@ -54,6 +54,7 @@ public class BestiaryPage {
 	private static final int YCOUNT = 5;
 	private static final float XPADDING = (190 - XCOUNT * 20) / (float) (XCOUNT + 1);
 	private static final float YPADDING = (202 - YCOUNT * 20) / (float) (YCOUNT + 1);
+
 	public static void renderPage(int mouseX, int mouseY) {
 		guiLeft = GuiProfileViewer.getGuiLeft();
 		guiTop = GuiProfileViewer.getGuiTop();
@@ -96,6 +97,7 @@ public class BestiaryPage {
 		RenderHelper.enableGUIStandardItemLighting();
 
 		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
+		Color color = new Color(128, 128, 128, 255);
 		if (mobs != null) {
 			for (int i = 0; i < mobs.size(); i++) {
 
@@ -109,7 +111,6 @@ public class BestiaryPage {
 						float x = 23 + XPADDING + (XPADDING + 20) * xIndex;
 						float y = 30 + YPADDING + (YPADDING + 20) * yIndex;
 
-						Color color = new Color(128, 128, 128, 255);
 						float completedness = 0;
 
 						GlStateManager.color(1, 1, 1, 1);
@@ -126,33 +127,32 @@ public class BestiaryPage {
 						float kills = Utils.getElementAsFloat(Utils.getElement(profileInfo, "bestiary.kills_" + mob), 0);
 						float deaths = Utils.getElementAsFloat(Utils.getElement(profileInfo, "bestiary.deaths_" + mob), 0);
 
+						String type;
+						if (BestiaryData.getMobType().get(mob) != null) {
+							type = BestiaryData.getMobType().get(mob);
+						} else {
+							type = "MOB";
+						}
+						JsonObject leveling = Constants.LEVELING;
+						ProfileViewer.Level level = null;
+						if (leveling != null) {
+							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
+							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
+							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+						}
+
+						float levelNum = 0;
+						if (level != null) {
+							levelNum = level.level;
+						}
 						if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
 							if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
-								String type;
-								String tierString = "I";
-								if (BestiaryData.getMobType().get(mob) != null) {
-									type = BestiaryData.getMobType().get(mob);
-								} else {
-									type = "MOB";
-								}
-
-								JsonObject leveling = Constants.LEVELING;
-								ProfileViewer.Level level = null;
-								if (leveling != null) {
-									JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
-									int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-									level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
-								}
-
-								float levelNum = 0;
 								tooltipToDisplay = new ArrayList<>();
-								if (level != null) {
-									levelNum = level.level;
-								}
 								tooltipToDisplay.add(mobItem.getDisplayName() + " " + (int) Math.floor(levelNum));
-								tooltipToDisplay.add("Kills: " + numberFormat.format(kills));
-								tooltipToDisplay.add("Deaths: " + numberFormat.format(deaths));
-								//tooltipToDisplay.add("Total Collected: " + numberFormat.format(amount));
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + numberFormat.format(kills));
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths));
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.AQUA +
+									GuiProfileViewer.shortNumberFormat(Math.round((level.level % 1) * level.maxXpForLevel), 0) + "/" + GuiProfileViewer.shortNumberFormat(level.maxXpForLevel, 0));
 							}
 						}
 
@@ -163,13 +163,16 @@ public class BestiaryPage {
 //								tierStringColour
 //							);
 //						}
-
-						Utils.drawStringCentered(GuiProfileViewer.shortNumberFormat(kills, 0) + "", Minecraft.getMinecraft().fontRendererObj,
+						Utils.drawStringCentered((int) Math.floor(levelNum) + "", Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + x + 10, guiTop + y + 26, true,
 							color.getRGB()
 						);
 					}
 				}
+				Utils.renderAlignedString(EnumChatFormatting.RED + "Bestiary Level: ",
+					EnumChatFormatting.GRAY + "" + (float) getBeTiers(profileInfo) / 10,
+					guiLeft + 220, guiTop + 50, 110
+				);
 			}
 		}
 		if (tooltipToDisplay != null) {
@@ -189,7 +192,7 @@ public class BestiaryPage {
 		for (ItemStack stack : BestiaryData.getBestiaryLocations().keySet()) {
 			if (mouseX > guiLeft + 30 + bestiaryYSize * yIndex &&
 				mouseX < guiLeft + 30 + bestiaryYSize * yIndex + 20) {
-				if (mouseY > guiTop + 10 &&	mouseY < guiTop + 10 + 20) {
+				if (mouseY > guiTop + 10 && mouseY < guiTop + 10 + 20) {
 					selectedBestiaryLocation = stack;
 					Utils.playPressSound();
 					return;
@@ -197,5 +200,75 @@ public class BestiaryPage {
 			}
 			yIndex++;
 		}
+	}
+
+	public static int getBeTiers(JsonObject profileInfo) {
+		int beLevel = 0;
+		for (ItemStack items : BestiaryData.getBestiaryLocations().keySet()) {
+			List<String> mobs = BestiaryData.getBestiaryLocations().get(items);
+			if (mobs != null) {
+				for (int i = 0; i < mobs.size(); i++) {
+
+					String mob = mobs.get(i);
+					if (mob != null) {
+						float kills = Utils.getElementAsFloat(Utils.getElement(profileInfo, "bestiary.kills_" + mob), 0);
+						String type;
+						if (BestiaryData.getMobType().get(mob) != null) {
+							type = BestiaryData.getMobType().get(mob);
+						} else {
+							type = "MOB";
+						}
+						JsonObject leveling = Constants.LEVELING;
+						ProfileViewer.Level level = null;
+						if (leveling != null) {
+							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
+							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
+							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+						}
+
+						float levelNum = 0;
+						if (level != null) {
+							levelNum = level.level;
+						}
+						beLevel += (int) Math.floor(levelNum);
+					}
+				}
+			}
+		}
+		return beLevel;
+	}
+
+	public static int getBeTiersFromPage(JsonObject profileInfo) {
+		int beLevel = 0;
+		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
+		if (mobs != null) {
+			for (int i = 0; i < mobs.size(); i++) {
+
+				String mob = mobs.get(i);
+				if (mob != null) {
+					float kills = Utils.getElementAsFloat(Utils.getElement(profileInfo, "bestiary.kills_" + mob), 0);
+					String type;
+					if (BestiaryData.getMobType().get(mob) != null) {
+						type = BestiaryData.getMobType().get(mob);
+					} else {
+						type = "MOB";
+					}
+					JsonObject leveling = Constants.LEVELING;
+					ProfileViewer.Level level = null;
+					if (leveling != null) {
+						JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
+						int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
+						level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+					}
+
+					float levelNum = 0;
+					if (level != null) {
+						levelNum = level.level;
+					}
+					beLevel += (int) Math.floor(levelNum);
+				}
+			}
+		}
+		return beLevel;
 	}
 }
