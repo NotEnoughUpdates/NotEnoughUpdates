@@ -255,7 +255,15 @@ public class XPInformation {
 		}
 		Stream<JsonElement> pet_levels =
 			StreamSupport.stream(Constants.PETS.get("pet_levels").getAsJsonArray().spliterator(), false);
+		if(!Constants.PETS.has("pet_rarity_offset"))  {
+			Utils.showOutdatedRepoNotification();
+			return 0;
+		}
 		int pet_rarity_offset = Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity).getAsInt();
+		if(!Constants.PETS.has("custom_pet_leveling")) {
+			Utils.showOutdatedRepoNotification();
+			return 0;
+		}
 		JsonObject custom_pet_leveling = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petId);
 		List<Integer> xpLevelsRequired =
 			pet_levels.skip(pet_rarity_offset).limit(100).map(JsonElement::getAsInt).collect(Collectors.toList());
