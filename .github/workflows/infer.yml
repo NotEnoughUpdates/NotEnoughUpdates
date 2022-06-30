@@ -21,14 +21,29 @@ jobs:
       - name: Setup Infer
         uses: srz-zumix/setup-infer@v1
       - name: Run Infer on feature
-        run: ./.github/workflows/inferbuild.sh feature
+        run: |
+          echo On commit $(git log --pretty=%s -1)
+          mkdir -p ciwork
+          infer capture -- ./gradlew clean test --no-daemon
+          infer analyze
+          cp infer-out/report.json ciwork/report-feature.json
       - uses: actions/checkout@v2
         name: Checkout base
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           clean: false
       - name: Run Infer on base
-        run: ./.github/workflows/inferbuild.sh base
+        run: |
+          echo On commit $(git log --pretty=%s -1)
+          infer capture --reactive -- ./gradlew clean test --no-daemon
+          infer analyze --reactive
       - name: Generate report
-        run: ./.github/workflows/inferbuild.sh report
-
+        run: |
+          infer reportdiff --report-current ciwork/report-feature.json --report-previous infer-out/report.json
+          jq -r '.[] | select(.severity == "ERROR") | ("::error file="+.file +",line=" +(.line|tostring)+"::" + .qualifier)' <infer-out/differential/introduced.json
+          jq -r '.[] | select(.severity == "WARNING") | ("::warning file="+.file +",line=" +(.line|tostring)+"::" + .qualifier)' <infer-out/differential/introduced.json
+          fixcount=$(jq -r "length" <infer-out/differential/fixed.json)
+          unfixcount=$(jq -r "length" <infer-out/differential/introduced.json)
+          othercount=$(jq -r "length" <infer-out/differential/preexisting.json)
+          echo "This PR fixes $fixcount potential bug(s), introduces $unfixcount potential bug(s). (Total present in feature branch: $((unfixcount + othercount)))" >>$GITHUB_STEP_SUMMARY
+          [[ $unfixcount != 0 ]] && exit 1 || echo ok.

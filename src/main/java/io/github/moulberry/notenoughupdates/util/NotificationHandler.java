@@ -49,6 +49,13 @@ public class NotificationHandler {
 		showNotificationOverInv = overInventory;
 	}
 
+	/**
+	 * Stops rendering the notification, if one is displayed
+	 */
+	public static void cancelNotification() {
+		notificationDisplayMillis = 0;
+	}
+
 	public static void renderNotification() {
 		long timeRemaining = 15000 - (System.currentTimeMillis() - notificationDisplayMillis);
 		boolean display = timeRemaining > 0 || notificationDisplayMillis == -420;

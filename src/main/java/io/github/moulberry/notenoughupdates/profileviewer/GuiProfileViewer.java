@@ -957,6 +957,7 @@ public class GuiProfileViewer extends GuiScreen {
 			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
 			for (int i = 0; i < configList.size(); i++) {
 				ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+				if (page == null) continue;
 				if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
@@ -1286,7 +1287,7 @@ public class GuiProfileViewer extends GuiScreen {
 			dungeonLevelTextField.setCustomBorderColour(0xffffffff);
 			floorLevelTo = Integer.parseInt(dungeonLevelTextField.getText());
 
-			JsonArray levelingArray = Utils.getElement(leveling, "catacombs").getAsJsonArray();
+			JsonArray levelingArray = Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray();
 
 			float remaining = -((levelObjCata.level % 1) * levelObjCata.maxXpForLevel);
 
@@ -1335,7 +1336,7 @@ public class GuiProfileViewer extends GuiScreen {
 					profileInfo,
 					"dungeons.dungeon_types.catacombs.experience"
 				), 0);
-				levelObjCata = ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+				levelObjCata = ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 					cataXp, 99, false
 				);
 				levelObjCata.totalXp = cataXp;
@@ -1814,7 +1815,7 @@ public class GuiProfileViewer extends GuiScreen {
 						"dungeons.player_classes." + skillName.toLowerCase() + ".experience"
 					), 0);
 					ProfileViewer.Level levelObj =
-						ProfileViewer.getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+						ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 							cataXp, 50, false
 						);
 					levelObjClasses.put(skillName, levelObj);
@@ -1934,7 +1935,7 @@ public class GuiProfileViewer extends GuiScreen {
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs"))
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						Utils.formatNumberWithCommas((long) levelObj.totalXp);
+						numberFormat.format(levelObj.totalXp);
 				if (levelObj.maxed) {
 					levelStr = EnumChatFormatting.GOLD + "MAXED!";
 				} else {
@@ -3217,8 +3218,6 @@ public class GuiProfileViewer extends GuiScreen {
 			Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_treasure"), 0);
 		float items_fished_large_treasure =
 			Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_large_treasure"), 0);
-		float items_fished_trophy_fish =
-			Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_trophy_fish"), 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GREEN + "Ores Mined",
@@ -3254,13 +3253,6 @@ public class GuiProfileViewer extends GuiScreen {
 			EnumChatFormatting.WHITE.toString() + (int) items_fished_large_treasure,
 			guiLeft + xStart + xOffset * 2,
 			guiTop + yStartTop + yOffset * 5,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.GREEN + "Trophy Fish Fished",
-			EnumChatFormatting.WHITE.toString() + (int) items_fished_trophy_fish,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartTop + yOffset * 6,
 			76
 		);
 
@@ -3354,7 +3346,7 @@ public class GuiProfileViewer extends GuiScreen {
 		ProfileViewer.Level levelObjhotm = levelObjhotms.get(profileId);
 		if (levelObjhotm == null) {
 			float hotmXp = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
-			levelObjhotm = ProfileViewer.getLevel(Utils.getElement(leveling, "HOTM").getAsJsonArray(),
+			levelObjhotm = ProfileViewer.getLevel(Utils.getElementOrDefault(leveling, "HOTM", new JsonArray()).getAsJsonArray(),
 				hotmXp, 7, false
 			);
 			levelObjhotms.put(profileId, levelObjhotm);
@@ -3619,7 +3611,7 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GOLD + "Speed" + EnumChatFormatting.GRAY + ".",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(miningSpeed + 2, 3) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format(Math.pow(miningSpeed + 2, 3)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Mining Speed",
 				EnumChatFormatting.GRAY + "Level " + miningSpeed + EnumChatFormatting.DARK_GRAY + "/50",
@@ -3644,7 +3636,7 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GOLD + "Fortune" + EnumChatFormatting.GRAY + ".",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(miningFortune + 2, 3.05) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format(Math.pow(miningFortune + 2, 3)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Mining Fortune",
 				EnumChatFormatting.GRAY + "Level " + miningFortune + EnumChatFormatting.DARK_GRAY + "/50",
@@ -3671,7 +3663,7 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "Ore.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(tittyInsane + 2, 3.1) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(tittyInsane + 2, 3)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Titanium Insanium",
 				EnumChatFormatting.GRAY + "Level " + tittyInsane + EnumChatFormatting.DARK_GRAY + "/50",
@@ -3736,7 +3728,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(luckofcave + 2, 3.07) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(luckofcave + 2, 3.07)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Luck of the Cave",
 				"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
@@ -3790,7 +3782,7 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "adjacent ores.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(effMiner + 2, 2.6) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(effMiner + 2, 2.6)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Efficient Miner",
 				EnumChatFormatting.GRAY + "Level " + effMiner + EnumChatFormatting.DARK_GRAY + "/100",
@@ -3904,7 +3896,7 @@ public class GuiProfileViewer extends GuiScreen {
 					(moleStat == 1.0 ? "." : "s."),
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(mole + 2, 2.2) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(mole + 2, 2.2)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Mole",
 				EnumChatFormatting.GRAY + "Level " + mole + EnumChatFormatting.DARK_GRAY + "/190",
@@ -3931,7 +3923,7 @@ public class GuiProfileViewer extends GuiScreen {
 				EnumChatFormatting.GRAY + "Powder and Gemstone Powder§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(powderBuff + 2, 3.2) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(powderBuff + 2, 3.2)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Powder Buff",
 				EnumChatFormatting.GRAY + "Level " + powderBuff + EnumChatFormatting.DARK_GRAY + "/50",
@@ -3993,7 +3985,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(seasonMine + 2, 2.3) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(seasonMine + 2, 2.3)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Seasoned Mineman",
 				"§7Level " + seasonMine + "§8/100",
@@ -4031,7 +4023,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7while in the Crystal Hollows.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(lonesomeMiner + 2, 3.07) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(lonesomeMiner + 2, 3.07)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Lonesome Miner",
 				"§7Level " + lonesomeMiner + EnumChatFormatting.DARK_GRAY + "/45",
@@ -4056,7 +4048,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§6Speed§7 when mining Gemstones.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(professional + 2, 2.3) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(professional + 2, 2.3)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Professional",
 				"§7Level " + professional + EnumChatFormatting.DARK_GRAY + "/140",
@@ -4079,7 +4071,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§6Speed§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(miningSpeed2 + 2, 3.2) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format(Math.pow(miningSpeed2 + 2, 3))+ " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Mining Speed 2",
 				"§7Level " + miningSpeed2 + EnumChatFormatting.DARK_GRAY + "/50",
@@ -4102,7 +4094,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7forge by §a" + (quickForgeStat < 20 ? quickForgeStat : 30) + "%§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(quickForge + 2, 4) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(quickForge + 2, 4)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Quick Forge",
 				"§7Level " + quickForge + EnumChatFormatting.DARK_GRAY + "/20",
@@ -4125,7 +4117,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§6Fortune§7 when mining Gemstone.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(fortunate + 2, 3.05) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(fortunate + 2, 3.05)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Fortunate",
 				"§7Level " + fortunate + EnumChatFormatting.DARK_GRAY + "/20",
@@ -4148,7 +4140,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7find treasure.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(greatExplorer + 2, 4) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(greatExplorer + 2, 4)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Great Explorer",
 				"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
@@ -4170,7 +4162,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7Grants §a+§a" + miningFortune2Stat + "§7 §6☘ Mining", "§6Fortune§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.LIGHT_PURPLE + "" + (int) Math.pow(miningFortune2 + 2, 3.2) + " Gemstone Powder"
+				EnumChatFormatting.LIGHT_PURPLE + "" + numberFormat.format((int) Math.pow(miningFortune2 + 2, 3.2)) + " Gemstone Powder"
 			) : Lists.newArrayList(
 				"Mining Fortune 2",
 				"§7Level " + miningFortune2 + EnumChatFormatting.DARK_GRAY + "/50",
@@ -4260,7 +4252,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7§5Fallen Stars§7.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) Math.pow(crystallized + 2, 2.4) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + numberFormat.format((int) Math.pow(crystallized + 2, 2.4)) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Crystallized",
 				"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
@@ -4888,9 +4880,7 @@ public class GuiProfileViewer extends GuiScreen {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE +
 								shortNumberFormat(Math.round((level % 1) * maxXp), 0) + "/" + shortNumberFormat(maxXp, 0));
 						}
-						String totalXpS = NumberFormat
-							.getIntegerInstance()
-							.format((int) skillInfo.get("experience_" + entry.getKey()).getAsFloat());
+						String totalXpS = numberFormat.format((int) skillInfo.get("experience_" + entry.getKey()).getAsFloat());
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " +
 							EnumChatFormatting.DARK_PURPLE + totalXpS);
 					}

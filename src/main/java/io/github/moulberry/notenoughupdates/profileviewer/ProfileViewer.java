@@ -862,8 +862,10 @@ public class ProfileViewer {
 			if (profileId == null) profileId = latestProfile;
 			if (skillInfoMap.containsKey(profileId)) return skillInfoMap.get(profileId);
 			JsonObject leveling = Constants.LEVELING;
-			if (leveling == null) return null;
-
+			if (leveling == null || !leveling.has("social")) {
+				Utils.showOutdatedRepoNotification();
+				return null;
+			}
 			float experience_skill_taming =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_taming"), 0);
 			float experience_skill_mining =
@@ -952,7 +954,9 @@ public class ProfileViewer {
 			Level level_skill_runecrafting = getLevel(Utils.getElement(leveling, "runecrafting_xp").getAsJsonArray(),
 				experience_skill_runecrafting, getCap(leveling, "runecrafting"), false
 			);
-			Level level_skill_social = getLevel(Utils.getElement(leveling, "social").getAsJsonArray(),
+			Level level_skill_social = getLevel(Utils
+					.getElementOrDefault(leveling, "social", new JsonArray())
+					.getAsJsonArray(),
 				experience_skill_social, getCap(leveling, "social"), false
 			);
 			Level level_skill_catacombs = getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),

@@ -26,34 +26,23 @@ import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CookieWarning {
 
 	private static boolean hasNotified;
 
-	public CookieWarning() {
-		hasNotified = false;
-	}
-
-	@SubscribeEvent
-	public void onJoinWorld(EntityJoinWorldEvent e) {
-		if (e.entity == Minecraft.getMinecraft().thePlayer) {
-			this.checkCookie();
-		}
-	}
-
 	public static void resetNotification() {
 		hasNotified = false;
+		NotificationHandler.cancelNotification();
 	}
 
 	/**
-	 * Checks the tab list for a cookie timer, and sends a chat message if the timer is within the tolerance
+	 * Checks the tab list for a cookie timer, and sends a notification if the timer is within the tolerance
 	 */
-	private void checkCookie() {
-		if (!hasNotified && NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif) {
-			String[] lines = {};
+	public static void checkCookie() {
+		if (NotEnoughUpdates.INSTANCE.config.notifications.doBoosterNotif &&
+			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			String[] lines;
 			try {
 				lines = ((AccessorGuiPlayerTabOverlay) Minecraft.getMinecraft().ingameGUI.getTabList())
 					.getFooter()
@@ -106,6 +95,7 @@ public class CookieWarning {
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 						EnumChatFormatting.RED +
 							"NEU ran into an issue when retrieving the Booster Cookie Timer. Check the logs for details."));
+					hasNotified = true;
 				}
 				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins) {
 					NotificationHandler.displayNotification(Lists.newArrayList(
@@ -115,8 +105,12 @@ public class CookieWarning {
 						"\u00a77Press X on your keyboard to close this notification"
 					), true, true);
 					hasNotified = true;
+				} else if (hasNotified) {
+					NotificationHandler.cancelNotification();
+					hasNotified = false;
 				}
 			}
 		}
+
 	}
 }

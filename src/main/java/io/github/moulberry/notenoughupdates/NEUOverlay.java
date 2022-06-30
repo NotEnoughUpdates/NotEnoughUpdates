@@ -1119,7 +1119,7 @@ public class NEUOverlay extends Gui {
 						internalname.set(manager.getInternalNameForItem(hover));
 						itemstack.set(hover);
 					}
-				} else if (!hoverInv) {
+				} else {
 					Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
 
 					int width = Utils.peekGuiScale().getScaledWidth();

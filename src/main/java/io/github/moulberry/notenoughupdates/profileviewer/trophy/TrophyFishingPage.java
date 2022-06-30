@@ -378,6 +378,7 @@ public class TrophyFishingPage {
 		}
 		JsonObject trophyObject = trophyFishInformation.get("trophy_fish").getAsJsonObject();
 		Map<String, List<Pair<TrophyFish.TrophyFishRarity, Integer>>> trophyFishRarityIntegerMap = new HashMap<>();
+		totalCount = 0;
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : trophyObject.entrySet()) {
 			String key = stringJsonElementEntry.getKey();
 			if (key.equalsIgnoreCase("rewards") || key.equalsIgnoreCase("total_caught")) {

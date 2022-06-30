@@ -105,6 +105,7 @@ dependencies {
 		implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
 		implementation("info.bliki.wiki:bliki-core:3.1.0")
 		testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+		testAnnotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
 }
 
