@@ -1937,7 +1937,7 @@ public class Utils {
 		NotificationHandler.displayNotification(Lists.newArrayList(
 				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
 				EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
-				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +" and restart your game" +
 					EnumChatFormatting.RED + " to see if that fixes the issue.",
 				EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
 					"discord.gg/moulberry" +

@@ -1418,6 +1418,7 @@ public class ProfileViewer {
 				PlayerStats.getStats(getSkillInfo(profileId), getInventoryInfo(profileId), getCollectionInfo(profileId),
 					getPetsInfo(profileId), profileInfo
 				);
+			if (stats == null) return null;
 			this.stats.put(profileId, stats);
 			return stats;
 		}

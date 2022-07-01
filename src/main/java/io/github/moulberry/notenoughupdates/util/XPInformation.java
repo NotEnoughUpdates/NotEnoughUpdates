@@ -249,7 +249,7 @@ public class XPInformation {
 	}
 
 	public double getPetLevel(String petId, double exp, String rarity) {
-		if(!Constants.PETS.has("pet_levels")) {
+		if(Constants.PETS == null || !Constants.PETS.has("pet_levels")) {
 			Utils.showOutdatedRepoNotification();
 			return 0;
 		}

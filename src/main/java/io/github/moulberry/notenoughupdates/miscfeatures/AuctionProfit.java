@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
@@ -43,10 +44,13 @@ public class AuctionProfit {
 		new ResourceLocation("notenoughupdates:auction_profit.png");
 
 	@SubscribeEvent
-	public void onWorldUnload(GuiScreenEvent.BackgroundDrawnEvent event) {
-		if(!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableAhSellValue) return;
-		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
-		Container inventoryContainer = Minecraft.getMinecraft().thePlayer.openContainer;
+	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableAhSellValue
+			|| !NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft == null || minecraft.thePlayer == null) return;
+
+		Container inventoryContainer = minecraft.thePlayer.openContainer;
 		if (!(inventoryContainer instanceof ContainerChest)) return;
 		ContainerChest containerChest = (ContainerChest) inventoryContainer;
 		if (!containerChest.getLowerChestInventory().getDisplayName()
@@ -56,7 +60,7 @@ public class AuctionProfit {
 		int xSize = ((AccessorGuiContainer) gui).getXSize();
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
-		Minecraft.getMinecraft().getTextureManager().bindTexture(auctionProfitImage);
+		minecraft.getTextureManager().bindTexture(auctionProfitImage);
 		GL11.glColor4f(1, 1, 1, 1);
 		GlStateManager.disableLighting();
 		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 180, 101, 0, 180 / 256f, 0, 101 / 256f, GL11.GL_NEAREST);
@@ -103,8 +107,8 @@ public class AuctionProfit {
 					String coinsString = s.split("coins")[0];
 					int coins = tryParse(EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim()));
 					if (coins != 0) {
-						if(coins > 1000000) {
-							coins /=1.1;
+						if (coins > 1000000) {
+							coins /= 1.1;
 						}
 						coinsToCollect += coins;
 					}
@@ -112,8 +116,8 @@ public class AuctionProfit {
 
 				if (line.contains("§7Status: §aSold!") || line.contains("§7Status: §aEnded!")) {
 					if (coinsToCheck != 0) {
-						if(coinsToCheck > 1000000) {
-							coinsToCheck /=1.1;
+						if (coinsToCheck > 1000000) {
+							coinsToCheck /= 1.1;
 						}
 						coinsToCollect += coinsToCheck;
 						coinsToCheck = 0;
@@ -132,21 +136,26 @@ public class AuctionProfit {
 
 		}
 		int a = guiLeft + xSize + 4;
-		String firstString = EnumChatFormatting.DARK_GREEN + "" + unclaimedAuctions + EnumChatFormatting.GRAY + " Unclaimed auctions";
-		String secondString = EnumChatFormatting.RED + "" + expiredAuctions + EnumChatFormatting.GRAY + " Expired auctions";
+		String unclaimedAuctionsStr = EnumChatFormatting.DARK_GREEN.toString()
+			+ unclaimedAuctions + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_GRAY + " Unclaimed auctions";
+		String expiredAuctionsStr =
+			EnumChatFormatting.RED.toString() + expiredAuctions + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_GRAY +
+				" Expired auctions";
 
-		Utils.drawStringScaled(firstString, Minecraft.getMinecraft().fontRendererObj, a + 7, guiTop + 6, true, 0, 1);
-		Utils.drawStringScaled(secondString, Minecraft.getMinecraft().fontRendererObj, a + 7, guiTop + 16, true, 0, 1);
+		FontRenderer fontRendererObj = minecraft.fontRendererObj;
+		fontRendererObj.drawString(unclaimedAuctionsStr, a + 6, guiTop + 6, -1, false);
+		fontRendererObj.drawString(expiredAuctionsStr, a + 6, guiTop + 16, -1, false);
 
-		String thirdString = EnumChatFormatting.GRAY + "Coins to collect: " + EnumChatFormatting.DARK_GREEN + "" +
-			GuiProfileViewer.shortNumberFormat(
-				coinsToCollect, 0);
-		String fourthString = EnumChatFormatting.GRAY + "Value if all sold: " + EnumChatFormatting.DARK_GREEN + "" +
-			GuiProfileViewer.shortNumberFormat(
-				coinsIfAllSold, 0);
+		String coinsToCollectStr =
+			EnumChatFormatting.BOLD + EnumChatFormatting.DARK_GRAY.toString() + "Coins to collect: " +
+				EnumChatFormatting.RESET + EnumChatFormatting.DARK_GREEN + "" +
+				GuiProfileViewer.shortNumberFormat(coinsToCollect, 0);
+		String valueIfSoldStr = EnumChatFormatting.BOLD + EnumChatFormatting.DARK_GRAY.toString() + "Value if all sold: " +
+			EnumChatFormatting.RESET + EnumChatFormatting.DARK_GREEN + "" +
+			GuiProfileViewer.shortNumberFormat(coinsIfAllSold, 0);
 
-		Utils.drawStringScaled(thirdString, Minecraft.getMinecraft().fontRendererObj, a + 7, guiTop + 32, true, 0, 1);
-		Utils.drawStringScaled(fourthString, Minecraft.getMinecraft().fontRendererObj, a + 7, guiTop + 42, true, 0, 1);
+		fontRendererObj.drawString(coinsToCollectStr, a + 6, guiTop + 32, -1, false);
+		fontRendererObj.drawString(valueIfSoldStr, a + 6, guiTop + 42, -1, false);
 	}
 
 	public static Integer tryParse(String s) {
@@ -155,6 +164,5 @@ public class AuctionProfit {
 		} catch (NumberFormatException exception) {
 			return 0;
 		}
-
 	}
 }

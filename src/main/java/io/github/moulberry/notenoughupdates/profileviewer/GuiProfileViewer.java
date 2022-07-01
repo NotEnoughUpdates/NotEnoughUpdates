@@ -304,6 +304,11 @@ public class GuiProfileViewer extends GuiScreen {
 	private static JsonObject getPetInfo(String pet_name, String rarity) {
 		JsonObject petInfo = new JsonObject();
 
+		if (Constants.PETS == null) {
+			Utils.showOutdatedRepoNotification();
+			return null;
+		}
+
 		if (Constants.PETS.has("custom_pet_leveling") &&
 			Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
 			JsonObject pet = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet_name);
@@ -350,6 +355,9 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public static PetLevel getPetLevel(String pet_name, String rarity, float exp) {
 		JsonObject petInfo = getPetInfo(pet_name, rarity);
+		if (petInfo == null) {
+			return null;
+		}
 		int offset = petInfo.get("offset").getAsInt();
 		int maxPetLevel = petInfo.get("max_level").getAsInt();
 		JsonArray levels = petInfo.getAsJsonArray("pet_levels");

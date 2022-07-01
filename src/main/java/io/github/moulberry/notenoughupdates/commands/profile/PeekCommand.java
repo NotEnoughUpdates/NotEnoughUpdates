@@ -102,6 +102,7 @@ public class PeekCommand extends ClientCommandBase {
 							boolean isMe = name.equalsIgnoreCase("moulberry");
 
 							PlayerStats.Stats stats = profile.getStats(null);
+							if (stats == null) return;
 							JsonObject skill = profile.getSkillInfo(null);
 
 							Minecraft.getMinecraft().ingameGUI
