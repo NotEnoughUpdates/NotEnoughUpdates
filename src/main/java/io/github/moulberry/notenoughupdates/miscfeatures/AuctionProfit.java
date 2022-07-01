@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.InvisibleModifier;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -45,16 +46,10 @@ public class AuctionProfit {
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableAhSellValue
-			|| !NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
-		Minecraft minecraft = Minecraft.getMinecraft();
-		if (minecraft == null || minecraft.thePlayer == null) return;
+		if(!inAuctionPage()) return;
 
+		Minecraft minecraft = Minecraft.getMinecraft();
 		Container inventoryContainer = minecraft.thePlayer.openContainer;
-		if (!(inventoryContainer instanceof ContainerChest)) return;
-		ContainerChest containerChest = (ContainerChest) inventoryContainer;
-		if (!containerChest.getLowerChestInventory().getDisplayName()
-											 .getUnformattedText().equalsIgnoreCase("Manage Auctions")) return;
 
 		Gui gui = event.gui;
 		int xSize = ((AccessorGuiContainer) gui).getXSize();
@@ -164,5 +159,19 @@ public class AuctionProfit {
 		} catch (NumberFormatException exception) {
 			return 0;
 		}
+	}
+
+	public static boolean inAuctionPage() {
+		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableAhSellValue
+			|| !NotEnoughUpdates.INSTANCE.isOnSkyblock()) return false;
+
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft == null || minecraft.thePlayer == null) return false;
+
+		Container inventoryContainer = minecraft.thePlayer.openContainer;
+		if (!(inventoryContainer instanceof ContainerChest)) return false;
+		ContainerChest containerChest = (ContainerChest) inventoryContainer;
+		return containerChest.getLowerChestInventory().getDisplayName()
+											 .getUnformattedText().equalsIgnoreCase("Manage Auctions");
 	}
 }

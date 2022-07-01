@@ -35,6 +35,7 @@ import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.itemeditor.NEUItemEditor;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
+import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
@@ -501,6 +502,11 @@ public class RenderListener {
 							x += 80 + 28;
 						}
 					}
+					if (AuctionProfit.inAuctionPage()) {
+						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
+							x -= 68 - 200;
+						}
+					}
 					if (NEUOverlay.isRenderingArmorHud()) {
 						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 							x -= 25;
@@ -606,6 +612,11 @@ public class RenderListener {
 					if (AccessoryBagOverlay.isInAccessoryBag()) {
 						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
 							x += 80 + 28;
+						}
+					}
+					if (AuctionProfit.inAuctionPage()) {
+						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
+							x -= 68 - 200;
 						}
 					}
 					if (NEUOverlay.isRenderingArmorHud()) {
@@ -1003,6 +1014,11 @@ public class RenderListener {
 					if (AccessoryBagOverlay.isInAccessoryBag()) {
 						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
 							x += 80 + 28;
+						}
+					}
+					if (AuctionProfit.inAuctionPage()) {
+						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
+							x -= 68 - 200;
 						}
 					}
 					if (NEUOverlay.isRenderingArmorHud()) {
