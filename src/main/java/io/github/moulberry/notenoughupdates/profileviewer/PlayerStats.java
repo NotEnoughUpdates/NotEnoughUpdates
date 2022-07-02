@@ -23,14 +23,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -709,5 +713,87 @@ public class PlayerStats {
 		applyLimits(stats, inventoryInfo);
 
 		return stats;
+	}
+
+	/**
+	 * Calculates the amount of Magical Power the player has using the list of accessories
+	 *
+	 * @param inventoryInfo inventory info object
+	 * @return the amount of Magical Power or -1
+	 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getInventoryInfo(String)
+	 */
+	public static int getMagicalPower(JsonObject inventoryInfo) {
+		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") ||
+			!inventoryInfo.get("talisman_bag").isJsonArray()) {
+			return -1;
+		}
+		JsonArray accessories = inventoryInfo.get("talisman_bag").getAsJsonArray();
+		int powderAmount = 0;
+		for (JsonElement element : accessories) {
+			if (element == null || !element.isJsonObject()) {
+				continue;
+			}
+			JsonObject accessory = element.getAsJsonObject();
+			NBTTagCompound tag;
+			try {
+				tag = JsonToNBT.getTagFromJson(accessory.get("nbttag").getAsString());
+			} catch (NBTException ignored) {
+				continue;
+			}
+
+			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
+			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
+			JsonArray lastElementJsonArray = new JsonArray();
+
+			//strip information that suggests the rarity has been upgraded (obfuscated char)
+			if (lastElement.contains("§k")) {
+				lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
+			}
+
+			lastElementJsonArray.add(new JsonPrimitive(lastElement));
+			switch (NEUOverlay.getRarity(lastElementJsonArray)) {
+				case 0:
+				case 6:
+					powderAmount += 3;
+					break;
+				case 1:
+					powderAmount += 5;
+					break;
+				case 2:
+					powderAmount += 8;
+					break;
+				case 3:
+					powderAmount += 12;
+					break;
+				case 4:
+					powderAmount += 16;
+					break;
+				case 5:
+					powderAmount += 22;
+					break;
+			}
+
+		}
+		return powderAmount;
+	}
+
+	/**
+	 * Finds the selected Magical Power the player selected if applicable
+	 *
+	 * @param profileInfo profile information object
+	 * @return selected magical power as a String or null
+	 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getProfileInformation(String)
+	 */
+	public static @Nullable String getSelectedMagicalPower(JsonObject profileInfo) {
+		String abs = "accessory_bag_storage";
+
+		if (profileInfo == null
+			|| !profileInfo.has(abs)
+			|| !profileInfo.get(abs).isJsonObject()
+			|| !profileInfo.get(abs).getAsJsonObject().has("selected_power")) {
+			return null;
+		}
+		String selectedPower = profileInfo.get(abs).getAsJsonObject().get("selected_power").getAsString();
+		return selectedPower.substring(0, 1).toUpperCase() + selectedPower.substring(1);
 	}
 }

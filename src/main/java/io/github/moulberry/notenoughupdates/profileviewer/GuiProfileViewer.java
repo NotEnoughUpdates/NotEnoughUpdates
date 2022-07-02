@@ -701,7 +701,7 @@ public class GuiProfileViewer extends GuiScreen {
 				drawExtraPage(mouseX, mouseY, partialTicks);
 				break;
 			case INVENTORIES:
-				drawInvsPage(mouseX, mouseY, partialTicks);
+				drawInvsPage(mouseX, mouseY);
 				break;
 			case COLLECTIONS:
 				drawColsPage(mouseX, mouseY, partialTicks);
@@ -1099,7 +1099,7 @@ public class GuiProfileViewer extends GuiScreen {
 				keyTypedDung(typedChar, keyCode);
 				break;
 		}
-		if (playerNameTextField.getFocus() && !(currentPage == ProfileViewerPage.LOADING)) {
+		if (playerNameTextField.getFocus()) {
 			if (keyCode == Keyboard.KEY_RETURN) {
 				currentPage = ProfileViewerPage.LOADING;
 				NotEnoughUpdates.profileViewer.getProfileByName(playerNameTextField.getText(), profile -> { //todo: invalid name
@@ -1202,6 +1202,8 @@ public class GuiProfileViewer extends GuiScreen {
 			case Keyboard.KEY_NUMPAD8:
 				selectedInventory = "potion_bag";
 				break;
+			default:
+				return;
 
 		}
 		Utils.playPressSound();
@@ -2871,7 +2873,7 @@ public class GuiProfileViewer extends GuiScreen {
 		return inventories;
 	}
 
-	private void drawInvsPage(int mouseX, int mouseY, float partialTicks) {
+	private void drawInvsPage(int mouseX, int mouseY) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_invs);
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
 		inventoryTextField.setSize(88, 20);
@@ -2905,6 +2907,19 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) {
 				if (mouseY >= guiTop + y && mouseY <= guiTop + y + 16) {
 					tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					if (Objects.equals(entry.getKey(), "talisman_bag")) {
+						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
+						int magicalPower = PlayerStats.getMagicalPower(inventoryInfo);
+						tooltipToDisplay.add(magicalPower == -1
+							? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
+							: magicalPowerString.append(EnumChatFormatting.GOLD).append(magicalPower).toString());
+
+						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
+						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfileInformation(profileId));
+						tooltipToDisplay.add(selectedPower == null
+							? selectedPowerString.append(EnumChatFormatting.RED).append("None!").toString()
+							: selectedPowerString.append(EnumChatFormatting.GREEN).append(selectedPower).toString());
+					}
 				}
 			}
 
