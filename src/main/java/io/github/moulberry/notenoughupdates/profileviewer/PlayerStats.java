@@ -743,13 +743,13 @@ public class PlayerStats {
 
 			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
-			JsonArray lastElementJsonArray = new JsonArray();
 
 			//strip information that suggests the rarity has been upgraded (obfuscated char)
 			if (lastElement.contains("§k")) {
 				lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
 			}
 
+			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
 			switch (NEUOverlay.getRarity(lastElementJsonArray)) {
 				case 0:
@@ -778,7 +778,7 @@ public class PlayerStats {
 	}
 
 	/**
-	 * Finds the selected Magical Power the player selected if applicable
+	 * Finds the Magical Power the player selected if applicable
 	 *
 	 * @param profileInfo profile information object
 	 * @return selected magical power as a String or null
