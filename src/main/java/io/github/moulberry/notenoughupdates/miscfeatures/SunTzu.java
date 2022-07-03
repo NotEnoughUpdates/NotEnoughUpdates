@@ -56,7 +56,8 @@ public class SunTzu {
 		"The wise warrior avoids the battle.",
 		"Great results, can be achieved with small forces.",
 		"Attack is the secret of defense; defense is the planning of an attack.",
-		"Subscribe to Moulberry on YouTube."
+		"Subscribe to Moulberry on YouTube.",
+		"Technoblade never dies!"
 	};
 
 	public static void setEnabled(boolean enabled) {

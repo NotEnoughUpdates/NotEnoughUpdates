@@ -50,7 +50,6 @@ public class HelpCommand extends ClientCommandBase {
 			"\u00a76/neulinks \u00a7r\u00a77- Shows links to neu/moulberry.",
 			"\u00a76/neuoverlay \u00a7r\u00a77- Opens GUI Editor for quickcommands and searchbar.",
 			"\u00a76/neuah \u00a7r\u00a77- Opens neu's custom ah GUI.",
-			"\u00a76/neumap \u00a7r\u00a77- Opens the dungeon map GUI.",
 			"\u00a76/neucalendar \u00a7r\u00a77- Opens neu's custom calendar GUI.",
 			"",
 			"\u00a76\u00a7lOld commands:",
