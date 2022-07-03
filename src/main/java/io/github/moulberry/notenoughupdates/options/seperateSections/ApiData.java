@@ -62,7 +62,7 @@ public class ApiData {
 	public int setRepositoryToDefaultButton = 0;
 
 	@ConfigAccordionId(id = 1)
-	@ConfigOption(name = "Use dangerous Repository", desc = "The latest, most up to date item list for the NEU prereleases.\n§4Use §lonly§r§4 with the prereleases.")
+	@ConfigOption(name = "Use pre-release repository", desc = "The latest, most up to date item list for the NEU pre-releases.\n§4Use §lonly§r§4 with the pre-releases.")
 	@ConfigEditorButton(runnableId = 24, buttonText = "Use")
 	public int setRepositoryToDangerousButton = 0;
 
