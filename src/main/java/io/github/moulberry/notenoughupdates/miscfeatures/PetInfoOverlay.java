@@ -879,7 +879,7 @@ public class PetInfoOverlay extends TextOverlay {
 									return;
 								}
 
-								int rarity = NEUOverlay.getRarity(jsonStack.get("lore").getAsJsonArray());
+								int rarity = Utils.getRarityFromLore(jsonStack.get("lore").getAsJsonArray());
 								String rarityString = Utils.getRarityFromInt(rarity);
 
 								String name = StringUtils.cleanColour(petStack.getDisplayName());

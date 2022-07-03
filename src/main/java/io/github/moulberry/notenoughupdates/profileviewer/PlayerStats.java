@@ -23,7 +23,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -751,12 +750,13 @@ public class PlayerStats {
 
 			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
-			switch (NEUOverlay.getRarity(lastElementJsonArray)) {
+			switch (Utils.getRarityFromLore(lastElementJsonArray)) {
 				case 0:
 				case 6:
 					powderAmount += 3;
 					break;
 				case 1:
+				case 7:
 					powderAmount += 5;
 					break;
 				case 2:
