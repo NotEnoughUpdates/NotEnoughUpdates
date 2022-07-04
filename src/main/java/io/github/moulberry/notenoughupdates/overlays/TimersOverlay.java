@@ -554,7 +554,7 @@ public class TimersOverlay extends TextOverlay {
 		}
 
 		long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000; // 12am est
-		long pearlsReset = midnightReset + 3600000; //8pm est
+		long pearlsReset = (midnightReset +86400000 + 72180000)-currentTime; //8pm est
 		long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
 		long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
 		long catacombsDiffNow = catacombsReset + 86400000 - currentTime;
@@ -783,7 +783,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+					Utils.prettyTime(pearlsReset)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.SOON.ordinal() &&
 			(hidden.dailyHeavyPearlCompleted < (pearlsReset - TimeEnums.HOUR.time))) {
@@ -791,7 +791,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+					Utils.prettyTime(pearlsReset)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
@@ -800,7 +800,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+					Utils.prettyTime(pearlsReset)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >=
 			DISPLAYTYPE.ALWAYS.ordinal()) {
@@ -808,7 +808,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+					Utils.prettyTime(pearlsReset)
 			);
 		}
 
@@ -850,8 +850,8 @@ public class TimersOverlay extends TextOverlay {
 		if (SBInfo.getInstance().location.equals("Belly of the Beast")) {
 			try {
 				msg = Utils.cleanColour(msg);
-				msg = msg.substring(msg.indexOf("Pearls Collected: ") + 18);
-				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/") + 1));
+				msg = msg.split("Pearls Collected: ")[1].split("/")[1].trim();
+				availablePearls = Integer.parseInt(msg);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
