@@ -1378,7 +1378,6 @@ public class Utils {
 	}
 
 	public static JsonElement getElement(JsonElement element, String path) {
-		if (element == null) return null;
 		List<String> path_split = PATH_SPLITTER.splitToList(path);
 		if (element instanceof JsonObject) {
 			JsonElement e = element.getAsJsonObject().get(path_split.get(0));
