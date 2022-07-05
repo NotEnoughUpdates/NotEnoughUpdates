@@ -270,8 +270,11 @@ public class Calculator {
 							case "m":
 								values.push(p.multiply(new BigDecimal(1_000_000)).setScale(2, RoundingMode.HALF_UP));
 								break;
-							case "t":
+							case "b":
 								values.push(p.multiply(new BigDecimal(1_000_000_000)).setScale(2, RoundingMode.HALF_UP));
+								break;
+							case "t":
+								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(2, RoundingMode.HALF_UP));
 								break;
 							default:
 								throw new CalculatorException(
