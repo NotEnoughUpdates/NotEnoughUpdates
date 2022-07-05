@@ -135,20 +135,22 @@ public class BestiaryPage {
 						}
 						JsonObject leveling = Constants.LEVELING;
 						ProfileViewer.Level level = null;
-						if (leveling != null) {
+						if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
 							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
 							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
 							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+						} else {
+							Utils.showOutdatedRepoNotification();
 						}
 
-						float levelNum = 0;
+						float levelNum = -1;
 						if (level != null) {
 							levelNum = level.level;
 						}
 						if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
 							if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
 								tooltipToDisplay = new ArrayList<>();
-								tooltipToDisplay.add(mobItem.getDisplayName() + " " + (int) Math.floor(levelNum));
+								tooltipToDisplay.add(mobItem.getDisplayName() + " " + ((levelNum == -1) ? "?" : (int) Math.floor(levelNum)));
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + numberFormat.format(kills));
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths));
 								if (level != null) {
@@ -223,7 +225,7 @@ public class BestiaryPage {
 						}
 						JsonObject leveling = Constants.LEVELING;
 						ProfileViewer.Level level = null;
-						if (leveling != null) {
+						if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
 							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
 							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
 							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
