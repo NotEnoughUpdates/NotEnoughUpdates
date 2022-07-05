@@ -154,7 +154,6 @@ public class Calculator {
 	public static List<Token> shuntingYard(List<Token> toShunt) throws CalculatorException {
 		// IT'S SHUNTING TIME
 		// This is an implementation of the shunting yard algorithm
-		// Dear god, just thinking about dijkstra makes me wet and hard, such a fucking good mathematician
 
 		Deque<Token> op = new ArrayDeque<>();
 		List<Token> out = new ArrayList<>();
