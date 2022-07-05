@@ -1855,7 +1855,7 @@ public class Utils {
 		return true;
 	}
 
-	public static String formatNumberWithCommas(long number) {
+	public static String formatNumberWithDots(long number) {
 		if (number == 0)
 			return "0";
 		String work = "";
@@ -1865,7 +1865,7 @@ public class Utils {
 			number = -number;
 		}
 		while (number != 0) {
-			work = String.format("%03d,%s", number % 1000, work);
+			work = String.format("%03d.%s", number % 1000, work);
 			number /= 1000;
 		}
 		work = work.substring(0, work.length() - 1);
