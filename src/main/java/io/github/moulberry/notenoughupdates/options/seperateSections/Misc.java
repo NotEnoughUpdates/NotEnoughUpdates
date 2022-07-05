@@ -215,4 +215,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean warpTwice = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Sign Calculator",
+		desc = "§fReplace calculations like §9\"1+2\"§f with the calculation result in sign popups (AH/BZ)"
+	)
+	@ConfigEditorDropdown(values = {"Off", "Enabled with ! Prefix", "Always enabled"})
+	public int calculationMode = 0;
+
 }
