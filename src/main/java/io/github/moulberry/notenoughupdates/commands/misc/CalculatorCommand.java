@@ -43,8 +43,13 @@ public class CalculatorCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		if (args.length == 1 && Objects.equals(args[0], "help")) {
-			sender.addChatMessage(new ChatComponentText("§e[NEU] §fUse like §b/neucalc 1+2§f. You can also use postfixes like §b/neucalc 14k * 3§f. Turn on Sign Calculator in /neu misc to also support this in sign popups." ));
+		if ((args.length == 1 && Objects.equals(args[0], "help")) || args.length == 0) {
+			sender.addChatMessage(new ChatComponentText(
+				"\n§e[NEU] §5Its a calculator.\n" +
+				"§eFor Example §b/neucalc 3m*7k§e.\n" +
+				"§eYou can also use suffixes (k, m, b, t, s)§e.\n" +
+				"§eThe \"s\" suffix acts as 64.\n" +
+				"§eTurn on Sign Calculator in /neu misc to also support this in sign popups.\n"));
 			return;
 		}
 		String source = String.join(" ", args);
