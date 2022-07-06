@@ -221,6 +221,6 @@ public class Misc {
 		desc = "§7Replace calculations like §9\"1+2\"§7 with the calculation result in sign popups (AH/BZ)"
 	)
 	@ConfigEditorDropdown(values = {"Off", "Enabled with ! Prefix", "Always enabled"})
-	public int calculationMode = 0;
+	public int calculationMode = 2;
 
 }
