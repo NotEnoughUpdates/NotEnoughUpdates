@@ -145,7 +145,7 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							int bazaarBuyPrice = (int) bazaarInfo.get("avg_buy").getAsFloat() * stackMultiplier;
+							long bazaarBuyPrice = (long) bazaarInfo.get("avg_buy").getAsFloat() * stackMultiplier;
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Buy: " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarBuyPrice > 1000
 								? Utils.shortNumberFormat(bazaarBuyPrice, 0)
@@ -160,7 +160,7 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							int bazaarSellPrice = (int) bazaarInfo.get("avg_sell").getAsFloat() * stackMultiplier;
+							long bazaarSellPrice = (long) bazaarInfo.get("avg_sell").getAsFloat() * stackMultiplier;
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Sell: " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarSellPrice > 1000
 								? Utils.shortNumberFormat(bazaarSellPrice, 0)
@@ -175,7 +175,7 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							int bazaarInstantBuyPrice = (int) bazaarInfo.get("curr_buy").getAsFloat() * stackMultiplier;
+							long bazaarInstantBuyPrice = (long) bazaarInfo.get("curr_buy").getAsFloat() * stackMultiplier;
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Insta-Buy: " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarInstantBuyPrice > 1000
 								? Utils.shortNumberFormat(bazaarInstantBuyPrice, 0)
@@ -191,7 +191,7 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							int bazaarInstantSellPrice = (int) bazaarInfo.get("curr_sell").getAsFloat() * stackMultiplier;
+							long bazaarInstantSellPrice = (long) bazaarInfo.get("curr_sell").getAsFloat() * stackMultiplier;
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Insta-Sell: " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarInstantSellPrice > 1000
 								? Utils.shortNumberFormat(
