@@ -45,7 +45,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -556,7 +555,7 @@ public class TimersOverlay extends TextOverlay {
 		}
 
 		long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000; // 12am est
-		long pearlsReset = (midnightReset + 72180000)-currentTime; //8pm est
+		long pearlsReset = midnightReset - 14400000; //8pm est
 		long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
 		long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
 		long catacombsDiffNow = catacombsReset + 86400000 - currentTime;
