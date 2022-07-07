@@ -1209,40 +1209,6 @@ public class NEUOverlay extends Gui {
 		updateSearch();
 	}
 
-	public static String[] rarityArr = new String[]{
-		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
-		EnumChatFormatting.GREEN + EnumChatFormatting.BOLD.toString() + "UNCOMMON",
-		EnumChatFormatting.BLUE + EnumChatFormatting.BOLD.toString() + "RARE",
-		EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD.toString() + "EPIC",
-		EnumChatFormatting.GOLD + EnumChatFormatting.BOLD.toString() + "LEGENDARY",
-		EnumChatFormatting.LIGHT_PURPLE + EnumChatFormatting.BOLD.toString() + "MYTHIC",
-		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
-	};
-
-	/**
-	 * Finds the rarity from the lore of an item.
-	 * -1 = UNKNOWN
-	 * 0 = COMMON
-	 * 1 = UNCOMMON
-	 * 2 = RARE
-	 * 3 = EPIC
-	 * 4 = LEGENDARY
-	 * 5 = MYTHIC
-	 * 6 = SPECIAL
-	 */
-	public static int getRarity(JsonArray lore) {
-		for (int i = lore.size() - 1; i >= 0; i--) {
-			String line = lore.get(i).getAsString();
-
-			for (int j = 0; j < rarityArr.length; j++) {
-				if (line.startsWith(rarityArr[j])) {
-					return j;
-				}
-			}
-		}
-		return -1;
-	}
-
 	/**
 	 * Convenience functions that get various compare/sort modes from the config.
 	 */
@@ -1283,8 +1249,8 @@ public class NEUOverlay extends Gui {
 
 			int mult = getCompareAscending().get(getCompareMode()) ? 1 : -1;
 			if (getCompareMode() == COMPARE_MODE_RARITY) {
-				int rarity1 = getRarity(o1.get("lore").getAsJsonArray());
-				int rarity2 = getRarity(o2.get("lore").getAsJsonArray());
+				int rarity1 = Utils.getRarityFromLore(o1.get("lore").getAsJsonArray());
+				int rarity2 = Utils.getRarityFromLore(o2.get("lore").getAsJsonArray());
 
 				if (rarity1 < rarity2) return mult;
 				if (rarity1 > rarity2) return -mult;
@@ -1338,7 +1304,7 @@ public class NEUOverlay extends Gui {
 		for (int i = lore.size() - 1; i >= 0; i--) {
 			String line = lore.get(i).getAsString();
 
-			for (String rarity : rarityArr) {
+			for (String rarity : Utils.rarityArrC) {
 				for (int j = 0; j < typeMatches.length; j++) {
 					if (line.trim().equals(rarity + " " + typeMatches[j])) {
 						return j;

@@ -1945,4 +1945,29 @@ public class Utils {
 			true, true
 		);
 	}
+
+	/**
+	 * Finds the rarity from the lore of an item.
+	 * -1 = UNKNOWN
+	 * 0 = COMMON
+	 * 1 = UNCOMMON
+	 * 2 = RARE
+	 * 3 = EPIC
+	 * 4 = LEGENDARY
+	 * 5 = MYTHIC
+	 * 6 = SPECIAL
+	 * 7 = VERY SPECIAL
+	 */
+	public static int getRarityFromLore(JsonArray lore) {
+		for (int i = lore.size() - 1; i >= 0; i--) {
+			String line = lore.get(i).getAsString();
+
+			for (int j = 0; j < rarityArrC.length; j++) {
+				if (line.startsWith(rarityArrC[j])) {
+					return j;
+				}
+			}
+		}
+		return -1;
+	}
 }

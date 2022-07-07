@@ -35,6 +35,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -213,6 +214,13 @@ public class ChatListener {
 			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
 		} else if (unformatted.startsWith("You consumed a Booster Cookie!")) {
 			CookieWarning.resetNotification();
+		} else if (unformatted.startsWith("QUICK MATHS! Solve:")) {
+			if (Math.random() < 0.2) {
+				ClientCommandHandler.instance.executeCommand(
+					Minecraft.getMinecraft().thePlayer,
+					"/neucalc " + unformatted.substring("QUICK MATHS! Solve: ".length())
+				);
+			}
 		}
 		if (e.message.getFormattedText().contains(
 			EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {
