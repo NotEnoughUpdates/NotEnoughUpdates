@@ -33,7 +33,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -555,7 +554,7 @@ public class TimersOverlay extends TextOverlay {
 		}
 
 		long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000; // 12am est
-		long pearlsReset = midnightReset - 14400000; //8pm est
+		long pearlsReset = midnightReset - 18000000; //8pm est
 		long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
 		long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
 		long catacombsDiffNow = catacombsReset + 86400000 - currentTime;
@@ -849,15 +848,11 @@ public class TimersOverlay extends TextOverlay {
 
 	public static void processActionBar(String msg) {
 		if (SBInfo.getInstance().location.equals("Belly of the Beast")) {
-			msg = Utils.cleanColour(msg);
-			String[] split = msg.split("Pearls Collected: ");
-			if(split.length == 0)return;
-			msg = split[1].split("/")[1].trim();
 			try {
-				availablePearls = Integer.parseInt(msg);
+				msg = Utils.cleanColour(msg);
+				msg = msg.substring(msg.indexOf("Pearls Collected: ") + 18);
+				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/") + 1));
 			} catch (Exception e) {
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§a[NEU] §cAn error occurred. Please check the logs for more information"));
-				System.out.println("Failed logging pearls collected, raw message: " + msg);
 				e.printStackTrace();
 			}
 		}
@@ -884,4 +879,3 @@ public class TimersOverlay extends TextOverlay {
 		ALWAYS,
 	}
 }
-
