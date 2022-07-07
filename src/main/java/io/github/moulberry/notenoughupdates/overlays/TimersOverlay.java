@@ -784,7 +784,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(pearlsReset)
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.SOON.ordinal() &&
 			(hidden.dailyHeavyPearlCompleted < (pearlsReset - TimeEnums.HOUR.time))) {
@@ -792,7 +792,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(pearlsReset)
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
@@ -801,7 +801,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(pearlsReset)
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyHeavyPearlDisplay >=
 			DISPLAYTYPE.ALWAYS.ordinal()) {
@@ -809,7 +809,7 @@ public class TimersOverlay extends TextOverlay {
 				9,
 				DARK_AQUA + "Daily Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(pearlsReset)
+					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
 		}
 
