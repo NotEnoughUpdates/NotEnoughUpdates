@@ -51,6 +51,7 @@ public class HelpCommand extends ClientCommandBase {
 			"\u00a76/neuoverlay \u00a7r\u00a77- Opens GUI Editor for quickcommands and searchbar.",
 			"\u00a76/neuah \u00a7r\u00a77- Opens neu's custom ah GUI.",
 			"\u00a76/neucalendar \u00a7r\u00a77- Opens neu's custom calendar GUI.",
+			"\u00a76/neucalc \u00a7r\u00a77- Run calculations.",
 			"",
 			"\u00a76\u00a7lOld commands:",
 			"\u00a76/peek \u00a7b?{user} \u00a72\u2D35 \u00a7r\u00a77- Shows quickly stats for a user.",
