@@ -2414,30 +2414,61 @@ public class NEUOverlay extends Gui {
 								}
 							}
 						}
-						//top slot
-						int tooltipXModifier = -175;
+
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
 							tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+								Utils.drawHoveringText(
+									tooltipToDisplay,
+									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
+									mouseY,
+									width,
+									height,
+									-1,
+									fr
+								);
 							}
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
 							tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+								Utils.drawHoveringText(
+									tooltipToDisplay,
+									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
+									mouseY,
+									width,
+									height,
+									-1,
+									fr
+								);
 							}
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
 							tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+								Utils.drawHoveringText(
+									tooltipToDisplay,
+									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
+									mouseY,
+									width,
+									height,
+									-1,
+									fr
+								);
 							}
 						}
 						if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
 							tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(tooltipToDisplay, mouseX + tooltipXModifier, mouseY, width, height, -1, fr);
+								Utils.drawHoveringText(
+									tooltipToDisplay,
+									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
+									mouseY,
+									width,
+									height,
+									-1,
+									fr
+								);
 							}
 						}
 					}
@@ -2540,7 +2571,8 @@ public class NEUOverlay extends Gui {
 									}
 								}
 								tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-								Utils.drawHoveringText(tooltipToDisplay, mouseX - 200, mouseY, width, height, -1, fr);
+								int tooltipXOffset = calculateTooltipXOffset(tooltipToDisplay, fr);
+								Utils.drawHoveringText(tooltipToDisplay, mouseX - tooltipXOffset, mouseY, width, height, -1, fr);
 								GL11.glTranslatef(0, 0, -80);
 							}
 						}
@@ -2549,6 +2581,26 @@ public class NEUOverlay extends Gui {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Calculates the width of the longest String in the tooltip, which can be used to offset the entire tooltip to the left more precisely
+	 *
+	 * @param tooltipToDisplay tooltip
+	 * @param fr               FontRenderer object
+	 * @return offset to apply
+	 */
+	private int calculateTooltipXOffset(List<String> tooltipToDisplay, FontRenderer fr) {
+		int offset = 0;
+		if (tooltipToDisplay != null) {
+			for (String line : tooltipToDisplay) {
+				int lineWidth = fr.getStringWidth(line);
+				if (lineWidth > offset) {
+					offset = lineWidth;
+				}
+			}
+		}
+		return offset + 20;
 	}
 
 	private boolean shouldShowEquipmentTooltip(List<String> toolTip) {
