@@ -2571,8 +2571,15 @@ public class NEUOverlay extends Gui {
 									}
 								}
 								tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-								int tooltipXOffset = calculateTooltipXOffset(tooltipToDisplay, fr);
-								Utils.drawHoveringText(tooltipToDisplay, mouseX - tooltipXOffset, mouseY, width, height, -1, fr);
+								Utils.drawHoveringText(
+									tooltipToDisplay,
+									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
+									mouseY,
+									width,
+									height,
+									-1,
+									fr
+								);
 								GL11.glTranslatef(0, 0, -80);
 							}
 						}
