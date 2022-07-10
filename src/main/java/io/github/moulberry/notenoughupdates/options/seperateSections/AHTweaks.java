@@ -144,6 +144,6 @@ public class AHTweaks {
 		desc = "Display profit information (coins to collect, value if all sold, expired and unclaimed auctions)"
 	)
 	@ConfigEditorBoolean
-	public boolean enableAhSellValue = false;
+	public boolean enableAhSellValue = true;
 
 }

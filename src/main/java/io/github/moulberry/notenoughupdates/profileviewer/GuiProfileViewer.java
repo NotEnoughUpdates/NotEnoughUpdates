@@ -4665,7 +4665,7 @@ public class GuiProfileViewer extends GuiScreen {
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 35, guiTop + 160);
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(potato_crown, guiLeft + 50, guiTop + 162);
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 63, guiTop + 160);
-			}else{
+			} else {
 				locationStr = NotEnoughUpdates.INSTANCE.navigation.getNameForAreaModeOrUnknown(location);
 			}
 			if (locationStr != null) {

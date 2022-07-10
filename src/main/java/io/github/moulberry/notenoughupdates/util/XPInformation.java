@@ -249,18 +249,18 @@ public class XPInformation {
 	}
 
 	public double getPetLevel(String petId, double exp, String rarity) {
-		if(Constants.PETS == null || !Constants.PETS.has("pet_levels")) {
+		if (Constants.PETS == null || !Constants.PETS.has("pet_levels")) {
 			Utils.showOutdatedRepoNotification();
 			return 0;
 		}
 		Stream<JsonElement> pet_levels =
 			StreamSupport.stream(Constants.PETS.get("pet_levels").getAsJsonArray().spliterator(), false);
-		if(!Constants.PETS.has("pet_rarity_offset"))  {
+		if (!Constants.PETS.has("pet_rarity_offset")) {
 			Utils.showOutdatedRepoNotification();
 			return 0;
 		}
 		int pet_rarity_offset = Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity).getAsInt();
-		if(!Constants.PETS.has("custom_pet_leveling")) {
+		if (!Constants.PETS.has("custom_pet_leveling")) {
 			Utils.showOutdatedRepoNotification();
 			return 0;
 		}
