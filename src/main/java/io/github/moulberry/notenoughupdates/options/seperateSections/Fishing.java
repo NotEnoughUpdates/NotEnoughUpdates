@@ -264,4 +264,13 @@ public class Fishing {
 	@ConfigAccordionId(id = 6)
 	public String fishingTimerColor30SecPlus = "0:255:0:0:0";
 
+	@Expose
+	@ConfigOption(
+		name = "Fishing timer ping (30s)",
+		desc = "Play a sound after 30 seconds passed"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 6)
+	public boolean fishingSound30Sec = true;
+
 }

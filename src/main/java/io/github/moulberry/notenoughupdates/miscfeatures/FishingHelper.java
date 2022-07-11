@@ -145,6 +145,21 @@ public class FishingHelper {
 		float baseHeight = isExclamationMarkPresent ? 20 : 0;
 		int ticksExisted = hook.ticksExisted;
 		float seconds = ticksExisted / 20F;
+		if (NotEnoughUpdates.INSTANCE.config.fishing.fishingSound30Sec && seconds == 30) {
+
+			ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{
+				volume = 50;
+				pitch = 2f;
+				repeat = false;
+				repeatDelay = 0;
+				attenuationType = ISound.AttenuationType.NONE;
+			}};
+
+			float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
+			Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
+			Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+			Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
+		}
 		int color;
 		if (seconds > 30) {
 			color = ChromaColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.fishing.fishingTimerColor30SecPlus);
