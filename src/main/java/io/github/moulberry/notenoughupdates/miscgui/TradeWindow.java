@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
@@ -136,6 +137,12 @@ public class TradeWindow {
 				int auctionPricePer = (int) (info.get("price").getAsFloat() / info.get("count").getAsFloat());
 
 				pricePer = auctionPricePer;
+			}
+		}
+		if (pricePer == -1) {
+			APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalname);
+			if (craftCost != null && !NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalname)) {
+				pricePer = (int) craftCost.craftCost;
 			}
 		}
 		return pricePer;
