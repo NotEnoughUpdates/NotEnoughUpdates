@@ -57,7 +57,7 @@ public class SignCalculator {
 			getRenderedString(),
 			Minecraft.getMinecraft().fontRendererObj,
 			guiEditSign.width / 2F,
-			guiEditSign.height / 4F - 120,
+			58,
 			false,
 			0x808080FF
 		);
