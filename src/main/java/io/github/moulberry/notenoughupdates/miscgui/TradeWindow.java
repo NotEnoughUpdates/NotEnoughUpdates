@@ -141,7 +141,7 @@ public class TradeWindow {
 		}
 		if (pricePer == -1) {
 			APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalname);
-			if (craftCost != null && !NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalname)) {
+			if (craftCost != null) {
 				pricePer = (int) craftCost.craftCost;
 			}
 		}
