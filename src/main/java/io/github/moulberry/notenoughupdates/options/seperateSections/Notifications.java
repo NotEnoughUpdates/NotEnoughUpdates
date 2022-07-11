@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
@@ -30,8 +31,8 @@ public class Notifications {
 		name = "Update Messages",
 		desc = "Give a notification in chat whenever a new version of NEU is released"
 	)
-	@ConfigEditorBoolean
-	public boolean showUpdateMsg = true;
+	@ConfigEditorDropdown(values = {"Off", "Releases", "Pre-Releases"})
+	public int showUpdateMsg = 1;
 
 	@Expose
 	@ConfigOption(

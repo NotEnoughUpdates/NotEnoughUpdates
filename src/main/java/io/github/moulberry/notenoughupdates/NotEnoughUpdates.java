@@ -34,7 +34,6 @@ import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
-import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
@@ -70,6 +69,7 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.KeyBinding;
@@ -108,9 +108,9 @@ import java.util.Set;
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
 	public static final String VERSION = "2.1.0-REL";
-	public static final String PRE_VERSION = "0.0";
-	public static final int VERSION_ID = 20100;
+	public static final int VERSION_ID = 20200;
 	public static final int PRE_VERSION_ID = 0;
+	public static final int HOTFIX_VERSION_ID = 1;
 	/**
 	 * Registers the biomes for the crystal hollows here so optifine knows they exists
 	 */
@@ -371,11 +371,10 @@ public class NotEnoughUpdates {
 		}
 	}
 
-	public void displayLinks(JsonObject update) {
+	public void displayLinks(JsonObject update, int totalWidth) {
 		String discord_link = update.get("discord_link").getAsString();
 		String youtube_link = update.get("youtube_link").getAsString();
 		String twitch_link = update.get("twitch_link").getAsString();
-		String update_link = update.get("update_link").getAsString();
 		String github_link = update.get("github_link").getAsString();
 		String other_text = update.get("other_text").getAsString();
 		String other_link = update.get("other_link").getAsString();
@@ -388,8 +387,7 @@ public class NotEnoughUpdates {
 		}
 		ChatComponentText links = new ChatComponentText("");
 		ChatComponentText separator = new ChatComponentText(
-			EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + EnumChatFormatting.STRIKETHROUGH +
-				(other == null ? "--" : "-"));
+			EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + EnumChatFormatting.STRIKETHROUGH + "-");
 		ChatComponentText discord = new ChatComponentText(
 			EnumChatFormatting.GRAY + "[" + EnumChatFormatting.BLUE + "Discord" + EnumChatFormatting.GRAY + "]");
 		discord.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, discord_link));
@@ -399,9 +397,6 @@ public class NotEnoughUpdates {
 		ChatComponentText twitch = new ChatComponentText(
 			EnumChatFormatting.GRAY + "[" + EnumChatFormatting.DARK_PURPLE + "Twitch" + EnumChatFormatting.GRAY + "]");
 		twitch.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, twitch_link));
-		ChatComponentText release = new ChatComponentText(
-			EnumChatFormatting.GRAY + "[" + EnumChatFormatting.GREEN + "Release" + EnumChatFormatting.GRAY + "]");
-		release.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, update_link));
 		ChatComponentText github = new ChatComponentText(
 			EnumChatFormatting.GRAY + "[" + EnumChatFormatting.DARK_PURPLE + "GitHub" + EnumChatFormatting.GRAY + "]");
 		github.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, github_link));
@@ -413,16 +408,28 @@ public class NotEnoughUpdates {
 		links.appendSibling(separator);
 		links.appendSibling(twitch);
 		links.appendSibling(separator);
-		links.appendSibling(release);
-		links.appendSibling(separator);
 		links.appendSibling(github);
 		links.appendSibling(separator);
 		if (other != null) {
 			links.appendSibling(other);
 			links.appendSibling(separator);
 		}
-
-		Minecraft.getMinecraft().thePlayer.addChatMessage(links);
+		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+		int missingWidth = Math.max(0, totalWidth - fr.getStringWidth(links.getFormattedText()));
+		int missingCharsOnEitherSide = missingWidth / fr.getStringWidth(EnumChatFormatting.BOLD + "-") / 2;
+		StringBuilder sb = new StringBuilder(missingCharsOnEitherSide + 6);
+		sb.append(EnumChatFormatting.GRAY);
+		sb.append(EnumChatFormatting.BOLD);
+		sb.append(EnumChatFormatting.STRIKETHROUGH);
+		for (int i = 0; i < missingCharsOnEitherSide; i++) {
+			sb.append("-");
+		}
+		String padding = sb.toString();
+		ChatComponentText cp = new ChatComponentText("");
+		cp.appendText(padding);
+		cp.appendSibling(links);
+		cp.appendText(padding);
+		Minecraft.getMinecraft().thePlayer.addChatMessage(cp);
 	}
 
 	@SubscribeEvent

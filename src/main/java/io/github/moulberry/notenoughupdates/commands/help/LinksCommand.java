@@ -44,7 +44,7 @@ public class LinksCommand extends ClientCommandBase {
 				JsonObject update = NotEnoughUpdates.INSTANCE.manager.getJsonFromFile(updateJson);
 
 				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
-				NotEnoughUpdates.INSTANCE.displayLinks(update);
+				NotEnoughUpdates.INSTANCE.displayLinks(update,0 );
 				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
 			} catch (Exception ignored) {
 			}

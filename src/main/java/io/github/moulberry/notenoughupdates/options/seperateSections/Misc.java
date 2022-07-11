@@ -196,8 +196,8 @@ public class Misc {
 		name = "Waypoint Keybind",
 		desc = "Press this keybind to show waypoints to various NPCs"
 	)
-	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_N)
-	public int keybindWaypoint = Keyboard.KEY_N;
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
+	public int keybindWaypoint = Keyboard.KEY_NONE;
 
 	@Expose
 	@ConfigOption(
@@ -210,7 +210,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Warp twice",
-		desc = "Warp twice when using SHIFT+N to /warp to a waypoint."
+		desc = "Warp twice when using SHIFT+<waypoint keybind> to /warp to a waypoint."
 	)
 	@ConfigEditorBoolean
 	public boolean warpTwice = true;
