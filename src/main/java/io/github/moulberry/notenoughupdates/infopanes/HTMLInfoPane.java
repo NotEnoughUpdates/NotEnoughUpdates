@@ -215,8 +215,11 @@ public class HTMLInfoPane extends TextInfoPane {
 		}
 		String html;
 		try {
-			html = wikiModel.render(wiki);
-		} catch (IOException e) {
+			if (isOfficialWiki)
+				html = wiki;
+			else
+				html = wikiModel.render(wiki);
+		} catch (Exception e) {
 			return new HTMLInfoPane(overlay, manager, "error", "error", "Could not render wiki.", false);
 		}
 		try (PrintWriter out = new PrintWriter(new File(manager.configLocation, "debug/html.txt"))) {
@@ -330,8 +333,6 @@ public class HTMLInfoPane extends TextInfoPane {
 																		.replaceAll("[^a-zA-Z0-9_\\-]", "_");
 		File output = new File(manager.configLocation, "tmp/" +
 			outputFileName + ".png");
-		File outputExt = new File(manager.configLocation, "tmp/" +
-			outputFileName + "_ext.png");
 
 		input.deleteOnExit();
 		output.deleteOnExit();
