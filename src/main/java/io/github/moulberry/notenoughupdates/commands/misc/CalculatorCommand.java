@@ -26,6 +26,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.text.DecimalFormat;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -55,9 +56,11 @@ public class CalculatorCommand extends ClientCommandBase {
 		String source = String.join(" ", args);
 		try {
 			BigDecimal calculate = Calculator.calculate(source);
+			DecimalFormat formatter = new DecimalFormat("#,###.00");
+			String lr = formatter.format(calculate);
 			sender.addChatMessage(new ChatComponentText(
 				EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.WHITE + source + " = " + EnumChatFormatting.GREEN +
-					calculate.toPlainString()
+					lr
 			));
 		} catch (Calculator.CalculatorException e) {
 			sender.addChatMessage(new ChatComponentText(
