@@ -32,7 +32,7 @@ public class Notifications {
 		desc = "Give a notification in chat whenever a new version of NEU is released"
 	)
 	@ConfigEditorDropdown(values = {"Off", "Releases", "Pre-Releases"})
-	public int showUpdateMsg = 1;
+	public int updateChannel = 1;
 
 	@Expose
 	@ConfigOption(

@@ -215,7 +215,8 @@ public class NotEnoughUpdates {
 				))
 			) {
 				config = gson.fromJson(reader, NEUConfig.class);
-			} catch (Exception ignored) {
+			} catch (Exception exc) {
+				new RuntimeException("Invalid config file. This will reset the config to default", exc).printStackTrace();
 			}
 		}
 

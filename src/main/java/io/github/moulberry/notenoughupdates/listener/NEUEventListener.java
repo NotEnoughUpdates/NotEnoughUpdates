@@ -131,7 +131,7 @@ public class NEUEventListener {
 				boolean hasPreReleaseAvailableForUpdate =
 					fullReleaseVersion == NotEnoughUpdates.VERSION_ID && preReleaseVersion > NotEnoughUpdates.PRE_VERSION_ID;
 
-				int updateChannel = NotEnoughUpdates.INSTANCE.config.notifications.showUpdateMsg; /* 1 = Full, 2 = Pre */
+				int updateChannel = NotEnoughUpdates.INSTANCE.config.notifications.updateChannel; /* 1 = Full, 2 = Pre */
 				if (hasFullReleaseAvailableForUpgrade || (hasHotfixAvailableForUpgrade && updateChannel == 1)) {
 					displayUpdateMessage(o, o.get("update_msg").getAsString(), o.get("update_link").getAsString());
 				} else if (hasPreReleaseAvailableForUpdate && updateChannel == 2) {
@@ -265,7 +265,7 @@ public class NEUEventListener {
 				if (!joinedSB) {
 					joinedSB = true;
 
-					if (NotEnoughUpdates.INSTANCE.config.notifications.showUpdateMsg != 0) {
+					if (NotEnoughUpdates.INSTANCE.config.notifications.updateChannel != 0) {
 						displayUpdateMessageIfOutOfDate();
 					}
 
