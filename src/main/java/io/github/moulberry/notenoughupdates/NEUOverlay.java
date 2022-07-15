@@ -112,6 +112,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NEUOverlay extends Gui {
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
 		"notenoughupdates:supersecretassets/bald.png");
+
+	private static final ResourceLocation ATMOULBERRYWHYISMYLUNARCLIENTBUGGING = new ResourceLocation(
+		"notenoughupdates:supersecretassets/lunar.png");
 	private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
 
@@ -1938,6 +1941,13 @@ public class NEUOverlay extends Gui {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(SUPERGEHEIMNISVERMOGEN);
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRect((width - 64) / 2f, (height - 64) / 2f - 114, 64, 64, GL11.GL_LINEAR);
+			GlStateManager.bindTexture(0);
+		}
+
+		if (textField.getText().toLowerCase().contains("lunar")) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(ATMOULBERRYWHYISMYLUNARCLIENTBUGGING);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect((width - 113) / 2f, (height - 70) / 2f - 114, 113, 64, GL11.GL_LINEAR);
 			GlStateManager.bindTexture(0);
 		}
 
