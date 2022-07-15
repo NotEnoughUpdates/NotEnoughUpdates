@@ -1947,7 +1947,8 @@ public class NEUOverlay extends Gui {
 		if (textField.getText().toLowerCase().contains("lunar")) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(ATMOULBERRYWHYISMYLUNARCLIENTBUGGING);
 			GlStateManager.color(1, 1, 1, 1);
-			Utils.drawTexturedRect((width - 113) / 2f, (height - 70) / 2f - 114, 113, 64, GL11.GL_LINEAR);
+			GlStateManager.translate(0,0,100);
+			Utils.drawTexturedRect((width + 410) / 2f, (height + 450) / 2f - 114, 113, 64, GL11.GL_LINEAR);
 			GlStateManager.bindTexture(0);
 		}
 
