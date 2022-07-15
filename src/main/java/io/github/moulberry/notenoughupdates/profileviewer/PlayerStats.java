@@ -742,6 +742,7 @@ public class PlayerStats {
 			}
 
 			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
+			String id = tag.getCompoundTag("ExtraAttributes").getString("id");
 			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
 
 			//strip information that suggests the rarity has been upgraded (obfuscated char)
@@ -751,6 +752,16 @@ public class PlayerStats {
 
 			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
+			if (id.equals("HEGEMONY_ARTIFACT")) {
+				switch (Utils.getRarityFromLore(lastElementJsonArray)) {
+					case 4:
+						powderAmount += 16;
+						break;
+					case 5:
+						powderAmount += 22;
+						break;
+				}
+			}
 			switch (Utils.getRarityFromLore(lastElementJsonArray)) {
 				case 0:
 				case 6:

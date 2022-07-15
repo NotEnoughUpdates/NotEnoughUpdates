@@ -2658,7 +2658,7 @@ public class GuiProfileViewer extends GuiScreen {
 						int magicalPower = PlayerStats.getMagicalPower(inventoryInfo);
 						tooltipToDisplay.add(magicalPower == -1
 							? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
-							: magicalPowerString.append(EnumChatFormatting.GOLD).append(Utils.formatNumberWithDots(magicalPower)).toString());
+							: magicalPowerString.append(EnumChatFormatting.GOLD).append(numberFormat.format(magicalPower)).toString());
 
 						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
 						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfileInformation(profileId));
