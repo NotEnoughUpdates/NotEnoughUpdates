@@ -231,7 +231,7 @@ public class TrophyFishingPage {
 			if (mouseX >= x && mouseX < x + 24) {
 				if (mouseY >= y && mouseY <= y + 24) {
 					Utils.drawHoveringText(
-						getTooltip(value),
+						getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()),
 						mouseX,
 						mouseY,
 						width,
@@ -260,7 +260,7 @@ public class TrophyFishingPage {
 				if (mouseX >= x && mouseX < x + 24) {
 					if (mouseY >= y && mouseY <= y + 24) {
 						Utils.drawHoveringText(
-							getTooltipIfNotFound(difference),
+							getTooltip(difference, null),
 							mouseX,
 							mouseY,
 							width,
@@ -315,31 +315,29 @@ public class TrophyFishingPage {
 		GlStateManager.enableLighting();
 	}
 
-	private static List<String> getTooltip(TrophyFish fish) {
+	private static List<String> getTooltip(
+		String name,
+		Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap
+	) {
 		List<String> tooltip = new ArrayList<>();
 		tooltip.add(
-			internalTrophyFish.get(fish.getInternalName()) + WordUtils.capitalize(fish.getName().replace("_", " ")));
-		Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap = fish.getTrophyFishRarityIntegerMap();
+			internalTrophyFish.get(name.toLowerCase().replace(" ", "_")) + WordUtils.capitalize(name.replace("_", " ")));
+
+		List<String> lore = readLoreFromRepo(name.toUpperCase());
+		List<String> description = readDescriptionFromLore(lore);
+		tooltip.addAll(description);
 		tooltip.add(" ");
+
+		if (trophyFishRarityIntegerMap == null) {
+			tooltip.add(EnumChatFormatting.RED + checkX + " Not Discovered");
+			tooltip.add(" ");
+		}
+
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.DIAMOND, EnumChatFormatting.AQUA));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.GOLD, EnumChatFormatting.GOLD));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.SILVER, EnumChatFormatting.GRAY));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.BRONZE, EnumChatFormatting.DARK_GRAY
 		));
-		return tooltip;
-	}
-
-	private static List<String> getTooltipIfNotFound(String name) {
-		List<String> tooltip = new ArrayList<>();
-		tooltip.add(
-			internalTrophyFish.get(name.toLowerCase().replace(" ", "_")) + WordUtils.capitalize(name.replace("_", " ")));
-		tooltip.add(" ");
-		tooltip.add(EnumChatFormatting.RED + checkX + " Not Discovered");
-		tooltip.add(" ");
-		tooltip.add(display(null, TrophyFish.TrophyFishRarity.DIAMOND, EnumChatFormatting.AQUA));
-		tooltip.add(display(null, TrophyFish.TrophyFishRarity.GOLD, EnumChatFormatting.GOLD));
-		tooltip.add(display(null, TrophyFish.TrophyFishRarity.SILVER, EnumChatFormatting.GRAY));
-		tooltip.add(display(null, TrophyFish.TrophyFishRarity.BRONZE, EnumChatFormatting.DARK_GRAY));
 		return tooltip;
 	}
 
@@ -441,5 +439,33 @@ public class TrophyFishingPage {
 			fixedList.add(s.toLowerCase().replace(" ", "_"));
 		}
 		return fixedList;
+	}
+
+	private static List<String> readDescriptionFromLore(List<String> lore) {
+		List<String> description = new ArrayList<>();
+		boolean found = false;
+
+		for (String line : lore) {
+			if (!found && line.startsWith("§7")) found = true;
+			if (found && line.isEmpty()) break;
+
+			if (found) {
+				description.add(line);
+			}
+		}
+
+		return description;
+	}
+
+	private static List<String> readLoreFromRepo(String name) {
+		String repoName = name.toUpperCase().replace(" ", "_") + "_BRONZE";
+		JsonObject jsonItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(repoName);
+
+		List<String> list = new ArrayList<>();
+		for (JsonElement line : jsonItem.getAsJsonArray("lore")) {
+			list.add(line.getAsString());
+		}
+
+		return list;
 	}
 }
