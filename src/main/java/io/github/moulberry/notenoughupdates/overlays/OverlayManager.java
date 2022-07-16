@@ -50,8 +50,8 @@ public class OverlayManager {
 			"\u00a73Fetchur: \u00a7eReady!",
 			"\u00a73Commissions: \u00a7eReady!",
 			"\u00a73Experiments: \u00a7eReady!",
-			"\u00a73Daily Mithril Powder: \u00a7eReady",
-			"\u00a73Daily Gemstone Powder: \u00a7eReady",
+			"\u00a73Mithril Powder: \u00a7eReady",
+			"\u00a73Gemstone Powder: \u00a7eReady",
 			"\u00a73Cakes: \u00a7e1d21h",
 			"\u00a73Cookie Buff: \u00a7e2d23h",
 			"\u00a73Godpot: \u00a7e19h",
@@ -59,8 +59,8 @@ public class OverlayManager {
 			"\u00a73Fetchur: \u00a7e3h38m",
 			"\u00a73Commissions: \u00a7e3h38m",
 			"\u00a73Experiments: \u00a7e3h38m",
-			"\u00a73Daily Mithril Powder: \u00a7e3h38m",
-			"\u00a73Daily Gemstone Powder: \u00a7e3h38m"
+			"\u00a73Mithril Powder: \u00a7e3h38m",
+			"\u00a73Gemstone Powder: \u00a7e3h38m"
 		);
 		textOverlays.add(
 			timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {
