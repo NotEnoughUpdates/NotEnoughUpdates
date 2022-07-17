@@ -480,8 +480,10 @@ public class TrophyFishingPage {
 		JsonObject jsonItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(repoName);
 
 		List<String> list = new ArrayList<>();
-		for (JsonElement line : jsonItem.getAsJsonArray("lore")) {
-			list.add(line.getAsString());
+		if (jsonItem != null && jsonItem.has("lore")) {
+			for (JsonElement line : jsonItem.getAsJsonArray("lore")) {
+				list.add(line.getAsString());
+			}
 		}
 
 		return list;
