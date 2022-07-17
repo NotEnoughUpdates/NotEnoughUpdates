@@ -19,20 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.updater;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
+import com.google.common.io.Files;
 import io.github.moulberry.notenoughupdates.util.NetUtils;
+import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.ArrayList;
+import java.util.List;
 
 abstract class UpdateLoader {
 
@@ -76,7 +71,6 @@ abstract class UpdateLoader {
 									}
 									state = State.DOWNLOAD_FINISHED;
 
-
 									updater.logProgress("Download completed. Trying to install");
 									launchUpdate(f);
 									return null;
@@ -90,5 +84,43 @@ abstract class UpdateLoader {
 
 	public abstract void greet();
 
-	public abstract void launchUpdate(File file);
+	public void launchUpdate(File file) {
+
+		if (state != State.DOWNLOAD_FINISHED) {
+			updater.logProgress("§cUpdate is invalid state " + state + " to start update.");
+			state = State.FAILED;
+			return;
+		}
+		File mcDataDir = new File(Minecraft.getMinecraft().mcDataDir, "mods");
+		if (!mcDataDir.exists() || !mcDataDir.isDirectory() || !mcDataDir.canRead()) {
+			updater.logProgress("§cCould not find mods folder. Searched: " + mcDataDir);
+			state = State.FAILED;
+			return;
+		}
+		ArrayList<File> toDelete = new ArrayList<>();
+		for (File sus : mcDataDir.listFiles()) {
+			if (sus.getName().endsWith(".jar")) {
+				if (updater.isNeuJar(sus)) {
+					updater.logProgress("Found old NEU file: " + sus + ". Deleting later.");
+					toDelete.add(sus);
+				}
+			}
+		}
+		File dest = new File(mcDataDir, file.getName());
+		try {
+			Files.copy(file, dest);
+		} catch (IOException e) {
+			e.printStackTrace();
+			updater.logProgress(
+				"§cFailed to copy release JAR. Not making any changes to your mod folder. Consult your logs for more info.");
+			state = State.FAILED;
+		}
+		deleteFiles(toDelete);
+		if (state != State.FAILED)
+			state = State.INSTALLED;
+		updater.logProgress("Update successful. Thank you for your time.");
+	}
+
+	public abstract void deleteFiles(List<File> toDelete);
+
 }

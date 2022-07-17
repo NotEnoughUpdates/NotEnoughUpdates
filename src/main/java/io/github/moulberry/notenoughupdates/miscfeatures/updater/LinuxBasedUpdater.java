@@ -19,16 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.updater;
 
-import com.google.common.io.Files;
-import net.minecraft.client.Minecraft;
-
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 
-/* Based on what? */
-class LinuxBasedUpdater extends UpdateLoader {
+class LinuxBasedUpdater /* Based on what? */ extends UpdateLoader {
 
 	LinuxBasedUpdater(AutoUpdater updater, URL url) {
 		super(updater, url);
@@ -41,44 +36,12 @@ class LinuxBasedUpdater extends UpdateLoader {
 	}
 
 	@Override
-	public void launchUpdate(File file) {
-		if (state != State.DOWNLOAD_FINISHED) {
-			updater.logProgress("§cUpdate is invalid state " + state + " to start update.");
-			state = State.FAILED;
-			return;
-		}
-		File mcDataDir = new File(Minecraft.getMinecraft().mcDataDir, "mods");
-		if (!mcDataDir.exists() || !mcDataDir.isDirectory() || !mcDataDir.canRead()) {
-			updater.logProgress("§cCould not find mods folder. Searched: " + mcDataDir);
-			state = State.FAILED;
-			return;
-		}
-		ArrayList<File> toDelete = new ArrayList<>();
-		for (File sus : mcDataDir.listFiles()) {
-			if (sus.getName().endsWith(".jar")) {
-				if (updater.isNeuJar(sus)) {
-					updater.logProgress("Found old NEU file: " + sus + ". Deleting later.");
-					toDelete.add(sus);
-				}
-			}
-		}
-		File dest = new File(mcDataDir, file.getName());
-		try {
-			Files.copy(file, dest);
-		} catch (IOException e) {
-			e.printStackTrace();
-			updater.logProgress(
-				"§cFailed to copy release JAR. Not making any changes to your mod folder. Consult your logs for more info.");
-			state = State.FAILED;
-		}
+	public void deleteFiles(List<File> toDelete) {
 		for (File toDel : toDelete) {
 			if (!toDel.delete()) {
 				updater.logProgress("§cCould not delete old version of NEU: " + toDel + ". Please manually delete file.");
 				state = State.FAILED;
 			}
 		}
-		if (state != State.FAILED)
-			state = State.INSTALLED;
-		updater.logProgress("Update successful. Thank you for your time.");
 	}
 }

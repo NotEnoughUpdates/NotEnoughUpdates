@@ -76,7 +76,7 @@ public class AutoUpdater {
 			return new LinuxBasedUpdater(this, url);
 		}
 		if (Loader.isModLoaded("skyblockclientupdater")) {
-			// TODO: add SCU support
+			return SCUCompatUpdater.tryCreate(this, url);
 		}
 		return null;
 	}
@@ -99,7 +99,10 @@ public class AutoUpdater {
 				"Your system does not support auto updates. Please download this update manually. Click here to read more about auto update compatibility (or the link above for manual downloads)")
 				.setChatStyle(
 					new ChatStyle()
-						.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click here to read about auto update modalities")))
+						.setChatHoverEvent(new HoverEvent(
+							HoverEvent.Action.SHOW_TEXT,
+							new ChatComponentText("Click here to read about auto update modalities")
+						))
 						.setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/neuupdate updatemodes"))
 				));
 			return;
