@@ -36,6 +36,14 @@ public class Notifications {
 
 	@Expose
 	@ConfigOption(
+		name = "Missing repo warning",
+		desc = "Warning when repo data is missing or out of date"
+	)
+	@ConfigEditorBoolean
+	public boolean outdatedRepo = true;
+
+	@Expose
+	@ConfigOption(
 		name = "RAM Warning",
 		desc = "Warning when game starts with lots of RAM allocated\n" +
 			"\u00a7cBefore disabling this, please seriously read the message. If you complain about FPS issues without listening to the warning, that's your fault."
