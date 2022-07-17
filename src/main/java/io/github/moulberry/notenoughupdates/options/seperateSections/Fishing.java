@@ -273,4 +273,29 @@ public class Fishing {
 	@ConfigAccordionId(id = 6)
 	public boolean fishingSound30Sec = true;
 
+	@ConfigOption(
+		name = "Trophy Reward",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 7)
+	public boolean trophyReward = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Trophy Reward Overlay",
+		desc = "Displays an overlay at Odger that shows information about your trophies"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 7)
+	public boolean trophyRewardOverlay = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Trophy Reward Tooltips",
+		desc = "Displays the exchange of your trophies as a tooltip in the Odger Inventory"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 7)
+	public boolean trophyRewardTooltips = true;
+
 }
