@@ -104,10 +104,10 @@ public class TrophyRewardOverlay {
 
 		GuiScreen screen = Minecraft.getMinecraft().currentScreen;
 		if (!(screen instanceof GuiChest)) return;
-		GuiChest eventGui = (GuiChest) screen;
-		int xSize = (int) Utils.getField(GuiContainer.class, eventGui, "xSize", "field_146999_f");
-		int guiLeft = (int) Utils.getField(GuiContainer.class, eventGui, "guiLeft", "field_147003_i");
-		int guiTop = (int) Utils.getField(GuiContainer.class, eventGui, "guiTop", "field_147009_r");
+		Gui gui = event.gui;
+		int xSize = ((AccessorGuiContainer) gui).getXSize();
+		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
 
 		List<String> list = createText();
 		int removed = 0;
