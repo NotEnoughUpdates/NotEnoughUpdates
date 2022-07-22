@@ -92,6 +92,7 @@ repositories {
 		mavenCentral()
 		mavenLocal()
 		maven("https://repo.spongepowered.org/maven/")
+		maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 		maven("https://jitpack.io")
 }
 
@@ -107,6 +108,8 @@ dependencies {
 		testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 		testAnnotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
+
+		modRuntimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 }
 
 

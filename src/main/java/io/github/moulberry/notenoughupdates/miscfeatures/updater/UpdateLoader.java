@@ -19,13 +19,16 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.updater;
 
-import com.google.common.io.Files;
 import io.github.moulberry.notenoughupdates.util.NetUtils;
 import net.minecraft.client.Minecraft;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +101,13 @@ abstract class UpdateLoader {
 			return;
 		}
 		ArrayList<File> toDelete = new ArrayList<>();
-		for (File sus : mcDataDir.listFiles()) {
+		File[] modFiles = mcDataDir.listFiles();
+		if (modFiles == null) {
+			updater.logProgress("§cCould not list minecraft mod folder (" + mcDataDir + ")");
+			state = State.FAILED;
+			return;
+		}
+		for (File sus : modFiles) {
 			if (sus.getName().endsWith(".jar")) {
 				if (updater.isNeuJar(sus)) {
 					updater.logProgress("Found old NEU file: " + sus + ". Deleting later.");
@@ -107,8 +116,11 @@ abstract class UpdateLoader {
 			}
 		}
 		File dest = new File(mcDataDir, file.getName());
-		try {
-			Files.copy(file, dest);
+		try (
+			InputStream i = Files.newInputStream(file.toPath());
+			OutputStream o = Files.newOutputStream(dest.toPath());
+		) {
+			IOUtils.copyLarge(i, o);
 		} catch (IOException e) {
 			e.printStackTrace();
 			updater.logProgress(
