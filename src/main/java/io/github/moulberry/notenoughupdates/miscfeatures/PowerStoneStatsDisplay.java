@@ -37,6 +37,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.text.NumberFormat;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 public class PowerStoneStatsDisplay {
@@ -85,7 +86,7 @@ public class PowerStoneStatsDisplay {
 
 		ItemStack itemStack = event.itemStack;
 		if (itemStack == null) return;
-		LinkedList<String> lore = ItemUtils.getLore(itemStack);
+		List<String> lore = ItemUtils.getLore(itemStack);
 
 		boolean isPowerStone = false;
 		for (String line : lore) {
