@@ -27,6 +27,7 @@ import net.minecraft.nbt.NBTTagString;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,13 +73,13 @@ public class ItemUtils {
 		is.setTagCompound(tagCompound);
 	}
 
-	public static List<String> getLore(ItemStack is) {
+	public static LinkedList<String> getLore(ItemStack is) {
+		LinkedList<String> list = new LinkedList<>();
 		NBTTagCompound tagCompound = is.getTagCompound();
 		if (tagCompound == null) {
-			return Collections.emptyList();
+			return list;
 		}
 		NBTTagList tagList = tagCompound.getCompoundTag("display").getTagList("Lore", 8);
-		List<String> list = new ArrayList<>();
 		for (int i = 0; i < tagList.tagCount(); i++) {
 			list.add(tagList.getStringTagAt(i));
 		}

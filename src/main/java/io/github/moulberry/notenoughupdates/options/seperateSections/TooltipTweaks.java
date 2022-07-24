@@ -172,4 +172,12 @@ public class TooltipTweaks {
 		minStep = 1f
 	)
 	public int tooltipBorderOpacity = 200;
+
+	@Expose
+	@ConfigOption(
+		name = "Power Stone Stats",
+		desc = "Replace the magical power bonus for power stones on the tooltip"
+	)
+	@ConfigEditorBoolean
+	public boolean powerStoneStats = true;
 }
