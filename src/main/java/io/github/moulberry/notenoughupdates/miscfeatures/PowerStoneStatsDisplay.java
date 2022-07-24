@@ -75,7 +75,9 @@ public class PowerStoneStatsDisplay {
 			for (String line : ItemUtils.getLore(stack)) {
 				if (line.startsWith("§7Magical Power: ")) {
 					String rawNumber = line.split("§6")[1].replace(",", "");
-					NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower = Integer.parseInt(rawNumber);
+					NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+					if (configProfileSpecific == null) return;
+					configProfileSpecific.magicalPower = Integer.parseInt(rawNumber);
 				}
 			}
 		}
