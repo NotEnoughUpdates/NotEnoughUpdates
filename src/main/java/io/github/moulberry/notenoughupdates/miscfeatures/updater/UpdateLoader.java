@@ -128,9 +128,12 @@ abstract class UpdateLoader {
 			state = State.FAILED;
 		}
 		deleteFiles(toDelete);
-		if (state != State.FAILED)
+		if (state != State.FAILED) {
 			state = State.INSTALLED;
-		updater.logProgress("Update successful. Thank you for your time.");
+			updater.logProgress("Update successful. Thank you for your time.");
+			return;
+		}
+		updater.logProgress("§cFailure to delete some files. Please delte the old NEU version manually from your mods folder.");
 	}
 
 	public abstract void deleteFiles(List<File> toDelete);

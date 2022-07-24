@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -36,9 +35,8 @@ public class NetUtils {
 	public static CompletableFuture<File> downloadAsync(URL httpURL, File outputFile) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				URLConnection urlConnection = httpURL.openConnection();
 				try (
-					InputStream from = urlConnection.getInputStream();
+					InputStream from = httpURL.openStream();
 					OutputStream to = Files.newOutputStream(outputFile.toPath());
 				) {
 					IOUtils.copyLarge(from, to);

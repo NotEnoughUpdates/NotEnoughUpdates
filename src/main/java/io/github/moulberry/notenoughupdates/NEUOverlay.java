@@ -809,7 +809,7 @@ public class NEUOverlay extends Gui {
 	/**
 	 * Handles the mouse input, cancelling the forge event if a NEU gui element is clicked.
 	 */
-	public boolean mouseInput() {
+	public synchronized boolean mouseInput() {
 		if (disabled) {
 			return false;
 		}
@@ -1479,7 +1479,7 @@ public class NEUOverlay extends Gui {
 	 * Returns an index-able array containing the elements in searchedItems.
 	 * Whenever searchedItems is updated in updateSearch(), the array is recreated here.
 	 */
-	public List<JsonObject> getSearchedItems() {
+	public synchronized List<JsonObject> getSearchedItems() {
 		if (searchedItems == null) {
 			updateSearch();
 			return new ArrayList<>();

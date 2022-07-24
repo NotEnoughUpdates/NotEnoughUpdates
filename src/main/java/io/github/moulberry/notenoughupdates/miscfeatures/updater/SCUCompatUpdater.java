@@ -45,6 +45,8 @@ import java.util.List;
  * */
 public class SCUCompatUpdater extends UpdateLoader {
 
+	public static final boolean IS_ENABLED = false;
+
 	private SCUCompatUpdater(AutoUpdater updater, URL url) {
 		super(updater, url);
 	}
@@ -58,7 +60,7 @@ public class SCUCompatUpdater extends UpdateLoader {
 	public void deleteFiles(List<File> toDelete) {
 		try {
 			for (File f : toDelete)
-				ReflectionHolder.deleteFileOnShutdownHandle.invoke(f, "");
+				ReflectionHolder.deleteFileOnShutdownHandle.invoke(ReflectionHolder.updateCheckerInstance, f, "");
 		} catch (Throwable e) {
 			e.printStackTrace();
 			updater.logProgress("Invoking SCU failed. Check the log for more info.");
@@ -89,8 +91,10 @@ public class SCUCompatUpdater extends UpdateLoader {
 	}
 
 	public static UpdateLoader tryCreate(AutoUpdater updater, URL url) {
-		if (!ReflectionHolder.isSCUFullyPresent)
+		if (!ReflectionHolder.isSCUFullyPresent) {
 			updater.logProgress("§cFound Skyclient Updater Mod, however our hooks did not function properly.");
+			return null;
+		}
 		return new SCUCompatUpdater(updater, url);
 	}
 }

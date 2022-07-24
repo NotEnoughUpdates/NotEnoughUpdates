@@ -873,6 +873,8 @@ public class Utils {
 		String... lore
 	) {
 		NBTTagCompound tag = itemStack.getTagCompound();
+		if (tag == null)
+			tag = new NBTTagCompound();
 		NBTTagCompound display = tag.getCompoundTag("display");
 		NBTTagList Lore = new NBTTagList();
 
@@ -1936,9 +1938,13 @@ public class Utils {
 	public static void showOutdatedRepoNotification() {
 		NotificationHandler.displayNotification(Lists.newArrayList(
 				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-				EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
-				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET + EnumChatFormatting.RED +" and restart your game" +
-					" to see if that fixes the issue.", EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD + "discord.gg/moulberry" +
+				EnumChatFormatting.RED +
+					"Data used for many NEU features is not up to date, this should normally not be the case.",
+				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+					EnumChatFormatting.RED + " and restart your game" +
+					" to see if that fixes the issue.",
+				EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
+					"discord.gg/moulberry" +
 					EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 					"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 			),

@@ -86,7 +86,7 @@ public class UpdateCommand extends ClientCommandBase {
 				neu.autoUpdater.scheduleDownload();
 				break;
 			case "updatemodes":
-				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for autoupdates on system with certain capabilities for file deletions (specifically linux), or systems that have SkyClient Updater installed. Updating NEU through SCU and through NEUs autoupdate with the SCU compatibility enabled behaves potentially different, so we suggest turning off NEU updates in SCU if you want to use NEU specific update features (such as betas and faster access to hotfixes)."));
+				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for autoupdates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
 				break;
 			default:
 				displayHelp(sender);

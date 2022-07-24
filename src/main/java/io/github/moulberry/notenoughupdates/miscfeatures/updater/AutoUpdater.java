@@ -75,7 +75,7 @@ public class AutoUpdater {
 		if (SystemUtils.IS_OS_UNIX) {
 			return new LinuxBasedUpdater(this, url);
 		}
-		if (Loader.isModLoaded("skyblockclientupdater")) {
+		if (Loader.isModLoaded("skyblockclientupdater") && SCUCompatUpdater.IS_ENABLED) {
 			return SCUCompatUpdater.tryCreate(this, url);
 		}
 		return null;
@@ -165,6 +165,7 @@ public class AutoUpdater {
 		}
 		neu.displayLinks(updateJson, firstWidth);
 		NotificationHandler.displayNotification(Arrays.asList(
+			"",
 			"§eThere is a new version of NotEnoughUpdates available.",
 			"§eCheck the chat for more information"
 		), true);
@@ -249,7 +250,8 @@ public class AutoUpdater {
 				return validateMcModInfo(jsonArray);
 			}
 		} catch (IOException | JsonSyntaxException e) {
-			return false;
+			e.printStackTrace();
 		}
+		return false;
 	}
 }
