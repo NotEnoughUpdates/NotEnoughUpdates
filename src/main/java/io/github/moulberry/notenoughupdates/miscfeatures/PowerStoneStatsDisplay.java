@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -98,7 +99,10 @@ public class PowerStoneStatsDisplay {
 
 		if (!isPowerStone) return;
 
-		int magicalPower = NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower;
+		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (configProfileSpecific == null) return;
+
+		int magicalPower = configProfileSpecific.magicalPower;
 		if (magicalPower < 1) return;
 
 		double scaledMagicalPower = scalePower(magicalPower);
@@ -113,6 +117,7 @@ public class PowerStoneStatsDisplay {
 			if (line.startsWith("§7At ")) {
 
 				String rawNumber = StringUtils.substringBetween(StringUtils.cleanColour(line), "At ", " Magical");
+				if (rawNumber == null) return;
 
 				//This ignores old repo entries in the item browser from neu
 				if (rawNumber.equals("mmm")) return;
