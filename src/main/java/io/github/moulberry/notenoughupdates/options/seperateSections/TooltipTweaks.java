@@ -176,7 +176,7 @@ public class TooltipTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Power Stone Stats",
-		desc = "Replace the magical power bonus for power stones on the tooltip"
+		desc = "Show your real magical power and real stat increase on power stones"
 	)
 	@ConfigEditorBoolean
 	public boolean powerStoneStats = true;

@@ -34,7 +34,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.input.Keyboard;
 
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -42,14 +41,7 @@ import java.util.Locale;
 
 public class PowerStoneStatsDisplay {
 	private static PowerStoneStatsDisplay instance = null;
-	//	DecimalFormat decimalFormat = new DecimalFormat("#,##0");
 	NumberFormat format = NumberFormat.getInstance(Locale.US);
-
-	//TODO remove method
-	private String formatNumber(double number) {
-//		return decimalFormat.format(number).replace(".", ",");
-		return format.format(number);
-	}
 
 	public static PowerStoneStatsDisplay getInstance() {
 		if (instance == null) {
@@ -60,7 +52,6 @@ public class PowerStoneStatsDisplay {
 
 	@SubscribeEvent
 	public void onTick(TickEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.powerStoneStats) return;
 		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 		if (currentScreen == null) return;
 		if (!(currentScreen instanceof GuiChest)) return;
@@ -68,21 +59,21 @@ public class PowerStoneStatsDisplay {
 		IInventory menu = container.getLowerChestInventory();
 		String title = menu.getDisplayName().getUnformattedText();
 
-		if (title.equals("SkyBlock Menu")) {
-			EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-			Container openContainer = p.openContainer;
-			for (Slot slot : openContainer.inventorySlots) {
-				ItemStack stack = slot.getStack();
-				if (stack != null) {
-					String displayName = stack.getDisplayName();
-					if ("§aAccessory Bag".equals(displayName)) {
-						for (String line : ItemUtils.getLore(stack)) {
-							if (line.startsWith("§7Magical Power: ")) {
-								String rawNumber = line.split("§6")[1].replace(",", "");
-								NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower = Integer.parseInt(rawNumber);
-							}
-						}
-					}
+		if (!title.equals("SkyBlock Menu")) return;
+
+		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+		Container openContainer = p.openContainer;
+		for (Slot slot : openContainer.inventorySlots) {
+			ItemStack stack = slot.getStack();
+			if (stack == null) continue;
+
+			String displayName = stack.getDisplayName();
+			if (!"§aAccessory Bag".equals(displayName)) continue;
+
+			for (String line : ItemUtils.getLore(stack)) {
+				if (line.startsWith("§7Magical Power: ")) {
+					String rawNumber = line.split("§6")[1].replace(",", "");
+					NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower = Integer.parseInt(rawNumber);
 				}
 			}
 		}
@@ -98,7 +89,6 @@ public class PowerStoneStatsDisplay {
 
 		boolean isPowerStone = false;
 		for (String line : lore) {
-			//§8Power Stone
 			if (line.equals("§8Power Stone")) {
 				isPowerStone = true;
 				break;
@@ -107,88 +97,64 @@ public class PowerStoneStatsDisplay {
 
 		if (!isPowerStone) return;
 
-		//TODO remove before push
-		boolean shiftPressed = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		if (!shiftPressed) return;
+		int magicalPower = NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower;
+		if (magicalPower < 1) return;
 
-		int baseMagicalPower = 0;
-
-//		System.out.println("");
-//		System.out.println("");
-//		System.out.println("");
-//		System.out.println("");
-//		System.out.println("");
-//		System.out.println("");
-//		int id = 0;
-//		for (String s : lore) {
-//			System.out.println("lore " + id + " '" + s + "'");
-//			id++;
-//		}
-//		System.out.println("");
-//		id = 0;
-//		for (String s : event.toolTip) {
-//			System.out.println("event.toolTip " + id + " '" + s + "'");
-//			id++;
-//		}
-//		System.out.println("");
+		double scaledMagicalPower = scalePower(magicalPower);
+		double scaledCurrentPower = 0.0;
 
 		int index = 0;
-		boolean foundValue = false;
+		boolean foundMagicalPower = false;
 		for (String line : new LinkedList<>(lore)) {
 			index++;
+			line = line.replace("§k", "");
 
-			//§7At §61,000 Magical Power§7:
 			if (line.startsWith("§7At ")) {
-				//TODO test debug for neu inventory
-				if (line.contains("§k")) return;
-				String rawNumber = StringUtils.substringBetween(line, "§7At ", " Magical");
-				baseMagicalPower = StringUtils.cleanAndParseInt(rawNumber);
-				int magicalPower = NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower;
-				event.toolTip.set(index, "§7At §6" + formatNumber(magicalPower) + " Magical Power§7:");
 
-				foundValue = true;
+				String rawNumber = StringUtils.substringBetween(StringUtils.cleanColour(line), "At ", " Magical");
+
+				//This ignores old repo entries in the item browser from neu
+				if (rawNumber.equals("mmm")) return;
+
+				try {
+					scaledCurrentPower = scalePower(StringUtils.cleanAndParseInt(rawNumber));
+				} catch (NumberFormatException ignored) {
+					return;
+				}
+
+				event.toolTip.set(index, "§7At §6" + format.format((double) magicalPower) + " Magical Power§7:");
+				foundMagicalPower = true;
 				continue;
 			}
 
-			String cleanLine = StringUtils.cleanColour(line);
+			if (!foundMagicalPower) continue;
 
-			if (foundValue) {
-				if (cleanLine.equals("")) {
-					foundValue = false;
+			String cleanLine = StringUtils.cleanColour(line);
+			if (cleanLine.equals("")) {
+				break;
+			}
+
+			for (String operator : new String[]{"+", "-"}) {
+				if (!cleanLine.startsWith(operator)) continue;
+				String rawStat = StringUtils.cleanColour(StringUtils.substringBetween(line, operator, " "));
+
+				double currentStat;
+				try {
+					currentStat = 0.0 + StringUtils.cleanAndParseInt(rawStat.substring(0, rawStat.length() - 1));
+				} catch (NumberFormatException ignored) {
 					continue;
 				}
+				double realStat = (currentStat / scaledCurrentPower) * scaledMagicalPower;
 
-				if (cleanLine.startsWith("+")) {
-					System.out.println("");
-					System.out.println("line: '" + line + "'");
-					System.out.println("cleanLine: '" + cleanLine + "'");
-					String rawNumber = StringUtils.substringBetween(line, "+", " ");
-					System.out.println("rawNumber: '" + rawNumber + "'");
-					int number = StringUtils.cleanAndParseInt(rawNumber.substring(0, rawNumber.length() - 1));
-					System.out.println("number: '" + number + "'");
+				String format = this.format.format((double) Math.round(realStat));
+				format += rawStat.substring(rawStat.length() - 1);
 
-					//§5§o§c+349❁ Strength
-
-					double currentNumber = 0.0 + number;
-					double realMagicalPower = 0.0 + NotEnoughUpdates.INSTANCE.config.getProfileSpecific().magicalPower;
-					double currentMagicalPower = 0.0 + baseMagicalPower;
-
-					double realNumber = (currentNumber / currentMagicalPower) * realMagicalPower;
-					String format = formatNumber((int) realNumber);
-					System.out.println("format: '" + format + "'");
-
-					String realFormat = format + rawNumber.substring(rawNumber.length() - 1);
-					System.out.println("realFormat: '" + realFormat + "'");
-					String finalLine = line.replace(rawNumber, realFormat);
-					System.out.println("finalLine: '" + finalLine + "'");
-
-					event.toolTip.set(index, finalLine);
-				}
+				event.toolTip.set(index, line.replace(rawStat, format));
 			}
 		}
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
 	}
 
+	private double scalePower(int magicalPower) {
+		return Math.pow(29.97 * (Math.log(0.0019 * magicalPower + 1)), 1.2);
+	}
 }
