@@ -452,6 +452,7 @@ public class ProfileViewer {
 		public float maxXpForLevel = 0;
 		public boolean maxed = false;
 		public double totalXp;
+		public int maxLevel = 50;
 	}
 
 	public class Profile {
@@ -892,6 +893,16 @@ public class ProfileViewer {
 
 			float experience_skill_catacombs =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.experience"), 0);
+			float experience_skill_healer =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.healer.experience"), 0);
+			float experience_skill_archer =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.archer.experience"), 0);
+			float experience_skill_tank =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.tank.experience"), 0);
+			float experience_skill_mage =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.mage.experience"), 0);
+			float experience_skill_berserk =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.berserk.experience"), 0);
 
 			float experience_slayer_zombie =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.zombie.xp"), 0);
@@ -928,6 +939,11 @@ public class ProfileViewer {
 			skillInfo.addProperty("experience_skill_hotm", experience_skill_hotm);
 
 			skillInfo.addProperty("experience_skill_catacombs", experience_skill_catacombs);
+			skillInfo.addProperty("experience_skill_healer", experience_skill_healer);
+			skillInfo.addProperty("experience_skill_tank", experience_skill_tank);
+			skillInfo.addProperty("experience_skill_mage", experience_skill_mage);
+			skillInfo.addProperty("experience_skill_archer", experience_skill_archer);
+			skillInfo.addProperty("experience_skill_berserk", experience_skill_berserk);
 
 			skillInfo.addProperty("experience_slayer_zombie", experience_slayer_zombie);
 			skillInfo.addProperty("experience_slayer_spider", experience_slayer_spider);

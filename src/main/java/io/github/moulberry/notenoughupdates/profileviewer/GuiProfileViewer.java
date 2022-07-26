@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishingPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -4933,6 +4934,24 @@ public class GuiProfileViewer extends GuiScreen {
 				Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 322,
 				guiTop + 101,
+				true,
+				0
+			);
+		}
+
+		if (skillInfo != null) {
+			if(Constants.WEIGHT == null) {
+				Utils.showOutdatedRepoNotification();
+				return;
+			}
+
+			LilyWeight lilyWeight = new LilyWeight(skillInfo);
+
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(lilyWeight.getTotalWeight().getRaw()),
+				fr,
+				guiLeft + 63,
+				guiTop + 28,
 				true,
 				0
 			);
