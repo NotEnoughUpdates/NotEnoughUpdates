@@ -3,6 +3,7 @@ package io.github.moulberry.notenoughupdates.dungeons;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.dungeons.map.DungeonMap;
 import io.github.moulberry.notenoughupdates.dungeons.map.DungeonMapPlayers;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.seperateSections.DungeonMapConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -27,8 +28,8 @@ public class SpiritLeap {
 			config,
 			this.dungeonMap.parsedDungeon,
 			savedPlayers != null ? savedPlayers : this.dungeonMap.dungeonMapPlayers,
-			gui.guiLeft - Math.round(20 * config.dmBorderSize),
-			gui.guiTop + gui.height / 2
+			((AccessorGuiContainer)gui).getGuiLeft() - Math.round(20 * config.dmBorderSize),
+			((AccessorGuiContainer)gui).getGuiTop() + gui.height / 2
 		);
 	}
 
