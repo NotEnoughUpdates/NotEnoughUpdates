@@ -105,6 +105,7 @@ public class GuiCustomEnchant extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
+			System.out.println(enchId);
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -138,10 +139,13 @@ public class GuiCustomEnchant extends Gui {
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
+								System.out.println("a");
 								this.xpCost = costs.get(costs.size() - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
+								//System.out.println("b");
 								this.xpCost = costs.get(level - 1).getAsInt();
 							} else {
+								System.out.println("c");
 								overMaxLevel = true;
 							}
 						}
@@ -389,7 +393,7 @@ public class GuiCustomEnchant extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-									for (String enchId : enchantments.getKeySet()) {
+										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
 										String name = Utils.cleanColour(book.getDisplayName());
 										if (name.equalsIgnoreCase("Bane of Arthropods")) {
 											name = "Bane of Arth.";
@@ -422,7 +426,6 @@ public class GuiCustomEnchant extends Gui {
 										}
 
 										enchanterEnchLevels.put(enchantment.level, enchantment);
-									}
 								}
 							}
 						}
@@ -455,43 +458,43 @@ public class GuiCustomEnchant extends Gui {
 								if (ea != null) {
 									NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 									if (enchantments != null) {
-										for (String enchId : enchantments.getKeySet()) {
-											String name = Utils.cleanColour(book.getDisplayName());
+										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
+										if (enchId.equalsIgnoreCase("_")) continue;
+										String name = Utils.cleanColour(book.getDisplayName());
 
-											if (searchField.getText().trim().isEmpty() ||
-												name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
-												if (name.equalsIgnoreCase("Bane of Arthropods")) {
-													name = "Bane of Arth.";
-												} else if (name.equalsIgnoreCase("Projectile Protection")) {
-													name = "Projectile Prot";
-												} else if (name.equalsIgnoreCase("Blast Protection")) {
-													name = "Blast Prot";
-												} else if (name.equalsIgnoreCase("Luck of the Sea")) {
-													name = "Luck of Sea";
-												}
-
-												if (playerEnchantIds.containsKey(enchId)) {
-													Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-														Utils.getRawTooltip(book), playerEnchantIds.get(enchId), false, false
-													);
-													if (!enchantment.overMaxLevel) {
-														removable.add(enchantment);
-													}
-												} else {
-													Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-														Utils.getRawTooltip(book), enchantments.getInteger(enchId), true, true
-													);
-													applicable.add(enchantment);
-												}
-											} else {
-												if (playerEnchantIds.containsKey(enchId)) {
-													searchRemovedFromRemovable = true;
-												} else {
-													searchRemovedFromApplicable = true;
-												}
+										if (searchField.getText().trim().isEmpty() ||
+											name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+											if (name.equalsIgnoreCase("Bane of Arthropods")) {
+												name = "Bane of Arth.";
+											} else if (name.equalsIgnoreCase("Projectile Protection")) {
+												name = "Projectile Prot";
+											} else if (name.equalsIgnoreCase("Blast Protection")) {
+												name = "Blast Prot";
+											} else if (name.equalsIgnoreCase("Luck of the Sea")) {
+												name = "Luck of Sea";
 											}
 
+											if (playerEnchantIds.containsKey(enchId)) {
+												Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
+													Utils.getRawTooltip(book), playerEnchantIds.get(enchId), false, false
+												);
+												if (!enchantment.overMaxLevel) {
+													removable.add(enchantment);
+												}
+											} else {
+												Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
+													Utils.getRawTooltip(book), enchantments.getInteger(enchId), true, true
+												);
+												applicable.add(enchantment);
+											}
+										} else {
+											if (playerEnchantIds.containsKey(enchId)) {
+												searchRemovedFromRemovable = true;
+											} else {
+												searchRemovedFromApplicable = true;
+											}
 										}
+
 									}
 								}
 							}
