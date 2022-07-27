@@ -1173,9 +1173,11 @@ public class RenderListener {
 							}
 						}
 					}
-					JsonObject itemsObj = jsonObject.get(id).getAsJsonObject().get("items").getAsJsonObject();
-					jsonObject.get(id).getAsJsonObject().remove("items");
-					jsonObject.get(id).getAsJsonObject().add("items", itemsObj);
+					if (jsonObject.get(id).getAsJsonObject().has("items")) {
+						JsonObject itemsObj = jsonObject.get(id).getAsJsonObject().get("items").getAsJsonObject();
+						jsonObject.get(id).getAsJsonObject().remove("items");
+						jsonObject.get(id).getAsJsonObject().add("items", itemsObj);
+					}
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					try {
 						try (
