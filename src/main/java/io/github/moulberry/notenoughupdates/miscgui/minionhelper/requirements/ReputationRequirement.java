@@ -17,24 +17,28 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.dungeon;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+public class ReputationRequirement extends MinionRequirement {
 
-public class DnCommand extends ClientCommandBase {
+	private final String reputationType;
+	private final int reputation;
 
-	public DnCommand() {
-		super("dn");
+	public ReputationRequirement(String reputationType, int reputation) {
+		this.reputationType = reputationType;
+		this.reputation = reputation;
+	}
+
+	public int getReputation() {
+		return reputation;
+	}
+
+	public String getReputationType() {
+		return reputationType;
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-		Utils.addChatMessage(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao");
+	public String printDescription() {
+		return reputation + " " + reputationType + " reputation";
 	}
 }

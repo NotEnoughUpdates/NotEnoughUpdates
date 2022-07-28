@@ -24,11 +24,11 @@ import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.util.DiscordMarkdownBuilder;
 import io.github.moulberry.notenoughupdates.util.HastebinUploader;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Loader;
@@ -118,10 +118,8 @@ public class StatsCommand extends ClientCommandBase {
 	}
 
 	private static void modPrefixedMessage(String message) {
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-			EnumChatFormatting.GOLD + "[" + EnumChatFormatting.RED + "NotEnoughUpdates" + EnumChatFormatting.GOLD + "]: " +
-				message));
-
+		Utils.addChatMessage(
+			EnumChatFormatting.GOLD + "[" + EnumChatFormatting.RED + "NotEnoughUpdates" + EnumChatFormatting.GOLD + "]: " + message);
 	}
 
 	private static String createStats() {

@@ -17,24 +17,21 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.dungeon;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 
-public class DnCommand extends ClientCommandBase {
+public class CustomSource extends MinionSource {
 
-	public DnCommand() {
-		super("dn");
+	//TODO rename variable
+	private final String customSource;
+
+	public CustomSource(Minion minion, String customSource) {
+		super(minion);
+		this.customSource = customSource;
 	}
 
-	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-		Utils.addChatMessage(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao");
+	public String getCustomSource() {
+		return customSource;
 	}
 }

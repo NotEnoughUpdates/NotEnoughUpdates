@@ -17,24 +17,24 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.dungeon;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+import java.util.Arrays;
+import java.util.List;
 
-public class DnCommand extends ClientCommandBase {
+public class RenderableText extends RenderableObject {
 
-	public DnCommand() {
-		super("dn");
+	private final List<String> lines;
+
+	public RenderableText(List<String> lines) {
+		this.lines = lines;
 	}
 
-	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-		Utils.addChatMessage(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao");
+	public RenderableText(String... lines) {
+		this(Arrays.asList(lines));
+	}
+
+	public List<String> getLines() {
+		return lines;
 	}
 }

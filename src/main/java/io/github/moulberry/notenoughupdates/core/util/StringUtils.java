@@ -63,4 +63,14 @@ public class StringUtils {
 		str = str.replace(",", "");
 		return Integer.parseInt(str);
 	}
+
+	public static String removeLastWord(String string, String splitString) {
+		try {
+			String[] split = string.split(splitString);
+			String rawTier = split[split.length - 1];
+			return string.substring(0, string.length() - rawTier.length() - 1);
+		} catch (StringIndexOutOfBoundsException e) {
+			throw new RuntimeException("removeLastWord: '" + string + "'", e);
+		}
+	}
 }

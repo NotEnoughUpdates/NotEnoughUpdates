@@ -17,24 +17,28 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.dungeon;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+public class SlayerRequirement extends MinionRequirement {
 
-public class DnCommand extends ClientCommandBase {
+	private final String slayer;
+	private final int level;
 
-	public DnCommand() {
-		super("dn");
+	public SlayerRequirement(String slayer, int level) {
+		this.slayer = slayer;
+		this.level = level;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public String getSlayer() {
+		return slayer;
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-		Utils.addChatMessage(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao");
+	public String printDescription() {
+		return slayer + " slayer at level " + level;
 	}
 }

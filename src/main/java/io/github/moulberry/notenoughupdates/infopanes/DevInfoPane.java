@@ -25,7 +25,6 @@ import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -33,7 +32,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -688,7 +686,7 @@ public class DevInfoPane extends TextInfoPane {
 		json.addProperty("modver", NotEnoughUpdates.VERSION);
 
 		try {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Added: " + internalname));
+			Utils.addChatMessage("Added: " + internalname);
 			manager.writeJsonDefaultDir(json, internalname + ".json");
 			manager.loadItem(internalname);
 		} catch (IOException ignored) {
@@ -918,7 +916,7 @@ public class DevInfoPane extends TextInfoPane {
 
 							json.addProperty("clickcommand", "");
 							try {
-								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Added: " + internalname));
+								Utils.addChatMessage("Added: " + internalname);
 								manager.writeJsonDefaultDir(json, internalname + ".json");
 								manager.loadItem(internalname);
 							} catch (IOException ignored) {
@@ -951,7 +949,7 @@ public class DevInfoPane extends TextInfoPane {
 								json.addProperty("clickcommand", "viewrecipe");
 								json.add("recipe", entry.getValue());
 								try {
-									Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Added: " + internalname));
+									Utils.addChatMessage("Added: " + internalname);
 									if (entry.getKey() != 0 && entry.getKey() < 32000) {
 										manager.writeJsonDefaultDir(json, internalname + "-" + entry.getKey() + ".json");
 									} else {

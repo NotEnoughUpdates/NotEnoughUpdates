@@ -173,8 +173,7 @@ public class ChatListener {
 					0,
 					36
 				);
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
+			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured");
 			NotEnoughUpdates.INSTANCE.saveConfig();
 		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
 			SBInfo.getInstance().hasNewTab = false;

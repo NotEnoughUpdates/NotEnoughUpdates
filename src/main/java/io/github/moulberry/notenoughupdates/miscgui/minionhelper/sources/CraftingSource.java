@@ -17,24 +17,21 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.dungeon;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+import com.google.common.collect.ArrayListMultimap;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 
-public class DnCommand extends ClientCommandBase {
+public class CraftingSource extends MinionSource {
+	//name -> amount
+	private final ArrayListMultimap<String, Integer> items;
 
-	public DnCommand() {
-		super("dn");
+	public CraftingSource(Minion minion, ArrayListMultimap<String, Integer> items) {
+		super(minion);
+		this.items = items;
 	}
 
-	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-		Utils.addChatMessage(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao");
+	public ArrayListMultimap<String, Integer> getItems() {
+		return items;
 	}
 }

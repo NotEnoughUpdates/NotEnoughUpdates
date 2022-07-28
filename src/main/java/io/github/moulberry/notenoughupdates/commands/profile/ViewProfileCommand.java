@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.commands.profile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.command.ICommandSender;
@@ -38,32 +39,31 @@ public class ViewProfileCommand extends ClientCommandBase {
 
 	public static final Consumer<String[]> RUNNABLE = (args) -> {
 		if (!OpenGlHelper.isFramebufferEnabled()) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"Some parts of the profile viewer do not work with OF Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
+			Utils.addChatMessage(EnumChatFormatting.RED +
+				"Some parts of the profile viewer do not work with OF Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.");
 
 		}
 		if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey.trim().isEmpty()) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"Can't view profile, apikey is not set. Run /api new and put the result in settings."));
+			Utils.addChatMessage(EnumChatFormatting.RED +
+				"Can't view profile, apikey is not set. Run /api new and put the result in settings.");
 		} else if (args.length == 0) {
 			NotEnoughUpdates.profileViewer.getProfileByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
 				if (profile == null) {
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-						"Invalid player name/api key. Maybe api is down? Try /api new."));
+					Utils.addChatMessage(EnumChatFormatting.RED +
+						"Invalid player name/api key. Maybe api is down? Try /api new.");
 				} else {
 					profile.resetCache();
 					NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
 				}
 			});
 		} else if (args.length > 1) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"Too many arguments. Usage: /neuprofile [name]"));
+			Utils.addChatMessage(EnumChatFormatting.RED +
+				"Too many arguments. Usage: /neuprofile [name]");
 		} else {
 			NotEnoughUpdates.profileViewer.getProfileByName(args[0], profile -> {
 				if (profile == null) {
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-						"Invalid player name/api key. Maybe api is down? Try /api new."));
+					Utils.addChatMessage(EnumChatFormatting.RED + "Invalid player name/api key. Maybe api is down? Try /api new.");
 				} else {
 					profile.resetCache();
 					NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);

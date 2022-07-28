@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Locati
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.CommandException;
@@ -105,8 +106,7 @@ public class DevTestCommand extends ClientCommandBase {
 				Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(component);
 				return;
 			}
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				DEV_FAIL_STRINGS[devFailIndex++]));
+			Utils.addChatMessage(EnumChatFormatting.RED + DEV_FAIL_STRINGS[devFailIndex++]);
 			return;
 		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
@@ -159,18 +159,16 @@ public class DevTestCommand extends ClientCommandBase {
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("searchmode")) {
 			NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA +
-				"I would never search"));
+			Utils.addChatMessage(EnumChatFormatting.AQUA + "I would never search");
 			return;
 		}
 		if (args.length == 2 && args[0].equalsIgnoreCase("openGui")) {
 			try {
 				NotEnoughUpdates.INSTANCE.openGui = (GuiScreen) Class.forName(args[1]).newInstance();
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"Opening gui: " + NotEnoughUpdates.INSTANCE.openGui));
+				Utils.addChatMessage("Opening gui: " + NotEnoughUpdates.INSTANCE.openGui);
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
 				e.printStackTrace();
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to open this gui."));
+				Utils.addChatMessage("Failed to open this gui.");
 			}
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("center")) {

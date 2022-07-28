@@ -50,7 +50,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -1290,9 +1289,9 @@ public class PetInfoOverlay extends TextOverlay {
 
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+						Utils.addChatMessage(
 							EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
-								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+								EnumChatFormatting.RED + " try revisiting all pages of /pets.");
 					}
 				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
 					"switching to profile"))

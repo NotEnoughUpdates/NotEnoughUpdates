@@ -326,6 +326,7 @@ public class Utils {
 	}
 
 	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 1000 && iteration == 0) return "" + (int) n;
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
 		return (d < 1000 ?
@@ -1936,9 +1937,13 @@ public class Utils {
 	public static void showOutdatedRepoNotification() {
 		NotificationHandler.displayNotification(Lists.newArrayList(
 				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-				EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
-				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET + EnumChatFormatting.RED +" and restart your game" +
-					" to see if that fixes the issue.", EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD + "discord.gg/moulberry" +
+				EnumChatFormatting.RED +
+					"Data used for many NEU features is not up to date, this should normally not be the case.",
+				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+					EnumChatFormatting.RED + " and restart your game" +
+					" to see if that fixes the issue.",
+				EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
+					"discord.gg/moulberry" +
 					EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 					"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 			),
@@ -1969,5 +1974,9 @@ public class Utils {
 			}
 		}
 		return -1;
+	}
+
+	public static void addChatMessage(String message) {
+		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message));
 	}
 }

@@ -93,7 +93,7 @@ public class Navigation {
 		}
 	}
 
-	private NotEnoughUpdates neu;
+	private final NotEnoughUpdates neu;
 
 	public Navigation(NotEnoughUpdates notEnoughUpdates) {
 		neu = notEnoughUpdates;
@@ -378,8 +378,7 @@ public class Navigation {
 	private void showError(String message, boolean log) {
 		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		if (player != null)
-			player.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED +
-				"[NEU-Waypoint] " + message));
+			Utils.addChatMessage(EnumChatFormatting.DARK_RED + "[NEU-Waypoint] " + message);
 		if (log)
 			new RuntimeException("[NEU-Waypoint] " + message).printStackTrace();
 	}
