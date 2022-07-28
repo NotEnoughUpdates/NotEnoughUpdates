@@ -122,25 +122,25 @@ public class TradeWindow {
 		);
 	}
 
-	private static int getPrice(String internalname) {
-		int pricePer = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
+	private static long getPrice(String internalName) {
+		long pricePer = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalName);
 		if (pricePer == -1) {
-			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname);
+			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
 			if (bazaarInfo != null && bazaarInfo.has("avg_buy")) {
-				pricePer = (int) bazaarInfo.get("avg_buy").getAsFloat();
+				pricePer = (long) bazaarInfo.get("avg_buy").getAsDouble();
 			}
 		}
 		if (pricePer == -1) {
-			JsonObject info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalname);
-			if (info != null && !NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalname) &&
+			JsonObject info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalName);
+			if (info != null && !NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalName) &&
 				info.has("price") && info.has("count")) {
-				int auctionPricePer = (int) (info.get("price").getAsFloat() / info.get("count").getAsFloat());
+				long auctionPricePer = (long) (info.get("price").getAsDouble() / info.get("count").getAsDouble());
 
 				pricePer = auctionPricePer;
 			}
 		}
 		if (pricePer == -1) {
-			APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalname);
+			APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalName);
 			if (craftCost != null) {
 				pricePer = (int) craftCost.craftCost;
 			}
@@ -148,8 +148,8 @@ public class TradeWindow {
 		return pricePer;
 	}
 
-	private static int processTopItems(
-		ItemStack stack, Map<Integer, Set<String>> topItems,
+	private static long processTopItems(
+		ItemStack stack, Map<Long, Set<String>> topItems,
 		Map<String, ItemStack> topItemsStack, Map<String, Integer> topItemsCount
 	) {
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
@@ -188,9 +188,9 @@ public class TradeWindow {
 
 					topItemsStack.putIfAbsent("TRADE_COINS", stack);
 
-					int existingPrice = coins;
-					Set<Integer> toRemove = new HashSet<>();
-					for (Map.Entry<Integer, Set<String>> entry : topItems.entrySet()) {
+					long existingPrice = coins;
+					Set<Long> toRemove = new HashSet<>();
+					for (Map.Entry<Long, Set<String>> entry : topItems.entrySet()) {
 						if (entry.getValue().contains("TRADE_COINS")) {
 							entry.getValue().remove("TRADE_COINS");
 							existingPrice += entry.getKey();
@@ -208,12 +208,12 @@ public class TradeWindow {
 				}
 			}
 		} else {
-			int pricePer = getPrice(internalname);
+			long pricePer = getPrice(internalname);
 			if (pricePer > 0) {
 				topItemsStack.putIfAbsent(internalname, stack);
 
-				int price = pricePer * stack.stackSize;
-				int priceInclBackpack = price;
+				long price = pricePer * stack.stackSize;
+				long priceInclBackpack = price;
 
 				NBTTagCompound tag = stack.getTagCompound();
 				if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
@@ -254,9 +254,9 @@ public class TradeWindow {
 					}
 				}
 
-				int existingPrice = price;
-				Set<Integer> toRemove = new HashSet<>();
-				for (Map.Entry<Integer, Set<String>> entry : topItems.entrySet()) {
+				long existingPrice = price;
+				Set<Long> toRemove = new HashSet<>();
+				for (Map.Entry<Long, Set<String>> entry : topItems.entrySet()) {
 					if (entry.getValue().contains(internalname)) {
 						entry.getValue().remove(internalname);
 						existingPrice += entry.getKey();
@@ -300,7 +300,7 @@ public class TradeWindow {
 							NBTTagCompound nbt = items.getCompoundTagAt(k).getCompoundTag("tag");
 							String internalname2 = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(nbt);
 							if (internalname2 != null) {
-								int pricePer2 = getPrice(internalname2);
+								long pricePer2 = getPrice(internalname2);
 								if (pricePer2 > 0) {
 									int count2 = items.getCompoundTagAt(k).getByte("Count");
 									price += pricePer2 * count2;
@@ -333,7 +333,7 @@ public class TradeWindow {
 
 		//Set index mappings
 		//Our slots
-		TreeMap<Integer, List<Integer>> ourTradeMap = new TreeMap<>();
+		TreeMap<Long, List<Integer>> ourTradeMap = new TreeMap<>();
 		for (int i = 0; i < 16; i++) {
 			ourTradeIndexes[i] = -1;
 
@@ -378,19 +378,19 @@ public class TradeWindow {
 					try {
 						int coins = (int) (Float.parseFloat(sb.toString()) * mult);
 
-						List<Integer> list = ourTradeMap.computeIfAbsent(coins, k -> new ArrayList<>());
+						List<Integer> list = ourTradeMap.computeIfAbsent((long) coins, k -> new ArrayList<>());
 						list.add(containerIndex);
 
 					} catch (Exception ignored) {
-						List<Integer> list = ourTradeMap.computeIfAbsent(-1, k -> new ArrayList<>());
+						List<Integer> list = ourTradeMap.computeIfAbsent(-1L, k -> new ArrayList<>());
 						list.add(containerIndex);
 					}
 				} else {
-					List<Integer> list = ourTradeMap.computeIfAbsent(-1, k -> new ArrayList<>());
+					List<Integer> list = ourTradeMap.computeIfAbsent(-1L, k -> new ArrayList<>());
 					list.add(containerIndex);
 				}
 			} else {
-				int price = getPrice(internalname);
+				long price = getPrice(internalname);
 				if (price == -1) price = 0;
 
 				price += getBackpackValue(stack);
@@ -501,7 +501,7 @@ public class TradeWindow {
 			}
 		}
 		int ourTradeIndex = 0;
-		for (Map.Entry<Integer, List<Integer>> entry : ourTradeMap.descendingMap().entrySet()) {
+		for (Map.Entry<Long, List<Integer>> entry : ourTradeMap.descendingMap().entrySet()) {
 			for (Integer index : entry.getValue()) {
 				ourTradeIndexes[ourTradeIndex++] = index;
 			}
@@ -833,7 +833,7 @@ public class TradeWindow {
 		}
 
 		if (NotEnoughUpdates.INSTANCE.config.tradeMenu.customTradePrices) {
-			TreeMap<Integer, Set<String>> ourTopItems = new TreeMap<>();
+			TreeMap<Long, Set<String>> ourTopItems = new TreeMap<>();
 			TreeMap<String, ItemStack> ourTopItemsStack = new TreeMap<>();
 			TreeMap<String, Integer> ourTopItemsCount = new TreeMap<>();
 			double ourPrice = 0;
@@ -847,7 +847,7 @@ public class TradeWindow {
 
 				ourPrice += processTopItems(stack, ourTopItems, ourTopItemsStack, ourTopItemsCount);
 			}
-			TreeMap<Integer, Set<String>> theirTopItems = new TreeMap<>();
+			TreeMap<Long, Set<String>> theirTopItems = new TreeMap<>();
 			TreeMap<String, ItemStack> theirTopItemsStack = new TreeMap<>();
 			TreeMap<String, Integer> theirTopItemsCount = new TreeMap<>();
 			double theirPrice = 0;
@@ -879,7 +879,7 @@ public class TradeWindow {
 
 			int ourTopIndex = Math.max(0, 3 - ourTopItemsStack.size());
 			out:
-			for (Map.Entry<Integer, Set<String>> entry : ourTopItems.descendingMap().entrySet()) {
+			for (Map.Entry<Long, Set<String>> entry : ourTopItems.descendingMap().entrySet()) {
 				for (String ourTopItemInternal : entry.getValue()) {
 					ItemStack stack = ourTopItemsStack.get(ourTopItemInternal);
 					if (stack == null) continue;
@@ -942,7 +942,7 @@ public class TradeWindow {
 
 			int theirTopIndex = Math.max(0, 3 - theirTopItemsStack.size());
 			out:
-			for (Map.Entry<Integer, Set<String>> entry : theirTopItems.descendingMap().entrySet()) {
+			for (Map.Entry<Long, Set<String>> entry : theirTopItems.descendingMap().entrySet()) {
 				for (String theirTopItemInternal : entry.getValue()) {
 					ItemStack stack = theirTopItemsStack.get(theirTopItemInternal);
 					if (stack == null) continue;

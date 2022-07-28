@@ -717,7 +717,7 @@ public class RenderListener {
 
 					String missingItem = null;
 					int totalValue = 0;
-					HashMap<String, Float> itemValues = new HashMap<>();
+					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
@@ -730,7 +730,7 @@ public class RenderListener {
 							}
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
-							float worth = -1;
+							double worth = -1;
 							if (bazaarPrice > 0) {
 								worth = bazaarPrice;
 							} else {
@@ -742,9 +742,9 @@ public class RenderListener {
 										JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 										if (auctionInfo != null) {
 											if (auctionInfo.has("clean_price")) {
-												worth = (int) auctionInfo.get("clean_price").getAsFloat();
+												worth = (long) auctionInfo.get("clean_price").getAsDouble();
 											} else {
-												worth = (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+												worth = (long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
 										}
 										break;
@@ -813,7 +813,7 @@ public class RenderListener {
 						valueStringBIN2 = missingItem;
 					}
 
-					int profitLossBIN = totalValue - chestCost;
+					long profitLossBIN = totalValue - chestCost;
 
 					boolean kismetUsed = false;
 					// checking for kismet
@@ -827,7 +827,7 @@ public class RenderListener {
 							}
 						}
 					}
-					int kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
+					long kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
 					String kismetStr = EnumChatFormatting.RED + format.format(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
@@ -884,10 +884,10 @@ public class RenderListener {
 					}
 
 					int index = 0;
-					for (Map.Entry<String, Float> entry : itemValues.entrySet()) {
+					for (Map.Entry<String, Double> entry : itemValues.entrySet()) {
 						Utils.renderAlignedString(
 							entry.getKey(),
-							prefix + format.format(entry.getValue().intValue()),
+							prefix + format.format(entry.getValue().longValue()),
 							guiLeft + xSize + 4 + 10,
 							guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ? (kismetUsed ? 39 : 29) : 29) + (++index) * 10,
 							160

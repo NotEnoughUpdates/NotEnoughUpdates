@@ -679,7 +679,7 @@ public class CustomAH extends Gui {
 									boolean hasAuctionPrice = auctionInfo != null;
 									boolean hasBazaarPrice = bazaarInfo != null;
 
-									int lowestBin = manager.auctionManager.getLowestBin(internalname);
+									long lowestBin = manager.auctionManager.getLowestBin(internalname);
 
 									NumberFormat format = NumberFormat.getInstance(Locale.US);
 
@@ -1375,7 +1375,7 @@ public class CustomAH extends Gui {
 			}
 		}
 		if (getBinPriceFilterAmount() > -1) {
-			int lowestBin =
+			long lowestBin =
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(
 					auc.getStack()));
 			if (lowestBin > 0) {
