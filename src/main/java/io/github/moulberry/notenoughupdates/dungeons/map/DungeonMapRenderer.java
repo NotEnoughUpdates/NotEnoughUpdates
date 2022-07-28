@@ -9,7 +9,6 @@ import io.github.moulberry.notenoughupdates.util.NEUResourceManager;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -258,12 +257,21 @@ public class DungeonMapRenderer {
 						orphanedMarker
 					);
 				}
-				if (NEUDebugFlag.MAP.isSet())
-					players.getAllMapPositions().forEach((label, playerMarker) -> {
-						float x = playerMarker.x * pixelToMapScale;
-						float y = playerMarker.z * pixelToMapScale;
-						Utils.drawStringF(label, Minecraft.getMinecraft().fontRendererObj, x, y, true, 0xffd3d3d3);
-					});
+				if (NEUDebugFlag.MAP.isSet()) {
+					if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
+						players.getRunnerEntityPosition().forEach((name, playerMarker) -> {
+							float x = playerMarker.x * pixelToMapScale;
+							float y = playerMarker.z * pixelToMapScale;
+							Utils.drawStringF(name, Minecraft.getMinecraft().fontRendererObj, x, y, true, 0xffd3d3d3);
+						});
+					} else {
+						players.getAllMapPositions().forEach((label, playerMarker) -> {
+							float x = playerMarker.x * pixelToMapScale;
+							float y = playerMarker.z * pixelToMapScale;
+							Utils.drawStringF(label, Minecraft.getMinecraft().fontRendererObj, x, y, true, 0xffd3d3d3);
+						});
+					}
+				}
 
 				if (useFb) {
 					GlStateManager.enableBlend();

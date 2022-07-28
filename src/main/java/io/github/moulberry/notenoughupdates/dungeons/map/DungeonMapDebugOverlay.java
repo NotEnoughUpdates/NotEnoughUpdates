@@ -12,14 +12,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class DungeonMapDebugOverlay extends TextOverlay {
 	public DungeonMapDebugOverlay(DungeonMap map) {
@@ -38,6 +35,7 @@ public class DungeonMapDebugOverlay extends TextOverlay {
 	}
 
 	public void newDungeon() {
+		finishDungeon();
 		File file = new File(NotEnoughUpdates.INSTANCE.getNeuDir(), String.format(
 			"dungeonlog/log-%s.txt",
 			DateTimeFormatter.ofPattern("dd-MM-yyyy-HH-mm-ss").format(LocalDateTime.now())
@@ -81,6 +79,12 @@ public class DungeonMapDebugOverlay extends TextOverlay {
 
 		overlayStrings.add("Player Coords:");
 		addMap(map.dungeonMapPlayers.getRunnerEntityPosition());
+
+		DungeonMapPlayers.PlayerMarker playerMarker = map.dungeonMapPlayers.getPlayerMarker();
+		overlayStrings.add("Player Marker: " + (playerMarker == null ? "None" : playerMarker.x + " " + playerMarker.z));
+
+		overlayStrings.add(
+			"Map Offset: " + map.dungeonMapPlayers.getMapOffsetX() + " " + map.dungeonMapPlayers.getMapOffsetZ());
 
 		overlayStrings.add("");
 

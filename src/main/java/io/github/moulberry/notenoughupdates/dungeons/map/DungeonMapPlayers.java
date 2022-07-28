@@ -2,6 +2,7 @@ package io.github.moulberry.notenoughupdates.dungeons.map;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.moulberry.notenoughupdates.mixins.AccessorEntityPlayerSP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -17,41 +18,17 @@ import java.util.Objects;
 
 public class DungeonMapPlayers {
 
-	public static class Linear {
-		private final float slope;
-		private final float intercept;
-
-		public Linear(float slope, float intercept) {
-			this.slope = slope;
-			this.intercept = intercept;
-		}
-
-		public float getSlope() {
-			return slope;
-		}
-
-		public float getIntercept() {
-			return intercept;
-		}
-
-		public float calculate(float x) {
-			return slope * x + intercept;
-		}
-
-		public float calculateInverse(float y) {
-			return (y - intercept) / slope;
-		}
+	public PlayerMarker getPlayerMarker() {
+		return mainPlayerMarker;
 	}
 
-	public static Map<String, Linear> FLOOR_MAP_SCALINGS = new HashMap<String, Linear>() {{
-		put("F1", new Linear(1.5F, -215F));
-		put("F2", new Linear(1.5F, -215F));
-		put("F3", new Linear(1.5F, -215F));
-		put("F4", new Linear(1.6F, -206F));
-		put("F5", new Linear(1.6F, -206F));
-		put("F6", new Linear(1.6F, -206F));
-		put("F7", new Linear(1.6F, -206F));
-	}};
+	public float getMapOffsetX() {
+		return mapXOffset;
+	}
+
+	public float getMapOffsetZ() {
+		return mapZOffset;
+	}
 
 	public static class PlayerMarker {
 		public final int x, z;
@@ -93,17 +70,22 @@ public class DungeonMapPlayers {
 	private final Map<String, ResourceLocation> skinMap = new HashMap<>();
 	private final Map<String, PlayerMarker> allMapPositions = new HashMap<>();
 	private final Map<String, PlayerMarker> orphanedMarkers = new HashMap<>();
+	private PlayerMarker mainPlayerMarker;
 	private float mainPlayerRotation;
 	private float mainPlayerX;
 	private float mainPlayerZ;
+	private float mapXOffset;
+	private float mapZOffset;
+	public static float mapScale = 0.66F;
 
 	private boolean isRealPlayer(String playerName) {
-		return Minecraft.getMinecraft().thePlayer.getWorldScoreboard().getTeams().stream()
-																						 .anyMatch(it
-																							 -> it.getMembershipCollection().size() == 1
-																							 && it.getMembershipCollection().contains(playerName)
-																							 && it.getTeamName().startsWith("a")
-																							 && it.getNameTagVisibility() == Team.EnumVisible.ALWAYS);
+		return Minecraft.getMinecraft().thePlayer
+			.getWorldScoreboard().getTeams().stream()
+			.anyMatch(it
+				-> it.getMembershipCollection().size() == 1
+				&& it.getMembershipCollection().contains(playerName)
+				&& it.getTeamName().startsWith("a")
+				&& it.getNameTagVisibility() == Team.EnumVisible.ALWAYS);
 	}
 
 	public void parse(DungeonMapStaticParser mapData, DungeonMapPlayers last) {
@@ -111,15 +93,21 @@ public class DungeonMapPlayers {
 		if (last != null) {
 			playerNameToIconName.putAll(last.playerNameToIconName);
 			skinMap.putAll(last.skinMap);
+			mapXOffset = last.mapXOffset;
+			mapZOffset = last.mapZOffset;
 		}
 
 		if (mapData == null) return;
-
-		parseEntityPositions(mapData);
-
 		Map<String, Vec4b> mapDecorations = mapData.mapDecorations;
+
 		if (mapDecorations != null) {
 			parseMapPositions(mapDecorations);
+			if (mainPlayerMarker != null)
+				calculateMapOffset(mainPlayerMarker);
+		}
+		parseEntityPositions(mapData);
+
+		if (mapDecorations != null) {
 			assignKnownMapMarkers(mapData.dungeonMap);
 			findOrphanedMarkers();
 		} else if (last != null) {
@@ -134,6 +122,13 @@ public class DungeonMapPlayers {
 				runnerPositions.put(playerName, allMapPositions.get(markerName));
 			}
 		});
+	}
+
+	private void calculateMapOffset(PlayerMarker marker) {
+		AccessorEntityPlayerSP thePlayer = ((AccessorEntityPlayerSP) Minecraft.getMinecraft().thePlayer);
+
+		mapXOffset = (float) (marker.x - (mapScale * thePlayer.getLastReportedPosX()));
+		mapZOffset = (float) (marker.z - (mapScale * thePlayer.getLastReportedPosZ()));
 	}
 
 	private void findOrphanedMarkers() {
@@ -152,7 +147,11 @@ public class DungeonMapPlayers {
 			int mapX = (int) entry.getValue().func_176112_b() / 2 + 64;
 			int mapZ = (int) entry.getValue().func_176113_c() / 2 + 64;
 			float angle = entry.getValue().func_176111_d() * 360 / 16F;
-			allMapPositions.put(entry.getKey(), new PlayerMarker(mapX, mapZ, angle));
+			PlayerMarker marker = new PlayerMarker(mapX, mapZ, angle);
+			allMapPositions.put(entry.getKey(), marker);
+			if (id == 1) {
+				mainPlayerMarker = marker;
+			}
 		}
 	}
 
@@ -162,12 +161,15 @@ public class DungeonMapPlayers {
 		for (Map.Entry<String, PlayerMarker> mapPos : allMapPositions.entrySet()) {
 			String oldPlayer = playerNameToIconName.inverse().get(mapPos.getKey());
 			String newPlayer = findExclusivePlayerNextToPoint(mapPos.getValue());
+			if (mainPlayerMarker == mapPos.getValue()) {
+				newPlayer = Minecraft.getMinecraft().thePlayer.getName();
+			}
 			if (newPlayer == null && oldPlayer != null) {
 				dungeonMap.dungeonMapDebugOverlay.logAssignmentChange(
 					EnumChatFormatting.GOLD + "Player " + oldPlayer + " is far away from their respective marker (" +
 						mapPos.getKey() + "). Still keeping marker.");
 			}
-
+			if (oldPlayer != null) continue;
 			if (newPlayer != null && !Objects.equals(newPlayer, oldPlayer)) {
 				if (playerNameToIconName.containsKey(newPlayer)) {
 					String oldMarker = playerNameToIconName.remove(newPlayer);
@@ -196,8 +198,6 @@ public class DungeonMapPlayers {
 	}
 
 	private void parseEntityPositions(DungeonMapStaticParser mapData) {
-		Linear coordMapping = FLOOR_MAP_SCALINGS.get(mapData.floorName);
-		if (coordMapping == null) return;
 		for (EntityPlayer entity : Minecraft.getMinecraft().theWorld.playerEntities) {
 			if (entity.isPlayerSleeping() || !isRealPlayer(entity.getName())) continue;
 			if (entity instanceof AbstractClientPlayer) {
@@ -206,8 +206,8 @@ public class DungeonMapPlayers {
 					skinMap.put(entity.getName(), skin);
 			}
 
-			float x = coordMapping.calculateInverse((float) entity.posX);
-			float z = coordMapping.calculateInverse((float) entity.posZ);
+			float x = ((float) entity.posX) * mapScale + mapXOffset;
+			float z = ((float) entity.posZ) * mapScale + mapZOffset;
 			if (entity.getName().equals(Minecraft.getMinecraft().thePlayer.getName())) {
 				mainPlayerX = x;
 				mainPlayerZ = z;

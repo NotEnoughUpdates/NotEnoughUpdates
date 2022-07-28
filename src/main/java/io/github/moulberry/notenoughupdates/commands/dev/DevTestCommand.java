@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.commands.dev;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.dungeons.map.DungeonMapPlayers;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
@@ -162,6 +163,10 @@ public class DevTestCommand extends ClientCommandBase {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA +
 				"I would never search"));
 			return;
+		}
+		if(args.length == 2 && "mapscale".equalsIgnoreCase(args[0])) {
+			DungeonMapPlayers.mapScale = Float.parseFloat(args[1]);
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Set mapsacle."));
 		}
 		if (args.length == 2 && args[0].equalsIgnoreCase("openGui")) {
 			try {
