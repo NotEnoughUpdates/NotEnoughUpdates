@@ -173,7 +173,7 @@ public class MinionHelperManager {
 					upgradeCost += calculateUpgradeCosts(getMinionById(internalName).getMinionSource(), false);
 				} else {
 					if (!cheapItems.contains(internalName)) {
-						long lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalName);
+						double lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
 						upgradeCost += lowestBin * amount;
 					}
 				}
@@ -242,8 +242,8 @@ public class MinionHelperManager {
 				int has = highestCollectionTier.get(internalName);
 
 				return has >= need;
-			} else {
-				Utils.addChatMessage("§cInvalid hypixel collection name: '" + internalName + "'");
+//			} else {
+//				Utils.addChatMessage("§cInvalid hypixel collection name: '" + internalName + "'");
 			}
 
 		} else if (requirement instanceof SlayerRequirement) {
