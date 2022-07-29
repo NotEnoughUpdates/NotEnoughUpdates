@@ -22,11 +22,11 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 import com.google.common.collect.ArrayListMultimap;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableObject;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableText;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
@@ -80,10 +80,9 @@ public class MinionHelperOverlay {
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
 
-		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap(shift);
+		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
 
-		renderHover(renderMap, shift);
+		renderHover(renderMap);
 		render(event, renderMap);
 	}
 
@@ -92,8 +91,7 @@ public class MinionHelperOverlay {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!Mouse.getEventButtonState()) return;
 
-		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap(shift);
+		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
 
 		RenderableObject mouseObject = getObjectOverMouse(renderMap);
 
@@ -136,10 +134,7 @@ public class MinionHelperOverlay {
 		return null;
 	}
 
-	private void renderHover(
-		LinkedHashMap<String, RenderableObject> renderMap,
-		boolean shift
-	) {
+	private void renderHover(LinkedHashMap<String, RenderableObject> renderMap) {
 		lastHovered = null;
 
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
@@ -154,7 +149,7 @@ public class MinionHelperOverlay {
 		if (mouseObject != null) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
-			Utils.drawHoveringText(getTooltip(shift, mouseObject),
+			Utils.drawHoveringText(getTooltip(mouseObject),
 				mouseX * scaledresolution.getScaleFactor() / 2,
 				mouseY * scaledresolution.getScaleFactor() / 2,
 				scaledWidth * scaledresolution.getScaleFactor() / 2,
@@ -164,7 +159,7 @@ public class MinionHelperOverlay {
 		}
 	}
 
-	private List<String> getTooltip(boolean shift, RenderableObject renderableObject) {
+	private List<String> getTooltip(RenderableObject renderableObject) {
 		List<String> lines = new ArrayList<>();
 
 		if (renderableObject instanceof RenderableText) {
@@ -180,70 +175,51 @@ public class MinionHelperOverlay {
 			List<MinionRequirement> requirements = manager.getRequirements(minionSource.getMinion());
 			if (!requirements.isEmpty()) {
 				for (MinionRequirement requirement : requirements) {
-					String color = manager.meetRequirement(minion, requirement) ? "§a" : "§c";
-					lines.add("  " + color + "Requirement: §f" + requirement.printDescription());
+					String color = manager.meetRequirement(minion, requirement) ? "§a" : "§7";
+					lines.add(" §8- " + color + requirement.printDescription());
 				}
 			} else {
-				lines.add("§cCould not find any requirements!");
-				lines.add("§cThis is ");
+				lines.add("§cNo requirements loaded!");
 			}
 
 			if (minionSource instanceof CraftingSource) {
 				CraftingSource craftingSource = (CraftingSource) minionSource;
 				lines.add("");
-				if (shift || minion.getTier() == 1) {
-					lines.add("Full crafting costs:");
+				String format = manager.calculateUpgradeCostsFormat(craftingSource, true);
+				if (minion.getTier() == 1) {
+					lines.add("Full crafting costs: " + format);
 				} else {
-					lines.add("Upgrade costs:");
+					lines.add("Upgrade costs: " + format);
 				}
-				String format = manager.calculateUpgradeCostsFormat(craftingSource, !shift);
-				lines.add(format);
+				formatItems(lines, grabAllItems(craftingSource.getItems()));
 
-				lines.add("");
-
-				Map<String, Integer> allItems = grabAllItems(craftingSource.getItems());
-
-				lines.add("Crafting recipe requires:");
-				for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
-					String name = entry.getKey();
-					int amount = entry.getValue();
-					lines.add(name + ": " + amount);
-				}
 			} else if (minionSource instanceof NpcSource) {
 				NpcSource npcSource = (NpcSource) minionSource;
-				int coins = npcSource.getCoins();
 				String npcName = npcSource.getNpcName();
 				lines.add("");
-				lines.add("Can bet bought at the NPC");
-				lines.add("name: " + npcName);
+				lines.add("Buy at §9" + npcName + " (NPC)");
 				lines.add("");
-				lines.add("Cost:");
-				String format = Utils.shortNumberFormat(coins, 0);
-				String result = "§6" + format + " coins";
-				lines.add("  coins: " + result);
-				lines.add("  Items:");
-				Map<String, Integer> allItems = grabAllItems(npcSource.getItems());
-				for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
-					String name = entry.getKey();
-					int amount = entry.getValue();
-					lines.add("   " + name + ": " + amount);
-				}
-
-			} else if (minionSource instanceof CustomSource) {
-				CustomSource customSource = (CustomSource) minionSource;
-				String source = customSource.getCustomSource();
-				lines.add("");
-				lines.add(source);
+				lines.add("Buy costs: " + manager.calculateUpgradeCostsFormat(npcSource, true));
+				lines.add(" §8- " + manager.formatCoins(npcSource.getCoins()));
+				formatItems(lines, grabAllItems(npcSource.getItems()));
 			}
 
 			lines.add("");
 			lines.add("§eClick to view recipe");
-			if (!shift) {
-				lines.add("");
-				lines.add("§8[SHIFT show full costs]");
-			}
 		}
 		return lines;
+	}
+
+	private void formatItems(List<String> lines, Map<String, Integer> allItems) {
+		for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
+			String internalName = entry.getKey();
+			String name = MinionHelperRepoLoader.getInstance().getDisplayName(internalName);
+
+			int amount = entry.getValue();
+			String amountText = amount != 1 ? amount + "x " : "";
+			String price = manager.formatCoins(manager.getPrice(internalName) * amount);
+			lines.add(" §8- §f" + amountText + name + " " + price);
+		}
 	}
 
 	private Map<String, Integer> grabAllItems(ArrayListMultimap<String, Integer> multimap) {
@@ -258,7 +234,6 @@ public class MinionHelperOverlay {
 	}
 
 	private Map<Minion, Long> getMissing(boolean shift) {
-
 		Map<Minion, Long> prices = new HashMap<>();
 		for (Minion minion : manager.getAllMinions().values()) {
 
@@ -302,7 +277,8 @@ public class MinionHelperOverlay {
 		}
 	}
 
-	private LinkedHashMap<String, RenderableObject> getRenderMap(boolean shift) {
+	private LinkedHashMap<String, RenderableObject> getRenderMap() {
+		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (!shift) {
 			if (cacheNoShift != null) return cacheNoShift;
 		} else {
@@ -316,11 +292,12 @@ public class MinionHelperOverlay {
 		} else {
 			renderMap.put(
 				"To craft: " + prices.size(),
+				//TODO formulierung
 				new RenderableText("you can craft that many more minions!")
-			);//TODO formulierung
+			);
 			int i = 0;
 
-			//TOOD change
+			//TODO change
 			int max = 20;
 
 			Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
@@ -336,7 +313,7 @@ public class MinionHelperOverlay {
 				String format = manager.calculateUpgradeCostsFormat(minion.getMinionSource(), true);
 				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
 				renderMap.put(
-					requirementFormat + displayName + "§r " + requirementFormat + minion.getTier() + "§r §8- " + format,
+					requirementFormat + displayName + "§r " + requirementFormat + minion.getTier() + " §r§8- " + format,
 					minion.getMinionSource()
 				);
 

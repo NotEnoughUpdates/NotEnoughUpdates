@@ -51,6 +51,7 @@ public class MinionHelperRepoLoader {
 	private final MinionHelperManager manager = MinionHelperManager.getInstance();
 	private boolean dirty = true;
 	private int ticks = 0;
+	private final Map<String, String> displayNameCache = new HashMap<>();
 
 	public static MinionHelperRepoLoader getInstance() {
 		if (instance == null) {
@@ -65,6 +66,7 @@ public class MinionHelperRepoLoader {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRepoReload(RepositoryReloadEvent event) {
 		dirty = true;
+		displayNameCache.clear();
 	}
 
 	@SubscribeEvent
@@ -121,9 +123,9 @@ public class MinionHelperRepoLoader {
 		}
 
 		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement(
-			"Buy Flower Minion 1 from Dark Auction"));
+			"Buy a Flower Minion 1 from Dark Auction"));
 		manager.getMinionById("SNOW_GENERATOR_1").getRequirements().add(new CustomRequirement(
-			"Gain Snow Minion 1 from opening gifts"));
+			"Get a Snow Minion 1 from opening gifts"));
 
 	}
 
@@ -264,7 +266,8 @@ public class MinionHelperRepoLoader {
 					error = true;
 					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 						Utils.addChatMessage(
-							"§c[NEU] Error in MinionHelperRepoLoader while loading repo entry " + minion.getDisplayName() + " " + minion.getTier() + ": " +
+							"§c[NEU] Error in MinionHelperRepoLoader while loading repo entry " + minion.getDisplayName() + " " +
+								minion.getTier() + ": " +
 								e.getClass().getSimpleName() + ": " + e.getMessage());
 					}
 					e.printStackTrace();
@@ -334,5 +337,32 @@ public class MinionHelperRepoLoader {
 				items.put(itemName, amount);
 			}
 		}
+	}
+
+	//TODO move into utils class or somewhere
+	public String getDisplayName(String internalName) {
+		if (displayNameCache.containsKey(internalName)) {
+			return displayNameCache.get(internalName);
+		}
+
+		String displayName = null;
+		TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
+		if (itemInformation.containsKey(internalName)) {
+			JsonObject jsonObject = itemInformation.get(internalName);
+			if (jsonObject.has("displayname")) {
+				displayName = jsonObject.get("displayname").getAsString();
+			}
+		}
+
+		if (displayName == null) {
+			displayName = internalName;
+			Utils.showOutdatedRepoNotification();
+			if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+				Utils.addChatMessage("§c[NEU] Found no display name in repo for '" + internalName + "'!");
+			}
+		}
+
+		displayNameCache.put(internalName, displayName);
+		return displayName;
 	}
 }

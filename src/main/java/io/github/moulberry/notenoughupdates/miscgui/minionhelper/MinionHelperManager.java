@@ -108,6 +108,7 @@ public class MinionHelperManager {
 	}
 
 	public String calculateUpgradeCostsFormat(MinionSource source, boolean upgradeOnly) {
+		if (source == null) return "§c?";
 		String internalName = source.getMinion().getInternalName();
 		if (upgradeOnly) {
 			if (upgradeCostFormatCache.containsKey(internalName)) {
@@ -120,13 +121,11 @@ public class MinionHelperManager {
 		}
 
 		if (source instanceof CustomSource) {
-			return "§7" + ((CustomSource) source).getCustomSource();
+			return "§f" + ((CustomSource) source).getCustomSource();
 		}
 
 		long costs = calculateUpgradeCosts(source, upgradeOnly);
-		String format = Utils.shortNumberFormat(costs, 0);
-		String fullCostsFormat = !upgradeOnly ? "§o" : "";
-		String result = "§6" + fullCostsFormat + format + " coins";
+		String result = formatCoins(costs, !upgradeOnly ? "§o" : "");
 
 		if (source instanceof NpcSource) {
 			ArrayListMultimap<String, Integer> items = ((NpcSource) source).getItems();
@@ -166,26 +165,9 @@ public class MinionHelperManager {
 		long upgradeCost = 0;
 		for (Map.Entry<String, Integer> entry : items.entries()) {
 			String internalName = entry.getKey();
+			long price = getPrice(internalName);
 			int amount = entry.getValue();
-			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
-			if (bazaarInfo == null) {
-				if (internalName.contains("_GENERATOR_")) {
-					upgradeCost += calculateUpgradeCosts(getMinionById(internalName).getMinionSource(), false);
-				} else {
-					if (!cheapItems.contains(internalName)) {
-						double lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
-						upgradeCost += lowestBin * amount;
-					}
-				}
-				continue;
-			}
-			if (!bazaarInfo.has("curr_sell")) {
-				System.err.println("curr_sell does not exist for '" + internalName + "'");
-				continue;
-			}
-			long bazaarInstantSellPrice = (long) bazaarInfo.get("curr_sell").getAsFloat();
-			long added = bazaarInstantSellPrice * amount;
-			upgradeCost += added;
+			upgradeCost += price * amount;
 		}
 		if (!upgradeOnly) {
 			Minion parent = source.getMinion().getParent();
@@ -194,6 +176,27 @@ public class MinionHelperManager {
 			}
 		}
 		return upgradeCost;
+	}
+
+	public long getPrice(String internalName) {
+		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
+		if (bazaarInfo == null) {
+			if (internalName.contains("_GENERATOR_")) {
+				return calculateUpgradeCosts(getMinionById(internalName).getMinionSource(), false);
+			} else {
+				if (!cheapItems.contains(internalName)) {
+					return (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
+				}
+			}
+			return 0;
+		}
+
+		//TODO use average bazaar price?
+		if (!bazaarInfo.has("curr_sell")) {
+			System.err.println("curr_sell does not exist for '" + internalName + "'");
+			return 0;
+		}
+		return (long) bazaarInfo.get("curr_sell").getAsDouble();
 	}
 
 	public void createMinion(String internalName, int tier) {
@@ -286,5 +289,14 @@ public class MinionHelperManager {
 		for (Minion minion : minions.values()) {
 			minion.setMeetRequirements(meetAllRequirements(minion));
 		}
+	}
+
+	public String formatCoins(long coins) {
+		return formatCoins(coins, "");
+	}
+
+	public String formatCoins(long coins, String extraFormat) {
+		String format = Utils.shortNumberFormat(coins, 0);
+		return "§6" + extraFormat + format + " coins";
 	}
 }

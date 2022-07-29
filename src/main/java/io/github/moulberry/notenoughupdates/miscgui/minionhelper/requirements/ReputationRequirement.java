@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
+import io.github.moulberry.notenoughupdates.util.Utils;
+
 public class ReputationRequirement extends MinionRequirement {
 
 	private final String reputationType;
@@ -39,6 +41,6 @@ public class ReputationRequirement extends MinionRequirement {
 
 	@Override
 	public String printDescription() {
-		return reputation + " " + reputationType + " reputation";
+		return "Reputation: " + Utils.formatNumberWithDots(reputation) + " " + reputationType.toLowerCase();
 	}
 }

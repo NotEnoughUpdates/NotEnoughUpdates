@@ -39,6 +39,6 @@ public class SlayerRequirement extends MinionRequirement {
 
 	@Override
 	public String printDescription() {
-		return slayer + " slayer at level " + level;
+		return "Slayer: " + slayer + " lvl " + level;
 	}
 }
