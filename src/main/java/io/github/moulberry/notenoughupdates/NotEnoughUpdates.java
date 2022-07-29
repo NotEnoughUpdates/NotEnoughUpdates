@@ -62,6 +62,7 @@ import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperApiLoader;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperChatLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperInventoryLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
@@ -301,6 +302,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(MinionHelperOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperTooltips.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());
+		MinecraftForge.EVENT_BUS.register(MinionHelperChatLoader.getInstance());
 
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
