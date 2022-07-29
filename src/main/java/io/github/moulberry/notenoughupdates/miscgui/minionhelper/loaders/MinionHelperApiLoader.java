@@ -121,6 +121,7 @@ public class MinionHelperApiLoader {
 					int level = Integer.parseInt(split[split.length - 1]);
 					String name = StringUtils.removeLastWord(text, "_");
 
+					//Because skyblock is good in naming things
 					LinkedHashMap<String, ItemStack> collectionMap = ProfileViewer.getCollectionToCollectionDisplayMap();
 					if (collectionMap.containsKey(name)) {
 						ItemStack itemStack = collectionMap.get(name);
@@ -128,10 +129,7 @@ public class MinionHelperApiLoader {
 						name = Utils.cleanColour(displayName);
 						name = manager.formatInternalName(name);
 					} else {
-						/**
-						 * Because skyblock is good in naming things
-						 * Since there is no space in the profile viewer page for more collectionToCollectionDisplayMap entries
-						 */
+						//Doing this since there is no space in the profile viewer gui for more entries in collectionToCollectionDisplayMap
 						if (name.equals("SAND:1")) name = "RED_SAND";
 						if (name.equals("MYCEL")) name = "MYCELIUM";
 					}
