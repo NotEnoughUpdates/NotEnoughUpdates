@@ -61,6 +61,7 @@ public class MinionHelperApiLoader {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
+		if (Minecraft.getMinecraft().thePlayer == null) return;
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 		ticks++;
 
@@ -108,79 +109,71 @@ public class MinionHelperApiLoader {
 	}
 
 	private void readData(JsonObject player) {
-		try {
-			Map<String, Integer> highestCollectionTier = new HashMap<>();
-			Map<String, Integer> slayerTier = new HashMap<>();
-			int magesReputation = 0;
-			int barbariansReputation = 0;
+		Map<String, Integer> highestCollectionTier = new HashMap<>();
+		Map<String, Integer> slayerTier = new HashMap<>();
+		int magesReputation = 0;
+		int barbariansReputation = 0;
 
-			if (player.has("unlocked_coll_tiers")) {
-				for (JsonElement element : player.get("unlocked_coll_tiers").getAsJsonArray()) {
-					String text = element.getAsString();
-					String[] split = text.split("_");
-					int level = Integer.parseInt(split[split.length - 1]);
-					String name = StringUtils.removeLastWord(text, "_");
+		if (player.has("unlocked_coll_tiers")) {
+			for (JsonElement element : player.get("unlocked_coll_tiers").getAsJsonArray()) {
+				String text = element.getAsString();
+				String[] split = text.split("_");
+				int level = Integer.parseInt(split[split.length - 1]);
+				String name = StringUtils.removeLastWord(text, "_");
 
-					//Because skyblock is good in naming things
-					LinkedHashMap<String, ItemStack> collectionMap = ProfileViewer.getCollectionToCollectionDisplayMap();
-					if (collectionMap.containsKey(name)) {
-						ItemStack itemStack = collectionMap.get(name);
-						String displayName = itemStack.getDisplayName();
-						name = Utils.cleanColour(displayName);
-						name = manager.formatInternalName(name);
-					} else {
-						//Doing this since there is no space in the profile viewer gui for more entries in collectionToCollectionDisplayMap
-						if (name.equals("SAND:1")) name = "RED_SAND";
-						if (name.equals("MYCEL")) name = "MYCELIUM";
-					}
-
-					level = Math.max(highestCollectionTier.getOrDefault(name, 0), level);
-					highestCollectionTier.put(name, level);
+				//Because skyblock is good in naming things
+				LinkedHashMap<String, ItemStack> collectionMap = ProfileViewer.getCollectionToCollectionDisplayMap();
+				if (collectionMap.containsKey(name)) {
+					ItemStack itemStack = collectionMap.get(name);
+					String displayName = itemStack.getDisplayName();
+					name = Utils.cleanColour(displayName);
+					name = manager.formatInternalName(name);
+				} else {
+					//Doing this since there is no space in the profile viewer gui for more entries in collectionToCollectionDisplayMap
+					if (name.equals("SAND:1")) name = "RED_SAND";
+					if (name.equals("MYCEL")) name = "MYCELIUM";
 				}
+
+				level = Math.max(highestCollectionTier.getOrDefault(name, 0), level);
+				highestCollectionTier.put(name, level);
 			}
-
-			if (player.has("nether_island_player_data")) {
-				JsonObject netherData = player.getAsJsonObject("nether_island_player_data");
-				if (netherData.has("mages_reputation")) {
-					magesReputation = netherData.get("mages_reputation").getAsInt();
-				}
-				if (netherData.has("barbarians_reputation")) {
-					barbariansReputation = netherData.get("barbarians_reputation").getAsInt();
-				}
-			}
-
-			JsonObject slayerLeveling = Constants.LEVELING.getAsJsonObject("slayer_xp");
-
-			if (player.has("slayer_bosses")) {
-				JsonObject slayerBosses = player.getAsJsonObject("slayer_bosses");
-				for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
-					String name = entry.getKey();
-					JsonObject slayerEntry = entry.getValue().getAsJsonObject();
-					if (slayerEntry.has("xp")) {
-						long xp = slayerEntry.get("xp").getAsLong();
-
-						int tier = 0;
-						for (JsonElement element : slayerLeveling.getAsJsonArray(name)) {
-							int needForLevel = element.getAsInt();
-							if (xp >= needForLevel) {
-								tier++;
-							} else {
-								break;
-							}
-						}
-						slayerTier.put(name, tier);
-					}
-				}
-			}
-
-			manager.setApiData(new ApiData(highestCollectionTier, slayerTier, magesReputation, barbariansReputation));
-
-			manager.reloadRequirements();
-
-		} catch (Throwable t) {
-			t.printStackTrace();
-			Utils.addChatMessage("there was a mistake!");
-			throw new RuntimeException("lul", t);
 		}
+
+		if (player.has("nether_island_player_data")) {
+			JsonObject netherData = player.getAsJsonObject("nether_island_player_data");
+			if (netherData.has("mages_reputation")) {
+				magesReputation = netherData.get("mages_reputation").getAsInt();
+			}
+			if (netherData.has("barbarians_reputation")) {
+				barbariansReputation = netherData.get("barbarians_reputation").getAsInt();
+			}
+		}
+
+		JsonObject slayerLeveling = Constants.LEVELING.getAsJsonObject("slayer_xp");
+
+		if (player.has("slayer_bosses")) {
+			JsonObject slayerBosses = player.getAsJsonObject("slayer_bosses");
+			for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
+				String name = entry.getKey();
+				JsonObject slayerEntry = entry.getValue().getAsJsonObject();
+				if (slayerEntry.has("xp")) {
+					long xp = slayerEntry.get("xp").getAsLong();
+
+					int tier = 0;
+					for (JsonElement element : slayerLeveling.getAsJsonArray(name)) {
+						int needForLevel = element.getAsInt();
+						if (xp >= needForLevel) {
+							tier++;
+						} else {
+							break;
+						}
+					}
+					slayerTier.put(name, tier);
+				}
+			}
+		}
+
+		manager.setApiData(new ApiData(highestCollectionTier, slayerTier, magesReputation, barbariansReputation));
+		manager.reloadRequirements();
 	}
 }

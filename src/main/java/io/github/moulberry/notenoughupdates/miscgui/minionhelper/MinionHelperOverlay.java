@@ -177,9 +177,15 @@ public class MinionHelperOverlay {
 			lastHovered = minion;
 			String displayName = minion.getDisplayName();
 			lines.add(displayName + " " + minion.getTier());
-			for (MinionRequirement requirement : manager.getRequirements(minionSource.getMinion())) {
-				String color = manager.meetRequirement(minion, requirement) ? "§a" : "§c";
-				lines.add("  " + color + "Requirement: §f" + requirement.printDescription());
+			List<MinionRequirement> requirements = manager.getRequirements(minionSource.getMinion());
+			if (!requirements.isEmpty()) {
+				for (MinionRequirement requirement : requirements) {
+					String color = manager.meetRequirement(minion, requirement) ? "§a" : "§c";
+					lines.add("  " + color + "Requirement: §f" + requirement.printDescription());
+				}
+			} else {
+				lines.add("§cCould not find any requirements!");
+				lines.add("§cThis is ");
 			}
 
 			if (minionSource instanceof CraftingSource) {
@@ -320,6 +326,12 @@ public class MinionHelperOverlay {
 			Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
 			for (Minion minion : sort.keySet()) {
 				String displayName = minion.getDisplayName();
+				if (displayName == null) {
+					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+						Utils.addChatMessage("§cDisplayname is null for " + minion.getInternalName());
+					}
+					continue;
+				}
 				displayName = displayName.replace(" Minion", "");
 				String format = manager.calculateUpgradeCostsFormat(minion.getMinionSource(), true);
 				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";

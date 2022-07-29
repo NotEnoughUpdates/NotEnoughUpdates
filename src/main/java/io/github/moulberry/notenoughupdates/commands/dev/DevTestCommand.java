@@ -55,7 +55,8 @@ public class DevTestCommand extends ClientCommandBase {
 			"dediamondpro",
 			"lulonaut",
 			"craftyoldminer",
-			"eisengolem"
+			"eisengolem",
+			"hannibal2"
 		);
 
 	private static final String[] DEV_FAIL_STRINGS = {
@@ -150,7 +151,8 @@ public class DevTestCommand extends ClientCommandBase {
 			return;
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("dev")) {
-			NotEnoughUpdates.INSTANCE.config.hidden.dev = true;
+			NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev;
+			Utils.addChatMessage("§e[NEU] Dev mode " + (NotEnoughUpdates.INSTANCE.config.hidden.dev ? "§aenabled": "§cdisabled"));
 			return;
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("saveconfig")) {

@@ -1977,6 +1977,11 @@ public class Utils {
 	}
 
 	public static void addChatMessage(String message) {
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message));
+		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+		if (thePlayer != null) {
+			thePlayer.addChatMessage(new ChatComponentText(message));
+		} else {
+			System.out.println(message);
+		}
 	}
 }

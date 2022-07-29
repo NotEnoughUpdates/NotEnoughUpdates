@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomS
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -68,6 +69,7 @@ public class MinionHelperRepoLoader {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
+		if (Minecraft.getMinecraft().thePlayer == null) return;
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 		ticks++;
 
@@ -79,8 +81,12 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
+	boolean error = false;
+
 	void load() {
 		//TODO load new from config entries and so?
+		error = false;
+
 		loadMinions();
 
 		loadNpcData();
@@ -88,21 +94,25 @@ public class MinionHelperRepoLoader {
 		loadCustomSources();
 
 		checkMissingData();
+
+		if (error) {
+			Utils.showOutdatedRepoNotification();
+		}
 	}
 
 	private void loadCustomSources() {
-		Map<String, String> customDescriptions = new HashMap<>();
+		Map<String, String> customSource = new HashMap<>();
 
-		customDescriptions.put("SNOW_GENERATOR_1", "Gifts");
+		customSource.put("SNOW_GENERATOR_1", "Gifts");
 
-		customDescriptions.put("FLOWER_GENERATOR_1", "Dark Auction");
+		customSource.put("FLOWER_GENERATOR_1", "Dark Auction");
 
-		customDescriptions.put("REVENANT_GENERATOR_1", "Revenant Slayer");
-		customDescriptions.put("TARANTULA_GENERATOR_1", "Tarantula Slayer");
-		customDescriptions.put("VOIDLING_GENERATOR_1", "Voidling Slayer");
-		customDescriptions.put("INFERNO_GENERATOR_1", "Inferno Slayer");
+		customSource.put("REVENANT_GENERATOR_1", "Zombie Slayer");
+		customSource.put("TARANTULA_GENERATOR_1", "Spider Slayer");
+		customSource.put("VOIDLING_GENERATOR_1", "Enderman Slayer");
+		customSource.put("INFERNO_GENERATOR_1", "Blaze Slayer");
 
-		for (Map.Entry<String, String> entry : customDescriptions.entrySet()) {
+		for (Map.Entry<String, String> entry : customSource.entrySet()) {
 			String internalName = entry.getKey();
 			String description = entry.getValue();
 			Minion minion = manager.getMinionById(internalName);
@@ -110,9 +120,10 @@ public class MinionHelperRepoLoader {
 			minion.setMinionSource(new CustomSource(minion, description));
 		}
 
-
-		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement("Buy Flower Minion 1 from Dark Auction"));
-		manager.getMinionById("SNOW_GENERATOR_1").getRequirements().add(new CustomRequirement("Gain Snow Minion 1 from opening gifts"));
+		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement(
+			"Buy Flower Minion 1 from Dark Auction"));
+		manager.getMinionById("SNOW_GENERATOR_1").getRequirements().add(new CustomRequirement(
+			"Gain Snow Minion 1 from opening gifts"));
 
 	}
 
@@ -165,13 +176,28 @@ public class MinionHelperRepoLoader {
 	private void checkMissingData() {
 		for (Minion minion : manager.getAllMinions().values()) {
 			if (minion.getMinionSource() == null) {
-				Utils.addChatMessage("§7The Minion '" + minion.getInternalName() + " has no source!");
+				error = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no source!");
+				}
 			}
 			if (minion.getDisplayName() == null) {
-				Utils.addChatMessage("§cThe Minion '" + minion.getInternalName() + " has no display name!");
+				error = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no display name!");
+				}
 			}
 			if (manager.getRequirements(minion).isEmpty()) {
-				Utils.addChatMessage("§cThe Minion '" + minion.getInternalName() + " has no requirements!");
+				error = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no requirements!");
+				}
+			}
+			if (minion.getTier() > 1 && minion.getParent() == null) {
+				error = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has parent!");
+				}
 			}
 		}
 	}
@@ -235,9 +261,12 @@ public class MinionHelperRepoLoader {
 						}
 					}
 				} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-					Utils.addChatMessage(
-						"§4Error §cwhile loading repo entry " + minion.getDisplayName() + " " + minion.getTier() + ": " +
-							e.getClass().getSimpleName() + ": " + e.getMessage());
+					error = true;
+					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+						Utils.addChatMessage(
+							"§c[NEU] Error in MinionHelperRepoLoader while loading repo entry " + minion.getDisplayName() + " " + minion.getTier() + ": " +
+								e.getClass().getSimpleName() + ": " + e.getMessage());
+					}
 					e.printStackTrace();
 				}
 			}
@@ -287,7 +316,10 @@ public class MinionHelperRepoLoader {
 			boolean isParent = false;
 			if (itemName.contains("_GENERATOR_")) {
 				String minionInternalName = minion.getInternalName();
-				boolean same = StringUtils.removeLastWord(itemName, "_").equals(StringUtils.removeLastWord(minionInternalName, "_"));
+				boolean same = StringUtils.removeLastWord(itemName, "_").equals(StringUtils.removeLastWord(
+					minionInternalName,
+					"_"
+				));
 				if (same) {
 					parent = manager.getMinionById(itemName);
 					if (parent == null) {

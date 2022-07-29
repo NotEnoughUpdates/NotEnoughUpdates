@@ -30,9 +30,10 @@ public class Minion {
 	private final int tier;
 	private String displayName;
 	private MinionSource minionSource;
-	private boolean crafted = false;
 	private Minion parent;
 	private final List<MinionRequirement> requirements = new ArrayList<>();
+
+	private boolean crafted = false;
 	private boolean meetRequirements = false;
 
 	public Minion(String internalName, int tier) {
