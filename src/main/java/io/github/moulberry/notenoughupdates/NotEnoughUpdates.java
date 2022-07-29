@@ -49,6 +49,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.PowerStoneStatsDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
@@ -289,6 +290,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new OldAnimationChecker());
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
+		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {

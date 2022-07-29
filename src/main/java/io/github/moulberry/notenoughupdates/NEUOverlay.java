@@ -1261,8 +1261,8 @@ public class NEUOverlay extends Gui {
 				String internal1 = o1.get("internalname").getAsString();
 				String internal2 = o2.get("internalname").getAsString();
 
-				float cost1 = manager.auctionManager.getLowestBin(internal1);
-				float cost2 = manager.auctionManager.getLowestBin(internal2);
+				double cost1 = manager.auctionManager.getLowestBin(internal1);
+				double cost2 = manager.auctionManager.getLowestBin(internal2);
 
 				if (cost1 < cost2) return mult;
 				if (cost1 > cost2) return -mult;

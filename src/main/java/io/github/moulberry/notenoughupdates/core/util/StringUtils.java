@@ -53,4 +53,14 @@ public class StringUtils {
 
 		return trim;
 	}
+
+	public static String substringBetween(String str, String open, String close) {
+		return org.apache.commons.lang3.StringUtils.substringBetween(str, open, close);
+	}
+
+	public static int cleanAndParseInt(String str) {
+		str = cleanColour(str);
+		str = str.replace(",", "");
+		return Integer.parseInt(str);
+	}
 }
