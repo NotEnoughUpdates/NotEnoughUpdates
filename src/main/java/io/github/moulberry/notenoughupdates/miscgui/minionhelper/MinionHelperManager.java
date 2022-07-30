@@ -379,4 +379,12 @@ public class MinionHelperManager {
 
 		MinionHelperApiLoader.getInstance().onProfileSwitch();
 	}
+
+	public void reloadCraftedMinions() {
+		if (apiData != null) {
+			for (String minion : apiData.getCraftedMinions()) {
+				getMinionById(minion).setCrafted(true);
+			}
+		}
+	}
 }

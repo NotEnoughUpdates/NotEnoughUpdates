@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -37,8 +38,10 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MinionHelperApiLoader {
@@ -101,19 +104,42 @@ public class MinionHelperApiLoader {
 		for (JsonElement element : profiles) {
 			JsonObject profile = element.getAsJsonObject();
 			String profileName = profile.get("cute_name").getAsString();
-			JsonObject player = profile.getAsJsonObject("members").getAsJsonObject(Minecraft.getMinecraft().thePlayer
+			JsonObject members = profile.getAsJsonObject("members");
+			JsonObject player = members.getAsJsonObject(Minecraft.getMinecraft().thePlayer
 				.getUniqueID()
 				.toString()
 				.replace("-", ""));
 
 			if (profileName.equals(SBInfo.getInstance().currentProfile)) {
-				readData(player);
+				readData(player, members);
 				return;
 			}
 		}
 	}
 
-	private void readData(JsonObject player) {
+	private List<String> loadMinionData(JsonObject members) {
+		List<String> craftedMinions = new ArrayList<>();
+		for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
+			JsonObject value = entry.getValue().getAsJsonObject();
+			if (value.has("crafted_generators")) {
+				for (JsonElement e : value.get("crafted_generators").getAsJsonArray()) {
+					String rawGenerator = e.getAsString();
+					String[] split = rawGenerator.split("_");
+					String tier = split[split.length - 1];
+					String name = rawGenerator.substring(0, rawGenerator.length() - tier.length() - 1);
+					String internalName = name + "_GENERATOR_" + tier;
+					craftedMinions.add(internalName);
+				}
+			}
+		}
+
+		return craftedMinions;
+	}
+
+	private void readData(JsonObject player, JsonObject members) {
+
+		Utils.addChatMessage("set clipboard!");
+		MiscUtils.copyToClipboard(player.toString());
 		Map<String, Integer> highestCollectionTier = new HashMap<>();
 		Map<String, Integer> slayerTier = new HashMap<>();
 		int magesReputation = 0;
@@ -187,14 +213,19 @@ public class MinionHelperApiLoader {
 			}
 		}
 
+		List<String> craftedMinions = loadMinionData(members);
+
 		manager.setApiData(new ApiData(
 			highestCollectionTier,
 			slayerTier,
 			magesReputation,
 			barbariansReputation,
-			!collectionApiEnabled
+			!collectionApiEnabled,
+			craftedMinions
 		));
+
 		manager.reloadRequirements();
+		manager.reloadCraftedMinions();
 		apiReadyToUse = true;
 	}
 

@@ -98,6 +98,7 @@ public class MinionHelperRepoLoader {
 		testForMissingData();
 
 		manager.reloadRequirements();
+		manager.reloadCraftedMinions();
 		repoReadyToUse = true;
 
 		if (error) {

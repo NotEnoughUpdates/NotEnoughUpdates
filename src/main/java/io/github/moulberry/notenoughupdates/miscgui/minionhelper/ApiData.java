@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
+import java.util.List;
 import java.util.Map;
 
 public class ApiData {
@@ -28,19 +29,22 @@ public class ApiData {
 	private final int magesReputation;
 	private final int barbariansReputation;
 	private final boolean collectionApiDisabled;
+	private final List<String> craftedMinions;
 
 	public ApiData(
 		Map<String, Integer> highestCollectionTier,
 		Map<String, Integer> slayerTiers,
 		int magesReputation,
 		int barbariansReputation,
-		boolean collectionApiDisabled
+		boolean collectionApiDisabled,
+		List<String> craftedMinions
 	) {
 		this.highestCollectionTier = highestCollectionTier;
 		this.slayerTiers = slayerTiers;
 		this.magesReputation = magesReputation;
 		this.barbariansReputation = barbariansReputation;
 		this.collectionApiDisabled = collectionApiDisabled;
+		this.craftedMinions = craftedMinions;
 	}
 
 	public Map<String, Integer> getHighestCollectionTier() {
@@ -61,5 +65,9 @@ public class ApiData {
 
 	public boolean isCollectionApiDisabled() {
 		return collectionApiDisabled;
+	}
+
+	public List<String> getCraftedMinions() {
+		return craftedMinions;
 	}
 }
