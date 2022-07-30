@@ -111,12 +111,41 @@ public class MinionHelperManager {
 		minions.put(internalName, new Minion(internalName, tier));
 	}
 
-	public Map<String, Minion> getAllMinions() {
-		return minions;
-	}
-
 	public String formatInternalName(String text) {
 		return text.toUpperCase().replace(" ", "_");
+	}
+
+	public List<Minion> getChildren(Minion minion) {
+		List<Minion> list = new ArrayList<>();
+		for (Minion other : minions.values()) {
+			if (minion == other.getParent()) {
+				list.add(other);
+				list.addAll(getChildren(other));
+				break;
+			}
+		}
+		return list;
+	}
+
+	public void onProfileSwitch() {
+		//TODO check if the feature is enabled
+		for (Minion minion : minions.values()) {
+			minion.setCrafted(false);
+			minion.setMeetRequirements(false);
+		}
+
+		api.onProfileSwitch();
+	}
+
+	public void reloadData() {
+		requirementsManager.reloadRequirements();
+
+		ApiData apiData = api.getApiData();
+		if (apiData != null) {
+			for (String minion : apiData.getCraftedMinions()) {
+				getMinionById(minion).setCrafted(true);
+			}
+		}
 	}
 
 	public void handleCommand(String[] args) {
@@ -154,41 +183,8 @@ public class MinionHelperManager {
 		Utils.addChatMessage("");
 	}
 
-	public List<Minion> getChildren(Minion minion) {
-		List<Minion> list = new ArrayList<>();
-		for (Minion other : minions.values()) {
-			if (minion == other.getParent()) {
-				list.add(other);
-				list.addAll(getChildren(other));
-				break;
-			}
-		}
-		return list;
-	}
-
-	public void onProfileSwitch() {
-		//TODO check if the feature is enabled
-		for (Minion minion : minions.values()) {
-			minion.setCrafted(false);
-			minion.setMeetRequirements(false);
-		}
-
-		api.onProfileSwitch();
-	}
-
 	public MinionHelperPriceCalculation getPriceCalculation() {
 		return priceCalculation;
-	}
-
-	public void reloadData() {
-		requirementsManager.reloadRequirements();
-
-		ApiData apiData = api.getApiData();
-		if (apiData != null) {
-			for (String minion : apiData.getCraftedMinions()) {
-				getMinionById(minion).setCrafted(true);
-			}
-		}
 	}
 
 	public MinionHelperRequirementsManager getRequirementsManager() {
@@ -205,5 +201,9 @@ public class MinionHelperManager {
 
 	public MinionHelperOverlay getOverlay() {
 		return overlay;
+	}
+
+	public Map<String, Minion> getAllMinions() {
+		return minions;
 	}
 }
