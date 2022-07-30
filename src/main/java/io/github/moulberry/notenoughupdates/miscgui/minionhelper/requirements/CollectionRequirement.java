@@ -39,6 +39,6 @@ public class CollectionRequirement extends MinionRequirement {
 
 	@Override
 	public String printDescription() {
-		return "Collection: " + collection + " lvl " + level;
+		return "Collection: " + collection + " level " + level;
 	}
 }

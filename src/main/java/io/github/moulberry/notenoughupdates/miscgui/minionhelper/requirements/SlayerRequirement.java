@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+
 public class SlayerRequirement extends MinionRequirement {
 
 	private final String slayer;
@@ -39,6 +41,6 @@ public class SlayerRequirement extends MinionRequirement {
 
 	@Override
 	public String printDescription() {
-		return "Slayer: " + slayer + " lvl " + level;
+		return "Slayer: " + StringUtils.firstUpperLetter(slayer) + " level " + level;
 	}
 }
