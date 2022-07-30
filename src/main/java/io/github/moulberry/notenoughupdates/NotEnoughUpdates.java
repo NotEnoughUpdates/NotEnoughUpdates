@@ -296,7 +296,6 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
 
-		MinecraftForge.EVENT_BUS.register(MinionHelperRepoLoader.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperInventoryLoader.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperTooltips.getInstance());

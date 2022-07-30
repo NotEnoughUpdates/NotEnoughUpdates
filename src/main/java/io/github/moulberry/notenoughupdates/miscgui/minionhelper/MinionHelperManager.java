@@ -40,6 +40,7 @@ public class MinionHelperManager {
 	private final MinionHelperPriceCalculation priceCalculation = new MinionHelperPriceCalculation(this);
 	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
 	private final MinionHelperApiLoader api = new MinionHelperApiLoader(this);
+	private final MinionHelperRepoLoader repo = new MinionHelperRepoLoader(this);
 
 	public static MinionHelperManager getInstance() {
 		if (instance == null) {
@@ -51,6 +52,7 @@ public class MinionHelperManager {
 	private MinionHelperManager() {
 		MinecraftForge.EVENT_BUS.register(priceCalculation);
 		MinecraftForge.EVENT_BUS.register(api);
+		MinecraftForge.EVENT_BUS.register(repo);
 	}
 
 	public boolean inCraftedMinionsInventory() {
@@ -67,8 +69,7 @@ public class MinionHelperManager {
 	}
 
 	public boolean isReadyToUse() {
-		return MinionHelperRepoLoader.getInstance().isRepoReadyToUse() &&
-			api.isApiReadyToUse();
+		return repo.isRepoReadyToUse() && api.isApiReadyToUse();
 	}
 
 	public Minion getMinionById(String internalName) {
@@ -113,7 +114,7 @@ public class MinionHelperManager {
 				return;
 			}
 			if (parameter.equals("reloadrepo")) {
-				MinionHelperRepoLoader.getInstance().setDirty();
+				repo.setDirty();
 				Utils.addChatMessage("repo reload requested");
 				return;
 			}
@@ -182,5 +183,9 @@ public class MinionHelperManager {
 
 	public MinionHelperApiLoader getApi() {
 		return api;
+	}
+
+	public MinionHelperRepoLoader getRepo() {
+		return repo;
 	}
 }

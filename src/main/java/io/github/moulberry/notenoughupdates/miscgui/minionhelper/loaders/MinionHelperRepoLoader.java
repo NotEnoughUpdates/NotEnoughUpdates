@@ -47,18 +47,14 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public class MinionHelperRepoLoader {
-	private static MinionHelperRepoLoader instance = null;
-	private final MinionHelperManager manager = MinionHelperManager.getInstance();
+	private final MinionHelperManager manager;
 	private boolean dirty = true;
 	private int ticks = 0;
 	private final Map<String, String> displayNameCache = new HashMap<>();
 	private boolean repoReadyToUse = false;
 
-	public static MinionHelperRepoLoader getInstance() {
-		if (instance == null) {
-			instance = new MinionHelperRepoLoader();
-		}
-		return instance;
+	public MinionHelperRepoLoader(MinionHelperManager manager) {
+		this.manager = manager;
 	}
 
 	/**

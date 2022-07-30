@@ -237,7 +237,7 @@ public class MinionHelperOverlay {
 	private void formatItems(List<String> lines, Map<String, Integer> allItems) {
 		for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
 			String internalName = entry.getKey();
-			String name = MinionHelperRepoLoader.getInstance().getDisplayName(internalName);
+			String name = manager.getRepo().getDisplayName(internalName);
 
 			int amount = entry.getValue();
 			String amountText = amount != 1 ? amount + "§7x " : "";
