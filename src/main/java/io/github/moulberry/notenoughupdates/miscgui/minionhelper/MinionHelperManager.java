@@ -235,6 +235,8 @@ public class MinionHelperManager {
 		if (apiData == null) return false;
 
 		if (requirement instanceof CollectionRequirement) {
+			if (apiData.isCollectionApiDisabled()) return true;
+
 			CollectionRequirement collectionRequirement = (CollectionRequirement) requirement;
 			String collection = collectionRequirement.getCollection();
 			String internalName = formatInternalName(collection);
@@ -298,5 +300,9 @@ public class MinionHelperManager {
 	public String formatCoins(long coins, String extraFormat) {
 		String format = Utils.shortNumberFormat(coins, 0);
 		return "§6" + extraFormat + format + " coins";
+	}
+
+	public boolean isCollectionApiDisabled() {
+		return apiData != null && apiData.isCollectionApiDisabled();
 	}
 }

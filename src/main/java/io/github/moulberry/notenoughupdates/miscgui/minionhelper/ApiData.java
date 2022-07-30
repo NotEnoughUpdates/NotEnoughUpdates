@@ -27,17 +27,20 @@ public class ApiData {
 	private final Map<String, Integer> slayerTiers;
 	private final int magesReputation;
 	private final int barbariansReputation;
+	private final boolean collectionApiDisabled;
 
 	public ApiData(
 		Map<String, Integer> highestCollectionTier,
 		Map<String, Integer> slayerTiers,
 		int magesReputation,
-		int barbariansReputation
+		int barbariansReputation,
+		boolean collectionApiDisabled
 	) {
 		this.highestCollectionTier = highestCollectionTier;
 		this.slayerTiers = slayerTiers;
 		this.magesReputation = magesReputation;
 		this.barbariansReputation = barbariansReputation;
+		this.collectionApiDisabled = collectionApiDisabled;
 	}
 
 	public Map<String, Integer> getHighestCollectionTier() {
@@ -54,5 +57,9 @@ public class ApiData {
 
 	public int getBarbariansReputation() {
 		return barbariansReputation;
+	}
+
+	public boolean isCollectionApiDisabled() {
+		return collectionApiDisabled;
 	}
 }

@@ -46,6 +46,7 @@ public class MinionHelperApiLoader {
 	private final MinionHelperManager manager = MinionHelperManager.getInstance();
 	private boolean dirty = true;
 	private int ticks = 0;
+	boolean collectionApiEnabled = true;
 
 	public static MinionHelperApiLoader getInstance() {
 		if (instance == null) {
@@ -137,6 +138,17 @@ public class MinionHelperApiLoader {
 				level = Math.max(highestCollectionTier.getOrDefault(name, 0), level);
 				highestCollectionTier.put(name, level);
 			}
+			if (!collectionApiEnabled) {
+				Utils.addChatMessage("§e[NEU] Collection API detected!");
+			}
+			collectionApiEnabled = true;
+		} else {
+			if (collectionApiEnabled) {
+				//TODO formatting
+				Utils.addChatMessage("§c[NEU] Collection API is disabled!");
+				Utils.addChatMessage("§c[NEU] Minion Helper will not filter minions that do not meet the collection requirements!");
+			}
+			collectionApiEnabled = false;
 		}
 
 		if (player.has("nether_island_player_data")) {
@@ -173,7 +185,13 @@ public class MinionHelperApiLoader {
 			}
 		}
 
-		manager.setApiData(new ApiData(highestCollectionTier, slayerTier, magesReputation, barbariansReputation));
+		manager.setApiData(new ApiData(
+			highestCollectionTier,
+			slayerTier,
+			magesReputation,
+			barbariansReputation,
+			!collectionApiEnabled
+		));
 		manager.reloadRequirements();
 	}
 }

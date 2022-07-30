@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableObject;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableText;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
@@ -176,6 +177,9 @@ public class MinionHelperOverlay {
 			if (!requirements.isEmpty()) {
 				for (MinionRequirement requirement : requirements) {
 					String color = manager.meetRequirement(minion, requirement) ? "§a" : "§7";
+					if (requirement instanceof CollectionRequirement && manager.isCollectionApiDisabled()) {
+						color = "§cAPI DISABLED! §7";
+					}
 					lines.add(" §8- " + color + requirement.printDescription());
 				}
 			} else {
