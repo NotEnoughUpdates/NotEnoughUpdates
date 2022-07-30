@@ -326,8 +326,9 @@ public class MinionHelperRepoLoader {
 				if (same) {
 					parent = manager.getMinionById(itemName);
 					if (parent == null) {
-						String message = "Parent is null for minion " + minionInternalName;
-						Utils.addChatMessage(message);
+						if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+							Utils.addChatMessage("Parent is null for minion " + minionInternalName);
+						}
 					}
 					isParent = true;
 				}

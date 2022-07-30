@@ -40,6 +40,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -251,8 +252,6 @@ public class MinionHelperManager {
 				int has = highestCollectionTier.get(internalName);
 
 				return has >= need;
-//			} else {
-//				Utils.addChatMessage("§cInvalid hypixel collection name: '" + internalName + "'");
 			}
 
 		} else if (requirement instanceof SlayerRequirement) {
@@ -273,7 +272,7 @@ public class MinionHelperManager {
 			} else if (reputationType.equals("MAGE")) {
 				return apiData.getMagesReputation() >= need;
 			} else {
-				Utils.addChatMessage("§cUnknown reputation type: '" + reputationType + "'");
+				Utils.addChatMessage("§c[NEU] Minion Helper: Unknown reputation type: '" + reputationType + "'");
 				return false;
 			}
 		} else if (requirement instanceof CustomRequirement) {
@@ -344,5 +343,17 @@ public class MinionHelperManager {
 		Utils.addChatMessage("§6/neudevtest minion resetrepo §7Manually loading the data from repo");
 		Utils.addChatMessage("§6/neudevtest minion resetapi §7Manually loading the data from api");
 		Utils.addChatMessage("");
+	}
+
+	public List<Minion> getChilds(Minion minion) {
+		List<Minion> list = new ArrayList<>();
+		for (Minion other : minions.values()) {
+			if (minion == other.getParent()) {
+				list.add(other);
+				list.addAll(getChilds(other));
+				break;
+			}
+		}
+		return list;
 	}
 }

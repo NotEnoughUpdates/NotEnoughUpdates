@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -49,13 +50,36 @@ public class MinionHelperChatLoader {
 				String rawTier = text.split(" ")[0];
 				int tier = Utils.parseRomanNumeral(rawTier);
 				String name = text.substring(rawTier.length() + 1);
-				Minion minionByName = manager.getMinionByName(name, tier);
-				minionByName.setCrafted(true);
+
+				setCrafted(manager.getMinionByName(name, tier));
 			}
+
+			if (message.contains("§f §acrafted a §eTier ") && message.contains(" Minion§a!")) {
+				String text = StringUtils.substringBetween(message, "§eTier ", "§a!");
+				String rawTier = text.split(" ")[0];
+				int tier = Utils.parseRomanNumeral(rawTier);
+				String name = text.substring(rawTier.length() + 1);
+
+				setCrafted(manager.getMinionByName(name, tier));
+				MinionHelperOverlay.getInstance().resetCache();
+			}
+
 		} catch (Exception e) {
 			Utils.addChatMessage(
 				"[NEU] §cMinion Helper failed reading the minion upgrade message. See the logs for more info!");
 			e.printStackTrace();
+		}
+	}
+
+	private void setCrafted(Minion minion) {
+		minion.setCrafted(true);
+
+		if (!minion.doesMeetRequirements()) {
+			minion.setMeetRequirements(true);
+
+			for (Minion child : manager.getChilds(minion)) {
+				child.setMeetRequirements(true);
+			}
 		}
 	}
 }
