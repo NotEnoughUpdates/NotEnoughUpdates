@@ -114,31 +114,62 @@ public class MinionHelperApiLoader {
 		}
 	}
 
-	private List<String> loadCraftedMinionsData(JsonObject members) {
-		List<String> craftedMinions = new ArrayList<>();
-		for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
-			JsonObject value = entry.getValue().getAsJsonObject();
-			if (value.has("crafted_generators")) {
-				for (JsonElement e : value.get("crafted_generators").getAsJsonArray()) {
-					String rawGenerator = e.getAsString();
-					String[] split = rawGenerator.split("_");
-					String tier = split[split.length - 1];
-					String name = rawGenerator.substring(0, rawGenerator.length() - tier.length() - 1);
-					String internalName = name + "_GENERATOR_" + tier;
-					craftedMinions.add(internalName);
-				}
+	private void readData(JsonObject player, JsonObject members) {
+		int magesReputation = 0;
+		int barbariansReputation = 0;
+		if (player.has("nether_island_player_data")) {
+			JsonObject netherData = player.getAsJsonObject("nether_island_player_data");
+			if (netherData.has("mages_reputation")) {
+				magesReputation = netherData.get("mages_reputation").getAsInt();
+			}
+			if (netherData.has("barbarians_reputation")) {
+				barbariansReputation = netherData.get("barbarians_reputation").getAsInt();
 			}
 		}
 
-		return craftedMinions;
+		apiData = new ApiData(
+			getCollections(player),
+			getSlayers(player),
+			magesReputation,
+			barbariansReputation,
+			!collectionApiEnabled,
+			loadCraftedMinions(members)
+		);
+
+		manager.reloadData();
+		apiReadyToUse = true;
 	}
 
-	private void readData(JsonObject player, JsonObject members) {
-		Map<String, Integer> highestCollectionTier = new HashMap<>();
-		Map<String, Integer> slayerTier = new HashMap<>();
-		int magesReputation = 0;
-		int barbariansReputation = 0;
+	private Map<String, Integer> getSlayers(JsonObject player) {
+		JsonObject slayerLeveling = Constants.LEVELING.getAsJsonObject("slayer_xp");
 
+		Map<String, Integer> slayerTier = new HashMap<>();
+		if (player.has("slayer_bosses")) {
+			JsonObject slayerBosses = player.getAsJsonObject("slayer_bosses");
+			for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
+				String name = entry.getKey();
+				JsonObject slayerEntry = entry.getValue().getAsJsonObject();
+				if (slayerEntry.has("xp")) {
+					long xp = slayerEntry.get("xp").getAsLong();
+
+					int tier = 0;
+					for (JsonElement element : slayerLeveling.getAsJsonArray(name)) {
+						int needForLevel = element.getAsInt();
+						if (xp >= needForLevel) {
+							tier++;
+						} else {
+							break;
+						}
+					}
+					slayerTier.put(name, tier);
+				}
+			}
+		}
+		return slayerTier;
+	}
+
+	private Map<String, Integer> getCollections(JsonObject player) {
+		Map<String, Integer> highestCollectionTier = new HashMap<>();
 		if (player.has("unlocked_coll_tiers")) {
 			for (JsonElement element : player.get("unlocked_coll_tiers").getAsJsonArray()) {
 				String text = element.getAsString();
@@ -172,52 +203,26 @@ public class MinionHelperApiLoader {
 			}
 			collectionApiEnabled = false;
 		}
+		return highestCollectionTier;
+	}
 
-		if (player.has("nether_island_player_data")) {
-			JsonObject netherData = player.getAsJsonObject("nether_island_player_data");
-			if (netherData.has("mages_reputation")) {
-				magesReputation = netherData.get("mages_reputation").getAsInt();
-			}
-			if (netherData.has("barbarians_reputation")) {
-				barbariansReputation = netherData.get("barbarians_reputation").getAsInt();
-			}
-		}
-
-		JsonObject slayerLeveling = Constants.LEVELING.getAsJsonObject("slayer_xp");
-
-		if (player.has("slayer_bosses")) {
-			JsonObject slayerBosses = player.getAsJsonObject("slayer_bosses");
-			for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
-				String name = entry.getKey();
-				JsonObject slayerEntry = entry.getValue().getAsJsonObject();
-				if (slayerEntry.has("xp")) {
-					long xp = slayerEntry.get("xp").getAsLong();
-
-					int tier = 0;
-					for (JsonElement element : slayerLeveling.getAsJsonArray(name)) {
-						int needForLevel = element.getAsInt();
-						if (xp >= needForLevel) {
-							tier++;
-						} else {
-							break;
-						}
-					}
-					slayerTier.put(name, tier);
+	private List<String> loadCraftedMinions(JsonObject members) {
+		List<String> craftedMinions = new ArrayList<>();
+		for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
+			JsonObject value = entry.getValue().getAsJsonObject();
+			if (value.has("crafted_generators")) {
+				for (JsonElement e : value.get("crafted_generators").getAsJsonArray()) {
+					String rawGenerator = e.getAsString();
+					String[] split = rawGenerator.split("_");
+					String tier = split[split.length - 1];
+					String name = rawGenerator.substring(0, rawGenerator.length() - tier.length() - 1);
+					String internalName = name + "_GENERATOR_" + tier;
+					craftedMinions.add(internalName);
 				}
 			}
 		}
 
-		apiData = new ApiData(
-			highestCollectionTier,
-			slayerTier,
-			magesReputation,
-			barbariansReputation,
-			!collectionApiEnabled,
-			loadCraftedMinionsData(members)
-		);
-
-		manager.reloadData();
-		apiReadyToUse = true;
+		return craftedMinions;
 	}
 
 	public void setDirty() {
