@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -28,6 +29,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -144,9 +146,7 @@ public class MinionHelperApiLoader {
 			collectionApiEnabled = true;
 		} else {
 			if (collectionApiEnabled) {
-				//TODO formatting
-				Utils.addChatMessage("§c[NEU] Collection API is disabled!");
-				Utils.addChatMessage("§c[NEU] Minion Helper will not filter minions that do not meet the collection requirements!");
+				manager.setShouldNotifyNoCollectionApi(true);
 			}
 			collectionApiEnabled = false;
 		}

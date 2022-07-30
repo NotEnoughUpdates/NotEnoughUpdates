@@ -73,4 +73,10 @@ public class StringUtils {
 			throw new RuntimeException("removeLastWord: '" + string + "'", e);
 		}
 	}
+
+	public static String firstUpperLetter(String text) {
+		if (text.isEmpty()) return text;
+		String firstLetter = ("" + text.charAt(0)).toUpperCase();
+		return firstLetter + text.substring(1);
+	}
 }

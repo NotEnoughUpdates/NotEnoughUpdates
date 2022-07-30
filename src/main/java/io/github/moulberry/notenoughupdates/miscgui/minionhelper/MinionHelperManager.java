@@ -50,6 +50,8 @@ public class MinionHelperManager {
 	private final Map<String, String> upgradeCostFormatCache = new HashMap<>();
 	private final Map<String, String> fullCostFormatCache = new HashMap<>();
 	private ApiData apiData = null;
+	private boolean shouldNotifyNoCollectionApi = false;
+	//TODO maybe change logic with 0 coins later or stuff
 	private final List<String> cheapItems = Arrays.asList(
 		"WOOD_SWORD",
 		"WOOD_HOE",
@@ -304,5 +306,13 @@ public class MinionHelperManager {
 
 	public boolean isCollectionApiDisabled() {
 		return apiData != null && apiData.isCollectionApiDisabled();
+	}
+
+	public void setShouldNotifyNoCollectionApi(boolean shouldNotifyNoCollectionApi) {
+		this.shouldNotifyNoCollectionApi = shouldNotifyNoCollectionApi;
+	}
+
+	public boolean isShouldNotifyNoCollectionApi() {
+		return shouldNotifyNoCollectionApi;
 	}
 }

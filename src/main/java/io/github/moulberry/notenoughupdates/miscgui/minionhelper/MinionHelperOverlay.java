@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
@@ -31,6 +32,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.Craftin
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -80,6 +82,17 @@ public class MinionHelperOverlay {
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
+
+		if (manager.isShouldNotifyNoCollectionApi()) {
+			NotificationHandler.displayNotification(Lists.newArrayList(
+				"",
+				"§cCollection API is disabled!",
+				"§cMinion Helper will not filter minions that",
+				"§cdo not meet the collection requirements!"
+			), false, true);
+			//TODO add tutorial how to enable collection api
+			manager.setShouldNotifyNoCollectionApi(false);
+		}
 
 		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
 
@@ -172,10 +185,11 @@ public class MinionHelperOverlay {
 			Minion minion = minionSource.getMinion();
 			lastHovered = minion;
 			String displayName = minion.getDisplayName();
-			lines.add(displayName + " " + minion.getTier());
+			lines.add("§9" + displayName + " " + minion.getTier());
 			List<MinionRequirement> requirements = manager.getRequirements(minionSource.getMinion());
 			if (!requirements.isEmpty()) {
 				for (MinionRequirement requirement : requirements) {
+					//TODO maybe change the §7 color
 					String color = manager.meetRequirement(minion, requirement) ? "§a" : "§7";
 					if (requirement instanceof CollectionRequirement && manager.isCollectionApiDisabled()) {
 						color = "§cAPI DISABLED! §7";
@@ -191,9 +205,9 @@ public class MinionHelperOverlay {
 				lines.add("");
 				String format = manager.calculateUpgradeCostsFormat(craftingSource, true);
 				if (minion.getTier() == 1) {
-					lines.add("Full crafting costs: " + format);
+					lines.add("§7Full crafting costs: " + format);
 				} else {
-					lines.add("Upgrade costs: " + format);
+					lines.add("§7Upgrade costs: " + format);
 				}
 				formatItems(lines, grabAllItems(craftingSource.getItems()));
 
@@ -201,9 +215,9 @@ public class MinionHelperOverlay {
 				NpcSource npcSource = (NpcSource) minionSource;
 				String npcName = npcSource.getNpcName();
 				lines.add("");
-				lines.add("Buy at §9" + npcName + " (NPC)");
+				lines.add("§7Buy from: §9" + npcName + " (NPC)");
 				lines.add("");
-				lines.add("Buy costs: " + manager.calculateUpgradeCostsFormat(npcSource, true));
+				lines.add("§7Buy costs: " + manager.calculateUpgradeCostsFormat(npcSource, true));
 				lines.add(" §8- " + manager.formatCoins(npcSource.getCoins()));
 				formatItems(lines, grabAllItems(npcSource.getItems()));
 			}
@@ -220,9 +234,9 @@ public class MinionHelperOverlay {
 			String name = MinionHelperRepoLoader.getInstance().getDisplayName(internalName);
 
 			int amount = entry.getValue();
-			String amountText = amount != 1 ? amount + "x " : "";
+			String amountText = amount != 1 ? amount + "§7x " : "";
 			String price = manager.formatCoins(manager.getPrice(internalName) * amount);
-			lines.add(" §8- §f" + amountText + name + " " + price);
+			lines.add(" §8- §a" + amountText + "§f" + name + " " + price);
 		}
 	}
 
