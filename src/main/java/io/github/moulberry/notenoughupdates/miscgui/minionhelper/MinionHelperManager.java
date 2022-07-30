@@ -21,6 +21,8 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperApiLoader;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperChatLoader;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperInventoryLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -41,6 +43,10 @@ public class MinionHelperManager {
 	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
 	private final MinionHelperApiLoader api = new MinionHelperApiLoader(this);
 	private final MinionHelperRepoLoader repo = new MinionHelperRepoLoader(this);
+	private final MinionHelperOverlay overlay = new MinionHelperOverlay(this);
+	private final MinionHelperTooltips tooltips = new MinionHelperTooltips(this);
+	private final MinionHelperChatLoader chatLoader = new MinionHelperChatLoader(this);
+	private final MinionHelperInventoryLoader inventoryLoader = new MinionHelperInventoryLoader(this);
 
 	public static MinionHelperManager getInstance() {
 		if (instance == null) {
@@ -53,6 +59,10 @@ public class MinionHelperManager {
 		MinecraftForge.EVENT_BUS.register(priceCalculation);
 		MinecraftForge.EVENT_BUS.register(api);
 		MinecraftForge.EVENT_BUS.register(repo);
+		MinecraftForge.EVENT_BUS.register(overlay);
+		MinecraftForge.EVENT_BUS.register(tooltips);
+		MinecraftForge.EVENT_BUS.register(chatLoader);
+		MinecraftForge.EVENT_BUS.register(inventoryLoader);
 	}
 
 	public boolean inCraftedMinionsInventory() {
@@ -187,5 +197,9 @@ public class MinionHelperManager {
 
 	public MinionHelperRepoLoader getRepo() {
 		return repo;
+	}
+
+	public MinionHelperOverlay getOverlay() {
+		return overlay;
 	}
 }

@@ -29,14 +29,11 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class MinionHelperChatLoader {
-	private static MinionHelperChatLoader instance = null;
-	private final MinionHelperManager manager = MinionHelperManager.getInstance();
 
-	public static MinionHelperChatLoader getInstance() {
-		if (instance == null) {
-			instance = new MinionHelperChatLoader();
-		}
-		return instance;
+	private final MinionHelperManager manager;
+
+	public MinionHelperChatLoader(MinionHelperManager manager) {
+		this.manager = manager;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
@@ -61,7 +58,7 @@ public class MinionHelperChatLoader {
 				String name = text.substring(rawTier.length() + 1);
 
 				setCrafted(manager.getMinionByName(name, tier));
-				MinionHelperOverlay.getInstance().resetCache();
+				manager.getOverlay().resetCache();
 			}
 
 			if (message.startsWith("§r§7Switching to profile ")) {

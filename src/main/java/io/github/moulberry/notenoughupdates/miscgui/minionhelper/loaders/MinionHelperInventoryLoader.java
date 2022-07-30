@@ -38,18 +38,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinionHelperInventoryLoader {
-	private static MinionHelperInventoryLoader instance = null;
-	private final MinionHelperManager manager = MinionHelperManager.getInstance();
 	private final List<String> loadedAlready = new ArrayList<>();
-
-	public static MinionHelperInventoryLoader getInstance() {
-		if (instance == null) {
-			instance = new MinionHelperInventoryLoader();
-		}
-		return instance;
-	}
+	private final MinionHelperManager manager;
 
 	int ticks = 0;
+
+	public MinionHelperInventoryLoader(MinionHelperManager manager) {
+		this.manager = manager;
+	}
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
@@ -112,7 +108,7 @@ public class MinionHelperInventoryLoader {
 				}
 			}
 			if (crafted > 0) {
-				MinionHelperOverlay.getInstance().resetCache();
+				manager.getOverlay().resetCache();
 			}
 		}
 	}

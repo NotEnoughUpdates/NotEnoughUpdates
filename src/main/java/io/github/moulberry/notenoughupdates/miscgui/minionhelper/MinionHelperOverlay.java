@@ -19,18 +19,12 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableObject;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableText;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -49,25 +43,20 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MinionHelperOverlay {
-	private static MinionHelperOverlay instance = null;
-	private final MinionHelperManager manager = MinionHelperManager.getInstance();
-	private Minion lastHovered = null;
+	private final MinionHelperManager manager;
+	private final MinionHelperOverlayHover hover;
 
 	private LinkedHashMap<String, RenderableObject> cacheRenderMapShift = null;
 	private LinkedHashMap<String, RenderableObject> cacheRenderMapNoShift = null;
 
-	public static MinionHelperOverlay getInstance() {
-		if (instance == null) {
-			instance = new MinionHelperOverlay();
-		}
-		return instance;
+	public MinionHelperOverlay(MinionHelperManager manager) {
+		this.manager = manager;
+		hover = new MinionHelperOverlayHover(this, manager);
 	}
 
 	@SubscribeEvent
@@ -101,7 +90,7 @@ public class MinionHelperOverlay {
 
 		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
 
-		renderHover(renderMap);
+		hover.renderHover(renderMap);
 		render(event, renderMap);
 	}
 
@@ -111,9 +100,7 @@ public class MinionHelperOverlay {
 		if (!manager.isReadyToUse()) return;
 		if (!Mouse.getEventButtonState()) return;
 
-		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
-
-		RenderableObject mouseObject = getObjectOverMouse(renderMap);
+		RenderableObject mouseObject = getObjectOverMouse(getRenderMap());
 
 		if (mouseObject != null) {
 			if (mouseObject instanceof MinionSource) {
@@ -122,139 +109,6 @@ public class MinionHelperOverlay {
 				NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(minion.getInternalName());
 			}
 		}
-	}
-
-	private RenderableObject getObjectOverMouse(LinkedHashMap<String, RenderableObject> renderMap) {
-		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-		if (!(gui instanceof GuiChest)) return null;
-
-		int xSize = ((AccessorGuiContainer) gui).getXSize();
-		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
-		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
-
-		int x = guiLeft + xSize + 4;
-		int y = guiTop;
-
-		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-		final int scaledWidth = scaledresolution.getScaledWidth();
-		final int scaledHeight = scaledresolution.getScaledHeight();
-		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
-		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-
-		int index = 0;
-		for (RenderableObject renderableObject : renderMap.values()) {
-
-			if (mouseX > x && mouseX < x + 130 &&
-				mouseY > y + index && mouseY < y + 13 + index) {
-				return renderableObject;
-			}
-			index += 10;
-		}
-
-		return null;
-	}
-
-	private void renderHover(LinkedHashMap<String, RenderableObject> renderMap) {
-		lastHovered = null;
-
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
-
-		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-		final int scaledWidth = scaledresolution.getScaledWidth();
-		final int scaledHeight = scaledresolution.getScaledHeight();
-		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
-		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-
-		RenderableObject mouseObject = getObjectOverMouse(renderMap);
-		if (mouseObject != null) {
-			GlStateManager.pushMatrix();
-			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
-			Utils.drawHoveringText(getTooltip(mouseObject),
-				mouseX * scaledresolution.getScaleFactor() / 2,
-				mouseY * scaledresolution.getScaleFactor() / 2,
-				scaledWidth * scaledresolution.getScaleFactor() / 2,
-				scaledHeight * scaledresolution.getScaleFactor() / 2, -1, Minecraft.getMinecraft().fontRendererObj
-			);
-			GlStateManager.popMatrix();
-		}
-	}
-
-	private List<String> getTooltip(RenderableObject renderableObject) {
-		List<String> lines = new ArrayList<>();
-
-		if (renderableObject instanceof RenderableText) {
-			RenderableText renderableText = (RenderableText) renderableObject;
-			lines.addAll(renderableText.getLines());
-		} else if (renderableObject instanceof MinionSource) {
-			MinionSource minionSource = (MinionSource) renderableObject;
-
-			Minion minion = minionSource.getMinion();
-			lastHovered = minion;
-			String displayName = minion.getDisplayName();
-			lines.add("§9" + displayName + " " + minion.getTier());
-			List<MinionRequirement> requirements = manager.getRequirementsManager().getRequirements(minionSource.getMinion());
-			if (!requirements.isEmpty()) {
-				for (MinionRequirement requirement : requirements) {
-					//TODO maybe change the §7 color
-					String color = manager.getRequirementsManager().meetRequirement(minion, requirement) ? "§a" : "§7";
-					if (requirement instanceof CollectionRequirement && manager.getApi().isCollectionApiDisabled()) {
-						color = "§cAPI DISABLED! §7";
-					}
-					lines.add(" §8- " + color + requirement.printDescription());
-				}
-			} else {
-				lines.add("§cNo requirements loaded!");
-			}
-
-			if (minionSource instanceof CraftingSource) {
-				CraftingSource craftingSource = (CraftingSource) minionSource;
-				lines.add("");
-				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(craftingSource, true);
-				if (minion.getTier() == 1) {
-					lines.add("§7Full crafting costs: " + format);
-				} else {
-					lines.add("§7Upgrade costs: " + format);
-				}
-				formatItems(lines, grabAllItems(craftingSource.getItems()));
-
-			} else if (minionSource instanceof NpcSource) {
-				NpcSource npcSource = (NpcSource) minionSource;
-				String npcName = npcSource.getNpcName();
-				lines.add("");
-				lines.add("§7Buy from: §9" + npcName + " (NPC)");
-				lines.add("");
-				lines.add("§7Buy costs: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(npcSource, true));
-				lines.add(" §8- " + manager.getPriceCalculation().formatCoins(npcSource.getCoins()));
-				formatItems(lines, grabAllItems(npcSource.getItems()));
-			}
-
-			lines.add("");
-			lines.add("§eClick to view recipe");
-		}
-		return lines;
-	}
-
-	private void formatItems(List<String> lines, Map<String, Integer> allItems) {
-		for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
-			String internalName = entry.getKey();
-			String name = manager.getRepo().getDisplayName(internalName);
-
-			int amount = entry.getValue();
-			String amountText = amount != 1 ? amount + "§7x " : "";
-			String price = manager.getPriceCalculation().formatCoins(manager.getPriceCalculation().getPrice(internalName) * amount);
-			lines.add(" §8- §a" + amountText + "§f" + name + " " + price);
-		}
-	}
-
-	private Map<String, Integer> grabAllItems(ArrayListMultimap<String, Integer> multimap) {
-		Map<String, Integer> allItems = new HashMap<>();
-		for (Map.Entry<String, Integer> entry : multimap.entries()) {
-			String name = entry.getKey();
-			int amount = entry.getValue();
-			amount = allItems.getOrDefault(name, 0) + amount;
-			allItems.put(name, amount);
-		}
-		return allItems;
 	}
 
 	private Map<Minion, Long> getMissing(boolean shift) {
@@ -292,7 +146,7 @@ public class MinionHelperOverlay {
 			String prefix = "";
 			if (renderableObject instanceof MinionSource) {
 				Minion minion = ((MinionSource) renderableObject).getMinion();
-				if (lastHovered == minion) {
+				if (minion == hover.getLastHovered()) {
 					prefix = "§e";
 				}
 			}
@@ -353,5 +207,35 @@ public class MinionHelperOverlay {
 		}
 
 		return renderMap;
+	}
+
+	RenderableObject getObjectOverMouse(LinkedHashMap<String, RenderableObject> renderMap) {
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		if (!(gui instanceof GuiChest)) return null;
+
+		int xSize = ((AccessorGuiContainer) gui).getXSize();
+		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+
+		int x = guiLeft + xSize + 4;
+		int y = guiTop;
+
+		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+		final int scaledWidth = scaledresolution.getScaledWidth();
+		final int scaledHeight = scaledresolution.getScaledHeight();
+		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+
+		int index = 0;
+		for (RenderableObject renderableObject : renderMap.values()) {
+
+			if (mouseX > x && mouseX < x + 130 &&
+				mouseY > y + index && mouseY < y + 13 + index) {
+				return renderableObject;
+			}
+			index += 10;
+		}
+
+		return null;
 	}
 }

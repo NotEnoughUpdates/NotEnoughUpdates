@@ -32,16 +32,12 @@ import org.lwjgl.input.Keyboard;
 import java.util.List;
 
 public class MinionHelperTooltips {
-	private static MinionHelperTooltips instance = null;
-	private final MinionHelperManager manager = MinionHelperManager.getInstance();
+	private final MinionHelperManager manager;
 	private boolean pressedShiftLast = false;
 	private boolean showFullCost = false;
 
-	public static MinionHelperTooltips getInstance() {
-		if (instance == null) {
-			instance = new MinionHelperTooltips();
-		}
-		return instance;
+	public MinionHelperTooltips(MinionHelperManager manager) {
+		this.manager = manager;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)

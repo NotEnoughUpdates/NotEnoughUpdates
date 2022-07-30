@@ -295,14 +295,8 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new OldAnimationChecker());
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
-
-		MinecraftForge.EVENT_BUS.register(MinionHelperInventoryLoader.getInstance());
-		MinecraftForge.EVENT_BUS.register(MinionHelperOverlay.getInstance());
-		MinecraftForge.EVENT_BUS.register(MinionHelperTooltips.getInstance());
-		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());
-		MinecraftForge.EVENT_BUS.register(MinionHelperChatLoader.getInstance());
-
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
+		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
