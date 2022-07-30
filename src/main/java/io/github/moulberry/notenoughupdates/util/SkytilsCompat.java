@@ -48,40 +48,41 @@ public class SkytilsCompat {
 		static {
 			Exception exception = null;
 			for (String packageStart : Arrays.asList("gg.skytils", "skytils")) {
-				if (!isSkytilsPresent) {
-					try {
-						skytilsClass = Class.forName(packageStart + ".skytilsmod.Skytils");
-						isSkytilsPresent = true;
-					} catch (ClassNotFoundException ignored) {
-					}
+				isSkytilsPresent = false;
+				try {
+					skytilsClass = Class.forName(packageStart + ".skytilsmod.Skytils");
+					isSkytilsPresent = true;
+				} catch (ClassNotFoundException ignored) {
 				}
 
-				try {
-					Class<?> skytilsCompanionClass = Class.forName(packageStart + ".skytilsmod.Skytils$Companion");
-					skytilsConfigClass = Class.forName(packageStart + ".skytilsmod.core.Config");
-					Field skytilsCompanionField = skytilsClass.getField("Companion");
-					skytilsCompanionObject = skytilsCompanionField.get(null);
-					Method skytilsGetConfigMethod = skytilsCompanionClass.getMethod("getConfig");
-					skytilsConfigObject = skytilsGetConfigMethod.invoke(skytilsCompanionObject);
-					skytilsGetShowItemRarity = skytilsConfigClass.getMethod("getShowItemRarity");
-					renderUtilClass = Class.forName(packageStart + ".skytilsmod.utils.RenderUtil");
-					renderRarityMethod = renderUtilClass.getDeclaredMethod(
-						"renderRarity",
-						ItemStack.class,
-						Integer.TYPE,
-						Integer.TYPE
-					);
-					isSkytilsFullyPresent = true;
-					break;
-				} catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException |
-					InvocationTargetException e) {
-					exception = e;
+				if (isSkytilsPresent) {
+					try {
+						Class<?> skytilsCompanionClass = Class.forName(packageStart + ".skytilsmod.Skytils$Companion");
+						skytilsConfigClass = Class.forName(packageStart + ".skytilsmod.core.Config");
+						Field skytilsCompanionField = skytilsClass.getField("Companion");
+						skytilsCompanionObject = skytilsCompanionField.get(null);
+						Method skytilsGetConfigMethod = skytilsCompanionClass.getMethod("getConfig");
+						skytilsConfigObject = skytilsGetConfigMethod.invoke(skytilsCompanionObject);
+						skytilsGetShowItemRarity = skytilsConfigClass.getMethod("getShowItemRarity");
+						renderUtilClass = Class.forName(packageStart + ".skytilsmod.utils.RenderUtil");
+						renderRarityMethod = renderUtilClass.getDeclaredMethod(
+							"renderRarity",
+							ItemStack.class,
+							Integer.TYPE,
+							Integer.TYPE
+						);
+						isSkytilsFullyPresent = true;
+						break;
+					} catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | IllegalAccessException |
+						InvocationTargetException e) {
+						exception = e;
+					}
 				}
 			}
 
 			if (!isSkytilsFullyPresent) {
 				if (exception != null) {
-					System.err.println("NEU failed to get Skytils class even tho Skytils mod is present.");
+					System.err.println("Failed to get Skytils class even tho Skytils mod is present. This is (probably) a NEU bug");
 					exception.printStackTrace();
 				}
 			}
