@@ -69,8 +69,8 @@ public class MinionHelperOverlay {
 		cacheRenderMapNoShift = null;
 	}
 
-	public static final ResourceLocation auctionProfitImage =
-		new ResourceLocation("notenoughupdates:auction_profit.png");
+	//TODO use different texture
+	public final ResourceLocation auctionProfitImage = new ResourceLocation("notenoughupdates:auction_profit.png");
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
