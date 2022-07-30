@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -177,6 +178,9 @@ public class DevTestCommand extends ClientCommandBase {
 			double x = Math.floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f;
 			double z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f;
 			Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z);
+		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("minion")) {
+			MinionHelperManager.getInstance().handleCommand(args);
 		}
 	}
 }

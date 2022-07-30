@@ -60,8 +60,8 @@ public class MinionHelperOverlay {
 	private final MinionHelperManager manager = MinionHelperManager.getInstance();
 	private Minion lastHovered = null;
 
-	private LinkedHashMap<String, RenderableObject> cacheShift = null;
-	private LinkedHashMap<String, RenderableObject> cacheNoShift = null;
+	private LinkedHashMap<String, RenderableObject> cacheRenderMapShift = null;
+	private LinkedHashMap<String, RenderableObject> cacheRenderMapNoShift = null;
 
 	public static MinionHelperOverlay getInstance() {
 		if (instance == null) {
@@ -72,8 +72,12 @@ public class MinionHelperOverlay {
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
-		cacheShift = null;
-		cacheNoShift = null;
+		resetCache();
+	}
+
+	public void resetCache() {
+		cacheRenderMapShift = null;
+		cacheRenderMapNoShift = null;
 	}
 
 	public static final ResourceLocation auctionProfitImage =
@@ -298,9 +302,9 @@ public class MinionHelperOverlay {
 	private LinkedHashMap<String, RenderableObject> getRenderMap() {
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (!shift) {
-			if (cacheNoShift != null) return cacheNoShift;
+			if (cacheRenderMapNoShift != null) return cacheRenderMapNoShift;
 		} else {
-			if (cacheShift != null) return cacheShift;
+			if (cacheRenderMapShift != null) return cacheRenderMapShift;
 		}
 		Map<Minion, Long> prices = getMissing(shift);
 
@@ -341,9 +345,9 @@ public class MinionHelperOverlay {
 		}
 
 		if (shift) {
-			cacheShift = renderMap;
+			cacheRenderMapShift = renderMap;
 		} else {
-			cacheNoShift = renderMap;
+			cacheRenderMapNoShift = renderMap;
 		}
 
 		return renderMap;

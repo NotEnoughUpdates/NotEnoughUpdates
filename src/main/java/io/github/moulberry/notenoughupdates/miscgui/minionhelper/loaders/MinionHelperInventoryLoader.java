@@ -23,7 +23,9 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -82,6 +84,7 @@ public class MinionHelperInventoryLoader {
 
 			if (!shouldLoad) return;
 
+			int crafted = 0;
 			for (Slot slot : openContainer.inventorySlots) {
 				if (!slot.getHasStack()) continue;
 				ItemStack stack = slot.getStack();
@@ -100,9 +103,15 @@ public class MinionHelperInventoryLoader {
 					}
 					if (line.contains("§a")) {
 						Minion minion = manager.getMinionByName(displayName, index);
-						minion.setCrafted(true);
+						if (!minion.isCrafted()) {
+							minion.setCrafted(true);
+							crafted++;
+						}
 					}
 				}
+			}
+			if (crafted > 0) {
+				MinionHelperOverlay.getInstance().resetCache();
 			}
 		}
 	}

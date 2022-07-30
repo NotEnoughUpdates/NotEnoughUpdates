@@ -365,4 +365,8 @@ public class MinionHelperRepoLoader {
 		displayNameCache.put(internalName, displayName);
 		return displayName;
 	}
+
+	public void setDirty() {
+		this.dirty = true;
+	}
 }

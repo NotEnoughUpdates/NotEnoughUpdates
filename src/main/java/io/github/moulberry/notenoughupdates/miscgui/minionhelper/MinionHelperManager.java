@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperApiLoader;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CustomRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
@@ -314,5 +316,33 @@ public class MinionHelperManager {
 
 	public boolean isShouldNotifyNoCollectionApi() {
 		return shouldNotifyNoCollectionApi;
+	}
+
+	public void handleCommand(String[] args) {
+		if (args.length == 2) {
+			String parameter = args[1];
+			if (parameter.equals("clear")) {
+				minions.clear();
+				Utils.addChatMessage("minions cleared");
+				return;
+			}
+			if (parameter.equals("resetrepo")) {
+				MinionHelperRepoLoader.getInstance().setDirty();
+				Utils.addChatMessage("repo reload requested");
+				return;
+			}
+			if (parameter.equals("resetapi")) {
+				MinionHelperApiLoader.getInstance().setDirty();
+				Utils.addChatMessage("api reload requested");
+				return;
+			}
+		}
+
+		Utils.addChatMessage("");
+		Utils.addChatMessage("§3NEU Minion Helper commands: §c((for testing only!)");
+		Utils.addChatMessage("§6/neudevtest minion clear §7Clears the internal minion data");
+		Utils.addChatMessage("§6/neudevtest minion resetrepo §7Manually loading the data from repo");
+		Utils.addChatMessage("§6/neudevtest minion resetapi §7Manually loading the data from api");
+		Utils.addChatMessage("");
 	}
 }
