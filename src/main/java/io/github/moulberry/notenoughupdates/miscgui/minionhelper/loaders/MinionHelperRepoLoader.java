@@ -97,8 +97,7 @@ public class MinionHelperRepoLoader {
 
 		testForMissingData();
 
-		manager.reloadRequirements();
-		manager.reloadCraftedMinions();
+		manager.reloadData();
 		repoReadyToUse = true;
 
 		if (error) {
@@ -193,7 +192,7 @@ public class MinionHelperRepoLoader {
 					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no display name!");
 				}
 			}
-			if (manager.getRequirements(minion).isEmpty()) {
+			if (manager.getRequirementsManager().getRequirements(minion).isEmpty()) {
 				error = true;
 				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no requirements!");

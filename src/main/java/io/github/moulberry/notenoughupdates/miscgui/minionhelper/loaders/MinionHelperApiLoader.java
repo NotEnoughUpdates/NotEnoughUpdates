@@ -221,8 +221,7 @@ public class MinionHelperApiLoader {
 			craftedMinions
 		));
 
-		manager.reloadRequirements();
-		manager.reloadCraftedMinions();
+		manager.reloadData();
 		apiReadyToUse = true;
 	}
 

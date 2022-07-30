@@ -22,11 +22,6 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperApiLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CustomRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.ReputationRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.SlayerRequirement;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
@@ -34,7 +29,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +40,7 @@ public class MinionHelperManager {
 	private boolean shouldNotifyNoCollectionApi = false;
 
 	private final MinionHelperPriceCalculation priceCalculation = new MinionHelperPriceCalculation(this);
+	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
 
 	public static MinionHelperManager getInstance() {
 		if (instance == null) {
@@ -105,88 +100,12 @@ public class MinionHelperManager {
 		return minions;
 	}
 
-	public List<MinionRequirement> getRequirements(Minion minion) {
-		if (!minion.getRequirements().isEmpty()) {
-			return minion.getRequirements();
-		}
-
-		Minion parent = minion.getParent();
-		if (parent != null) {
-			return getRequirements(parent);
-		}
-
-		return Collections.emptyList();
-	}
-
-	public boolean meetAllRequirements(Minion minion) {
-		List<MinionRequirement> list = getRequirements(minion);
-		for (MinionRequirement requirement : list) {
-			if (!meetRequirement(minion, requirement)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	public boolean meetRequirement(Minion minion, MinionRequirement requirement) {
-		if (apiData == null) return false;
-
-		if (requirement instanceof CollectionRequirement) {
-			if (apiData.isCollectionApiDisabled()) return true;
-
-			CollectionRequirement collectionRequirement = (CollectionRequirement) requirement;
-			String collection = collectionRequirement.getCollection();
-			String internalName = formatInternalName(collection);
-
-			int need = collectionRequirement.getLevel();
-			Map<String, Integer> highestCollectionTier = apiData.getHighestCollectionTier();
-			if (highestCollectionTier.containsKey(internalName)) {
-				int has = highestCollectionTier.get(internalName);
-
-				return has >= need;
-			}
-
-		} else if (requirement instanceof SlayerRequirement) {
-			SlayerRequirement slayerRequirement = (SlayerRequirement) requirement;
-			String slayer = slayerRequirement.getSlayer();
-			int need = slayerRequirement.getLevel();
-			Map<String, Integer> slayerTiers = apiData.getSlayerTiers();
-			if (slayerTiers.containsKey(slayer)) {
-				return slayerTiers.get(slayer) >= need;
-			}
-
-		} else if (requirement instanceof ReputationRequirement) {
-			ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
-			int need = reputationRequirement.getReputation();
-			String reputationType = reputationRequirement.getReputationType();
-			if (reputationType.equals("BARBARIAN")) {
-				return apiData.getBarbariansReputation() >= need;
-			} else if (reputationType.equals("MAGE")) {
-				return apiData.getMagesReputation() >= need;
-			} else {
-				Utils.addChatMessage("§c[NEU] Minion Helper: Unknown reputation type: '" + reputationType + "'");
-				return false;
-			}
-		} else if (requirement instanceof CustomRequirement) {
-			return minion.isCrafted();
-		}
-
-		return false;
-	}
-
 	public String formatInternalName(String text) {
 		return text.toUpperCase().replace(" ", "_");
 	}
 
 	public void setApiData(ApiData apiData) {
 		this.apiData = apiData;
-	}
-
-	public void reloadRequirements() {
-		for (Minion minion : minions.values()) {
-			minion.setMeetRequirements(meetAllRequirements(minion));
-		}
 	}
 
 	public boolean isCollectionApiDisabled() {
@@ -259,7 +178,17 @@ public class MinionHelperManager {
 		MinionHelperApiLoader.getInstance().onProfileSwitch();
 	}
 
-	public void reloadCraftedMinions() {
+	public MinionHelperPriceCalculation getPriceCalculation() {
+		return priceCalculation;
+	}
+
+	public ApiData getApiData() {
+		return apiData;
+	}
+
+	public void reloadData() {
+		requirementsManager.reloadRequirements();
+
 		if (apiData != null) {
 			for (String minion : apiData.getCraftedMinions()) {
 				getMinionById(minion).setCrafted(true);
@@ -267,7 +196,7 @@ public class MinionHelperManager {
 		}
 	}
 
-	public MinionHelperPriceCalculation getPriceCalculation() {
-		return priceCalculation;
+	public MinionHelperRequirementsManager getRequirementsManager() {
+		return requirementsManager;
 	}
 }

@@ -192,11 +192,11 @@ public class MinionHelperOverlay {
 			lastHovered = minion;
 			String displayName = minion.getDisplayName();
 			lines.add("§9" + displayName + " " + minion.getTier());
-			List<MinionRequirement> requirements = manager.getRequirements(minionSource.getMinion());
+			List<MinionRequirement> requirements = manager.getRequirementsManager().getRequirements(minionSource.getMinion());
 			if (!requirements.isEmpty()) {
 				for (MinionRequirement requirement : requirements) {
 					//TODO maybe change the §7 color
-					String color = manager.meetRequirement(minion, requirement) ? "§a" : "§7";
+					String color = manager.getRequirementsManager().meetRequirement(minion, requirement) ? "§a" : "§7";
 					if (requirement instanceof CollectionRequirement && manager.isCollectionApiDisabled()) {
 						color = "§cAPI DISABLED! §7";
 					}
