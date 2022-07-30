@@ -65,7 +65,7 @@ public class MinionHelperChatLoader {
 			}
 
 			if (message.startsWith("§r§7Switching to profile ")) {
-				MinionHelperApiLoader.getInstance().prepareProfileSwitch();
+				manager.getApi().prepareProfileSwitch();
 			}
 
 		} catch (Exception e) {

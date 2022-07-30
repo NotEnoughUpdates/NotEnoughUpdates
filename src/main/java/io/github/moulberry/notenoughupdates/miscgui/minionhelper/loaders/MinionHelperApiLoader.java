@@ -23,7 +23,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -45,19 +44,17 @@ import java.util.List;
 import java.util.Map;
 
 public class MinionHelperApiLoader {
-	private static MinionHelperApiLoader instance = null;
-	private final MinionHelperManager manager = MinionHelperManager.getInstance();
+	private final MinionHelperManager manager;
 	private boolean dirty = true;
 	private int ticks = 0;
 	private boolean collectionApiEnabled = true;
 	private boolean ignoreWorldSwitches = false;
 	private boolean apiReadyToUse = false;
+	private ApiData apiData = null;
+	private boolean notifyNoCollectionApi = false;
 
-	public static MinionHelperApiLoader getInstance() {
-		if (instance == null) {
-			instance = new MinionHelperApiLoader();
-		}
-		return instance;
+	public MinionHelperApiLoader(MinionHelperManager manager) {
+		this.manager = manager;
 	}
 
 	@SubscribeEvent
@@ -117,7 +114,7 @@ public class MinionHelperApiLoader {
 		}
 	}
 
-	private List<String> loadMinionData(JsonObject members) {
+	private List<String> loadCraftedMinionsData(JsonObject members) {
 		List<String> craftedMinions = new ArrayList<>();
 		for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
 			JsonObject value = entry.getValue().getAsJsonObject();
@@ -171,7 +168,7 @@ public class MinionHelperApiLoader {
 			collectionApiEnabled = true;
 		} else {
 			if (collectionApiEnabled) {
-				manager.setShouldNotifyNoCollectionApi(true);
+				notifyNoCollectionApi = true;
 			}
 			collectionApiEnabled = false;
 		}
@@ -210,16 +207,14 @@ public class MinionHelperApiLoader {
 			}
 		}
 
-		List<String> craftedMinions = loadMinionData(members);
-
-		manager.setApiData(new ApiData(
+		apiData = new ApiData(
 			highestCollectionTier,
 			slayerTier,
 			magesReputation,
 			barbariansReputation,
 			!collectionApiEnabled,
-			craftedMinions
-		));
+			loadCraftedMinionsData(members)
+		);
 
 		manager.reloadData();
 		apiReadyToUse = true;
@@ -236,6 +231,7 @@ public class MinionHelperApiLoader {
 	}
 
 	public void onProfileSwitch() {
+		apiData = null;
 		setDirty();
 		ignoreWorldSwitches = false;
 		collectionApiEnabled = true;
@@ -243,5 +239,25 @@ public class MinionHelperApiLoader {
 
 	public boolean isApiReadyToUse() {
 		return apiReadyToUse;
+	}
+
+	public ApiData getApiData() {
+		return apiData;
+	}
+
+	public boolean isCollectionApiDisabled() {
+		return apiData != null && apiData.isCollectionApiDisabled();
+	}
+
+	public void resetData() {
+		apiData = null;
+	}
+
+	public void setNotifyNoCollectionApi(boolean notifyNoCollectionApi) {
+		this.notifyNoCollectionApi = notifyNoCollectionApi;
+	}
+
+	public boolean isNotifyNoCollectionApi() {
+		return notifyNoCollectionApi;
 	}
 }

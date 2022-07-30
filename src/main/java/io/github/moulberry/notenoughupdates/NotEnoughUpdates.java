@@ -298,7 +298,6 @@ public class NotEnoughUpdates {
 
 		MinecraftForge.EVENT_BUS.register(MinionHelperRepoLoader.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperInventoryLoader.getInstance());
-		MinecraftForge.EVENT_BUS.register(MinionHelperApiLoader.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperTooltips.getInstance());
 		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());

@@ -88,7 +88,7 @@ public class MinionHelperOverlay {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!manager.isReadyToUse()) return;
 
-		if (manager.isShouldNotifyNoCollectionApi()) {
+		if (manager.getApi().isNotifyNoCollectionApi()) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"",
 				"§cCollection API is disabled!",
@@ -96,7 +96,7 @@ public class MinionHelperOverlay {
 				"§cdo not meet the collection requirements!"
 			), false, true);
 			//TODO add tutorial how to enable collection api
-			manager.setShouldNotifyNoCollectionApi(false);
+			manager.getApi().setNotifyNoCollectionApi(false);
 		}
 
 		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
@@ -197,7 +197,7 @@ public class MinionHelperOverlay {
 				for (MinionRequirement requirement : requirements) {
 					//TODO maybe change the §7 color
 					String color = manager.getRequirementsManager().meetRequirement(minion, requirement) ? "§a" : "§7";
-					if (requirement instanceof CollectionRequirement && manager.isCollectionApiDisabled()) {
+					if (requirement instanceof CollectionRequirement && manager.getApi().isCollectionApiDisabled()) {
 						color = "§cAPI DISABLED! §7";
 					}
 					lines.add(" §8- " + color + requirement.printDescription());

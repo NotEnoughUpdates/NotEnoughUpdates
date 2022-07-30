@@ -63,17 +63,18 @@ public class MinionHelperRequirementsManager {
 	}
 
 	public boolean meetRequirement(Minion minion, MinionRequirement requirement) {
-		if (manager.getApiData() == null) return false;
+		ApiData apiData = manager.getApi().getApiData();
+		if (apiData == null) return false;
 
 		if (requirement instanceof CollectionRequirement) {
-			if (manager.getApiData().isCollectionApiDisabled()) return true;
+			if (apiData.isCollectionApiDisabled()) return true;
 
 			CollectionRequirement collectionRequirement = (CollectionRequirement) requirement;
 			String collection = collectionRequirement.getCollection();
 			String internalName = manager.formatInternalName(collection);
 
 			int need = collectionRequirement.getLevel();
-			Map<String, Integer> highestCollectionTier = manager.getApiData().getHighestCollectionTier();
+			Map<String, Integer> highestCollectionTier = apiData.getHighestCollectionTier();
 			if (highestCollectionTier.containsKey(internalName)) {
 				int has = highestCollectionTier.get(internalName);
 
@@ -84,7 +85,7 @@ public class MinionHelperRequirementsManager {
 			SlayerRequirement slayerRequirement = (SlayerRequirement) requirement;
 			String slayer = slayerRequirement.getSlayer();
 			int need = slayerRequirement.getLevel();
-			Map<String, Integer> slayerTiers = manager.getApiData().getSlayerTiers();
+			Map<String, Integer> slayerTiers = apiData.getSlayerTiers();
 			if (slayerTiers.containsKey(slayer)) {
 				return slayerTiers.get(slayer) >= need;
 			}
@@ -94,9 +95,9 @@ public class MinionHelperRequirementsManager {
 			int need = reputationRequirement.getReputation();
 			String reputationType = reputationRequirement.getReputationType();
 			if (reputationType.equals("BARBARIAN")) {
-				return manager.getApiData().getBarbariansReputation() >= need;
+				return apiData.getBarbariansReputation() >= need;
 			} else if (reputationType.equals("MAGE")) {
-				return manager.getApiData().getMagesReputation() >= need;
+				return apiData.getMagesReputation() >= need;
 			} else {
 				Utils.addChatMessage("§c[NEU] Minion Helper: Unknown reputation type: '" + reputationType + "'");
 				return false;

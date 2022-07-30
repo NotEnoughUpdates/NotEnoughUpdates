@@ -36,11 +36,10 @@ import java.util.Map;
 public class MinionHelperManager {
 	private static MinionHelperManager instance = null;
 	private final Map<String, Minion> minions = new HashMap<>();
-	private ApiData apiData = null;
-	private boolean shouldNotifyNoCollectionApi = false;
 
 	private final MinionHelperPriceCalculation priceCalculation = new MinionHelperPriceCalculation(this);
 	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
+	private final MinionHelperApiLoader api = new MinionHelperApiLoader(this);
 
 	public static MinionHelperManager getInstance() {
 		if (instance == null) {
@@ -51,6 +50,7 @@ public class MinionHelperManager {
 
 	private MinionHelperManager() {
 		MinecraftForge.EVENT_BUS.register(priceCalculation);
+		MinecraftForge.EVENT_BUS.register(api);
 	}
 
 	public boolean inCraftedMinionsInventory() {
@@ -68,7 +68,7 @@ public class MinionHelperManager {
 
 	public boolean isReadyToUse() {
 		return MinionHelperRepoLoader.getInstance().isRepoReadyToUse() &&
-			MinionHelperApiLoader.getInstance().isApiReadyToUse();
+			api.isApiReadyToUse();
 	}
 
 	public Minion getMinionById(String internalName) {
@@ -104,22 +104,6 @@ public class MinionHelperManager {
 		return text.toUpperCase().replace(" ", "_");
 	}
 
-	public void setApiData(ApiData apiData) {
-		this.apiData = apiData;
-	}
-
-	public boolean isCollectionApiDisabled() {
-		return apiData != null && apiData.isCollectionApiDisabled();
-	}
-
-	public void setShouldNotifyNoCollectionApi(boolean shouldNotifyNoCollectionApi) {
-		this.shouldNotifyNoCollectionApi = shouldNotifyNoCollectionApi;
-	}
-
-	public boolean isShouldNotifyNoCollectionApi() {
-		return shouldNotifyNoCollectionApi;
-	}
-
 	public void handleCommand(String[] args) {
 		if (args.length == 2) {
 			String parameter = args[1];
@@ -134,13 +118,13 @@ public class MinionHelperManager {
 				return;
 			}
 			if (parameter.equals("reloadapi")) {
-				apiData = null;
-				MinionHelperApiLoader.getInstance().setDirty();
+				api.resetData();
+				api.setDirty();
 				Utils.addChatMessage("api reload requested");
 				return;
 			}
 			if (parameter.equals("clearapi")) {
-				apiData = null;
+				api.resetData();
 				Utils.addChatMessage("api data cleared");
 				return;
 			}
@@ -173,22 +157,18 @@ public class MinionHelperManager {
 			minion.setCrafted(false);
 			minion.setMeetRequirements(false);
 		}
-		apiData = null;
 
-		MinionHelperApiLoader.getInstance().onProfileSwitch();
+		api.onProfileSwitch();
 	}
 
 	public MinionHelperPriceCalculation getPriceCalculation() {
 		return priceCalculation;
 	}
 
-	public ApiData getApiData() {
-		return apiData;
-	}
-
 	public void reloadData() {
 		requirementsManager.reloadRequirements();
 
+		ApiData apiData = api.getApiData();
 		if (apiData != null) {
 			for (String minion : apiData.getCraftedMinions()) {
 				getMinionById(minion).setCrafted(true);
@@ -198,5 +178,9 @@ public class MinionHelperManager {
 
 	public MinionHelperRequirementsManager getRequirementsManager() {
 		return requirementsManager;
+	}
+
+	public MinionHelperApiLoader getApi() {
+		return api;
 	}
 }
