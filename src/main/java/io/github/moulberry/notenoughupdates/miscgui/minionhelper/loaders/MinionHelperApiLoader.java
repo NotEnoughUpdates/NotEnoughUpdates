@@ -137,9 +137,6 @@ public class MinionHelperApiLoader {
 	}
 
 	private void readData(JsonObject player, JsonObject members) {
-
-		Utils.addChatMessage("set clipboard!");
-		MiscUtils.copyToClipboard(player.toString());
 		Map<String, Integer> highestCollectionTier = new HashMap<>();
 		Map<String, Integer> slayerTier = new HashMap<>();
 		int magesReputation = 0;
