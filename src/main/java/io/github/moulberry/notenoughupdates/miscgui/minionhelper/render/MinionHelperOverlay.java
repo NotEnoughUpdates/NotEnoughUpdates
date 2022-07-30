@@ -190,11 +190,12 @@ public class MinionHelperOverlay {
 					}
 					continue;
 				}
+
 				displayName = displayName.replace(" Minion", "");
 				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
 				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
 				renderMap.put(
-					requirementFormat + displayName + "§r " + requirementFormat + minion.getTier() + " §r§8- " + format,
+					requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,
 					minion
 				);
 
