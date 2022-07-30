@@ -17,7 +17,24 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables;
 
-public abstract class RenderableObject {
+import java.util.Arrays;
+import java.util.List;
+
+public class RenderableText extends RenderableObject {
+
+	private final List<String> lines;
+
+	public RenderableText(List<String> lines) {
+		this.lines = lines;
+	}
+
+	public RenderableText(String... lines) {
+		this(Arrays.asList(lines));
+	}
+
+	public List<String> getLines() {
+		return lines;
+	}
 }

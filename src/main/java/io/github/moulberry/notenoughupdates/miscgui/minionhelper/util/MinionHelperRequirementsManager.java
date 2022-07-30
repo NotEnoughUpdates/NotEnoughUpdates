@@ -17,8 +17,11 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.util;
 
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CustomRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;

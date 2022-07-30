@@ -17,13 +17,15 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableObject;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.renderables.RenderableText;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableObject;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableText;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;

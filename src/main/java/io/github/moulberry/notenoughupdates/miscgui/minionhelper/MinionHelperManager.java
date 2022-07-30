@@ -24,6 +24,10 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionH
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperChatLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperInventoryLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionHelperRepoLoader;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.MinionHelperOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.MinionHelperTooltips;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.util.MinionHelperPriceCalculation;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.util.MinionHelperRequirementsManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;

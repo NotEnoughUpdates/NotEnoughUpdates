@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
