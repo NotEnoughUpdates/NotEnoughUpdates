@@ -52,6 +52,7 @@ public class MinionHelperRepoLoader {
 	private boolean dirty = true;
 	private int ticks = 0;
 	private final Map<String, String> displayNameCache = new HashMap<>();
+	private boolean repoReadyToUse = false;
 
 	public static MinionHelperRepoLoader getInstance() {
 		if (instance == null) {
@@ -65,8 +66,7 @@ public class MinionHelperRepoLoader {
 	 */
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRepoReload(RepositoryReloadEvent event) {
-		dirty = true;
-		displayNameCache.clear();
+		setDirty();
 	}
 
 	@SubscribeEvent
@@ -95,7 +95,10 @@ public class MinionHelperRepoLoader {
 		loadMinionData();
 		loadCustomSources();
 
-		checkMissingData();
+		testForMissingData();
+
+		manager.reloadRequirements();
+		repoReadyToUse = true;
 
 		if (error) {
 			Utils.showOutdatedRepoNotification();
@@ -175,7 +178,7 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
-	private void checkMissingData() {
+	private void testForMissingData() {
 		for (Minion minion : manager.getAllMinions().values()) {
 			if (minion.getMinionSource() == null) {
 				error = true;
@@ -368,6 +371,12 @@ public class MinionHelperRepoLoader {
 	}
 
 	public void setDirty() {
-		this.dirty = true;
+		dirty = true;
+		displayNameCache.clear();
+		repoReadyToUse = false;
+	}
+
+	public boolean isRepoReadyToUse() {
+		return repoReadyToUse;
 	}
 }

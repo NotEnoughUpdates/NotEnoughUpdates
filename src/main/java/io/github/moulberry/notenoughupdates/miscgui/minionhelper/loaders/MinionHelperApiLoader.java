@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -46,7 +47,7 @@ public class MinionHelperApiLoader {
 	private final MinionHelperManager manager = MinionHelperManager.getInstance();
 	private boolean dirty = true;
 	private int ticks = 0;
-	boolean collectionApiEnabled = true;
+	private boolean collectionApiEnabled = true;
 
 	public static MinionHelperApiLoader getInstance() {
 		if (instance == null) {
@@ -191,6 +192,7 @@ public class MinionHelperApiLoader {
 			!collectionApiEnabled
 		));
 		manager.reloadRequirements();
+		MinionHelperOverlay.getInstance().resetCache();
 	}
 
 	public void setDirty() {

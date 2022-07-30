@@ -45,9 +45,9 @@ public class MinionHelperTooltips {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
-	public void onItemTooltipLow(ItemTooltipEvent event) {
+	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
-		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardTooltips) return;
+		if (!manager.isReadyToUse()) return;
 
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		if (!pressedShiftLast && shift) {

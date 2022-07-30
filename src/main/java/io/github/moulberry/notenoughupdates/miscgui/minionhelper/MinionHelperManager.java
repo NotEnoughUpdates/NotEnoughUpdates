@@ -91,6 +91,10 @@ public class MinionHelperManager {
 												 .getUnformattedText().equalsIgnoreCase("Crafted Minions");
 	}
 
+	public boolean isReadyToUse() {
+		return MinionHelperRepoLoader.getInstance().isRepoReadyToUse();
+	}
+
 	public Minion getMinionById(String internalName) {
 		if (minions.containsKey(internalName)) {
 			return minions.get(internalName);
@@ -320,28 +324,35 @@ public class MinionHelperManager {
 	public void handleCommand(String[] args) {
 		if (args.length == 2) {
 			String parameter = args[1];
-			if (parameter.equals("clear")) {
+			if (parameter.equals("clearminion")) {
 				minions.clear();
-				Utils.addChatMessage("minions cleared");
+				Utils.addChatMessage("minion map cleared");
 				return;
 			}
-			if (parameter.equals("resetrepo")) {
+			if (parameter.equals("reloadrepo")) {
 				MinionHelperRepoLoader.getInstance().setDirty();
 				Utils.addChatMessage("repo reload requested");
 				return;
 			}
-			if (parameter.equals("resetapi")) {
+			if (parameter.equals("reloadapi")) {
+				apiData = null;
 				MinionHelperApiLoader.getInstance().setDirty();
 				Utils.addChatMessage("api reload requested");
+				return;
+			}
+			if (parameter.equals("clearapi")) {
+				apiData = null;
+				Utils.addChatMessage("api data cleared");
 				return;
 			}
 		}
 
 		Utils.addChatMessage("");
 		Utils.addChatMessage("§3NEU Minion Helper commands: §c((for testing only!)");
-		Utils.addChatMessage("§6/neudevtest minion clear §7Clears the internal minion data");
-		Utils.addChatMessage("§6/neudevtest minion resetrepo §7Manually loading the data from repo");
-		Utils.addChatMessage("§6/neudevtest minion resetapi §7Manually loading the data from api");
+		Utils.addChatMessage("§6/neudevtest minion clearminion §7Clears the minion map");
+		Utils.addChatMessage("§6/neudevtest minion reloadrepo §7Manually loading the data from repo");
+		Utils.addChatMessage("§6/neudevtest minion reloadapi §7Manually loading the data from api");
+		Utils.addChatMessage("§6/neudevtest minion clearapi §7Clears the api data");
 		Utils.addChatMessage("");
 	}
 

@@ -86,6 +86,7 @@ public class MinionHelperOverlay {
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
+		if (!manager.isReadyToUse()) return;
 
 		if (manager.isShouldNotifyNoCollectionApi()) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
@@ -107,6 +108,7 @@ public class MinionHelperOverlay {
 	@SubscribeEvent
 	public void onMouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
 		if (!manager.inCraftedMinionsInventory()) return;
+		if (!manager.isReadyToUse()) return;
 		if (!Mouse.getEventButtonState()) return;
 
 		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
