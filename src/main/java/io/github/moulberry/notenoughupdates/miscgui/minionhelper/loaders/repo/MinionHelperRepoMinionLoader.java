@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.repo;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
