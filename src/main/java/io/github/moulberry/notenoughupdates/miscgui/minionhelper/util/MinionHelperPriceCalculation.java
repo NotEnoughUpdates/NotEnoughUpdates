@@ -63,9 +63,11 @@ public class MinionHelperPriceCalculation {
 		fullCostFormatCache.clear();
 	}
 
-	public String calculateUpgradeCostsFormat(MinionSource source, boolean upgradeOnly) {
+	public String calculateUpgradeCostsFormat(Minion minion, boolean upgradeOnly) {
+		MinionSource source = minion.getMinionSource();
+
 		if (source == null) return "§c?";
-		String internalName = source.getMinion().getInternalName();
+		String internalName = minion.getInternalName();
 		if (upgradeOnly) {
 			if (upgradeCostFormatCache.containsKey(internalName)) {
 				upgradeCostFormatCache.get(internalName);
@@ -80,7 +82,7 @@ public class MinionHelperPriceCalculation {
 			return "§f" + ((CustomSource) source).getSourceName();
 		}
 
-		long costs = calculateUpgradeCosts(source, upgradeOnly);
+		long costs = calculateUpgradeCosts(minion, upgradeOnly);
 		String result = formatCoins(costs, !upgradeOnly ? "§o" : "");
 
 		if (source instanceof NpcSource) {
@@ -100,14 +102,15 @@ public class MinionHelperPriceCalculation {
 		return result;
 	}
 
-	public long calculateUpgradeCosts(MinionSource source, boolean upgradeOnly) {
+	public long calculateUpgradeCosts(Minion minion, boolean upgradeOnly) {
+		MinionSource source = minion.getMinionSource();
 		if (source instanceof CraftingSource) {
 			CraftingSource craftingSource = (CraftingSource) source;
-			return getCosts(source, upgradeOnly, craftingSource.getItems());
+			return getCosts(minion, upgradeOnly, craftingSource.getItems());
 
 		} else if (source instanceof NpcSource) {
 			NpcSource npcSource = (NpcSource) source;
-			long upgradeCost = getCosts(source, upgradeOnly, npcSource.getItems());
+			long upgradeCost = getCosts(minion, upgradeOnly, npcSource.getItems());
 			long coins = npcSource.getCoins();
 			upgradeCost += coins;
 
@@ -117,7 +120,7 @@ public class MinionHelperPriceCalculation {
 		return 0;
 	}
 
-	private long getCosts(MinionSource source, boolean upgradeOnly, ArrayListMultimap<String, Integer> items) {
+	private long getCosts(Minion minion, boolean upgradeOnly, ArrayListMultimap<String, Integer> items) {
 		long upgradeCost = 0;
 		for (Map.Entry<String, Integer> entry : items.entries()) {
 			String internalName = entry.getKey();
@@ -126,9 +129,9 @@ public class MinionHelperPriceCalculation {
 			upgradeCost += price * amount;
 		}
 		if (!upgradeOnly) {
-			Minion parent = source.getMinion().getParent();
+			Minion parent = minion.getParent();
 			if (parent != null) {
-				upgradeCost += calculateUpgradeCosts(parent.getMinionSource(), false);
+				upgradeCost += calculateUpgradeCosts(parent, false);
 			}
 		}
 		return upgradeCost;
@@ -138,7 +141,7 @@ public class MinionHelperPriceCalculation {
 		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
 		if (bazaarInfo == null) {
 			if (internalName.contains("_GENERATOR_")) {
-				return calculateUpgradeCosts(manager.getMinionById(internalName).getMinionSource(), false);
+				return calculateUpgradeCosts(manager.getMinionById(internalName), false);
 			} else {
 				if (!cheapItems.contains(internalName)) {
 					return (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);

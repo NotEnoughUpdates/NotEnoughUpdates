@@ -126,7 +126,7 @@ public class MinionHelperRepoMinionLoader {
 			builder.addLine(minion, rawString);
 		}
 
-		minion.setMinionSource(new CraftingSource(minion, builder.getItems()));
+		minion.setMinionSource(new CraftingSource(builder.getItems()));
 		minion.setParent(builder.getParent());
 	}
 }

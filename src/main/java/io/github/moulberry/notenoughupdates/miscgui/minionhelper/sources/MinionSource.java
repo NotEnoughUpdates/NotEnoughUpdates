@@ -19,18 +19,5 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableObject;
-
-public abstract class MinionSource extends RenderableObject {
-	private final Minion minion;
-
-	public MinionSource(Minion minion) {
-		this.minion = minion;
-	}
-
-	//TODO remove later maybe?
-	public Minion getMinion() {
-		return minion;
-	}
+public abstract class MinionSource {
 }

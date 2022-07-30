@@ -76,7 +76,7 @@ public class MinionHelperTooltips {
 				System.err.println("minionSource is null for " + minion.getInternalName());
 				continue;
 			}
-			String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minionSource, !showFullCost);
+			String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, !showFullCost);
 			event.toolTip.set(index, line + " §8- " + format);
 		}
 

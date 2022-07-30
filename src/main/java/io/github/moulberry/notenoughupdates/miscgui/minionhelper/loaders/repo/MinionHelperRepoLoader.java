@@ -113,7 +113,7 @@ public class MinionHelperRepoLoader {
 			String sourceName = entry.getValue();
 			Minion minion = manager.getMinionById(internalName);
 			if (minion == null) continue;
-			minion.setMinionSource(new CustomSource(minion, sourceName));
+			minion.setMinionSource(new CustomSource(sourceName));
 		}
 
 		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement(
@@ -163,7 +163,7 @@ public class MinionHelperRepoLoader {
 					map.removeAll("SKYBLOCK_COIN");
 				}
 
-				minion.setMinionSource(new NpcSource(minion, npcName, coins, builder.getItems()));
+				minion.setMinionSource(new NpcSource(npcName, coins, builder.getItems()));
 				minion.setParent(builder.getParent());
 			}
 		}

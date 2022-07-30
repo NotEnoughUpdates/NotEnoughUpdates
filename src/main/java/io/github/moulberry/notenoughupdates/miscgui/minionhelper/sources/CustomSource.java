@@ -19,14 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
-
 public class CustomSource extends MinionSource {
 
 	private final String sourceName;
 
-	public CustomSource(Minion minion, String sourceName) {
-		super(minion);
+	public CustomSource(String sourceName) {
 		this.sourceName = sourceName;
 	}
 

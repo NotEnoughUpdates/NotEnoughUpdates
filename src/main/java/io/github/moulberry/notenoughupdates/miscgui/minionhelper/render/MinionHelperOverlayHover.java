@@ -84,14 +84,14 @@ public class MinionHelperOverlayHover {
 		if (renderableObject instanceof RenderableText) {
 			RenderableText renderableText = (RenderableText) renderableObject;
 			lines.addAll(renderableText.getLines());
-		} else if (renderableObject instanceof MinionSource) {
-			MinionSource minionSource = (MinionSource) renderableObject;
+		} else if (renderableObject instanceof Minion) {
 
-			Minion minion = minionSource.getMinion();
+			Minion minion = (Minion) renderableObject;
+			MinionSource minionSource = minion.getMinionSource();
 			lastHovered = minion;
 			String displayName = minion.getDisplayName();
 			lines.add("§9" + displayName + " " + minion.getTier());
-			List<MinionRequirement> requirements = manager.getRequirementsManager().getRequirements(minionSource.getMinion());
+			List<MinionRequirement> requirements = manager.getRequirementsManager().getRequirements(minion);
 			if (!requirements.isEmpty()) {
 				for (MinionRequirement requirement : requirements) {
 					//TODO maybe change the §7 color
@@ -108,7 +108,7 @@ public class MinionHelperOverlayHover {
 			if (minionSource instanceof CraftingSource) {
 				CraftingSource craftingSource = (CraftingSource) minionSource;
 				lines.add("");
-				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(craftingSource, true);
+				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
 				if (minion.getTier() == 1) {
 					lines.add("§7Full crafting costs: " + format);
 				} else {
@@ -122,7 +122,7 @@ public class MinionHelperOverlayHover {
 				lines.add("");
 				lines.add("§7Buy from: §9" + npcName + " (NPC)");
 				lines.add("");
-				lines.add("§7Buy costs: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(npcSource, true));
+				lines.add("§7Buy costs: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true));
 				lines.add(" §8- " + manager.getPriceCalculation().formatCoins(npcSource.getCoins()));
 				formatItems(lines, grabAllItems(npcSource.getItems()));
 			}

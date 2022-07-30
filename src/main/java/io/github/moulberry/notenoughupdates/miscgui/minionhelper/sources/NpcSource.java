@@ -28,8 +28,7 @@ public class NpcSource extends MinionSource {
 	private final ArrayListMultimap<String, Integer> items;
 	private int coins = 0;
 
-	public NpcSource(Minion minion, String npcName, int coins, ArrayListMultimap<String, Integer> items) {
-		super(minion);
+	public NpcSource(String npcName, int coins, ArrayListMultimap<String, Integer> items) {
 		this.npcName = npcName;
 		this.coins = coins;
 		this.items = items;

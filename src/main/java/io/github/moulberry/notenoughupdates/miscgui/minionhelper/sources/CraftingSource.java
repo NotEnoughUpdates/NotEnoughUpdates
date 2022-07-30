@@ -26,8 +26,7 @@ public class CraftingSource extends MinionSource {
 	//name -> amount
 	private final ArrayListMultimap<String, Integer> items;
 
-	public CraftingSource(Minion minion, ArrayListMultimap<String, Integer> items) {
-		super(minion);
+	public CraftingSource(ArrayListMultimap<String, Integer> items) {
 		this.items = items;
 	}
 

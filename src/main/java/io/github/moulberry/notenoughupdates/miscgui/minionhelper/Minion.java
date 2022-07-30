@@ -19,13 +19,14 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableObject;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Minion {
+public class Minion extends RenderableObject {
 	private final String internalName;
 	private final int tier;
 	private String displayName;

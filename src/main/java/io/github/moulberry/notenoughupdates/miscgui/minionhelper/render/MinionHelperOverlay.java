@@ -105,9 +105,10 @@ public class MinionHelperOverlay {
 		RenderableObject mouseObject = getObjectOverMouse(getRenderMap());
 
 		if (mouseObject != null) {
-			if (mouseObject instanceof MinionSource) {
+			if (mouseObject instanceof Minion) {
+
 				event.setCanceled(true);
-				Minion minion = ((MinionSource) mouseObject).getMinion();
+				Minion minion = ((Minion) mouseObject);
 				NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(minion.getInternalName());
 			}
 		}
@@ -119,7 +120,7 @@ public class MinionHelperOverlay {
 
 			if (!minion.doesMeetRequirements() && !shift) continue;
 			if (!minion.isCrafted()) {
-				long price = manager.getPriceCalculation().calculateUpgradeCosts(minion.getMinionSource(), true);
+				long price = manager.getPriceCalculation().calculateUpgradeCosts(minion, true);
 				prices.put(minion, price);
 			}
 		}
@@ -146,8 +147,8 @@ public class MinionHelperOverlay {
 			String line = entry.getKey();
 			RenderableObject renderableObject = entry.getValue();
 			String prefix = "";
-			if (renderableObject instanceof MinionSource) {
-				Minion minion = ((MinionSource) renderableObject).getMinion();
+			if (renderableObject instanceof Minion) {
+				Minion minion = (Minion) renderableObject;
 				if (minion == hover.getLastHovered()) {
 					prefix = "§e";
 				}
@@ -190,11 +191,11 @@ public class MinionHelperOverlay {
 					continue;
 				}
 				displayName = displayName.replace(" Minion", "");
-				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion.getMinionSource(), true);
+				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
 				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
 				renderMap.put(
 					requirementFormat + displayName + "§r " + requirementFormat + minion.getTier() + " §r§8- " + format,
-					minion.getMinionSource()
+					minion
 				);
 
 				i++;
