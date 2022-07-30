@@ -27,11 +27,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CustomRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.ReputationRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.SlayerRequirement;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -44,7 +40,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.regex.Pattern;
 
 public class MinionHelperRepoLoader {
 	private final MinionHelperManager manager;
@@ -52,9 +47,12 @@ public class MinionHelperRepoLoader {
 	private int ticks = 0;
 	private final Map<String, String> displayNameCache = new HashMap<>();
 	private boolean repoReadyToUse = false;
+	private final MinionHelperRepoMinionLoader minionLoader;
+	boolean errorWhileLoading = false;
 
 	public MinionHelperRepoLoader(MinionHelperManager manager) {
 		this.manager = manager;
+		minionLoader = new MinionHelperRepoMinionLoader(this, manager);
 	}
 
 	/**
@@ -79,16 +77,14 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
-	boolean error = false;
-
 	void load() {
 		//TODO load new from config entries and so?
-		error = false;
+		errorWhileLoading = false;
 
-		loadMinions();
+		createMinions();
 
 		loadNpcData();
-		loadMinionData();
+		minionLoader.loadMinionData();
 		loadCustomSources();
 
 		testForMissingData();
@@ -96,7 +92,7 @@ public class MinionHelperRepoLoader {
 		manager.reloadData();
 		repoReadyToUse = true;
 
-		if (error) {
+		if (errorWhileLoading) {
 			Utils.showOutdatedRepoNotification();
 		}
 	}
@@ -154,7 +150,7 @@ public class MinionHelperRepoLoader {
 				Minion minion = manager.getMinionById(result);
 				if (!object.has("cost")) continue;
 
-				RecipeBuilder builder = new RecipeBuilder();
+				RecipeBuilder builder = new RecipeBuilder(manager);
 
 				for (JsonElement costEntry : object.get("cost").getAsJsonArray()) {
 					String price = costEntry.getAsString();
@@ -174,120 +170,7 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
-	private void testForMissingData() {
-		for (Minion minion : manager.getAllMinions().values()) {
-			if (minion.getMinionSource() == null) {
-				error = true;
-				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no source!");
-				}
-			}
-			if (minion.getDisplayName() == null) {
-				error = true;
-				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no display name!");
-				}
-			}
-			if (manager.getRequirementsManager().getRequirements(minion).isEmpty()) {
-				error = true;
-				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no requirements!");
-				}
-			}
-			if (minion.getTier() > 1 && minion.getParent() == null) {
-				error = true;
-				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has parent!");
-				}
-			}
-		}
-	}
-
-	private void loadMinionData() {
-		TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
-
-		for (Map.Entry<String, Minion> entry : manager.getAllMinions().entrySet()) {
-			String internalName = entry.getKey();
-			if (!itemInformation.containsKey(internalName)) continue;
-			Minion minion = entry.getValue();
-
-			JsonObject jsonObject = itemInformation.get(internalName);
-			if (jsonObject.has("displayname")) {
-				String displayName = jsonObject.get("displayname").getAsString();
-				displayName = StringUtils.cleanColour(displayName);
-				displayName = StringUtils.removeLastWord(displayName, " ");
-				minion.setDisplayName(displayName);
-			}
-
-			if (jsonObject.has("recipe")) {
-				loadRecipes(minion, jsonObject);
-			}
-			loadRequirements(minion, jsonObject);
-		}
-	}
-
-	private void loadRequirements(Minion minion, JsonObject jsonObject) {
-		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-			String name = entry.getKey();
-			if (name.endsWith("_req") || name.equals("crafttext")) {
-				String value = entry.getValue().getAsString();
-
-				try {
-					switch (name) {
-						case "reputation_req": {
-							String[] split = value.split(":");
-							String reputationType = split[0];
-							int reputation = Integer.parseInt(split[1]);
-							minion.getRequirements().add(new ReputationRequirement(reputationType, reputation));
-							break;
-						}
-						case "crafttext": {
-							if (minion.getTier() != 1) break;
-							if (value.isEmpty()) break;
-
-							String rawCollection = value.split(Pattern.quote(": "))[1];
-							String cleanCollection = StringUtils.removeLastWord(rawCollection, " ");
-							String rawTier = rawCollection.substring(cleanCollection.length() + 1);
-							int tier = Utils.parseRomanNumeral(rawTier);
-							minion.getRequirements().add(new CollectionRequirement(cleanCollection, tier));
-							break;
-						}
-						case "slayer_req": {
-							String[] split = value.split("_");
-							String slayerType = split[0].toLowerCase();
-							int tier = Integer.parseInt(split[1]);
-							minion.getRequirements().add(new SlayerRequirement(slayerType, tier));
-							break;
-						}
-					}
-				} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-					error = true;
-					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-						Utils.addChatMessage(
-							"§c[NEU] Error in MinionHelperRepoLoader while loading repo entry " + minion.getDisplayName() + " " +
-								minion.getTier() + ": " +
-								e.getClass().getSimpleName() + ": " + e.getMessage());
-					}
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private void loadRecipes(Minion minion, JsonObject jsonObject) {
-		JsonObject recipes = jsonObject.get("recipe").getAsJsonObject();
-		RecipeBuilder builder = new RecipeBuilder();
-		for (Map.Entry<String, JsonElement> entry : recipes.entrySet()) {
-			String rawString = entry.getValue().getAsString();
-
-			builder.addLine(minion, rawString);
-		}
-
-		minion.setMinionSource(new CraftingSource(minion, builder.getItems()));
-		minion.setParent(builder.getParent());
-	}
-
-	private void loadMinions() {
+	private void createMinions() {
 		for (Map.Entry<String, JsonElement> entry : Constants.MISC.get("minions").getAsJsonObject().entrySet()) {
 			String internalName = entry.getKey();
 			int maxTier = entry.getValue().getAsInt();
@@ -298,42 +181,31 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
-	class RecipeBuilder {
-		private Minion parent = null;
-		private final ArrayListMultimap<String, Integer> items = ArrayListMultimap.create();
-
-		public Minion getParent() {
-			return parent;
-		}
-
-		public ArrayListMultimap<String, Integer> getItems() {
-			return items;
-		}
-
-		public void addLine(Minion minion, String rawString) {
-			String[] split = rawString.split(":");
-			String itemName = split[0];
-
-			boolean isParent = false;
-			if (itemName.contains("_GENERATOR_")) {
-				String minionInternalName = minion.getInternalName();
-				boolean same = StringUtils.removeLastWord(itemName, "_").equals(StringUtils.removeLastWord(
-					minionInternalName,
-					"_"
-				));
-				if (same) {
-					parent = manager.getMinionById(itemName);
-					if (parent == null) {
-						if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-							Utils.addChatMessage("Parent is null for minion " + minionInternalName);
-						}
-					}
-					isParent = true;
+	private void testForMissingData() {
+		for (Minion minion : manager.getAllMinions().values()) {
+			if (minion.getMinionSource() == null) {
+				errorWhileLoading = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no source!");
 				}
 			}
-			if (!isParent) {
-				int amount = Integer.parseInt(split[1]);
-				items.put(itemName, amount);
+			if (minion.getDisplayName() == null) {
+				errorWhileLoading = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no display name!");
+				}
+			}
+			if (manager.getRequirementsManager().getRequirements(minion).isEmpty()) {
+				errorWhileLoading = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has no requirements!");
+				}
+			}
+			if (minion.getTier() > 1 && minion.getParent() == null) {
+				errorWhileLoading = true;
+				if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+					Utils.addChatMessage("§c[NEU] The Minion '" + minion.getInternalName() + " has parent!");
+				}
 			}
 		}
 	}
