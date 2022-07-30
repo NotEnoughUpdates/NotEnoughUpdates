@@ -78,7 +78,6 @@ public class MinionHelperRepoLoader {
 	}
 
 	void load() {
-		//TODO load new from config entries and so?
 		errorWhileLoading = false;
 
 		createMinions();
@@ -111,10 +110,10 @@ public class MinionHelperRepoLoader {
 
 		for (Map.Entry<String, String> entry : customSource.entrySet()) {
 			String internalName = entry.getKey();
-			String description = entry.getValue();
+			String sourceName = entry.getValue();
 			Minion minion = manager.getMinionById(internalName);
 			if (minion == null) continue;
-			minion.setMinionSource(new CustomSource(minion, description));
+			minion.setMinionSource(new CustomSource(minion, sourceName));
 		}
 
 		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement(

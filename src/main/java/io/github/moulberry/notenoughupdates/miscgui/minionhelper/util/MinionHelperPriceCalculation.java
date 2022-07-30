@@ -77,7 +77,7 @@ public class MinionHelperPriceCalculation {
 		}
 
 		if (source instanceof CustomSource) {
-			return "§f" + ((CustomSource) source).getCustomSource();
+			return "§f" + ((CustomSource) source).getSourceName();
 		}
 
 		long costs = calculateUpgradeCosts(source, upgradeOnly);

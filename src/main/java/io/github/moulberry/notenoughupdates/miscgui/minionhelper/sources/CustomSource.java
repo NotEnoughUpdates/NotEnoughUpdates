@@ -23,15 +23,14 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 
 public class CustomSource extends MinionSource {
 
-	//TODO rename variable
-	private final String customSource;
+	private final String sourceName;
 
-	public CustomSource(Minion minion, String customSource) {
+	public CustomSource(Minion minion, String sourceName) {
 		super(minion);
-		this.customSource = customSource;
+		this.sourceName = sourceName;
 	}
 
-	public String getCustomSource() {
-		return customSource;
+	public String getSourceName() {
+		return sourceName;
 	}
 }
