@@ -209,7 +209,7 @@ public class MinionHelperOverlay {
 			if (minionSource instanceof CraftingSource) {
 				CraftingSource craftingSource = (CraftingSource) minionSource;
 				lines.add("");
-				String format = manager.calculateUpgradeCostsFormat(craftingSource, true);
+				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(craftingSource, true);
 				if (minion.getTier() == 1) {
 					lines.add("§7Full crafting costs: " + format);
 				} else {
@@ -223,8 +223,8 @@ public class MinionHelperOverlay {
 				lines.add("");
 				lines.add("§7Buy from: §9" + npcName + " (NPC)");
 				lines.add("");
-				lines.add("§7Buy costs: " + manager.calculateUpgradeCostsFormat(npcSource, true));
-				lines.add(" §8- " + manager.formatCoins(npcSource.getCoins()));
+				lines.add("§7Buy costs: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(npcSource, true));
+				lines.add(" §8- " + manager.getPriceCalculation().formatCoins(npcSource.getCoins()));
 				formatItems(lines, grabAllItems(npcSource.getItems()));
 			}
 
@@ -241,7 +241,7 @@ public class MinionHelperOverlay {
 
 			int amount = entry.getValue();
 			String amountText = amount != 1 ? amount + "§7x " : "";
-			String price = manager.formatCoins(manager.getPrice(internalName) * amount);
+			String price = manager.getPriceCalculation().formatCoins(manager.getPriceCalculation().getPrice(internalName) * amount);
 			lines.add(" §8- §a" + amountText + "§f" + name + " " + price);
 		}
 	}
@@ -263,7 +263,7 @@ public class MinionHelperOverlay {
 
 			if (!minion.doesMeetRequirements() && !shift) continue;
 			if (!minion.isCrafted()) {
-				long price = manager.calculateUpgradeCosts(minion.getMinionSource(), true);
+				long price = manager.getPriceCalculation().calculateUpgradeCosts(minion.getMinionSource(), true);
 				prices.put(minion, price);
 			}
 		}
@@ -334,7 +334,7 @@ public class MinionHelperOverlay {
 					continue;
 				}
 				displayName = displayName.replace(" Minion", "");
-				String format = manager.calculateUpgradeCostsFormat(minion.getMinionSource(), true);
+				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion.getMinionSource(), true);
 				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
 				renderMap.put(
 					requirementFormat + displayName + "§r " + requirementFormat + minion.getTier() + " §r§8- " + format,
