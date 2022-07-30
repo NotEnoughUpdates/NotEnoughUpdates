@@ -249,7 +249,6 @@ public class MinionHelperRepoLoader {
 							if (minion.getTier() != 1) break;
 							if (value.isEmpty()) break;
 
-							//Requires: Red Sand I
 							String rawCollection = value.split(Pattern.quote(": "))[1];
 							String cleanCollection = StringUtils.removeLastWord(rawCollection, " ");
 							String rawTier = rawCollection.substring(cleanCollection.length() + 1);

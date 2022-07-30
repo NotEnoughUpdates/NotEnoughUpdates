@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
@@ -158,6 +159,7 @@ public class NEUManager {
 
 	public void setCurrentProfile(String currentProfile) {
 		SBInfo.getInstance().currentProfile = currentProfile;
+		MinionHelperManager.getInstance().onProfileSwitch();
 	}
 
 	public String getCurrentProfile() {
@@ -207,7 +209,7 @@ public class NEUManager {
 	}
 
 	public CompletableFuture<Boolean> fetchRepository() {
-		return CompletableFuture.<Boolean>supplyAsync(() -> {
+		return CompletableFuture.supplyAsync(() -> {
 			try {
 				JsonObject currentCommitJSON = getJsonFromFile(new File(configLocation, "currentCommit.json"));
 
@@ -1519,7 +1521,7 @@ public class NEUManager {
 		return NotEnoughUpdates.INSTANCE.manager
 			.fetchRepository()
 			.thenCompose(ignored -> NotEnoughUpdates.INSTANCE.manager.reloadRepository())
-			.<List<String>>thenApply(ignored -> {
+			.thenApply(ignored -> {
 				String newCommitHash = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
 				String newCommitShortHash = (newCommitHash == null ? "MISSING" : newCommitHash.substring(0, 7));
 				return Arrays.asList(

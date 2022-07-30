@@ -92,7 +92,8 @@ public class MinionHelperManager {
 	}
 
 	public boolean isReadyToUse() {
-		return MinionHelperRepoLoader.getInstance().isRepoReadyToUse();
+		return MinionHelperRepoLoader.getInstance().isRepoReadyToUse() &&
+			MinionHelperApiLoader.getInstance().isApiReadyToUse();
 	}
 
 	public Minion getMinionById(String internalName) {
@@ -356,15 +357,26 @@ public class MinionHelperManager {
 		Utils.addChatMessage("");
 	}
 
-	public List<Minion> getChilds(Minion minion) {
+	public List<Minion> getChildren(Minion minion) {
 		List<Minion> list = new ArrayList<>();
 		for (Minion other : minions.values()) {
 			if (minion == other.getParent()) {
 				list.add(other);
-				list.addAll(getChilds(other));
+				list.addAll(getChildren(other));
 				break;
 			}
 		}
 		return list;
+	}
+
+	public void onProfileSwitch() {
+		//TODO check if the feature is enabled
+		for (Minion minion : minions.values()) {
+			minion.setCrafted(false);
+			minion.setMeetRequirements(false);
+		}
+		apiData = null;
+
+		MinionHelperApiLoader.getInstance().onProfileSwitch();
 	}
 }

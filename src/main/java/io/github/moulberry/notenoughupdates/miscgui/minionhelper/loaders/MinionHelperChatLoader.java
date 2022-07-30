@@ -64,6 +64,10 @@ public class MinionHelperChatLoader {
 				MinionHelperOverlay.getInstance().resetCache();
 			}
 
+			if (message.startsWith("§r§7Switching to profile ")) {
+				MinionHelperApiLoader.getInstance().prepareProfileSwitch();
+			}
+
 		} catch (Exception e) {
 			Utils.addChatMessage(
 				"[NEU] §cMinion Helper failed reading the minion upgrade message. See the logs for more info!");
@@ -77,7 +81,7 @@ public class MinionHelperChatLoader {
 		if (!minion.doesMeetRequirements()) {
 			minion.setMeetRequirements(true);
 
-			for (Minion child : manager.getChilds(minion)) {
+			for (Minion child : manager.getChildren(minion)) {
 				child.setMeetRequirements(true);
 			}
 		}

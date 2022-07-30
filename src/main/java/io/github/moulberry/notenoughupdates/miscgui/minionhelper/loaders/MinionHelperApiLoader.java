@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -48,6 +47,8 @@ public class MinionHelperApiLoader {
 	private boolean dirty = true;
 	private int ticks = 0;
 	private boolean collectionApiEnabled = true;
+	private boolean ignoreWorldSwitches = false;
+	private boolean apiReadyToUse = false;
 
 	public static MinionHelperApiLoader getInstance() {
 		if (instance == null) {
@@ -58,7 +59,9 @@ public class MinionHelperApiLoader {
 
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
-		dirty = true;
+		if (ignoreWorldSwitches) return;
+
+		setDirty();
 	}
 
 	@SubscribeEvent
@@ -192,10 +195,26 @@ public class MinionHelperApiLoader {
 			!collectionApiEnabled
 		));
 		manager.reloadRequirements();
-		MinionHelperOverlay.getInstance().resetCache();
+		apiReadyToUse = true;
 	}
 
 	public void setDirty() {
-		this.dirty = true;
+		dirty = true;
+		apiReadyToUse = false;
+	}
+
+	public void prepareProfileSwitch() {
+		ignoreWorldSwitches = true;
+		apiReadyToUse = false;
+	}
+
+	public void onProfileSwitch() {
+		setDirty();
+		ignoreWorldSwitches = false;
+		collectionApiEnabled = true;
+	}
+
+	public boolean isApiReadyToUse() {
+		return apiReadyToUse;
 	}
 }
