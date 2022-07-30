@@ -41,6 +41,6 @@ public class ReputationRequirement extends MinionRequirement {
 
 	@Override
 	public String printDescription() {
-		return "Reputation: " + Utils.formatNumberWithDots(reputation) + " " + reputationType.toLowerCase();
+		return "Reputation: " + Utils.formatNumberWithDots(reputation) + " " + reputationType.toLowerCase() + " reputation";
 	}
 }
