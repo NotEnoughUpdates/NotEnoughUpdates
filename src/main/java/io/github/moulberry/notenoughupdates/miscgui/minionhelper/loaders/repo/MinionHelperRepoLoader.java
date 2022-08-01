@@ -105,8 +105,6 @@ public class MinionHelperRepoLoader {
 
 		customSource.put("REVENANT_GENERATOR_1", "Zombie Slayer");
 		customSource.put("TARANTULA_GENERATOR_1", "Spider Slayer");
-		customSource.put("VOIDLING_GENERATOR_1", "Enderman Slayer");
-		customSource.put("INFERNO_GENERATOR_1", "Blaze Slayer");
 
 		for (Map.Entry<String, String> entry : customSource.entrySet()) {
 			String internalName = entry.getKey();
