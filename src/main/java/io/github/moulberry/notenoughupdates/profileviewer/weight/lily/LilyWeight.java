@@ -25,11 +25,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 public class LilyWeight extends Weight {
 
 	public LilyWeight(JsonObject player, JsonObject profileJson) {
-		super(
-			new LilySlayerWeight(player),
-			new LilySkillsWeight(player),
-			new LilyDungeonsWeight(player, profileJson)
-		);
+		super(new LilySlayerWeight(player), new LilySkillsWeight(player), new LilyDungeonsWeight(player, profileJson));
 	}
 
 	@Override

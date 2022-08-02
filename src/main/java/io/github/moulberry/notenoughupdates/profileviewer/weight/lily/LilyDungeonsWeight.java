@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class LilyDungeonsWeight extends DungeonsWeight {
 
-	JsonObject profileJson;
+	private final JsonObject profileJson;
 
 	public LilyDungeonsWeight(JsonObject player, JsonObject profileJson) {
 		super(player);
@@ -38,38 +38,21 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 
 	@Override
 	public void getDungeonWeight() {
-		double level = Utils.getElementAsFloat(
-			Utils.getElement(player, "level_skill_catacombs"),
-			0
-		);
-		float cataXP = Utils.getElementAsFloat(
-			Utils.getElement(player, "experience_skill_catacombs"),
-			0
-		);
+		double level = Utils.getElementAsFloat(Utils.getElement(player, "level_skill_catacombs"), 0);
+		float cataXP = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_catacombs"), 0);
 
 		double extra = 0;
 		double n = 0;
 		if (cataXP < 569809640) {
 			n = 0.2 * Math.pow(level / 50, 1.538679118869934);
 		} else {
-			extra =
-				500.0 *
-				Math.pow(
-					(cataXP - CATACOMBS_LEVEL_50_XP) / 142452410.0,
-					1.0 / 1.781925776625157
-				);
+			extra = 500.0 * Math.pow((cataXP - CATACOMBS_LEVEL_50_XP) / 142452410.0, 1.0 / 1.781925776625157);
 		}
 
 		if (level != 0) {
 			if (cataXP < 569809640) {
 				weightStruct.add(
-					new WeightStruct(
-						1.2733079672009226 *
-						(
-							(Math.pow(1.18340401286164044, (level + 1)) - 1.05994990217254) *
-							(1 + n)
-						)
-					)
+					new WeightStruct(1.2733079672009226 * ((Math.pow(1.18340401286164044, (level + 1)) - 1.05994990217254) * (1 + n)))
 				);
 			} else {
 				weightStruct.add(new WeightStruct((4100 + extra) * 2));
@@ -82,9 +65,7 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 	public void getDungeonCompletionWeight(String cataMode) {
 		double max1000 = 0;
 		double mMax1000 = 0;
-		JsonObject dungeonsCompletionWorth = Utils
-			.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth")
-			.getAsJsonObject();
+		JsonObject dungeonsCompletionWorth = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth").getAsJsonObject();
 		for (Map.Entry<String, JsonElement> dcwEntry : dungeonsCompletionWorth.entrySet()) {
 			if (dcwEntry.getKey().startsWith("catacombs_")) {
 				max1000 += dcwEntry.getValue().getAsDouble();
@@ -96,23 +77,14 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 		mMax1000 *= 1000;
 		double upperBound = 1500;
 		if (cataMode.equals("normal")) {
-			if (
-				Utils.getElement(
-					profileJson,
-					"dungeons.dungeon_types.catacombs.tier_completions"
-				) ==
-				null
-			) {
+			if (Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions") == null) {
 				new WeightStruct();
 				return;
 			}
 
 			double score = 0;
 			for (Map.Entry<String, JsonElement> normalFloor : Utils
-				.getElement(
-					profileJson,
-					"dungeons.dungeon_types.catacombs.tier_completions"
-				)
+				.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions")
 				.getAsJsonObject()
 				.entrySet()) {
 				int amount = normalFloor.getValue().getAsInt();
@@ -122,60 +94,39 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 					amount = 1000;
 				}
 
-				double floorScore =
-					amount *
-					dungeonsCompletionWorth
-						.get("catacombs_" + normalFloor.getKey())
-						.getAsDouble();
-				if (excess > 0) floorScore *=
-					Math.log(excess / 1000 + 1) / Math.log(7.5) + 1;
+				double floorScore = amount * dungeonsCompletionWorth.get("catacombs_" + normalFloor.getKey()).getAsDouble();
+				if (excess > 0) floorScore *= Math.log(excess / 1000 + 1) / Math.log(7.5) + 1;
 				score += floorScore;
 			}
 
 			weightStruct.add(new WeightStruct(score / max1000 * upperBound * 2));
 		} else {
-			JsonObject dungeonsCompletionBuffs = Utils
-				.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs")
-				.getAsJsonObject();
+			JsonObject dungeonsCompletionBuffs = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs").getAsJsonObject();
 
-			if (
-				Utils.getElement(
-					profileJson,
-					"dungeons.dungeon_types.master_catacombs.tier_completions"
-				) ==
-				null
-			) {
+			if (Utils.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions") == null) {
 				new WeightStruct();
 				return;
 			}
 
 			for (Map.Entry<String, JsonElement> masterFloor : Utils
-				.getElement(
-					profileJson,
-					"dungeons.dungeon_types.master_catacombs.tier_completions"
-				)
+				.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions")
 				.getAsJsonObject()
 				.entrySet()) {
 				if (dungeonsCompletionBuffs.get(masterFloor.getKey()) != null) {
 					int amount = masterFloor.getValue().getAsInt();
 					double threshold = 20;
 					if (amount >= threshold) {
-						upperBound +=
-							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt();
+						upperBound += dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt();
 					} else {
 						upperBound +=
-							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt() *
-							Math.pow((amount / threshold), 1.840896416);
+							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt() * Math.pow((amount / threshold), 1.840896416);
 					}
 				}
 			}
 
 			double masterScore = 0;
 			for (Map.Entry<String, JsonElement> masterFloor : Utils
-				.getElement(
-					profileJson,
-					"dungeons.dungeon_types.master_catacombs.tier_completions"
-				)
+				.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions")
 				.getAsJsonObject()
 				.entrySet()) {
 				int amount = masterFloor.getValue().getAsInt();
@@ -185,20 +136,14 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 					amount = 1000;
 				}
 
-				double floorScore =
-					amount *
-					dungeonsCompletionWorth
-						.get("master_catacombs_" + masterFloor.getKey())
-						.getAsDouble();
+				double floorScore = amount * dungeonsCompletionWorth.get("master_catacombs_" + masterFloor.getKey()).getAsDouble();
 				if (excess > 0) {
 					floorScore *= (Math.log((excess / 1000) + 1) / Math.log(6)) + 1;
 				}
 				masterScore += floorScore;
 			}
 
-			weightStruct.add(
-				new WeightStruct((masterScore / mMax1000) * upperBound * 2)
-			);
+			weightStruct.add(new WeightStruct((masterScore / mMax1000) * upperBound * 2));
 		}
 	}
 }

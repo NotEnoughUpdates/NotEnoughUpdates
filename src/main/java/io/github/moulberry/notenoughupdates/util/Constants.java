@@ -94,14 +94,7 @@ public class Constants {
 			FAIRYSOULS = Utils.getConstant("fairy_souls", gson);
 			REFORGESTONES = Utils.getConstant("reforgestones", gson);
 			TROPHYFISH = Utils.getConstant("trophyfish", gson);
-//		WEIGHT = Utils.getConstant("weight", gson); TODO: this
-			try (
-				InputStreamReader reader = new InputStreamReader(getClass()
-					.getClassLoader()
-					.getResourceAsStream("assets/notenoughupdates/temp.json"))
-			) {
-				WEIGHT = gson.fromJson(reader, JsonObject.class);
-			}
+			WEIGHT = Utils.getConstant("weight", gson);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {

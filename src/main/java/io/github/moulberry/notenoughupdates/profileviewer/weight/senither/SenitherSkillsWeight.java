@@ -29,28 +29,25 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 
 public class SenitherSkillsWeight extends SkillsWeight {
 
-	public SenitherSkillsWeight(JsonObject player) {
+	private final JsonObject profileJson;
+
+	public SenitherSkillsWeight(JsonObject player, JsonObject profileJson) {
 		super(player);
+		this.profileJson = profileJson;
 	}
 
 	@Override
 	public void getSkillsWeight(String skillName) {
-		JsonArray curWeights = Utils
-			.getElement(Constants.WEIGHT, "senither.skills." + skillName)
-			.getAsJsonArray();
+		JsonArray curWeights = Utils.getElement(Constants.WEIGHT, "senither.skills." + skillName).getAsJsonArray();
 		double exponent = curWeights.get(0).getAsDouble();
 		double divider = curWeights.get(1).getAsDouble();
 
-		float currentSkillXp = Utils.getElementAsFloat(
-			Utils.getElement(player, "experience_skill_" + skillName),
-			0
-		);
+		float currentSkillXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
 
 		if (currentSkillXp > 0) {
-			int maxLevel = Utils.getElementAsInt(
-				Utils.getElement(Constants.LEVELING, "leveling_caps." + skillName),
-				50
-			);
+			int maxLevel = skillName.equals("farming")
+				? 60
+				: Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps." + skillName), 50);
 			double level = ProfileViewer.getLevel(
 				Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
 				currentSkillXp,
@@ -66,12 +63,7 @@ public class SenitherSkillsWeight extends SkillsWeight {
 				return;
 			}
 
-			weightStruct.add(
-				new WeightStruct(
-					Math.round(base),
-					Math.pow((currentSkillXp - maxLevelExp) / divider, 0.968)
-				)
-			);
+			weightStruct.add(new WeightStruct(Math.round(base), Math.pow((currentSkillXp - maxLevelExp) / divider, 0.968)));
 			return;
 		}
 

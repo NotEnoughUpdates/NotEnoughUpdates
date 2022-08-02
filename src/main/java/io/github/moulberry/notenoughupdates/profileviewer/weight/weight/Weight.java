@@ -24,20 +24,8 @@ import java.util.List;
 
 public abstract class Weight {
 
-	protected static final List<String> SLAYER_NAMES = Arrays.asList(
-		"wolf",
-		"zombie",
-		"spider",
-		"enderman",
-		"blaze"
-	);
-	protected static final List<String> DUNGEON_CLASS_NAMES = Arrays.asList(
-		"healer",
-		"mage",
-		"berserk",
-		"archer",
-		"tank"
-	);
+	protected static final List<String> SLAYER_NAMES = Arrays.asList("wolf", "zombie", "spider", "enderman", "blaze");
+	protected static final List<String> DUNGEON_CLASS_NAMES = Arrays.asList("healer", "mage", "berserk", "archer", "tank");
 	public static final List<String> SKILL_NAMES = Arrays.asList(
 		"taming",
 		"mining",
@@ -52,11 +40,7 @@ public abstract class Weight {
 	protected final SkillsWeight skillsWeight;
 	protected final DungeonsWeight dungeonsWeight;
 
-	public Weight(
-		SlayerWeight slayerWeight,
-		SkillsWeight skillsWeight,
-		DungeonsWeight dungeonsWeight
-	) {
+	public Weight(SlayerWeight slayerWeight, SkillsWeight skillsWeight, DungeonsWeight dungeonsWeight) {
 		this.slayerWeight = slayerWeight;
 		this.skillsWeight = skillsWeight;
 		this.dungeonsWeight = dungeonsWeight;
@@ -69,6 +53,18 @@ public abstract class Weight {
 		w.add(skillsWeight.getWeightStruct());
 		w.add(dungeonsWeight.getWeightStruct());
 		return w;
+	}
+
+	public SlayerWeight getSlayerWeight() {
+		return slayerWeight;
+	}
+
+	public SkillsWeight getSkillsWeight() {
+		return skillsWeight;
+	}
+
+	public DungeonsWeight getDungeonsWeight() {
+		return dungeonsWeight;
 	}
 
 	protected abstract void calculateWeight();
