@@ -173,9 +173,14 @@ public class MinionHelperManager {
 				Utils.addChatMessage("api data cleared");
 				return;
 			}
+		}
+
+		if (args.length == 3) {
+			String parameter = args[1];
+
 			if (parameter.equals("maxperpage")) {
 				api.resetData();
-				int maxPerPage = Integer.parseInt(args[1]);
+				int maxPerPage = Integer.parseInt(args[2]);
 				Utils.addChatMessage("set max per page to " + maxPerPage);
 				overlay.setMaxPerPage(maxPerPage);
 				return;
