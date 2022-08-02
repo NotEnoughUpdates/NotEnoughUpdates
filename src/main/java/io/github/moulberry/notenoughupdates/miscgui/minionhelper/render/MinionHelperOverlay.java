@@ -44,6 +44,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -54,6 +55,9 @@ public class MinionHelperOverlay {
 
 	private LinkedHashMap<String, OverviewLine> cacheRenderMap = null;
 	private boolean showOnlyAvailable = true;
+
+	private int maxPerPage = 8;
+	private int currentPage = 0;
 
 	public MinionHelperOverlay(MinionHelperManager manager) {
 		this.manager = manager;
@@ -135,6 +139,7 @@ public class MinionHelperOverlay {
 		int a = guiLeft + xSize + 4;
 		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 
+		int index = 0;
 		int extra = 0;
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
@@ -148,6 +153,9 @@ public class MinionHelperOverlay {
 			}
 			fontRendererObj.drawString(prefix + line, a + 6, guiTop + 6 + extra, -1, false);
 			extra += 10;
+			if (extra == maxPerPage + 2) extra = 15;
+			index++;
+			if (index == renderMap.values().size() - 2) extra = maxPerPage * 10 + 20;
 		}
 	}
 
@@ -156,54 +164,100 @@ public class MinionHelperOverlay {
 
 		Map<Minion, Long> prices = getMissing();
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
+
 		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
+
+		int pageNr = currentPage + 1;
+		int totalPages = getTotalPages(prices);
+
+		String pagePrefix = "(" + pageNr + "/" + totalPages + ") ";
+
 		if (prices.isEmpty()) {
 			renderMap.put(
-				"all minions collected!",
-				new OverviewText(Arrays.asList("No minions to craft avaliable!", toggleText), this::toggleShowAvailable)
+				pagePrefix + "all minions collected!",
+				new OverviewText(
+					Arrays.asList("No minions to craft avaliable!", toggleText),
+					this::toggleShowAvailable
+				)
 			);
 		} else {
 			renderMap.put(
-				"To craft: " + prices.size(),
+				pagePrefix + "To craft: " + prices.size(),
 				new OverviewText(
 					Arrays.asList("You can craft " + prices.size() + " more minions!", toggleText),
 					this::toggleShowAvailable
 				)
 			);
+
+			int skipPreviousPages = currentPage * maxPerPage;
 			int i = 0;
-
-			//TODO change
-			int max = 9;
-
 			Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
 			for (Minion minion : sort.keySet()) {
-				String displayName = minion.getDisplayName();
-				if (displayName == null) {
-					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-						Utils.addChatMessage("§cDisplayname is null for " + minion.getInternalName());
+				if (i >= skipPreviousPages) {
+					String displayName = minion.getDisplayName();
+					if (displayName == null) {
+						if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+							Utils.addChatMessage("§cDisplayname is null for " + minion.getInternalName());
+						}
+						continue;
 					}
-					continue;
+
+					displayName = displayName.replace(" Minion", "");
+					String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
+					String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
+					renderMap.put(
+						requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,
+						minion
+					);
 				}
 
-				displayName = displayName.replace(" Minion", "");
-				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
-				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
-				renderMap.put(
-					requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,
-					minion
-				);
-
 				i++;
-				if (i == max) break;
+				if (i == ((currentPage + 1) * maxPerPage)) break;
 			}
+		}
+
+		if (totalPages != currentPage + 1) {
+			renderMap.put("   §eNext Page ->", new OverviewText(Collections.singletonList("§eClick to show page " + (currentPage + 2)), () -> {
+				if (totalPages == currentPage + 1) return;
+				currentPage++;
+				resetCache();
+			}));
+		} else {
+			renderMap.put("   §7Next Page ->", new OverviewText(Collections.singletonList("§7There is no next page"), () -> {
+			}));
+		}
+		if (currentPage != 0) {
+			renderMap.put(
+				"§e<- Previous Page",
+				new OverviewText(Collections.singletonList("§eClick to show page " + currentPage), () -> {
+					if (currentPage == 0) return;
+					currentPage--;
+					resetCache();
+				})
+			);
+		} else {
+			renderMap.put(
+				"§7<- Previous Page",
+				new OverviewText(Collections.singletonList("§7There is no previous page"), () -> {
+				})
+			);
 		}
 
 		cacheRenderMap = renderMap;
 		return renderMap;
 	}
 
+	private int getTotalPages(Map<Minion, Long> prices) {
+		int totalPages = (int) ((double) prices.size() / maxPerPage);
+		if (prices.size() % maxPerPage != 0) {
+			totalPages++;
+		}
+		return totalPages;
+	}
+
 	private void toggleShowAvailable() {
 		showOnlyAvailable = !showOnlyAvailable;
+		currentPage = 0;
 		resetCache();
 	}
 
@@ -225,15 +279,28 @@ public class MinionHelperOverlay {
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
 		int index = 0;
+		int extra = 0;
 		for (OverviewLine overviewLine : renderMap.values()) {
 
 			if (mouseX > x && mouseX < x + 130 &&
-				mouseY > y + index && mouseY < y + 13 + index) {
+				mouseY > y + extra && mouseY < y + 13 + extra) {
 				return overviewLine;
 			}
-			index += 10;
+			extra += 10;
+			if (extra == maxPerPage + 2) extra = 15;
+			index++;
+			if (index == renderMap.values().size() - 2) extra = maxPerPage * 10 + 20;
 		}
 
 		return null;
+	}
+
+	public void onProfileSwitch() {
+		currentPage = 0;
+		showOnlyAvailable = true;
+	}
+
+	public void setMaxPerPage(int maxPerPage) {
+		this.maxPerPage = maxPerPage;
 	}
 }

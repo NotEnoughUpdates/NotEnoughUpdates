@@ -135,6 +135,7 @@ public class MinionHelperManager {
 		}
 
 		api.onProfileSwitch();
+		overlay.onProfileSwitch();
 	}
 
 	public void reloadData() {
@@ -172,6 +173,13 @@ public class MinionHelperManager {
 				Utils.addChatMessage("api data cleared");
 				return;
 			}
+			if (parameter.equals("maxperpage")) {
+				api.resetData();
+				int maxPerPage = Integer.parseInt(args[1]);
+				Utils.addChatMessage("set max per page to " + maxPerPage);
+				overlay.setMaxPerPage(maxPerPage);
+				return;
+			}
 		}
 
 		Utils.addChatMessage("");
@@ -180,6 +188,7 @@ public class MinionHelperManager {
 		Utils.addChatMessage("§6/neudevtest minion reloadrepo §7Manually loading the data from repo");
 		Utils.addChatMessage("§6/neudevtest minion reloadapi §7Manually loading the data from api");
 		Utils.addChatMessage("§6/neudevtest minion clearapi §7Clears the api data");
+		Utils.addChatMessage("§6/neudevtest minion maxperpage <number> §7Changes the max minions per page number");
 		Utils.addChatMessage("");
 	}
 
