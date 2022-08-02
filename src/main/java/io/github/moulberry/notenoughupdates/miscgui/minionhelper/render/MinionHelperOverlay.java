@@ -164,64 +164,23 @@ public class MinionHelperOverlay {
 
 		Map<Minion, Long> prices = getMissing();
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
-
-		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
-
-		int pageNr = currentPage + 1;
 		int totalPages = getTotalPages(prices);
 
-		String pagePrefix = "(" + pageNr + "/" + totalPages + ") ";
+		addTitle(prices, renderMap, totalPages);
 
-		if (prices.isEmpty()) {
-			renderMap.put(
-				pagePrefix + "all minions collected!",
-				new OverviewText(
-					Arrays.asList("No minions to craft avaliable!", toggleText),
-					this::toggleShowAvailable
-				)
-			);
-		} else {
-			renderMap.put(
-				pagePrefix + "To craft: " + prices.size(),
-				new OverviewText(
-					Arrays.asList("You can craft " + prices.size() + " more minions!", toggleText),
-					this::toggleShowAvailable
-				)
-			);
-
-			int skipPreviousPages = currentPage * maxPerPage;
-			int i = 0;
-			Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
-			for (Minion minion : sort.keySet()) {
-				if (i >= skipPreviousPages) {
-					String displayName = minion.getDisplayName();
-					if (displayName == null) {
-						if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-							Utils.addChatMessage("§cDisplayname is null for " + minion.getInternalName());
-						}
-						continue;
-					}
-
-					displayName = displayName.replace(" Minion", "");
-					String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
-					String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
-					renderMap.put(
-						requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,
-						minion
-					);
-				}
-
-				i++;
-				if (i == ((currentPage + 1) * maxPerPage)) break;
-			}
+		if (!prices.isEmpty()) {
+			addMinions(prices, renderMap);
 		}
 
 		if (totalPages != currentPage + 1) {
-			renderMap.put("   §eNext Page ->", new OverviewText(Collections.singletonList("§eClick to show page " + (currentPage + 2)), () -> {
-				if (totalPages == currentPage + 1) return;
-				currentPage++;
-				resetCache();
-			}));
+			renderMap.put(
+				"   §eNext Page ->",
+				new OverviewText(Collections.singletonList("§eClick to show page " + (currentPage + 2)), () -> {
+					if (totalPages == currentPage + 1) return;
+					currentPage++;
+					resetCache();
+				})
+			);
 		} else {
 			renderMap.put("   §7Next Page ->", new OverviewText(Collections.singletonList("§7There is no next page"), () -> {
 			}));
@@ -245,6 +204,53 @@ public class MinionHelperOverlay {
 
 		cacheRenderMap = renderMap;
 		return renderMap;
+	}
+
+	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap, int totalPages) {
+		String name;
+		String hoverText;
+		String pagePrefix = "(" + (currentPage + 1) + "/" + totalPages + ") ";
+		if (prices.isEmpty()) {
+			name = pagePrefix + (showOnlyAvailable ? "No minion obtainable!" : "§aAll minions collected!");
+			hoverText = "No minions to craft avaliable!";
+		} else {
+			name = pagePrefix + (showOnlyAvailable ? "Obtainable" : "All") + ": " + prices.size();
+			if (showOnlyAvailable) {
+			hoverText = "There are " + prices.size() + " more minions in total!";
+			} else {
+			hoverText = "You can craft " + prices.size() + " more minions!";
+			}
+		}
+		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
+		renderMap.put(name, new OverviewText(Arrays.asList(hoverText, "", toggleText), this::toggleShowAvailable));
+	}
+
+	private void addMinions(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
+		int skipPreviousPages = currentPage * maxPerPage;
+		int i = 0;
+		Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
+		for (Minion minion : sort.keySet()) {
+			if (i >= skipPreviousPages) {
+				String displayName = minion.getDisplayName();
+				if (displayName == null) {
+					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+						Utils.addChatMessage("§cDisplayname is null for " + minion.getInternalName());
+					}
+					continue;
+				}
+
+				displayName = displayName.replace(" Minion", "");
+				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
+				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
+				renderMap.put(
+					requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,
+					minion
+				);
+			}
+
+			i++;
+			if (i == ((currentPage + 1) * maxPerPage)) break;
+		}
 	}
 
 	private int getTotalPages(Map<Minion, Long> prices) {
