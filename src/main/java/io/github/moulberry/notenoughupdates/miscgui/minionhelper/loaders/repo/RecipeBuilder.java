@@ -55,13 +55,16 @@ public class RecipeBuilder {
 				"_"
 			));
 			if (same) {
-				parent = manager.getMinionById(itemName);
-				if (parent == null) {
-					if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-						Utils.addChatMessage("Parent is null for minion " + minionInternalName);
+				Minion recipeMinion = manager.getMinionById(itemName);
+				if (recipeMinion.getTier() == minion.getTier() - 1) {
+					parent = recipeMinion;
+					if (parent == null) {
+						if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+							Utils.addChatMessage("Parent is null for minion " + minionInternalName);
+						}
 					}
+					isParent = true;
 				}
-				isParent = true;
 			}
 		}
 		if (!isParent) {
