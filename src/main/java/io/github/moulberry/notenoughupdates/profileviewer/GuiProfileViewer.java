@@ -4941,58 +4941,62 @@ public class GuiProfileViewer extends GuiScreen {
 			);
 		}
 
-		if (skillInfo != null) {
-			if(Constants.WEIGHT == null) {
-				Utils.showOutdatedRepoNotification();
-				return;
+		renderWeight(mouseX, mouseY, skillInfo, profileInfo);
+	}
+
+	private void renderWeight(int mouseX, int mouseY, JsonObject skillInfo, JsonObject profileInfo) {
+		if (skillInfo == null) {
+			return;
+		}
+
+		if(Constants.WEIGHT == null) {
+			Utils.showOutdatedRepoNotification();
+			return;
+		}
+
+		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+
+		SenitherWeight senitherWeight = new SenitherWeight(skillInfo);
+		LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
+
+		Utils.drawStringCentered(
+			EnumChatFormatting.GREEN + "Senither Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
+			fr,
+			guiLeft + 63,
+			guiTop + 18,
+			true,
+			0
+		);
+
+		int textWidth = fontRendererObj.getStringWidth("Senither Weight: " + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())));
+		if (mouseX > guiLeft + 63 - textWidth / 2 &&
+			mouseX < guiLeft + 63 + textWidth / 2) {
+			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fontRendererObj.FONT_HEIGHT) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Skills: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getSkillsWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Slayer: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getSlayerWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Dungeons: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())));
 			}
+		}
 
-			SenitherWeight senitherWeight = new SenitherWeight(skillInfo);
-			LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
+		Utils.drawStringCentered(
+			EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
+			fr,
+			guiLeft + 63,
+			guiTop + 28,
+			true,
+			0
+		);
 
-			Utils.drawStringCentered(
-				EnumChatFormatting.GREEN + "Senither Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
-				fr,
-				guiLeft + 63,
-				guiTop + 18,
-				true,
-				0
-			);
-
-			try {
-				int textWidth = fontRendererObj.getStringWidth("Senither Weight: " + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())));
-				if (mouseX > guiLeft + 63 - textWidth / 2 &&
-					mouseX < guiLeft + 63 + textWidth / 2) {
-					if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fontRendererObj.FONT_HEIGHT) {
-						tooltipToDisplay = new ArrayList<>();
-						tooltipToDisplay.add(EnumChatFormatting.GREEN + "Skills: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getSkillsWeight().getWeightStruct().getRaw())));
-						tooltipToDisplay.add(EnumChatFormatting.GREEN + "Slayer: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getSlayerWeight().getWeightStruct().getRaw())));
-						tooltipToDisplay.add(EnumChatFormatting.GREEN + "Dungeons: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())));
-					}
-				}
-			} catch (Exception ignored) {}
-
-			Utils.drawStringCentered(
-				EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
-				fr,
-				guiLeft + 63,
-				guiTop + 28,
-				true,
-				0
-			);
-
-			try {
-				int fontWidth = fontRendererObj.getStringWidth("Lily Weight: " + numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())));
-				if (mouseX > guiLeft + 63 - fontWidth / 2 &&
-					mouseX < guiLeft + 63 + fontWidth / 2) {
-					if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fontRendererObj.FONT_HEIGHT) {
-						tooltipToDisplay = new ArrayList<>();
-						tooltipToDisplay.add(EnumChatFormatting.GREEN + "Skills: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getSkillsWeight().getWeightStruct().getRaw())));
-						tooltipToDisplay.add(EnumChatFormatting.GREEN + "Slayer: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getSlayerWeight().getWeightStruct().getRaw())));
-						tooltipToDisplay.add(EnumChatFormatting.GREEN + "Dungeons: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getDungeonsWeight().getWeightStruct().getRaw())));
-					}
-				}
-			} catch (Exception ignored) {}
+		int fontWidth = fontRendererObj.getStringWidth("Lily Weight: " + numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())));
+		if (mouseX > guiLeft + 63 - fontWidth / 2 &&
+			mouseX < guiLeft + 63 + fontWidth / 2) {
+			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fontRendererObj.FONT_HEIGHT) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Skills: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getSkillsWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Slayer: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getSlayerWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Dungeons: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getDungeonsWeight().getWeightStruct().getRaw())));
+			}
 		}
 	}
 

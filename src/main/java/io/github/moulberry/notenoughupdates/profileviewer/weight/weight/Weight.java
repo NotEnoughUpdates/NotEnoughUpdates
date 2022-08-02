@@ -48,11 +48,7 @@ public abstract class Weight {
 	}
 
 	public WeightStruct getTotalWeight() {
-		WeightStruct w = new WeightStruct();
-		w.add(slayerWeight.getWeightStruct());
-		w.add(skillsWeight.getWeightStruct());
-		w.add(dungeonsWeight.getWeightStruct());
-		return w;
+		return new WeightStruct().add(slayerWeight.getWeightStruct()).add(skillsWeight.getWeightStruct()).add(dungeonsWeight.getWeightStruct());
 	}
 
 	public SlayerWeight getSlayerWeight() {

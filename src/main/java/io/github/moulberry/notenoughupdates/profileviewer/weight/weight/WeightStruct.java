@@ -37,13 +37,10 @@ public class WeightStruct {
 		this.overflow = overflow;
 	}
 
-	/**
-	 * @return The weight struct being added, not this
-	 **/
 	public WeightStruct add(WeightStruct o) {
 		this.base += o.base;
 		this.overflow += o.overflow;
-		return o;
+		return this;
 	}
 
 	public double getRaw() {

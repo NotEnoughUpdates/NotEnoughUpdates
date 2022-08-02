@@ -452,7 +452,6 @@ public class ProfileViewer {
 		public float maxXpForLevel = 0;
 		public boolean maxed = false;
 		public double totalXp;
-		public int maxLevel = 50;
 	}
 
 	public class Profile {

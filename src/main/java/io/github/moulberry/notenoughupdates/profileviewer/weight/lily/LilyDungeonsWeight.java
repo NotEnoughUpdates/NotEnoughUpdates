@@ -76,7 +76,6 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 		double upperBound = 1500;
 		if (cataMode.equals("normal")) {
 			if (Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions") == null) {
-				new WeightStruct();
 				return;
 			}
 
@@ -102,7 +101,6 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 			JsonObject dungeonsCompletionBuffs = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs").getAsJsonObject();
 
 			if (Utils.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions") == null) {
-				new WeightStruct();
 				return;
 			}
 
