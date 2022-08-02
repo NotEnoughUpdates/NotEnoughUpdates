@@ -22,8 +22,8 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 import com.google.common.collect.ArrayListMultimap;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableObject;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableText;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewText;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
@@ -53,7 +53,7 @@ public class MinionHelperOverlayHover {
 		this.manager = manager;
 	}
 
-	void renderHover(LinkedHashMap<String, RenderableObject> renderMap) {
+	void renderHover(LinkedHashMap<String, OverviewLine> renderMap) {
 		lastHovered = null;
 
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
@@ -64,7 +64,7 @@ public class MinionHelperOverlayHover {
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-		RenderableObject mouseObject = overlay.getObjectOverMouse(renderMap);
+		OverviewLine mouseObject = overlay.getObjectOverMouse(renderMap);
 		if (mouseObject != null) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
@@ -78,15 +78,15 @@ public class MinionHelperOverlayHover {
 		}
 	}
 
-	private List<String> getTooltip(RenderableObject renderableObject) {
+	private List<String> getTooltip(OverviewLine overviewLine) {
 		List<String> lines = new ArrayList<>();
 
-		if (renderableObject instanceof RenderableText) {
-			RenderableText renderableText = (RenderableText) renderableObject;
-			lines.addAll(renderableText.getLines());
-		} else if (renderableObject instanceof Minion) {
+		if (overviewLine instanceof OverviewText) {
+			OverviewText overviewText = (OverviewText) overviewLine;
+			lines.addAll(overviewText.getLines());
+		} else if (overviewLine instanceof Minion) {
 
-			Minion minion = (Minion) renderableObject;
+			Minion minion = (Minion) overviewLine;
 			MinionSource minionSource = minion.getMinionSource();
 			lastHovered = minion;
 			String displayName = minion.getDisplayName();

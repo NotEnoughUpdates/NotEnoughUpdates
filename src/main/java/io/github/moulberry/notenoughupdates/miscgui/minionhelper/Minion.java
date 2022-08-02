@@ -19,14 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableObject;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Minion extends RenderableObject {
+public class Minion extends OverviewLine {
 	private final String internalName;
 	private final int tier;
 	private String displayName;
@@ -92,5 +93,10 @@ public class Minion extends RenderableObject {
 
 	public void setMeetRequirements(boolean meetRequirements) {
 		this.meetRequirements = meetRequirements;
+	}
+
+	@Override
+	public void onClick() {
+		NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
 	}
 }

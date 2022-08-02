@@ -19,22 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables;
 
-import java.util.Arrays;
-import java.util.List;
+public abstract class OverviewLine {
 
-public class RenderableText extends RenderableObject {
-
-	private final List<String> lines;
-
-	public RenderableText(List<String> lines) {
-		this.lines = lines;
-	}
-
-	public RenderableText(String... lines) {
-		this(Arrays.asList(lines));
-	}
-
-	public List<String> getLines() {
-		return lines;
-	}
+	public abstract void onClick();
 }

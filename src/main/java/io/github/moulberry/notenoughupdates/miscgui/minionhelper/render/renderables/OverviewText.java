@@ -19,5 +19,24 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables;
 
-public abstract class RenderableObject {
+import java.util.List;
+
+public class OverviewText extends OverviewLine {
+
+	private final Runnable clickRunnable;
+	private final List<String> lines;
+
+	public OverviewText(List<String> line, Runnable clickRunnable) {
+		this.lines = line;
+		this.clickRunnable = clickRunnable;
+	}
+
+	public List<String> getLines() {
+		return lines;
+	}
+
+	@Override
+	public void onClick() {
+		clickRunnable.run();
+	}
 }

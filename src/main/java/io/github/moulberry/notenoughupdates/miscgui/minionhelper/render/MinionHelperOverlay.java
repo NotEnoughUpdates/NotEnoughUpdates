@@ -24,9 +24,8 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableObject;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.RenderableText;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewText;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -45,6 +44,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,8 +53,8 @@ public class MinionHelperOverlay {
 	private final MinionHelperManager manager;
 	private final MinionHelperOverlayHover hover;
 
-	private LinkedHashMap<String, RenderableObject> cacheRenderMapShift = null;
-	private LinkedHashMap<String, RenderableObject> cacheRenderMapNoShift = null;
+	private LinkedHashMap<String, OverviewLine> cacheRenderMapShift = null;
+	private LinkedHashMap<String, OverviewLine> cacheRenderMapNoShift = null;
 
 	public MinionHelperOverlay(MinionHelperManager manager) {
 		this.manager = manager;
@@ -90,7 +90,7 @@ public class MinionHelperOverlay {
 			manager.getApi().setNotifyNoCollectionApi(false);
 		}
 
-		LinkedHashMap<String, RenderableObject> renderMap = getRenderMap();
+		LinkedHashMap<String, OverviewLine> renderMap = getRenderMap();
 
 		hover.renderHover(renderMap);
 		render(event, renderMap);
@@ -102,15 +102,10 @@ public class MinionHelperOverlay {
 		if (!manager.isReadyToUse()) return;
 		if (!Mouse.getEventButtonState()) return;
 
-		RenderableObject mouseObject = getObjectOverMouse(getRenderMap());
-
-		if (mouseObject != null) {
-			if (mouseObject instanceof Minion) {
-
-				event.setCanceled(true);
-				Minion minion = ((Minion) mouseObject);
-				NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(minion.getInternalName());
-			}
+		OverviewLine overviewLine = getObjectOverMouse(getRenderMap());
+		if (overviewLine != null) {
+			overviewLine.onClick();
+			event.setCanceled(true);
 		}
 	}
 
@@ -127,7 +122,7 @@ public class MinionHelperOverlay {
 		return prices;
 	}
 
-	private void render(GuiScreenEvent.BackgroundDrawnEvent event, Map<String, RenderableObject> renderMap) {
+	private void render(GuiScreenEvent.BackgroundDrawnEvent event, Map<String, OverviewLine> renderMap) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
 		Gui gui = event.gui;
@@ -143,12 +138,12 @@ public class MinionHelperOverlay {
 		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 
 		int extra = 0;
-		for (Map.Entry<String, RenderableObject> entry : renderMap.entrySet()) {
+		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
-			RenderableObject renderableObject = entry.getValue();
+			OverviewLine overviewLine = entry.getValue();
 			String prefix = "";
-			if (renderableObject instanceof Minion) {
-				Minion minion = (Minion) renderableObject;
+			if (overviewLine instanceof Minion) {
+				Minion minion = (Minion) overviewLine;
 				if (minion == hover.getLastHovered()) {
 					prefix = "§e";
 				}
@@ -158,7 +153,7 @@ public class MinionHelperOverlay {
 		}
 	}
 
-	private LinkedHashMap<String, RenderableObject> getRenderMap() {
+	private LinkedHashMap<String, OverviewLine> getRenderMap() {
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (!shift) {
 			if (cacheRenderMapNoShift != null) return cacheRenderMapNoShift;
@@ -167,19 +162,25 @@ public class MinionHelperOverlay {
 		}
 		Map<Minion, Long> prices = getMissing(shift);
 
-		LinkedHashMap<String, RenderableObject> renderMap = new LinkedHashMap<>();
+		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
 		if (prices.isEmpty()) {
-			renderMap.put("all minions collected!", new RenderableText("You have all the minions available collected! :)"));
+			renderMap.put("all minions collected!", new OverviewText(Arrays.asList("No minions to craft avaliable!"), () -> {
+				//TODO formatting
+				Utils.addChatMessage("you can't craft anything rn!");
+
+			}));
 		} else {
 			renderMap.put(
 				"To craft: " + prices.size(),
-				//TODO formulierung
-				new RenderableText("you can craft that many more minions!")
+				//TODO formatting
+				new OverviewText(Arrays.asList("You can craft " + prices.size() + " more minions!"), () -> {
+					Utils.addChatMessage("craft them now!");
+				})
 			);
 			int i = 0;
 
 			//TODO change
-			int max = 20;
+			int max = 9;
 
 			Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
 			for (Minion minion : sort.keySet()) {
@@ -213,7 +214,7 @@ public class MinionHelperOverlay {
 		return renderMap;
 	}
 
-	RenderableObject getObjectOverMouse(LinkedHashMap<String, RenderableObject> renderMap) {
+	OverviewLine getObjectOverMouse(LinkedHashMap<String, OverviewLine> renderMap) {
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 		if (!(gui instanceof GuiChest)) return null;
 
@@ -231,11 +232,11 @@ public class MinionHelperOverlay {
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
 		int index = 0;
-		for (RenderableObject renderableObject : renderMap.values()) {
+		for (OverviewLine overviewLine : renderMap.values()) {
 
 			if (mouseX > x && mouseX < x + 130 &&
 				mouseY > y + index && mouseY < y + 13 + index) {
-				return renderableObject;
+				return overviewLine;
 			}
 			index += 10;
 		}
