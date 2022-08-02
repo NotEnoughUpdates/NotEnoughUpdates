@@ -4625,9 +4625,8 @@ public class GuiProfileViewer extends GuiScreen {
 					.get("avg_buy")
 					.getAsDouble());
 				String networthIRLMoney = Long.toString(Math.round(((networthInCookies * 325) / 675) * 4.99));
-				int textWidth = fontRendererObj.getStringWidth("Net Worth: " + numberFormat.format(networth));
-				if (mouseX > guiLeft + 63 - textWidth / 2 &&
-					mouseX < guiLeft + 63 + textWidth / 2) {
+				if (mouseX > guiLeft + 8 &&
+					mouseX < guiLeft + 8 + fontRendererObj.getStringWidth("Net Worth: " + numberFormat.format(networth))) {
 					if (mouseY > guiTop + 32 && mouseY < guiTop + 32 + fontRendererObj.FONT_HEIGHT) {
 						tooltipToDisplay = new ArrayList<>();
 						tooltipToDisplay.add(
