@@ -40,7 +40,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -53,8 +52,8 @@ public class MinionHelperOverlay {
 	private final MinionHelperManager manager;
 	private final MinionHelperOverlayHover hover;
 
-	private LinkedHashMap<String, OverviewLine> cacheRenderMapShift = null;
-	private LinkedHashMap<String, OverviewLine> cacheRenderMapNoShift = null;
+	private LinkedHashMap<String, OverviewLine> cacheRenderMap = null;
+	private boolean showOnlyAvailable = true;
 
 	public MinionHelperOverlay(MinionHelperManager manager) {
 		this.manager = manager;
@@ -67,8 +66,7 @@ public class MinionHelperOverlay {
 	}
 
 	public void resetCache() {
-		cacheRenderMapShift = null;
-		cacheRenderMapNoShift = null;
+		cacheRenderMap = null;
 	}
 
 	//TODO use different texture
@@ -109,11 +107,11 @@ public class MinionHelperOverlay {
 		}
 	}
 
-	private Map<Minion, Long> getMissing(boolean shift) {
+	private Map<Minion, Long> getMissing() {
 		Map<Minion, Long> prices = new HashMap<>();
 		for (Minion minion : manager.getAllMinions().values()) {
 
-			if (!minion.doesMeetRequirements() && !shift) continue;
+			if (!minion.doesMeetRequirements() && showOnlyAvailable) continue;
 			if (!minion.isCrafted()) {
 				long price = manager.getPriceCalculation().calculateUpgradeCosts(minion, true);
 				prices.put(minion, price);
@@ -154,28 +152,23 @@ public class MinionHelperOverlay {
 	}
 
 	private LinkedHashMap<String, OverviewLine> getRenderMap() {
-		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		if (!shift) {
-			if (cacheRenderMapNoShift != null) return cacheRenderMapNoShift;
-		} else {
-			if (cacheRenderMapShift != null) return cacheRenderMapShift;
-		}
-		Map<Minion, Long> prices = getMissing(shift);
+		if (cacheRenderMap != null) return cacheRenderMap;
 
+		Map<Minion, Long> prices = getMissing();
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
+		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
 		if (prices.isEmpty()) {
-			renderMap.put("all minions collected!", new OverviewText(Arrays.asList("No minions to craft avaliable!"), () -> {
-				//TODO formatting
-				Utils.addChatMessage("you can't craft anything rn!");
-
-			}));
+			renderMap.put(
+				"all minions collected!",
+				new OverviewText(Arrays.asList("No minions to craft avaliable!", toggleText), this::toggleShowAvailable)
+			);
 		} else {
 			renderMap.put(
 				"To craft: " + prices.size(),
-				//TODO formatting
-				new OverviewText(Arrays.asList("You can craft " + prices.size() + " more minions!"), () -> {
-					Utils.addChatMessage("craft them now!");
-				})
+				new OverviewText(
+					Arrays.asList("You can craft " + prices.size() + " more minions!", toggleText),
+					this::toggleShowAvailable
+				)
 			);
 			int i = 0;
 
@@ -205,13 +198,13 @@ public class MinionHelperOverlay {
 			}
 		}
 
-		if (shift) {
-			cacheRenderMapShift = renderMap;
-		} else {
-			cacheRenderMapNoShift = renderMap;
-		}
-
+		cacheRenderMap = renderMap;
 		return renderMap;
+	}
+
+	private void toggleShowAvailable() {
+		showOnlyAvailable = !showOnlyAvailable;
+		resetCache();
 	}
 
 	OverviewLine getObjectOverMouse(LinkedHashMap<String, OverviewLine> renderMap) {
