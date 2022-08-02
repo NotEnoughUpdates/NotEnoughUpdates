@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -26,8 +27,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWe
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-
-import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
 
 public class LilySkillsWeight extends SkillsWeight {
 
@@ -39,27 +38,53 @@ public class LilySkillsWeight extends SkillsWeight {
 	public void getSkillsWeight(String skillName) {
 		double skillAverage = 0;
 		for (String skill : SKILL_NAMES) {
-			skillAverage += Utils.getElementAsInt(Utils.getElement(player, "level_skill_" + skill), 0);
+			skillAverage +=
+				Utils.getElementAsInt(
+					Utils.getElement(player, "level_skill_" + skill),
+					0
+				);
 		}
 		skillAverage /= SKILL_NAMES.size();
 
-		int currentLevel = Utils.getElementAsInt(Utils.getElement(player, "level_skill_" + skillName), 0);
-		float currentExp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
+		int currentLevel = Utils.getElementAsInt(
+			Utils.getElement(player, "level_skill_" + skillName),
+			0
+		);
+		float currentExp = Utils.getElementAsFloat(
+			Utils.getElement(player, "experience_skill_" + skillName),
+			0
+		);
 
-		JsonArray srwTable = Utils.getElement(Constants.WEIGHT, "lily.skills.ratio_weight." + skillName).getAsJsonArray();
+		JsonArray srwTable = Utils
+			.getElement(Constants.WEIGHT, "lily.skills.ratio_weight." + skillName)
+			.getAsJsonArray();
 		double base =
 			(
 				(12 * Math.pow((skillAverage / 60), 2.44780217148309)) *
 				srwTable.get(currentLevel).getAsDouble() *
 				srwTable.get(srwTable.size() - 1).getAsDouble()
 			) +
-			(srwTable.get(srwTable.size() - 1).getAsDouble() * Math.pow(currentLevel / 60.0, Math.pow(2, 0.5)));
+			(
+				srwTable.get(srwTable.size() - 1).getAsDouble() *
+				Math.pow(currentLevel / 60.0, Math.pow(2, 0.5))
+			);
 		base *= 1.8162162162162162;
 		double overflow = 0;
 		if (currentExp > 111672425) {
-			double factor = Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.factors." + skillName), 0);
+			double factor = Utils.getElementAsFloat(
+				Utils.getElement(Constants.WEIGHT, "lily.skills.factors." + skillName),
+				0
+			);
 			double effectiveOver = effectiveXP(currentExp - 111672425, factor);
-			double t = (effectiveOver / 111672425) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.overflow_multipliers." + skillName), 0);
+			double t =
+				(effectiveOver / 111672425) *
+				Utils.getElementAsFloat(
+					Utils.getElement(
+						Constants.WEIGHT,
+						"lily.skills.overflow_multipliers." + skillName
+					),
+					0
+				);
 			if (t > 0) {
 				overflow += 1.8162162162162162 * t;
 			}

@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
@@ -94,8 +95,12 @@ public class Constants {
 			REFORGESTONES = Utils.getConstant("reforgestones", gson);
 			TROPHYFISH = Utils.getConstant("trophyfish", gson);
 //		WEIGHT = Utils.getConstant("weight", gson); TODO: this
-			try(FileReader reader = new FileReader("src/main/java/io/github/moulberry/notenoughupdates/profileviewer/weight/weight/temp.json")){
-				WEIGHT = new JsonParser().parse(reader).getAsJsonObject();
+			try (
+				InputStreamReader reader = new InputStreamReader(getClass()
+					.getClassLoader()
+					.getResourceAsStream("assets/notenoughupdates/temp.json"))
+			) {
+				WEIGHT = gson.fromJson(reader, JsonObject.class);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();

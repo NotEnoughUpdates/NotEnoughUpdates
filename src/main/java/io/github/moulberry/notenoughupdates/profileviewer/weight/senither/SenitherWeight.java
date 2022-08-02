@@ -25,7 +25,11 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 public class SenitherWeight extends Weight {
 
 	public SenitherWeight(JsonObject player) {
-		super(new SenitherSlayerWeight(player), new SenitherSkillsWeight(player), new SenitherDungeonsWeight(player));
+		super(
+			new SenitherSlayerWeight(player),
+			new SenitherSkillsWeight(player),
+			new SenitherDungeonsWeight(player)
+		);
 	}
 
 	@Override
@@ -44,7 +48,9 @@ public class SenitherWeight extends Weight {
 
 		dungeonsWeight.getDungeonWeight();
 		for (String dungeonClassName : DUNGEON_CLASS_NAMES) {
-			((SenitherDungeonsWeight) dungeonsWeight).getClassWeight(dungeonClassName);
+			((SenitherDungeonsWeight) dungeonsWeight).getClassWeight(
+					dungeonClassName
+				);
 		}
 	}
 }

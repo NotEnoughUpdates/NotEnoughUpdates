@@ -37,14 +37,21 @@ public class SenitherSlayerWeight extends SlayerWeight {
 			return;
 		}
 
-		JsonArray curWeights = Utils.getElement(Constants.WEIGHT, "senither.slayer." + slayerName).getAsJsonArray();
+		JsonArray curWeights = Utils
+			.getElement(Constants.WEIGHT, "senither.slayer." + slayerName)
+			.getAsJsonArray();
 		double divider = curWeights.get(0).getAsDouble();
-		double modifier =  curWeights.get(1).getAsDouble();
+		double modifier = curWeights.get(1).getAsDouble();
 
-		int currentSlayerXp = Utils.getElementAsInt(Utils.getElement(player, "experience_slayer_" + slayerName), 0);
+		int currentSlayerXp = Utils.getElementAsInt(
+			Utils.getElement(player, "experience_slayer_" + slayerName),
+			0
+		);
 
 		if (currentSlayerXp <= 1000000) {
-			weightStruct.add(new WeightStruct(currentSlayerXp == 0 ? 0 : currentSlayerXp / divider));
+			weightStruct.add(
+				new WeightStruct(currentSlayerXp == 0 ? 0 : currentSlayerXp / divider)
+			);
 			return;
 		}
 

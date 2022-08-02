@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
-
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SlayerWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
@@ -33,7 +32,10 @@ public class LilySlayerWeight extends SlayerWeight {
 	}
 
 	public void getSlayerWeight(String slayerName) {
-		int currentSlayerXp = Utils.getElementAsInt(Utils.getElement(player, "experience_slayer_" + slayerName), 0);
+		int currentSlayerXp = Utils.getElementAsInt(
+			Utils.getElement(player, "experience_slayer_" + slayerName),
+			0
+		);
 
 		double score;
 		double d = currentSlayerXp / 100000.0;
@@ -43,30 +45,44 @@ public class LilySlayerWeight extends SlayerWeight {
 			double v = Math.cbrt(3 * (d - Math.sqrt(D)));
 			score = u + v - 1;
 		} else {
-			score = Math.sqrt(4.0 / 3) * Math.cos(Math.acos(d * Math.pow(3, 5.0 / 2)) / 3) - 1;
+			score =
+				Math.sqrt(4.0 / 3) *
+				Math.cos(Math.acos(d * Math.pow(3, 5.0 / 2)) / 3) -
+				1;
 		}
 
-		double scaleFactor = Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.slayer.deprecation_scaling." + slayerName), 0);
+		double scaleFactor = Utils.getElementAsFloat(
+			Utils.getElement(
+				Constants.WEIGHT,
+				"lily.slayer.deprecation_scaling." + slayerName
+			),
+			0
+		);
 		int intScore = (int) score;
 		double distance = currentSlayerXp - actualInt(intScore);
 		double effectiveDistance = distance * Math.pow(scaleFactor, intScore);
-		double effectiveScore = effectiveInt(intScore, scaleFactor) + effectiveDistance;
+		double effectiveScore =
+			effectiveInt(intScore, scaleFactor) + effectiveDistance;
 		double weight;
 		switch (slayerName) {
 			case "rev":
 				weight = (effectiveScore / 8390.64) + (currentSlayerXp / 1000000.0);
 				break;
 			case "tara":
-				weight = (effectiveScore / 7019.57) + ((currentSlayerXp * 1.6) / 1000000);
+				weight =
+					(effectiveScore / 7019.57) + ((currentSlayerXp * 1.6) / 1000000);
 				break;
 			case "sven":
-				weight = (effectiveScore / 2982.06) + ((currentSlayerXp * 3.6) / 1000000);
+				weight =
+					(effectiveScore / 2982.06) + ((currentSlayerXp * 3.6) / 1000000);
 				break;
 			case "enderman":
-				weight = (effectiveScore / 1118.81) + ((currentSlayerXp * 10.0) / 1000000);
+				weight =
+					(effectiveScore / 1118.81) + ((currentSlayerXp * 10.0) / 1000000);
 				break;
 			case "blaze":
-				weight = (effectiveScore / 751.281) + ((currentSlayerXp * 15.0) / 1000000);
+				weight =
+					(effectiveScore / 751.281) + ((currentSlayerXp * 15.0) / 1000000);
 				break;
 			default:
 				return;
@@ -76,13 +92,21 @@ public class LilySlayerWeight extends SlayerWeight {
 	}
 
 	private double actualInt(int intScore) {
-		return ((Math.pow(intScore, 3) / 6) + (Math.pow(intScore, 2) / 2) + (intScore / 3.0)) * 100000;
+		return (
+			(
+				(Math.pow(intScore, 3) / 6) +
+				(Math.pow(intScore, 2) / 2) +
+				(intScore / 3.0)
+			) *
+			100000
+		);
 	}
 
 	private double effectiveInt(int intScore, double scaleFactor) {
 		double total = 0;
 		for (int k = 0; k < intScore; k++) {
-			total += (Math.pow((k + 1), 2) + (k + 1)) * Math.pow(scaleFactor, (k + 1));
+			total +=
+				(Math.pow((k + 1), 2) + (k + 1)) * Math.pow(scaleFactor, (k + 1));
 		}
 		return 1000000 * total * (0.05 / scaleFactor);
 	}

@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import com.google.gson.JsonObject;
+
 public abstract class SkillsWeight {
 
 	protected final JsonObject player;

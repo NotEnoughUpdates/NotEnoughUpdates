@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishingPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -4945,13 +4946,23 @@ public class GuiProfileViewer extends GuiScreen {
 				return;
 			}
 
+			SenitherWeight senitherWeight = new SenitherWeight(skillInfo);
 			LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
+
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN + "Senither Weight: " + EnumChatFormatting.GOLD + numberFormat.format(senitherWeight.getTotalWeight().getRaw()),
+				fr,
+				guiLeft + 63,
+				guiTop + 28,
+				true,
+				0
+			);
 
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(lilyWeight.getTotalWeight().getRaw()),
 				fr,
 				guiLeft + 63,
-				guiTop + 28,
+				guiTop + 48,
 				true,
 				0
 			);

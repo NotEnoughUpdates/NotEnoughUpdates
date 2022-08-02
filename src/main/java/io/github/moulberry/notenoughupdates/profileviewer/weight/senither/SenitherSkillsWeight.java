@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -36,17 +35,29 @@ public class SenitherSkillsWeight extends SkillsWeight {
 
 	@Override
 	public void getSkillsWeight(String skillName) {
-		JsonArray curWeights = Utils.getElement(Constants.WEIGHT, "senither.skills." + skillName).getAsJsonArray();
+		JsonArray curWeights = Utils
+			.getElement(Constants.WEIGHT, "senither.skills." + skillName)
+			.getAsJsonArray();
 		double exponent = curWeights.get(0).getAsDouble();
-		double divider =  curWeights.get(1).getAsDouble();
+		double divider = curWeights.get(1).getAsDouble();
 
-		float currentSkillXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
+		float currentSkillXp = Utils.getElementAsFloat(
+			Utils.getElement(player, "experience_skill_" + skillName),
+			0
+		);
 
 		if (currentSkillXp > 0) {
-			int maxLevel = Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps." + skillName), 50);
-			double level = ProfileViewer.getLevel(Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
-				currentSkillXp, maxLevel, false
-			).level;
+			int maxLevel = Utils.getElementAsInt(
+				Utils.getElement(Constants.LEVELING, "leveling_caps." + skillName),
+				50
+			);
+			double level = ProfileViewer.getLevel(
+				Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
+				currentSkillXp,
+				maxLevel,
+				false
+			)
+				.level;
 
 			double maxLevelExp = maxLevel == 50 ? 55172425 : 111672425;
 			double base = Math.pow(level * 10, 0.5 + exponent + (level / 100)) / 1250;
@@ -55,7 +66,12 @@ public class SenitherSkillsWeight extends SkillsWeight {
 				return;
 			}
 
-			weightStruct.add(new WeightStruct(Math.round(base), Math.pow((currentSkillXp - maxLevelExp) / divider, 0.968)));
+			weightStruct.add(
+				new WeightStruct(
+					Math.round(base),
+					Math.pow((currentSkillXp - maxLevelExp) / divider, 0.968)
+				)
+			);
 			return;
 		}
 
