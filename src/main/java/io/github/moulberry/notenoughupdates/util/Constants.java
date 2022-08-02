@@ -26,12 +26,14 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
@@ -91,7 +93,10 @@ public class Constants {
 			FAIRYSOULS = Utils.getConstant("fairy_souls", gson);
 			REFORGESTONES = Utils.getConstant("reforgestones", gson);
 			TROPHYFISH = Utils.getConstant("trophyfish", gson);
-			WEIGHT = Utils.getConstant("weight", gson);
+//		WEIGHT = Utils.getConstant("weight", gson); TODO: this
+			try(FileReader reader = new FileReader("src/main/java/io/github/moulberry/notenoughupdates/profileviewer/weight/weight/temp.json")){
+				WEIGHT = new JsonParser().parse(reader).getAsJsonObject();
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {

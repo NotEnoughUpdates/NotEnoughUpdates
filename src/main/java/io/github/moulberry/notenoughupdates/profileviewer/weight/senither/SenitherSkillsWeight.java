@@ -40,7 +40,7 @@ public class SenitherSkillsWeight extends SkillsWeight {
 		double exponent = curWeights.get(0).getAsDouble();
 		double divider =  curWeights.get(1).getAsDouble();
 
-		float currentSkillXp = Utils.getElementAsFloat(Utils.getElement(Constants.LEVELING, "experience_skill_" + skillName), 0);
+		float currentSkillXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
 
 		if (currentSkillXp > 0) {
 			int maxLevel = Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps." + skillName), 50);

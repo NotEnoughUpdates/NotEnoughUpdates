@@ -25,8 +25,8 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 
 public class LilyWeight extends Weight {
 
-	public LilyWeight(JsonObject player) {
-		super(new LilySlayerWeight(player), new LilySkillsWeight(player), new LilyDungeonsWeight(player));
+	public LilyWeight(JsonObject player, JsonObject profileJson) {
+		super(new LilySlayerWeight(player), new LilySkillsWeight(player), new LilyDungeonsWeight(player, profileJson));
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class LilyWeight extends Weight {
 		}
 
 		dungeonsWeight.getDungeonWeight();
-		dungeonsWeight.getDungeonCompletionWeight("normal");
-		dungeonsWeight.getDungeonCompletionWeight("master");
+		((LilyDungeonsWeight) dungeonsWeight).getDungeonCompletionWeight("normal");
+		((LilyDungeonsWeight) dungeonsWeight).getDungeonCompletionWeight("master");
 	}
 }

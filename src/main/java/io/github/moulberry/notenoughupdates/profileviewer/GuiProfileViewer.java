@@ -4945,7 +4945,7 @@ public class GuiProfileViewer extends GuiScreen {
 				return;
 			}
 
-			LilyWeight lilyWeight = new LilyWeight(skillInfo);
+			LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
 
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(lilyWeight.getTotalWeight().getRaw()),

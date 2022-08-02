@@ -23,6 +23,8 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SlayerWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
+import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
 
 public class LilySlayerWeight extends SlayerWeight {
 
@@ -31,6 +33,8 @@ public class LilySlayerWeight extends SlayerWeight {
 	}
 
 	public void getSlayerWeight(String slayerName) {
+		int currentSlayerXp = Utils.getElementAsInt(Utils.getElement(player, "experience_slayer_" + slayerName), 0);
+
 		double score;
 		double d = currentSlayerXp / 100000.0;
 		if (currentSlayerXp >= 6416) {
@@ -42,7 +46,7 @@ public class LilySlayerWeight extends SlayerWeight {
 			score = Math.sqrt(4.0 / 3) * Math.cos(Math.acos(d * Math.pow(3, 5.0 / 2)) / 3) - 1;
 		}
 
-		double scaleFactor = higherDepth(SLAYER_DEPRECATION_SCALING, slayerName).getAsDouble();
+		double scaleFactor = Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.slayer.deprecation_scaling." + slayerName), 0);
 		int intScore = (int) score;
 		double distance = currentSlayerXp - actualInt(intScore);
 		double effectiveDistance = distance * Math.pow(scaleFactor, intScore);

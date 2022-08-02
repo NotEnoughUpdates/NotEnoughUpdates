@@ -23,19 +23,23 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
+import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
 
 import java.util.Map;
 
 public class LilyDungeonsWeight extends DungeonsWeight {
+	JsonObject profileJson;
 
-	public LilyDungeonsWeight(JsonObject player) {
+	public LilyDungeonsWeight(JsonObject player, JsonObject profileJson) {
 		super(player);
+		this.profileJson = profileJson;
 	}
 
 	@Override
 	public void getDungeonWeight() {
-		double level = catacombs.getProgressLevel();
-		long cataXP = catacombs.totalExp();
+		double level = Utils.getElementAsFloat(Utils.getElement(player, "level_skill_catacombs"), 0);
+		float cataXP = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_catacombs"), 0);
 
 		double extra = 0;
 		double n = 0;
@@ -59,10 +63,11 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 		}
 	}
 
-	public WeightStruct getDungeonCompletionWeight(String cataMode) {
+	public void getDungeonCompletionWeight(String cataMode) {
 		double max1000 = 0;
 		double mMax1000 = 0;
-		for (Map.Entry<String, JsonElement> dcwEntry : DUNGEON_COMPLETION_WORTH.entrySet()) {
+		JsonObject dungeonsCompletionWorth = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth").getAsJsonObject();
+		for (Map.Entry<String, JsonElement> dcwEntry : dungeonsCompletionWorth.entrySet()) {
 			if (dcwEntry.getKey().startsWith("catacombs_")) {
 				max1000 += dcwEntry.getValue().getAsDouble();
 			} else {
@@ -73,13 +78,14 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 		mMax1000 *= 1000;
 		double upperBound = 1500;
 		if (cataMode.equals("normal")) {
-			if (higherDepth(player.profileJson(), "dungeons.dungeon_types.catacombs.tier_completions") == null) {
-				return new WeightStruct();
+			if (Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions") == null) {
+				new WeightStruct();
+				return;
 			}
 
 			double score = 0;
-			for (Map.Entry<String, JsonElement> normalFloor : higherDepth(
-				player.profileJson(),
+			for (Map.Entry<String, JsonElement> normalFloor : Utils.getElement(
+				profileJson,
 				"dungeons.dungeon_types.catacombs.tier_completions"
 			)
 				.getAsJsonObject()
@@ -91,39 +97,42 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 					amount = 1000;
 				}
 
-				double floorScore = amount * DUNGEON_COMPLETION_WORTH.get("catacombs_" + normalFloor.getKey()).getAsDouble();
+				double floorScore = amount * dungeonsCompletionWorth.get("catacombs_" + normalFloor.getKey()).getAsDouble();
 				if (excess > 0) floorScore *= Math.log(excess / 1000 + 1) / Math.log(7.5) + 1;
 				score += floorScore;
 			}
 
-			return weightStruct.add(new WeightStruct(score / max1000 * upperBound * 2));
+			weightStruct.add(new WeightStruct(score / max1000 * upperBound * 2));
 		} else {
-			if (higherDepth(player.profileJson(), "dungeons.dungeon_types.master_catacombs.tier_completions") == null) {
-				return new WeightStruct();
+			JsonObject dungeonsCompletionBuffs = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs").getAsJsonObject();
+
+			if (Utils.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions") == null) {
+				new WeightStruct();
+				return;
 			}
 
-			for (Map.Entry<String, JsonElement> masterFloor : higherDepth(
-				player.profileJson(),
+			for (Map.Entry<String, JsonElement> masterFloor : Utils.getElement(
+				profileJson,
 				"dungeons.dungeon_types.master_catacombs.tier_completions"
 			)
 				.getAsJsonObject()
 				.entrySet()) {
-				if (higherDepth(DUNGEON_COMPLETION_BUFFS, masterFloor.getKey()) != null) {
+				if (dungeonsCompletionBuffs.get(masterFloor.getKey()) != null) {
 					int amount = masterFloor.getValue().getAsInt();
 					double threshold = 20;
 					if (amount >= threshold) {
-						upperBound += higherDepth(DUNGEON_COMPLETION_BUFFS, masterFloor.getKey()).getAsInt();
+						upperBound += dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt();
 					} else {
 						upperBound +=
-							higherDepth(DUNGEON_COMPLETION_BUFFS, masterFloor.getKey()).getAsInt() *
+							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt() *
 							Math.pow((amount / threshold), 1.840896416);
 					}
 				}
 			}
 
 			double masterScore = 0;
-			for (Map.Entry<String, JsonElement> masterFloor : higherDepth(
-				player.profileJson(),
+			for (Map.Entry<String, JsonElement> masterFloor : Utils.getElement(
+				profileJson,
 				"dungeons.dungeon_types.master_catacombs.tier_completions"
 			)
 				.getAsJsonObject()
@@ -135,14 +144,14 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 					amount = 1000;
 				}
 
-				double floorScore = amount * DUNGEON_COMPLETION_WORTH.get("master_catacombs_" + masterFloor.getKey()).getAsDouble();
+				double floorScore = amount * dungeonsCompletionWorth.get("master_catacombs_" + masterFloor.getKey()).getAsDouble();
 				if (excess > 0) {
 					floorScore *= (Math.log((excess / 1000) + 1) / Math.log(6)) + 1;
 				}
 				masterScore += floorScore;
 			}
 
-			return weightStruct.add(new WeightStruct((masterScore / mMax1000) * upperBound * 2));
+			weightStruct.add(new WeightStruct((masterScore / mMax1000) * upperBound * 2));
 		}
 	}
 }

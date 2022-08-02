@@ -33,11 +33,11 @@ public class SenitherDungeonsWeight extends DungeonsWeight {
 	}
 
 	public void getClassWeight(String className) {
-		float currentClassXp = Utils.getElementAsFloat(Utils.getElement(Constants.LEVELING, "experience_skill_" + className), 0);
+		float currentClassXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + className), 0);
 		double currentClassLevel = ProfileViewer.getLevel(Utils.getElement(Constants.LEVELING, "catacombs").getAsJsonArray(),
 			currentClassXp, Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps.catacombs"), 50), false
 		).level;
-		double base = Math.pow(currentClassLevel, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeon_classes." + className), 0);
+		double base = Math.pow(currentClassLevel, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.classes." + className), 0);
 
 		if (currentClassXp <= CATACOMBS_LEVEL_50_XP) {
 			weightStruct.add(new WeightStruct(base));
@@ -51,7 +51,7 @@ public class SenitherDungeonsWeight extends DungeonsWeight {
 
 	@Override
 	public void getDungeonWeight() {
-		float catacombsSkillXp = Utils.getElementAsFloat(Utils.getElement(Constants.LEVELING, "experience_skill_catacombs"), 0);
+		float catacombsSkillXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_catacombs"), 0);
 
 		double level = ProfileViewer.getLevel(Utils.getElement(Constants.LEVELING, "catacombs").getAsJsonArray(),
 			catacombsSkillXp, Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps.catacombs"), 50), false

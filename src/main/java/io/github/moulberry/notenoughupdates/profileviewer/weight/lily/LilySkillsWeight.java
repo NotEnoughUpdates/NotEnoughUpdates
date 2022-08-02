@@ -24,6 +24,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
+import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
+
+import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
 
 public class LilySkillsWeight extends SkillsWeight {
 
@@ -35,29 +39,27 @@ public class LilySkillsWeight extends SkillsWeight {
 	public void getSkillsWeight(String skillName) {
 		double skillAverage = 0;
 		for (String skill : SKILL_NAMES) {
-			try {
-				skillAverage += (skill.equals(skillName) ? skillsStruct : player.getSkill(skill, Player.WeightType.LILY)).currentLevel();
-			} catch (Exception e) {
-				new WeightStruct();
-				return;
-			}
+			skillAverage += Utils.getElementAsInt(Utils.getElement(player, "level_skill_" + skill), 0);
 		}
 		skillAverage /= SKILL_NAMES.size();
 
-		JsonArray srwTable = higherDepth(SKILL_RATIO_WEIGHT, skillName).getAsJsonArray();
+		int currentLevel = Utils.getElementAsInt(Utils.getElement(player, "level_skill_" + skillName), 0);
+		float currentExp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
+
+		JsonArray srwTable = Utils.getElement(Constants.WEIGHT, "lily.skills.ratio_weight." + skillName).getAsJsonArray();
 		double base =
 			(
 				(12 * Math.pow((skillAverage / 60), 2.44780217148309)) *
-				srwTable.get(skillsStruct.currentLevel()).getAsDouble() *
+				srwTable.get(currentLevel).getAsDouble() *
 				srwTable.get(srwTable.size() - 1).getAsDouble()
 			) +
-			(srwTable.get(srwTable.size() - 1).getAsDouble() * Math.pow(skillsStruct.currentLevel() / 60.0, Math.pow(2, 0.5)));
+			(srwTable.get(srwTable.size() - 1).getAsDouble() * Math.pow(currentLevel / 60.0, Math.pow(2, 0.5)));
 		base *= 1.8162162162162162;
 		double overflow = 0;
-		if (skillsStruct.totalExp() > SKILLS_LEVEL_60_XP) {
-			double factor = higherDepth(SKILL_FACTORS, skillName).getAsDouble();
-			double effectiveOver = effectiveXP(skillsStruct.totalExp() - SKILLS_LEVEL_60_XP, factor);
-			double t = (effectiveOver / SKILLS_LEVEL_60_XP) * (higherDepth(SKILL_OVERFLOW_MULTIPLIERS, skillName).getAsDouble());
+		if (currentExp > 111672425) {
+			double factor = Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.factors." + skillName), 0);
+			double effectiveOver = effectiveXP(currentExp - 111672425, factor);
+			double t = (effectiveOver / 111672425) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.overflow_multipliers." + skillName), 0);
 			if (t > 0) {
 				overflow += 1.8162162162162162 * t;
 			}
@@ -67,18 +69,18 @@ public class LilySkillsWeight extends SkillsWeight {
 	}
 
 	private double effectiveXP(double xp, double factor) {
-		if (xp < SKILLS_LEVEL_60_XP) {
+		if (xp < 111672425) {
 			return xp;
 		} else {
 			double remainingXP = xp;
 			double z = 0;
-			for (int i = 0; i <= (int) (xp / SKILLS_LEVEL_60_XP); i++) {
-				if (remainingXP >= SKILLS_LEVEL_60_XP) {
-					remainingXP -= SKILLS_LEVEL_60_XP;
+			for (int i = 0; i <= (int) (xp / 111672425); i++) {
+				if (remainingXP >= 111672425) {
+					remainingXP -= 111672425;
 					z += Math.pow(factor, i);
 				}
 			}
-			return z * SKILLS_LEVEL_60_XP;
+			return z * 111672425;
 		}
 	}
 }
