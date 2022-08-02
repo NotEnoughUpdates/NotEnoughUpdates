@@ -54,9 +54,9 @@ public class AuctionBINWarning extends GuiElement {
 	private boolean showWarning = false;
 	private List<String> sellingTooltip;
 	private String sellingName;
-	private int sellingPrice;
-	private int lowestPrice;
-	private int buyPercentage;
+	private long sellingPrice;
+	private long lowestPrice;
+	private long buyPercentage;
 	private int sellStackAmount;
 	private boolean isALoss = true;
 
@@ -96,7 +96,7 @@ public class AuctionBINWarning extends GuiElement {
 
 				if (priceMatcher.matches()) {
 					try {
-						sellingPrice = Integer.parseInt(priceMatcher.group(1).replace(",", ""));
+						sellingPrice = Long.parseLong(priceMatcher.group(1).replace(",", ""));
 					} catch (NumberFormatException ignored) {
 					}
 				}
