@@ -4948,7 +4948,7 @@ public class GuiProfileViewer extends GuiScreen {
 				return;
 			}
 
-			SenitherWeight senitherWeight = new SenitherWeight(skillInfo, profileInfo);
+			SenitherWeight senitherWeight = new SenitherWeight(skillInfo);
 			LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
 
 			Utils.drawStringCentered(

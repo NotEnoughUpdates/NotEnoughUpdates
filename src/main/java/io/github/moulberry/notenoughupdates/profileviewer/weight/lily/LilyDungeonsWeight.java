@@ -57,8 +57,6 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 			} else {
 				weightStruct.add(new WeightStruct((4100 + extra) * 2));
 			}
-		} else {
-			new WeightStruct();
 		}
 	}
 

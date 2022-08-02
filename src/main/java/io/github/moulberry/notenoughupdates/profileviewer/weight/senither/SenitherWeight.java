@@ -24,8 +24,8 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 
 public class SenitherWeight extends Weight {
 
-	public SenitherWeight(JsonObject player, JsonObject profileJson) {
-		super(new SenitherSlayerWeight(player), new SenitherSkillsWeight(player, profileJson), new SenitherDungeonsWeight(player));
+	public SenitherWeight(JsonObject player) {
+		super(new SenitherSlayerWeight(player), new SenitherSkillsWeight(player), new SenitherDungeonsWeight(player));
 	}
 
 	@Override

@@ -29,11 +29,8 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 
 public class SenitherSkillsWeight extends SkillsWeight {
 
-	private final JsonObject profileJson;
-
-	public SenitherSkillsWeight(JsonObject player, JsonObject profileJson) {
+	public SenitherSkillsWeight(JsonObject player) {
 		super(player);
-		this.profileJson = profileJson;
 	}
 
 	@Override
@@ -64,9 +61,6 @@ public class SenitherSkillsWeight extends SkillsWeight {
 			}
 
 			weightStruct.add(new WeightStruct(Math.round(base), Math.pow((currentSkillXp - maxLevelExp) / divider, 0.968)));
-			return;
 		}
-
-		new WeightStruct();
 	}
 }
