@@ -838,7 +838,7 @@ public class AccessoryBagOverlay {
 
 	private static Comparator<String> getItemComparator() {
 		return (o1, o2) -> {
-			float cost1;
+			double cost1;
 			JsonObject o1Auc = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o1);
 			if (o1Auc != null && o1Auc.has("price")) {
 				cost1 = o1Auc.get("price").getAsFloat();
@@ -849,7 +849,7 @@ public class AccessoryBagOverlay {
 				else
 					cost1 = 0;
 			}
-			float cost2;
+			double cost2;
 			JsonObject o2Auc = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o2);
 			if (o2Auc != null && o2Auc.has("price")) {
 				cost2 = o2Auc.get("price").getAsFloat();

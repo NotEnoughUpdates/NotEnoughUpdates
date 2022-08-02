@@ -101,9 +101,9 @@ public class ItemPriceInformation {
 		}
 		JsonObject auctionInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalname);
 		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname);
-		float lowestBinAvg = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalname);
+		double lowestBinAvg = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalname);
 
-		int lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
+		long lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
 		APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalname);
 		boolean bazaarItem = bazaarInfo != null;
 
@@ -211,7 +211,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							float cost = craftCost.craftCost;
+							double cost = craftCost.craftCost;
 							if (shiftPressed) cost = cost * shiftStackMultiplier;
 
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Raw Craft Cost: " +
