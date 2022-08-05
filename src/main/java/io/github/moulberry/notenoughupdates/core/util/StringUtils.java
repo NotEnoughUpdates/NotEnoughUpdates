@@ -63,5 +63,4 @@ public class StringUtils {
 		str = str.replace(",", "");
 		return Integer.parseInt(str);
 	}
-
 }
