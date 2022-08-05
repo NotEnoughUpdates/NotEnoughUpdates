@@ -378,8 +378,7 @@ public class NEUOverlay extends Gui {
 				}
 
 				//Search bar text
-				fr.drawString(
-					NeuSearchCalculator.format(textField.getText()), (int) x + 5,
+				fr.drawString(NeuSearchCalculator.format(textField.getText()), (int) x + 5,
 					(int) y - 4 + getHeight() / 2, Color.WHITE.getRGB()
 				);
 
