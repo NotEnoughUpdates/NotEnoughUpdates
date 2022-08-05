@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.PageArrowsUtils;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -50,6 +51,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MinionHelperOverlay {
+
+	private final ResourceLocation minionOverlayImage = new ResourceLocation("notenoughupdates:minion_overlay.png");
+
 	private final MinionHelperManager manager;
 	private final MinionHelperOverlayHover hover;
 	private int[] topLeft = new int[]{237, 110};
@@ -76,8 +80,6 @@ public class MinionHelperOverlay {
 		cacheRenderMap = null;
 		cacheTotalPages = -1;
 	}
-
-	public final ResourceLocation minionOverlayImage = new ResourceLocation("notenoughupdates:minion_overlay.png");
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -273,8 +275,8 @@ public class MinionHelperOverlay {
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
 
-		int x = guiLeft + xSize + 4;
-		int y = guiTop;
+		int x = guiLeft + xSize + 9;
+		int y = guiTop + 5;
 
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		final int scaledWidth = scaledresolution.getScaledWidth();
@@ -282,15 +284,21 @@ public class MinionHelperOverlay {
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-		int extra = 0;
-		for (OverviewLine overviewLine : renderMap.values()) {
-
-			if (mouseX > x && mouseX < x + 130 &&
-				mouseY > y + extra && mouseY < y + 13 + extra) {
-				return overviewLine;
+		boolean first = true;
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
+			String text = entry.getKey();
+			int width = fontRenderer.getStringWidth(StringUtils.cleanColour(text));
+			if (mouseX > x && mouseX < x + width &&
+				mouseY > y && mouseY < y + 11) {
+				return entry.getValue();
 			}
-			extra += 10;
-			if (extra == maxPerPage + 2) extra = 15;
+			if (first) {
+				y += 15;
+				first = false;
+			} else {
+				y += 10;
+			}
 		}
 
 		return null;
