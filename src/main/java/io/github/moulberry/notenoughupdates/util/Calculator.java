@@ -19,8 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -28,8 +31,30 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class Calculator {
+
+	static String lastInput = "";
+	static String lastResult = null;
+
 	public static BigDecimal calculate(String source) throws CalculatorException {
 		return evaluate(shuntingYard(lex(source)));
+	}
+
+	public static String calculateInSearchBar(String input) {
+		int calculationMode = NotEnoughUpdates.INSTANCE.config.misc.calculationMode;
+		if (input.isEmpty() || calculationMode == 0 || (calculationMode == 1 && !input.startsWith("!"))) return null;
+		input = calculationMode == 1 ? input.substring(1) : input;
+
+		if (!lastInput.equals(input)) {
+			lastInput = input;
+			try {
+				BigDecimal calculate = calculate(input);
+				lastResult = new DecimalFormat("#,##0.##").format(calculate);
+			} catch (CalculatorException ignored) {
+				lastResult = null;
+			}
+		}
+
+		return lastResult;
 	}
 
 	///<editor-fold desc="Lexing Time">

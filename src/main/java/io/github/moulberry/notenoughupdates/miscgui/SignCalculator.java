@@ -52,8 +52,14 @@ public class SignCalculator {
 		if (!isEnabled()) return;
 		GuiEditSign guiEditSign = (GuiEditSign) event.gui;
 		TileEntitySign tileSign = ((AccessorGuiEditSign) guiEditSign).getTileSign();
-		if (!tileSign.signText[1].getUnformattedText().equals("^^^^^^^^^^^^^^^") && !tileSign.signText[1].getUnformattedText().equals("^^^^^^")) return;
-		refresh(tileSign.signText[0].getUnformattedText());
+		if (!tileSign.signText[1].getUnformattedText().equals("^^^^^^^^^^^^^^^") &&
+			!tileSign.signText[1].getUnformattedText().equals("^^^^^^")) return;
+		String source = tileSign.signText[0].getUnformattedText();
+		refresh(source);
+
+		int calculationMode = NotEnoughUpdates.INSTANCE.config.misc.calculationMode;
+		if ((calculationMode == 1 && !source.startsWith("!"))) return;
+
 		Utils.drawStringCentered(
 			getRenderedString(),
 			Minecraft.getMinecraft().fontRendererObj,
@@ -77,12 +83,14 @@ public class SignCalculator {
 
 	public String getRenderedString() {
 		if (lastResult != null) {
-			DecimalFormat formatter = new DecimalFormat("#,###.00");
+			DecimalFormat formatter = new DecimalFormat("#,##0.##");
 			String lr = formatter.format(lastResult);
 			if (Minecraft.getMinecraft().fontRendererObj.getStringWidth(lr) > 90) {
-				return EnumChatFormatting.WHITE + lastSource + " = " + EnumChatFormatting.RED + "Result too long";
+				return EnumChatFormatting.WHITE + lastSource + " " + EnumChatFormatting.YELLOW + "= " + EnumChatFormatting.RED +
+					"Result too long";
 			}
-			return EnumChatFormatting.WHITE + lastSource + " = " + EnumChatFormatting.GREEN + lr;
+			return EnumChatFormatting.WHITE + lastSource + " " + EnumChatFormatting.YELLOW + "= " + EnumChatFormatting.GREEN +
+				lr;
 		} else if (lastException != null) {
 			return EnumChatFormatting.RED + lastException.getMessage();
 		}
