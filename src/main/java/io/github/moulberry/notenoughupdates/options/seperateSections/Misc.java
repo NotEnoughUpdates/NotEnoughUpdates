@@ -223,4 +223,12 @@ public class Misc {
 	@ConfigEditorDropdown(values = {"Off", "Enabled with ! Prefix", "Always enabled"})
 	public int calculationMode = 2;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable Abiphone Warning",
+		desc = "Asks for confirmation when removing a contact in the abiphone"
+	)
+	@ConfigEditorBoolean
+	public boolean abiphoneWarning = true;
+
 }

@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.itemeditor.NEUItemEditor;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
@@ -681,6 +682,10 @@ public class RenderListener {
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().render();
 		}
+
+		if (AbiphoneWarning.getInstance().shouldShow()) {
+			AbiphoneWarning.getInstance().render();
+		}
 	}
 
 	private void renderDungeonChestOverlay(GuiScreen gui) {
@@ -919,6 +924,11 @@ public class RenderListener {
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().mouseInput(mouseX, mouseY);
+			event.setCanceled(true);
+			return;
+		}
+		if (AbiphoneWarning.getInstance().shouldShow()) {
+			AbiphoneWarning.getInstance().mouseInput(mouseX, mouseY);
 			event.setCanceled(true);
 			return;
 		}
@@ -1387,6 +1397,11 @@ public class RenderListener {
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().keyboardInput();
+			event.setCanceled(true);
+			return;
+		}
+		if (AbiphoneWarning.getInstance().shouldShow()) {
+			AbiphoneWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}
