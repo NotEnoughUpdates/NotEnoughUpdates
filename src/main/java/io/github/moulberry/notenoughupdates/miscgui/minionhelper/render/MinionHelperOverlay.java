@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.PageArrowsUtils;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -44,7 +45,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,8 +52,11 @@ import java.util.Map;
 public class MinionHelperOverlay {
 	private final MinionHelperManager manager;
 	private final MinionHelperOverlayHover hover;
+	private int[] topLeft = new int[]{190, 130};
 
 	private LinkedHashMap<String, OverviewLine> cacheRenderMap = null;
+	private int cacheTotalPages = -1;
+
 	private boolean showOnlyAvailable = true;
 
 	private int maxPerPage = 8;
@@ -71,6 +74,7 @@ public class MinionHelperOverlay {
 
 	public void resetCache() {
 		cacheRenderMap = null;
+		cacheTotalPages = -1;
 	}
 
 	//TODO use different texture
@@ -96,6 +100,15 @@ public class MinionHelperOverlay {
 
 		hover.renderHover(renderMap);
 		render(event, renderMap);
+
+		GuiScreen gui = event.gui;
+		if (gui instanceof AccessorGuiContainer) {
+			AccessorGuiContainer container = (AccessorGuiContainer) gui;
+			int guiLeft = container.getGuiLeft();
+			int guiTop = container.getGuiTop();
+			int totalPages = getTotalPages();
+			PageArrowsUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages);
+		}
 	}
 
 	@SubscribeEvent
@@ -107,6 +120,16 @@ public class MinionHelperOverlay {
 		OverviewLine overviewLine = getObjectOverMouse(getRenderMap());
 		if (overviewLine != null) {
 			overviewLine.onClick();
+			event.setCanceled(true);
+		}
+
+		int totalPages = getTotalPages();
+		int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
+		int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
+		if (PageArrowsUtils.onPageSwitch(guiLeft, guiTop, topLeft, currentPage, totalPages, pageChange -> {
+			currentPage = pageChange;
+			resetCache();
+		})) {
 			event.setCanceled(true);
 		}
 	}
@@ -139,7 +162,6 @@ public class MinionHelperOverlay {
 		int a = guiLeft + xSize + 4;
 		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 
-		int index = 0;
 		int extra = 0;
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
@@ -154,8 +176,6 @@ public class MinionHelperOverlay {
 			fontRendererObj.drawString(prefix + line, a + 6, guiTop + 6 + extra, -1, false);
 			extra += 10;
 			if (extra == maxPerPage + 2) extra = 15;
-			index++;
-			if (index == renderMap.values().size() - 2) extra = maxPerPage * 10 + 20;
 		}
 	}
 
@@ -164,42 +184,12 @@ public class MinionHelperOverlay {
 
 		Map<Minion, Long> prices = getMissing();
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
-		int totalPages = getTotalPages(prices);
+		int totalPages = getTotalPages();
 
 		addTitle(prices, renderMap, totalPages);
 
 		if (!prices.isEmpty()) {
 			addMinions(prices, renderMap);
-		}
-
-		if (totalPages != currentPage + 1) {
-			renderMap.put(
-				"   §eNext Page ->",
-				new OverviewText(Collections.singletonList("§eClick to show page " + (currentPage + 2)), () -> {
-					if (totalPages == currentPage + 1) return;
-					currentPage++;
-					resetCache();
-				})
-			);
-		} else {
-			renderMap.put("   §7Next Page ->", new OverviewText(Collections.singletonList("§7There is no next page"), () -> {
-			}));
-		}
-		if (currentPage != 0) {
-			renderMap.put(
-				"§e<- Previous Page",
-				new OverviewText(Collections.singletonList("§eClick to show page " + currentPage), () -> {
-					if (currentPage == 0) return;
-					currentPage--;
-					resetCache();
-				})
-			);
-		} else {
-			renderMap.put(
-				"§7<- Previous Page",
-				new OverviewText(Collections.singletonList("§7There is no previous page"), () -> {
-				})
-			);
 		}
 
 		cacheRenderMap = renderMap;
@@ -216,9 +206,9 @@ public class MinionHelperOverlay {
 		} else {
 			name = pagePrefix + (showOnlyAvailable ? "Obtainable" : "All") + ": " + prices.size();
 			if (showOnlyAvailable) {
-			hoverText = "There are " + prices.size() + " more minions in total!";
+				hoverText = "There are " + prices.size() + " more minions in total!";
 			} else {
-			hoverText = "You can craft " + prices.size() + " more minions!";
+				hoverText = "You can craft " + prices.size() + " more minions!";
 			}
 		}
 		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
@@ -253,11 +243,16 @@ public class MinionHelperOverlay {
 		}
 	}
 
-	private int getTotalPages(Map<Minion, Long> prices) {
+	private int getTotalPages() {
+		if (cacheTotalPages != -1) return cacheTotalPages;
+
+		Map<Minion, Long> prices = getMissing();
 		int totalPages = (int) ((double) prices.size() / maxPerPage);
 		if (prices.size() % maxPerPage != 0) {
 			totalPages++;
 		}
+
+		cacheTotalPages = totalPages;
 		return totalPages;
 	}
 
@@ -284,7 +279,6 @@ public class MinionHelperOverlay {
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-		int index = 0;
 		int extra = 0;
 		for (OverviewLine overviewLine : renderMap.values()) {
 
@@ -294,8 +288,6 @@ public class MinionHelperOverlay {
 			}
 			extra += 10;
 			if (extra == maxPerPage + 2) extra = 15;
-			index++;
-			if (index == renderMap.values().size() - 2) extra = maxPerPage * 10 + 20;
 		}
 
 		return null;
@@ -308,5 +300,9 @@ public class MinionHelperOverlay {
 
 	public void setMaxPerPage(int maxPerPage) {
 		this.maxPerPage = maxPerPage;
+	}
+
+	public void setTopLeft(int[] topLeft) {
+		this.topLeft = topLeft;
 	}
 }

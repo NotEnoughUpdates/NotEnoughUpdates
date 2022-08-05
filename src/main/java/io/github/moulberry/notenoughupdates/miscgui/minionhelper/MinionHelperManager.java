@@ -150,50 +150,62 @@ public class MinionHelperManager {
 	}
 
 	public void handleCommand(String[] args) {
-		if (args.length == 2) {
-			String parameter = args[1];
-			if (parameter.equals("clearminion")) {
-				minions.clear();
-				Utils.addChatMessage("minion map cleared");
-				return;
-			}
-			if (parameter.equals("reloadrepo")) {
-				repo.setDirty();
-				Utils.addChatMessage("repo reload requested");
-				return;
-			}
-			if (parameter.equals("reloadapi")) {
-				api.resetData();
-				api.setDirty();
-				Utils.addChatMessage("api reload requested");
-				return;
-			}
-			if (parameter.equals("clearapi")) {
-				api.resetData();
-				Utils.addChatMessage("api data cleared");
-				return;
-			}
-		}
-
-		if (args.length == 3) {
+		if (args.length > 1) {
 			String parameter = args[1];
 
-			if (parameter.equals("maxperpage")) {
-				api.resetData();
-				int maxPerPage = Integer.parseInt(args[2]);
-				Utils.addChatMessage("set max per page to " + maxPerPage);
-				overlay.setMaxPerPage(maxPerPage);
-				return;
+			if (args.length == 2) {
+				if (parameter.equals("clearminion")) {
+					minions.clear();
+					Utils.addChatMessage("minion map cleared");
+					return;
+				}
+				if (parameter.equals("reloadrepo")) {
+					repo.setDirty();
+					Utils.addChatMessage("repo reload requested");
+					return;
+				}
+				if (parameter.equals("reloadapi")) {
+					api.resetData();
+					api.setDirty();
+					Utils.addChatMessage("api reload requested");
+					return;
+				}
+				if (parameter.equals("clearapi")) {
+					api.resetData();
+					Utils.addChatMessage("api data cleared");
+					return;
+				}
+			}
+
+			if (args.length == 3) {
+				if (parameter.equals("maxperpage")) {
+					api.resetData();
+					int maxPerPage = Integer.parseInt(args[2]);
+					Utils.addChatMessage("set max per page to " + maxPerPage);
+					overlay.setMaxPerPage(maxPerPage);
+					return;
+				}
+			}
+
+			if (args.length == 4) {
+				if (parameter.equals("pagepos")) {
+					int x = Integer.parseInt(args[2]);
+					int y = Integer.parseInt(args[3]);
+					Utils.addChatMessage("set page pos to " + x + ";" + y);
+					overlay.setTopLeft(new int[] {x, y});
+					return;
+				}
 			}
 		}
 
 		Utils.addChatMessage("");
-		Utils.addChatMessage("§3NEU Minion Helper commands: §c((for testing only!)");
+		Utils.addChatMessage("§3NEU Minion Helper commands: §c(for testing only!)");
 		Utils.addChatMessage("§6/neudevtest minion clearminion §7Clears the minion map");
 		Utils.addChatMessage("§6/neudevtest minion reloadrepo §7Manually loading the data from repo");
 		Utils.addChatMessage("§6/neudevtest minion reloadapi §7Manually loading the data from api");
 		Utils.addChatMessage("§6/neudevtest minion clearapi §7Clears the api data");
 		Utils.addChatMessage("§6/neudevtest minion maxperpage <number> §7Changes the max minions per page number");
+		Utils.addChatMessage("§6/neudevtest minion pagepos <x, y> §7Changes the position of the page numbers");
 		Utils.addChatMessage("");
 	}
 
