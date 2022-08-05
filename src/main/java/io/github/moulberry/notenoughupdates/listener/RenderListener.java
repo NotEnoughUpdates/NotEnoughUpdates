@@ -47,6 +47,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
@@ -508,6 +509,12 @@ public class RenderListener {
 							x += diffX;
 						}
 					}
+					if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+						int diffX = 172;
+						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+							x += diffX;
+						}
+					}
 					if (AuctionProfit.inAuctionPage()) {
 						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 							y < guiTop + 56) {
@@ -624,6 +631,12 @@ public class RenderListener {
 					if (TrophyRewardOverlay.inTrophyFishingInventory()) {
 						int diffX = 162;
 						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+							x += diffX;
+						}
+					}
+					if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+						int diffX = 172;
+						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
 							x += diffX;
 						}
 					}
@@ -1033,6 +1046,12 @@ public class RenderListener {
 					if (TrophyRewardOverlay.inTrophyFishingInventory()) {
 						int diffX = 162;
 						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+							x += diffX;
+						}
+					}
+					if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+						int diffX = 172;
+						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
 							x += diffX;
 						}
 					}
