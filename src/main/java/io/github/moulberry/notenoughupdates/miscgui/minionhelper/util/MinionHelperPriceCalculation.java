@@ -43,15 +43,15 @@ public class MinionHelperPriceCalculation {
 	private final Map<String, String> upgradeCostFormatCache = new HashMap<>();
 	private final Map<String, String> fullCostFormatCache = new HashMap<>();
 	//TODO maybe change logic with 0 coins later or stuff
-	private final List<String> cheapItems = Arrays.asList(
-		"WOOD_SWORD",
-		"WOOD_HOE",
-		"WOOD_AXE",
-		"WOOD_PICKAXE",
-		"WOOD_SPADE",
-		"FISHING_ROD",
-		"SKYBLOCK_PELT"
-	);
+//	private final List<String> cheapItems = Arrays.asList(
+//		"WOOD_SWORD",
+//		"WOOD_HOE",
+//		"WOOD_AXE",
+//		"WOOD_PICKAXE",
+//		"WOOD_SPADE",
+//		"FISHING_ROD",
+//		"SKYBLOCK_PELT"
+//	);
 
 	public MinionHelperPriceCalculation(MinionHelperManager manager) {
 		this.manager = manager;
@@ -124,6 +124,7 @@ public class MinionHelperPriceCalculation {
 		long upgradeCost = 0;
 		for (Map.Entry<String, Integer> entry : items.entries()) {
 			String internalName = entry.getKey();
+			if (internalName.equals("SKYBLOCK_PELT")) continue;
 			long price = getPrice(internalName);
 			int amount = entry.getValue();
 			upgradeCost += price * amount;
@@ -138,24 +139,37 @@ public class MinionHelperPriceCalculation {
 	}
 
 	public long getPrice(String internalName) {
-		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
-		if (bazaarInfo == null) {
-			if (internalName.contains("_GENERATOR_")) {
-				return calculateUpgradeCosts(manager.getMinionById(internalName), false);
-			} else {
-				if (!cheapItems.contains(internalName)) {
-					return (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
-				}
-			}
-			return 0;
+		//Is minion
+		if (internalName.contains("_GENERATOR_")) {
+			return calculateUpgradeCosts(manager.getMinionById(internalName), false);
 		}
 
-		//TODO use average bazaar price?
-		if (!bazaarInfo.has("curr_sell")) {
-			System.err.println("curr_sell does not exist for '" + internalName + "'");
+		//Is bazaar item
+		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
+		if (bazaarInfo != null) {
+			if (!bazaarInfo.has("curr_sell")) {
+				System.err.println("curr_sell does not exist for '" + internalName + "'");
+				return 0;
+			}
+			return (long) bazaarInfo.get("curr_sell").getAsDouble();
+		}
+
+		//Is cheap item
+//		if (cheapItems.contains(internalName)) return 0;
+
+		//is ah bin
+		long avgBinPrice = (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
+		if (avgBinPrice >= 1) return avgBinPrice;
+
+
+		//is ah without bin
+		JsonObject auctionInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalName);
+		if (auctionInfo == null) {
+			//only wood axe and similar useless items
 			return 0;
 		}
-		return (long) bazaarInfo.get("curr_sell").getAsDouble();
+		return (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+
 	}
 
 	public String formatCoins(long coins) {

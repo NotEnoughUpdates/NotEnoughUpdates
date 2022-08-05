@@ -123,7 +123,10 @@ public class MinionHelperOverlayHover {
 				lines.add("§7Buy from: §9" + npcName + " (NPC)");
 				lines.add("");
 				lines.add("§7Buy costs: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true));
-				lines.add(" §8- " + manager.getPriceCalculation().formatCoins(npcSource.getCoins()));
+				int coins = npcSource.getCoins();
+				if (coins != 0) {
+					lines.add(" §8- " + manager.getPriceCalculation().formatCoins(coins));
+				}
 				formatItems(lines, grabAllItems(npcSource.getItems()));
 			}
 
@@ -136,6 +139,8 @@ public class MinionHelperOverlayHover {
 	private void formatItems(List<String> lines, Map<String, Integer> allItems) {
 		for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
 			String internalName = entry.getKey();
+			if (internalName.equals("SKYBLOCK_PELT")) continue;
+
 			String name = manager.getRepo().getDisplayName(internalName);
 
 			int amount = entry.getValue();
