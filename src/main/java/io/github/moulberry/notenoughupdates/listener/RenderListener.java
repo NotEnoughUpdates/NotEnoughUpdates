@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
@@ -486,64 +487,67 @@ public class RenderListener {
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 			if (!NEUApi.disableInventoryButtons) {
-				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-					if (!button.isActive()) continue;
-					if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
+				if (!EnchantingSolvers.disableButtons()) {
+					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+						if (!button.isActive()) continue;
+						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
 
-					int x = guiLeft + button.x;
-					int y = guiTop + button.y;
-					if (button.anchorRight) {
-						x += xSize;
-					}
-					if (button.anchorBottom) {
-						y += ySize;
-					}
-					if (AccessoryBagOverlay.isInAccessoryBag()) {
-						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-							x += 80 + 28;
+						int x = guiLeft + button.x;
+						int y = guiTop + button.y;
+						if (button.anchorRight) {
+							x += xSize;
 						}
-					}
-					if (TrophyRewardOverlay.inTrophyFishingInventory()) {
-						int diffX = 162;
-						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
-							x += diffX;
+						if (button.anchorBottom) {
+							y += ySize;
 						}
-					}
-					if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
-							x -= 68 - 200;
+						if (AccessoryBagOverlay.isInAccessoryBag()) {
+							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
+								x += 80 + 28;
+							}
 						}
-					}
-					if (NEUOverlay.isRenderingArmorHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
+							int diffX = 162;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+								x += diffX;
+							}
 						}
-					}
-					if (NEUOverlay.isRenderingPetHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+						if (AuctionProfit.inAuctionPage()) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
+								x -= 68 - 200;
+							}
 						}
-					}
+						if (NEUOverlay.isRenderingArmorHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+								x -= 25;
+							}
+						}
+						if (NEUOverlay.isRenderingPetHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+								x -= 25;
+							}
+						}
 
-					GlStateManager.color(1, 1, 1, 1f);
+						GlStateManager.color(1, 1, 1, 1f);
 
-					GlStateManager.enableDepth();
-					GlStateManager.enableAlpha();
-					Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
-					Utils.drawTexturedRect(
-						x,
-						y,
-						18,
-						18,
-						button.backgroundIndex * 18 / 256f,
-						(button.backgroundIndex * 18 + 18) / 256f,
-						18 / 256f,
-						36 / 256f,
-						GL11.GL_NEAREST
-					);
+						GlStateManager.enableDepth();
+						GlStateManager.enableAlpha();
+						Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
+						Utils.drawTexturedRect(
+							x,
+							y,
+							18,
+							18,
+							button.backgroundIndex * 18 / 256f,
+							(button.backgroundIndex * 18 + 18) / 256f,
+							18 / 256f,
+							36 / 256f,
+							GL11.GL_NEAREST
+						);
 
-					if (button.icon != null && !button.icon.trim().isEmpty()) {
-						GuiInvButtonEditor.renderIcon(button.icon, x + 1, y + 1);
+						if (button.icon != null && !button.icon.trim().isEmpty()) {
+							GuiInvButtonEditor.renderIcon(button.icon, x + 1, y + 1);
+						}
 					}
 				}
 			}
@@ -604,73 +608,76 @@ public class RenderListener {
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 			if (!NEUApi.disableInventoryButtons) {
-				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-					if (!button.isActive()) continue;
-					if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
+				if (!EnchantingSolvers.disableButtons()) {
+					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+						if (!button.isActive()) continue;
+						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
 
-					int x = guiLeft + button.x;
-					int y = guiTop + button.y;
-					if (button.anchorRight) {
-						x += xSize;
-					}
-					if (button.anchorBottom) {
-						y += ySize;
-					}
-					if (AccessoryBagOverlay.isInAccessoryBag()) {
-						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-							x += 80 + 28;
+						int x = guiLeft + button.x;
+						int y = guiTop + button.y;
+						if (button.anchorRight) {
+							x += xSize;
 						}
-					}
-					if (TrophyRewardOverlay.inTrophyFishingInventory()) {
-						int diffX = 162;
-						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
-							x += diffX;
+						if (button.anchorBottom) {
+							y += ySize;
 						}
-					}
-					if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
-							x -= 68 - 200;
+						if (AccessoryBagOverlay.isInAccessoryBag()) {
+							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
+								x += 80 + 28;
+							}
 						}
-					}
-					if (NEUOverlay.isRenderingArmorHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
+							int diffX = 162;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+								x += diffX;
+							}
 						}
-					}
-					if (NEUOverlay.isRenderingPetHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+						if (AuctionProfit.inAuctionPage()) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
+								x -= 68 - 200;
+							}
 						}
-					}
-
-					if (x - guiLeft >= 85 && x - guiLeft <= 115 && y - guiTop >= 4 && y - guiTop <= 25) {
-						disableCraftingText = true;
-					}
-
-					if (event.mouseX >= x && event.mouseX <= x + 18 && event.mouseY >= y && event.mouseY <= y + 18) {
-						hoveringButton = true;
-						long currentTime = System.currentTimeMillis();
-
-						if (buttonHovered != button) {
-							buttonHoveredMillis = currentTime;
-							buttonHovered = button;
+						if (NEUOverlay.isRenderingArmorHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+								x -= 25;
+							}
+						}
+						if (NEUOverlay.isRenderingPetHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+								x -= 25;
+							}
 						}
 
-						if (currentTime - buttonHoveredMillis > 600) {
-							String command = button.command.trim();
-							if (!command.startsWith("/")) {
-								command = "/" + command;
+						if (x - guiLeft >= 85 && x - guiLeft <= 115 && y - guiTop >= 4 && y - guiTop <= 25) {
+							disableCraftingText = true;
+						}
+
+						if (event.mouseX >= x && event.mouseX <= x + 18 && event.mouseY >= y && event.mouseY <= y + 18) {
+							hoveringButton = true;
+							long currentTime = System.currentTimeMillis();
+
+							if (buttonHovered != button) {
+								buttonHoveredMillis = currentTime;
+								buttonHovered = button;
 							}
 
-							Utils.drawHoveringText(
-								Lists.newArrayList("\u00a77" + command),
-								event.mouseX,
-								event.mouseY,
-								event.gui.width,
-								event.gui.height,
-								-1,
-								Minecraft.getMinecraft().fontRendererObj
-							);
+							if (currentTime - buttonHoveredMillis > 600) {
+								String command = button.command.trim();
+								if (!command.startsWith("/")) {
+									command = "/" + command;
+								}
+
+								Utils.drawHoveringText(
+									Lists.newArrayList("\u00a77" + command),
+									event.mouseX,
+									event.mouseY,
+									event.gui.width,
+									event.gui.height,
+									-1,
+									Minecraft.getMinecraft().fontRendererObj
+								);
+							}
 						}
 					}
 				}
@@ -744,7 +751,8 @@ public class RenderListener {
 											if (auctionInfo.has("clean_price")) {
 												worth = (long) auctionInfo.get("clean_price").getAsDouble();
 											} else {
-												worth = (long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
+												worth =
+													(long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
 										}
 										break;
@@ -1012,61 +1020,65 @@ public class RenderListener {
 			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 			if (!NEUApi.disableInventoryButtons) {
-				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-					if (!button.isActive()) continue;
-					if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
+				if (!EnchantingSolvers.disableButtons()) {
+					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+						if (!button.isActive()) continue;
+						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
 
-					int x = guiLeft + button.x;
-					int y = guiTop + button.y;
-					if (button.anchorRight) {
-						x += xSize;
-					}
-					if (button.anchorBottom) {
-						y += ySize;
-					}
-					if (AccessoryBagOverlay.isInAccessoryBag()) {
-						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-							x += 80 + 28;
+						int x = guiLeft + button.x;
+						int y = guiTop + button.y;
+						if (button.anchorRight) {
+							x += xSize;
 						}
-					}
-					if (TrophyRewardOverlay.inTrophyFishingInventory()) {
-						int diffX = 162;
-						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
-							x += diffX;
+						if (button.anchorBottom) {
+							y += ySize;
 						}
-					}
-					if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
-							x -= 68 - 200;
-						}
-					}
-					if (NEUOverlay.isRenderingArmorHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
-						}
-					}
-					if (NEUOverlay.isRenderingPetHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
-						}
-					}
-
-					if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
-						if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-							int clickType = NotEnoughUpdates.INSTANCE.config.inventoryButtons.clickType;
-							if ((clickType == 0 && Mouse.getEventButtonState()) || (clickType == 1 && !Mouse.getEventButtonState())) {
-								String command = button.command.trim();
-								if (!command.startsWith("/")) {
-									command = "/" + command;
-								}
-								if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command) == 0) {
-									NotEnoughUpdates.INSTANCE.sendChatMessage(command);
-								}
+						if (AccessoryBagOverlay.isInAccessoryBag()) {
+							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
+								x += 80 + 28;
 							}
-						} else {
-							event.setCanceled(true);
 						}
-						return;
+						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
+							int diffX = 162;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+								x += diffX;
+							}
+						}
+						if (AuctionProfit.inAuctionPage()) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
+								x -= 68 - 200;
+							}
+						}
+						if (NEUOverlay.isRenderingArmorHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+								x -= 25;
+							}
+						}
+						if (NEUOverlay.isRenderingPetHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+								x -= 25;
+							}
+						}
+
+						if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
+							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+								int clickType = NotEnoughUpdates.INSTANCE.config.inventoryButtons.clickType;
+								if ((clickType == 0 && Mouse.getEventButtonState()) ||
+									(clickType == 1 && !Mouse.getEventButtonState())) {
+									String command = button.command.trim();
+									if (!command.startsWith("/")) {
+										command = "/" + command;
+									}
+									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command) == 0) {
+										NotEnoughUpdates.INSTANCE.sendChatMessage(command);
+									}
+								}
+							} else {
+								event.setCanceled(true);
+							}
+							return;
+						}
 					}
 				}
 			}

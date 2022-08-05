@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBAnchorPoint;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
@@ -548,6 +549,7 @@ public class NEUOverlay extends Gui {
 			@Override
 			public void mouseClick(float x, float y, int mouseX, int mouseY) {
 				if (!NotEnoughUpdates.INSTANCE.config.toolbar.quickCommands) return;
+				if (EnchantingSolvers.disableButtons()) return;
 
 				if ((NotEnoughUpdates.INSTANCE.config.toolbar.quickCommandsClickType != 0 && Mouse.getEventButtonState()) ||
 					(NotEnoughUpdates.INSTANCE.config.toolbar.quickCommandsClickType == 0 && !Mouse.getEventButtonState() &&
@@ -570,6 +572,7 @@ public class NEUOverlay extends Gui {
 			@Override
 			public void render(float x, float y) {
 				if (!NotEnoughUpdates.INSTANCE.config.toolbar.quickCommands) return;
+				if (EnchantingSolvers.disableButtons()) return;
 
 				int paddingUnscaled = getPaddingUnscaled();
 				int bigItemSize = getSearchBarYSize();
@@ -1947,7 +1950,7 @@ public class NEUOverlay extends Gui {
 		if (textField.getText().toLowerCase().contains("lunar")) {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(ATMOULBERRYWHYISMYLUNARCLIENTBUGGING);
 			GlStateManager.color(1, 1, 1, 1);
-			GlStateManager.translate(0,0,100);
+			GlStateManager.translate(0, 0, 100);
 			Utils.drawTexturedRect((width + 410) / 2f, (height + 450) / 2f - 114, 113, 64, GL11.GL_LINEAR);
 			GlStateManager.bindTexture(0);
 		}
