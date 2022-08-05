@@ -157,11 +157,6 @@ public class NEUManager {
 		repoLocation.mkdir();
 	}
 
-	public void setCurrentProfile(String currentProfile) {
-		SBInfo.getInstance().currentProfile = currentProfile;
-		MinionHelperManager.getInstance().onProfileSwitch();
-	}
-
 	public String getCurrentProfile() {
 		return SBInfo.getInstance().currentProfile;
 	}
@@ -674,7 +669,8 @@ public class NEUManager {
 				ea = ea.getCompoundTag("Properties");
 				ea = ea.getTagList("textures", 10).getCompoundTagAt(0);
 				String name = ea3.getString("Name").replaceAll(" M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$", "");
-				return "put(\"ID\", Utils.createSkull(EnumChatFormatting.AQUA + \"" + name + "\" ,\"" + ea2.getString("Id") + "\", \"" + ea.getString("Value") +"\"));";
+				return "put(\"ID\", Utils.createSkull(EnumChatFormatting.AQUA + \"" + name + "\" ,\"" + ea2.getString("Id") +
+					"\", \"" + ea.getString("Value") + "\"));";
 			}
 		}
 		return null;
@@ -914,6 +910,7 @@ public class NEUManager {
 		NBTTagCompound tag = stack.getTagCompound();
 		return getSkullValueFromNBT(tag);
 	}
+
 	public String getInternalNameForItem(ItemStack stack) {
 		if (stack == null) return null;
 		NBTTagCompound tag = stack.getTagCompound();

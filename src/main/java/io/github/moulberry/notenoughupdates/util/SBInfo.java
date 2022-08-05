@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -294,7 +295,7 @@ public class SBInfo {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
 				if (name.startsWith(profilePrefix)) {
-					currentProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					setCurrentProfile(Utils.cleanColour(name.substring(profilePrefix.length())));
 					hasNewTab = true;
 				} else if (name.startsWith(skillsPrefix)) {
 					String levelInfo = name.substring(skillsPrefix.length()).trim();
@@ -411,6 +412,13 @@ public class SBInfo {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void setCurrentProfile(String newProfile) {
+		if (!newProfile.equals(currentProfile)) {
+			currentProfile = newProfile;
+			MinionHelperManager.getInstance().onProfileSwitch();
 		}
 	}
 }

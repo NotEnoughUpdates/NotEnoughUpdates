@@ -46,6 +46,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -84,7 +85,12 @@ public class MinionHelperOverlay {
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
-		if (!manager.isReadyToUse()) return;
+		if (!manager.isReadyToUse()) {
+			LinkedHashMap<String, OverviewLine> map = new LinkedHashMap<>();
+			map.put("§cLoading...", new OverviewText(Collections.emptyList(), () -> {}));
+			render(event, map);
+			return;
+		}
 
 		if (manager.getApi().isNotifyNoCollectionApi()) {
 			NotificationHandler.displayNotification(Lists.newArrayList(

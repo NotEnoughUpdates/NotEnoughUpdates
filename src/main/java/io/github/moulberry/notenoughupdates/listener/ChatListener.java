@@ -160,11 +160,11 @@ public class ChatListener {
 		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
 		Matcher matcher = SLAYER_XP.matcher(unformatted);
 		if (unformatted.startsWith("You are playing on profile: ")) {
-			neu.manager.setCurrentProfile(unformatted
+			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("You are playing on profile: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your profile was changed to: ")) {//Your profile was changed to:
-			neu.manager.setCurrentProfile(unformatted
+			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your new API key is ")) {
