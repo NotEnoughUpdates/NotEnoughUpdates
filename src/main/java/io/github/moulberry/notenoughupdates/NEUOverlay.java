@@ -39,8 +39,8 @@ import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
-import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
@@ -378,12 +378,8 @@ public class NEUOverlay extends Gui {
 				}
 
 				//Search bar text
-				String renderText = textField.getText();
-				String calculate = Calculator.calculateInSearchBar(textField.getText());
-				if (calculate != null) {
-					renderText += " §e= §a" + calculate;
-				}
-				fr.drawString(renderText, (int) x + 5,
+				fr.drawString(
+					NeuSearchCalculator.format(textField.getText()), (int) x + 5,
 					(int) y - 4 + getHeight() / 2, Color.WHITE.getRGB()
 				);
 
