@@ -49,6 +49,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.ItemOverlay
 import io.github.moulberry.notenoughupdates.options.seperateSections.Itemlist;
 import io.github.moulberry.notenoughupdates.options.seperateSections.LocationEdit;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
+import io.github.moulberry.notenoughupdates.options.seperateSections.MinionHelper;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
 import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
@@ -389,6 +390,13 @@ public class NEUConfig extends Config {
 		desc = "Profile Viewer"
 	)
 	public ProfileViewer profileViewer = new ProfileViewer();
+
+	@Expose
+	@Category(
+		name = "Minion Helper",
+		desc = "Minion Helper"
+	)
+	public MinionHelper minionHelper = new MinionHelper();
 
 	@Expose
 	@Category(

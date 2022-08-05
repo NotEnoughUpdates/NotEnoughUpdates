@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -39,6 +40,7 @@ public class MinionHelperChatLoader {
 	public void onChat(ClientChatReceivedEvent event) {
 		if (event.type != 0) return;
 		String message = event.message.getFormattedText();
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 
 		try {
 			if (message.startsWith("§r§aYou crafted a §eTier ") && message.contains("§a! That's a new one!")) {

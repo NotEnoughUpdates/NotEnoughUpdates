@@ -128,7 +128,6 @@ public class MinionHelperManager {
 	}
 
 	public void onProfileSwitch() {
-		//TODO check if the feature is enabled
 		for (Minion minion : minions.values()) {
 			minion.setCrafted(false);
 			minion.setMeetRequirements(false);
@@ -150,6 +149,11 @@ public class MinionHelperManager {
 	}
 
 	public void handleCommand(String[] args) {
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) {
+			Utils.addChatMessage("§e[NEU] Minion Helper gui is disabled!");
+			return;
+		}
+
 		if (args.length > 1) {
 			String parameter = args[1];
 
@@ -192,7 +196,7 @@ public class MinionHelperManager {
 					int x = Integer.parseInt(args[2]);
 					int y = Integer.parseInt(args[3]);
 					Utils.addChatMessage("set page pos to " + x + ";" + y);
-					overlay.setTopLeft(new int[] {x, y});
+					overlay.setTopLeft(new int[]{x, y});
 					return;
 				}
 			}

@@ -48,6 +48,7 @@ public class MinionHelperInventoryLoader {
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 		if (!manager.isReadyToUse()) return;
 		ticks++;
 

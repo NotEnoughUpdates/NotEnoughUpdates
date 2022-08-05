@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -44,6 +45,7 @@ public class MinionHelperTooltips {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.tooltip) return;
 		if (!manager.isReadyToUse()) return;
 
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);

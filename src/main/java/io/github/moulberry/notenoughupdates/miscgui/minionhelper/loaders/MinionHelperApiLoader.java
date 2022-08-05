@@ -68,6 +68,7 @@ public class MinionHelperApiLoader {
 	public void onTick(TickEvent.ClientTickEvent event) {
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 		ticks++;
 
 		if (ticks % 20 != 0) return;
