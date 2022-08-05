@@ -188,7 +188,7 @@ public class MinionHelperManager {
 			}
 
 			if (args.length == 4) {
-				if (parameter.equals("pagepos")) {
+				if (parameter.equals("arrowpos")) {
 					int x = Integer.parseInt(args[2]);
 					int y = Integer.parseInt(args[3]);
 					Utils.addChatMessage("set page pos to " + x + ";" + y);
@@ -205,7 +205,7 @@ public class MinionHelperManager {
 		Utils.addChatMessage("§6/neudevtest minion reloadapi §7Manually loading the data from api");
 		Utils.addChatMessage("§6/neudevtest minion clearapi §7Clears the api data");
 		Utils.addChatMessage("§6/neudevtest minion maxperpage <number> §7Changes the max minions per page number");
-		Utils.addChatMessage("§6/neudevtest minion pagepos <x, y> §7Changes the position of the page numbers");
+		Utils.addChatMessage("§6/neudevtest minion arrowpos <x, y> §7Changes the position of the page numbers");
 		Utils.addChatMessage("");
 	}
 

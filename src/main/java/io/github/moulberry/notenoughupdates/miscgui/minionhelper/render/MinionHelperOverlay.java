@@ -52,7 +52,7 @@ import java.util.Map;
 public class MinionHelperOverlay {
 	private final MinionHelperManager manager;
 	private final MinionHelperOverlayHover hover;
-	private int[] topLeft = new int[]{190, 130};
+	private int[] topLeft = new int[]{237, 110};
 
 	private LinkedHashMap<String, OverviewLine> cacheRenderMap = null;
 	private int cacheTotalPages = -1;
@@ -77,8 +77,7 @@ public class MinionHelperOverlay {
 		cacheTotalPages = -1;
 	}
 
-	//TODO use different texture
-	public final ResourceLocation auctionProfitImage = new ResourceLocation("notenoughupdates:auction_profit.png");
+	public final ResourceLocation minionOverlayImage = new ResourceLocation("notenoughupdates:minion_overlay.png");
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -101,6 +100,10 @@ public class MinionHelperOverlay {
 		hover.renderHover(renderMap);
 		render(event, renderMap);
 
+		renderArrows(event);
+	}
+
+	private void renderArrows(GuiScreenEvent.BackgroundDrawnEvent event) {
 		GuiScreen gui = event.gui;
 		if (gui instanceof AccessorGuiContainer) {
 			AccessorGuiContainer container = (AccessorGuiContainer) gui;
@@ -124,13 +127,15 @@ public class MinionHelperOverlay {
 		}
 
 		int totalPages = getTotalPages();
-		int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
-		int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
-		if (PageArrowsUtils.onPageSwitch(guiLeft, guiTop, topLeft, currentPage, totalPages, pageChange -> {
-			currentPage = pageChange;
-			resetCache();
-		})) {
-			event.setCanceled(true);
+		if (event.gui instanceof AccessorGuiContainer) {
+			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
+			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
+			if (PageArrowsUtils.onPageSwitch(guiLeft, guiTop, topLeft, currentPage, totalPages, pageChange -> {
+				currentPage = pageChange;
+				resetCache();
+			})) {
+				event.setCanceled(true);
+			}
 		}
 	}
 
@@ -154,10 +159,10 @@ public class MinionHelperOverlay {
 		int xSize = ((AccessorGuiContainer) gui).getXSize();
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
-		minecraft.getTextureManager().bindTexture(auctionProfitImage);
+		minecraft.getTextureManager().bindTexture(minionOverlayImage);
 		GL11.glColor4f(1, 1, 1, 1);
 		GlStateManager.disableLighting();
-		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 180, 101, 0, 180 / 256f, 0, 101 / 256f, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 1f, 0, 1f, GL11.GL_NEAREST);
 
 		int a = guiLeft + xSize + 4;
 		FontRenderer fontRendererObj = minecraft.fontRendererObj;
@@ -184,9 +189,8 @@ public class MinionHelperOverlay {
 
 		Map<Minion, Long> prices = getMissing();
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
-		int totalPages = getTotalPages();
 
-		addTitle(prices, renderMap, totalPages);
+		addTitle(prices, renderMap);
 
 		if (!prices.isEmpty()) {
 			addMinions(prices, renderMap);
@@ -196,15 +200,14 @@ public class MinionHelperOverlay {
 		return renderMap;
 	}
 
-	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap, int totalPages) {
+	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
 		String name;
 		String hoverText;
-		String pagePrefix = "(" + (currentPage + 1) + "/" + totalPages + ") ";
 		if (prices.isEmpty()) {
-			name = pagePrefix + (showOnlyAvailable ? "No minion obtainable!" : "§aAll minions collected!");
-			hoverText = "No minions to craft avaliable!";
+			name = (showOnlyAvailable ? "No minion obtainable!" : "§aAll minions collected!");
+			hoverText = "No minions to craft available!";
 		} else {
-			name = pagePrefix + (showOnlyAvailable ? "Obtainable" : "All") + ": " + prices.size();
+			name = (showOnlyAvailable ? "Obtainable" : "All") + ": " + prices.size();
 			if (showOnlyAvailable) {
 				hoverText = "There are " + prices.size() + " more minions in total!";
 			} else {
