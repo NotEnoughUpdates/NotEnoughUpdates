@@ -61,6 +61,7 @@ public class BazaarSacksProfit {
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
+		showSellOrderPrice = false;
 		prices.clear();
 		names.clear();
 		invalidNames.clear();
