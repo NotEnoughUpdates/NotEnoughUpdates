@@ -32,7 +32,7 @@ public class NeuSearchCalculator {
 
 	public static String format(String text) {
 		String calculate = calculateInSearchBar(text);
-		return text + calculate != null ? " §e= §a" + calculate : "";
+		return text + (calculate != null ? " §e= §a" + calculate : "");
 	}
 
 	private static String calculateInSearchBar(String input) {
