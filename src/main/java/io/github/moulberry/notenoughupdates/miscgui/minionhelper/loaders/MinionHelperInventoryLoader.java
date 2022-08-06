@@ -36,10 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinionHelperInventoryLoader {
-	private final List<String> loadedAlready = new ArrayList<>();
 	private final MinionHelperManager manager;
+	private final List<String> pagesSeenAlready = new ArrayList<>();
+	private boolean shouldCheckNextSlot = true;
 
-	int ticks = 0;
+	private int ticks = 0;
 
 	public MinionHelperInventoryLoader(MinionHelperManager manager) {
 		this.manager = manager;
@@ -55,60 +56,85 @@ public class MinionHelperInventoryLoader {
 		if (ticks % 5 != 0) return;
 
 		if (manager.inCraftedMinionsInventory()) {
-			checkInv();
+			checkInventory();
 		} else {
-			loadedAlready.clear();
+			pagesSeenAlready.clear();
+			shouldCheckNextSlot = true;
 		}
 	}
 
-	private void checkInv() {
+	private void checkInventory() {
 		Container openContainer = Minecraft.getMinecraft().thePlayer.openContainer;
 		if (openContainer instanceof ContainerChest) {
 
-			Slot firstSlot = openContainer.inventorySlots.get(10);
-			boolean shouldLoad = false;
-			if (firstSlot != null) {
-				if (firstSlot.getHasStack()) {
-					ItemStack stack = firstSlot.getStack();
-					String displayName = stack.getDisplayName();
-					if (!loadedAlready.contains(displayName)) {
-						loadedAlready.add(displayName);
-						shouldLoad = true;
-					}
-				}
+			if (shouldCheckNextSlot) {
+				shouldCheckNextSlot = false;
+				checkNextSlot(openContainer);
 			}
 
-			if (!shouldLoad) return;
+			loadMinionData(openContainer);
+		}
+	}
 
-			int crafted = 0;
-			for (Slot slot : openContainer.inventorySlots) {
-				if (!slot.getHasStack()) continue;
-				ItemStack stack = slot.getStack();
-				if (stack == null) continue;
-				if (slot.slotNumber != slot.getSlotIndex()) continue;
+	private void checkNextSlot(Container openContainer) {
+		Slot informationSlot = openContainer.inventorySlots.get(50);
+		if (informationSlot.getHasStack()) {
+			ItemStack informationStack = informationSlot.getStack();
+			for (String line : ItemUtils.getLore(informationStack)) {
+				if (line.contains("§aunique")) {
+					String[] split = line.split(" ");
+					int needForNextSlot = Integer.parseInt(StringUtils.cleanColour(split[1]));
+					manager.setNeedForNextSlot(needForNextSlot);
+					return;
+				}
+			}
+		}
+	}
 
+	private void loadMinionData(Container openContainer) {
+		Slot firstSlot = openContainer.inventorySlots.get(10);
+		boolean shouldLoad = false;
+		if (firstSlot != null) {
+			if (firstSlot.getHasStack()) {
+				ItemStack stack = firstSlot.getStack();
 				String displayName = stack.getDisplayName();
-				if (!displayName.contains(" Minion")) continue;
+				if (!pagesSeenAlready.contains(displayName)) {
+					pagesSeenAlready.add(displayName);
+					shouldLoad = true;
+				}
+			}
+		}
 
-				displayName = StringUtils.cleanColour(displayName);
-				int index = 0;
-				for (String line : ItemUtils.getLore(stack)) {
-					index++;
-					if (!line.contains("Tier")) {
-						continue;
-					}
-					if (line.contains("§a")) {
-						Minion minion = manager.getMinionByName(displayName, index);
-						if (!minion.isCrafted()) {
-							minion.setCrafted(true);
-							crafted++;
-						}
+		if (!shouldLoad) return;
+
+		int crafted = 0;
+		for (Slot slot : openContainer.inventorySlots) {
+			if (!slot.getHasStack()) continue;
+			ItemStack stack = slot.getStack();
+			if (stack == null) continue;
+			if (slot.slotNumber != slot.getSlotIndex()) continue;
+
+			String displayName = stack.getDisplayName();
+			if (!displayName.contains(" Minion")) continue;
+
+			displayName = StringUtils.cleanColour(displayName);
+			int index = 0;
+			for (String line : ItemUtils.getLore(stack)) {
+				index++;
+				if (!line.contains("Tier")) {
+					continue;
+				}
+				if (line.contains("§a")) {
+					Minion minion = manager.getMinionByName(displayName, index);
+					if (!minion.isCrafted()) {
+						minion.setCrafted(true);
+						crafted++;
 					}
 				}
 			}
-			if (crafted > 0) {
-				manager.getOverlay().resetCache();
-			}
+		}
+		if (crafted > 0) {
+			manager.getOverlay().resetCache();
 		}
 	}
 }

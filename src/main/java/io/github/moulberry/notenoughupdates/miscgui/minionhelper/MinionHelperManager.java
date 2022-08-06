@@ -42,6 +42,7 @@ import java.util.Map;
 public class MinionHelperManager {
 	private static MinionHelperManager instance = null;
 	private final Map<String, Minion> minions = new HashMap<>();
+	private int needForNextSlot = -1;
 
 	private final MinionHelperPriceCalculation priceCalculation = new MinionHelperPriceCalculation(this);
 	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
@@ -111,8 +112,8 @@ public class MinionHelperManager {
 		minions.put(internalName, new Minion(internalName, tier));
 	}
 
-	public String formatInternalName(String text) {
-		return text.toUpperCase().replace(" ", "_");
+	public String formatInternalName(String minionName) {
+		return minionName.toUpperCase().replace(" ", "_");
 	}
 
 	public List<Minion> getChildren(Minion minion) {
@@ -135,6 +136,7 @@ public class MinionHelperManager {
 
 		api.onProfileSwitch();
 		overlay.onProfileSwitch();
+		needForNextSlot = -1;
 	}
 
 	public void reloadData() {
@@ -235,5 +237,14 @@ public class MinionHelperManager {
 
 	public Map<String, Minion> getAllMinions() {
 		return minions;
+	}
+
+	public void setNeedForNextSlot(int needForNextSlot) {
+		this.needForNextSlot = needForNextSlot;
+		overlay.resetCache();
+	}
+
+	public int getNeedForNextSlot() {
+		return needForNextSlot;
 	}
 }

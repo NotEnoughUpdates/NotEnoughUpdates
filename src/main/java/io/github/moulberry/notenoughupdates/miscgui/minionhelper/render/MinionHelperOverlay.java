@@ -45,10 +45,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MinionHelperOverlay {
@@ -177,7 +179,8 @@ public class MinionHelperOverlay {
 		int a = guiLeft + xSize + 4;
 		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 
-		int extra = 0;
+		int i = 0;
+		int y = 0;
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
 			OverviewLine overviewLine = entry.getValue();
@@ -188,9 +191,13 @@ public class MinionHelperOverlay {
 					prefix = "§e";
 				}
 			}
-			fontRendererObj.drawString(prefix + line, a + 6, guiTop + 6 + extra, -1, false);
-			extra += 10;
-			if (extra == maxPerPage + 2) extra = 15;
+			fontRendererObj.drawString(prefix + line, a + 6, guiTop + 6 + y, -1, false);
+			i++;
+			if (i == 2) {
+				y += 15;
+			} else {
+				y += 10;
+			}
 		}
 	}
 
@@ -201,6 +208,7 @@ public class MinionHelperOverlay {
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
 
 		addTitle(prices, renderMap);
+		addNeedToNextSlot(prices, renderMap);
 
 		if (!prices.isEmpty()) {
 			addMinions(prices, renderMap);
@@ -208,6 +216,37 @@ public class MinionHelperOverlay {
 
 		cacheRenderMap = renderMap;
 		return renderMap;
+	}
+
+	private void addNeedToNextSlot(
+		Map<Minion, Long> prices,
+		LinkedHashMap<String, OverviewLine> renderMap
+	) {
+		int neededForNextSlot = manager.getNeedForNextSlot();
+		if (neededForNextSlot == -1) {
+			renderMap.put("Next slot in: ?", new OverviewText(Collections.emptyList(), () -> {}));
+			return;
+		}
+
+		long priceNeeded = 0;
+		int index = 0;
+		for (Long price : TrophyRewardOverlay.sortByValue(prices).values()) {
+			priceNeeded += price;
+			index++;
+			if (index == neededForNextSlot) break;
+		}
+		String format = manager.getPriceCalculation().formatCoins(priceNeeded);
+		String text = "Next slot in: §b" + neededForNextSlot + " §8- " + format;
+		List<String> list = new ArrayList<>();
+		list.add("§7The combined upgrade cost for");
+		list.add("§7the next §b" + index + " minions §7is " + format);
+
+		if (!showOnlyAvailable) {
+			list.add("");
+			list.add("§cThis shows minions that don't meet requirements!");
+		}
+
+		renderMap.put(text, new OverviewText(list, () -> {}));
 	}
 
 	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
@@ -292,7 +331,7 @@ public class MinionHelperOverlay {
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
-		boolean first = true;
+		int i = 0;
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String text = entry.getKey();
@@ -301,9 +340,9 @@ public class MinionHelperOverlay {
 				mouseY > y && mouseY < y + 11) {
 				return entry.getValue();
 			}
-			if (first) {
+			i++;
+			if (i == 2) {
 				y += 15;
-				first = false;
 			} else {
 				y += 10;
 			}
