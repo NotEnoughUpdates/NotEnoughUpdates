@@ -35,9 +35,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class BazaarSacksProfit {
@@ -110,7 +112,8 @@ public class BazaarSacksProfit {
 		event.toolTip.removeIf(line -> line.contains("§7x ") || line.contains("You earn:"));
 
 		Map<String, Float> map = new HashMap<>();
-		DecimalFormat formatter = new DecimalFormat("#,##0");
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ENGLISH);
+		formatter.applyPattern("#,##0");
 		double totalPrice = 0;
 		for (Map.Entry<String, Integer> entry : prices.entrySet()) {
 			String internalName = entry.getKey();
