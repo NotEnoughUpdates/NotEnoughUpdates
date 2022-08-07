@@ -1315,7 +1315,7 @@ public class ProfileViewer {
 			}
 
 			for (Map.Entry<String, JsonElement> entry : personalAmounts.entrySet()) {
-				totalAmounts.addProperty(entry.getKey(), entry.getValue().getAsInt());
+				totalAmounts.addProperty(entry.getKey(), entry.getValue().getAsLong());
 			}
 
 			List<JsonObject> coopProfiles = getCoopProfileInformation(profileId);
@@ -1325,7 +1325,7 @@ public class ProfileViewer {
 					if (coopCollectionInfoElement != null && coopCollectionInfoElement.isJsonObject()) {
 						for (Map.Entry<String, JsonElement> entry : coopCollectionInfoElement.getAsJsonObject().entrySet()) {
 							float existing = Utils.getElementAsFloat(totalAmounts.get(entry.getKey()), 0);
-							totalAmounts.addProperty(entry.getKey(), existing + entry.getValue().getAsInt());
+							totalAmounts.addProperty(entry.getKey(), existing + entry.getValue().getAsLong());
 						}
 					}
 				}
