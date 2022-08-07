@@ -2822,8 +2822,12 @@ public class GuiProfileViewer extends GuiScreen {
 		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16) {
 			if (mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
 				if (mouseY < guiTop + 101 + 17) {
-					tooltipToDisplay =
-						Utils.createList(EnumChatFormatting.WHITE + "Arrow " + EnumChatFormatting.GRAY + "x" + arrowCount);
+					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, profile.getProfileInformation(profileId));
+					if (quiverInfo == null) {
+						tooltipToDisplay = Utils.createList(EnumChatFormatting.RED + "Error checking Quiver");
+					} else {
+						tooltipToDisplay = quiverInfo.generateProfileViewerTooltip();
+					}
 				} else if (mouseY < guiTop + 119 + 17) {
 					tooltipToDisplay = Utils.createList(
 						EnumChatFormatting.GREEN + "Green Candy " + EnumChatFormatting.GRAY + "x" + greenCandyCount);

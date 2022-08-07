@@ -808,4 +808,36 @@ public class PlayerStats {
 		String selectedPower = profileInfo.get(abs).getAsJsonObject().get("selected_power").getAsString();
 		return selectedPower.substring(0, 1).toUpperCase() + selectedPower.substring(1);
 	}
+
+	public static @Nullable QuiverInfo getQuiverInfo(JsonObject inventoryInfo, JsonObject profileInfo) {
+		if (inventoryInfo == null
+			|| !inventoryInfo.has("quiver")
+			|| !inventoryInfo.get("quiver").isJsonArray()) {
+			return null;
+		}
+		QuiverInfo quiverInfo = new QuiverInfo();
+		quiverInfo.arrows = new HashMap<>();
+
+		JsonArray quiver = inventoryInfo.getAsJsonArray("quiver");
+		for (JsonElement quiverEntry : quiver) {
+			if (quiverEntry == null || quiverEntry.isJsonNull() || !quiverEntry.isJsonObject()) {
+				continue;
+			}
+			JsonObject stack = quiverEntry.getAsJsonObject();
+			if (!stack.has("internalname") || !stack.has("count")) {
+				continue;
+			}
+			String internalName = stack.get("internalname").getAsString();
+			int count = stack.get("count").getAsInt();
+
+			quiverInfo.arrows.computeIfPresent(internalName, (key, existing) -> existing + count);
+			quiverInfo.arrows.putIfAbsent(internalName, count);
+		}
+
+		if (profileInfo.has("favorite_arrow")) {
+			quiverInfo.selectedArrow = profileInfo.get("favorite_arrow").getAsString();
+		}
+
+		return quiverInfo;
+	}
 }
