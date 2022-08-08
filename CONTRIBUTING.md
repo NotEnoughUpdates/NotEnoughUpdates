@@ -24,6 +24,7 @@
 - Run the `gen<IntelliJ/Eclipse>Runs` gradle task. In IntelliJ that can be done in the gradle tab on the right side of your IDE.
 - Optionally, run the `genSources` gradle task.
 - Run the `Minecraft Client` to make sure that everything works.
+  - Note: if you are using OSX, remove the `XstartOnFirstThread` JVM option
 
 ## Logging into Hypixel in a development environment
 
