@@ -1291,15 +1291,15 @@ public class DungeonMap {
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
 
-						float roomX = (float) player.posX / (roomSizeBlocks + 1);
-						float roomY = (float) player.posZ / (roomSizeBlocks + 1);
+						float roomX = (float) (player.posX + 200) / (roomSizeBlocks + 1);
+						float roomY = (float) (player.posZ + 200) / (roomSizeBlocks + 1);
 
 						float playerRoomOffsetX = (float) Math.floor(roomX);
 						float playerConnOffsetX = (float) Math.floor(roomX);
 						float playerRoomOffsetY = (float) Math.floor(roomY);
 						float playerConnOffsetY = (float) Math.floor(roomY);
 
-						float roomXInBlocks = (float) player.posX % (roomSizeBlocks + 1);
+						float roomXInBlocks = (float) (player.posX + 200) % (roomSizeBlocks + 1);
 						if (roomXInBlocks < 2) { //0,1
 							playerConnOffsetX -= 2 / 5f - roomXInBlocks / 5f;
 						} else if (roomXInBlocks > roomSizeBlocks - 2) { //31,30,29
@@ -1309,7 +1309,7 @@ public class DungeonMap {
 							playerRoomOffsetX += (roomXInBlocks - 2) / (roomSizeBlocks - 4);
 						}
 
-						float roomYInBlocks = (float) player.posZ % (roomSizeBlocks + 1);
+						float roomYInBlocks = (float) (player.posZ + 200) % (roomSizeBlocks + 1);
 						if (roomYInBlocks < 2) { //0,1
 							playerConnOffsetY -= 2 / 5f - roomYInBlocks / 5f;
 						} else if (roomYInBlocks > roomSizeBlocks - 2) { //31,30,29
