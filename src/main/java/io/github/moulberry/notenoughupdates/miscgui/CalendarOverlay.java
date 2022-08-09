@@ -1005,7 +1005,7 @@ public class CalendarOverlay {
 								}
 							}
 							if (nextMajorEvent != null) {
-								tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Major:");
+								tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Mayor:");
 								tooltipToDisplay.add(nextMajorEvent.display);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
 									prettyTime(timeUntilMajor, false));
