@@ -43,16 +43,16 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 
 		double extra = 0;
 		double n = 0;
-		if (catacombs.totalXp < 569809640) {
+		if (catacombs.totalXp < CATACOMBS_LEVEL_50_XP) {
 			n = 0.2 * Math.pow(catacombs.level / 50, 1.538679118869934);
 		} else {
 			extra = 500.0 * Math.pow((catacombs.totalXp - CATACOMBS_LEVEL_50_XP) / 142452410.0, 1.0 / 1.781925776625157);
 		}
 
 		if (catacombs.level != 0) {
-			if (catacombs.totalXp < 569809640) {
+			if (catacombs.totalXp < CATACOMBS_LEVEL_50_XP) {
 				weightStruct.add(
-					new WeightStruct(1.2733079672009226 * ((Math.pow(1.18340401286164044, (catacombs.level + 1)) - 1.05994990217254) * (1 + n)))
+					new WeightStruct(Utils.getElement(Constants.WEIGHT, "lily.dungeons.overall").getAsDouble() * ((Math.pow(1.18340401286164044, (catacombs.level + 1)) - 1.05994990217254) * (1 + n)))
 				);
 			} else {
 				weightStruct.add(new WeightStruct((4100 + extra) * 2));

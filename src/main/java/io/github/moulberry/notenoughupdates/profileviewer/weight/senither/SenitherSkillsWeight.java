@@ -54,7 +54,7 @@ public class SenitherSkillsWeight extends SkillsWeight {
 			)
 				.level;
 
-			double maxLevelExp = maxLevel == 50 ? 55172425 : 111672425;
+			double maxLevelExp = maxLevel == 50 ? SKILLS_LEVEL_50 : SKILLS_LEVEL_60;
 			double base = Math.pow(level * 10, 0.5 + exponent + (level / 100)) / 1250;
 			if (currentSkillXp <= maxLevelExp) {
 				weightStruct.add(new WeightStruct(base));
