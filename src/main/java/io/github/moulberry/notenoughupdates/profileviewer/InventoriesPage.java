@@ -559,6 +559,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				selectedInventory = "potion_bag";
 				break;
 			default:
+				getInstance().inventoryTextField.keyTyped(typedChar, keyCode);
 				return;
 		}
 		Utils.playPressSound();
