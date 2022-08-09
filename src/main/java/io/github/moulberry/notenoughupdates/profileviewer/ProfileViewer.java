@@ -27,16 +27,6 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumChatFormatting;
-
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,24 +41,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
 
 public class ProfileViewer {
-	private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {{
-		put("COMMON", "0");
-		put("UNCOMMON", "1");
-		put("RARE", "2");
-		put("EPIC", "3");
-		put("LEGENDARY", "4");
-		put("MYTHIC", "5");
-	}};
-	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
-		new LinkedHashMap<String, ItemStack>() {{
+
+	private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {
+		{
+			put("COMMON", "0");
+			put("UNCOMMON", "1");
+			put("RARE", "2");
+			put("EPIC", "3");
+			put("LEGENDARY", "4");
+			put("MYTHIC", "5");
+		}
+	};
+	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap = new LinkedHashMap<String, ItemStack>() {
+		{
 			put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
 			put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
-			put(
-				"foraging",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging")
-			);
+			put("foraging", Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging"));
 			put(
 				"enchanting",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting")
@@ -81,10 +80,7 @@ public class ProfileViewer {
 			put("combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
 			put("fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
 			put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
-			put(
-				"runecrafting",
-				Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting")
-			);
+			put("runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
 			put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
 			// put("catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
 			put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
@@ -92,62 +88,183 @@ public class ProfileViewer {
 			put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
 			put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
 			put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
-		}};
-	private static final ItemStack CAT_FARMING =
-		Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
-	private static final ItemStack CAT_MINING =
-		Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining");
-	private static final ItemStack CAT_COMBAT =
-		Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat");
-	private static final ItemStack CAT_FORAGING =
-		Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging");
-	private static final ItemStack CAT_FISHING =
-		Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing");
-	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap =
-		new LinkedHashMap<ItemStack, List<String>>() {{
-			put(CAT_FARMING, Utils.createList("WHEAT", "CARROT_ITEM", "POTATO_ITEM", "PUMPKIN", "MELON", "SEEDS",
-				"MUSHROOM_COLLECTION", "INK_SACK:3", "CACTUS", "SUGAR_CANE", "FEATHER", "LEATHER", "PORK", "RAW_CHICKEN",
-				"MUTTON", "RABBIT", "NETHER_STALK"
-			));
-			put(CAT_MINING, Utils.createList("COBBLESTONE", "COAL", "IRON_INGOT", "GOLD_INGOT", "DIAMOND", "INK_SACK:4",
-				"EMERALD", "REDSTONE", "QUARTZ", "OBSIDIAN", "GLOWSTONE_DUST", "GRAVEL", "ICE", "NETHERRACK", "SAND",
-				"ENDER_STONE", null, "MITHRIL_ORE", "HARD_STONE", "GEMSTONE_COLLECTION"
-			));
-			put(CAT_COMBAT, Utils.createList("ROTTEN_FLESH", "BONE", "STRING", "SPIDER_EYE", "SULPHUR", "ENDER_PEARL",
-				"GHAST_TEAR", "SLIME_BALL", "BLAZE_ROD", "MAGMA_CREAM", null, null, null, null, "CHILI_PEPPER"
-			));
+		}
+	};
+	private static final ItemStack CAT_FARMING = Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
+	private static final ItemStack CAT_MINING = Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining");
+	private static final ItemStack CAT_COMBAT = Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat");
+	private static final ItemStack CAT_FORAGING = Utils.createItemStack(
+		Item.getItemFromBlock(Blocks.sapling),
+		EnumChatFormatting.DARK_GREEN + "Foraging"
+	);
+	private static final ItemStack CAT_FISHING = Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing");
+	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap = new LinkedHashMap<ItemStack, List<String>>() {
+		{
+			put(
+				CAT_FARMING,
+				Utils.createList(
+					"WHEAT",
+					"CARROT_ITEM",
+					"POTATO_ITEM",
+					"PUMPKIN",
+					"MELON",
+					"SEEDS",
+					"MUSHROOM_COLLECTION",
+					"INK_SACK:3",
+					"CACTUS",
+					"SUGAR_CANE",
+					"FEATHER",
+					"LEATHER",
+					"PORK",
+					"RAW_CHICKEN",
+					"MUTTON",
+					"RABBIT",
+					"NETHER_STALK"
+				)
+			);
+			put(
+				CAT_MINING,
+				Utils.createList(
+					"COBBLESTONE",
+					"COAL",
+					"IRON_INGOT",
+					"GOLD_INGOT",
+					"DIAMOND",
+					"INK_SACK:4",
+					"EMERALD",
+					"REDSTONE",
+					"QUARTZ",
+					"OBSIDIAN",
+					"GLOWSTONE_DUST",
+					"GRAVEL",
+					"ICE",
+					"NETHERRACK",
+					"SAND",
+					"ENDER_STONE",
+					null,
+					"MITHRIL_ORE",
+					"HARD_STONE",
+					"GEMSTONE_COLLECTION"
+				)
+			);
+			put(
+				CAT_COMBAT,
+				Utils.createList(
+					"ROTTEN_FLESH",
+					"BONE",
+					"STRING",
+					"SPIDER_EYE",
+					"SULPHUR",
+					"ENDER_PEARL",
+					"GHAST_TEAR",
+					"SLIME_BALL",
+					"BLAZE_ROD",
+					"MAGMA_CREAM",
+					null,
+					null,
+					null,
+					null,
+					"CHILI_PEPPER"
+				)
+			);
 			put(CAT_FORAGING, Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
-			put(CAT_FISHING, Utils.createList("RAW_FISH", "RAW_FISH:1", "RAW_FISH:2", "RAW_FISH:3", "PRISMARINE_SHARD",
-				"PRISMARINE_CRYSTALS", "CLAY_BALL", "WATER_LILY", "INK_SACK", "SPONGE", "MAGMA_FISH"
-			));
-
-		}};
-	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap =
-		new LinkedHashMap<ItemStack, List<String>>() {{
-			put(CAT_FARMING, Utils.createList("WHEAT", "CARROT", "POTATO", "PUMPKIN", "MELON", null, "MUSHROOM",
-				"COCOA", "CACTUS", "SUGAR_CANE", "CHICKEN", "COW", "PIG", null, "SHEEP", "RABBIT", "NETHER_WARTS"
-			));
-			put(CAT_MINING, Utils.createList("COBBLESTONE", "COAL", "IRON", "GOLD", "DIAMOND", "LAPIS", "EMERALD",
-				"REDSTONE", "QUARTZ", "OBSIDIAN", "GLOWSTONE", "GRAVEL", "ICE", null, "SAND", "ENDER_STONE", "SNOW",
-				"MITHRIL", "HARD_STONE", null
-			));
-			put(CAT_COMBAT, Utils.createList("ZOMBIE", "SKELETON", "SPIDER", "CAVESPIDER", "CREEPER", "ENDERMAN",
-				"GHAST", "SLIME", "BLAZE", "MAGMA_CUBE", "REVENANT", "TARANTULA", "VOIDLING", "INFERNO"
-			));
+			put(
+				CAT_FISHING,
+				Utils.createList(
+					"RAW_FISH",
+					"RAW_FISH:1",
+					"RAW_FISH:2",
+					"RAW_FISH:3",
+					"PRISMARINE_SHARD",
+					"PRISMARINE_CRYSTALS",
+					"CLAY_BALL",
+					"WATER_LILY",
+					"INK_SACK",
+					"SPONGE",
+					"MAGMA_FISH"
+				)
+			);
+		}
+	};
+	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap = new LinkedHashMap<ItemStack, List<String>>() {
+		{
+			put(
+				CAT_FARMING,
+				Utils.createList(
+					"WHEAT",
+					"CARROT",
+					"POTATO",
+					"PUMPKIN",
+					"MELON",
+					null,
+					"MUSHROOM",
+					"COCOA",
+					"CACTUS",
+					"SUGAR_CANE",
+					"CHICKEN",
+					"COW",
+					"PIG",
+					null,
+					"SHEEP",
+					"RABBIT",
+					"NETHER_WARTS"
+				)
+			);
+			put(
+				CAT_MINING,
+				Utils.createList(
+					"COBBLESTONE",
+					"COAL",
+					"IRON",
+					"GOLD",
+					"DIAMOND",
+					"LAPIS",
+					"EMERALD",
+					"REDSTONE",
+					"QUARTZ",
+					"OBSIDIAN",
+					"GLOWSTONE",
+					"GRAVEL",
+					"ICE",
+					null,
+					"SAND",
+					"ENDER_STONE",
+					"SNOW",
+					"MITHRIL",
+					"HARD_STONE",
+					null
+				)
+			);
+			put(
+				CAT_COMBAT,
+				Utils.createList(
+					"ZOMBIE",
+					"SKELETON",
+					"SPIDER",
+					"CAVESPIDER",
+					"CREEPER",
+					"ENDERMAN",
+					"GHAST",
+					"SLIME",
+					"BLAZE",
+					"MAGMA_CUBE",
+					"REVENANT",
+					"TARANTULA",
+					"VOIDLING",
+					"INFERNO"
+				)
+			);
 			put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
 			put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
-
-		}};
-	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap =
-		new LinkedHashMap<String, ItemStack>() {{
+		}
+	};
+	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap = new LinkedHashMap<String, ItemStack>() {
+		{
 			/* FARMING COLLECTIONS */
 			put("WHEAT", Utils.createItemStack(Items.wheat, EnumChatFormatting.YELLOW + "Wheat"));
 			put("CARROT_ITEM", Utils.createItemStack(Items.carrot, EnumChatFormatting.YELLOW + "Carrot"));
 			put("POTATO_ITEM", Utils.createItemStack(Items.potato, EnumChatFormatting.YELLOW + "Potato"));
-			put(
-				"PUMPKIN",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.pumpkin), EnumChatFormatting.YELLOW + "Pumpkin")
-			);
+			put("PUMPKIN", Utils.createItemStack(Item.getItemFromBlock(Blocks.pumpkin), EnumChatFormatting.YELLOW + "Pumpkin"));
 			put("MELON", Utils.createItemStack(Items.melon, EnumChatFormatting.YELLOW + "Melon"));
 			put("SEEDS", Utils.createItemStack(Items.wheat_seeds, EnumChatFormatting.YELLOW + "Seeds"));
 			put(
@@ -166,10 +283,7 @@ public class ProfileViewer {
 			put("NETHER_STALK", Utils.createItemStack(Items.nether_wart, EnumChatFormatting.YELLOW + "Nether Wart"));
 
 			/* MINING COLLECTIONS */
-			put(
-				"COBBLESTONE",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.cobblestone), EnumChatFormatting.GRAY + "Cobblestone")
-			);
+			put("COBBLESTONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.cobblestone), EnumChatFormatting.GRAY + "Cobblestone"));
 			put("COAL", Utils.createItemStack(Items.coal, EnumChatFormatting.GRAY + "Coal"));
 			put("IRON_INGOT", Utils.createItemStack(Items.iron_ingot, EnumChatFormatting.GRAY + "Iron Ingot"));
 			put("GOLD_INGOT", Utils.createItemStack(Items.gold_ingot, EnumChatFormatting.GRAY + "Gold Ingot"));
@@ -178,27 +292,15 @@ public class ProfileViewer {
 			put("EMERALD", Utils.createItemStack(Items.emerald, EnumChatFormatting.GRAY + "Emerald"));
 			put("REDSTONE", Utils.createItemStack(Items.redstone, EnumChatFormatting.GRAY + "Redstone"));
 			put("QUARTZ", Utils.createItemStack(Items.quartz, EnumChatFormatting.GRAY + "Nether Quartz"));
-			put(
-				"OBSIDIAN",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.obsidian), EnumChatFormatting.GRAY + "Obsidian")
-			);
+			put("OBSIDIAN", Utils.createItemStack(Item.getItemFromBlock(Blocks.obsidian), EnumChatFormatting.GRAY + "Obsidian"));
 			put("GLOWSTONE_DUST", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Glowstone"));
 			put("GRAVEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.gravel), EnumChatFormatting.GRAY + "Gravel"));
 			put("ICE", Utils.createItemStack(Item.getItemFromBlock(Blocks.ice), EnumChatFormatting.GRAY + "Ice"));
-			put(
-				"NETHERRACK",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.netherrack), EnumChatFormatting.GRAY + "Netherrack")
-			);
+			put("NETHERRACK", Utils.createItemStack(Item.getItemFromBlock(Blocks.netherrack), EnumChatFormatting.GRAY + "Netherrack"));
 			put("SAND", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Sand"));
-			put(
-				"ENDER_STONE",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.end_stone), EnumChatFormatting.GRAY + "End Stone")
-			);
+			put("ENDER_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.end_stone), EnumChatFormatting.GRAY + "End Stone"));
 			put("MITHRIL_ORE", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.GRAY + "Mithril"));
-			put(
-				"HARD_STONE",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.stone), EnumChatFormatting.GRAY + "Hard Stone")
-			);
+			put("HARD_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.stone), EnumChatFormatting.GRAY + "Hard Stone"));
 			put(
 				"GEMSTONE_COLLECTION",
 				Utils.createSkull(
@@ -219,50 +321,32 @@ public class ProfileViewer {
 			put("SLIME_BALL", Utils.createItemStack(Items.slime_ball, EnumChatFormatting.RED + "Slimeball"));
 			put("BLAZE_ROD", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.RED + "Blaze Rod"));
 			put("MAGMA_CREAM", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.RED + "Magma Cream"));
-			put("CHILI_PEPPER", Utils.createSkull(
-				EnumChatFormatting.RED + "Chili Pepper",
-				"3d47abaa-b40b-3826-b20c-d83a7f053bd9",
-				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg1OWM4ZGYxMTA5YzA4YTc1NjI3NWYxZDI4ODdjMjc0ODA0OWZlMzM4Nzc3NjlhN2I0MTVkNTZlZGE0NjlkOCJ9fX0"
-			));
+			put(
+				"CHILI_PEPPER",
+				Utils.createSkull(
+					EnumChatFormatting.RED + "Chili Pepper",
+					"3d47abaa-b40b-3826-b20c-d83a7f053bd9",
+					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg1OWM4ZGYxMTA5YzA4YTc1NjI3NWYxZDI4ODdjMjc0ODA0OWZlMzM4Nzc3NjlhN2I0MTVkNTZlZGE0NjlkOCJ9fX0"
+				)
+			);
 
 			/* FORAGING COLLECTIONS */
 			put("LOG", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Oak"));
-			put(
-				"LOG:1",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Spruce", 1)
-			);
-			put(
-				"LOG:2",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Birch", 2)
-			);
-			put(
-				"LOG_2:1",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Dark Oak", 1)
-			);
+			put("LOG:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Spruce", 1));
+			put("LOG:2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Birch", 2));
+			put("LOG_2:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Dark Oak", 1));
 			put("LOG_2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Acacia"));
-			put(
-				"LOG:3",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Jungle", 3)
-			);
+			put("LOG:3", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Jungle", 3));
 
 			/* FISHING COLLECTIONS */
 			put("RAW_FISH", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Fish"));
 			put("RAW_FISH:1", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Salmon", 1));
 			put("RAW_FISH:2", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Clownfish", 2));
 			put("RAW_FISH:3", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Pufferfish", 3));
-			put(
-				"PRISMARINE_SHARD",
-				Utils.createItemStack(Items.prismarine_shard, EnumChatFormatting.AQUA + "Prismarine Shard")
-			);
-			put(
-				"PRISMARINE_CRYSTALS",
-				Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.AQUA + "Prismarine Crystals")
-			);
+			put("PRISMARINE_SHARD", Utils.createItemStack(Items.prismarine_shard, EnumChatFormatting.AQUA + "Prismarine Shard"));
+			put("PRISMARINE_CRYSTALS", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.AQUA + "Prismarine Crystals"));
 			put("CLAY_BALL", Utils.createItemStack(Items.clay_ball, EnumChatFormatting.AQUA + "Clay"));
-			put(
-				"WATER_LILY",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.waterlily), EnumChatFormatting.AQUA + "Lilypad")
-			);
+			put("WATER_LILY", Utils.createItemStack(Item.getItemFromBlock(Blocks.waterlily), EnumChatFormatting.AQUA + "Lilypad"));
 			put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sack"));
 			put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
 			put(
@@ -273,7 +357,8 @@ public class ProfileViewer {
 					"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ"
 				)
 			);
-		}};
+		}
+	};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
 	private static JsonObject resourceCollection = null;
 	private final NEUManager manager;
@@ -364,10 +449,17 @@ public class ProfileViewer {
 		String nameF = name.toLowerCase();
 		HashMap<String, String> args = new HashMap<>();
 		args.put("name", "" + nameF);
-		manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "player",
-			args, jsonObject -> {
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()
-					&& jsonObject.get("player").isJsonObject()) {
+		manager.hypixelApi.getHypixelApiAsync(
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+			"player",
+			args,
+			jsonObject -> {
+				if (
+					jsonObject != null &&
+					jsonObject.has("success") &&
+					jsonObject.get("success").getAsBoolean() &&
+					jsonObject.get("player").isJsonObject()
+				) {
 					nameToUuid.put(nameF, jsonObject.get("player").getAsJsonObject().get("uuid").getAsString());
 					uuidToHypixelProfile.put(
 						jsonObject.get("player").getAsJsonObject().get("uuid").getAsString(),
@@ -392,17 +484,18 @@ public class ProfileViewer {
 			return;
 		}
 
-		manager.hypixelApi.getApiAsync("https://api.mojang.com/users/profiles/minecraft/" + nameF,
-			(jsonObject) -> {
-				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
-					((JsonPrimitive) jsonObject.get("id")).isString()) {
+		manager.hypixelApi.getApiAsync(
+			"https://api.mojang.com/users/profiles/minecraft/" + nameF,
+			jsonObject -> {
+				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() && ((JsonPrimitive) jsonObject.get("id")).isString()) {
 					String uuid = jsonObject.get("id").getAsString();
 					nameToUuid.put(nameF, uuid);
 					uuidCallback.accept(uuid);
 					return;
 				}
 				uuidCallback.accept(null);
-			}, () -> uuidCallback.accept(null)
+			},
+			() -> uuidCallback.accept(null)
 		);
 	}
 
@@ -414,26 +507,29 @@ public class ProfileViewer {
 			return;
 		}
 
-		getPlayerUUID(nameF, (uuid) -> {
-			if (uuid == null) {
-				getHypixelProfile(nameF, jsonObject -> {
-					if (jsonObject != null) {
-						callback.accept(getProfileReset(nameToUuid.get(nameF), ignored -> {
-						}));
-					} else {
-						callback.accept(null);
-						nameToUuid.put(nameF, null);
+		getPlayerUUID(
+			nameF,
+			uuid -> {
+				if (uuid == null) {
+					getHypixelProfile(
+						nameF,
+						jsonObject -> {
+							if (jsonObject != null) {
+								callback.accept(getProfileReset(nameToUuid.get(nameF), ignored -> {}));
+							} else {
+								callback.accept(null);
+								nameToUuid.put(nameF, null);
+							}
+						}
+					);
+				} else {
+					if (!uuidToHypixelProfile.containsKey(uuid)) {
+						getHypixelProfile(nameF, jsonObject -> {});
 					}
-				});
-			} else {
-				if (!uuidToHypixelProfile.containsKey(uuid)) {
-					getHypixelProfile(nameF, jsonObject -> {
-					});
+					callback.accept(getProfileReset(uuid, ignored -> {}));
 				}
-				callback.accept(getProfileReset(uuid, ignored -> {
-				}));
 			}
-		});
+		);
 	}
 
 	public Profile getProfile(String uuid, Consumer<Profile> callback) {
@@ -452,6 +548,7 @@ public class ProfileViewer {
 	}
 
 	public static class Level {
+
 		public float level = 0;
 		public float maxXpForLevel = 0;
 		public boolean maxed = false;
@@ -460,6 +557,7 @@ public class ProfileViewer {
 	}
 
 	public class Profile {
+
 		private final String uuid;
 		private final HashMap<String, JsonObject> profileMap = new HashMap<>();
 		private final HashMap<String, JsonObject> petsInfoMap = new HashMap<>();
@@ -501,14 +599,18 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "status",
-				args, jsonObject -> {
+			manager.hypixelApi.getHypixelApiAsync(
+				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+				"status",
+				args,
+				jsonObject -> {
 					updatingPlayerStatusState.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
 						playerStatus = jsonObject.get("session").getAsJsonObject();
 					}
-				}, () -> updatingPlayerStatusState.set(false)
+				},
+				() -> updatingPlayerStatusState.set(false)
 			);
 
 			return null;
@@ -537,8 +639,8 @@ public class ProfileViewer {
 					} else {
 						bingoInformation = null;
 					}
-
-				}, () -> updatingBingoInfo.set(false)
+				},
+				() -> updatingBingoInfo.set(false)
 			);
 			return bingoInformation != null ? bingoInformation : null;
 		}
@@ -615,8 +717,7 @@ public class ProfileViewer {
 										}
 									}
 								}
-							} catch (IOException ignored) {
-							}
+							} catch (IOException ignored) {}
 
 							int count = 1;
 							if (element.getAsJsonObject().has("count")) {
@@ -683,8 +784,11 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "skyblock/profiles",
-				args, jsonObject -> {
+			manager.hypixelApi.getHypixelApiAsync(
+				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+				"skyblock/profiles",
+				args,
+				jsonObject -> {
 					updatingSkyblockProfilesState.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
@@ -721,14 +825,14 @@ public class ProfileViewer {
 										lastCuteName = cuteName;
 									}
 								}
-
 							}
 						}
 						latestProfile = lastCuteName;
 
 						if (runnable != null) runnable.run();
 					}
-				}, () -> updatingSkyblockProfilesState.set(false)
+				},
+				() -> updatingSkyblockProfilesState.set(false)
 			);
 
 			return null;
@@ -745,8 +849,11 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("player", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "guild",
-				args, jsonObject -> {
+			manager.hypixelApi.getHypixelApiAsync(
+				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+				"guild",
+				args,
+				jsonObject -> {
 					updatingGuildInfoState.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
@@ -756,7 +863,8 @@ public class ProfileViewer {
 
 						if (runnable != null) runnable.run();
 					}
-				}, () -> updatingGuildInfoState.set(false)
+				},
+				() -> updatingGuildInfoState.set(false)
 			);
 
 			return null;
@@ -798,8 +906,7 @@ public class ProfileViewer {
 		}
 
 		public List<JsonObject> getCoopProfileInformation(String profileName) {
-			JsonArray playerInfo = getSkyblockProfiles(() -> {
-			});
+			JsonArray playerInfo = getSkyblockProfiles(() -> {});
 			if (playerInfo == null) return null;
 			if (profileName == null) profileName = latestProfile;
 			if (coopProfileMap.containsKey(profileName)) return coopProfileMap.get(profileName);
@@ -867,10 +974,25 @@ public class ProfileViewer {
 
 			Map<String, Level> out = new HashMap<>();
 
-			List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "carpentry", "farming", "combat", "fishing", "alchemy", "runecrafting", "social");
+			List<String> skills = Arrays.asList(
+				"taming",
+				"mining",
+				"foraging",
+				"enchanting",
+				"carpentry",
+				"farming",
+				"combat",
+				"fishing",
+				"alchemy",
+				"runecrafting",
+				"social"
+			);
 			float totalSkillXP = 0;
 			for (String skillName : skills) {
-				float skillExperience = Utils.getElementAsFloat(Utils.getElement(profileInfo, "experience_skill_" + (skillName.equals("social") ? "social2" : skillName)), 0);
+				float skillExperience = Utils.getElementAsFloat(
+					Utils.getElement(profileInfo, "experience_skill_" + (skillName.equals("social") ? "social2" : skillName)),
+					0
+				);
 				totalSkillXP += skillExperience;
 
 				JsonArray levelingArray = Utils.getElement(leveling, "leveling_xp").getAsJsonArray();
@@ -880,7 +1002,13 @@ public class ProfileViewer {
 					levelingArray = Utils.getElement(leveling, "social").getAsJsonArray();
 				}
 
-				int maxLevel = getCap(leveling, skillName) + (skillName.equals("farming") ? Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.farming_level_cap"), 0) : 0);
+				int maxLevel =
+					getCap(leveling, skillName) +
+					(
+						skillName.equals("farming")
+							? Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.farming_level_cap"), 0)
+							: 0
+					);
 				out.put(skillName, getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
 
@@ -889,22 +1017,50 @@ public class ProfileViewer {
 				return null;
 			}
 
-			out.put("hotm", getLevel(Utils.getElement(leveling, "leveling_xp").getAsJsonArray(), Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0), getCap(leveling, "HOTM"), false));
+			out.put(
+				"hotm",
+				getLevel(
+					Utils.getElement(leveling, "leveling_xp").getAsJsonArray(),
+					Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0),
+					getCap(leveling, "HOTM"),
+					false
+				)
+			);
 
-			out.put("catacombs", getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(),
-				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.experience"), 0), getCap(leveling, "catacombs"), false
-			));
+			out.put(
+				"catacombs",
+				getLevel(
+					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+					Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.experience"), 0),
+					getCap(leveling, "catacombs"),
+					false
+				)
+			);
 
 			List<String> dungeonClasses = Arrays.asList("healer", "tank", "mage", "archer", "berserk");
 			for (String className : dungeonClasses) {
-				float classExperience = Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes." + className + ".experience"), 0);
-				out.put(className, getLevel(Utils.getElement(leveling, "catacombs").getAsJsonArray(), classExperience, getCap(leveling, "catacombs"), false));
+				float classExperience = Utils.getElementAsFloat(
+					Utils.getElement(profileInfo, "dungeons.player_classes." + className + ".experience"),
+					0
+				);
+				out.put(
+					className,
+					getLevel(
+						Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+						classExperience,
+						getCap(leveling, "catacombs"),
+						false
+					)
+				);
 			}
 
 			List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 			for (String slayerName : slayers) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses." + slayerName + ".xp"), 0);
-				out.put(slayerName, getLevel(Utils.getElement(leveling, "slayer_xp." + slayerName).getAsJsonArray(), slayerExperience, 9, true));
+				out.put(
+					slayerName,
+					getLevel(Utils.getElement(leveling, "slayer_xp." + slayerName).getAsJsonArray(), slayerExperience, 9, true)
+				);
 			}
 
 			skyblockInfoCache.put(profileName, out);
@@ -970,7 +1126,7 @@ public class ProfileViewer {
 
 			JsonObject inventoryInfo = new JsonObject();
 
-			String[] inv_names = new String[]{
+			String[] inv_names = new String[] {
 				"inv_armor",
 				"fishing_bag",
 				"quiver",
@@ -982,9 +1138,9 @@ public class ProfileViewer {
 				"inv_contents",
 				"talisman_bag",
 				"candy_inventory_contents",
-				"equippment_contents"
+				"equippment_contents",
 			};
-			String[] inv_bytes = new String[]{
+			String[] inv_bytes = new String[] {
 				inv_armor_bytes,
 				fishing_bag_bytes,
 				quiver_bytes,
@@ -996,7 +1152,7 @@ public class ProfileViewer {
 				inv_contents_bytes,
 				talisman_bag_bytes,
 				candy_inventory_contents_bytes,
-				equipment_contents_bytes
+				equipment_contents_bytes,
 			};
 			for (int i = 0; i < inv_bytes.length; i++) {
 				try {
@@ -1008,10 +1164,10 @@ public class ProfileViewer {
 						JsonObject temp = getBackpackData(backpack_contents_json, backpack_icons);
 						contents = (JsonArray) temp.get("contents");
 						inventoryInfo.add("backpack_sizes", temp.get("backpack_sizes"));
-
 					} else {
-						NBTTagCompound inv_contents_nbt =
-							CompressedStreamTools.readCompressed(new ByteArrayInputStream(Base64.getDecoder().decode(bytes)));
+						NBTTagCompound inv_contents_nbt = CompressedStreamTools.readCompressed(
+							new ByteArrayInputStream(Base64.getDecoder().decode(bytes))
+						);
 						NBTTagList items = inv_contents_nbt.getTagList("i", 10);
 						for (int j = 0; j < items.tagCount(); j++) {
 							JsonObject item = manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
@@ -1069,8 +1225,9 @@ public class ProfileViewer {
 
 			for (String backpack : backpackArray) {
 				try {
-					NBTTagCompound inv_contents_nbt =
-						CompressedStreamTools.readCompressed(new ByteArrayInputStream(Base64.getDecoder().decode(backpack)));
+					NBTTagCompound inv_contents_nbt = CompressedStreamTools.readCompressed(
+						new ByteArrayInputStream(Base64.getDecoder().decode(backpack))
+					);
 					NBTTagList items = inv_contents_nbt.getTagList("i", 10);
 
 					backpackSizes.add(new JsonPrimitive(items.tagCount()));
@@ -1078,8 +1235,7 @@ public class ProfileViewer {
 						JsonObject item = manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
 						contents.add(item);
 					}
-				} catch (IOException ignored) {
-				}
+				} catch (IOException ignored) {}
 			}
 
 			JsonObject bundledReturn = new JsonObject();
@@ -1189,8 +1345,9 @@ public class ProfileViewer {
 				}
 			}
 			for (JsonObject current_member_info : coopMembers) {
-				if (!current_member_info.has("crafted_generators") ||
-					!current_member_info.get("crafted_generators").isJsonArray()) continue;
+				if (
+					!current_member_info.has("crafted_generators") || !current_member_info.get("crafted_generators").isJsonArray()
+				) continue;
 				JsonArray crafted_generators = Utils.getElement(current_member_info, "crafted_generators").getAsJsonArray();
 				for (int j = 0; j < crafted_generators.size(); j++) {
 					String unlocked = crafted_generators.get(j).getAsString();
@@ -1274,11 +1431,13 @@ public class ProfileViewer {
 				return null;
 			}
 
-			PlayerStats.Stats stats =
-				PlayerStats.getStats(
-					getSkyblockInfo(profileName), getInventoryInfo(profileName), getCollectionInfo(profileName),
-					getPetsInfo(profileName), profileInfo
-				);
+			PlayerStats.Stats stats = PlayerStats.getStats(
+				getSkyblockInfo(profileName),
+				getInventoryInfo(profileName),
+				getCollectionInfo(profileName),
+				getPetsInfo(profileName),
+				profileInfo
+			);
 			if (stats == null) return null;
 			this.stats.put(profileName, stats);
 			return stats;

@@ -26,6 +26,13 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -35,15 +42,8 @@ import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class PlayerStats {
+
 	public static final String HEALTH = "health";
 	public static final String DEFENCE = "defence";
 	public static final String STRENGTH = "strength";
@@ -58,7 +58,7 @@ public class PlayerStats {
 	public static final String MINING_FORTUNE = "mining_fortune";
 	public static final String MINING_SPEED = "mining_speed";
 
-	public static final String[] defaultStatNames = new String[]{
+	public static final String[] defaultStatNames = new String[] {
 		"health",
 		"defence",
 		"strength",
@@ -73,9 +73,9 @@ public class PlayerStats {
 		"ferocity",
 		"ability_damage",
 		"mining_fortune",
-		"mining_speed"
+		"mining_speed",
 	};
-	public static final String[] defaultStatNamesPretty = new String[]{
+	public static final String[] defaultStatNamesPretty = new String[] {
 		EnumChatFormatting.RED + "\u2764 Health",
 		EnumChatFormatting.GREEN + "\u2748 Defence",
 		EnumChatFormatting.RED + "\u2741 Strength",
@@ -90,83 +90,23 @@ public class PlayerStats {
 		EnumChatFormatting.RED + "\u2AFD Ferocity",
 		EnumChatFormatting.RED + "\u2739 Ability Damage",
 		EnumChatFormatting.GOLD + "\u2618 Mining Fortune",
-		EnumChatFormatting.GOLD + "\u2E15 Mining Speed"
+		EnumChatFormatting.GOLD + "\u2E15 Mining Speed",
 	};
-
-	public static class Stats {
-		JsonObject statsJson = new JsonObject();
-
-		/*public float health;
-		public float defence;
-		public float strength;
-		public float speed;
-		public float crit_chance;
-		public float crit_damage;
-		public float bonus_attack_speed;
-		public float intelligence;
-		public float sea_creature_chance;
-		public float magic_find;
-		public float pet_luck;*/
-
-		public Stats(Stats... statses) {
-			for (Stats stats : statses) {
-				add(stats);
-			}
+	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {
+		{
+			put(HEALTH, Pattern.compile("^Health: ((?:\\+|-)[0-9]+)"));
+			put(DEFENCE, Pattern.compile("^Defense: ((?:\\+|-)[0-9]+)"));
+			put(STRENGTH, Pattern.compile("^Strength: ((?:\\+|-)[0-9]+)"));
+			put(SPEED, Pattern.compile("^Speed: ((?:\\+|-)[0-9]+)"));
+			put(CRIT_CHANCE, Pattern.compile("^Crit Chance: ((?:\\+|-)[0-9]+)"));
+			put(CRIT_DAMAGE, Pattern.compile("^Crit Damage: ((?:\\+|-)[0-9]+)"));
+			put(BONUS_ATTACK_SPEED, Pattern.compile("^Bonus Attack Speed: ((?:\\+|-)[0-9]+)"));
+			put(INTELLIGENCE, Pattern.compile("^Intelligence: ((?:\\+|-)[0-9]+)"));
+			put(SEA_CREATURE_CHANCE, Pattern.compile("^Sea Creature Chance: ((?:\\+|-)[0-9]+)"));
+			put("ferocity", Pattern.compile("^Ferocity: ((?:\\+|-)[0-9]+)"));
+			put("ability_damage", Pattern.compile("^Ability Damage: ((?:\\+|-)[0-9]+)"));
 		}
-
-		/*@Override
-		public String toString() {
-			return String.format("{health=%s,defence=%s,strength=%s,speed=%s,crit_chance=%s,crit_damage=%s," +
-					"bonus_attack_speed=%s,intelligence=%s,sea_creature_chance=%s,magic_find=%s,pet_luck=%s}",
-				stats.get("health"), defence, strength, speed, crit_chance, crit_damage, bonus_attack_speed, intelligence,
-				sea_creature_chance, magic_find, pet_luck
-			);
-		}*/
-
-		public float get(String statName) {
-			if (statsJson.has(statName)) {
-				return statsJson.get(statName).getAsFloat();
-			} else {
-				return 0;
-			}
-		}
-
-		public Stats add(Stats stats) {
-			for (Map.Entry<String, JsonElement> statEntry : stats.statsJson.entrySet()) {
-				if (statEntry.getValue().isJsonPrimitive() && ((JsonPrimitive) statEntry.getValue()).isNumber()) {
-					if (!statsJson.has(statEntry.getKey())) {
-						statsJson.add(statEntry.getKey(), statEntry.getValue());
-					} else {
-						JsonPrimitive e = statsJson.get(statEntry.getKey()).getAsJsonPrimitive();
-						float statNum = e.getAsFloat() + statEntry.getValue().getAsFloat();
-						statsJson.add(statEntry.getKey(), new JsonPrimitive(statNum));
-					}
-				}
-			}
-			return this;
-		}
-
-		public void scale(String statName, float scale) {
-			if (statsJson.has(statName)) {
-				statsJson.add(statName, new JsonPrimitive(statsJson.get(statName).getAsFloat() * scale));
-			}
-		}
-
-		public void scaleAll(float scale) {
-			for (Map.Entry<String, JsonElement> statEntry : statsJson.entrySet()) {
-				statsJson.add(statEntry.getKey(), new JsonPrimitive(statEntry.getValue().getAsFloat() * scale));
-			}
-		}
-
-		public void addStat(String statName, float amount) {
-			if (!statsJson.has(statName)) {
-				statsJson.add(statName, new JsonPrimitive(amount));
-			} else {
-				JsonPrimitive e = statsJson.get(statName).getAsJsonPrimitive();
-				statsJson.add(statName, new JsonPrimitive(e.getAsFloat() + amount));
-			}
-		}
-	}
+	};
 
 	public static Stats getBaseStats() {
 		JsonObject misc = Constants.MISC;
@@ -258,8 +198,7 @@ public class PlayerStats {
 	}
 
 	private static float harpBonus(JsonObject profile) {
-		String talk_to_melody =
-			Utils.getElementAsString(Utils.getElement(profile, "objectives.talk_to_melody.status"), "INCOMPLETE");
+		String talk_to_melody = Utils.getElementAsString(Utils.getElement(profile, "objectives.talk_to_melody.status"), "INCOMPLETE");
 		if (talk_to_melody.equalsIgnoreCase("COMPLETE")) {
 			return 26;
 		} else {
@@ -268,20 +207,15 @@ public class PlayerStats {
 	}
 
 	private static float hotmFortune(JsonObject profile, Map<String, ProfileViewer.Level> skyblockInfo) {
-		int miningLevelFortune =
-			(int) (4 * (float) Math.floor(skyblockInfo.get("mining").level));
-		int miningFortuneStat =
-			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) * 5);
-		int miningFortune2Stat =
-			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"), 0)) * 5);
+		int miningLevelFortune = (int) (4 * (float) Math.floor(skyblockInfo.get("mining").level));
+		int miningFortuneStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) * 5);
+		int miningFortune2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"), 0)) * 5);
 		return miningFortuneStat + miningFortune2Stat + miningLevelFortune;
 	}
 
 	private static float hotmSpeed(JsonObject profile) {
-		int miningSpeedStat =
-			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) * 20);
-		int miningSpeed2Stat =
-			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) * 40);
+		int miningSpeedStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) * 20);
+		int miningSpeed2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) * 40);
 		return miningSpeedStat + miningSpeed2Stat;
 	}
 
@@ -358,12 +292,13 @@ public class PlayerStats {
 				case "LAPIS_ARMOR_":
 					bonuses.addStat(HEALTH, 60);
 					break;
-				case "EMERALD_ARMOR_": {
-					int bonus = (int) Math.floor(Utils.getElementAsFloat(Utils.getElement(collectionInfo, "EMERALD"), 0) / 3000);
-					bonuses.addStat(HEALTH, bonus);
-					bonuses.addStat(DEFENCE, bonus);
-				}
-				break;
+				case "EMERALD_ARMOR_":
+					{
+						int bonus = (int) Math.floor(Utils.getElementAsFloat(Utils.getElement(collectionInfo, "EMERALD"), 0) / 3000);
+						bonuses.addStat(HEALTH, bonus);
+						bonuses.addStat(DEFENCE, bonus);
+					}
+					break;
 				case "FAIRY_":
 					bonuses.addStat(HEALTH, Utils.getElementAsFloat(Utils.getElement(profile, "fairy_souls_collected"), 0));
 					break;
@@ -377,10 +312,7 @@ public class PlayerStats {
 					bonuses.addStat(HEALTH, 50 * Math.round(stats.get(CRIT_DAMAGE)));
 					break;
 				case "ANGLER_":
-					bonuses.addStat(
-						HEALTH,
-						10 * (float) Math.floor(skyblockInfo.get("fishing").level)
-					);
+					bonuses.addStat(HEALTH, 10 * (float) Math.floor(skyblockInfo.get("fishing").level));
 					bonuses.addStat(SEA_CREATURE_CHANCE, 4);
 					break;
 				case "ARMOR_OF_MAGMA_":
@@ -420,20 +352,6 @@ public class PlayerStats {
 
 		return bonuses;
 	}
-
-	private static final HashMap<String, Pattern> STAT_PATTERN_MAP = new HashMap<String, Pattern>() {{
-		put(HEALTH, Pattern.compile("^Health: ((?:\\+|-)[0-9]+)"));
-		put(DEFENCE, Pattern.compile("^Defense: ((?:\\+|-)[0-9]+)"));
-		put(STRENGTH, Pattern.compile("^Strength: ((?:\\+|-)[0-9]+)"));
-		put(SPEED, Pattern.compile("^Speed: ((?:\\+|-)[0-9]+)"));
-		put(CRIT_CHANCE, Pattern.compile("^Crit Chance: ((?:\\+|-)[0-9]+)"));
-		put(CRIT_DAMAGE, Pattern.compile("^Crit Damage: ((?:\\+|-)[0-9]+)"));
-		put(BONUS_ATTACK_SPEED, Pattern.compile("^Bonus Attack Speed: ((?:\\+|-)[0-9]+)"));
-		put(INTELLIGENCE, Pattern.compile("^Intelligence: ((?:\\+|-)[0-9]+)"));
-		put(SEA_CREATURE_CHANCE, Pattern.compile("^Sea Creature Chance: ((?:\\+|-)[0-9]+)"));
-		put("ferocity", Pattern.compile("^Ferocity: ((?:\\+|-)[0-9]+)"));
-		put("ability_damage", Pattern.compile("^Ability Damage: ((?:\\+|-)[0-9]+)"));
-	}};
 
 	private static Stats getStatForItem(String internalname, JsonObject item, JsonArray lore) {
 		Stats stats = new Stats();
@@ -498,8 +416,7 @@ public class PlayerStats {
 					if (itemBonuses.containsKey(internalname)) {
 						continue;
 					}
-					if (!talismanOnly ||
-						Utils.checkItemType(item.get("lore").getAsJsonArray(), true, "ACCESSORY", "HATCCESSORY") >= 0) {
+					if (!talismanOnly || Utils.checkItemType(item.get("lore").getAsJsonArray(), true, "ACCESSORY", "HATCCESSORY") >= 0) {
 						Stats itemBonus = getStatForItem(internalname, item, item.get("lore").getAsJsonArray());
 
 						itemBonuses.put(internalname, itemBonus);
@@ -531,13 +448,21 @@ public class PlayerStats {
 		JsonObject petnums = Constants.PETNUMS;
 		if (petsJson == null || petnums == null) return new Stats();
 
-		if (petsInfo != null && petsInfo.has("active_pet") && petsInfo.get("active_pet") != null &&
-			petsInfo.get("active_pet").isJsonObject()) {
+		if (
+			petsInfo != null &&
+			petsInfo.has("active_pet") &&
+			petsInfo.get("active_pet") != null &&
+			petsInfo.get("active_pet").isJsonObject()
+		) {
 			JsonObject pet = petsInfo.get("active_pet").getAsJsonObject();
-			if (pet.has("type") && pet.get("type") != null &&
-				pet.has("tier") && pet.get("tier") != null &&
-				pet.has("exp") && pet.get("exp") != null) {
-
+			if (
+				pet.has("type") &&
+				pet.get("type") != null &&
+				pet.has("tier") &&
+				pet.get("tier") != null &&
+				pet.has("exp") &&
+				pet.get("exp") != null
+			) {
 				String petname = pet.get("type").getAsString();
 				String tier = pet.get("tier").getAsString();
 				String heldItem = Utils.getElementAsString(pet.get("heldItem"), null);
@@ -550,8 +475,11 @@ public class PlayerStats {
 				float exp = pet.get("exp").getAsFloat();
 				if (tierNum == null) return new Stats();
 
-				if (pet.has("heldItem") && !pet.get("heldItem").isJsonNull() &&
-					pet.get("heldItem").getAsString().equals("PET_ITEM_TIER_BOOST")) {
+				if (
+					pet.has("heldItem") &&
+					!pet.get("heldItem").isJsonNull() &&
+					pet.get("heldItem").getAsString().equals("PET_ITEM_TIER_BOOST")
+				) {
 					tierNum = "" + (Integer.parseInt(tierNum) + 1);
 				}
 
@@ -599,18 +527,15 @@ public class PlayerStats {
 							String key = entryBoost.getKey().toLowerCase();
 							try {
 								stats.addStat(key, entryBoost.getValue());
-							} catch (Exception ignored) {
-							}
+							} catch (Exception ignored) {}
 						}
-
 					}
 					if (petStatBootsMult != null) {
 						for (Map.Entry<String, Float> entryBoost : petStatBootsMult.entrySet()) {
 							String key = entryBoost.getKey().toLowerCase();
 							try {
 								stats.scale(key, entryBoost.getValue());
-							} catch (Exception ignored) {
-							}
+							} catch (Exception ignored) {}
 						}
 					}
 				}
@@ -667,16 +592,21 @@ public class PlayerStats {
 		}
 
 		for (Map.Entry<String, JsonElement> statEntry : stats.statsJson.entrySet()) {
-			if (statEntry.getKey().equals(CRIT_DAMAGE) ||
+			if (
+				statEntry.getKey().equals(CRIT_DAMAGE) ||
 				statEntry.getKey().equals(INTELLIGENCE) ||
-				statEntry.getKey().equals(BONUS_ATTACK_SPEED)) continue;
+				statEntry.getKey().equals(BONUS_ATTACK_SPEED)
+			) continue;
 			stats.statsJson.add(statEntry.getKey(), new JsonPrimitive(Math.max(0, statEntry.getValue().getAsFloat())));
 		}
 	}
 
 	public static Stats getStats(
-		Map<String, ProfileViewer.Level> skyblockInfo, JsonObject inventoryInfo, JsonObject collectionInfo,
-		JsonObject petsInfo, JsonObject profile
+		Map<String, ProfileViewer.Level> skyblockInfo,
+		JsonObject inventoryInfo,
+		JsonObject collectionInfo,
+		JsonObject petsInfo,
+		JsonObject profile
 	) {
 		if (skyblockInfo == null || inventoryInfo == null || collectionInfo == null || profile == null) return null;
 
@@ -720,8 +650,7 @@ public class PlayerStats {
 	 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getInventoryInfo(String)
 	 */
 	public static int getMagicalPower(JsonObject inventoryInfo) {
-		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") ||
-			!inventoryInfo.get("talisman_bag").isJsonArray()) {
+		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") || !inventoryInfo.get("talisman_bag").isJsonArray()) {
 			return -1;
 		}
 		JsonArray accessories = inventoryInfo.get("talisman_bag").getAsJsonArray();
@@ -781,7 +710,6 @@ public class PlayerStats {
 					powderAmount += 22;
 					break;
 			}
-
 		}
 		return powderAmount;
 	}
@@ -796,13 +724,91 @@ public class PlayerStats {
 	public static @Nullable String getSelectedMagicalPower(JsonObject profileInfo) {
 		String abs = "accessory_bag_storage";
 
-		if (profileInfo == null
-			|| !profileInfo.has(abs)
-			|| !profileInfo.get(abs).isJsonObject()
-			|| !profileInfo.get(abs).getAsJsonObject().has("selected_power")) {
+		if (
+			profileInfo == null ||
+			!profileInfo.has(abs) ||
+			!profileInfo.get(abs).isJsonObject() ||
+			!profileInfo.get(abs).getAsJsonObject().has("selected_power")
+		) {
 			return null;
 		}
 		String selectedPower = profileInfo.get(abs).getAsJsonObject().get("selected_power").getAsString();
 		return selectedPower.substring(0, 1).toUpperCase() + selectedPower.substring(1);
+	}
+
+	public static class Stats {
+
+		JsonObject statsJson = new JsonObject();
+
+		/*public float health;
+		public float defence;
+		public float strength;
+		public float speed;
+		public float crit_chance;
+		public float crit_damage;
+		public float bonus_attack_speed;
+		public float intelligence;
+		public float sea_creature_chance;
+		public float magic_find;
+		public float pet_luck;*/
+
+		public Stats(Stats... statses) {
+			for (Stats stats : statses) {
+				add(stats);
+			}
+		}
+
+		/*@Override
+		public String toString() {
+			return String.format("{health=%s,defence=%s,strength=%s,speed=%s,crit_chance=%s,crit_damage=%s," +
+					"bonus_attack_speed=%s,intelligence=%s,sea_creature_chance=%s,magic_find=%s,pet_luck=%s}",
+				stats.get("health"), defence, strength, speed, crit_chance, crit_damage, bonus_attack_speed, intelligence,
+				sea_creature_chance, magic_find, pet_luck
+			);
+		}*/
+
+		public float get(String statName) {
+			if (statsJson.has(statName)) {
+				return statsJson.get(statName).getAsFloat();
+			} else {
+				return 0;
+			}
+		}
+
+		public Stats add(Stats stats) {
+			for (Map.Entry<String, JsonElement> statEntry : stats.statsJson.entrySet()) {
+				if (statEntry.getValue().isJsonPrimitive() && ((JsonPrimitive) statEntry.getValue()).isNumber()) {
+					if (!statsJson.has(statEntry.getKey())) {
+						statsJson.add(statEntry.getKey(), statEntry.getValue());
+					} else {
+						JsonPrimitive e = statsJson.get(statEntry.getKey()).getAsJsonPrimitive();
+						float statNum = e.getAsFloat() + statEntry.getValue().getAsFloat();
+						statsJson.add(statEntry.getKey(), new JsonPrimitive(statNum));
+					}
+				}
+			}
+			return this;
+		}
+
+		public void scale(String statName, float scale) {
+			if (statsJson.has(statName)) {
+				statsJson.add(statName, new JsonPrimitive(statsJson.get(statName).getAsFloat() * scale));
+			}
+		}
+
+		public void scaleAll(float scale) {
+			for (Map.Entry<String, JsonElement> statEntry : statsJson.entrySet()) {
+				statsJson.add(statEntry.getKey(), new JsonPrimitive(statEntry.getValue().getAsFloat() * scale));
+			}
+		}
+
+		public void addStat(String statName, float amount) {
+			if (!statsJson.has(statName)) {
+				statsJson.add(statName, new JsonPrimitive(amount));
+			} else {
+				JsonPrimitive e = statsJson.get(statName).getAsJsonPrimitive();
+				statsJson.add(statName, new JsonPrimitive(e.getAsFloat() + amount));
+			}
+		}
 	}
 }

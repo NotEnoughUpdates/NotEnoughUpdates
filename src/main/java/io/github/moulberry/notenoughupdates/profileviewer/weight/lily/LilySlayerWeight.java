@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SlayerWe
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-
 import java.util.Map;
 
 public class LilySlayerWeight extends SlayerWeight {

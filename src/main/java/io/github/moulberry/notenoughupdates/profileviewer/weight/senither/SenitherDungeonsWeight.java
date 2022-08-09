@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Dungeons
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-
 import java.util.Map;
 
 public class SenitherDungeonsWeight extends DungeonsWeight {
@@ -52,7 +51,8 @@ public class SenitherDungeonsWeight extends DungeonsWeight {
 	@Override
 	public void getDungeonWeight() {
 		ProfileViewer.Level catacombs = player.get("catacombs");
-		double base = Math.pow(catacombs.level, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.catacombs"), 0);
+		double base =
+			Math.pow(catacombs.level, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.catacombs"), 0);
 
 		if (catacombs.totalXp <= CATACOMBS_LEVEL_50_XP) {
 			weightStruct.add(new WeightStruct(base));

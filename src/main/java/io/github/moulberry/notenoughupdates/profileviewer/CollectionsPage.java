@@ -23,6 +23,13 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import java.awt.*;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -31,38 +38,49 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+public class CollectionsPage extends GuiProfileViewerPage {
 
-public class CollectionPage {
-
-	private static int guiLeft;
-	private static int guiTop;
-	private static int sizeX = 413;
-	private static int sizeY = 202;
 	public static final ResourceLocation pv_cols = new ResourceLocation("notenoughupdates:pv_cols.png");
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final int COLLS_XCOUNT = 5;
 	private static final int COLLS_YCOUNT = 4;
 	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
 	private static final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
-	private static final String[] romans = new String[]{
-		"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI",
-		"XII", "XIII", "XIV", "XV", "XVI", "XVII", "XIX", "XX"
+	private static final String[] romans = new String[] {
+		"I",
+		"II",
+		"III",
+		"IV",
+		"V",
+		"VI",
+		"VII",
+		"VIII",
+		"IX",
+		"X",
+		"XI",
+		"XII",
+		"XIII",
+		"XIV",
+		"XV",
+		"XVI",
+		"XVII",
+		"XIX",
+		"XX",
 	};
-	private static List<String> tooltipToDisplay = null;
 	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+	private static List<String> tooltipToDisplay = null;
 	private static ItemStack selectedCollectionCategory = null;
-	public static void drawColsPage(int mouseX, int mouseY, int width, int height) {
-		guiLeft = GuiProfileViewer.getGuiLeft();
-		guiTop = GuiProfileViewer.getGuiTop();
+
+	public CollectionsPage(GuiProfileViewer instance) {
+		super(instance);
+	}
+
+	public void drawPage(int mouseX, int mouseY, float partialTicks) {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_cols);
-		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
 		JsonObject collectionInfo = GuiProfileViewer.getProfile().getCollectionInfo(GuiProfileViewer.getProfileId());
 		if (collectionInfo == null) {
@@ -87,18 +105,29 @@ public class CollectionPage {
 				if (selectedCollectionCategory == null) selectedCollectionCategory = stack;
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 				if (stack == selectedCollectionCategory) {
-					Utils.drawTexturedRect(guiLeft + 7, guiTop + 10 + collectionCatYSize * yIndex, 20, 20,
-						20 / 256f, 0, 20 / 256f, 0, GL11.GL_NEAREST
+					Utils.drawTexturedRect(
+						guiLeft + 7,
+						guiTop + 10 + collectionCatYSize * yIndex,
+						20,
+						20,
+						20 / 256f,
+						0,
+						20 / 256f,
+						0,
+						GL11.GL_NEAREST
 					);
-					Utils.drawItemStackWithText(
-						stack,
-						guiLeft + 10,
-						guiTop + 13 + collectionCatYSize * yIndex,
-						"" + (yIndex + 1)
-					);
+					Utils.drawItemStackWithText(stack, guiLeft + 10, guiTop + 13 + collectionCatYSize * yIndex, "" + (yIndex + 1));
 				} else {
-					Utils.drawTexturedRect(guiLeft + 7, guiTop + 10 + collectionCatYSize * yIndex, 20, 20,
-						0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST
+					Utils.drawTexturedRect(
+						guiLeft + 7,
+						guiTop + 10 + collectionCatYSize * yIndex,
+						20,
+						20,
+						0,
+						20 / 256f,
+						0,
+						20 / 256f,
+						GL11.GL_NEAREST
 					);
 					Utils.drawItemStackWithText(stack, guiLeft + 9, guiTop + 12 + collectionCatYSize * yIndex, "" + (yIndex + 1));
 				}
@@ -156,37 +185,66 @@ public class CollectionPage {
 
 						GlStateManager.color(1, 1, 1, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-						Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20 * (1 - completedness),
-							0, 20 / 256f, 0, 20 * (1 - completedness) / 256f, GL11.GL_NEAREST
+						Utils.drawTexturedRect(
+							guiLeft + x,
+							guiTop + y,
+							20,
+							20 * (1 - completedness),
+							0,
+							20 / 256f,
+							0,
+							20 * (1 - completedness) / 256f,
+							GL11.GL_NEAREST
 						);
 						GlStateManager.color(1, 185 / 255f, 0, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-						Utils.drawTexturedRect(guiLeft + x, guiTop + y + 20 * (1 - completedness), 20, 20 * (completedness),
-							0, 20 / 256f, 20 * (1 - completedness) / 256f, 20 / 256f, GL11.GL_NEAREST
+						Utils.drawTexturedRect(
+							guiLeft + x,
+							guiTop + y + 20 * (1 - completedness),
+							20,
+							20 * (completedness),
+							0,
+							20 / 256f,
+							20 * (1 - completedness) / 256f,
+							20 / 256f,
+							GL11.GL_NEAREST
 						);
 						Utils.drawItemStack(collectionItem, guiLeft + (int) x + 2, guiTop + (int) y + 2);
 
 						if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
 							if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
 								tooltipToDisplay = new ArrayList<>();
-								tooltipToDisplay.add(collectionItem.getDisplayName() + " " +
-									(completedness >= 1 ? EnumChatFormatting.GOLD : EnumChatFormatting.GRAY) + tierString);
 								tooltipToDisplay.add(
-									"Collected: " + numberFormat.format(Utils.getElementAsFloat(personalAmounts.get(collection), 0)));
+									collectionItem.getDisplayName() +
+									" " +
+									(completedness >= 1 ? EnumChatFormatting.GOLD : EnumChatFormatting.GRAY) +
+									tierString
+								);
+								tooltipToDisplay.add(
+									"Collected: " + numberFormat.format(Utils.getElementAsFloat(personalAmounts.get(collection), 0))
+								);
 								tooltipToDisplay.add("Total Collected: " + numberFormat.format(amount));
 							}
 						}
 
 						GlStateManager.color(1, 1, 1, 1);
 						if (tier >= 0) {
-							Utils.drawStringCentered(tierString, Minecraft.getMinecraft().fontRendererObj,
-								guiLeft + x + 10, guiTop + y - 4, true,
+							Utils.drawStringCentered(
+								tierString,
+								Minecraft.getMinecraft().fontRendererObj,
+								guiLeft + x + 10,
+								guiTop + y - 4,
+								true,
 								tierStringColour
 							);
 						}
 
-						Utils.drawStringCentered(GuiProfileViewer.shortNumberFormat(amount, 0) + "", Minecraft.getMinecraft().fontRendererObj,
-							guiLeft + x + 10, guiTop + y + 26, true,
+						Utils.drawStringCentered(
+							GuiProfileViewer.shortNumberFormat(amount, 0) + "",
+							Minecraft.getMinecraft().fontRendererObj,
+							guiLeft + x + 10,
+							guiTop + y + 26,
+							true,
 							color.getRGB()
 						);
 					}
@@ -209,8 +267,7 @@ public class CollectionPage {
 				String minion = minions.get(i);
 				if (minion != null) {
 					JsonObject misc = Constants.MISC;
-					float MAX_MINION_TIER =
-						Utils.getElementAsFloat(Utils.getElement(misc, "minions." + minion + "_GENERATOR"), 11);
+					float MAX_MINION_TIER = Utils.getElementAsFloat(Utils.getElement(misc, "minions." + minion + "_GENERATOR"), 11);
 
 					int tier = (int) Utils.getElementAsFloat(minionTiers.get(minion), 0);
 					JsonObject minionJson;
@@ -246,13 +303,29 @@ public class CollectionPage {
 
 						GlStateManager.color(1, 1, 1, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-						Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20 * (1 - completedness),
-							0, 20 / 256f, 0, 20 * (1 - completedness) / 256f, GL11.GL_NEAREST
+						Utils.drawTexturedRect(
+							guiLeft + x,
+							guiTop + y,
+							20,
+							20 * (1 - completedness),
+							0,
+							20 / 256f,
+							0,
+							20 * (1 - completedness) / 256f,
+							GL11.GL_NEAREST
 						);
 						GlStateManager.color(1, 185 / 255f, 0, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-						Utils.drawTexturedRect(guiLeft + x, guiTop + y + 20 * (1 - completedness), 20, 20 * (completedness),
-							0, 20 / 256f, 20 * (1 - completedness) / 256f, 20 / 256f, GL11.GL_NEAREST
+						Utils.drawTexturedRect(
+							guiLeft + x,
+							guiTop + y + 20 * (1 - completedness),
+							20,
+							20 * (completedness),
+							0,
+							20 / 256f,
+							20 * (1 - completedness) / 256f,
+							20 / 256f,
+							GL11.GL_NEAREST
 						);
 
 						Utils.drawItemStack(
@@ -263,18 +336,21 @@ public class CollectionPage {
 
 						if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
 							if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
-								tooltipToDisplay = NotEnoughUpdates.INSTANCE.manager.jsonToStack(minionJson)
-																																		.getTooltip(
-																																			Minecraft.getMinecraft().thePlayer,
-																																			false
-																																		);
+								tooltipToDisplay =
+									NotEnoughUpdates.INSTANCE.manager
+										.jsonToStack(minionJson)
+										.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 							}
 						}
 
 						GlStateManager.color(1, 1, 1, 1);
 						if (tier >= 0) {
-							Utils.drawStringCentered(tierString, Minecraft.getMinecraft().fontRendererObj,
-								guiLeft + x + 10, guiTop + y - 4, true,
+							Utils.drawStringCentered(
+								tierString,
+								Minecraft.getMinecraft().fontRendererObj,
+								guiLeft + x + 10,
+								guiTop + y - 4,
+								true,
 								tierStringColour
 							);
 						}
@@ -288,12 +364,21 @@ public class CollectionPage {
 			for (String line : tooltipToDisplay) {
 				grayTooltip.add(EnumChatFormatting.GRAY + line);
 			}
-			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
+			Utils.drawHoveringText(
+				grayTooltip,
+				mouseX,
+				mouseY,
+				getInstance().width,
+				getInstance().height,
+				-1,
+				Minecraft.getMinecraft().fontRendererObj
+			);
 			tooltipToDisplay = null;
 		}
 	}
 
-	protected static void keyTypedCols(char typedChar, int keyCode) throws IOException {
+	@Override
+	public void keyTyped(char typedChar, int keyCode) throws IOException {
 		ItemStack stack = null;
 		Iterator<ItemStack> items = ProfileViewer.getCollectionCatToCollectionMap().keySet().iterator();
 		switch (keyCode) {
@@ -319,14 +404,17 @@ public class CollectionPage {
 		Utils.playPressSound();
 	}
 
-	public static void mouseReleasedCols(int mouseX, int mouseY, int mouseButton) {
+	@Override
+	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
 		int yIndex = 0;
 		for (ItemStack stack : ProfileViewer.getCollectionCatToCollectionMap().keySet()) {
 			if (mouseX > guiLeft + 7 && mouseX < guiLeft + 7 + 20) {
-				if (mouseY > guiTop + 10 + collectionCatYSize * yIndex &&
-					mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
+				if (mouseY > guiTop + 10 + collectionCatYSize * yIndex && mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
 					selectedCollectionCategory = stack;
 					Utils.playPressSound();
 					return;

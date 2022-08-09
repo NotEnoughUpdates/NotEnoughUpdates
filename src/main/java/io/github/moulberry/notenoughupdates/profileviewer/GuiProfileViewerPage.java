@@ -17,24 +17,32 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
+package io.github.moulberry.notenoughupdates.profileviewer;
 
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import java.util.Map;
+import java.io.IOException;
 
-public abstract class SlayerWeight {
+public abstract class GuiProfileViewerPage {
 
-	protected final Map<String, ProfileViewer.Level> player;
-	protected final WeightStruct weightStruct;
+	private final GuiProfileViewer instance;
 
-	public SlayerWeight(Map<String, ProfileViewer.Level> player) {
-		this.player = player;
-		this.weightStruct = new WeightStruct();
+	public GuiProfileViewerPage(GuiProfileViewer instance) {
+		this.instance = instance;
 	}
 
-	public WeightStruct getWeightStruct() {
-		return weightStruct;
+	/**
+	 * @return Instance of the current {@link GuiProfileViewer}
+	 */
+	public GuiProfileViewer getInstance() {
+		return instance;
 	}
 
-	public abstract void getSlayerWeight(String slayerName);
+	public abstract void drawPage(int mouseX, int mouseY, float partialTicks);
+
+	public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {}
+
+	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {}
+
+	public void keyTyped(char typedChar, int keyCode) throws IOException {}
+
+	public void resetCache() {}
 }
