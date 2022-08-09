@@ -498,8 +498,8 @@ public class PetsPage extends GuiProfileViewerPage {
 	}
 
 	@Override
-	public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		if (sortedPets == null) return;
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		if (sortedPets == null) return false;
 		for (int i = petsPage * 20; i < Math.min(petsPage * 20 + 20, sortedPets.size()); i++) {
 			int xIndex = (i % 20) % COLLS_XCOUNT;
 			int yIndex = (i % 20) / COLLS_XCOUNT;
@@ -512,10 +512,11 @@ public class PetsPage extends GuiProfileViewerPage {
 			if (mouseX > guiLeft + x && mouseX < guiLeft + x + 20) {
 				if (mouseY > guiTop + y && mouseY < guiTop + y + 20) {
 					selectedPet = i;
-					return;
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	@Override

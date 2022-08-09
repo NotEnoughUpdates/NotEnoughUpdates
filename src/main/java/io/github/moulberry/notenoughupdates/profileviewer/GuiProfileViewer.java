@@ -842,7 +842,9 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		if (pages.containsKey(currentPage)) {
-			pages.get(currentPage).mouseClicked(mouseX, mouseY, mouseButton);
+			if (pages.get(currentPage).mouseClicked(mouseX, mouseY, mouseButton)) {
+				return;
+			}
 		}
 
 		if (mouseX > guiLeft + sizeX - 100 && mouseX < guiLeft + sizeX) {

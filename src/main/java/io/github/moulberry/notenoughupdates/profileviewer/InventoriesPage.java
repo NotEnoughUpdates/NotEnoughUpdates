@@ -457,7 +457,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	}
 
 	@Override
-	public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
@@ -466,8 +466,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
 				getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
 				getInstance().playerNameTextField.otherComponentClick();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override

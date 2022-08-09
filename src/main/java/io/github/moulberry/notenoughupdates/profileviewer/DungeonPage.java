@@ -675,7 +675,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 	}
 
 	@Override
-	public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
@@ -701,7 +701,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				if (mouseX >= x - 2 && mouseX <= x + 7) {
 					floorTime = i;
-					return;
+					return false;
 				}
 			}
 		}
@@ -712,6 +712,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				onMasterMode = true;
 			}
 		}
+		return false;
 	}
 
 	@Override
