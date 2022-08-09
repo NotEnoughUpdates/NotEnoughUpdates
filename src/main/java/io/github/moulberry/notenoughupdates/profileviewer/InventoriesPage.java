@@ -139,7 +139,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				Utils.drawTexturedRect(guiLeft + x - 2, guiTop + y - 2, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 			}
 
-			Utils.drawItemStackWithText(entry.getValue(), guiLeft + x, guiTop + y, "" + (invNameIndex + 1));
+			Utils.drawItemStackWithText(entry.getValue(), guiLeft + x, guiTop + y, "" + (invNameIndex + 1), true);
 
 			if (mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) {
 				if (mouseY >= guiTop + y && mouseY <= guiTop + y + 16) {
@@ -186,7 +186,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		for (int i = 0; i < armorItems.length; i++) {
 			ItemStack stack = armorItems[i];
 			if (stack != null) {
-				Utils.drawItemStack(stack, guiLeft + 173, guiTop + 67 - 18 * i);
+				Utils.drawItemStack(stack, guiLeft + 173, guiTop + 67 - 18 * i, true);
 				if (stack != fillerStack) {
 					if (mouseX >= guiLeft + 173 - 1 && mouseX <= guiLeft + 173 + 16 + 1) {
 						if (mouseY >= guiTop + 67 - 18 * i - 1 && mouseY <= guiTop + 67 - 18 * i + 16 + 1) {
@@ -213,7 +213,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		for (int i = 0; i < equipmentItems.length; i++) {
 			ItemStack stack = equipmentItems[i];
 			if (stack != null) {
-				Utils.drawItemStack(stack, guiLeft + 192, guiTop + 13 + 18 * i);
+				Utils.drawItemStack(stack, guiLeft + 192, guiTop + 13 + 18 * i, true);
 				if (stack != fillerStack) {
 					if (mouseX >= guiLeft + 192 - 1 && mouseX <= guiLeft + 192 + 16 + 1) {
 						if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
@@ -281,7 +281,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		for (int i = 0; i < bestWeapons.length; i++) {
 			if (bestWeapons[i] == null) continue;
 			ItemStack stack = bestWeapons[i];
-			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 13 + 18 * i);
+			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 13 + 18 * i, true);
 			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1) {
 				if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
 					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
@@ -292,7 +292,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		for (int i = 0; i < bestRods.length; i++) {
 			if (bestRods[i] == null) continue;
 			ItemStack stack = bestRods[i];
-			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 137 + 18 * i);
+			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 137 + 18 * i, true);
 			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1) {
 				if (mouseY >= guiTop + 137 + 18 * i - 1 && mouseY <= guiTop + 137 + 18 * i + 16 + 1) {
 					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
@@ -314,19 +314,22 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ARROW")),
 			guiLeft + 173,
 			guiTop + 101,
-			"" + (arrowCount > 999 ? GuiProfileViewer.shortNumberFormat(arrowCount, 0) : arrowCount)
+			"" + (arrowCount > 999 ? GuiProfileViewer.shortNumberFormat(arrowCount, 0) : arrowCount),
+			true
 		);
 		Utils.drawItemStackWithText(
 			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("GREEN_CANDY")),
 			guiLeft + 173,
 			guiTop + 119,
-			"" + greenCandyCount
+			"" + greenCandyCount,
+			true
 		);
 		Utils.drawItemStackWithText(
 			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PURPLE_CANDY")),
 			guiLeft + 173,
 			guiTop + 137,
-			"" + purpleCandyCount
+			"" + purpleCandyCount,
+			true
 		);
 		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16) {
 			if (mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
@@ -418,7 +421,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			for (int xIndex = 0; xIndex < inventory[yIndex].length; xIndex++) {
 				ItemStack stack = inventory[yIndex][xIndex];
 
-				if (stack != null) Utils.drawItemStack(stack, x + 8 + xIndex * 18, y + 18 + yIndex * 18);
+				if (stack != null) Utils.drawItemStack(stack, x + 8 + xIndex * 18, y + 18 + yIndex * 18, true);
 
 				if (
 					getInstance().inventoryTextField.getText() != null &&

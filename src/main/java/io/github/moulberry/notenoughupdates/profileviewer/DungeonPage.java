@@ -43,12 +43,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 public class DungeonPage extends GuiProfileViewerPage {
 
+	private static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
 	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
 	private static final String[] dungSkillsName = { "Healer", "Mage", "Berserk", "Archer", "Tank" };
 	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
@@ -114,6 +116,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
+		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dung);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
 		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
