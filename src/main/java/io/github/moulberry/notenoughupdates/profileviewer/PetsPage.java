@@ -432,7 +432,7 @@ public class PetsPage extends GuiProfileViewerPage {
 			GlStateManager.enableDepth();
 			GlStateManager.translate(-55, 0, 0);
 			GlStateManager.scale(3.5f, 3.5f, 1);
-			Utils.drawItemStack(petStack, 0, 0, true);
+			Utils.drawItemStack(petStack, 0, 0);
 			GlStateManager.popMatrix();
 
 			float level = pet.get("level").getAsFloat();
