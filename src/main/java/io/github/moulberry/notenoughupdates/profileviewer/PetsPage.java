@@ -396,7 +396,7 @@ public class PetsPage extends GuiProfileViewerPage {
 				}
 				Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
-				Utils.drawItemStack(stack, guiLeft + (int) x + 2, guiTop + (int) y + 2);
+				Utils.drawItemStack(stack, guiLeft + (int) x + 2, guiTop + (int) y + 2, true);
 
 				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 20) {
 					if (mouseY > guiTop + y && mouseY < guiTop + y + 20) {
@@ -432,7 +432,7 @@ public class PetsPage extends GuiProfileViewerPage {
 			GlStateManager.enableDepth();
 			GlStateManager.translate(-55, 0, 0);
 			GlStateManager.scale(3.5f, 3.5f, 1);
-			Utils.drawItemStack(petStack, 0, 0);
+			Utils.drawItemStack(petStack, 0, 0, true);
 			GlStateManager.popMatrix();
 
 			float level = pet.get("level").getAsFloat();
