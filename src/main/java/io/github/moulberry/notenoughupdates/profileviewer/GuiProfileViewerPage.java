@@ -41,7 +41,9 @@ public abstract class GuiProfileViewerPage {
 	/**
 	 * @return Whether to return in calling method
 	 */
-	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {return false;}
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		return false;
+	}
 
 	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {}
 
