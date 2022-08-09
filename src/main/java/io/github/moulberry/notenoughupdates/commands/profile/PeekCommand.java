@@ -41,11 +41,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class PeekCommand extends ClientCommandBase {
 
 	private ScheduledExecutorService peekCommandExecutorService = null;
+	private ScheduledFuture<?> peekScheduledFuture = null;
 
 	public PeekCommand() {
 		super("peek");
@@ -70,23 +72,23 @@ public class PeekCommand extends ClientCommandBase {
 			} else {
 				profile.resetCache();
 
-				if (peekCommandExecutorService == null || peekCommandExecutorService.isShutdown()) {
+				if (peekCommandExecutorService == null) {
 					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
-				} else {
+				}
+
+				if (peekScheduledFuture != null && !peekScheduledFuture.isDone()) {
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 						EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one."));
-					peekCommandExecutorService.shutdownNow();
-					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
+					peekScheduledFuture.cancel(true);
 				}
 
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
 					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
 
 				long startTime = System.currentTimeMillis();
-				peekCommandExecutorService.schedule(new Runnable() {
+				peekScheduledFuture = peekCommandExecutorService.schedule(new Runnable() {
 					public void run() {
 						if (System.currentTimeMillis() - startTime > 10 * 1000) {
-
 							Minecraft.getMinecraft().ingameGUI
 								.getChatGUI()
 								.printChatMessageWithOptionalDeletion(new ChatComponentText(
@@ -284,7 +286,7 @@ public class PeekCommand extends ClientCommandBase {
 
 							peekCommandExecutorService.shutdownNow();
 						} else {
-							peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
+							peekScheduledFuture = peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
 						}
 					}
 				}, 200, TimeUnit.MILLISECONDS);

@@ -63,35 +63,35 @@ public class ProfileViewer {
 	}};
 	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
 		new LinkedHashMap<String, ItemStack>() {{
-			put("skill_taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
-			put("skill_mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
+			put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
+			put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
 			put(
-				"skill_foraging",
+				"foraging",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging")
 			);
 			put(
-				"skill_enchanting",
+				"enchanting",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting")
 			);
 			put(
-				"skill_carpentry",
+				"carpentry",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.crafting_table), EnumChatFormatting.DARK_RED + "Carpentry")
 			);
-			put("skill_farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
-			put("skill_combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
-			put("skill_fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
-			put("skill_alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
+			put("farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
+			put("combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
+			put("fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
+			put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
 			put(
-				"skill_runecrafting",
+				"runecrafting",
 				Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting")
 			);
-			put("skill_social2", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
-			// put("skill_catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
-			put("slayer_zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
-			put("slayer_spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
-			put("slayer_wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
-			put("slayer_enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
-			put("slayer_blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
+			put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
+			// put("catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
+			put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
+			put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
+			put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
+			put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
+			put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
 		}};
 	private static final ItemStack CAT_FARMING =
 		Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
@@ -497,15 +497,15 @@ public class ProfileViewer {
 			long currentTime = System.currentTimeMillis();
 			if (currentTime - lastStatusInfoState < 15 * 1000) return null;
 			lastStatusInfoState = currentTime;
+			updatingPlayerStatusState.set(true);
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
 			manager.hypixelApi.getHypixelApiAsync(NotEnoughUpdates.INSTANCE.config.apiData.apiKey, "status",
 				args, jsonObject -> {
-					if (jsonObject == null) return;
-
 					updatingPlayerStatusState.set(false);
-					if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+
+					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
 						playerStatus = jsonObject.get("session").getAsJsonObject();
 					}
 				}, () -> updatingPlayerStatusState.set(false)
@@ -530,26 +530,27 @@ public class ProfileViewer {
 				"skyblock/bingo",
 				args,
 				jsonObject -> {
-					if (jsonObject == null) return;
-					if (jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					updatingBingoInfo.set(false);
+
+					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
 						bingoInformation = jsonObject;
 					} else {
 						bingoInformation = null;
 					}
-					updatingBingoInfo.set(false);
+
 				}, () -> updatingBingoInfo.set(false)
 			);
 			return bingoInformation != null ? bingoInformation : null;
 		}
 
-		public long getNetWorth(String profileId) {
-			if (profileId == null) profileId = latestProfile;
-			if (networth.get(profileId) != null) return networth.get(profileId);
-			if (getProfileInformation(profileId) == null) return -1;
-			if (getInventoryInfo(profileId) == null) return -1;
+		public long getNetWorth(String profileName) {
+			if (profileName == null) profileName = latestProfile;
+			if (networth.get(profileName) != null) return networth.get(profileName);
+			if (getProfileInformation(profileName) == null) return -1;
+			if (getInventoryInfo(profileName) == null) return -1;
 
-			JsonObject inventoryInfo = getInventoryInfo(profileId);
-			JsonObject profileInfo = getProfileInformation(profileId);
+			JsonObject inventoryInfo = getInventoryInfo(profileName);
+			JsonObject profileInfo = getProfileInformation(profileName);
 
 			HashMap<String, Long> mostExpensiveInternal = new HashMap<>();
 
@@ -634,7 +635,7 @@ public class ProfileViewer {
 
 			networth = (int) (networth * 1.3f);
 
-			JsonObject petsInfo = getPetsInfo(profileId);
+			JsonObject petsInfo = getPetsInfo(profileName);
 			if (petsInfo != null && petsInfo.has("pets")) {
 				if (petsInfo.get("pets").isJsonArray()) {
 					JsonArray pets = petsInfo.get("pets").getAsJsonArray();
@@ -663,7 +664,7 @@ public class ProfileViewer {
 
 			networth += bankBalance + purseBalance;
 
-			this.networth.put(profileId, networth);
+			this.networth.put(profileName, networth);
 			return networth;
 		}
 
@@ -796,12 +797,12 @@ public class ProfileViewer {
 			return null;
 		}
 
-		public List<JsonObject> getCoopProfileInformation(String profileId) {
+		public List<JsonObject> getCoopProfileInformation(String profileName) {
 			JsonArray playerInfo = getSkyblockProfiles(() -> {
 			});
 			if (playerInfo == null) return null;
-			if (profileId == null) profileId = latestProfile;
-			if (coopProfileMap.containsKey(profileId)) return coopProfileMap.get(profileId);
+			if (profileName == null) profileName = latestProfile;
+			if (coopProfileMap.containsKey(profileName)) return coopProfileMap.get(profileName);
 
 			for (int i = 0; i < skyblockProfiles.size(); i++) {
 				if (!skyblockProfiles.get(i).isJsonObject()) {
@@ -809,7 +810,7 @@ public class ProfileViewer {
 					return null;
 				}
 				JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
-				if (profile.get("cute_name").getAsString().equalsIgnoreCase(profileId)) {
+				if (profile.get("cute_name").getAsString().equalsIgnoreCase(profileName)) {
 					if (!profile.has("members")) return null;
 					JsonObject members = profile.get("members").getAsJsonObject();
 					if (!members.has(uuid)) return null;
@@ -820,7 +821,7 @@ public class ProfileViewer {
 							coopList.add(coopProfileInfo);
 						}
 					}
-					coopProfileMap.put(profileId, coopList);
+					coopProfileMap.put(profileName, coopList);
 					return coopList;
 				}
 			}
@@ -846,22 +847,17 @@ public class ProfileViewer {
 
 		public int getCap(JsonObject leveling, String skillName) {
 			JsonElement capsElement = Utils.getElement(leveling, "leveling_caps");
-			if (capsElement == null || !capsElement.isJsonObject()) {
-				return 50;
-			}
-			JsonObject caps = capsElement.getAsJsonObject();
-			if (caps.has(skillName)) {
-				return caps.get(skillName).getAsInt();
-			}
-			return 50;
+			return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
+				? capsElement.getAsJsonObject().get(skillName).getAsInt()
+				: 50;
 		}
 
-		public Map<String, Level> getSkyblockInfo(String profileId) {
-			JsonObject profileInfo = getProfileInformation(profileId);
+		public Map<String, Level> getSkyblockInfo(String profileName) {
+			JsonObject profileInfo = getProfileInformation(profileName);
 
 			if (profileInfo == null) return null;
-			if (profileId == null) profileId = latestProfile;
-			if (skyblockInfoCache.containsKey(profileId)) return skyblockInfoCache.get(profileId);
+			if (profileName == null) profileName = latestProfile;
+			if (skyblockInfoCache.containsKey(profileName)) return skyblockInfoCache.get(profileName);
 
 			JsonObject leveling = Constants.LEVELING;
 			if (leveling == null || !leveling.has("social")) {
@@ -911,16 +907,16 @@ public class ProfileViewer {
 				out.put(slayerName, getLevel(Utils.getElement(leveling, "slayer_xp." + slayerName).getAsJsonArray(), slayerExperience, 9, true));
 			}
 
-			skyblockInfoCache.put(profileId, out);
+			skyblockInfoCache.put(profileName, out);
 
 			return out;
 		}
 
-		public JsonObject getInventoryInfo(String profileId) {
-			JsonObject profileInfo = getProfileInformation(profileId);
+		public JsonObject getInventoryInfo(String profileName) {
+			JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) return null;
-			if (profileId == null) profileId = latestProfile;
-			if (inventoryCacheMap.containsKey(profileId)) return inventoryCacheMap.get(profileId);
+			if (profileName == null) profileName = latestProfile;
+			if (inventoryCacheMap.containsKey(profileName)) return inventoryCacheMap.get(profileName);
 
 			String inv_armor_bytes = Utils.getElementAsString(
 				Utils.getElement(profileInfo, "inv_armor.data"),
@@ -1028,7 +1024,7 @@ public class ProfileViewer {
 				}
 			}
 
-			inventoryCacheMap.put(profileId, inventoryInfo);
+			inventoryCacheMap.put(profileName, inventoryInfo);
 
 			return inventoryInfo;
 		}
@@ -1103,10 +1099,10 @@ public class ProfileViewer {
 			return newArray;
 		}
 
-		public JsonObject getPetsInfo(String profileId) {
-			JsonObject profileInfo = getProfileInformation(profileId);
+		public JsonObject getPetsInfo(String profileName) {
+			JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) return null;
-			if (petsInfoMap.containsKey(profileId)) return petsInfoMap.get(profileId);
+			if (petsInfoMap.containsKey(profileName)) return petsInfoMap.get(profileName);
 
 			JsonObject petsInfo = new JsonObject();
 			JsonElement petsElement = profileInfo.get("pets");
@@ -1122,21 +1118,21 @@ public class ProfileViewer {
 				}
 				petsInfo.add("active_pet", activePet);
 				petsInfo.add("pets", pets);
-				petsInfoMap.put(profileId, petsInfo);
+				petsInfoMap.put(profileName, petsInfo);
 				return petsInfo;
 			}
 			return null;
 		}
 
-		public JsonObject getCollectionInfo(String profileId) {
-			JsonObject profileInfo = getProfileInformation(profileId);
+		public JsonObject getCollectionInfo(String profileName) {
+			JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) return null;
 			JsonObject resourceCollectionInfo = getResourceCollectionInformation();
 			if (resourceCollectionInfo == null) return null;
-			if (profileId == null) profileId = latestProfile;
-			if (collectionInfoMap.containsKey(profileId)) return collectionInfoMap.get(profileId);
+			if (profileName == null) profileName = latestProfile;
+			if (collectionInfoMap.containsKey(profileName)) return collectionInfoMap.get(profileName);
 
-			List<JsonObject> coopMembers = getCoopProfileInformation(profileId);
+			List<JsonObject> coopMembers = getCoopProfileInformation(profileName);
 			JsonElement unlocked_coll_tiers_element = Utils.getElement(profileInfo, "unlocked_coll_tiers");
 			JsonElement crafted_generators_element = Utils.getElement(profileInfo, "crafted_generators");
 			JsonObject fakeMember = new JsonObject();
@@ -1162,7 +1158,7 @@ public class ProfileViewer {
 				totalAmounts.addProperty(entry.getKey(), entry.getValue().getAsInt());
 			}
 
-			List<JsonObject> coopProfiles = getCoopProfileInformation(profileId);
+			List<JsonObject> coopProfiles = getCoopProfileInformation(profileName);
 			if (coopProfiles != null) {
 				for (JsonObject coopProfile : coopProfiles) {
 					JsonElement coopCollectionInfoElement = Utils.getElement(coopProfile, "collection");
@@ -1255,36 +1251,36 @@ public class ProfileViewer {
 			return collectionInfo;
 		}
 
-		public PlayerStats.Stats getPassiveStats(String profileId) {
-			if (passiveStats.get(profileId) != null) return passiveStats.get(profileId);
-			JsonObject profileInfo = getProfileInformation(profileId);
+		public PlayerStats.Stats getPassiveStats(String profileName) {
+			if (passiveStats.get(profileName) != null) return passiveStats.get(profileName);
+			JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) return null;
 
-			PlayerStats.Stats passiveStats = PlayerStats.getPassiveBonuses(getSkyblockInfo(profileId), profileInfo);
+			PlayerStats.Stats passiveStats = PlayerStats.getPassiveBonuses(getSkyblockInfo(profileName), profileInfo);
 
 			if (passiveStats != null) {
 				passiveStats.add(PlayerStats.getBaseStats());
 			}
 
-			this.passiveStats.put(profileId, passiveStats);
+			this.passiveStats.put(profileName, passiveStats);
 
 			return passiveStats;
 		}
 
-		public PlayerStats.Stats getStats(String profileId) {
-			if (stats.get(profileId) != null) return stats.get(profileId);
-			JsonObject profileInfo = getProfileInformation(profileId);
+		public PlayerStats.Stats getStats(String profileName) {
+			if (stats.get(profileName) != null) return stats.get(profileName);
+			JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) {
 				return null;
 			}
 
 			PlayerStats.Stats stats =
 				PlayerStats.getStats(
-					getSkyblockInfo(profileId), getInventoryInfo(profileId), getCollectionInfo(profileId),
-					getPetsInfo(profileId), profileInfo
+					getSkyblockInfo(profileName), getInventoryInfo(profileName), getCollectionInfo(profileName),
+					getPetsInfo(profileName), profileInfo
 				);
 			if (stats == null) return null;
-			this.stats.put(profileId, stats);
+			this.stats.put(profileName, stats);
 			return stats;
 		}
 
