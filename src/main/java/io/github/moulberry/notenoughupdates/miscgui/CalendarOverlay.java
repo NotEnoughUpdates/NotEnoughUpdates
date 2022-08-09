@@ -865,8 +865,8 @@ public class CalendarOverlay {
 			SBEvent firstEvent = null;
 			List<SBEvent> nextFavourites = new ArrayList<>();
 			List<Long> nextFavouritesTime = new ArrayList<>();
-			long timeUntilMajor = 0;
-			SBEvent nextMajorEvent = null;
+			long timeUntilMayor = 0;
+			SBEvent nextMayorEvent = null;
 
 			List<String> eventFavourites = NotEnoughUpdates.INSTANCE.config.hidden.eventFavourites;
 
@@ -889,10 +889,10 @@ public class CalendarOverlay {
 						}
 					}
 
-					if (nextMajorEvent == null && !sbEvent.id.split(":")[0].equals("jacob_farming") &&
+					if (nextMayorEvent == null && !sbEvent.id.split(":")[0].equals("jacob_farming") &&
 						!sbEvent.id.equals("dark_auction")) {
-						nextMajorEvent = sbEvent;
-						timeUntilMajor = timeUntilMillis;
+						nextMayorEvent = sbEvent;
+						timeUntilMayor = timeUntilMillis;
 					}
 
 					if (firstEvent == null) {
@@ -919,7 +919,7 @@ public class CalendarOverlay {
 						}
 					}
 
-					if (nextFavourites.size() >= 3 && nextMajorEvent != null) {
+					if (nextFavourites.size() >= 3 && nextMayorEvent != null) {
 						break out;
 					}
 				}
@@ -1000,18 +1000,18 @@ public class CalendarOverlay {
 								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
 									tooltipToDisplay.addAll(sbEvent.desc);
 								}
-								if (nextMajorEvent != null || i < nextFavourites.size() - 1) {
+								if (nextMayorEvent != null || i < nextFavourites.size() - 1) {
 									tooltipToDisplay.add("");
 								}
 							}
-							if (nextMajorEvent != null) {
+							if (nextMayorEvent != null) {
 								tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Mayor:");
-								tooltipToDisplay.add(nextMajorEvent.display);
+								tooltipToDisplay.add(nextMayorEvent.display);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
-									prettyTime(timeUntilMajor, false));
-								if (nextMajorEvent.lastsFor >= 0) {
+									prettyTime(timeUntilMayor, false));
+								if (nextMayorEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-										prettyTime(nextMajorEvent.lastsFor, true));
+										prettyTime(nextMayorEvent.lastsFor, true));
 								}
 							}
 
