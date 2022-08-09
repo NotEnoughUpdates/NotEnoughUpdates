@@ -212,9 +212,9 @@ public class GuiProfileViewer extends GuiScreen {
 		put("fishing_bag", Utils.createItemStack(Items.fish, EnumChatFormatting.GRAY + "Fishing Bag"));
 		put("potion_bag", Utils.createItemStack(Items.potionitem, EnumChatFormatting.GRAY + "Potion Bag"));
 	}};
-	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+([0-9]+)");
-	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+([0-9]+)");
-	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+([0-9]+)");
+	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+(\\d+)");
+	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+(\\d+)");
+	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+(\\d+)");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
@@ -242,7 +242,6 @@ public class GuiProfileViewer extends GuiScreen {
 	private final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
 	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
 	private final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	private final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
 	Shader blurShaderHorz = null;
 	Framebuffer blurOutputHorz = null;
 	Shader blurShaderVert = null;
@@ -414,11 +413,11 @@ public class GuiProfileViewer extends GuiScreen {
 
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return (d < 1000 ?
-			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
+		return d < 1000 ?
+			(isRound || d > 9.99 ?
 				(int) d * 10 / 10 : d + ""
-			) + "" + c[iteration])
-			: shortNumberFormat(d, iteration + 1));
+			) + "" + c[iteration]
+			: shortNumberFormat(d, iteration + 1);
 	}
 
 	public static void drawEntityOnScreen(
@@ -490,7 +489,7 @@ public class GuiProfileViewer extends GuiScreen {
 		ProfileViewerPage page = currentPage;
 		if (profile == null) {
 			page = ProfileViewerPage.INVALID_NAME;
-		} else if (profile.getPlayerInformation(null) == null) {
+		} else if (profile.getSkyblockProfiles(null) == null) {
 			page = ProfileViewerPage.LOADING;
 		} else if (profile.getLatestProfile() == null) {
 			page = ProfileViewerPage.NO_SKYBLOCK;
@@ -502,26 +501,21 @@ public class GuiProfileViewer extends GuiScreen {
 		{
 			//this is just to cache the guild info
 			if (profile != null) {
-				profile.getGuildInfo(null);
+				profile.getGuildInformation(null);
 			}
 		}
 
 		this.sizeX = 431;
 		this.sizeY = 202;
-		this.guiLeft = (this.width - this.sizeX) / 2;
-		this.guiTop = (this.height - this.sizeY) / 2;
+		guiLeft = (this.width - this.sizeX) / 2;
+		guiTop = (this.height - this.sizeY) / 2;
 
-		boolean bingo = false;
 		JsonObject currProfileInfo = profile != null ? profile.getProfileInformation(profileId) : null;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
 			showBingoPage = true;
 		} else {
-			if (currProfileInfo != null && currProfileInfo.has("game_mode") &&
-				currProfileInfo.get("game_mode").getAsString().equals("bingo")) {
-				showBingoPage = true;
-			} else {
-				showBingoPage = false;
-			}
+			showBingoPage = currProfileInfo != null && currProfileInfo.has("game_mode") &&
+				currProfileInfo.get("game_mode").getAsString().equals("bingo");
 		}
 
 		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO)
@@ -613,10 +607,10 @@ public class GuiProfileViewer extends GuiScreen {
 					new Color(63, 224, 208, 255).getRGB()
 				);
 
-				if (profileDropdownSelected && !profile.getProfileIds().isEmpty() && scaledResolution.getScaleFactor() != 4) {
+				if (profileDropdownSelected && !profile.getProfileNames().isEmpty() && scaledResolution.getScaleFactor() != 4) {
 					int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
 
-					int numProfiles = profile.getProfileIds().size();
+					int numProfiles = profile.getProfileNames().size();
 					int sizeYDropdown = numProfiles * dropdownOptionSize;
 					renderBlurredBackground(width, height, guiLeft + 2, guiTop + sizeY + 23, 100 - 4, sizeYDropdown - 2);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
@@ -630,8 +624,8 @@ public class GuiProfileViewer extends GuiScreen {
 						100 / 200f, 1, (181 - sizeYDropdown) / 185f, 181 / 185f, GL11.GL_NEAREST
 					);
 
-					for (int yIndex = 0; yIndex < profile.getProfileIds().size(); yIndex++) {
-						String otherProfileId = profile.getProfileIds().get(yIndex);
+					for (int yIndex = 0; yIndex < profile.getProfileNames().size(); yIndex++) {
+						String otherProfileId = profile.getProfileNames().get(yIndex);
 						Utils.drawStringCenteredScaledMaxWidth(
 							otherProfileId,
 							Minecraft.getMinecraft().fontRendererObj,
@@ -1030,7 +1024,7 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 		if (mouseX > guiLeft + 106 && mouseX < guiLeft + 106 + 100 && profile != null &&
-			!profile.getProfileIds().isEmpty() && profileId != null) {
+			!profile.getProfileNames().isEmpty() && profileId != null) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
 				try {
 					Desktop desk = Desktop.getDesktop();
@@ -1047,14 +1041,14 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
-		if (mouseX > guiLeft && mouseX < guiLeft + 100 && profile != null && !profile.getProfileIds().isEmpty()) {
+		if (mouseX > guiLeft && mouseX < guiLeft + 100 && profile != null && !profile.getProfileNames().isEmpty()) {
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
 				if (scaledResolution.getScaleFactor() == 4) {
 					profileDropdownSelected = false;
 					int profileNum = 0;
-					for (int index = 0; index < profile.getProfileIds().size(); index++) {
-						if (profile.getProfileIds().get(index).equals(profileId)) {
+					for (int index = 0; index < profile.getProfileNames().size(); index++) {
+						if (profile.getProfileNames().get(index).equals(profileId)) {
 							profileNum = index;
 							break;
 						}
@@ -1064,10 +1058,10 @@ public class GuiProfileViewer extends GuiScreen {
 					} else {
 						profileNum--;
 					}
-					if (profileNum >= profile.getProfileIds().size()) profileNum = 0;
-					if (profileNum < 0) profileNum = profile.getProfileIds().size() - 1;
+					if (profileNum >= profile.getProfileNames().size()) profileNum = 0;
+					if (profileNum < 0) profileNum = profile.getProfileNames().size() - 1;
 
-					String newProfileId = profile.getProfileIds().get(profileNum);
+					String newProfileId = profile.getProfileNames().get(profileNum);
 					if (profileId != null && !profileId.equals(newProfileId)) {
 						resetCache();
 					}
@@ -1079,8 +1073,8 @@ public class GuiProfileViewer extends GuiScreen {
 				int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
 				int extraY = mouseY - (guiTop + sizeY + 23);
 				int index = extraY / dropdownOptionSize;
-				if (index >= 0 && index < profile.getProfileIds().size()) {
-					String newProfileId = profile.getProfileIds().get(index);
+				if (index >= 0 && index < profile.getProfileNames().size()) {
+					String newProfileId = profile.getProfileNames().get(index);
 					if (profileId != null && !profileId.equals(newProfileId)) {
 						resetCache();
 					}
@@ -1183,7 +1177,7 @@ public class GuiProfileViewer extends GuiScreen {
 		dungeonLevelTextField.keyTyped(typedChar, keyCode);
 	}
 
-	protected void keyTypedInvs(char typedChar, int keyCode) throws IOException {
+	protected void keyTypedInvs(char typedChar, int keyCode) {
 		switch (keyCode) {
 			case Keyboard.KEY_1:
 			case Keyboard.KEY_NUMPAD1:
@@ -1224,20 +1218,16 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.playPressSound();
 	}
 
-
-
 	private void mouseReleasedPets(int mouseX, int mouseY, int mouseButton) {
 		if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
 			if (mouseX > guiLeft + 100 - 15 - 12 && mouseX < guiLeft + 100 - 20) {
 				if (petsPage > 0) {
 					petsPage--;
 				}
-				return;
 			} else if (mouseX > guiLeft + 100 + 15 && mouseX < guiLeft + 100 + 20 + 12) {
 				if (sortedPets != null && petsPage < Math.ceil(sortedPets.size() / 20f) - 1) {
 					petsPage++;
 				}
-				return;
 			}
 		}
 	}
@@ -1254,7 +1244,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (mouseX >= x && mouseX <= x + 16) {
 					if (mouseY >= y && mouseY <= y + 16) {
-						if (selectedInventory != entry.getKey()) Utils.playPressSound();
+						if (!selectedInventory.equals(entry.getKey())) Utils.playPressSound();
 						selectedInventory = entry.getKey();
 						return;
 					}
@@ -1274,9 +1264,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (inventory == null) return;
 
 			int inventoryRows = inventory.length;
-			int invSizeY = inventoryRows * 18 + 17 + 7;
 
-			int y = guiTop + 101 - invSizeY / 2;
 			int staticSelectorHeight = guiTop + 177;
 
 			if (mouseY > staticSelectorHeight && mouseY < staticSelectorHeight + 16) {
@@ -1608,7 +1596,6 @@ public class GuiProfileViewer extends GuiScreen {
 				hypixelInfo,
 				"achievements.skyblock_treasure_hunter"
 			), 0);
-			float totalRuns = 0;
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;
 			for (int i = 1; i <= 7; i++) {
@@ -1633,32 +1620,24 @@ public class GuiProfileViewer extends GuiScreen {
 					totalRunsM5 += runs;
 				}
 			}
-			totalRuns = totalRunsF + totalRunsM;
+			float totalRuns = totalRunsF + totalRunsM;
 
-			float mobKills = 0;
+			float mobKills;
 			float mobKillsF = 0;
-			float mobKillsF5 = 0;
 			for (int i = 1; i <= 7; i++) {
 				float kills = Utils.getElementAsFloat(Utils.getElement(
 					profileInfo,
 					"dungeons.dungeon_types.catacombs.mobs_killed." + i
 				), 0);
 				mobKillsF += kills;
-				if (i >= 5) {
-					mobKillsF5 += kills;
-				}
 			}
 			float mobKillsM = 0;
-			float mobKillsM5 = 0;
 			for (int i = 1; i <= 7; i++) {
 				float kills = Utils.getElementAsFloat(Utils.getElement(
 					profileInfo,
 					"dungeons.dungeon_types.master_catacombs.mobs_killed." + i
 				), 0);
 				mobKillsM += kills;
-				if (i >= 5) {
-					mobKillsM5 += kills;
-				}
 			}
 			mobKills = mobKillsF + mobKillsM;
 
@@ -1848,11 +1827,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		drawSideButtons();
-
-		//drawSideButton(0, dungeonsModeIcons.get("catacombs"), true);
-		//drawSideButton(1, dungeonsModeIcons.get("master_catacombs"), true);
-		//drawSideButton(1, dungeonsModeIcons.get("catacombs"), true);
-		//drawSideButton(2, dungeonsModeIcons.get("catacombs"), false);
 	}
 
 	//TODO: improve this shit
@@ -2089,7 +2063,6 @@ public class GuiProfileViewer extends GuiScreen {
 				ItemStack stack;
 				if (petItem == null) {
 					stack = getQuestionmarkSkull();
-					HashMap<String, String> replacements = new HashMap<>();
 					NBTTagCompound display = new NBTTagCompound();
 					if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("display")) {
 						display = stack.getTagCompound().getCompoundTag("display");
@@ -2408,8 +2381,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-
-
 	public int countItemsInInventory(
 		String internalname,
 		JsonObject inventoryInfo,
@@ -2484,11 +2455,11 @@ public class GuiProfileViewer extends GuiScreen {
 			case "wardrobe_contents":
 				return 4;
 			case "backpack_contents":
-				return 5;
 			case "ender_chest_contents":
 				return 5;
+			default:
+				return 6;
 		}
-		return 6;
 	}
 
 	private boolean useActualMax(String invName) {
@@ -2500,16 +2471,6 @@ public class GuiProfileViewer extends GuiScreen {
 				return true;
 		}
 		return false;
-	}
-
-	private int getIgnoredRowsForInventory(String invName) {
-		switch (invName) {
-			case "talisman_bag":
-			case "fishing_bag":
-			case "potion_bag":
-				return 1;
-		}
-		return 0;
 	}
 
 	public ItemStack[][][] getItemsForInventory(JsonObject inventoryInfo, String invName) {
@@ -2554,7 +2515,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		for (int i = 0; i < numInventories; i++) {
 			int thisRows = Math.min(maxRowsPerPage, rows - maxRowsPerPage * i);
-			int invSize = 0;
+			int invSize;
 
 			if (invName.equals("backpack_contents")) {
 				thisRows = backPackSizes.get(i).getAsInt() / 9;
@@ -2923,17 +2884,15 @@ public class GuiProfileViewer extends GuiScreen {
 	private String niceUuid(String uuidStr) {
 		if (uuidStr.length() != 32) return uuidStr;
 
-		StringBuilder niceAucId = new StringBuilder();
-		niceAucId.append(uuidStr, 0, 8);
-		niceAucId.append("-");
-		niceAucId.append(uuidStr, 8, 12);
-		niceAucId.append("-");
-		niceAucId.append(uuidStr, 12, 16);
-		niceAucId.append("-");
-		niceAucId.append(uuidStr, 16, 20);
-		niceAucId.append("-");
-		niceAucId.append(uuidStr, 20, 32);
-		return niceAucId.toString();
+		return uuidStr.substring(0, 8) +
+			"-" +
+			uuidStr.substring(8, 12) +
+			"-" +
+			uuidStr.substring(12, 16) +
+			"-" +
+			uuidStr.substring(16, 20) +
+			"-" +
+			uuidStr.substring(20, 32);
 	}
 
 	public EntityOtherPlayerMP getEntityPlayer() {
@@ -2941,14 +2900,12 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	private void drawExtraPage(int mouseX, int mouseY, float partialTicks) {
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_extra);
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
 
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
-		JsonObject skillInfo = profile.getSkillInfo(profileId);
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
 
 		float xStart = 22;
 		float xOffset = 103;
@@ -2993,7 +2950,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		}
 		{
-			JsonObject guildInfo = profile.getGuildInfo(null);
+			JsonObject guildInfo = profile.getGuildInformation(null);
 			if (guildInfo != null && guildInfo.has("name")) {
 				Utils.renderAlignedString(
 					EnumChatFormatting.AQUA + "Guild",
@@ -3018,7 +2975,8 @@ public class GuiProfileViewer extends GuiScreen {
 			guiTop + yStartBottom,
 			76
 		);
-		if (skillInfo != null) {
+
+		if (skyblockInfo != null) {
 			float totalSkillLVL = 0;
 			float totalTrueSkillLVL = 0;
 			float totalSlayerLVL = 0;
@@ -3026,21 +2984,18 @@ public class GuiProfileViewer extends GuiScreen {
 			float totalSlayerCount = 0;
 			float totalSlayerXP = 0;
 
-			for (Map.Entry<String, JsonElement> entry : skillInfo.entrySet()) {
-				if (entry.getKey().startsWith("level_skill")) {
-					if (entry.getKey().contains("runecrafting")) continue;
-					if (entry.getKey().contains("carpentry")) continue;
-					if (entry.getKey().contains("catacombs")) continue;
-					if (entry.getKey().contains("social")) continue;
+			List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+			List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 
-					totalSkillLVL += entry.getValue().getAsFloat();
-					totalTrueSkillLVL += Math.floor(entry.getValue().getAsFloat());
+			for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
+				if (skills.contains(entry.getKey())) {
+					totalSkillLVL += entry.getValue().level;
+					totalTrueSkillLVL += Math.floor(entry.getValue().level);
 					totalSkillCount++;
-				} else if (entry.getKey().startsWith("level_slayer")) {
-					totalSlayerLVL += entry.getValue().getAsFloat();
+				} else if (slayers.contains(entry.getKey())) {
+					totalSlayerLVL += entry.getValue().level;
 					totalSlayerCount++;
-				} else if (entry.getKey().startsWith("experience_slayer")) {
-					totalSlayerXP += entry.getValue().getAsFloat();
+					totalSlayerXP += entry.getValue().totalXp;
 				}
 			}
 
@@ -3352,20 +3307,15 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	private void drawMiningPage(int mouseX, int mouseY, float partialTicks) {
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_mining);
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
 
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
-		JsonObject skillInfo = profile.getSkillInfo(profileId);
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
 
 		float xStart = 22;
-		float xOffset = 103;
 		float yStartTop = 27;
-		float yStartBottom = 105;
-		float yOffset = 10;
 
 		int x = guiLeft + 23;
 		int y = guiTop + 25;
@@ -4213,7 +4163,7 @@ public class GuiProfileViewer extends GuiScreen {
 				"§7amount of experience orbs.",
 				"",
 				EnumChatFormatting.GRAY + "Cost",
-				EnumChatFormatting.DARK_GREEN + "" + (int) ((orbit + 1) * 70) + " Mithril Powder"
+				EnumChatFormatting.DARK_GREEN + "" + ((orbit + 1) * 70) + " Mithril Powder"
 			) : Lists.newArrayList(
 				"Orbiter",
 				"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
@@ -4581,16 +4531,14 @@ public class GuiProfileViewer extends GuiScreen {
 
 						playerName = EnumChatFormatting.GRAY + name;
 						if (rankName != null) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("\u00A7" + rankColor);
-							sb.append("[");
-							sb.append(rankName);
-							sb.append(rankPlusColor);
-							sb.append(rankPlus);
-							sb.append("\u00A7" + rankColor);
-							sb.append("] ");
-							sb.append(name);
-							playerName = sb.toString();
+							playerName = "\u00A7" + rankColor +
+								"[" +
+								rankName +
+								rankPlusColor +
+								rankPlus +
+								"\u00A7" + rankColor +
+								"] " +
+								name;
 						}
 					}
 				}
@@ -4727,7 +4675,7 @@ public class GuiProfileViewer extends GuiScreen {
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
 
-		JsonObject skillInfo = profile.getSkillInfo(profileId);
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
 		JsonObject inventoryInfo = profile.getInventoryInfo(profileId);
 
 		if (entityPlayer != null) {
@@ -4886,7 +4834,7 @@ public class GuiProfileViewer extends GuiScreen {
 			);
 		}
 
-		if (skillInfo != null) {
+		if (skyblockInfo != null) {
 			int position = 0;
 			for (Map.Entry<String, ItemStack> entry : ProfileViewer.getSkillToSkillDisplayMap().entrySet()) {
 				if (entry.getValue() == null || entry.getKey() == null) {
@@ -4899,7 +4847,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 				String skillName = entry.getValue().getDisplayName();
 
-				float level = Utils.getElementAsFloat(skillInfo.get("level_" + entry.getKey()), 0);
+				float level = skyblockInfo.get(entry.getKey()).level;
 				int levelFloored = (int) Math.floor(level);
 
 				int x = guiLeft + 237 + 86 * xPosition;
@@ -4907,7 +4855,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 
-				if (skillInfo.get("maxed_" + entry.getKey()).getAsBoolean()) {
+				if (skyblockInfo.get(entry.getKey()).maxed) {
 					renderGoldBar(x, y + 6, 80);
 				} else {
 					renderBar(x, y + 6, 80, level % 1);
@@ -4917,14 +4865,14 @@ public class GuiProfileViewer extends GuiScreen {
 					if (mouseY > y - 4 && mouseY < y + 13) {
 						tooltipToDisplay = new ArrayList<>();
 						tooltipToDisplay.add(skillName);
-						if (skillInfo.get("maxed_" + entry.getKey()).getAsBoolean()) {
+						if (skyblockInfo.get(entry.getKey()).maxed) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
-							int maxXp = (int) skillInfo.get("maxxp_" + entry.getKey()).getAsFloat();
+							int maxXp = (int) skyblockInfo.get(entry.getKey()).maxXpForLevel;
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE +
 								shortNumberFormat(Math.round((level % 1) * maxXp), 0) + "/" + shortNumberFormat(maxXp, 0));
 						}
-						String totalXpS = numberFormat.format((int) skillInfo.get("experience_" + entry.getKey()).getAsFloat());
+						String totalXpS = numberFormat.format((int) skyblockInfo.get(entry.getKey()).totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " +
 							EnumChatFormatting.DARK_PURPLE + totalXpS);
 					}
@@ -4949,11 +4897,11 @@ public class GuiProfileViewer extends GuiScreen {
 			);
 		}
 
-		renderWeight(mouseX, mouseY, skillInfo, profileInfo);
+		renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
 	}
 
-	private void renderWeight(int mouseX, int mouseY, JsonObject skillInfo, JsonObject profileInfo) {
-		if (skillInfo == null) {
+	private void renderWeight(int mouseX, int mouseY, Map<String, ProfileViewer.Level> skyblockInfo, JsonObject profileInfo) {
+		if (skyblockInfo == null) {
 			return;
 		}
 
@@ -4964,8 +4912,8 @@ public class GuiProfileViewer extends GuiScreen {
 
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 
-		SenitherWeight senitherWeight = new SenitherWeight(skillInfo);
-		LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
+		SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
+		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, profileInfo);
 
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN + "Senither Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
@@ -5039,15 +4987,11 @@ public class GuiProfileViewer extends GuiScreen {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(icons);
 
 		completed = Math.round(completed / 0.05f) * 0.05f;
-
-		float notcompleted = 1 - completed;
-
-		int displayNum = 0;//tl.x%5;
-
+		float notCompleted = 1 - completed;
 		GlStateManager.color(1, 1, 1, 1);
-		float width = 0;
+		float width;
 
-		if (completed < 0.5f && (displayNum == 1 || displayNum == 0)) {
+		if (completed < 0.5f) {
 			width = (0.5f - completed) * xSize;
 			Utils.drawTexturedRect(
 				x + xSize * completed,
@@ -5061,8 +5005,8 @@ public class GuiProfileViewer extends GuiScreen {
 				GL11.GL_NEAREST
 			);
 		}
-		if (completed < 1f && (displayNum == 2 || displayNum == 0)) {
-			width = Math.min(xSize * notcompleted, xSize / 2f);
+		if (completed < 1f) {
+			width = Math.min(xSize * notCompleted, xSize / 2f);
 			Utils.drawTexturedRect(
 				x + (xSize / 2f) + Math.max(xSize * (completed - 0.5f), 0),
 				y,
@@ -5076,13 +5020,13 @@ public class GuiProfileViewer extends GuiScreen {
 			);
 		}
 
-		if (completed > 0f && (displayNum == 3 || displayNum == 0)) {
+		if (completed > 0f) {
 			width = Math.min(xSize * completed, xSize / 2f);
 			Utils.drawTexturedRect(x, y, width, 5,
 				0 / 256f, width / 256f, 79 / 256f, 84 / 256f, GL11.GL_NEAREST
 			);
 		}
-		if (completed > 0.5f && (displayNum == 4 || displayNum == 0)) {
+		if (completed > 0.5f) {
 			width = Math.min(xSize * (completed - 0.5f), xSize / 2f);
 			Utils.drawTexturedRect(x + (xSize / 2f), y, width, 5,
 				(182 - (xSize / 2f)) / 256f, (182 - (xSize / 2f) + width) / 256f, 79 / 256f, 84 / 256f, GL11.GL_NEAREST

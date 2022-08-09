@@ -22,16 +22,17 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Map;
+
 public class LilySkillsWeight extends SkillsWeight {
 
-	public LilySkillsWeight(JsonObject player) {
+	public LilySkillsWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
@@ -42,7 +43,7 @@ public class LilySkillsWeight extends SkillsWeight {
 			skillAverage +=
 				(int) ProfileViewer.getLevel(
 					Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
-					Utils.getElementAsInt(Utils.getElement(player, "experience_skill_" + skill), 0),
+					player.get(skill).totalXp,
 					60,
 					false
 				)
@@ -50,7 +51,7 @@ public class LilySkillsWeight extends SkillsWeight {
 		}
 		skillAverage /= SKILL_NAMES.size();
 
-		float currentExp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
+		float currentExp = player.get(skillName).totalXp;
 		int currentLevel = (int) ProfileViewer.getLevel(
 			Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
 			currentExp,

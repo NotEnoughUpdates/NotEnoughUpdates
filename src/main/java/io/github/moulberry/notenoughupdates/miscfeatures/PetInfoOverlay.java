@@ -301,7 +301,7 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private static void getAndSetPet(ProfileViewer.Profile profile) {
-		JsonObject skillInfo = profile.getSkillInfo(profile.getLatestProfile());
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profile.getLatestProfile());
 		JsonObject invInfo = profile.getInventoryInfo(profile.getLatestProfile());
 		JsonObject profileInfo = profile.getProfileInformation(profile.getLatestProfile());
 		if (invInfo != null && profileInfo != null) {
@@ -340,7 +340,8 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}
-		if (skillInfo != null) config.tamingLevel = skillInfo.get("level_skill_taming").getAsInt();
+		if (skyblockInfo != null) config.tamingLevel = (int) skyblockInfo.get("taming").level;
+
 		//JsonObject petObject = profile.getPetsInfo(profile.getLatestProfile());
         /*JsonObject petsJson = Constants.PETS;
         if(petsJson != null) {

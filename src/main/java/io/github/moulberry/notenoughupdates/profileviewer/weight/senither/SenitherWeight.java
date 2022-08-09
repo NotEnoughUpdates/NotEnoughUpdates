@@ -19,12 +19,14 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
-import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
+
+import java.util.Map;
 
 public class SenitherWeight extends Weight {
 
-	public SenitherWeight(JsonObject player) {
+	public SenitherWeight(Map<String, ProfileViewer.Level> player) {
 		super(new SenitherSlayerWeight(player), new SenitherSkillsWeight(player), new SenitherDungeonsWeight(player));
 	}
 

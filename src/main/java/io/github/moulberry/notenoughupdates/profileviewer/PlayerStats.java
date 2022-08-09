@@ -193,29 +193,26 @@ public class PlayerStats {
 		return bonus;
 	}
 
-	private static Stats getSkillBonus(JsonObject skillInfo) {
+	private static Stats getSkillBonus(Map<String, ProfileViewer.Level> skyblockInfo) {
 		JsonObject bonuses = Constants.BONUSES;
 		if (bonuses == null) return null;
 
 		Stats skillBonus = new Stats();
 
-		for (Map.Entry<String, JsonElement> entry : skillInfo.entrySet()) {
-			if (entry.getKey().startsWith("level_")) {
-				String skill = entry.getKey().substring("level_".length());
-				JsonElement element = Utils.getElement(bonuses, "bonus_stats." + skill);
-				if (element != null && element.isJsonObject()) {
-					JsonObject skillStatMap = element.getAsJsonObject();
+		for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
+			JsonElement element = Utils.getElement(bonuses, "bonus_stats." + entry.getKey());
+			if (element != null && element.isJsonObject()) {
+				JsonObject skillStatMap = element.getAsJsonObject();
 
-					Stats currentBonus = new Stats();
-					for (int i = 1; i <= entry.getValue().getAsFloat(); i++) {
-						if (skillStatMap.has("" + i)) {
-							currentBonus = new Stats();
-							for (Map.Entry<String, JsonElement> entry2 : skillStatMap.get("" + i).getAsJsonObject().entrySet()) {
-								currentBonus.addStat(entry2.getKey(), entry2.getValue().getAsFloat());
-							}
+				Stats currentBonus = new Stats();
+				for (int i = 1; i <= entry.getValue().level; i++) {
+					if (skillStatMap.has("" + i)) {
+						currentBonus = new Stats();
+						for (Map.Entry<String, JsonElement> entry2 : skillStatMap.get("" + i).getAsJsonObject().entrySet()) {
+							currentBonus.addStat(entry2.getKey(), entry2.getValue().getAsFloat());
 						}
-						skillBonus.add(currentBonus);
 					}
+					skillBonus.add(currentBonus);
 				}
 			}
 		}
@@ -270,9 +267,9 @@ public class PlayerStats {
 		}
 	}
 
-	private static float hotmFortune(JsonObject profile, JsonObject skillInfo) {
+	private static float hotmFortune(JsonObject profile, Map<String, ProfileViewer.Level> skyblockInfo) {
 		int miningLevelFortune =
-			(int) (4 * (float) Math.floor(Utils.getElementAsFloat(Utils.getElement(skillInfo, "level_skill_mining"), 0)));
+			(int) (4 * (float) Math.floor(skyblockInfo.get("mining").level));
 		int miningFortuneStat =
 			((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) * 5);
 		int miningFortune2Stat =
@@ -288,11 +285,11 @@ public class PlayerStats {
 		return miningSpeedStat + miningSpeed2Stat;
 	}
 
-	public static Stats getPassiveBonuses(JsonObject skillInfo, JsonObject profile) {
+	public static Stats getPassiveBonuses(Map<String, ProfileViewer.Level> skyblockInfo, JsonObject profile) {
 		Stats passiveBonuses = new Stats();
 
 		Stats fairyBonus = getFairyBonus((int) Utils.getElementAsFloat(Utils.getElement(profile, "fairy_exchanges"), 0));
-		Stats skillBonus = getSkillBonus(skillInfo);
+		Stats skillBonus = getSkillBonus(skyblockInfo);
 		Stats petBonus = getTamingBonus(profile);
 
 		if (skillBonus == null || petBonus == null) {
@@ -307,10 +304,10 @@ public class PlayerStats {
 		return passiveBonuses;
 	}
 
-	public static Stats getHOTMBonuses(JsonObject skillInfo, JsonObject profile) {
+	public static Stats getHOTMBonuses(Map<String, ProfileViewer.Level> skyblockInfo, JsonObject profile) {
 		Stats hotmBonuses = new Stats();
 
-		hotmBonuses.addStat(MINING_FORTUNE, hotmFortune(profile, skillInfo));
+		hotmBonuses.addStat(MINING_FORTUNE, hotmFortune(profile, skyblockInfo));
 		hotmBonuses.addStat(MINING_SPEED, hotmSpeed(profile));
 
 		return hotmBonuses;
@@ -347,7 +344,7 @@ public class PlayerStats {
 		Stats stats,
 		JsonObject inventoryInfo,
 		JsonObject collectionInfo,
-		JsonObject skillInfo,
+		Map<String, ProfileViewer.Level> skyblockInfo,
 		JsonObject profile
 	) {
 		JsonArray armor = Utils.getElement(inventoryInfo, "inv_armor").getAsJsonArray();
@@ -382,7 +379,7 @@ public class PlayerStats {
 				case "ANGLER_":
 					bonuses.addStat(
 						HEALTH,
-						10 * (float) Math.floor(Utils.getElementAsFloat(Utils.getElement(skillInfo, "level_skill_fishing"), 0))
+						10 * (float) Math.floor(skyblockInfo.get("fishing").level)
 					);
 					bonuses.addStat(SEA_CREATURE_CHANCE, 4);
 					break;
@@ -678,17 +675,17 @@ public class PlayerStats {
 	}
 
 	public static Stats getStats(
-		JsonObject skillInfo, JsonObject inventoryInfo, JsonObject collectionInfo,
+		Map<String, ProfileViewer.Level> skyblockInfo, JsonObject inventoryInfo, JsonObject collectionInfo,
 		JsonObject petsInfo, JsonObject profile
 	) {
-		if (skillInfo == null || inventoryInfo == null || collectionInfo == null || profile == null) return null;
+		if (skyblockInfo == null || inventoryInfo == null || collectionInfo == null || profile == null) return null;
 
 		JsonArray armor = Utils.getElement(inventoryInfo, "inv_armor").getAsJsonArray();
 		JsonArray inventory = Utils.getElement(inventoryInfo, "inv_contents").getAsJsonArray();
 		JsonArray talisman_bag = Utils.getElement(inventoryInfo, "talisman_bag").getAsJsonArray();
 
-		Stats passiveBonuses = getPassiveBonuses(skillInfo, profile);
-		Stats hotmBonuses = getHOTMBonuses(skillInfo, profile);
+		Stats passiveBonuses = getPassiveBonuses(skyblockInfo, profile);
+		Stats hotmBonuses = getHOTMBonuses(skyblockInfo, profile);
 		Stats armorBonuses = getItemBonuses(false, armor);
 		Stats talismanBonuses = getItemBonuses(true, inventory, talisman_bag);
 
@@ -706,7 +703,7 @@ public class PlayerStats {
 
 		stats = stats.add(passiveBonuses).add(armorBonuses).add(talismanBonuses).add(petBonus).add(hotmBonuses);
 
-		stats.add(getSetBonuses(stats, inventoryInfo, collectionInfo, skillInfo, profile));
+		stats.add(getSetBonuses(stats, inventoryInfo, collectionInfo, skyblockInfo, profile));
 
 		stats.scaleAll(getStatMult(inventoryInfo));
 

@@ -19,14 +19,16 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
-import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+
+import java.util.Map;
 
 public abstract class SlayerWeight {
 
-	protected final JsonObject player;
+	protected final Map<String, ProfileViewer.Level> player;
 	protected final WeightStruct weightStruct;
 
-	public SlayerWeight(JsonObject player) {
+	public SlayerWeight(Map<String, ProfileViewer.Level> player) {
 		this.player = player;
 		this.weightStruct = new WeightStruct();
 	}
