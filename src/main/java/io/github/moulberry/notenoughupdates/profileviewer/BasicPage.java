@@ -621,7 +621,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			return;
 		}
 
-		if (Constants.WEIGHT == null) {
+		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null || !Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
