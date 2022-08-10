@@ -284,7 +284,7 @@ public class CustomItemEffects {
 
 			WorldClient world = Minecraft.getMinecraft().theWorld;
 			if (usingEtherwarp && NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
-				String denyTpReason = null;
+				denyTpReason = null;
 				if (etherwarpRaycast == null) {
 					denyTpReason = "Too far!";
 				} else {
@@ -642,20 +642,30 @@ public class CustomItemEffects {
 
 							if (etherwarpRaycast != null &&
 								NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpBlockOverlay) {
-								AxisAlignedBB bb = etherwarpRaycast.state.getBlock().getSelectedBoundingBox(
-																										 Minecraft.getMinecraft().theWorld,
-																										 etherwarpRaycast.pos
-																									 )
-																												 .expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
-								drawFilledBoundingBox(bb, 1f, NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour);
+								if (denyTpReason == null || !NotEnoughUpdates.INSTANCE.config.itemOverlays.disableOverlayWhenFailed) {
+									AxisAlignedBB box = etherwarpRaycast.state.getBlock().getSelectedBoundingBox(
+										Minecraft.getMinecraft().theWorld,
+										etherwarpRaycast.pos
+									);
+									AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
+									drawFilledBoundingBox(
+										bb,
+										1f,
+										NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+									);
 
-								GlStateManager.disableDepth();
-								drawOutlineBoundingBox(bb, 2f, NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour);
-								GlStateManager.enableDepth();
+									GlStateManager.disableDepth();
+									drawOutlineBoundingBox(
+										bb,
+										2f,
+										NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+									);
+									GlStateManager.enableDepth();
 
-								GlStateManager.depthMask(true);
-								GlStateManager.enableTexture2D();
-								GlStateManager.disableBlend();
+									GlStateManager.depthMask(true);
+									GlStateManager.enableTexture2D();
+									GlStateManager.disableBlend();
+								}
 
 								if (NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
 									float distFactor = 1 -
