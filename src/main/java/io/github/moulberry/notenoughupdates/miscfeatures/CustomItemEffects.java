@@ -281,6 +281,7 @@ public class CustomItemEffects {
 			ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 			String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
+			WorldClient world = Minecraft.getMinecraft().theWorld;
 			if (usingEtherwarp && NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
 				String denyTpReason = null;
 				if (etherwarpRaycast == null) {
@@ -288,21 +289,27 @@ public class CustomItemEffects {
 				} else {
 					BlockPos pos = etherwarpRaycast.pos;
 
-					if (!etherwarpRaycast.state.getBlock().isCollidable() ||
-						etherwarpRaycast.state.getBlock().getCollisionBoundingBox(
-							Minecraft.getMinecraft().theWorld,
-							etherwarpRaycast.pos,
-							etherwarpRaycast.state
-						) == null) {
+					Block block = etherwarpRaycast.state.getBlock();
+					if (!block.isCollidable() ||
+						//Don't allow teleport at this block
+						block == Blocks.carpet || block == Blocks.skull ||
+						block.getCollisionBoundingBox(world, etherwarpRaycast.pos, etherwarpRaycast.state) == null &&
+							//Allow teleport at this block
+							block != Blocks.wall_sign && block != Blocks.standing_sign) {
 						denyTpReason = "Not solid!";
 					} else {
-						WorldClient world = Minecraft.getMinecraft().theWorld;
-						Block above = world.getBlockState(pos.add(0, 1, 0)).getBlock();
-						if (above != Blocks.air && above.isCollidable() &&
-							above.getCollisionBoundingBox(Minecraft.getMinecraft().theWorld, pos.add(0, 1, 0),
-								world.getBlockState(pos.add(0, 1, 0))
-							) != null ||
-							world.getBlockState(pos.add(0, 2, 0)).getBlock() != Blocks.air) {
+						BlockPos blockPosAbove = pos.add(0, 1, 0);
+						Block blockAbove = world.getBlockState(blockPosAbove).getBlock();
+
+						Block twoBlockAbove = world.getBlockState(pos.add(0, 2, 0)).getBlock();
+						if (blockAbove.isCollidable() ||
+							//Don't allow teleport to the block below this block
+							blockAbove == Blocks.wall_sign || block == Blocks.standing_sign &&
+							blockAbove.getCollisionBoundingBox(world, blockPosAbove, world.getBlockState(blockPosAbove)) != null &&
+							//Allow teleport to the block below this block
+							blockAbove != Blocks.air && blockAbove != Blocks.carpet && blockAbove != Blocks.skull ||
+							//Allow teleport to the block 2 blocks below this block
+							twoBlockAbove != Blocks.air && twoBlockAbove != Blocks.double_plant && twoBlockAbove != Blocks.carpet) {
 							denyTpReason = "No air above!";
 						}
 					}
@@ -326,7 +333,7 @@ public class CustomItemEffects {
 				Minecraft.getMinecraft().objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
 				onPrivateIsland) {
 
-				IBlockState hover = Minecraft.getMinecraft().theWorld.getBlockState(
+				IBlockState hover = world.getBlockState(
 					Minecraft.getMinecraft().objectMouseOver.getBlockPos().offset(
 						Minecraft.getMinecraft().objectMouseOver.sideHit, 1));
 				if (hover.getBlock() == Blocks.air) {
@@ -338,14 +345,14 @@ public class CustomItemEffects {
 						TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
 
 						IBlockState match =
-							Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
+							world.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
 						Item matchItem = Item.getItemFromBlock(match.getBlock());
 						if (matchItem != null) {
 							ItemStack matchStack = new ItemStack(matchItem, 1,
 								match
 									.getBlock()
 									.getDamageValue(
-										Minecraft.getMinecraft().theWorld,
+										world,
 										Minecraft.getMinecraft().objectMouseOver.getBlockPos()
 									)
 							);
@@ -603,7 +610,8 @@ public class CustomItemEffects {
 			double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) event.partialTicks;
 			double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) event.partialTicks;
 
-			if (tick - lastEtherwarpUse > 10) {
+			//Don't need to wait 10 ticks when zoom is disabled
+			if (tick - lastEtherwarpUse > 10 || !NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
 				boolean aotv = Minecraft.getMinecraft().thePlayer.isSneaking() &&
 					(heldInternal.equals("ASPECT_OF_THE_VOID") || heldInternal.equals("ASPECT_OF_THE_END"));
 				if (aotv || heldInternal.equals("ETHERWARP_CONDUIT")) {
