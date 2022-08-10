@@ -50,7 +50,7 @@ public class CalculatorCommand extends ClientCommandBase {
 					"§eFor Example §b/neucalc 3m*7k§e.\n" +
 					"§eYou can also use suffixes (k, m, b, t, s)§e.\n" +
 					"§eThe \"s\" suffix acts as 64.\n" +
-					"§eTurn on Sign Calculator in /neu misc to also support this in sign popups.\n"));
+					"§eTurn on Sign Calculator in /neu misc to also support this in sign popups and the neu search bar.\n"));
 			return;
 		}
 		String source = String.join(" ", args);
