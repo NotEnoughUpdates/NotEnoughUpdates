@@ -288,6 +288,7 @@ public class MinionHelperOverlay {
 
 				displayName = displayName.replace(" Minion", "");
 				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
+				format = format.replace(" coins", "");
 				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
 				renderMap.put(
 					requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,

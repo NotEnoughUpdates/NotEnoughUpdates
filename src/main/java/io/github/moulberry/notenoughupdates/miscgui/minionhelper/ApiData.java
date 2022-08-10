@@ -30,6 +30,7 @@ public class ApiData {
 	private final int barbariansReputation;
 	private final boolean collectionApiDisabled;
 	private final List<String> craftedMinions;
+	private final int peltCount;
 
 	public ApiData(
 		Map<String, Integer> highestCollectionTier,
@@ -37,7 +38,8 @@ public class ApiData {
 		int magesReputation,
 		int barbariansReputation,
 		boolean collectionApiDisabled,
-		List<String> craftedMinions
+		List<String> craftedMinions,
+		int peltCount
 	) {
 		this.highestCollectionTier = highestCollectionTier;
 		this.slayerTiers = slayerTiers;
@@ -45,6 +47,7 @@ public class ApiData {
 		this.barbariansReputation = barbariansReputation;
 		this.collectionApiDisabled = collectionApiDisabled;
 		this.craftedMinions = craftedMinions;
+		this.peltCount = peltCount;
 	}
 
 	public Map<String, Integer> getHighestCollectionTier() {
@@ -69,5 +72,9 @@ public class ApiData {
 
 	public List<String> getCraftedMinions() {
 		return craftedMinions;
+	}
+
+	public int getPeltCount() {
+		return peltCount;
 	}
 }

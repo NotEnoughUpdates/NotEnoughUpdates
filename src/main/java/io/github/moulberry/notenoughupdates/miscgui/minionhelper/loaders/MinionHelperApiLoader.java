@@ -134,11 +134,23 @@ public class MinionHelperApiLoader {
 			magesReputation,
 			barbariansReputation,
 			!collectionApiEnabled,
-			loadCraftedMinions(members)
+			loadCraftedMinions(members),
+			loadPeltCount(player)
 		);
 
 		manager.reloadData();
 		apiReadyToUse = true;
+	}
+
+	private int loadPeltCount(JsonObject player) {
+		int peltCount = 0;
+		if (player.has("trapper_quest")) {
+			JsonObject jsonObject = player.getAsJsonObject("trapper_quest");
+			if (jsonObject.has("pelt_count")) {
+				peltCount = jsonObject.get("pelt_count").getAsInt();
+			}
+		}
+		return peltCount;
 	}
 
 	private Map<String, Integer> getSlayers(JsonObject player) {
