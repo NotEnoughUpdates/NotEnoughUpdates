@@ -273,6 +273,7 @@ public class CustomItemEffects {
 	private boolean usingEtherwarp = false;
 	private RaycastResult etherwarpRaycast = null;
 	private int lastEtherwarpUse = 0;
+	private String denyTpReason = null;
 
 	@SubscribeEvent
 	public void onOverlayDrawn(RenderGameOverlayEvent.Post event) {
@@ -302,14 +303,15 @@ public class CustomItemEffects {
 						Block blockAbove = world.getBlockState(blockPosAbove).getBlock();
 
 						Block twoBlockAbove = world.getBlockState(pos.add(0, 2, 0)).getBlock();
-						if (blockAbove.isCollidable() ||
+						if (blockAbove != Blocks.air &&
+							//Allow teleport to the block below this block
+							blockAbove != Blocks.carpet && blockAbove != Blocks.skull && blockAbove.isCollidable() ||
 							//Don't allow teleport to the block below this block
 							blockAbove == Blocks.wall_sign || block == Blocks.standing_sign &&
-							blockAbove.getCollisionBoundingBox(world, blockPosAbove, world.getBlockState(blockPosAbove)) != null &&
-							//Allow teleport to the block below this block
-							blockAbove != Blocks.air && blockAbove != Blocks.carpet && blockAbove != Blocks.skull ||
+							blockAbove.getCollisionBoundingBox(world, blockPosAbove, world.getBlockState(blockPosAbove)) != null ||
 							//Allow teleport to the block 2 blocks below this block
-							twoBlockAbove != Blocks.air && twoBlockAbove != Blocks.double_plant && twoBlockAbove != Blocks.carpet) {
+							twoBlockAbove != Blocks.air && twoBlockAbove != Blocks.double_plant && twoBlockAbove != Blocks.carpet &&
+								blockAbove != Blocks.skull) {
 							denyTpReason = "No air above!";
 						}
 					}
