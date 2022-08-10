@@ -223,8 +223,9 @@ public class MinionHelperOverlay {
 		LinkedHashMap<String, OverviewLine> renderMap
 	) {
 		int neededForNextSlot = manager.getNeedForNextSlot();
+		String color = showOnlyAvailable ? "§e" : "§c";
 		if (neededForNextSlot == -1) {
-			renderMap.put("Next slot in: ?", new OverviewText(Collections.emptyList(), () -> {}));
+			renderMap.put(color + "Next slot in: ?", new OverviewText(Collections.emptyList(), () -> {}));
 			return;
 		}
 
@@ -236,17 +237,8 @@ public class MinionHelperOverlay {
 			if (index == neededForNextSlot) break;
 		}
 		String format = manager.getPriceCalculation().formatCoins(priceNeeded);
-		String text = "Next slot in: §b" + neededForNextSlot + " §8- " + format;
-		List<String> list = new ArrayList<>();
-		list.add("§7The combined upgrade cost for");
-		list.add("§7the next §b" + index + " minions §7is " + format);
-
-		if (!showOnlyAvailable) {
-			list.add("");
-			list.add("§cThis shows minions that don't meet requirements!");
-		}
-
-		renderMap.put(text, new OverviewText(list, () -> {}));
+		String text = color + "Next slot in: §b" + neededForNextSlot + " §8- " + format;
+		renderMap.put(text, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
 	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
@@ -264,7 +256,7 @@ public class MinionHelperOverlay {
 			}
 		}
 		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
-		renderMap.put(name, new OverviewText(Arrays.asList(hoverText, "", toggleText), this::toggleShowAvailable));
+		renderMap.put("§e" + name, new OverviewText(Arrays.asList(hoverText, "", toggleText), this::toggleShowAvailable));
 	}
 
 	private void addMinions(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {

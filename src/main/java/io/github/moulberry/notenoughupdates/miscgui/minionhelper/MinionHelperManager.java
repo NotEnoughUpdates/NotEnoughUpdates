@@ -134,9 +134,10 @@ public class MinionHelperManager {
 			minion.setMeetRequirements(false);
 		}
 
+		needForNextSlot = -1;
 		api.onProfileSwitch();
 		overlay.onProfileSwitch();
-		needForNextSlot = -1;
+		inventoryLoader.onProfileSwitch();
 	}
 
 	public void reloadData() {

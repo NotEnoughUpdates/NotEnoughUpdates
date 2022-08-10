@@ -59,7 +59,9 @@ public class MinionHelperInventoryLoader {
 			checkInventory();
 		} else {
 			pagesSeenAlready.clear();
-			shouldCheckNextSlot = true;
+			if (shouldCheckNextSlot) {
+				shouldCheckNextSlot = true;
+			}
 		}
 	}
 
@@ -136,5 +138,9 @@ public class MinionHelperInventoryLoader {
 		if (crafted > 0) {
 			manager.getOverlay().resetCache();
 		}
+	}
+
+	public void onProfileSwitch() {
+		shouldCheckNextSlot = true;
 	}
 }
