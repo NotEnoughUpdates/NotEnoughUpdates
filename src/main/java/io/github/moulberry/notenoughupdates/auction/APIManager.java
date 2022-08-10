@@ -409,6 +409,7 @@ public class APIManager {
 				int page = pagesToDownload.pop();
 				getPageFromAPI(page);
 			} catch (NoSuchElementException ignored) {
+				return;
 			} //Weird race condition?
 		}
 	}
