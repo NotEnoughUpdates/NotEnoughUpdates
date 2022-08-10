@@ -91,6 +91,9 @@ public class MinionHelperOverlayHover {
 
 			Minion minion = (Minion) overviewLine;
 			MinionSource minionSource = minion.getMinionSource();
+			if (minion.getCustomSource() != null) {
+				minionSource = minion.getCustomSource();
+			}
 			lastHovered = minion;
 			String displayName = minion.getDisplayName();
 			lines.add("§9" + displayName + " " + minion.getTier());
