@@ -36,6 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class CollectionsPage extends GuiProfileViewerPage {
@@ -70,6 +71,8 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 	private static List<String> tooltipToDisplay = null;
 	private static ItemStack selectedCollectionCategory = null;
+	private int page = 0;
+	private int maxPage = 0;
 
 	public CollectionsPage(GuiProfileViewer instance) {
 		super(instance);
@@ -94,6 +97,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			);
 			return;
 		}
+
 		JsonObject resourceCollectionInfo = ProfileViewer.getResourceCollectionInformation();
 		if (resourceCollectionInfo == null) return;
 
@@ -135,6 +139,53 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			}
 		}
 
+		List<String> collections = ProfileViewer.getCollectionCatToCollectionMap().get(selectedCollectionCategory);
+		List<String> minions = ProfileViewer.getCollectionCatToMinionMap().get(selectedCollectionCategory);
+
+		maxPage = Math.max((collections != null ? collections.size() : 0) / 20, (minions != null ? minions.size() : 0) / 20);
+
+		if (maxPage != 0) {
+			boolean leftHovered = false;
+			boolean rightHovered = false;
+			if (Mouse.isButtonDown(0)) {
+				if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
+					if (mouseX > guiLeft + 100 - 20 - 12 && mouseX < guiLeft + 100 - 20) {
+						leftHovered = true;
+					} else if (mouseX > guiLeft + 100 + 20 + 250 && mouseX < guiLeft + 100 + 20 + 12 + 250) {
+						rightHovered = true;
+					}
+				}
+			}
+			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.resource_packs);
+
+			if (page > 0) {
+				Utils.drawTexturedRect(
+					guiLeft + 100 - 15 - 12,
+					guiTop + 6,
+					12,
+					16,
+					29 / 256f,
+					53 / 256f,
+					!leftHovered ? 0 : 32 / 256f,
+					!leftHovered ? 32 / 256f : 64 / 256f,
+					GL11.GL_NEAREST
+				);
+			}
+			if (page < 1) {
+				Utils.drawTexturedRect(
+					guiLeft + 100 + 15 + 250,
+					guiTop + 6,
+					12,
+					16,
+					5 / 256f,
+					29 / 256f,
+					!rightHovered ? 0 : 32 / 256f,
+					!rightHovered ? 32 / 256f : 64 / 256f,
+					GL11.GL_NEAREST
+				);
+			}
+		}
+
 		Utils.drawStringCentered(
 			selectedCollectionCategory.getDisplayName() + " Collections",
 			Minecraft.getMinecraft().fontRendererObj,
@@ -150,15 +201,14 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		JsonObject totalAmounts = collectionInfo.get("total_amounts").getAsJsonObject();
 		JsonObject personalAmounts = collectionInfo.get("personal_amounts").getAsJsonObject();
 
-		List<String> collections = ProfileViewer.getCollectionCatToCollectionMap().get(selectedCollectionCategory);
 		if (collections != null) {
-			for (int i = 0; i < collections.size(); i++) {
+			for (int i = page * 20, j = 0; i < Math.min((page + 1) * 20, collections.size()); i++, j++) {
 				String collection = collections.get(i);
 				if (collection != null) {
 					ItemStack collectionItem = ProfileViewer.getCollectionToCollectionDisplayMap().get(collection);
 					if (collectionItem != null) {
-						int xIndex = i % COLLS_XCOUNT;
-						int yIndex = i / COLLS_XCOUNT;
+						int xIndex = j % COLLS_XCOUNT;
+						int yIndex = j / COLLS_XCOUNT;
 
 						float x = 39 + COLLS_XPADDING + (COLLS_XPADDING + 20) * xIndex;
 						float y = 7 + COLLS_YPADDING + (COLLS_YPADDING + 20) * yIndex;
@@ -261,9 +311,8 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			4210752
 		);
 
-		List<String> minions = ProfileViewer.getCollectionCatToMinionMap().get(selectedCollectionCategory);
 		if (minions != null) {
-			for (int i = 0; i < minions.size(); i++) {
+			for (int i = page * 20, j = 0; i < Math.min((page + 1) * 20, minions.size()); i++, j++) {
 				String minion = minions.get(i);
 				if (minion != null) {
 					JsonObject misc = Constants.MISC;
@@ -278,8 +327,8 @@ public class CollectionsPage extends GuiProfileViewerPage {
 					}
 
 					if (minionJson != null) {
-						int xIndex = i % COLLS_XCOUNT;
-						int yIndex = i / COLLS_XCOUNT;
+						int xIndex = j % COLLS_XCOUNT;
+						int yIndex = j / COLLS_XCOUNT;
 
 						float x = 231 + COLLS_XPADDING + (COLLS_XPADDING + 20) * xIndex;
 						float y = 7 + COLLS_YPADDING + (COLLS_YPADDING + 20) * yIndex;
@@ -400,6 +449,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		}
 		if (stack != null) {
 			selectedCollectionCategory = stack;
+			page = 0;
 		}
 		Utils.playPressSound();
 	}
@@ -409,6 +459,22 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
+		if (maxPage != 0) {
+			if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
+				if (mouseX > guiLeft + 100 - 15 - 12 && mouseX < guiLeft + 100 - 20) {
+					if (page > 0) {
+						page--;
+						return;
+					}
+				} else if (mouseX > guiLeft + 100 + 15 + 250 && mouseX < guiLeft + 100 + 20 + 12 + 250) {
+					if (page < 1) {
+						page++;
+						return;
+					}
+				}
+			}
+		}
+
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
 		int yIndex = 0;
@@ -416,6 +482,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			if (mouseX > guiLeft + 7 && mouseX < guiLeft + 7 + 20) {
 				if (mouseY > guiTop + 10 + collectionCatYSize * yIndex && mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
 					selectedCollectionCategory = stack;
+					page = 0;
 					Utils.playPressSound();
 					return;
 				}

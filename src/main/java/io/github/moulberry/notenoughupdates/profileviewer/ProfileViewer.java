@@ -144,7 +144,10 @@ public class ProfileViewer {
 					null,
 					"MITHRIL_ORE",
 					"HARD_STONE",
-					"GEMSTONE_COLLECTION"
+					"GEMSTONE_COLLECTION",
+					"MYCEL",
+					"SAND:1",
+					"SULPHUR_ORE"
 				)
 			);
 			put(
@@ -232,6 +235,9 @@ public class ProfileViewer {
 					"SNOW",
 					"MITHRIL",
 					"HARD_STONE",
+					null,
+					"MYCELIUM",
+					"RED_SAND",
 					null
 				)
 			);
@@ -309,6 +315,9 @@ public class ProfileViewer {
 					"ewogICJ0aW1lc3RhbXAiIDogMTYxODA4Mzg4ODc3MSwKICAicHJvZmlsZUlkIiA6ICJjNTBhZmE4YWJlYjk0ZTQ1OTRiZjFiNDI1YTk4MGYwMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUd29FQmFlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2FhYzE1ZjZmY2YyY2U5NjNlZjRjYTcxZjFhODY4NWFkYjk3ZWI3NjllMWQxMTE5NGNiYmQyZTk2NGE4ODk3OGMiCiAgICB9CiAgfQp9"
 				)
 			);
+			put("MYCEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.mycelium), EnumChatFormatting.GRAY + "Mycelium"));
+			put("SAND:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Red Sand", 1));
+			put("SULPHUR_ORE", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Sulphur"));
 
 			/* COMBAT COLLECTIONS */
 			put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.RED + "Rotten Flesh"));
