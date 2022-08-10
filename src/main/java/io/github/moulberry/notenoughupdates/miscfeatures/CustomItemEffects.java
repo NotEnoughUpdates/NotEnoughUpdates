@@ -283,7 +283,7 @@ public class CustomItemEffects {
 			String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
 			WorldClient world = Minecraft.getMinecraft().theWorld;
-			if (usingEtherwarp && NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
+			if (usingEtherwarp) {
 				denyTpReason = null;
 				if (etherwarpRaycast == null) {
 					denyTpReason = "Too far!";
@@ -317,13 +317,15 @@ public class CustomItemEffects {
 					}
 				}
 
-				if (denyTpReason != null) {
-					ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-					Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
-						Minecraft.getMinecraft().fontRendererObj,
-						scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
-					);
-					GlStateManager.color(1, 1, 1, 1);
+				if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
+					if (denyTpReason != null) {
+						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+						Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
+							Minecraft.getMinecraft().fontRendererObj,
+							scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
+						);
+						GlStateManager.color(1, 1, 1, 1);
+					}
 				}
 			}
 
