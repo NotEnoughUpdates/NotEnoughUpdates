@@ -20,12 +20,15 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
 import com.google.common.collect.ArrayListMultimap;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewText;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.CollectionRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.ReputationRequirement;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
@@ -94,12 +97,9 @@ public class MinionHelperOverlayHover {
 			List<MinionRequirement> requirements = manager.getRequirementsManager().getRequirements(minion);
 			if (!requirements.isEmpty()) {
 				for (MinionRequirement requirement : requirements) {
-					//TODO maybe change the §7 color
-					String color = manager.getRequirementsManager().meetRequirement(minion, requirement) ? "§a" : "§7";
-					if (requirement instanceof CollectionRequirement && manager.getApi().isCollectionApiDisabled()) {
-						color = "§cAPI DISABLED! §7";
-					}
-					lines.add(" §8- " + color + requirement.printDescription());
+					String result = getRequirementDescription(minion, requirement);
+					if (result == null) continue;
+					lines.add(result);
 				}
 			} else {
 				lines.add("§cNo requirements loaded!");
@@ -134,6 +134,42 @@ public class MinionHelperOverlayHover {
 			lines.add("§eClick to view recipe");
 		}
 		return lines;
+	}
+
+	private String getRequirementDescription(Minion minion, MinionRequirement requirement) {
+		//TODO maybe change the §7 color
+		boolean meetRequirement = manager.getRequirementsManager().meetRequirement(minion, requirement);
+		String color = meetRequirement ? "§a" : "§7";
+		if (requirement instanceof CollectionRequirement && manager.getApi().isCollectionApiDisabled()) {
+			color = "§cAPI DISABLED! §7";
+		}
+
+		String description = requirement.printDescription();
+		if (!meetRequirement) {
+			if (requirement instanceof ReputationRequirement) {
+				ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
+				String reputationType = reputationRequirement.getReputationType();
+				ApiData apiData = manager.getApi().getApiData();
+				int having = 0;
+				if (reputationType.equals("BARBARIAN")) {
+					having = apiData.getBarbariansReputation();
+				} else if (reputationType.equals("MAGE")) {
+					having = apiData.getMagesReputation();
+				} else {
+					Utils.addChatMessage("§c[NEU] Minion Helper: Unknown reputation type: '" + reputationType + "'");
+					return null;
+				}
+				int need = reputationRequirement.getReputation();
+				if (having < 0) having = 0;
+
+				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
+				String havingFormat = Utils.formatNumberWithDots(having);
+				String needFormat = Utils.formatNumberWithDots(need);
+				description =  "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";
+			}
+		}
+
+		return " §8- " + color + description;
 	}
 
 	private void formatItems(List<String> lines, Map<String, Integer> allItems) {
