@@ -20,5 +20,5 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
 public abstract class MinionRequirement {
-	public abstract String printDescription();
+	public abstract String printDescription(String color);
 }

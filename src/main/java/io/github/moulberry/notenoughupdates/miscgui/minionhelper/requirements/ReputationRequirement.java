@@ -33,7 +33,7 @@ public class ReputationRequirement extends MinionRequirement {
 		this.reputation = reputation;
 
 		String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
-		description =  "Reputation: " + Utils.formatNumberWithDots(reputation) + " " + reputationName + " Reputation";
+		description = Utils.formatNumberWithDots(reputation) + " §7" + reputationName + " Reputation";
 	}
 
 	public int getReputation() {
@@ -45,7 +45,7 @@ public class ReputationRequirement extends MinionRequirement {
 	}
 
 	@Override
-	public String printDescription() {
-		return description;
+	public String printDescription(String color) {
+		return "Reputation: " + color + description;
 	}
 }

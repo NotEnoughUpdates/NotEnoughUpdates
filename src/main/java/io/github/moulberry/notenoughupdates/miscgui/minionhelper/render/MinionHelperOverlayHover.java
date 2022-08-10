@@ -137,20 +137,20 @@ public class MinionHelperOverlayHover {
 	}
 
 	private String getRequirementDescription(Minion minion, MinionRequirement requirement) {
-		//TODO maybe change the §7 color
 		boolean meetRequirement = manager.getRequirementsManager().meetRequirement(minion, requirement);
-		String color = meetRequirement ? "§a" : "§7";
+		String color = meetRequirement ? "§a" : "§c";
+
+		String description = requirement.printDescription(color);
 		if (requirement instanceof CollectionRequirement && manager.getApi().isCollectionApiDisabled()) {
-			color = "§cAPI DISABLED! §7";
+			description += " §cAPI DISABLED! §7";
 		}
 
-		String description = requirement.printDescription();
 		if (!meetRequirement) {
 			if (requirement instanceof ReputationRequirement) {
 				ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
 				String reputationType = reputationRequirement.getReputationType();
 				ApiData apiData = manager.getApi().getApiData();
-				int having = 0;
+				int having;
 				if (reputationType.equals("BARBARIAN")) {
 					having = apiData.getBarbariansReputation();
 				} else if (reputationType.equals("MAGE")) {
@@ -169,7 +169,7 @@ public class MinionHelperOverlayHover {
 			}
 		}
 
-		return " §8- " + color + description;
+		return " §8- §7" + description;
 	}
 
 	private void formatItems(List<String> lines, Map<String, Integer> allItems) {

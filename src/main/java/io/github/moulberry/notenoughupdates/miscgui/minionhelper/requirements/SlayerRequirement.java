@@ -40,7 +40,7 @@ public class SlayerRequirement extends MinionRequirement {
 	}
 
 	@Override
-	public String printDescription() {
-		return "Slayer: " + StringUtils.firstUpperLetter(slayer) + " level " + level;
+	public String printDescription(String color) {
+		return "Slayer: " + color +StringUtils.firstUpperLetter(slayer)+ " level " + level;
 	}
 }

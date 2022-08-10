@@ -116,9 +116,9 @@ public class MinionHelperRepoLoader {
 		}
 
 		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement(
-			"Buy a Flower Minion 1 from Dark Auction"));
+			"Buy a §cFlower Minion 1 §7from Dark Auction"));
 		manager.getMinionById("SNOW_GENERATOR_1").getRequirements().add(new CustomRequirement(
-			"Get a Snow Minion 1 from opening gifts"));
+			"Get a §cSnow Minion 1 §7from opening gifts"));
 
 	}
 
