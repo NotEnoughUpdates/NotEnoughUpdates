@@ -79,7 +79,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
@@ -510,17 +509,17 @@ public class RenderListener {
 							int diffX = 162;
 							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
 								x += diffX;
+							}
 						}
-					}
-					if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
-						int diffX = 172;
-						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
-							x += diffX;
+						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+							int diffX = 172;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+								x += diffX;
 							}
 						}
 						if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-							y < guiTop + 56) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
 								x -= 68 - 200;
 							}
 						}
@@ -639,15 +638,15 @@ public class RenderListener {
 								x += diffX;
 							}
 						}
-					if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
-						int diffX = 172;
-						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
-							x += diffX;
+						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+							int diffX = 172;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+								x += diffX;
+							}
 						}
-					}
 						if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-							y < guiTop + 56) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
 								x -= 68 - 200;
 							}
 						}
@@ -1066,15 +1065,15 @@ public class RenderListener {
 								x += diffX;
 							}
 						}
-					if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
-						int diffX = 172;
-						if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
-							x += diffX;
+						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+							int diffX = 172;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+								x += diffX;
+							}
 						}
-					}
 						if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-							y < guiTop + 56) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
 								x -= 68 - 200;
 							}
 						}
