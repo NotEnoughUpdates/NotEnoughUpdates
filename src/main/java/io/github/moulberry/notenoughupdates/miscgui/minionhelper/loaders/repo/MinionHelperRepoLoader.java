@@ -112,7 +112,7 @@ public class MinionHelperRepoLoader {
 			String sourceName = entry.getValue();
 			Minion minion = manager.getMinionById(internalName);
 			if (minion == null) continue;
-			minion.setMinionSource(new CustomSource(sourceName));
+			manager.setCustomSource(minion, new CustomSource(sourceName));
 		}
 
 		manager.getMinionById("FLOWER_GENERATOR_1").getRequirements().add(new CustomRequirement(

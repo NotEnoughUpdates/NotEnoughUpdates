@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.MinionRequirement;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class Minion extends OverviewLine {
 	private final int tier;
 	private String displayName;
 	private MinionSource minionSource;
+	private CustomSource customSource;
 	private Minion parent;
 	private final List<MinionRequirement> requirements = new ArrayList<>();
 
@@ -98,5 +100,13 @@ public class Minion extends OverviewLine {
 	@Override
 	public void onClick() {
 		NotEnoughUpdates.INSTANCE.manager.displayGuiItemRecipe(internalName);
+	}
+
+	public void setCustomSource(CustomSource customSource) {
+		this.customSource = customSource;
+	}
+
+	public CustomSource getCustomSource() {
+		return customSource;
 	}
 }

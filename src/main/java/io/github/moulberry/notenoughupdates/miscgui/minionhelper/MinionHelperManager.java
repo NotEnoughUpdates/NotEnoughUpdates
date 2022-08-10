@@ -26,6 +26,8 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.MinionH
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders.repo.MinionHelperRepoLoader;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.MinionHelperTooltips;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CustomSource;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.util.MinionHelperPriceCalculation;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.util.MinionHelperRequirementsManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -247,5 +249,13 @@ public class MinionHelperManager {
 
 	public int getNeedForNextSlot() {
 		return needForNextSlot;
+	}
+
+	public void setCustomSource(Minion minion, CustomSource customSource) {
+		MinionSource minionSource = minion.getMinionSource();
+		if (minionSource == null) {
+			minion.setMinionSource(customSource);
+		}
+		minion.setCustomSource(customSource);
 	}
 }

@@ -32,9 +32,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MinionHelperPriceCalculation {
@@ -70,16 +68,18 @@ public class MinionHelperPriceCalculation {
 		String internalName = minion.getInternalName();
 		if (upgradeOnly) {
 			if (upgradeCostFormatCache.containsKey(internalName)) {
-				upgradeCostFormatCache.get(internalName);
+				return upgradeCostFormatCache.get(internalName);
 			}
 		} else {
 			if (fullCostFormatCache.containsKey(internalName)) {
-				fullCostFormatCache.get(internalName);
+				return fullCostFormatCache.get(internalName);
 			}
 		}
 
-		if (source instanceof CustomSource) {
-			return "§f" + ((CustomSource) source).getSourceName();
+		if (upgradeOnly) {
+			if (minion.getCustomSource() != null) {
+				return "§f" + (minion.getCustomSource()).getSourceName();
+			}
 		}
 
 		long costs = calculateUpgradeCosts(minion, upgradeOnly);
@@ -104,6 +104,13 @@ public class MinionHelperPriceCalculation {
 
 	public long calculateUpgradeCosts(Minion minion, boolean upgradeOnly) {
 		MinionSource source = minion.getMinionSource();
+
+		if (upgradeOnly) {
+			if (minion.getCustomSource() != null) {
+				return 0;
+			}
+		}
+
 		if (source instanceof CraftingSource) {
 			CraftingSource craftingSource = (CraftingSource) source;
 			return getCosts(minion, upgradeOnly, craftingSource.getItems());
@@ -160,7 +167,6 @@ public class MinionHelperPriceCalculation {
 		//is ah bin
 		long avgBinPrice = (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
 		if (avgBinPrice >= 1) return avgBinPrice;
-
 
 		//is ah without bin
 		JsonObject auctionInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalName);
