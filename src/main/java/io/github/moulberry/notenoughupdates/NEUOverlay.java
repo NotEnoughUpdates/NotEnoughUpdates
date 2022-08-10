@@ -2383,10 +2383,10 @@ public class NEUOverlay extends Gui {
 				Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
 				GlStateManager.bindTexture(0);
 
-				Utils.drawItemStack(slot1, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105));
-				Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18);
-				Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36);
-				Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54);
+				Utils.drawItemStack(slot1, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105), true);
+				Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18, true);
+				Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36, true);
+				Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54, true);
 				if (slot1 == null) {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
 					GlStateManager.color(1, 1, 1, 1);
@@ -2569,7 +2569,7 @@ public class NEUOverlay extends Gui {
 					Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
 					GlStateManager.bindTexture(0);
 
-					Utils.drawItemStack(petInfo, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 72);
+					Utils.drawItemStack(petInfo, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 72, true);
 					renderingPetHud = true;
 
 					List<String> tooltipToDisplay = null;
