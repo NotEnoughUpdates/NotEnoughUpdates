@@ -208,33 +208,6 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
-	//TODO move into utils class or somewhere
-	public String getDisplayName(String internalName) {
-		if (displayNameCache.containsKey(internalName)) {
-			return displayNameCache.get(internalName);
-		}
-
-		String displayName = null;
-		TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
-		if (itemInformation.containsKey(internalName)) {
-			JsonObject jsonObject = itemInformation.get(internalName);
-			if (jsonObject.has("displayname")) {
-				displayName = jsonObject.get("displayname").getAsString();
-			}
-		}
-
-		if (displayName == null) {
-			displayName = internalName;
-			Utils.showOutdatedRepoNotification();
-			if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-				Utils.addChatMessage("§c[NEU] Found no display name in repo for '" + internalName + "'!");
-			}
-		}
-
-		displayNameCache.put(internalName, displayName);
-		return displayName;
-	}
-
 	public void setDirty() {
 		dirty = true;
 		displayNameCache.clear();

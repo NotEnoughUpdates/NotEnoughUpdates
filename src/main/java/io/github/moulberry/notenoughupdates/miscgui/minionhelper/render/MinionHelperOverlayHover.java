@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
 import com.google.common.collect.ArrayListMultimap;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
@@ -235,12 +236,12 @@ public class MinionHelperOverlayHover {
 				continue;
 			}
 
-			String name = manager.getRepo().getDisplayName(internalName);
-
+			String name = NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalName);
 			String amountText = amount != 1 ? amount + "§7x " : "";
-			String price = manager.getPriceCalculation().formatCoins(
-				manager.getPriceCalculation().getPrice(internalName) * amount);
-			lines.add(" §8- §a" + amountText + "§f" + name + " " + price);
+			long price = manager.getPriceCalculation().getPrice(internalName);
+			String priceFormat = manager.getPriceCalculation().formatCoins(
+				price * amount);
+			lines.add(" §8- §a" + amountText + "§f" + name + " " + priceFormat);
 		}
 	}
 
