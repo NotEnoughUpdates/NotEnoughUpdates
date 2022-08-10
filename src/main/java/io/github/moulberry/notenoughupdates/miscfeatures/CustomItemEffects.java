@@ -305,10 +305,10 @@ public class CustomItemEffects {
 						Block twoBlockAbove = world.getBlockState(pos.add(0, 2, 0)).getBlock();
 						if (blockAbove != Blocks.air &&
 							//Allow teleport to the block below this block
-							blockAbove != Blocks.carpet && blockAbove != Blocks.skull && blockAbove.isCollidable() ||
-							//Don't allow teleport to the block below this block
-							blockAbove == Blocks.wall_sign || block == Blocks.standing_sign &&
+							blockAbove != Blocks.carpet && blockAbove != Blocks.skull && blockAbove.isCollidable() &&
 							blockAbove.getCollisionBoundingBox(world, blockPosAbove, world.getBlockState(blockPosAbove)) != null ||
+							//Don't allow teleport to the block below this block
+							blockAbove == Blocks.wall_sign || block == Blocks.standing_sign ||
 							//Allow teleport to the block 2 blocks below this block
 							twoBlockAbove != Blocks.air && twoBlockAbove != Blocks.double_plant && twoBlockAbove != Blocks.carpet &&
 								blockAbove != Blocks.skull) {
