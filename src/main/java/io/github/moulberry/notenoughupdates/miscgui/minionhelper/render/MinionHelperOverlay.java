@@ -21,7 +21,7 @@ package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.PageArrowsUtils;
+import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
@@ -45,12 +45,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MinionHelperOverlay {
@@ -121,7 +119,7 @@ public class MinionHelperOverlay {
 			int guiLeft = container.getGuiLeft();
 			int guiTop = container.getGuiTop();
 			int totalPages = getTotalPages();
-			PageArrowsUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages);
+			ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages);
 		}
 	}
 
@@ -142,12 +140,27 @@ public class MinionHelperOverlay {
 		if (event.gui instanceof AccessorGuiContainer) {
 			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
-			if (PageArrowsUtils.onPageSwitch(guiLeft, guiTop, topLeft, currentPage, totalPages, pageChange -> {
+			if (ArrowPagesUtils.onPageSwitchMouse(guiLeft, guiTop, topLeft, currentPage, totalPages, pageChange -> {
 				currentPage = pageChange;
 				resetCache();
 			})) {
 				event.setCanceled(true);
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onMouseClick(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+		if (!manager.inCraftedMinionsInventory()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
+		if (!manager.isReadyToUse()) return;
+
+		int totalPages = getTotalPages();
+		if (ArrowPagesUtils.onPageSwitchKey(currentPage, totalPages, pageChange -> {
+			currentPage = pageChange;
+			resetCache();
+		})) {
+			event.setCanceled(true);
 		}
 	}
 

@@ -1619,4 +1619,24 @@ public class RenderListener {
 	public void onRenderLast(RenderWorldLastEvent event) {
 		CrystalMetalDetectorSolver.render(event.partialTicks);
 	}
+
+	/**
+	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
+	 * @param event
+	 */
+	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?
+	@SubscribeEvent
+	public void onMouseClick(GuiScreenEvent.KeyboardInputEvent.Post event) {
+
+		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
+
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft == null || minecraft.thePlayer == null) return;
+
+		GuiScreen screen = minecraft.currentScreen;
+		if (screen instanceof GuiItemRecipe) {
+			GuiItemRecipe itemRecipe = (GuiItemRecipe) screen;
+			itemRecipe.arrowKeyboardInput();
+		}
+	}
 }

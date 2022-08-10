@@ -21,7 +21,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.ImmutableList;
 import io.github.moulberry.notenoughupdates.NEUManager;
-import io.github.moulberry.notenoughupdates.core.util.PageArrowsUtils;
+import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
@@ -142,7 +142,7 @@ public class GuiItemRecipe extends GuiScreen {
 		}
 
 		int[] topLeft = currentRecipe.getPageFlipPositionLeftTopCorner();
-		PageArrowsUtils.onDraw(guiLeft, guiTop, topLeft, currentIndex, getCurrentRecipeList().size());
+		ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentIndex, getCurrentRecipeList().size());
 
 		Utils.drawStringScaledMaxWidth(
 			currentRecipe.getTitle(),
@@ -278,8 +278,15 @@ public class GuiItemRecipe extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		NeuRecipe currentRecipe = getCurrentRecipe();
 		int[] topLeft = currentRecipe.getPageFlipPositionLeftTopCorner();
-		PageArrowsUtils.onPageSwitch(guiLeft, guiTop, topLeft, currentIndex, getCurrentRecipeList().size(), pageChange ->
-			changeRecipe(currentTab, pageChange));
+		ArrowPagesUtils.onPageSwitchMouse(
+			guiLeft,
+			guiTop,
+			topLeft,
+			currentIndex,
+			getCurrentRecipeList().size(),
+			pageChange ->
+				changeRecipe(currentTab, pageChange)
+		);
 
 		for (RecipeSlot slot : getAllRenderedSlots()) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
@@ -295,5 +302,10 @@ public class GuiItemRecipe extends GuiScreen {
 		}
 
 		currentRecipe.mouseClicked(this, mouseX, mouseY, mouseButton);
+	}
+
+	public void arrowKeyboardInput() {
+		ArrowPagesUtils.onPageSwitchKey(currentIndex, getCurrentRecipeList().size(), pageChange ->
+			changeRecipe(currentTab, pageChange));
 	}
 }

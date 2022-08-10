@@ -25,13 +25,14 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.function.Consumer;
 
-public class PageArrowsUtils {
+public class ArrowPagesUtils {
 
 	public static final int BUTTON_POSITION_RIGHT_OFFSET_X = 37;
 	public static final int PAGE_STRING_OFFSET_X = 22;
@@ -97,7 +98,28 @@ public class PageArrowsUtils {
 		);
 	}
 
-	public static boolean onPageSwitch(
+	public static boolean onPageSwitchKey(
+		int currentPage,
+		int totalPages,
+		Consumer<Integer> pageChange
+	) {
+
+		int keyPressed = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
+		if (Keyboard.getEventKeyState() && keyPressed == Keyboard.KEY_LEFT) {
+			int newPage = currentPage - 1;
+			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
+			return true;
+		}
+		if (Keyboard.getEventKeyState() && keyPressed == Keyboard.KEY_RIGHT) {
+			int newPage = currentPage + 1;
+			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean onPageSwitchMouse(
 		int guiLeft,
 		int guiTop,
 		int[] topLeft,
@@ -105,6 +127,19 @@ public class PageArrowsUtils {
 		int totalPages,
 		Consumer<Integer> pageChange
 	) {
+
+		int keyPressed = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
+		if (Keyboard.getEventKeyState() && keyPressed == Keyboard.KEY_LEFT) {
+			int newPage = currentPage - 1;
+			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
+			return true;
+		}
+		if (Keyboard.getEventKeyState() && keyPressed == Keyboard.KEY_RIGHT) {
+			int newPage = currentPage + 1;
+			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
+			return true;
+		}
+
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		final int scaledWidth = scaledresolution.getScaledWidth();
 		final int scaledHeight = scaledresolution.getScaledHeight();
