@@ -110,9 +110,9 @@ public class MinionHelperOverlayHover {
 				lines.add("");
 				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
 				if (minion.getTier() == 1) {
-					lines.add("§7Full crafting costs: " + format);
+					lines.add("§7Full crafting cost: " + format);
 				} else {
-					lines.add("§7Upgrade costs: " + format);
+					lines.add("§7Upgrade cost: " + format);
 				}
 				formatItems(lines, grabAllItems(craftingSource.getItems()));
 
@@ -122,7 +122,7 @@ public class MinionHelperOverlayHover {
 				lines.add("");
 				lines.add("§7Buy from: §9" + npcName + " (NPC)");
 				lines.add("");
-				lines.add("§7Buy costs: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true));
+				lines.add("§7Buy cost: " + manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true));
 				int coins = npcSource.getCoins();
 				if (coins != 0) {
 					lines.add(" §8- " + manager.getPriceCalculation().formatCoins(coins));

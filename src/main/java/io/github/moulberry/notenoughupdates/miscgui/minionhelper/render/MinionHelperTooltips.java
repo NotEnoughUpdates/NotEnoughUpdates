@@ -83,9 +83,9 @@ public class MinionHelperTooltips {
 		}
 
 		if (showFullCost) {
-			event.toolTip.add("§8[Press SHIFT to show upgrade costs]");
+			event.toolTip.add("§8[Press SHIFT to show upgrade cost]");
 		} else {
-			event.toolTip.add("§8[Press SHIFT to show full costs]");
+			event.toolTip.add("§8[Press SHIFT to show full cost]");
 		}
 	}
 }
