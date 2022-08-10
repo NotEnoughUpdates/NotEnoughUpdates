@@ -68,10 +68,10 @@ public class GuiPriceGraph extends GuiScreen {
 	private static final int X_SIZE = 364;
 	private static final int Y_SIZE = 215;
 	private ItemData itemData;
-	private float highestValue;
+	private double highestValue;
 	private long firstTime;
 	private long lastTime;
-	private Float lowestValue = null;
+	private Double lowestValue = null;
 	private String itemName;
 	private final String itemId;
 	private int guiLeft;
@@ -166,7 +166,7 @@ public class GuiPriceGraph extends GuiScreen {
 				Integer prevX = null;
 				Integer prevY = null;
 				for (Long time : itemData.get().keySet()) {
-					float price = itemData.isBz()
+					double price = itemData.isBz()
 						? i == 0 ? itemData.bz.get(time).b : itemData.bz.get(time).s
 						: itemData.ah.get(time);
 					int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
@@ -250,7 +250,7 @@ public class GuiPriceGraph extends GuiScreen {
 				Utils.drawDottedLine(customStart, guiTop + 197, customEnd, guiTop + 197, 2, 10, 0xFFc6c6c6);
 			}
 			if (lowestDist != null && !customSelecting) {
-				float price = itemData.isBz() ? itemData.bz.get(lowestDistTime).b : itemData.ah.get(lowestDistTime);
+				double price = itemData.isBz() ? itemData.bz.get(lowestDistTime).b : itemData.ah.get(lowestDistTime);
 				Float price2 = itemData.isBz() ? itemData.bz.get(lowestDistTime).s : null;
 				int xPos = (int) map(lowestDistTime, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
 				int yPos = (int) map(price, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198);
@@ -399,7 +399,7 @@ public class GuiPriceGraph extends GuiScreen {
 				highestValue = 0;
 				lowestValue = null;
 				for (long key : this.itemData.get().keySet()) {
-					float value1 = this.itemData.isBz() ? this.itemData.bz.get(key).b : this.itemData.ah.get(key);
+					double value1 = this.itemData.isBz() ? this.itemData.bz.get(key).b : this.itemData.ah.get(key);
 					Float value2 = this.itemData.isBz() ? this.itemData.bz.get(key).s : null;
 					if (value1 > highestValue) {
 						highestValue = value1;
@@ -411,7 +411,7 @@ public class GuiPriceGraph extends GuiScreen {
 						lowestValue = value1;
 					}
 					if (value2 != null && value2 < lowestValue) {
-						lowestValue = value2;
+						lowestValue = Double.valueOf(value2);
 					}
 				}
 			}
@@ -504,7 +504,7 @@ public class GuiPriceGraph extends GuiScreen {
 			}
 		} else {
 			if (existingItemData != null) {
-				prices.get(item.getKey()).ah.put(timestamp, item.getValue().getAsBigDecimal().intValue());
+				prices.get(item.getKey()).ah.put(timestamp, item.getValue().getAsBigDecimal().longValue());
 			} else {
 				TreeMap<Long, Object> mapData = new TreeMap<>();
 				mapData.put(timestamp, item.getValue().getAsLong());
@@ -544,7 +544,7 @@ public class GuiPriceGraph extends GuiScreen {
 				if (itemData.isBz())
 					trimmed.bz.put(lowest, new BzData((float) (sumBuy / amount), (float) (sumSell / amount)));
 				else
-					trimmed.ah.put(lowest, (int) (sumBuy / amount));
+					trimmed.ah.put(lowest, (long) (sumBuy / amount));
 			}
 		}
 		return trimmed;
@@ -593,7 +593,7 @@ public class GuiPriceGraph extends GuiScreen {
 }
 
 class ItemData {
-	public TreeMap<Long, Integer> ah = null;
+	public TreeMap<Long, Long> ah = null;
 	public TreeMap<Long, BzData> bz = null;
 
 	public ItemData() {
@@ -603,7 +603,7 @@ class ItemData {
 		if (bz)
 			this.bz = (TreeMap<Long, BzData>) map;
 		else
-			this.ah = (TreeMap<Long, Integer>) map;
+			this.ah = (TreeMap<Long, Long>) map;
 	}
 
 	public TreeMap<Long, ?> get() {

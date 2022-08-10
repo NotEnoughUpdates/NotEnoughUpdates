@@ -51,12 +51,6 @@ public class MapCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			Utils.addChatMessage(
-				EnumChatFormatting.RED +
-					"[NEU] The map does not work right now. You can use the map from other mods, for example: SkyblockAddons, DungeonsGuide or Skytils.");
-			return;
-		}
 
 		if (NotEnoughUpdates.INSTANCE.colourMap == null) {
 			try (

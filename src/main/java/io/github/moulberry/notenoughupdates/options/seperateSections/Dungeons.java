@@ -31,15 +31,13 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class Dungeons {
-	/*
+
 	@ConfigOption(
 		name = "Dungeon Map",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean dungeonMapAccordion = false;
-
-	 */
 
 	@Expose
 	@ConfigOption(

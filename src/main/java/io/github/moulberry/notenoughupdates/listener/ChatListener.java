@@ -215,10 +215,12 @@ public class ChatListener {
 			CookieWarning.resetNotification();
 		} else if (unformatted.startsWith("QUICK MATHS! Solve:")) {
 			if (Math.random() < 0.2) {
-				ClientCommandHandler.instance.executeCommand(
-					Minecraft.getMinecraft().thePlayer,
-					"/neucalc " + unformatted.substring("QUICK MATHS! Solve: ".length())
-				);
+				if (NotEnoughUpdates.INSTANCE.config.misc.calculationMode == 2) {
+					ClientCommandHandler.instance.executeCommand(
+						Minecraft.getMinecraft().thePlayer,
+						"/neucalc " + unformatted.substring("QUICK MATHS! Solve: ".length())
+					);
+				}
 			}
 		}
 		if (e.message.getFormattedText().contains(

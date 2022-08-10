@@ -31,6 +31,8 @@ import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishingPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -99,6 +101,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation pv_basic = new ResourceLocation("notenoughupdates:pv_basic.png");
@@ -4621,7 +4625,6 @@ public class GuiProfileViewer extends GuiScreen {
 					.get("avg_buy")
 					.getAsDouble());
 				String networthIRLMoney = Long.toString(Math.round(((networthInCookies * 325) / 675) * 4.99));
-
 				if (mouseX > guiLeft + 8 &&
 					mouseX < guiLeft + 8 + fontRendererObj.getStringWidth("Net Worth: " + numberFormat.format(networth))) {
 					if (mouseY > guiTop + 32 && mouseY < guiTop + 32 + fontRendererObj.FONT_HEIGHT) {
@@ -4656,16 +4659,24 @@ public class GuiProfileViewer extends GuiScreen {
 			String locationStr = null;
 			if (profile.getUuid().equals("20934ef9488c465180a78f861586b4cf")) {
 				locationStr = "Ignoring DMs";
-			} else if(profile.getUuid().equals("b876ec32e396476ba1158438d83c67d4")) {
+			} else if (profile.getUuid().equals("b876ec32e396476ba1158438d83c67d4")) {
 				statusStr = EnumChatFormatting.LIGHT_PURPLE + "Long live Potato King";
 				ItemStack potato_crown = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("POTATO_CROWN"));
 				potato_crown.addEnchantment(Enchantment.unbreaking, 1656638942); // this number may be useful
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 35, guiTop + 160);
+				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+					new ItemStack(Items.potato),
+					guiLeft + 35,
+					guiTop + 160
+				);
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(potato_crown, guiLeft + 50, guiTop + 162);
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 63, guiTop + 160);
-			} else {
+				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+					new ItemStack(Items.potato),
+					guiLeft + 63,
+					guiTop + 160
+				);
+			} else if (online) {
 				locationStr = NotEnoughUpdates.INSTANCE.navigation.getNameForAreaModeOrUnknown(location);
 			}
 			if (locationStr != null) {
@@ -4936,6 +4947,64 @@ public class GuiProfileViewer extends GuiScreen {
 				true,
 				0
 			);
+		}
+
+		renderWeight(mouseX, mouseY, skillInfo, profileInfo);
+	}
+
+	private void renderWeight(int mouseX, int mouseY, JsonObject skillInfo, JsonObject profileInfo) {
+		if (skillInfo == null) {
+			return;
+		}
+
+		if(Constants.WEIGHT == null) {
+			Utils.showOutdatedRepoNotification();
+			return;
+		}
+
+		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+
+		SenitherWeight senitherWeight = new SenitherWeight(skillInfo);
+		LilyWeight lilyWeight = new LilyWeight(skillInfo, profileInfo);
+
+		Utils.drawStringCentered(
+			EnumChatFormatting.GREEN + "Senither Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
+			fr,
+			guiLeft + 63,
+			guiTop + 18,
+			true,
+			0
+		);
+
+		int textWidth = fontRendererObj.getStringWidth("Senither Weight: " + numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())));
+		if (mouseX > guiLeft + 63 - textWidth / 2 &&
+			mouseX < guiLeft + 63 + textWidth / 2) {
+			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fontRendererObj.FONT_HEIGHT) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Skills: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getSkillsWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Slayer: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getSlayerWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Dungeons: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())));
+			}
+		}
+
+		Utils.drawStringCentered(
+			EnumChatFormatting.GREEN + "Lily Weight: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
+			fr,
+			guiLeft + 63,
+			guiTop + 28,
+			true,
+			0
+		);
+
+		int fontWidth = fontRendererObj.getStringWidth("Lily Weight: " + numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())));
+		if (mouseX > guiLeft + 63 - fontWidth / 2 &&
+			mouseX < guiLeft + 63 + fontWidth / 2) {
+			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fontRendererObj.FONT_HEIGHT) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Skills: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getSkillsWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Slayer: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getSlayerWeight().getWeightStruct().getRaw())));
+				tooltipToDisplay.add(EnumChatFormatting.GREEN + "Dungeons: " + EnumChatFormatting.GOLD + numberFormat.format(roundToNearestInt(lilyWeight.getDungeonsWeight().getWeightStruct().getRaw())));
+			}
 		}
 	}
 

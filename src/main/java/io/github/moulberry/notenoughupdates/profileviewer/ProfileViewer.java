@@ -113,7 +113,7 @@ public class ProfileViewer {
 				"ENDER_STONE", null, "MITHRIL_ORE", "HARD_STONE", "GEMSTONE_COLLECTION"
 			));
 			put(CAT_COMBAT, Utils.createList("ROTTEN_FLESH", "BONE", "STRING", "SPIDER_EYE", "SULPHUR", "ENDER_PEARL",
-				"GHAST_TEAR", "SLIME_BALL", "BLAZE_ROD", "MAGMA_CREAM", null, null, null
+				"GHAST_TEAR", "SLIME_BALL", "BLAZE_ROD", "MAGMA_CREAM", null, null, null, null, "CHILI_PEPPER"
 			));
 			put(CAT_FORAGING, Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
 			put(CAT_FISHING, Utils.createList("RAW_FISH", "RAW_FISH:1", "RAW_FISH:2", "RAW_FISH:3", "PRISMARINE_SHARD",
@@ -218,6 +218,11 @@ public class ProfileViewer {
 			put("SLIME_BALL", Utils.createItemStack(Items.slime_ball, EnumChatFormatting.RED + "Slimeball"));
 			put("BLAZE_ROD", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.RED + "Blaze Rod"));
 			put("MAGMA_CREAM", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.RED + "Magma Cream"));
+			put("CHILI_PEPPER", Utils.createSkull(
+				EnumChatFormatting.RED + "Chili Pepper",
+				"3d47abaa-b40b-3826-b20c-d83a7f053bd9",
+				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg1OWM4ZGYxMTA5YzA4YTc1NjI3NWYxZDI4ODdjMjc0ODA0OWZlMzM4Nzc3NjlhN2I0MTVkNTZlZGE0NjlkOCJ9fX0"
+			));
 
 			/* FORAGING COLLECTIONS */
 			put("LOG", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Oak Wood"));
@@ -892,6 +897,16 @@ public class ProfileViewer {
 
 			float experience_skill_catacombs =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.experience"), 0);
+			float experience_skill_healer =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.healer.experience"), 0);
+			float experience_skill_archer =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.archer.experience"), 0);
+			float experience_skill_tank =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.tank.experience"), 0);
+			float experience_skill_mage =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.mage.experience"), 0);
+			float experience_skill_berserk =
+				Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.player_classes.berserk.experience"), 0);
 
 			float experience_slayer_zombie =
 				Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.zombie.xp"), 0);
@@ -928,6 +943,11 @@ public class ProfileViewer {
 			skillInfo.addProperty("experience_skill_hotm", experience_skill_hotm);
 
 			skillInfo.addProperty("experience_skill_catacombs", experience_skill_catacombs);
+			skillInfo.addProperty("experience_skill_healer", experience_skill_healer);
+			skillInfo.addProperty("experience_skill_tank", experience_skill_tank);
+			skillInfo.addProperty("experience_skill_mage", experience_skill_mage);
+			skillInfo.addProperty("experience_skill_archer", experience_skill_archer);
+			skillInfo.addProperty("experience_skill_berserk", experience_skill_berserk);
 
 			skillInfo.addProperty("experience_slayer_zombie", experience_slayer_zombie);
 			skillInfo.addProperty("experience_slayer_spider", experience_slayer_spider);
@@ -1295,7 +1315,7 @@ public class ProfileViewer {
 			}
 
 			for (Map.Entry<String, JsonElement> entry : personalAmounts.entrySet()) {
-				totalAmounts.addProperty(entry.getKey(), entry.getValue().getAsInt());
+				totalAmounts.addProperty(entry.getKey(), entry.getValue().getAsLong());
 			}
 
 			List<JsonObject> coopProfiles = getCoopProfileInformation(profileId);
@@ -1305,7 +1325,7 @@ public class ProfileViewer {
 					if (coopCollectionInfoElement != null && coopCollectionInfoElement.isJsonObject()) {
 						for (Map.Entry<String, JsonElement> entry : coopCollectionInfoElement.getAsJsonObject().entrySet()) {
 							float existing = Utils.getElementAsFloat(totalAmounts.get(entry.getKey()), 0);
-							totalAmounts.addProperty(entry.getKey(), existing + entry.getValue().getAsInt());
+							totalAmounts.addProperty(entry.getKey(), existing + entry.getValue().getAsLong());
 						}
 					}
 				}

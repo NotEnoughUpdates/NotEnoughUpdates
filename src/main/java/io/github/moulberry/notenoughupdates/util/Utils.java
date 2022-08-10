@@ -669,6 +669,10 @@ public class Utils {
 		return (float) Math.round(value * scale) / scale;
 	}
 
+	public static int roundToNearestInt(double value) {
+		return (int) Math.round(value);
+	}
+
 	// Parses Roman numerals, allowing for single character irregular subtractive notation (e.g. IL is 49, IIL is invalid)
 	public static int parseRomanNumeral(String input) {
 		int prevVal = 0;
