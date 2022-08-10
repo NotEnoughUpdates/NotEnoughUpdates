@@ -96,8 +96,8 @@ public class BazaarSacksProfit {
 						String internalName = entry.getKey();
 						JsonObject object = entry.getValue();
 						if (object.has("displayname")) {
-							String displayname = object.get("displayname").getAsString();
-							if (displayname.equals(bazaarName)) {
+							String name = object.get("displayname").getAsString();
+							if (name.equals(bazaarName)) {
 								prices.put(internalName, amount);
 								names.put(internalName, bazaarName);
 								continue out;
