@@ -39,16 +39,6 @@ public class MinionHelperPriceCalculation {
 	private final MinionHelperManager manager;
 	private final Map<String, String> upgradeCostFormatCache = new HashMap<>();
 	private final Map<String, String> fullCostFormatCache = new HashMap<>();
-	//TODO maybe change logic with 0 coins later or stuff
-//	private final List<String> cheapItems = Arrays.asList(
-//		"WOOD_SWORD",
-//		"WOOD_HOE",
-//		"WOOD_AXE",
-//		"WOOD_PICKAXE",
-//		"WOOD_SPADE",
-//		"FISHING_ROD",
-//		"SKYBLOCK_PELT"
-//	);
 
 	public MinionHelperPriceCalculation(MinionHelperManager manager) {
 		this.manager = manager;
@@ -160,9 +150,6 @@ public class MinionHelperPriceCalculation {
 			return (long) bazaarInfo.get("curr_sell").getAsDouble();
 		}
 
-		//Is cheap item
-//		if (cheapItems.contains(internalName)) return 0;
-
 		//is ah bin
 		long avgBinPrice = (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
 		if (avgBinPrice >= 1) return avgBinPrice;
@@ -174,7 +161,6 @@ public class MinionHelperPriceCalculation {
 			return 0;
 		}
 		return (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
-
 	}
 
 	public String formatCoins(long coins) {
