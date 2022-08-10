@@ -45,7 +45,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -54,6 +53,8 @@ import java.util.Map;
 public class MinionHelperOverlay {
 
 	private final ResourceLocation minionOverlayImage = new ResourceLocation("notenoughupdates:minion_overlay.png");
+	private final ResourceLocation greenCheckImage = new ResourceLocation("notenoughupdates:dungeon_map/green_check.png");
+	private final ResourceLocation whiteCheckImage = new ResourceLocation("notenoughupdates:dungeon_map/white_check.png");
 
 	private final MinionHelperManager manager;
 	private final MinionHelperOverlayHover hover;
@@ -147,6 +148,30 @@ public class MinionHelperOverlay {
 				event.setCanceled(true);
 			}
 		}
+		checkToggleClick();
+	}
+
+	private void checkToggleClick() {
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		if (!(gui instanceof GuiChest)) return;
+
+		int xSize = ((AccessorGuiContainer) gui).getXSize();
+		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+
+		int x = guiLeft + xSize + 4 + 149 - 3;
+		int y = guiTop + 109 - 3;
+
+		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+		final int scaledWidth = scaledresolution.getScaledWidth();
+		final int scaledHeight = scaledresolution.getScaledHeight();
+		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+
+		if (mouseX > x && mouseX < x + 16 &&
+			mouseY > y && mouseY < y + 16) {
+			toggleShowAvailable();
+		}
 	}
 
 	@SubscribeEvent
@@ -188,23 +213,20 @@ public class MinionHelperOverlay {
 		GL11.glColor4f(1, 1, 1, 1);
 		GlStateManager.disableLighting();
 		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 1f, 0, 1f, GL11.GL_NEAREST);
+		if (showOnlyAvailable) {
+			minecraft.getTextureManager().bindTexture(greenCheckImage);
+		} else {
+			minecraft.getTextureManager().bindTexture(whiteCheckImage);
+		}
+		Utils.drawTexturedRect(guiLeft + xSize + 4 + 149, guiTop + 109, 10, 10, 0, 1f, 0, 1f, GL11.GL_NEAREST);
 
 		int a = guiLeft + xSize + 4;
-		FontRenderer fontRendererObj = minecraft.fontRendererObj;
-
 		int i = 0;
 		int y = 0;
+		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
-			OverviewLine overviewLine = entry.getValue();
-			String prefix = "";
-			if (overviewLine instanceof Minion) {
-				Minion minion = (Minion) overviewLine;
-				if (minion == hover.getLastHovered()) {
-					prefix = "§e";
-				}
-			}
-			fontRendererObj.drawString(prefix + line, a + 6, guiTop + 6 + y, -1, false);
+			fontRendererObj.drawString(line, a + 6, guiTop + 6 + y, -1, false);
 			i++;
 			if (i == 2) {
 				y += 15;
@@ -236,9 +258,10 @@ public class MinionHelperOverlay {
 		LinkedHashMap<String, OverviewLine> renderMap
 	) {
 		int neededForNextSlot = manager.getNeedForNextSlot();
-		String color = showOnlyAvailable ? "§e" : "§c";
+		//TODO jani
+		String color = "§8";
 		if (neededForNextSlot == -1) {
-			renderMap.put(color + "Next slot in: ?", new OverviewText(Collections.emptyList(), () -> {}));
+			renderMap.put(color + "Next slot: ?", new OverviewText(Collections.emptyList(), () -> {}));
 			return;
 		}
 
@@ -250,26 +273,15 @@ public class MinionHelperOverlay {
 			if (index == neededForNextSlot) break;
 		}
 		String format = manager.getPriceCalculation().formatCoins(priceNeeded);
-		String text = color + "Next slot in: §b" + neededForNextSlot + " §8- " + format;
+		//TODO jani
+		String text = color + "Next slot: §3" + neededForNextSlot + " minions §8(" + format + "§8)";
 		renderMap.put(text, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
 	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
-		String name;
-		String hoverText;
-		if (prices.isEmpty()) {
-			name = (showOnlyAvailable ? "No minion obtainable!" : "§aAll minions collected!");
-			hoverText = "No minions to craft available!";
-		} else {
-			name = (showOnlyAvailable ? "Obtainable" : "All") + ": " + prices.size();
-			if (showOnlyAvailable) {
-				hoverText = "There are " + prices.size() + " more minions in total!";
-			} else {
-				hoverText = "You can craft " + prices.size() + " more minions!";
-			}
-		}
-		String toggleText = "§eClick to " + (showOnlyAvailable ? "show" : "hide") + " minion upgrades without requirements";
-		renderMap.put("§e" + name, new OverviewText(Arrays.asList(hoverText, "", toggleText), this::toggleShowAvailable));
+		//TODO jani
+		String name = "§8" + prices.size() + (showOnlyAvailable ? " craftable" : "") + " minions ";
+		renderMap.put(name, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
 	private void addMinions(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
@@ -289,9 +301,9 @@ public class MinionHelperOverlay {
 				displayName = displayName.replace(" Minion", "");
 				String format = manager.getPriceCalculation().calculateUpgradeCostsFormat(minion, true);
 				format = format.replace(" coins", "");
-				String requirementFormat = !minion.doesMeetRequirements() ? "§7§o" : "";
+				String requirementFormat = minion.doesMeetRequirements() ? "§9" : "§c";
 				renderMap.put(
-					requirementFormat + displayName + " " + minion.getTier() + " §r§8- " + format,
+					requirementFormat + displayName + " " + minion.getTier() + " §8- " + format,
 					minion
 				);
 			}
@@ -368,5 +380,9 @@ public class MinionHelperOverlay {
 
 	public void setTopLeft(int[] topLeft) {
 		this.topLeft = topLeft;
+	}
+
+	public boolean isShowOnlyAvailable() {
+		return showOnlyAvailable;
 	}
 }

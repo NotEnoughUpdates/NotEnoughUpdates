@@ -32,8 +32,10 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements.Re
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.CraftingSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -49,7 +51,6 @@ public class MinionHelperOverlayHover {
 
 	private final MinionHelperOverlay overlay;
 	private final MinionHelperManager manager;
-	private Minion lastHovered = null;
 
 	public MinionHelperOverlayHover(MinionHelperOverlay overlay, MinionHelperManager manager) {
 		this.overlay = overlay;
@@ -57,8 +58,6 @@ public class MinionHelperOverlayHover {
 	}
 
 	void renderHover(LinkedHashMap<String, OverviewLine> renderMap) {
-		lastHovered = null;
-
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
 
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -72,6 +71,57 @@ public class MinionHelperOverlayHover {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
 			Utils.drawHoveringText(getTooltip(mouseObject),
+				mouseX * scaledresolution.getScaleFactor() / 2,
+				mouseY * scaledresolution.getScaleFactor() / 2,
+				scaledWidth * scaledresolution.getScaleFactor() / 2,
+				scaledHeight * scaledresolution.getScaleFactor() / 2, -1, Minecraft.getMinecraft().fontRendererObj
+			);
+			GlStateManager.popMatrix();
+		}
+
+		renderToggleButton();
+	}
+
+	private void renderToggleButton() {
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		if (!(gui instanceof GuiChest)) return;
+
+		int xSize = ((AccessorGuiContainer) gui).getXSize();
+		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+
+		int x = guiLeft + xSize + 4 + 149 - 3;
+		int y = guiTop + 109 - 3;
+
+		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+		final int scaledWidth = scaledresolution.getScaledWidth();
+		final int scaledHeight = scaledresolution.getScaledHeight();
+		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
+		boolean showOnlyAvailable = overlay.isShowOnlyAvailable();
+
+		List<String> list = new ArrayList<>();
+
+		//TODO jani
+		if (showOnlyAvailable) {
+			list.add("§aFilter enabled!");
+			list.add("§7Only show minions that can be");
+			list.add("§7crafted and meet requirements");
+		} else {
+			list.add("§cFilter disabled!");
+			list.add("§7Show all minions. §cRed ones §7have");
+			list.add("§7missing requirements ");
+		}
+
+		list.add("");
+		list.add("§eClick to toggle!");
+
+		if (mouseX > x && mouseX < x + 16 &&
+			mouseY > y && mouseY < y + 16) {
+
+			GlStateManager.pushMatrix();
+			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
+			Utils.drawHoveringText(list,
 				mouseX * scaledresolution.getScaleFactor() / 2,
 				mouseY * scaledresolution.getScaleFactor() / 2,
 				scaledWidth * scaledresolution.getScaleFactor() / 2,
@@ -94,7 +144,6 @@ public class MinionHelperOverlayHover {
 			if (minion.getCustomSource() != null) {
 				minionSource = minion.getCustomSource();
 			}
-			lastHovered = minion;
 			String displayName = minion.getDisplayName();
 			lines.add("§9" + displayName + " " + minion.getTier());
 			List<MinionRequirement> requirements = manager.getRequirementsManager().getRequirements(minion);
@@ -134,7 +183,7 @@ public class MinionHelperOverlayHover {
 			}
 
 			lines.add("");
-			lines.add("§eClick to view recipe");
+			lines.add("§eClick to view recipe!");
 		}
 		return lines;
 	}
@@ -168,7 +217,7 @@ public class MinionHelperOverlayHover {
 				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
 				String havingFormat = Utils.formatNumberWithDots(having);
 				String needFormat = Utils.formatNumberWithDots(need);
-				description =  "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";
+				description = "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";
 			}
 		}
 
@@ -204,9 +253,5 @@ public class MinionHelperOverlayHover {
 			allItems.put(name, amount);
 		}
 		return allItems;
-	}
-
-	public Minion getLastHovered() {
-		return lastHovered;
 	}
 }

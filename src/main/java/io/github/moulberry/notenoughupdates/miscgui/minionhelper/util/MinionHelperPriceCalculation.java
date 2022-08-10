@@ -67,7 +67,7 @@ public class MinionHelperPriceCalculation {
 
 		if (upgradeOnly) {
 			if (minion.getCustomSource() != null) {
-				return "§f" + (minion.getCustomSource()).getSourceName();
+				return (minion.getCustomSource()).getSourceName();
 			}
 		}
 
