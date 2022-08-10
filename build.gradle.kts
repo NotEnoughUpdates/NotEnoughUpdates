@@ -168,6 +168,13 @@ tasks.shadowJar {
 
 tasks.assemble.get().dependsOn(remapJar)
 
+tasks.remapJar{
+
+		doLast{
+				println("Jar name :" + archiveFileName.get())
+		}
+}
+
 tasks.processResources {
 		filesMatching("mcmod.info") {
 				expand(
