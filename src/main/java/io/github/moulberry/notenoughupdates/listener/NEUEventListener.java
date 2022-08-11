@@ -80,73 +80,6 @@ public class NEUEventListener {
 		this.neu = neu;
 	}
 
-	private void displayUpdateMessage(JsonObject updateJson, String updateMessage, String downloadLink) {
-		int firstWidth = -1;
-
-		for (String line : Iterables.concat(Arrays.asList(updateMessage.split("\n")), Arrays.asList("Download here"))) {
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-			boolean isDownloadLink = line.equals("Download here");
-			int width = fr.getStringWidth(line);
-			if (firstWidth == -1) {
-				firstWidth = width;
-			}
-			int missingLen = firstWidth - width;
-			if (missingLen > 0) {
-				StringBuilder sb = new StringBuilder(missingLen / 4 / 2 +line.length());
-				for (int i = 0; i < missingLen / 4 / 2; i++) { /* fr.getCharWidth(' ') == 4 */
-					sb.append(" ");
-				}
-				sb.append(line);
-				line = sb.toString();
-			}
-			ChatComponentText cp = new ChatComponentText(line);
-			if (isDownloadLink)
-				cp.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, downloadLink));
-			Minecraft.getMinecraft().thePlayer.addChatMessage(cp);
-		}
-		neu.displayLinks(updateJson, firstWidth);
-		NotificationHandler.displayNotification(Arrays.asList(
-			"§eThere is a new version of NotEnoughUpdates available.",
-			"§eCheck the chat for more information"
-		), true);
-	}
-
-	private void displayUpdateMessageIfOutOfDate() {
-		File repo = neu.manager.repoLocation;
-		File updateJson = new File(repo, "update.json");
-		if (repo.exists() && updateJson.exists()) {
-			try {
-				JsonObject o = neu.manager.getJsonFromFile(updateJson);
-
-				int fullReleaseVersion =
-					o.has("version_id") && o.get("version_id").isJsonPrimitive() ? o.get("version_id").getAsInt() : -1;
-				int preReleaseVersion =
-					o.has("version_id") && o.get("version_id").isJsonPrimitive() ? o.get("version_id").getAsInt() : -1;
-				int hotfixVersion =
-					o.has("hotfix_id") && o.get("hotfix_id").isJsonPrimitive() ? o.get("hotfix_id").getAsInt() : -1;
-
-				boolean hasFullReleaseAvailableForUpgrade = fullReleaseVersion > NotEnoughUpdates.VERSION_ID;
-				boolean hasHotfixAvailableForUpgrade =
-					fullReleaseVersion == NotEnoughUpdates.VERSION_ID && hotfixVersion > NotEnoughUpdates.HOTFIX_VERSION_ID;
-				boolean hasPreReleaseAvailableForUpdate =
-					fullReleaseVersion == NotEnoughUpdates.VERSION_ID && preReleaseVersion > NotEnoughUpdates.PRE_VERSION_ID;
-
-				int updateChannel = NotEnoughUpdates.INSTANCE.config.notifications.updateChannel; /* 1 = Full, 2 = Pre */
-				if (hasFullReleaseAvailableForUpgrade || (hasHotfixAvailableForUpgrade && updateChannel == 1)) {
-					displayUpdateMessage(o, o.get("update_msg").getAsString(), o.get("update_link").getAsString());
-				} else if (hasPreReleaseAvailableForUpdate && updateChannel == 2) {
-					displayUpdateMessage(o, o.get("pre_update_msg").getAsString(), o.get("pre_update_link").getAsString());
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"§e[NEU] §cThere has been an error checking for updates. Check the log or join the discord for more information.").setChatStyle(
-					Utils.createClickStyle(
-						ClickEvent.Action.OPEN_URL, "https://discord.gg/moulberry")));
-			}
-		}
-	}
-
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Unload event) {
 		NotEnoughUpdates.INSTANCE.saveConfig();
@@ -266,7 +199,7 @@ public class NEUEventListener {
 					joinedSB = true;
 
 					if (NotEnoughUpdates.INSTANCE.config.notifications.updateChannel != 0) {
-						displayUpdateMessageIfOutOfDate();
+						NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate();
 					}
 
 					if (NotEnoughUpdates.INSTANCE.config.notifications.doRamNotif) {

@@ -196,17 +196,17 @@ public class TimersOverlay extends TextOverlay {
 			case "Cookie Buff":
 				icon = COOKIE_ICON;
 				break;
-			case "Daily Mithril Powder":
+			case "Mithril Powder":
 				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("MITHRIL_ORE"));
 				break;
-			case "Daily Gemstone Powder":
+			case "Gemstone Powder":
 				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("PERFECT_AMETHYST_GEM"));
 				break;
-			case "Daily Heavy Pearls":
+			case "Heavy Pearls":
 				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("HEAVY_PEARL"));
@@ -687,7 +687,7 @@ public class TimersOverlay extends TextOverlay {
 		if (hidden.dailyMithrilPowerCompleted < midnightReset) {
 			map.put(
 				7,
-				DARK_AQUA + "Daily Mithril Powder: " +
+				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
 			);
 		} else if (
@@ -695,7 +695,7 @@ public class TimersOverlay extends TextOverlay {
 				(hidden.dailyMithrilPowerCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				7,
-				DARK_AQUA + "Daily Mithril Powder: " +
+				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -703,7 +703,7 @@ public class TimersOverlay extends TextOverlay {
 			(hidden.dailyMithrilPowerCompleted < (midnightReset - TimeEnums.HOUR.time))) {
 			map.put(
 				7,
-				DARK_AQUA + "Daily Mithril Powder: " +
+				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -712,7 +712,7 @@ public class TimersOverlay extends TextOverlay {
 				(hidden.dailyMithrilPowerCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				7,
-				DARK_AQUA + "Daily Mithril Powder: " +
+				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -720,7 +720,7 @@ public class TimersOverlay extends TextOverlay {
 			DISPLAYTYPE.ALWAYS.ordinal()) {
 			map.put(
 				7,
-				DARK_AQUA + "Daily Mithril Powder: " +
+				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -730,7 +730,7 @@ public class TimersOverlay extends TextOverlay {
 		if (hidden.dailyGemstonePowderCompleted < midnightReset) {
 			map.put(
 				8,
-				DARK_AQUA + "Daily Gemstone Powder: " +
+				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
 			);
 		} else if (
@@ -738,7 +738,7 @@ public class TimersOverlay extends TextOverlay {
 				(hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				8,
-				DARK_AQUA + "Daily Gemstone Powder: " +
+				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -746,7 +746,7 @@ public class TimersOverlay extends TextOverlay {
 			(hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HOUR.time))) {
 			map.put(
 				8,
-				DARK_AQUA + "Daily Gemstone Powder: " +
+				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -755,7 +755,7 @@ public class TimersOverlay extends TextOverlay {
 				(hidden.dailyGemstonePowderCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				8,
-				DARK_AQUA + "Daily Gemstone Powder: " +
+				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -763,7 +763,7 @@ public class TimersOverlay extends TextOverlay {
 			DISPLAYTYPE.ALWAYS.ordinal()) {
 			map.put(
 				8,
-				DARK_AQUA + "Daily Gemstone Powder: " +
+				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
 			);
@@ -773,7 +773,7 @@ public class TimersOverlay extends TextOverlay {
 		if (hidden.dailyHeavyPearlCompleted < pearlsReset) {
 			map.put(
 				9,
-				DARK_AQUA + "Daily Heavy Pearls: " +
+				DARK_AQUA + "Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
 			);
 		} else if (
@@ -781,7 +781,7 @@ public class TimersOverlay extends TextOverlay {
 				(hidden.dailyHeavyPearlCompleted < (pearlsReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				9,
-				DARK_AQUA + "Daily Heavy Pearls: " +
+				DARK_AQUA + "Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
@@ -789,7 +789,7 @@ public class TimersOverlay extends TextOverlay {
 			(hidden.dailyHeavyPearlCompleted < (pearlsReset - TimeEnums.HOUR.time))) {
 			map.put(
 				9,
-				DARK_AQUA + "Daily Heavy Pearls: " +
+				DARK_AQUA + "Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
@@ -798,7 +798,7 @@ public class TimersOverlay extends TextOverlay {
 				(hidden.dailyHeavyPearlCompleted < (pearlsReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				9,
-				DARK_AQUA + "Daily Heavy Pearls: " +
+				DARK_AQUA + "Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
@@ -806,7 +806,7 @@ public class TimersOverlay extends TextOverlay {
 			DISPLAYTYPE.ALWAYS.ordinal()) {
 			map.put(
 				9,
-				DARK_AQUA + "Daily Heavy Pearls: " +
+				DARK_AQUA + "Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);

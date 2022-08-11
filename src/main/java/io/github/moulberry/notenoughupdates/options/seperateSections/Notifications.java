@@ -53,7 +53,7 @@ public class Notifications {
 
 	@Expose
 	@ConfigOption(
-		name = "OldAnimations warning",
+		name = "OldAnimations Warning",
 		desc = "Warning when an unsupported OldAnimations mod is used"
 	)
 	@ConfigEditorBoolean
@@ -61,7 +61,7 @@ public class Notifications {
 
 	@Expose
 	@ConfigOption(
-		name = "Fast Render warning",
+		name = "Fast Render Warning",
 		desc = "\u00a7cIf and ONLY if you have Fast Render disabled and are still seeing the warning, you can disable it here.\nDisabling it with Fast Render still on will lead to broken features."
 	)
 	@ConfigEditorBoolean

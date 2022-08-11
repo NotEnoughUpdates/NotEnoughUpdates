@@ -172,7 +172,7 @@ public class Calculator {
 							break;
 						assert (l.type == TokenType.BINOP);
 						int pl = getPrecedence(l);
-						if (pl > p) {
+						if (pl >= p) { // Association order
 							out.add(op.pop());
 						} else {
 							break;

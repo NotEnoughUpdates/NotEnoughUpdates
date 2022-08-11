@@ -123,7 +123,7 @@ public class APIManager {
 	public class Auction {
 		public String auctioneerUuid;
 		public long end;
-		public int starting_bid;
+		public long starting_bid;
 		public int highest_bid_amount;
 		public int bid_count;
 		public boolean bin;
@@ -137,7 +137,7 @@ public class APIManager {
 		public int enchLevel = 0; //0 = clean, 1 = ench, 2 = ench/hpb
 
 		public Auction(
-			String auctioneerUuid, long end, int starting_bid, int highest_bid_amount, int bid_count,
+			String auctioneerUuid, long end, long starting_bid, int highest_bid_amount, int bid_count,
 			boolean bin, String category, String rarity, int dungeonTier, String item_tag_str
 		) {
 			this.auctioneerUuid = auctioneerUuid;
@@ -273,11 +273,11 @@ public class APIManager {
 		return keys;
 	}
 
-	public int getLowestBin(String internalname) {
-		if (lowestBins != null && lowestBins.has(internalname)) {
-			JsonElement e = lowestBins.get(internalname);
+	public long getLowestBin(String internalName) {
+		if (lowestBins != null && lowestBins.has(internalName)) {
+			JsonElement e = lowestBins.get(internalName);
 			if (e.isJsonPrimitive() && e.getAsJsonPrimitive().isNumber()) {
-				return e.getAsBigDecimal().intValue();
+				return e.getAsBigDecimal().longValue();
 			}
 		}
 		return -1;
@@ -409,6 +409,7 @@ public class APIManager {
 				int page = pagesToDownload.pop();
 				getPageFromAPI(page);
 			} catch (NoSuchElementException ignored) {
+				return;
 			} //Weird race condition?
 		}
 	}
@@ -540,7 +541,7 @@ public class APIManager {
 		String auctionUuid = auction.get("uuid").getAsString();
 		String auctioneerUuid = auction.get("auctioneer").getAsString();
 		long end = auction.get("end").getAsLong();
-		int starting_bid = auction.get("starting_bid").getAsInt();
+		long starting_bid = auction.get("starting_bid").getAsLong();
 		int highest_bid_amount = auction.get("highest_bid_amount").getAsInt();
 		int bid_count = auction.get("bids").getAsJsonArray().size();
 		boolean bin = false;
@@ -775,13 +776,13 @@ public class APIManager {
 		return e.getAsJsonObject();
 	}
 
-	public float getItemAvgBin(String internalname) {
+	public double getItemAvgBin(String internalName) {
 		if (auctionPricesAvgLowestBinJson == null) return -1;
-		JsonElement e = auctionPricesAvgLowestBinJson.get(internalname);
+		JsonElement e = auctionPricesAvgLowestBinJson.get(internalName);
 		if (e == null) {
 			return -1;
 		}
-		return Math.round(e.getAsFloat());
+		return Math.round(e.getAsDouble());
 	}
 
 	public Set<String> getBazaarKeySet() {
@@ -823,7 +824,7 @@ public class APIManager {
 	public static class CraftInfo {
 		public boolean fromRecipe = false;
 		public boolean vanillaItem = false;
-		public float craftCost = -1;
+		public double craftCost = -1;
 	}
 
 	public CraftInfo getCraftCost(String internalname) {
@@ -839,10 +840,10 @@ public class APIManager {
 		visited.add(internalname);
 
 		boolean vanillaItem = isVanillaItem(internalname);
-		float craftCost = Float.POSITIVE_INFINITY;
+		double craftCost = Double.POSITIVE_INFINITY;
 
 		JsonObject auctionInfo = getItemAuctionInfo(internalname);
-		float lowestBin = getLowestBin(internalname);
+		double lowestBin = getLowestBin(internalname);
 		JsonObject bazaarInfo = getBazaarInfo(internalname);
 
 		if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
@@ -889,7 +890,7 @@ public class APIManager {
 					}
 				}
 		visited.remove(internalname);
-		if (Float.isInfinite(craftCost)) {
+		if (Double.isInfinite(craftCost)) {
 			return null;
 		}
 		CraftInfo craftInfo = new CraftInfo();

@@ -69,6 +69,8 @@ public class Constants {
 	public static JsonObject ESSENCECOSTS;
 	public static JsonObject FAIRYSOULS;
 	public static JsonObject REFORGESTONES;
+	public static JsonObject TROPHYFISH;
+	public static JsonObject WEIGHT;
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
@@ -88,6 +90,8 @@ public class Constants {
 			ESSENCECOSTS = Utils.getConstant("essencecosts", gson);
 			FAIRYSOULS = Utils.getConstant("fairy_souls", gson);
 			REFORGESTONES = Utils.getConstant("reforgestones", gson);
+			TROPHYFISH = Utils.getConstant("trophyfish", gson);
+			WEIGHT = Utils.getConstant("weight", gson);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {

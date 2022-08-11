@@ -65,9 +65,9 @@ public class MiscOverlays {
 			"\u00a73Fetchur: \u00a7e3h38m",
 			"\u00a73Commissions: \u00a7e3h38m",
 			"\u00a73Experiments: \u00a7e3h38m",
-			"\u00a73Daily Mithril Powder: \u00a7e3h38m",
-			"\u00a73Daily Gemstone Powder: \u00a7e3h38m",
-			"\u00a73Daily Heavy Pearls: \u00a7e3h38m",
+			"\u00a73Mithril Powder: \u00a7e3h38m",
+			"\u00a73Gemstone Powder: \u00a7e3h38m",
+			"\u00a73Heavy Pearls: \u00a7e3h38m",
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -167,8 +167,8 @@ public class MiscOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Daily Mithril Powder Display",
-		desc = "Change the way the daily mithril powder displays\n" +
+		name = "Mithril Powder Display",
+		desc = "Change the way the mithril powder displays\n" +
 			"Only when ready, When very Soon, When soon, When kinda soon or always."
 	)
 	@ConfigAccordionId(id = 1)
@@ -179,8 +179,8 @@ public class MiscOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Daily Gemstone Powder Display",
-		desc = "Change the way the daily gemstone powder displays\n" +
+		name = "Gemstone Powder Display",
+		desc = "Change the way the gemstone powder displays\n" +
 			"Only when ready, When very Soon, When soon, When kinda soon or always."
 	)
 	@ConfigAccordionId(id = 1)
@@ -191,8 +191,8 @@ public class MiscOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Daily Heavy Pearl Display",
-		desc = "Change the way the daily heavy pearl displays\n" +
+		name = "Heavy Pearl Display",
+		desc = "Change the way the heavy pearl displays\n" +
 			"Only when ready, When very Soon, When soon, When kinda soon or always."
 	)
 	@ConfigAccordionId(id = 1)

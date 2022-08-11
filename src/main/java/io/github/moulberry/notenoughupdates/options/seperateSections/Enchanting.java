@@ -131,6 +131,15 @@ public class Enchanting {
 
 	@Expose
 	@ConfigOption(
+		name = "Hide Buttons",
+		desc = "Hide Inventory Buttons and Quick Commands while in the experimentation table"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean hideButtons = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Ultrasequencer Next",
 		desc = "Set the colour of the glass pane shown behind the element in the ultrasequencer which is next"
 	)

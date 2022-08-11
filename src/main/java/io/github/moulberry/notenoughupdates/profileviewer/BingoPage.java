@@ -24,6 +24,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,17 +39,19 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+public class BingoPage extends GuiProfileViewerPage {
 
-public class BingoPage {
 	private static final ResourceLocation BINGO_GUI_TEXTURE = new ResourceLocation("notenoughupdates:pv_bingo_tab.png");
-	private static long lastResourceRequest;
-	private static List<JsonObject> bingoGoals = null;
-	private static int currentEventId;
+	private long lastResourceRequest;
+	private List<JsonObject> bingoGoals = null;
+	private int currentEventId;
 
-	public static void renderPage(int mouseX, int mouseY) {
+	public BingoPage(GuiProfileViewer instance) {
+		super(instance);
+	}
+
+	@Override
+	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		processBingoResources();
 		JsonObject bingoInfo = GuiProfileViewer.getProfile().getBingoInformation();
 
@@ -147,20 +152,22 @@ public class BingoPage {
 			personalGoalsString = EnumChatFormatting.AQUA + "Personal Goals: " + EnumChatFormatting.GOLD + "20/20";
 		} else {
 			personalGoalsString =
-				EnumChatFormatting.AQUA + "Personal Goals: " + EnumChatFormatting.WHITE + completedGoals.size() +
-					EnumChatFormatting.GOLD + "/" + EnumChatFormatting.WHITE + 20;
+				EnumChatFormatting.AQUA +
+				"Personal Goals: " +
+				EnumChatFormatting.WHITE +
+				completedGoals.size() +
+				EnumChatFormatting.GOLD +
+				"/" +
+				EnumChatFormatting.WHITE +
+				20;
 		}
-		Utils.drawStringF(totalPointsString, Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 22, guiTop + 19, true, 0
-		);
-		Utils.drawStringF(personalGoalsString, Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 22, guiTop + 31, true, 0
-		);
+		Utils.drawStringF(totalPointsString, Minecraft.getMinecraft().fontRendererObj, guiLeft + 22, guiTop + 19, true, 0);
+		Utils.drawStringF(personalGoalsString, Minecraft.getMinecraft().fontRendererObj, guiLeft + 22, guiTop + 31, true, 0);
 
 		GlStateManager.enableLighting();
 	}
 
-	private static boolean isCommunityGoalFinished(JsonObject goal) {
+	private boolean isCommunityGoalFinished(JsonObject goal) {
 		JsonArray tiers = goal.get("tiers").getAsJsonArray();
 		int totalTiers = tiers.size();
 		long progress = goal.get("progress").getAsLong();
@@ -175,7 +182,7 @@ public class BingoPage {
 		return finalTier == totalTiers;
 	}
 
-	private static String generateProgressIndicator(double progress, double goal) {
+	private String generateProgressIndicator(double progress, double goal) {
 		int totalFields = 20;
 		int filled;
 		double percentage = progress / goal * 100;
@@ -196,7 +203,7 @@ public class BingoPage {
 		return stringBuilder.toString();
 	}
 
-	private static List<String> getTooltip(JsonObject goal, boolean completed, boolean communityGoal) {
+	private List<String> getTooltip(JsonObject goal, boolean completed, boolean communityGoal) {
 		List<String> tooltip = new ArrayList<>();
 		if (communityGoal) {
 			//get current tier
@@ -211,9 +218,7 @@ public class BingoPage {
 				}
 				finalTier++;
 			}
-			double nextTier = finalTier < totalTiers ? tiers.get(totalTiers - 1).getAsLong() : tiers
-				.get(finalTier - 1)
-				.getAsLong();
+			double nextTier = finalTier < totalTiers ? tiers.get(totalTiers - 1).getAsLong() : tiers.get(finalTier - 1).getAsLong();
 			int progressToNextTier = (int) Math.round(progress / nextTier * 100);
 			if (progressToNextTier > 100) progressToNextTier = 100;
 			String progressBar = generateProgressIndicator(progress, nextTier);
@@ -226,21 +231,35 @@ public class BingoPage {
 			tooltip.add(EnumChatFormatting.DARK_GRAY + "Community Goal");
 			tooltip.add("");
 			tooltip.add(
-				EnumChatFormatting.GRAY + "Progress to " + name + " " + nextTierNum + ": " + EnumChatFormatting.YELLOW +
-					progressToNextTier + EnumChatFormatting.GOLD + "%");
-			tooltip.add(progressBar + EnumChatFormatting.YELLOW + " " + progressString + EnumChatFormatting.GOLD + "/" +
-				EnumChatFormatting.YELLOW + nextTierString);
+				EnumChatFormatting.GRAY +
+				"Progress to " +
+				name +
+				" " +
+				nextTierNum +
+				": " +
+				EnumChatFormatting.YELLOW +
+				progressToNextTier +
+				EnumChatFormatting.GOLD +
+				"%"
+			);
+			tooltip.add(
+				progressBar +
+				EnumChatFormatting.YELLOW +
+				" " +
+				progressString +
+				EnumChatFormatting.GOLD +
+				"/" +
+				EnumChatFormatting.YELLOW +
+				nextTierString
+			);
 			tooltip.add("");
 			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "Community Goals are");
-			tooltip.add(
-				EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "collaborative - anyone with a");
-			tooltip.add(
-				EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "Bingo profile can help to reach");
+			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "collaborative - anyone with a");
+			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "Bingo profile can help to reach");
 			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "the goal!");
 			tooltip.add("");
 			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "The more you contribute");
-			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC +
-				"towards the goal, the more you");
+			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "towards the goal, the more you");
 			tooltip.add(EnumChatFormatting.DARK_GRAY.toString() + EnumChatFormatting.ITALIC + "will be rewarded");
 
 			if (finalTier == totalTiers) {
@@ -266,14 +285,12 @@ public class BingoPage {
 		return tooltip;
 	}
 
-	private static void showMissingDataMessage(int guiLeft, int guiTop) {
+	private void showMissingDataMessage(int guiLeft, int guiTop) {
 		String message = EnumChatFormatting.RED + "No Bingo data for current event!";
-		Utils.drawStringCentered(message, Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 431 / 2f, guiTop + 101, true, 0
-		);
+		Utils.drawStringCentered(message, Minecraft.getMinecraft().fontRendererObj, guiLeft + 431 / 2f, guiTop + 101, true, 0);
 	}
 
-	private static List<String> jsonArrayToStringList(JsonArray completedGoals) {
+	private List<String> jsonArrayToStringList(JsonArray completedGoals) {
 		List<String> list = new ArrayList<>();
 		for (JsonElement completedGoal : completedGoals) {
 			list.add(completedGoal.getAsString());
@@ -281,7 +298,7 @@ public class BingoPage {
 		return list;
 	}
 
-	private static List<JsonObject> jsonArrayToJsonObjectList(JsonArray goals) {
+	private List<JsonObject> jsonArrayToJsonObjectList(JsonArray goals) {
 		List<JsonObject> list = new ArrayList<>();
 		for (JsonElement goal : goals) {
 			list.add(goal.getAsJsonObject());
@@ -290,7 +307,7 @@ public class BingoPage {
 		return list;
 	}
 
-	private static void processBingoResources() {
+	private void processBingoResources() {
 		long currentTime = System.currentTimeMillis();
 
 		//renew every 2 minutes

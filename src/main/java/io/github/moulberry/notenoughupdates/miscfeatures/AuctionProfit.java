@@ -20,13 +20,13 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.InvisibleModifier;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -46,11 +46,12 @@ public class AuctionProfit {
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
-		if(!inAuctionPage()) return;
+		if (!inAuctionPage()) return;
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 		Container inventoryContainer = minecraft.thePlayer.openContainer;
 
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
 		Gui gui = event.gui;
 		int xSize = ((AccessorGuiContainer) gui).getXSize();
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
@@ -172,6 +173,6 @@ public class AuctionProfit {
 		if (!(inventoryContainer instanceof ContainerChest)) return false;
 		ContainerChest containerChest = (ContainerChest) inventoryContainer;
 		return containerChest.getLowerChestInventory().getDisplayName()
-											 .getUnformattedText().equalsIgnoreCase("Manage Auctions");
+												 .getUnformattedText().equalsIgnoreCase("Manage Auctions");
 	}
 }

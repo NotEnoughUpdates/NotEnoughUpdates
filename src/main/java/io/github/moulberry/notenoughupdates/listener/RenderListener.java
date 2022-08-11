@@ -34,10 +34,12 @@ import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.itemeditor.NEUItemEditor;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
@@ -46,6 +48,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
+import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
@@ -485,58 +488,67 @@ public class RenderListener {
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 			if (!NEUApi.disableInventoryButtons) {
-				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-					if (!button.isActive()) continue;
-					if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
+				if (!EnchantingSolvers.disableButtons()) {
+					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+						if (!button.isActive()) continue;
+						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
 
-					int x = guiLeft + button.x;
-					int y = guiTop + button.y;
-					if (button.anchorRight) {
-						x += xSize;
-					}
-					if (button.anchorBottom) {
-						y += ySize;
-					}
-					if (AccessoryBagOverlay.isInAccessoryBag()) {
-						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-							x += 80 + 28;
+						int x = guiLeft + button.x;
+						int y = guiTop + button.y;
+						if (button.anchorRight) {
+							x += xSize;
 						}
-					}
-					if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
-							x -= 68 - 200;
+						if (button.anchorBottom) {
+							y += ySize;
 						}
-					}
-					if (NEUOverlay.isRenderingArmorHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+						if (AccessoryBagOverlay.isInAccessoryBag()) {
+							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
+								x += 80 + 28;
+							}
 						}
-					}
-					if (NEUOverlay.isRenderingPetHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
+							int diffX = 162;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+								x += diffX;
+							}
 						}
-					}
+						if (AuctionProfit.inAuctionPage()) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
+								x -= 68 - 200;
+							}
+						}
+						if (NEUOverlay.isRenderingArmorHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+								x -= 25;
+							}
+						}
+						if (NEUOverlay.isRenderingPetHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+								x -= 25;
+							}
+						}
 
-					GlStateManager.color(1, 1, 1, 1f);
+						GlStateManager.color(1, 1, 1, 1f);
 
-					GlStateManager.enableDepth();
-					GlStateManager.enableAlpha();
-					Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
-					Utils.drawTexturedRect(
-						x,
-						y,
-						18,
-						18,
-						button.backgroundIndex * 18 / 256f,
-						(button.backgroundIndex * 18 + 18) / 256f,
-						18 / 256f,
-						36 / 256f,
-						GL11.GL_NEAREST
-					);
+						GlStateManager.enableDepth();
+						GlStateManager.enableAlpha();
+						Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
+						Utils.drawTexturedRect(
+							x,
+							y,
+							18,
+							18,
+							button.backgroundIndex * 18 / 256f,
+							(button.backgroundIndex * 18 + 18) / 256f,
+							18 / 256f,
+							36 / 256f,
+							GL11.GL_NEAREST
+						);
 
-					if (button.icon != null && !button.icon.trim().isEmpty()) {
-						GuiInvButtonEditor.renderIcon(button.icon, x + 1, y + 1);
+						if (button.icon != null && !button.icon.trim().isEmpty()) {
+							GuiInvButtonEditor.renderIcon(button.icon, x + 1, y + 1);
+						}
 					}
 				}
 			}
@@ -597,67 +609,76 @@ public class RenderListener {
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 
 			if (!NEUApi.disableInventoryButtons) {
-				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-					if (!button.isActive()) continue;
-					if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
+				if (!EnchantingSolvers.disableButtons()) {
+					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+						if (!button.isActive()) continue;
+						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
 
-					int x = guiLeft + button.x;
-					int y = guiTop + button.y;
-					if (button.anchorRight) {
-						x += xSize;
-					}
-					if (button.anchorBottom) {
-						y += ySize;
-					}
-					if (AccessoryBagOverlay.isInAccessoryBag()) {
-						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-							x += 80 + 28;
+						int x = guiLeft + button.x;
+						int y = guiTop + button.y;
+						if (button.anchorRight) {
+							x += xSize;
 						}
-					}
-					if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
-							x -= 68 - 200;
+						if (button.anchorBottom) {
+							y += ySize;
 						}
-					}
-					if (NEUOverlay.isRenderingArmorHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
+						if (AccessoryBagOverlay.isInAccessoryBag()) {
+							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
+								x += 80 + 28;
+							}
 						}
-					}
-					if (NEUOverlay.isRenderingPetHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
+						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
+							int diffX = 162;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+								x += diffX;
+							}
 						}
-					}
-
-					if (x - guiLeft >= 85 && x - guiLeft <= 115 && y - guiTop >= 4 && y - guiTop <= 25) {
-						disableCraftingText = true;
-					}
-
-					if (event.mouseX >= x && event.mouseX <= x + 18 && event.mouseY >= y && event.mouseY <= y + 18) {
-						hoveringButton = true;
-						long currentTime = System.currentTimeMillis();
-
-						if (buttonHovered != button) {
-							buttonHoveredMillis = currentTime;
-							buttonHovered = button;
+						if (AuctionProfit.inAuctionPage()) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
+								x -= 68 - 200;
+							}
+						}
+						if (NEUOverlay.isRenderingArmorHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+								x -= 25;
+							}
+						}
+						if (NEUOverlay.isRenderingPetHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+								x -= 25;
+							}
 						}
 
-						if (currentTime - buttonHoveredMillis > 600) {
-							String command = button.command.trim();
-							if (!command.startsWith("/")) {
-								command = "/" + command;
+						if (x - guiLeft >= 85 && x - guiLeft <= 115 && y - guiTop >= 4 && y - guiTop <= 25) {
+							disableCraftingText = true;
+						}
+
+						if (event.mouseX >= x && event.mouseX <= x + 18 && event.mouseY >= y && event.mouseY <= y + 18) {
+							hoveringButton = true;
+							long currentTime = System.currentTimeMillis();
+
+							if (buttonHovered != button) {
+								buttonHoveredMillis = currentTime;
+								buttonHovered = button;
 							}
 
-							Utils.drawHoveringText(
-								Lists.newArrayList("\u00a77" + command),
-								event.mouseX,
-								event.mouseY,
-								event.gui.width,
-								event.gui.height,
-								-1,
-								Minecraft.getMinecraft().fontRendererObj
-							);
+							if (currentTime - buttonHoveredMillis > 600) {
+								String command = button.command.trim();
+								if (!command.startsWith("/")) {
+									command = "/" + command;
+								}
+
+								Utils.drawHoveringText(
+									Lists.newArrayList("\u00a77" + command),
+									event.mouseX,
+									event.mouseY,
+									event.gui.width,
+									event.gui.height,
+									-1,
+									Minecraft.getMinecraft().fontRendererObj
+								);
+							}
 						}
 					}
 				}
@@ -667,6 +688,10 @@ public class RenderListener {
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().render();
+		}
+
+		if (AbiphoneWarning.getInstance().shouldShow()) {
+			AbiphoneWarning.getInstance().render();
 		}
 	}
 
@@ -704,7 +729,7 @@ public class RenderListener {
 
 					String missingItem = null;
 					int totalValue = 0;
-					HashMap<String, Float> itemValues = new HashMap<>();
+					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
@@ -717,7 +742,7 @@ public class RenderListener {
 							}
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
-							float worth = -1;
+							double worth = -1;
 							if (bazaarPrice > 0) {
 								worth = bazaarPrice;
 							} else {
@@ -729,9 +754,10 @@ public class RenderListener {
 										JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 										if (auctionInfo != null) {
 											if (auctionInfo.has("clean_price")) {
-												worth = (int) auctionInfo.get("clean_price").getAsFloat();
+												worth = (long) auctionInfo.get("clean_price").getAsDouble();
 											} else {
-												worth = (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+												worth =
+													(long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
 										}
 										break;
@@ -800,7 +826,7 @@ public class RenderListener {
 						valueStringBIN2 = missingItem;
 					}
 
-					int profitLossBIN = totalValue - chestCost;
+					long profitLossBIN = totalValue - chestCost;
 
 					boolean kismetUsed = false;
 					// checking for kismet
@@ -814,7 +840,7 @@ public class RenderListener {
 							}
 						}
 					}
-					int kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
+					long kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
 					String kismetStr = EnumChatFormatting.RED + format.format(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
@@ -871,10 +897,10 @@ public class RenderListener {
 					}
 
 					int index = 0;
-					for (Map.Entry<String, Float> entry : itemValues.entrySet()) {
+					for (Map.Entry<String, Double> entry : itemValues.entrySet()) {
 						Utils.renderAlignedString(
 							entry.getKey(),
-							prefix + format.format(entry.getValue().intValue()),
+							prefix + format.format(entry.getValue().longValue()),
 							guiLeft + xSize + 4 + 10,
 							guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ? (kismetUsed ? 39 : 29) : 29) + (++index) * 10,
 							160
@@ -906,6 +932,11 @@ public class RenderListener {
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().mouseInput(mouseX, mouseY);
+			event.setCanceled(true);
+			return;
+		}
+		if (AbiphoneWarning.getInstance().shouldShow()) {
+			AbiphoneWarning.getInstance().mouseInput(mouseX, mouseY);
 			event.setCanceled(true);
 			return;
 		}
@@ -999,55 +1030,65 @@ public class RenderListener {
 			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
 			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
 			if (!NEUApi.disableInventoryButtons) {
-				for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-					if (!button.isActive()) continue;
-					if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
+				if (!EnchantingSolvers.disableButtons()) {
+					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+						if (!button.isActive()) continue;
+						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
 
-					int x = guiLeft + button.x;
-					int y = guiTop + button.y;
-					if (button.anchorRight) {
-						x += xSize;
-					}
-					if (button.anchorBottom) {
-						y += ySize;
-					}
-					if (AccessoryBagOverlay.isInAccessoryBag()) {
-						if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-							x += 80 + 28;
+						int x = guiLeft + button.x;
+						int y = guiTop + button.y;
+						if (button.anchorRight) {
+							x += xSize;
 						}
-					}
-					if (AuctionProfit.inAuctionPage()) {
-						if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 && y < guiTop + 56) {
-							x -= 68 - 200;
+						if (button.anchorBottom) {
+							y += ySize;
 						}
-					}
-					if (NEUOverlay.isRenderingArmorHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-							x -= 25;
-						}
-					}
-					if (NEUOverlay.isRenderingPetHud()) {
-						if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-							x -= 25;
-						}
-					}
-
-					if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
-						if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-							int clickType = NotEnoughUpdates.INSTANCE.config.inventoryButtons.clickType;
-							if ((clickType == 0 && Mouse.getEventButtonState()) || (clickType == 1 && !Mouse.getEventButtonState())) {
-								String command = button.command.trim();
-								if (!command.startsWith("/")) {
-									command = "/" + command;
-								}
-								if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command) == 0) {
-									NotEnoughUpdates.INSTANCE.sendChatMessage(command);
-								}
+						if (AccessoryBagOverlay.isInAccessoryBag()) {
+							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
+								x += 80 + 28;
 							}
-						} else {
-							event.setCanceled(true);
 						}
-						return;
+						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
+							int diffX = 162;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
+								x += diffX;
+							}
+						}
+						if (AuctionProfit.inAuctionPage()) {
+							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 56) {
+								x -= 68 - 200;
+							}
+						}
+						if (NEUOverlay.isRenderingArmorHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+								x -= 25;
+							}
+						}
+						if (NEUOverlay.isRenderingPetHud()) {
+							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+								x -= 25;
+							}
+						}
+
+						if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
+							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+								int clickType = NotEnoughUpdates.INSTANCE.config.inventoryButtons.clickType;
+								if ((clickType == 0 && Mouse.getEventButtonState()) ||
+									(clickType == 1 && !Mouse.getEventButtonState())) {
+									String command = button.command.trim();
+									if (!command.startsWith("/")) {
+										command = "/" + command;
+									}
+									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command) == 0) {
+										NotEnoughUpdates.INSTANCE.sendChatMessage(command);
+									}
+								}
+							} else {
+								event.setCanceled(true);
+							}
+							return;
+						}
 					}
 				}
 			}
@@ -1154,9 +1195,11 @@ public class RenderListener {
 							}
 						}
 					}
-					JsonObject itemsObj = jsonObject.get(id).getAsJsonObject().get("items").getAsJsonObject();
-					jsonObject.get(id).getAsJsonObject().remove("items");
-					jsonObject.get(id).getAsJsonObject().add("items", itemsObj);
+					if (jsonObject.get(id).getAsJsonObject().has("items")) {
+						JsonObject itemsObj = jsonObject.get(id).getAsJsonObject().get("items").getAsJsonObject();
+						jsonObject.get(id).getAsJsonObject().remove("items");
+						jsonObject.get(id).getAsJsonObject().add("items", itemsObj);
+					}
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					try {
 						try (
@@ -1195,22 +1238,22 @@ public class RenderListener {
 
 				try {
 					JsonObject newNPC = new JsonObject();
-					String displayname = lower.getDisplayName().getUnformattedText();
+					String displayName = lower.getDisplayName().getUnformattedText();
 					File file = new File(
 						Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
 						"config" + File.separator + "notenoughupdates" +
 							File.separator + "repo" + File.separator + "npc" + File.separator +
-							displayname.toUpperCase().replace(" ", "_") + ".json"
+							displayName.toUpperCase().replace(" ", "_") + ".json"
 					);
 					newNPC.add("itemid", new JsonPrimitive("minecraft:skull"));
-					newNPC.add("displayname", new JsonPrimitive("§9" + displayname + " (NPC)"));
+					newNPC.add("displayname", new JsonPrimitive("§9" + displayName + " (NPC)"));
 					newNPC.add("nbttag", new JsonPrimitive("TODO"));
 					newNPC.add("damage", new JsonPrimitive(3));
 
 					JsonArray newArray = new JsonArray();
 					newArray.add(new JsonPrimitive(""));
 					newNPC.add("lore", newArray);
-					newNPC.add("internalname", new JsonPrimitive(displayname.toUpperCase().replace(" ", "_") + "_NPC"));
+					newNPC.add("internalname", new JsonPrimitive(displayName.toUpperCase().replace(" ", "_") + "_NPC"));
 					newNPC.add("clickcommand", new JsonPrimitive("viewrecipe"));
 					newNPC.add("modver", new JsonPrimitive(NotEnoughUpdates.VERSION));
 					newNPC.add("infoType", new JsonPrimitive("WIKI_URL"));
@@ -1302,7 +1345,7 @@ public class RenderListener {
 						) {
 							writer.write(gson.toJson(newNPC));
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayname));
+								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayName));
 						}
 					} catch (IOException ignored) {
 						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
@@ -1366,6 +1409,11 @@ public class RenderListener {
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().keyboardInput();
+			event.setCanceled(true);
+			return;
+		}
+		if (AbiphoneWarning.getInstance().shouldShow()) {
+			AbiphoneWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}

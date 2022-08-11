@@ -172,4 +172,20 @@ public class TooltipTweaks {
 		minStep = 1f
 	)
 	public int tooltipBorderOpacity = 200;
+
+	@Expose
+	@ConfigOption(
+		name = "Power Stone Stats",
+		desc = "Show your real magical power and real stat increase on power stones"
+	)
+	@ConfigEditorBoolean
+	public boolean powerStoneStats = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Bazaar Sacks Profit",
+		desc = "Orders the items in your sacks in the bazaar inventory and adding buy order toggle"
+	)
+	@ConfigEditorBoolean
+	public boolean bazaarSacksProfit = true;
 }
