@@ -217,10 +217,18 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-		name = "Sign Calculator",
-		desc = "§7Replace calculations like §9\"1+2\"§7 with the calculation result in sign popups (AH/BZ)"
+		name = "Calculator",
+		desc = "Replace calculations like §9\"1+2\"§7 with the calculation result in sign popups (AH/BZ) and in the neu search bar"
 	)
 	@ConfigEditorDropdown(values = {"Off", "Enabled with ! Prefix", "Always enabled"})
 	public int calculationMode = 2;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Abiphone Warning",
+		desc = "Asks for confirmation when removing a contact in the abiphone"
+	)
+	@ConfigEditorBoolean
+	public boolean abiphoneWarning = true;
 
 }

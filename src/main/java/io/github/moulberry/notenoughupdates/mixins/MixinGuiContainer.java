@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.mixins;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
@@ -94,8 +95,8 @@ public abstract class MixinGuiContainer extends GuiScreen {
 					NBTTagCompound tag = eventGui.inventorySlots.inventorySlots.get(22).getStack().getTagCompound();
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
-						String displayname = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
-						if (tagName.equals(displayname.substring(displayname.length() - tagName.length()))) {
+						String displayName = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
+						if (tagName.equals(displayName.substring(displayName.length() - tagName.length()))) {
 							ci.cancel();
 
 							this.zLevel = 100.0F;
@@ -189,6 +190,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		StorageOverlay.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		GuiCustomEnchant.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AuctionBINWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
+		AbiphoneWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 	}
 
 	@Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGradientRect(IIIIII)V"))
@@ -301,6 +303,11 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		GuiContainer $this = (GuiContainer) (Object) this;
 
 		if (AuctionBINWarning.getInstance().onMouseClick(slotIn, slotId, clickedButton, clickType)) {
+			ci.cancel();
+			return;
+		}
+
+		if (AbiphoneWarning.getInstance().onMouseClick(slotIn, slotId, clickedButton, clickType)) {
 			ci.cancel();
 			return;
 		}

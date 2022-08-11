@@ -597,4 +597,8 @@ public class EnchantingSolvers {
 
 		processInventoryContents(true);
 	}
+
+	public static boolean disableButtons() {
+		return currentSolver != SolverType.NONE && NotEnoughUpdates.INSTANCE.config.enchantingSolvers.hideButtons;
+	}
 }
