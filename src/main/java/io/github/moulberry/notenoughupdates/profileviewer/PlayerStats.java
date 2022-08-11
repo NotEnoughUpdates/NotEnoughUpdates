@@ -657,6 +657,7 @@ public class PlayerStats {
 		JsonArray accessories = inventoryInfo.get("talisman_bag").getAsJsonArray();
 		Set<String> checkedTalisman = new HashSet<>();
 		int powderAmount = 0;
+		Map<Integer, Integer> counts = new HashMap<>();
 		for (JsonElement element : accessories) {
 			if (element == null || !element.isJsonObject()) {
 				continue;
@@ -685,6 +686,7 @@ public class PlayerStats {
 
 			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
+			counts.compute(Utils.getRarityFromLore(lastElementJsonArray), (k, v) -> (v != null ? 0 : v) + 1);
 			if (id.equals("HEGEMONY_ARTIFACT")) {
 				switch (Utils.getRarityFromLore(lastElementJsonArray)) {
 					case 4:
@@ -718,6 +720,7 @@ public class PlayerStats {
 					break;
 			}
 		}
+		System.out.println(counts);
 		return powderAmount;
 	}
 

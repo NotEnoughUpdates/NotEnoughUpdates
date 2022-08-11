@@ -663,8 +663,6 @@ public class PetInfoOverlay extends TextOverlay {
 			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
 		pet.skin = skin;
 
-		System.out.println(new Gson().toJsonTree(pet));
-
 		return pet;
 	}
 

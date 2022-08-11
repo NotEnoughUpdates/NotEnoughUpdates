@@ -72,7 +72,7 @@ public class ItemTooltipListener {
 	private final NotEnoughUpdates neu;
 	private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
 	private final HashSet<String> percentStats = new HashSet<>();
-	DecimalFormat myFormatter = new DecimalFormat("###,###.###");
+	DecimalFormat myFormatter = new DecimalFormat("#,###,###.###");
 	private String currentRarity = "COMMON";
 	private boolean copied = false;
 	private boolean showReforgeStoneStats = true;
