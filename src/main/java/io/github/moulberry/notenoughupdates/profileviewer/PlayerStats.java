@@ -661,15 +661,16 @@ public class PlayerStats {
 			if (element == null || !element.isJsonObject()) {
 				continue;
 			}
-			JsonObject accessory = element.getAsJsonObject();
+
 			NBTTagCompound tag;
 			try {
-				tag = JsonToNBT.getTagFromJson(accessory.get("nbttag").getAsString());
+				tag = JsonToNBT.getTagFromJson(element.getAsJsonObject().get("nbttag").getAsString());
 			} catch (NBTException ignored) {
 				continue;
 			}
 
 			String id = tag.getCompoundTag("ExtraAttributes").getString("id");
+			System.out.println("CUR ID: " + id + " | " + checkedTalisman);
 			if (!checkedTalisman.add(id)) {
 				continue;
 			}

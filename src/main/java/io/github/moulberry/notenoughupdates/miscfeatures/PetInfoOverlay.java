@@ -64,8 +64,6 @@ import org.lwjgl.util.vector.Vector2f;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -80,10 +78,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern XP_BOOST_PATTERN = Pattern.compile(
@@ -245,13 +245,8 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private static Pet getClosestPet(String petType, int petId, String petItem, float petLevel) {
-		Set<Pet> pets = new HashSet<Pet>() {{
-			for (Pet pet : config.petMap.values()) {
-				if (pet.petType.equals(petType) && pet.rarity.petId == petId) {
-					add(pet);
-				}
-			}
-		}};
+		Set<Pet> pets = config.petMap.values().stream().filter(pet -> pet.petType.equals(petType) && pet.rarity.petId == petId).collect(
+			Collectors.toSet());
 
 		if (pets.isEmpty()) {
 			return null;
@@ -261,13 +256,7 @@ public class PetInfoOverlay extends TextOverlay {
 			return pets.iterator().next();
 		}
 
-		Set<Pet> itemMatches = new HashSet<>();
-		for (Pet pet : pets) {
-			if ((petItem == null && pet.petItem == null) ||
-				(petItem != null && petItem.equals(pet.petItem))) {
-				itemMatches.add(pet);
-			}
-		}
+		Set<Pet> itemMatches = pets.stream().filter(pet -> Objects.equals(petItem, pet.petItem)).collect(Collectors.toSet());
 
 		if (itemMatches.size() == 1) {
 			return itemMatches.iterator().next();
@@ -288,11 +277,7 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 		}
 
-		if (closestPet != null) {
-			return closestPet;
-		} else {
-			return pets.iterator().next();
-		}
+		return closestPet;
 	}
 
 	private static void getAndSetPet(ProfileViewer.Profile profile) {
@@ -593,6 +578,7 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 		level = isMaxed ? maxLevel : level;
 
+		xpThisLevel = isMaxed ? currentLevelRequirement : xpThisLevel;
 		float pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
 		level += pct;
 
@@ -626,6 +612,7 @@ public class PetInfoOverlay extends TextOverlay {
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
 
+				// This is such beautiful code I know
 				int maxLevel = 100;
 				JsonArray levelArr = new JsonArray();
 				levelArr.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
