@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -654,6 +655,7 @@ public class PlayerStats {
 			return -1;
 		}
 		JsonArray accessories = inventoryInfo.get("talisman_bag").getAsJsonArray();
+		Set<String> checkedTalisman = new HashSet<>();
 		int powderAmount = 0;
 		for (JsonElement element : accessories) {
 			if (element == null || !element.isJsonObject()) {
@@ -667,8 +669,12 @@ public class PlayerStats {
 				continue;
 			}
 
-			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 			String id = tag.getCompoundTag("ExtraAttributes").getString("id");
+			if (!checkedTalisman.add(id)) {
+				continue;
+			}
+
+			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
 
 			//strip information that suggests the rarity has been upgraded (obfuscated char)

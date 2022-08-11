@@ -137,6 +137,7 @@ public class PetInfoOverlay extends TextOverlay {
 		public GuiProfileViewer.PetLevel petLevel;
 		public String petXpType;
 		public String petItem;
+		public String skin;
 	}
 
 	private static long lastXpGain = 0;
@@ -595,49 +596,39 @@ public class PetInfoOverlay extends TextOverlay {
 	private static GuiProfileViewer.PetLevel getLevel(
 		JsonArray levels,
 		int offset,
-		float xpThisLevel,
-		int xpMaxThisLevel
+		float exp, int maxLevel
 	) {
-		float xpTotal = 0;
-		float level = 1;
+		boolean isMaxed = true;
+		int level = 1;
+		long totalExp = 0;
 		float currentLevelRequirement = 0;
-		float exp = xpThisLevel;
-
-		boolean addLevel = true;
-
-		for (int i = offset; i < offset + 99; i++) {
-			if (addLevel) {
-				currentLevelRequirement = levels.get(i).getAsFloat();
-				xpTotal += currentLevelRequirement;
-
-				if (currentLevelRequirement >= xpMaxThisLevel) {
-					addLevel = false;
-				} else {
-					exp += currentLevelRequirement;
-					level += 1;
-				}
-			} else {
-				xpTotal += levels.get(i).getAsFloat();
+		float xpThisLevel = 0;
+		for (int i = offset; i < levels.size(); i++) {
+			currentLevelRequirement = levels.get(i).getAsLong();
+			totalExp += currentLevelRequirement;
+			if (totalExp >= exp) {
+				xpThisLevel = currentLevelRequirement - (totalExp - exp);
+				level = Math.min(i - offset + 1, maxLevel);
+				isMaxed = level != 100;
+				break;
 			}
 		}
+		level = isMaxed ? maxLevel : level;
 
-		level += xpThisLevel / currentLevelRequirement;
-		if (level <= 0) {
-			level = 1;
-		} else if (level > 100) {
-			level = 100;
-		}
+		float pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
+		level += pct;
+
 		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
 		levelObj.level = level;
 		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = xpTotal;
-		levelObj.levelPercentage = xpThisLevel / currentLevelRequirement;
+		levelObj.maxXP = getMaxLevel(levels, offset).maxXP;
+		levelObj.levelPercentage = pct;
 		levelObj.levelXp = xpThisLevel;
 		levelObj.totalXp = exp;
 		return levelObj;
 	}
 
-	public static Pet getPetFromStack(String name, String[] lore) {
+	public static Pet getPetFromStack(String name, NBTTagCompound tag) {
 		if (Constants.PETS == null || Constants.PETS.get("pet_levels") == null ||
 			Constants.PETS.get("pet_levels") instanceof JsonNull) {
 			Utils.showOutdatedRepoNotification();
@@ -648,109 +639,47 @@ public class PetInfoOverlay extends TextOverlay {
 		Rarity rarity = null;
 		String heldItem = null;
 		GuiProfileViewer.PetLevel level = null;
+		String skin = null;
 
-		Matcher petNameMatcher = PET_NAME_PATTERN.matcher(name);
-		if (petNameMatcher.matches()) {
-			String petStringMatch = petNameMatcher.group(1);
+		if (tag != null && tag.hasKey("ExtraAttributes")) {
+			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
+			if (ea.hasKey("petInfo")) {
+				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
+				petType = petInfo.get("type").getAsString();
+				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
 
-			char colChar = petStringMatch.charAt(0);
-			EnumChatFormatting col = EnumChatFormatting.RESET;
-			for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
-				if (formatting.toString().equals("\u00a7" + colChar)) {
-					col = formatting;
-					break;
+				int maxLevel = 100;
+				JsonArray levelArr = new JsonArray();
+				levelArr.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
+				JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
+				if (customLevelingJson != null) {
+					switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
+						case 1:
+							levelArr.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
+							break;
+						case 2:
+							levelArr = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
+							break;
+					}
+					maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
+				}
+
+				level = getLevel(
+					levelArr,
+					rarity.petOffset,
+					petInfo.get("exp").getAsFloat(), maxLevel
+				);
+				if (petInfo.has("heldItem")) {
+					heldItem = "PET_ITEM_" + petInfo.get("heldItem").getAsString();
+				}
+				if (petInfo.has("skin")) {
+					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
 				}
 			}
-
-			rarity = Rarity.COMMON;
-			if (col != EnumChatFormatting.RESET) {
-				rarity = Rarity.getRarityFromColor(col);
-			}
-
-			petType = Utils.cleanColour(petStringMatch.substring(1))
-										 .replaceAll("[^\\w ]", "").trim()
-										 .replace(" ", "_").toUpperCase();
 		}
-		if (petType == null || rarity == null) {
+
+		if (petType == null) {
 			return null;
-		}
-
-		for (String line : lore) {
-			Matcher xpLineMatcher = XP_LINE_PATTERN.matcher(Utils.cleanColour(line));
-			if (line.startsWith("\u00a76Held Item: ")) {
-				String after = line.substring("\u00a76Held Item: ".length());
-
-				if (itemMap == null) {
-					itemMap = new HashMap<>();
-
-					for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.entrySet()) {
-						boolean petItem = false;
-
-						if (entry.getKey().startsWith("PET_ITEM_")) {
-							petItem = true;
-						} else {
-							ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(entry.getValue());
-							if (stack.hasTagCompound()) {
-								String[] itemLore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-
-								for (String itemLoreLine : itemLore) {
-									if (itemLoreLine.contains("PET ITEM")) {
-										petItem = true;
-										break;
-									}
-								}
-							}
-						}
-
-						if (petItem) {
-							ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(entry.getValue());
-							itemMap.put(stack.getDisplayName().replace("\u00a7f\u00a7f", ""), entry.getKey());
-						}
-					}
-				}
-
-				if (itemMap.containsKey(after)) {
-					heldItem = itemMap.get(after);
-				}
-			} else if (xpLineMatcher.matches()) {
-				String xpThisLevelS = xpLineMatcher.group(1);
-				String xpMaxThisLevelS = xpLineMatcher.group(2).toLowerCase();
-
-				try {
-					float xpThisLevel = Float.parseFloat(xpThisLevelS.replace(",", ""));
-
-					int mutiplier = 1;
-					char end = xpMaxThisLevelS.charAt(xpMaxThisLevelS.length() - 1);
-					if (end < '0' || end > '9') {
-						xpMaxThisLevelS = xpMaxThisLevelS.substring(0, xpMaxThisLevelS.length() - 1);
-
-						switch (end) {
-							case 'k':
-								mutiplier = 1000;
-								break;
-							case 'm':
-								mutiplier = 1000000;
-								break;
-							case 'b':
-								mutiplier = 1000000000;
-								break;
-						}
-					}
-					int xpMaxThisLevel = (int) (Float.parseFloat(xpMaxThisLevelS) * mutiplier);
-
-					level = getLevel(
-						Constants.PETS.get("pet_levels").getAsJsonArray(),
-						rarity.petOffset,
-						xpThisLevel,
-						xpMaxThisLevel
-					);
-				} catch (NumberFormatException ignored) {
-				}
-			} else if (line.equals("\u00a7b\u00a7lMAX LEVEL")) {
-				level = getMaxLevel(Constants.PETS.get("pet_levels").getAsJsonArray(), rarity.petOffset);
-			}
 		}
 
 		if (level != null) {
@@ -762,6 +691,7 @@ public class PetInfoOverlay extends TextOverlay {
 			JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
 			pet.petXpType =
 				petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
+			pet.skin = skin;
 			return pet;
 		}
 
@@ -839,7 +769,7 @@ public class PetInfoOverlay extends TextOverlay {
 							}
 						} else {
 							String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-							Pet pet = getPetFromStack(stack.getDisplayName(), lore);
+							Pet pet = getPetFromStack(stack.getDisplayName(), stack.getTagCompound());
 							if (pet != null) {
 								config.petMap.put(petIndex, pet);
 
@@ -956,8 +886,7 @@ public class PetInfoOverlay extends TextOverlay {
 		if (currentPet.rarity.petId == 5) {
 			mythicRarity = 4;
 		}
-		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-			currentPet.petType + ";" + mythicRarity);
+		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
 		if (petItem != null) {
 			Vector2f position = getPosition(overlayWidth, overlayHeight);
 			int x = (int) position.x;
@@ -974,8 +903,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 		Pet currentPet2 = getCurrentPet2();
 		if (currentPet2 != null) {
-			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet2.petType + ";" + currentPet2.rarity.petId);
+			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
 			if (petItem2 != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight);
 				int x = (int) position.x;
@@ -1070,7 +998,7 @@ public class PetInfoOverlay extends TextOverlay {
 						setCurrentPet(newSelected);
 
 						String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-						Pet pet = getPetFromStack(stack.getDisplayName(), lore);
+						Pet pet = getPetFromStack(stack.getDisplayName(), stack.getTagCompound());
 						if (pet != null) {
 							config.petMap.put(config.selectedPet, pet);
 						}
