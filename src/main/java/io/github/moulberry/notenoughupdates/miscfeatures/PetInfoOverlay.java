@@ -587,7 +587,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 		if (isMaxed) {
 			level = maxLevel;
-			currentLevelRequirement = levels.get(level + maxLevel - 1).getAsFloat();
+			currentLevelRequirement = levels.get(offset + level - 1).getAsFloat();
 			xpThisLevel = currentLevelRequirement;
 		} else {
 			long totalExp = 0;
