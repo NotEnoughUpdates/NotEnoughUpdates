@@ -241,10 +241,6 @@ public class NotEnoughUpdates {
 				config.apiKey = null;
 			}
 
-			if (config.dungeonMap.dmEnable &&
-				!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-				config.dungeonMap.dmEnable = false;
-			}
 
 			//add the trophy fishing tab to the config
 			if (config.profileViewer.pageLayout.size() == 8) {
