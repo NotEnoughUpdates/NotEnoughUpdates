@@ -110,7 +110,11 @@ public class BazaarSacksProfit {
 			}
 		}
 
-		event.toolTip.removeIf(line -> line.contains("§7x ") || line.contains("You earn:"));
+		List<String> lore = event.toolTip;
+		lore.removeIf(line -> line.contains("§7x ") || line.contains("You earn:") ||
+			line.contains("Click to sell!"));
+		lore.remove(lore.size() - 1);
+		lore.remove(lore.size() - 1);
 
 		Map<String, Float> map = new HashMap<>();
 		DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ENGLISH);
@@ -145,26 +149,24 @@ public class BazaarSacksProfit {
 			totalPrice += extraPrice;
 			map.put("§a" + formatter.format(amount) + "§7x §f" + name + " §7for §6" + priceFormat + " coins", extraPrice);
 		}
+		lore.addAll(TrophyRewardOverlay.sortByValue(map).keySet());
+
+		for (String name : invalidNames) {
+			lore.add(name + " §cMissing repo data!");
+		}
+		lore.add("");
 
 		if (showSellOrderPrice) {
-			event.toolTip.add(4, "§7Sell order price: §6" + formatter.format(totalPrice));
+			lore.add("§7Sell order price: §6" + formatter.format(totalPrice));
 		} else {
-			event.toolTip.add(4, "§7Instant sell price: §6" + formatter.format(totalPrice));
+			lore.add("§7Instant sell price: §6" + formatter.format(totalPrice));
 		}
+		lore.add("");
 
-		event.toolTip.add(4, "");
-		for (String name : invalidNames) {
-			event.toolTip.add(4, name + " §cMissing repo data!");
-		}
-		for (String text : TrophyRewardOverlay.sortByValue(map).keySet()) {
-			event.toolTip.add(4, text);
-		}
-
-		event.toolTip.add("");
 		if (!showSellOrderPrice) {
-			event.toolTip.add("§8[Press SHIFT to show sell order price]");
+			lore.add("§8[Press SHIFT to show sell order price]");
 		} else {
-			event.toolTip.add("§8[Press SHIFT to show instant sell price]");
+			lore.add("§8[Press SHIFT to show instant sell price]");
 		}
 	}
 
