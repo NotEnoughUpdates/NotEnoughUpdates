@@ -674,7 +674,6 @@ public class PlayerStats {
 			if (!checkedTalisman.add(id)) {
 				continue;
 			}
-			System.out.println("CUR ID: " + id + " | " + checkedTalisman);
 
 			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
@@ -687,6 +686,7 @@ public class PlayerStats {
 			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
 			counts.compute(Utils.getRarityFromLore(lastElementJsonArray), (k, v) -> (v != null ? v : "") + id + " | ");
+			System.out.println(id + " - " + loreTagList.getStringTagAt(loreTagList.tagCount() - 1) + " - " + lastElement + " - " + Utils.getRarityFromLore(lastElementJsonArray));
 			if (id.equals("HEGEMONY_ARTIFACT")) {
 				switch (Utils.getRarityFromLore(lastElementJsonArray)) {
 					case 4:
