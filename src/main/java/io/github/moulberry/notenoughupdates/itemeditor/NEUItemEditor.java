@@ -103,8 +103,8 @@ public class NEUItemEditor extends GuiScreen {
 		this.itemId = addTextFieldWithSupplier(itemid, NO_SPACE);
 
 		options.add(new GuiElementText("Display name: ", Color.WHITE.getRGB()));
-		String displayname = item.has("displayname") ? item.get("displayname").getAsString() : "";
-		this.displayName = addTextFieldWithSupplier(displayname, COLOUR);
+		String displayName = item.has("displayname") ? item.get("displayname").getAsString() : "";
+		this.displayName = addTextFieldWithSupplier(displayName, COLOUR);
 
 		options.add(new GuiElementText("Lore: ", Color.WHITE.getRGB()));
 		JsonElement loreElement = getItemInfo("lore");

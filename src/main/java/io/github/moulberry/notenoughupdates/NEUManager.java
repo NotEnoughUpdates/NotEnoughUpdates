@@ -207,7 +207,7 @@ public class NEUManager {
 	}
 
 	public CompletableFuture<Boolean> fetchRepository() {
-		return CompletableFuture.<Boolean>supplyAsync(() -> {
+		return CompletableFuture.supplyAsync(() -> {
 			try {
 				JsonObject currentCommitJSON = getJsonFromFile(new File(configLocation, "currentCommit.json"));
 
@@ -672,7 +672,8 @@ public class NEUManager {
 				ea = ea.getCompoundTag("Properties");
 				ea = ea.getTagList("textures", 10).getCompoundTagAt(0);
 				String name = ea3.getString("Name").replaceAll(" M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$", "");
-				return "put(\"ID\", Utils.createSkull(EnumChatFormatting.AQUA + \"" + name + "\" ,\"" + ea2.getString("Id") + "\", \"" + ea.getString("Value") +"\"));";
+				return "put(\"ID\", Utils.createSkull(EnumChatFormatting.AQUA + \"" + name + "\" ,\"" + ea2.getString("Id") +
+					"\", \"" + ea.getString("Value") + "\"));";
 			}
 		}
 		return null;
@@ -781,14 +782,14 @@ public class NEUManager {
 		if (itemMc != null) {
 			itemid = itemMc.getRegistryName();
 		}
-		String displayname = display.getString("Name");
+		String displayName = display.getString("Name");
 		String[] info = new String[0];
 		String clickcommand = "";
 
 		JsonObject item = new JsonObject();
 		item.addProperty("internalname", internalname);
 		item.addProperty("itemid", itemid);
-		item.addProperty("displayname", displayname);
+		item.addProperty("displayname", displayName);
 
 		if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
 			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
@@ -912,6 +913,7 @@ public class NEUManager {
 		NBTTagCompound tag = stack.getTagCompound();
 		return getSkullValueFromNBT(tag);
 	}
+
 	public String getInternalNameForItem(ItemStack stack) {
 		if (stack == null) return null;
 		NBTTagCompound tag = stack.getTagCompound();
@@ -948,8 +950,7 @@ public class NEUManager {
 		if (!usagesMap.containsKey(internalName)) return false;
 		List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
 		if (usages.isEmpty()) return false;
-		Minecraft.getMinecraft().displayGuiScreen(
-			new GuiItemRecipe(usages, this));
+		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(usages, this));
 		return true;
 	}
 
@@ -957,8 +958,7 @@ public class NEUManager {
 		if (!recipesMap.containsKey(internalName)) return false;
 		List<NeuRecipe> recipes = getAvailableRecipesFor(internalName);
 		if (recipes.isEmpty()) return false;
-		Minecraft.getMinecraft().displayGuiScreen(
-			new GuiItemRecipe(recipes, this));
+		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(recipes, this));
 		return true;
 	}
 
@@ -1110,7 +1110,7 @@ public class NEUManager {
 	 * json files representing skyblock item data.
 	 */
 	public JsonObject createItemJson(
-		String internalname, String itemid, String displayname, String[] lore,
+		String internalname, String itemid, String displayName, String[] lore,
 		String crafttext, String infoType, String[] info,
 		String clickcommand, int damage, NBTTagCompound nbttag
 	) {
@@ -1118,7 +1118,7 @@ public class NEUManager {
 			new JsonObject(),
 			internalname,
 			itemid,
-			displayname,
+			displayName,
 			lore,
 			crafttext,
 			infoType,
@@ -1130,7 +1130,7 @@ public class NEUManager {
 	}
 
 	public JsonObject createItemJson(
-		JsonObject base, String internalname, String itemid, String displayname, String[] lore,
+		JsonObject base, String internalname, String itemid, String displayName, String[] lore,
 		String crafttext, String infoType, String[] info,
 		String clickcommand, int damage, NBTTagCompound nbttag
 	) {
@@ -1141,7 +1141,7 @@ public class NEUManager {
 		JsonObject json = gson.fromJson(gson.toJson(base, JsonObject.class), JsonObject.class);
 		json.addProperty("internalname", internalname);
 		json.addProperty("itemid", itemid);
-		json.addProperty("displayname", displayname);
+		json.addProperty("displayname", displayName);
 		json.addProperty("crafttext", crafttext);
 		json.addProperty("clickcommand", clickcommand);
 		json.addProperty("damage", damage);
@@ -1167,14 +1167,14 @@ public class NEUManager {
 	}
 
 	public boolean writeItemJson(
-		String internalname, String itemid, String displayname, String[] lore, String crafttext,
+		String internalname, String itemid, String displayName, String[] lore, String crafttext,
 		String infoType, String[] info, String clickcommand, int damage, NBTTagCompound nbttag
 	) {
 		return writeItemJson(
 			new JsonObject(),
 			internalname,
 			itemid,
-			displayname,
+			displayName,
 			lore,
 			crafttext,
 			infoType,
@@ -1186,14 +1186,14 @@ public class NEUManager {
 	}
 
 	public boolean writeItemJson(
-		JsonObject base, String internalname, String itemid, String displayname, String[] lore,
+		JsonObject base, String internalname, String itemid, String displayName, String[] lore,
 		String crafttext, String infoType, String[] info, String clickcommand, int damage, NBTTagCompound nbttag
 	) {
 		JsonObject json = createItemJson(
 			base,
 			internalname,
 			itemid,
-			displayname,
+			displayName,
 			lore,
 			crafttext,
 			infoType,
@@ -1486,11 +1486,11 @@ public class NEUManager {
 			if (useReplacements) {
 				replacements = getLoreReplacements(stack.getTagCompound(), -1);
 
-				String displayname = json.get("displayname").getAsString();
+				String displayName = json.get("displayname").getAsString();
 				for (Map.Entry<String, String> entry : replacements.entrySet()) {
-					displayname = displayname.replace("{" + entry.getKey() + "}", entry.getValue());
+					displayName = displayName.replace("{" + entry.getKey() + "}", entry.getValue());
 				}
-				stack.setStackDisplayName(displayname);
+				stack.setStackDisplayName(displayName);
 			}
 
 			if (json.has("lore")) {
@@ -1519,7 +1519,7 @@ public class NEUManager {
 		return NotEnoughUpdates.INSTANCE.manager
 			.fetchRepository()
 			.thenCompose(ignored -> NotEnoughUpdates.INSTANCE.manager.reloadRepository())
-			.<List<String>>thenApply(ignored -> {
+			.thenApply(ignored -> {
 				String newCommitHash = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
 				String newCommitShortHash = (newCommitHash == null ? "MISSING" : newCommitHash.substring(0, 7));
 				return Arrays.asList(

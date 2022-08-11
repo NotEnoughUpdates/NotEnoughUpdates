@@ -17,24 +17,35 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
+package io.github.moulberry.notenoughupdates.util;
 
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import java.util.Map;
+import org.apache.commons.io.IOUtils;
 
-public abstract class SlayerWeight {
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
-	protected final Map<String, ProfileViewer.Level> player;
-	protected final WeightStruct weightStruct;
+public class NetUtils {
 
-	public SlayerWeight(Map<String, ProfileViewer.Level> player) {
-		this.player = player;
-		this.weightStruct = new WeightStruct();
+	public static CompletableFuture<File> downloadAsync(URL httpURL, File outputFile) {
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				try (
+					InputStream from = httpURL.openStream();
+					OutputStream to = Files.newOutputStream(outputFile.toPath());
+				) {
+					IOUtils.copyLarge(from, to);
+				}
+				return outputFile;
+			} catch (IOException e) {
+				throw new CompletionException(e);
+			}
+		});
 	}
 
-	public WeightStruct getWeightStruct() {
-		return weightStruct;
-	}
-
-	public abstract void getSlayerWeight(String slayerName);
 }

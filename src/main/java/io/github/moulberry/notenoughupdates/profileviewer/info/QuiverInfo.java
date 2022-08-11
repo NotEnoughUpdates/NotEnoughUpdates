@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer;
+package io.github.moulberry.notenoughupdates.profileviewer.info;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;

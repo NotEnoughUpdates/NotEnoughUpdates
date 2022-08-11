@@ -20,15 +20,16 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SlayerWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import java.util.Map;
 
 public class SenitherSlayerWeight extends SlayerWeight {
 
-	public SenitherSlayerWeight(JsonObject player) {
+	public SenitherSlayerWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
@@ -41,7 +42,7 @@ public class SenitherSlayerWeight extends SlayerWeight {
 		double divider = curWeights.get(0).getAsDouble();
 		double modifier = curWeights.get(1).getAsDouble();
 
-		int currentSlayerXp = Utils.getElementAsInt(Utils.getElement(player, "experience_slayer_" + slayerName), 0);
+		int currentSlayerXp = (int) player.get(slayerName).totalXp;
 
 		if (currentSlayerXp <= 1000000) {
 			weightStruct.add(new WeightStruct(currentSlayerXp == 0 ? 0 : currentSlayerXp / divider));

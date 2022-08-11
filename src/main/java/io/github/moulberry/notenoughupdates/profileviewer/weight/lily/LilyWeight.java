@@ -20,11 +20,13 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
+import java.util.Map;
 
 public class LilyWeight extends Weight {
 
-	public LilyWeight(JsonObject player, JsonObject profileJson) {
+	public LilyWeight(Map<String, ProfileViewer.Level> player, JsonObject profileJson) {
 		super(new LilySlayerWeight(player), new LilySkillsWeight(player), new LilyDungeonsWeight(player, profileJson));
 	}
 

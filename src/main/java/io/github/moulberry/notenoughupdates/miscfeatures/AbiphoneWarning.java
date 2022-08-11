@@ -134,7 +134,7 @@ public class AbiphoneWarning extends GuiElement {
 		);
 
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
-			"Continue removing the contact?",
+			"Continue removing this contact?",
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2,
 			height / 2 - 45 + 50,

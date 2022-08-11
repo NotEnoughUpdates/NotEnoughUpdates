@@ -65,13 +65,8 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class DungeonMap {
 	private static final ResourceLocation GREEN_CHECK = new ResourceLocation(
@@ -602,8 +597,8 @@ public class DungeonMap {
 				GlStateManager.rotate(-rotation + 180, 0, 0, 1);
 
 				if (NotEnoughUpdates.INSTANCE.config.dungeonMap.dmCenterPlayer && playerPos != null) {
-					float x = playerPos.getRenderX(0);
-					float y = playerPos.getRenderY(0);
+					float x = playerPos.getRenderX();
+					float y = playerPos.getRenderY();
 					x -= minRoomX * (renderRoomSize + renderConnSize);
 					y -= minRoomY * (renderRoomSize + renderConnSize);
 
@@ -672,8 +667,8 @@ public class DungeonMap {
 				for (Map.Entry<String, MapPosition> entry : playerMarkerMapPositions.entrySet()) {
 					String name = entry.getKey();
 					MapPosition pos = entry.getValue();
-					float x = pos.getRenderX(0);
-					float y = pos.getRenderY(0);
+					float x = pos.getRenderX();
+					float y = pos.getRenderY();
 					float angle = pos.rotation;
 
 					boolean doInterp = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPlayerInterp;
@@ -681,8 +676,8 @@ public class DungeonMap {
 						MapPosition entityPos = playerEntityMapPositions.get(name);
 						angle = entityPos.rotation;
 
-						float deltaX = entityPos.getRenderX(9) - pos.getRenderX(0);
-						float deltaY = entityPos.getRenderY(9) - pos.getRenderY(0);
+						float deltaX = entityPos.getRenderX() - pos.getRenderX();
+						float deltaY = entityPos.getRenderY() - pos.getRenderY();
 
 						x += deltaX;
 						y += deltaY;
@@ -702,8 +697,8 @@ public class DungeonMap {
 
 					if (doInterp && playerMarkerMapPositionsLast.containsKey(name)) {
 						MapPosition last = playerMarkerMapPositionsLast.get(name);
-						float xLast = last.getRenderX(0);
-						float yLast = last.getRenderY(0);
+						float xLast = last.getRenderX();
+						float yLast = last.getRenderY();
 
 						float distSq = (x - xLast) * (x - xLast) + (y - yLast) * (y - yLast);
 						if (distSq < renderRoomSize * renderRoomSize / 4f) {
@@ -1100,12 +1095,12 @@ public class DungeonMap {
 			this.connOffsetY = connOffsetY;
 		}
 
-		public float getRenderX(int blockOffset) {
-			return (roomOffsetX + blockOffset) * getRenderRoomSize() + connOffsetX * getRenderConnSize();
+		public float getRenderX() {
+			return roomOffsetX * getRenderRoomSize() + connOffsetX * getRenderConnSize();
 		}
 
-		public float getRenderY(int blockOffset) {
-			return (roomOffsetY + blockOffset) * getRenderRoomSize() + connOffsetY * getRenderConnSize();
+		public float getRenderY() {
+			return roomOffsetY * getRenderRoomSize() + connOffsetY * getRenderConnSize();
 		}
 
 		@Override
@@ -1291,15 +1286,15 @@ public class DungeonMap {
 					if (entity instanceof EntityPlayer) {
 						EntityPlayer player = (EntityPlayer) entity;
 
-						float roomX = (float) player.posX / (roomSizeBlocks + 1);
-						float roomY = (float) player.posZ / (roomSizeBlocks + 1);
+						float roomX = (float) (player.posX + 200) / (roomSizeBlocks + 1);
+						float roomY = (float) (player.posZ + 200) / (roomSizeBlocks + 1);
 
 						float playerRoomOffsetX = (float) Math.floor(roomX);
 						float playerConnOffsetX = (float) Math.floor(roomX);
 						float playerRoomOffsetY = (float) Math.floor(roomY);
 						float playerConnOffsetY = (float) Math.floor(roomY);
 
-						float roomXInBlocks = (float) player.posX % (roomSizeBlocks + 1);
+						float roomXInBlocks = (float) (player.posX + 200) % (roomSizeBlocks + 1);
 						if (roomXInBlocks < 2) { //0,1
 							playerConnOffsetX -= 2 / 5f - roomXInBlocks / 5f;
 						} else if (roomXInBlocks > roomSizeBlocks - 2) { //31,30,29
@@ -1309,7 +1304,7 @@ public class DungeonMap {
 							playerRoomOffsetX += (roomXInBlocks - 2) / (roomSizeBlocks - 4);
 						}
 
-						float roomYInBlocks = (float) player.posZ % (roomSizeBlocks + 1);
+						float roomYInBlocks = (float) (player.posZ + 200) % (roomSizeBlocks + 1);
 						if (roomYInBlocks < 2) { //0,1
 							playerConnOffsetY -= 2 / 5f - roomYInBlocks / 5f;
 						} else if (roomYInBlocks > roomSizeBlocks - 2) { //31,30,29
@@ -1438,8 +1433,8 @@ public class DungeonMap {
 				for (Map.Entry<String, MapPosition> entry : playerMarkerMapPositionsLast.entrySet()) {
 					HashMap<Integer, Float> deltaDists = new HashMap<>();
 					for (int i = 0; i < positions.size(); i++) {
-						float dx = entry.getValue().getRenderX(0) - positions.get(i).getRenderX(0);
-						float dy = entry.getValue().getRenderY(0) - positions.get(i).getRenderY(0);
+						float dx = entry.getValue().getRenderX() - positions.get(i).getRenderX();
+						float dy = entry.getValue().getRenderY() - positions.get(i).getRenderY();
 						deltaDists.put(i, dx * dx + dy * dy);
 					}
 					distanceMap.put(entry.getKey(), deltaDists);
@@ -1619,7 +1614,6 @@ public class DungeonMap {
                     if(player.getUniqueID().toString().charAt(14) == '4') {
                         actualPlayers.add(player.getName());
                         System.out.println(player.getName());
-
                     }
                 }*/
 				int players = 0;

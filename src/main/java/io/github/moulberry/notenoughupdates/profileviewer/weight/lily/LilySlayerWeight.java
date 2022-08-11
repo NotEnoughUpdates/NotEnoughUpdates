@@ -19,20 +19,21 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
-import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SlayerWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import java.util.Map;
 
 public class LilySlayerWeight extends SlayerWeight {
 
-	public LilySlayerWeight(JsonObject player) {
+	public LilySlayerWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
 	public void getSlayerWeight(String slayerName) {
-		int currentSlayerXp = Utils.getElementAsInt(Utils.getElement(player, "experience_slayer_" + slayerName), 0);
+		int currentSlayerXp = (int) player.get(slayerName).totalXp;
 
 		double score;
 		double d = currentSlayerXp / 100000.0;

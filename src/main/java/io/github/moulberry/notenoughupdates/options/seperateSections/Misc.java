@@ -217,8 +217,8 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-		name = "Sign Calculator",
-		desc = "§7Replace calculations like §9\"1+2\"§7 with the calculation result in sign popups (AH/BZ)"
+		name = "Calculator",
+		desc = "Replace calculations like §9\"1+2\"§7 with the calculation result in sign popups (AH/BZ) and in the neu search bar"
 	)
 	@ConfigEditorDropdown(values = {"Off", "Enabled with ! Prefix", "Always enabled"})
 	public int calculationMode = 2;

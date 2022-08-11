@@ -17,24 +17,31 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
+package io.github.moulberry.notenoughupdates.miscfeatures.updater;
 
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import java.util.Map;
+import java.io.File;
+import java.net.URL;
+import java.util.List;
 
-public abstract class SlayerWeight {
+class LinuxBasedUpdater /* Based on what? */ extends UpdateLoader {
 
-	protected final Map<String, ProfileViewer.Level> player;
-	protected final WeightStruct weightStruct;
-
-	public SlayerWeight(Map<String, ProfileViewer.Level> player) {
-		this.player = player;
-		this.weightStruct = new WeightStruct();
+	LinuxBasedUpdater(AutoUpdater updater, URL url) {
+		super(updater, url);
 	}
 
-	public WeightStruct getWeightStruct() {
-		return weightStruct;
+	@Override
+	public void greet() {
+		updater.logProgress(
+			"Welcome Aristocrat! Your superior linux system configuration is supported for NEU auto updates.");
 	}
 
-	public abstract void getSlayerWeight(String slayerName);
+	@Override
+	public void deleteFiles(List<File> toDelete) {
+		for (File toDel : toDelete) {
+			if (!toDel.delete()) {
+				updater.logProgress("§cCould not delete old version of NEU: " + toDel + ". Please manually delete file.");
+				state = State.FAILED;
+			}
+		}
+	}
 }

@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -31,28 +32,30 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 
 	private final JsonObject profileJson;
 
-	public LilyDungeonsWeight(JsonObject player, JsonObject profileJson) {
+	public LilyDungeonsWeight(Map<String, ProfileViewer.Level> player, JsonObject profileJson) {
 		super(player);
 		this.profileJson = profileJson;
 	}
 
 	@Override
 	public void getDungeonWeight() {
-		double level = Utils.getElementAsFloat(Utils.getElement(player, "level_skill_catacombs"), 0);
-		float cataXP = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_catacombs"), 0);
+		ProfileViewer.Level catacombs = player.get("catacombs");
 
 		double extra = 0;
 		double n = 0;
-		if (cataXP < 569809640) {
-			n = 0.2 * Math.pow(level / 50, 1.538679118869934);
+		if (catacombs.totalXp < CATACOMBS_LEVEL_50_XP) {
+			n = 0.2 * Math.pow(catacombs.level / 50, 1.538679118869934);
 		} else {
-			extra = 500.0 * Math.pow((cataXP - CATACOMBS_LEVEL_50_XP) / 142452410.0, 1.0 / 1.781925776625157);
+			extra = 500.0 * Math.pow((catacombs.totalXp - CATACOMBS_LEVEL_50_XP) / 142452410.0, 1.0 / 1.781925776625157);
 		}
 
-		if (level != 0) {
-			if (cataXP < 569809640) {
+		if (catacombs.level != 0) {
+			if (catacombs.totalXp < CATACOMBS_LEVEL_50_XP) {
 				weightStruct.add(
-					new WeightStruct(1.2733079672009226 * ((Math.pow(1.18340401286164044, (level + 1)) - 1.05994990217254) * (1 + n)))
+					new WeightStruct(
+						Utils.getElement(Constants.WEIGHT, "lily.dungeons.overall").getAsDouble() *
+						((Math.pow(1.18340401286164044, (catacombs.level + 1)) - 1.05994990217254) * (1 + n))
+					)
 				);
 			} else {
 				weightStruct.add(new WeightStruct((4100 + extra) * 2));

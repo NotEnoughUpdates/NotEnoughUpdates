@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -231,15 +232,16 @@ public class XPInformation {
 	};
 
 	private void onApiUpdated(ProfileViewer.Profile profile) {
-		JsonObject skillInfo = profile.getSkillInfo(null);
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
 
 		for (String skill : skills) {
 			SkillInfo info = new SkillInfo();
 
-			float level = skillInfo.get("level_skill_" + skill).getAsFloat();
+			ProfileViewer.Level levelInfo = skyblockInfo.get(skill);
+			float level = levelInfo.level;
 
-			info.totalXp = skillInfo.get("experience_skill_" + skill).getAsFloat();
-			info.currentXpMax = skillInfo.get("maxxp_skill_" + skill).getAsFloat();
+			info.totalXp = levelInfo.totalXp;
+			info.currentXpMax = levelInfo.maxXpForLevel;
 			info.level = (int) level;
 			info.currentXp = (level % 1) * info.currentXpMax;
 			info.fromApi = true;

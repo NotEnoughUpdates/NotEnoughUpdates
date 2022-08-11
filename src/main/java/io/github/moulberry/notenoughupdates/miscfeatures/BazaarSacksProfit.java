@@ -96,8 +96,8 @@ public class BazaarSacksProfit {
 						String internalName = entry.getKey();
 						JsonObject object = entry.getValue();
 						if (object.has("displayname")) {
-							String displayname = object.get("displayname").getAsString();
-							if (displayname.equals(bazaarName)) {
+							String name = object.get("displayname").getAsString();
+							if (name.equals(bazaarName)) {
 								prices.put(internalName, amount);
 								names.put(internalName, bazaarName);
 								continue out;
@@ -143,7 +143,7 @@ public class BazaarSacksProfit {
 			float extraPrice = price * amount;
 			String priceFormat = formatter.format(extraPrice);
 			totalPrice += extraPrice;
-			map.put("§a" + formatter.format(amount) + "§7x §f" + name + " §6" + priceFormat, extraPrice);
+			map.put("§a" + formatter.format(amount) + "§7x §f" + name + " §7for §6" + priceFormat + " coins", extraPrice);
 		}
 
 
@@ -151,7 +151,7 @@ public class BazaarSacksProfit {
 		if (showSellOrderPrice) {
 			event.toolTip.add(4, "§7Sell order price: §6" + formatter.format(totalPrice));
 		} else {
-			event.toolTip.add(4, "§7Instantly sell price: §6" + formatter.format(totalPrice));
+			event.toolTip.add(4, "§7Instant sell price: §6" + formatter.format(totalPrice));
 		}
 
 		event.toolTip.add(4, "");
@@ -170,7 +170,7 @@ public class BazaarSacksProfit {
 		if (!showSellOrderPrice) {
 			event.toolTip.add("§8[Press SHIFT to show sell order price]");
 		} else {
-			event.toolTip.add("§8[Press SHIFT to show instantly sell price]");
+			event.toolTip.add("§8[Press SHIFT to show instant sell price]");
 		}
 	}
 

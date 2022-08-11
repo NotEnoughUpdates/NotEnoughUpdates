@@ -23,11 +23,9 @@ import java.util.Map;
 
 public class TrophyFish {
 
-	private final String name;
-
-	private int total = 0;
-
 	public final Map<TrophyFishRarity, Integer> trophyFishRarityIntegerMap;
+	private final String name;
+	private int total = 0;
 
 	public TrophyFish(String name, Map<TrophyFishRarity, Integer> trophyFishRarityIntegerMap) {
 		this.name = name;
@@ -35,7 +33,7 @@ public class TrophyFish {
 	}
 
 	public void addTotal(int n) {
-		total +=n;
+		total += n;
 	}
 
 	public int getTotal() {
@@ -43,7 +41,7 @@ public class TrophyFish {
 	}
 
 	public void removeTotal(int n) {
-		total -=n;
+		total -= n;
 	}
 
 	public String getName() {
@@ -55,20 +53,19 @@ public class TrophyFish {
 	}
 
 	public void add(TrophyFishRarity rarity, int value) {
-		if(!trophyFishRarityIntegerMap.containsKey(rarity)) {
+		if (!trophyFishRarityIntegerMap.containsKey(rarity)) {
 			trophyFishRarityIntegerMap.put(rarity, value);
 		}
+	}
+
+	public String getInternalName() {
+		return name.toLowerCase().replace(" ", "_");
 	}
 
 	public enum TrophyFishRarity {
 		BRONZE,
 		SILVER,
 		GOLD,
-		DIAMOND;
-	}
-
-	public String getInternalName() {
-		return name.toLowerCase().replace(" ", "_");
+		DIAMOND,
 	}
 }
-

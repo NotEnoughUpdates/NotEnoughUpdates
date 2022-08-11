@@ -22,16 +22,16 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import java.util.Map;
 
 public class LilySkillsWeight extends SkillsWeight {
 
-	public LilySkillsWeight(JsonObject player) {
+	public LilySkillsWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
@@ -42,7 +42,7 @@ public class LilySkillsWeight extends SkillsWeight {
 			skillAverage +=
 				(int) ProfileViewer.getLevel(
 					Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
-					Utils.getElementAsInt(Utils.getElement(player, "experience_skill_" + skill), 0),
+					player.get(skill).totalXp,
 					60,
 					false
 				)
@@ -50,7 +50,7 @@ public class LilySkillsWeight extends SkillsWeight {
 		}
 		skillAverage /= SKILL_NAMES.size();
 
-		float currentExp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
+		float currentExp = player.get(skillName).totalXp;
 		int currentLevel = (int) ProfileViewer.getLevel(
 			Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
 			currentExp,
@@ -67,16 +67,16 @@ public class LilySkillsWeight extends SkillsWeight {
 				srwTable.get(srwTable.size() - 1).getAsDouble()
 			) +
 			(srwTable.get(srwTable.size() - 1).getAsDouble() * Math.pow(currentLevel / 60.0, Math.pow(2, 0.5)));
-		base *= 1.8162162162162162;
+		base *= Utils.getElement(Constants.WEIGHT, "lily.skills.overall").getAsDouble();
 		double overflow = 0;
-		if (currentExp > 111672425) {
+		if (currentExp > SKILLS_LEVEL_60) {
 			double factor = Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.factors." + skillName), 0);
-			double effectiveOver = effectiveXP(currentExp - 111672425, factor);
+			double effectiveOver = effectiveXP(currentExp - SKILLS_LEVEL_60, factor);
 			double t =
-				(effectiveOver / 111672425) *
+				(effectiveOver / SKILLS_LEVEL_60) *
 				Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.overflow_multipliers." + skillName), 0);
 			if (t > 0) {
-				overflow += 1.8162162162162162 * t;
+				overflow += Utils.getElement(Constants.WEIGHT, "lily.skills.overall").getAsDouble() * t;
 			}
 		}
 
@@ -84,18 +84,18 @@ public class LilySkillsWeight extends SkillsWeight {
 	}
 
 	private double effectiveXP(double xp, double factor) {
-		if (xp < 111672425) {
+		if (xp < SKILLS_LEVEL_60) {
 			return xp;
 		} else {
 			double remainingXP = xp;
 			double z = 0;
-			for (int i = 0; i <= (int) (xp / 111672425); i++) {
-				if (remainingXP >= 111672425) {
-					remainingXP -= 111672425;
+			for (int i = 0; i <= (int) (xp / SKILLS_LEVEL_60); i++) {
+				if (remainingXP >= SKILLS_LEVEL_60) {
+					remainingXP -= SKILLS_LEVEL_60;
 					z += Math.pow(factor, i);
 				}
 			}
-			return z * 111672425;
+			return z * SKILLS_LEVEL_60;
 		}
 	}
 }
