@@ -48,11 +48,13 @@ public class QuiverInfo {
 
 		list.add("");
 		list.add(EnumChatFormatting.AQUA + "Total: " + EnumChatFormatting.GREEN + EnumChatFormatting.BOLD + totalCount);
-		JsonObject repoInfo = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(selectedArrow);
-		if (repoInfo == null) {
-			list.add(EnumChatFormatting.AQUA + "Selected Arrow: " + EnumChatFormatting.RED + "ERROR");
-		} else {
-			list.add(EnumChatFormatting.AQUA + "Selected Arrow: " + repoInfo.get("displayname").getAsString());
+		if (selectedArrow != null) {
+			JsonObject repoInfo = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(selectedArrow);
+			if (repoInfo == null) {
+				list.add(EnumChatFormatting.AQUA + "Selected Arrow: " + EnumChatFormatting.RED + "ERROR");
+			} else {
+				list.add(EnumChatFormatting.AQUA + "Selected Arrow: " + repoInfo.get("displayname").getAsString());
+			}
 		}
 
 		return list;
