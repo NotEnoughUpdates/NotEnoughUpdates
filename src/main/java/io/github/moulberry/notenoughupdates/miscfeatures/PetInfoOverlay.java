@@ -549,7 +549,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
 		float xpTotal = 0;
 
-		for (int i = offset; i < offset + 99 + (maxLevel - 100); i++) {
+		for (int i = offset; i < offset + maxLevel - 1; i++) {
 			xpTotal += levels.get(i).getAsFloat();
 		}
 
@@ -557,35 +557,58 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private static GuiProfileViewer.PetLevel getLevel(
-		JsonArray levels,
+		String petType,
 		int offset,
-		float exp, int maxLevel
+		float exp
 	) {
-		boolean isMaxed = true;
+		int maxLevel = 100;
+
+		JsonArray levels = new JsonArray();
+		levels.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
+		JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
+		if (customLevelingJson != null) {
+			switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
+				case 1:
+					levels.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
+					break;
+				case 2:
+					levels = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
+					break;
+			}
+			maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
+		}
+
+		float maxXP = getMaxLevelXp(levels, offset, maxLevel);
+		boolean isMaxed = exp >= maxXP;
+
 		int level = 1;
-		long totalExp = 0;
 		float currentLevelRequirement = 0;
 		float xpThisLevel = 0;
-		for (int i = offset; i < levels.size(); i++) {
-			currentLevelRequirement = levels.get(i).getAsLong();
-			totalExp += currentLevelRequirement;
-			if (totalExp >= exp) {
-				xpThisLevel = currentLevelRequirement - (totalExp - exp);
-				level = Math.min(i - offset + 1, maxLevel);
-				isMaxed = level != 100;
-				break;
+
+		if (isMaxed) {
+			level = maxLevel;
+			currentLevelRequirement = levels.get(level + maxLevel - 1).getAsFloat();
+			xpThisLevel = currentLevelRequirement;
+		} else {
+			long totalExp = 0;
+			for (int i = offset; i < levels.size(); i++) {
+				currentLevelRequirement = levels.get(i).getAsLong();
+				totalExp += currentLevelRequirement;
+				if (totalExp >= exp) {
+					xpThisLevel = currentLevelRequirement - (totalExp - exp);
+					level = Math.min(i - offset + 1, maxLevel);
+					break;
+				}
 			}
 		}
-		level = isMaxed ? maxLevel : level;
 
-		xpThisLevel = isMaxed ? currentLevelRequirement : xpThisLevel;
 		float pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
 		level += pct;
 
 		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
 		levelObj.level = level;
 		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = getMaxLevelXp(levels, offset, maxLevel);
+		levelObj.maxXP = maxXP;
 		levelObj.levelPercentage = pct;
 		levelObj.levelXp = xpThisLevel;
 		levelObj.totalXp = exp;
@@ -612,30 +635,13 @@ public class PetInfoOverlay extends TextOverlay {
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
 
-				// This is such beautiful code I know
-				int maxLevel = 100;
-				JsonArray levelArr = new JsonArray();
-				levelArr.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
-				JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
-				if (customLevelingJson != null) {
-					switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
-						case 1:
-							levelArr.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
-							break;
-						case 2:
-							levelArr = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
-							break;
-					}
-					maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
-				}
-
 				level = getLevel(
-					levelArr,
+					petType ,
 					rarity.petOffset,
-					petInfo.get("exp").getAsFloat(), maxLevel
+					petInfo.get("exp").getAsFloat()
 				);
 				if (petInfo.has("heldItem")) {
-					heldItem = "PET_ITEM_" + petInfo.get("heldItem").getAsString();
+					heldItem = petInfo.get("heldItem").getAsString();
 				}
 				if (petInfo.has("skin")) {
 					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();

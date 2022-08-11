@@ -670,10 +670,10 @@ public class PlayerStats {
 			}
 
 			String id = tag.getCompoundTag("ExtraAttributes").getString("id");
-			System.out.println("CUR ID: " + id + " | " + checkedTalisman);
 			if (!checkedTalisman.add(id)) {
 				continue;
 			}
+			System.out.println("CUR ID: " + id + " | " + checkedTalisman);
 
 			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
