@@ -69,6 +69,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -88,9 +89,6 @@ public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern XP_BOOST_PATTERN = Pattern.compile(
 		"PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
 	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("\\((\\d)/(\\d)\\) Pets");
-	private static final Pattern PET_NAME_PATTERN = Pattern.compile("\u00a77\\[Lvl \\d+] \u00a7(.+)");
-	private static final Pattern XP_LINE_PATTERN = Pattern.compile(
-		"-------------------- (\\d+(?:,\\d+)*(?:\\.\\d+)?)/(\\d+(?:\\.\\d+)?[B|M|k]?)");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -110,10 +108,10 @@ public class PetInfoOverlay extends TextOverlay {
 		LEGENDARY(20, 4, 5, EnumChatFormatting.GOLD),
 		MYTHIC(20, 5, 5, EnumChatFormatting.LIGHT_PURPLE);
 
-		public int petOffset;
-		public EnumChatFormatting chatFormatting;
-		public int petId;
-		public int beastcreatMultiplyer;
+		public final int petOffset;
+		public final EnumChatFormatting chatFormatting;
+		public final int petId;
+		public final int beastcreatMultiplyer;
 
 		Rarity(int petOffset, int petId, int beastcreatMultiplyer, EnumChatFormatting chatFormatting) {
 			this.chatFormatting = chatFormatting;
@@ -139,8 +137,6 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petItem;
 		public String skin;
 	}
-
-	private static long lastXpGain = 0;
 
 	public static class PetConfig {
 		public HashMap<Integer, Pet> petMap = new HashMap<>();
@@ -170,7 +166,7 @@ public class PetInfoOverlay extends TextOverlay {
 	public static void loadConfig(File file) {
 		try (
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file),
+				Files.newInputStream(file.toPath()),
 				StandardCharsets.UTF_8
 			))
 		) {
@@ -187,7 +183,7 @@ public class PetInfoOverlay extends TextOverlay {
 			file.createNewFile();
 			try (
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file),
+					Files.newOutputStream(file.toPath()),
 					StandardCharsets.UTF_8
 				))
 			) {
@@ -265,12 +261,10 @@ public class PetInfoOverlay extends TextOverlay {
 			return pets.iterator().next();
 		}
 
-		String searchItem = petItem;
-
 		Set<Pet> itemMatches = new HashSet<>();
 		for (Pet pet : pets) {
-			if ((searchItem == null && pet.petItem == null) ||
-				(searchItem != null && searchItem.equals(pet.petItem))) {
+			if ((petItem == null && pet.petItem == null) ||
+				(petItem != null && petItem.equals(pet.petItem))) {
 				itemMatches.add(pet);
 			}
 		}
@@ -567,30 +561,14 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
-	private static GuiProfileViewer.PetLevel getMaxLevel(JsonArray levels, int offset) {
+	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
 		float xpTotal = 0;
-		float level = 1;
-		float currentLevelRequirement = 0;
 
-		for (int i = offset; i < offset + 99; i++) {
-			currentLevelRequirement = levels.get(i).getAsFloat();
-			xpTotal += currentLevelRequirement;
-			level += 1;
+		for (int i = offset; i < offset + 99 + (maxLevel - 100); i++) {
+			xpTotal += levels.get(i).getAsFloat();
 		}
 
-		if (level <= 0) {
-			level = 1;
-		} else if (level > 100) {
-			level = 100;
-		}
-		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
-		levelObj.level = level;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = xpTotal;
-		levelObj.levelPercentage = 1;
-		levelObj.levelXp = currentLevelRequirement - 5;
-		levelObj.totalXp = xpTotal - 5;
-		return levelObj;
+		return xpTotal;
 	}
 
 	private static GuiProfileViewer.PetLevel getLevel(
@@ -621,14 +599,14 @@ public class PetInfoOverlay extends TextOverlay {
 		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
 		levelObj.level = level;
 		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = getMaxLevel(levels, offset).maxXP;
+		levelObj.maxXP = getMaxLevelXp(levels, offset, maxLevel);
 		levelObj.levelPercentage = pct;
 		levelObj.levelXp = xpThisLevel;
 		levelObj.totalXp = exp;
 		return levelObj;
 	}
 
-	public static Pet getPetFromStack(String name, NBTTagCompound tag) {
+	public static Pet getPetFromStack(NBTTagCompound tag) {
 		if (Constants.PETS == null || Constants.PETS.get("pet_levels") == null ||
 			Constants.PETS.get("pet_levels") instanceof JsonNull) {
 			Utils.showOutdatedRepoNotification();
@@ -682,20 +660,19 @@ public class PetInfoOverlay extends TextOverlay {
 			return null;
 		}
 
-		if (level != null) {
-			Pet pet = new Pet();
-			pet.petItem = heldItem;
-			pet.petLevel = level;
-			pet.rarity = rarity;
-			pet.petType = petType;
-			JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
-			pet.petXpType =
-				petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
-			pet.skin = skin;
-			return pet;
-		}
+		Pet pet = new Pet();
+		pet.petItem = heldItem;
+		pet.petLevel = level;
+		pet.rarity = rarity;
+		pet.petType = petType;
+		JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
+		pet.petXpType =
+			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
+		pet.skin = skin;
 
-		return null;
+		System.out.println(new Gson().toJsonTree(pet));
+
+		return pet;
 	}
 
 	private static final HashMap<Integer, Integer> removeMap = new HashMap<>();
@@ -769,7 +746,7 @@ public class PetInfoOverlay extends TextOverlay {
 							}
 						} else {
 							String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-							Pet pet = getPetFromStack(stack.getDisplayName(), stack.getTagCompound());
+							Pet pet = getPetFromStack(stack.getTagCompound());
 							if (pet != null) {
 								config.petMap.put(petIndex, pet);
 
@@ -997,8 +974,7 @@ public class PetInfoOverlay extends TextOverlay {
 					} else {
 						setCurrentPet(newSelected);
 
-						String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-						Pet pet = getPetFromStack(stack.getDisplayName(), stack.getTagCompound());
+						Pet pet = getPetFromStack(stack.getTagCompound());
 						if (pet != null) {
 							config.petMap.put(config.selectedPet, pet);
 						}
@@ -1043,8 +1019,6 @@ public class PetInfoOverlay extends TextOverlay {
 	public void updatePetLevels() {
 		HashMap<String, XPInformation.SkillInfo> skillInfoMap = XPInformation.getInstance().getSkillInfoMap();
 
-		long currentTime = System.currentTimeMillis();
-
 		float totalGain = 0;
 
 		Pet currentPet = getCurrentPet();
@@ -1058,7 +1032,6 @@ public class PetInfoOverlay extends TextOverlay {
 				if (skillXpLast <= 0) {
 					skillInfoMapLast.put(entry.getKey(), skillXp);
 				} else if (skillXp > skillXpLast) {
-					lastXpGain = currentTime;
 
 					float deltaXp = skillXp - skillXpLast;
 
@@ -1132,13 +1105,13 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private int lastLevelHovered = 0;
-	private String lastItemHovered = null;
 
 	private static HashMap<String, String> itemMap = null;
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onTooltip(ItemTooltipEvent event) {
 		for (String line : event.toolTip) {
+			String lastItemHovered = null;
 			if (line.startsWith("\u00a7o\u00a77[Lvl ")) {
 				lastItemHovered = null;
 
