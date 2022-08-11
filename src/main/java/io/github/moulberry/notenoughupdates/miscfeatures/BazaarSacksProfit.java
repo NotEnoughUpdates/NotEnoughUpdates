@@ -146,6 +146,8 @@ public class BazaarSacksProfit {
 			map.put("§a" + formatter.format(amount) + "§7x §f" + name + " §6" + priceFormat, extraPrice);
 		}
 
+
+		event.toolTip.add(4, "");
 		if (showSellOrderPrice) {
 			event.toolTip.add(4, "§7Sell order price: §6" + formatter.format(totalPrice));
 		} else {
@@ -153,14 +155,18 @@ public class BazaarSacksProfit {
 		}
 
 		event.toolTip.add(4, "");
+		event.toolTip.removeIf(line -> line.equals("§5§o"));
+		int index = 4;
 		for (String name : invalidNames) {
+			index++;
 			event.toolTip.add(4, name + " §cMissing repo data!");
 		}
 		for (String text : TrophyRewardOverlay.sortByValue(map).keySet()) {
+			index++;
 			event.toolTip.add(4, text);
 		}
+		event.toolTip.add(index, "");
 
-		event.toolTip.add("");
 		if (!showSellOrderPrice) {
 			event.toolTip.add("§8[Press SHIFT to show sell order price]");
 		} else {
