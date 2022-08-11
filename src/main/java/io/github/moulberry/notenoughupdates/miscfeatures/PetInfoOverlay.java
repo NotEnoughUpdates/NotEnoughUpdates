@@ -584,6 +584,7 @@ public class PetInfoOverlay extends TextOverlay {
 		int level = 1;
 		float currentLevelRequirement = 0;
 		float xpThisLevel = 0;
+		float pct = 0;
 
 		if (isMaxed) {
 			level = maxLevel;
@@ -600,10 +601,9 @@ public class PetInfoOverlay extends TextOverlay {
 					break;
 				}
 			}
+			pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
+			level += pct;
 		}
-
-		float pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
-		level += pct;
 
 		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
 		levelObj.level = level;
