@@ -38,11 +38,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class PlayerStats {
 
@@ -657,7 +663,7 @@ public class PlayerStats {
 		}
 
 		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo.get("talisman_bag").getAsJsonArray())
-			.map(o -> {
+																								.map(o -> {
 				try {
 					return JsonToNBT.getTagFromJson(o.getAsJsonObject().get("nbttag").getAsString());
 				} catch (Exception ignored) {
@@ -675,7 +681,7 @@ public class PlayerStats {
 					tag.getCompoundTag("ExtraAttributes").getString("id"),
 					Utils.getRarityFromLore(lastElementJsonArray)
 				);
-			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1,v2)->v1, LinkedHashMap::new));
+			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)->v1, LinkedHashMap::new));
 
 		Set<String> ignoredTalismans = new HashSet<>();
 		int powderAmount = 0;
