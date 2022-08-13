@@ -84,18 +84,6 @@ public class LilySkillsWeight extends SkillsWeight {
 	}
 
 	private double effectiveXP(double xp, double factor) {
-		if (xp < SKILLS_LEVEL_60) {
-			return xp;
-		} else {
-			double remainingXP = xp;
-			double z = 0;
-			for (int i = 0; i <= (int) (xp / SKILLS_LEVEL_60); i++) {
-				if (remainingXP >= SKILLS_LEVEL_60) {
-					remainingXP -= SKILLS_LEVEL_60;
-					z += Math.pow(factor, i);
-				}
-			}
-			return z * SKILLS_LEVEL_60;
-		}
+		return Math.pow(xp, factor);
 	}
 }
