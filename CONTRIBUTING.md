@@ -28,7 +28,7 @@
 
 ## Logging into Hypixel in a development environment
 
-Use [DevAuth](https://github.com/DJtheRedstoner/DevAuth). Download the `forge-legacy` version, and put it into the `run/mods` folder. Then follow the configuration instructions in the [DevAuth README](https://github.com/DJtheRedstoner/DevAuth#configuration-file)
+Use [DevAuth](https://github.com/DJtheRedstoner/DevAuth). You do **not** need to download the jar, just follow the configuration instructions in the [DevAuth README](https://github.com/DJtheRedstoner/DevAuth#configuration-file)
 
 ## Hot Reloading
 

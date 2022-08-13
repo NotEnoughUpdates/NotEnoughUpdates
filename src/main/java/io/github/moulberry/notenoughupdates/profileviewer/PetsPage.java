@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -291,6 +292,33 @@ public class PetsPage extends GuiProfileViewerPage {
 						}
 						tag.setTag("display", display);
 					}
+
+					// Adds the missing pet fields to the tag
+					NBTTagCompound extraAttributes = new NBTTagCompound();
+					JsonObject petInfo = new JsonObject();
+					if(tag.hasKey("ExtraAttributes", 10)) {
+						extraAttributes = tag.getCompoundTag("ExtraAttributes");
+						if (extraAttributes.hasKey("petInfo", 8)) {
+							petInfo = new JsonParser().parse(extraAttributes.getString("petInfo")).getAsJsonObject();
+						}
+					}
+					if (!petInfo.has("exp")) {
+						petInfo.addProperty("exp", exp);
+					}
+					if (!petInfo.has("tier")) {
+						petInfo.addProperty("tier", tier);
+					}
+					if (!petInfo.has("type")) {
+						petInfo.addProperty("type", petname);
+					}
+					if (heldItem != null && !petInfo.has("heldItem")) {
+						petInfo.addProperty("heldItem", heldItem);
+					}
+					if (skin != null && !petInfo.has("skin")) {
+						petInfo.addProperty("skin", skin);
+					}
+					extraAttributes.setString("petInfo", petInfo.toString());
+					tag.setTag("ExtraAttributes", extraAttributes);
 					stack.setTagCompound(tag);
 				}
 				sortedPetsStack.add(stack);

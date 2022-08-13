@@ -546,75 +546,6 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
-	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
-		float xpTotal = 0;
-
-		for (int i = offset; i < offset + maxLevel - 1; i++) {
-			xpTotal += levels.get(i).getAsFloat();
-		}
-
-		return xpTotal;
-	}
-
-	private static GuiProfileViewer.PetLevel getLevel(
-		String petType,
-		int offset,
-		float exp
-	) {
-		int maxLevel = 100;
-
-		JsonArray levels = new JsonArray();
-		levels.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
-		JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
-		if (customLevelingJson != null) {
-			switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
-				case 1:
-					levels.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
-					break;
-				case 2:
-					levels = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
-					break;
-			}
-			maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
-		}
-
-		float maxXP = getMaxLevelXp(levels, offset, maxLevel);
-		boolean isMaxed = exp >= maxXP;
-
-		int level = 1;
-		float currentLevelRequirement = 0;
-		float xpThisLevel = 0;
-		float pct = 0;
-
-		if (isMaxed) {
-			level = maxLevel;
-			currentLevelRequirement = levels.get(offset + level - 2).getAsFloat();
-			xpThisLevel = currentLevelRequirement;
-		} else {
-			long totalExp = 0;
-			for (int i = offset; i < levels.size(); i++) {
-				currentLevelRequirement = levels.get(i).getAsLong();
-				totalExp += currentLevelRequirement;
-				if (totalExp >= exp) {
-					xpThisLevel = currentLevelRequirement - (totalExp - exp);
-					level = Math.min(i - offset + 1, maxLevel);
-					break;
-				}
-			}
-			pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
-			level += pct;
-		}
-
-		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
-		levelObj.level = level;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = maxXP;
-		levelObj.levelPercentage = pct;
-		levelObj.levelXp = xpThisLevel;
-		levelObj.totalXp = exp;
-		return levelObj;
-	}
-
 	public static Pet getPetFromStack(NBTTagCompound tag) {
 		if (Constants.PETS == null || Constants.PETS.get("pet_levels") == null ||
 			Constants.PETS.get("pet_levels") instanceof JsonNull) {
@@ -628,18 +559,20 @@ public class PetInfoOverlay extends TextOverlay {
 		GuiProfileViewer.PetLevel level = null;
 		String skin = null;
 
+		System.out.println(tag);
 		if (tag != null && tag.hasKey("ExtraAttributes")) {
 			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 			if (ea.hasKey("petInfo")) {
 				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
-
-				level = getLevel(
-					petType ,
-					rarity.petOffset,
-					petInfo.get("exp").getAsFloat()
-				);
+				if(petInfo.has("exp")) {
+					level = GuiProfileViewer. getPetLevel(
+						petType,
+						rarity.name(),
+						petInfo.get("exp").getAsFloat()
+					);
+				}
 				if (petInfo.has("heldItem")) {
 					heldItem = petInfo.get("heldItem").getAsString();
 				}
