@@ -26,10 +26,10 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
@@ -655,33 +655,42 @@ public class PlayerStats {
 		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") || !inventoryInfo.get("talisman_bag").isJsonArray()) {
 			return -1;
 		}
-		JsonArray accessories = inventoryInfo.get("talisman_bag").getAsJsonArray();
+
+		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo.get("talisman_bag").getAsJsonArray())
+			.map(o -> {
+				try {
+					return JsonToNBT.getTagFromJson(o.getAsJsonObject().get("nbttag").getAsString());
+				} catch (Exception ignored) {
+					return null;
+				}
+			}).filter(Objects::nonNull).map(tag -> {
+				NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
+				String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
+				if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
+					lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
+				}
+				JsonArray lastElementJsonArray = new JsonArray();
+				lastElementJsonArray.add(new JsonPrimitive(lastElement));
+				return new AbstractMap.SimpleEntry<>(
+					tag.getCompoundTag("ExtraAttributes").getString("id"),
+					Utils.getRarityFromLore(lastElementJsonArray)
+				);
+			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1,v2)->v1, LinkedHashMap::new));
+
+		Set<String> ignoredTalismans = new HashSet<>();
 		int powderAmount = 0;
-		for (JsonElement element : accessories) {
-			if (element == null || !element.isJsonObject()) {
-				continue;
-			}
-			JsonObject accessory = element.getAsJsonObject();
-			NBTTagCompound tag;
-			try {
-				tag = JsonToNBT.getTagFromJson(accessory.get("nbttag").getAsString());
-			} catch (NBTException ignored) {
+		for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
+			if (ignoredTalismans.contains(entry.getKey())) {
 				continue;
 			}
 
-			NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
-			String id = tag.getCompoundTag("ExtraAttributes").getString("id");
-			String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
-
-			//strip information that suggests the rarity has been upgraded (obfuscated char)
-			if (lastElement.contains("§k")) {
-				lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
+			JsonArray children = Utils.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray()).getAsJsonArray();
+			for (JsonElement child : children) {
+				ignoredTalismans.add(child.getAsString());
 			}
 
-			JsonArray lastElementJsonArray = new JsonArray();
-			lastElementJsonArray.add(new JsonPrimitive(lastElement));
-			if (id.equals("HEGEMONY_ARTIFACT")) {
-				switch (Utils.getRarityFromLore(lastElementJsonArray)) {
+			if (entry.getKey().equals("HEGEMONY_ARTIFACT")) {
+				switch (entry.getValue()) {
 					case 4:
 						powderAmount += 16;
 						break;
@@ -690,7 +699,7 @@ public class PlayerStats {
 						break;
 				}
 			}
-			switch (Utils.getRarityFromLore(lastElementJsonArray)) {
+			switch (entry.getValue()) {
 				case 0:
 				case 6:
 					powderAmount += 3;

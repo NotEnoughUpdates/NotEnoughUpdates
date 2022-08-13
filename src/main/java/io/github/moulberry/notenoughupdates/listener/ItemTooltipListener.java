@@ -26,7 +26,6 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
-import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -73,7 +72,7 @@ public class ItemTooltipListener {
 	private final NotEnoughUpdates neu;
 	private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
 	private final HashSet<String> percentStats = new HashSet<>();
-	DecimalFormat myFormatter = new DecimalFormat("###,###.###");
+	DecimalFormat myFormatter = new DecimalFormat("#,###,###.###");
 	private String currentRarity = "COMMON";
 	private boolean copied = false;
 	private boolean showReforgeStoneStats = true;
@@ -791,8 +790,7 @@ public class ItemTooltipListener {
 					}
 
 					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
-						event.itemStack.getDisplayName(),
-						NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(event.itemStack.getTagCompound())
+						event.itemStack.getTagCompound()
 					);
 					if (pet == null) {
 						return;
