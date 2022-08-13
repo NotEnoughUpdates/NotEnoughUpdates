@@ -634,12 +634,13 @@ public class PetInfoOverlay extends TextOverlay {
 				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
-
-				level = getLevel(
-					petType ,
-					rarity.petOffset,
-					petInfo.get("exp").getAsFloat()
-				);
+				if (petInfo.has("exp")) {
+					level = getLevel(
+						petType ,
+						rarity.petOffset,
+						petInfo.get("exp").getAsFloat()
+					);
+				}
 				if (petInfo.has("heldItem")) {
 					heldItem = petInfo.get("heldItem").getAsString();
 				}
