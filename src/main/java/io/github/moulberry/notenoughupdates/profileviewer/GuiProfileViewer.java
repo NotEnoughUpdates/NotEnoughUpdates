@@ -264,7 +264,6 @@ public class GuiProfileViewer extends GuiScreen {
 		levelObj.levelPercentage = pct;
 		levelObj.levelXp = xpThisLevel;
 		levelObj.totalXp = exp;
-		System.out.println(petType + " - maxed: " + isMaxed + " | " + new Gson().toJsonTree(levelObj));
 		return levelObj;
 	}
 

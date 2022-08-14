@@ -666,8 +666,6 @@ public class PetInfoOverlay extends TextOverlay {
 						} else {
 							String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 							Pet pet = getPetFromStack(stack.getTagCompound());
-							System.out.println(stack.getTagCompound());
-							System.out.println(pet);
 							if (pet != null) {
 								config.petMap.put(petIndex, pet);
 
