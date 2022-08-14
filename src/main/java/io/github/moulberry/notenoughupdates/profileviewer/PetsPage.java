@@ -302,19 +302,13 @@ public class PetsPage extends GuiProfileViewerPage {
 							petInfo = new JsonParser().parse(extraAttributes.getString("petInfo")).getAsJsonObject();
 						}
 					}
-					if (!petInfo.has("exp")) {
-						petInfo.addProperty("exp", exp);
-					}
-					if (!petInfo.has("tier")) {
-						petInfo.addProperty("tier", tier);
-					}
-					if (!petInfo.has("type")) {
-						petInfo.addProperty("type", petname);
-					}
-					if (heldItem != null && !petInfo.has("heldItem")) {
+					petInfo.addProperty("exp", exp);
+					petInfo.addProperty("tier", tier);
+					petInfo.addProperty("type", petname);
+					if (heldItem != null) {
 						petInfo.addProperty("heldItem", heldItem);
 					}
-					if (skin != null && !petInfo.has("skin")) {
+					if (skin != null) {
 						petInfo.addProperty("skin", skin);
 					}
 					extraAttributes.setString("petInfo", petInfo.toString());

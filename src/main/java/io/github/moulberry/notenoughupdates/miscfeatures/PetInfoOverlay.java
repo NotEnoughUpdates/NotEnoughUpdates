@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -53,7 +52,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -559,20 +557,17 @@ public class PetInfoOverlay extends TextOverlay {
 		GuiProfileViewer.PetLevel level = null;
 		String skin = null;
 
-		System.out.println(tag);
 		if (tag != null && tag.hasKey("ExtraAttributes")) {
 			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 			if (ea.hasKey("petInfo")) {
 				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
-				if(petInfo.has("exp")) {
-					level = GuiProfileViewer. getPetLevel(
-						petType,
-						rarity.name(),
-						petInfo.get("exp").getAsFloat()
-					);
-				}
+				level = GuiProfileViewer. getPetLevel(
+					petType,
+					rarity.name(),
+					petInfo.get("exp").getAsFloat()
+				);
 				if (petInfo.has("heldItem")) {
 					heldItem = petInfo.get("heldItem").getAsString();
 				}
@@ -1029,48 +1024,6 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private int lastLevelHovered = 0;
-
-	private static HashMap<String, String> itemMap = null;
-
-	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-	public void onTooltip(ItemTooltipEvent event) {
-		for (String line : event.toolTip) {
-			String lastItemHovered = null;
-			if (line.startsWith("\u00a7o\u00a77[Lvl ")) {
-				lastItemHovered = null;
-
-				String after = line.substring("\u00a7o\u00a77[Lvl ".length());
-				if (after.contains("]")) {
-					String levelStr = after.split("]")[0];
-
-					try {
-						lastLevelHovered = Integer.parseInt(levelStr.trim());
-					} catch (Exception ignored) {
-					}
-				}
-			} else if (line.startsWith("\u00a75\u00a7o\u00a76Held Item: ")) {
-				String after = line.substring("\u00a75\u00a7o\u00a76Held Item: ".length());
-
-				if (itemMap == null) {
-					itemMap = new HashMap<>();
-
-					for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
-						.getItemInformation()
-						.entrySet()) {
-						if (entry.getKey().equals("ALL_SKILLS_SUPER_BOOST") ||
-							XP_BOOST_PATTERN.matcher(entry.getKey()).matches()) {
-							ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(entry.getValue());
-							itemMap.put(stack.getDisplayName(), entry.getKey());
-						}
-					}
-				}
-
-				if (itemMap.containsKey(after)) {
-					lastItemHovered = itemMap.get(after);
-				}
-			}
-		}
-	}
 
 	private static final Pattern AUTOPET_EQUIP = Pattern.compile(
 		"\u00a7cAutopet \u00a7eequipped your \u00a77\\[Lvl (\\d+)] \u00a7(.{2,})\u00a7e! \u00a7a\u00a7lVIEW RULE\u00a7r");

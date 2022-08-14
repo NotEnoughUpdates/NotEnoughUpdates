@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -194,55 +193,6 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.BINGO, new BingoPage(this));
 		pages.put(ProfileViewerPage.TROPHY_FISH, new TrophyFishPage(this));
 		pages.put(ProfileViewerPage.BESTIARY, new BestiaryPage(this));
-	}
-
-	private static JsonObject getPetInfo(String pet_name, String rarity) {
-		JsonObject petInfo = new JsonObject();
-
-		if (Constants.PETS == null) {
-			Utils.showOutdatedRepoNotification();
-			return null;
-		}
-
-		if (Constants.PETS.has("custom_pet_leveling") && Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet_name)) {
-			JsonObject pet = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet_name);
-			if (pet.has("type") && pet.has("pet_levels")) {
-				int type = pet.get("type").getAsInt();
-				switch (type) {
-					case 1:
-						JsonArray defaultLevels = Constants.PETS.getAsJsonArray("pet_levels");
-						defaultLevels.addAll(pet.getAsJsonArray("pet_levels"));
-						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-						break;
-					case 2:
-						petInfo.add("pet_levels", pet.getAsJsonArray("pet_levels"));
-						break;
-					default:
-						petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-						break;
-				}
-			} else {
-				petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-			}
-			if (pet.has("max_level")) {
-				petInfo.add("max_level", pet.get("max_level"));
-			} else {
-				petInfo.add("max_level", new JsonPrimitive(100));
-			}
-
-			if (pet.has("pet_rarity_offset")) {
-				petInfo.add("offset", pet.get("pet_rarity_offset"));
-			} else {
-				petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
-			}
-		} else {
-			//System.out.println("Default Path");
-			petInfo.add("offset", Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity));
-			petInfo.add("max_level", new JsonPrimitive(100));
-			petInfo.add("pet_levels", Constants.PETS.getAsJsonArray("pet_levels"));
-		}
-
-		return petInfo;
 	}
 
 	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {

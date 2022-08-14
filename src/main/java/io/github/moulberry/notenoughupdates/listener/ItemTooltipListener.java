@@ -789,7 +789,6 @@ public class ItemTooltipListener {
 						}
 					}
 
-					System.out.println(event.toolTip);
 					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
 						event.itemStack.getTagCompound()
 					);

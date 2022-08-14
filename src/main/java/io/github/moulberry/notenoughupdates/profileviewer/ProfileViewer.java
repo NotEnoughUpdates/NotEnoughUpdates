@@ -1276,7 +1276,7 @@ public class ProfileViewer {
 				JsonArray pets = petsElement.getAsJsonArray();
 				for (int i = 0; i < pets.size(); i++) {
 					JsonObject pet = pets.get(i).getAsJsonObject();
-					if (pet.has("active") && pet.get("active").getAsJsonPrimitive().getAsBoolean()) {
+					if (pet.has("active") && pet.get("active").getAsBoolean()) {
 						activePet = pet;
 						break;
 					}
