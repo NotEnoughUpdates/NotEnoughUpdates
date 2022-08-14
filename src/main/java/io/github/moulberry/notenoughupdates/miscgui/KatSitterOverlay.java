@@ -22,8 +22,8 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -69,8 +69,8 @@ public class KatSitterOverlay {
 		boolean nextRarityPresent = katSlot.getStack() != null && katSlot.getStack().getItem() != Item.getItemFromBlock(
 			Blocks.barrier) && upgradedRarity != null;
 		renderPetInformation(
-			(int) XPInformation.getInstance().getPetLevel(petId, xp, rarity),
-			nextRarityPresent ? (int) XPInformation.getInstance().getPetLevel(petId, xp, upgradedRarity) : null,
+			(int) GuiProfileViewer.getPetLevel(petId, rarity, (float) xp).level,
+			nextRarityPresent ? (int) GuiProfileViewer.getPetLevel(petId, upgradedRarity, (float) xp).level : null,
 			gui
 		);
 	}

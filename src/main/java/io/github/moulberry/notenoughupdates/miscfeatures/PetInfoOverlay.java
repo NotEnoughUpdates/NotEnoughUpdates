@@ -566,7 +566,7 @@ public class PetInfoOverlay extends TextOverlay {
 				level = GuiProfileViewer. getPetLevel(
 					petType,
 					rarity.name(),
-					petInfo.get("exp").getAsFloat()
+					Utils.getElementAsFloat(petInfo.get("exp"), 0) // Should only default if from item list and repo missing exp:0
 				);
 				if (petInfo.has("heldItem")) {
 					heldItem = petInfo.get("heldItem").getAsString();
@@ -714,7 +714,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 								float petXp = petInfoObject.get("exp").getAsFloat();
 
-								double petLevel = XPInformation.getInstance().getPetLevel(name, petXp, rarityString);
+								double petLevel = GuiProfileViewer.getPetLevel(name, rarityString, petXp).level;
 								int index = getClosestPetIndex(name, rarity, "", (float) petLevel);
 								if (index != config.selectedPet) {
 									clearPet();

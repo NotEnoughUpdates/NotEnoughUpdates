@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -262,6 +263,7 @@ public class GuiProfileViewer extends GuiScreen {
 		levelObj.levelPercentage = pct;
 		levelObj.levelXp = xpThisLevel;
 		levelObj.totalXp = exp;
+		System.out.println(petType + " - maxed: " + isMaxed + " | " + new Gson().toJsonTree(levelObj));
 		return levelObj;
 	}
 
