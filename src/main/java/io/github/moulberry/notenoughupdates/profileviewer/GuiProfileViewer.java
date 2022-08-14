@@ -241,6 +241,7 @@ public class GuiProfileViewer extends GuiScreen {
 			level = maxLevel;
 			currentLevelRequirement = levels.get(offset + level - 2).getAsFloat();
 			xpThisLevel = currentLevelRequirement;
+			pct = 1;
 		} else {
 			long totalExp = 0;
 			for (int i = offset; i < levels.size(); i++) {
