@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -34,9 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class XPInformation {
 	private static final XPInformation INSTANCE = new XPInformation();
