@@ -2309,9 +2309,10 @@ public class StorageOverlay extends GuiElement {
 			this.fastRender = true;
 			NotificationHandler.displayNotification(Lists.newArrayList(
 				"\u00a74Fast Render Warning",
-				"\u00a77Due to the way fast render works, it's not compatible with NEU.",
-				"\u00a77Please disable fast render in your options under",
+				"\u00a77Due to the way fast render and antialiasing work, they're not compatible with NEU.",
+				"\u00a77Please disable fast render and antialiasing in your options under",
 				"\u00a77ESC > Options > Video Settings > Performance > Fast Render",
+				"\u00a77and ESC > Options > Video Settings > Quality > Antialiasing respectively",
 				"\u00a77This can't be fixed.",
 				"\u00a77",
 				"\u00a77Press X on your keyboard to close this notification"
