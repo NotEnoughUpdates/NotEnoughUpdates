@@ -258,6 +258,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
 		levelObj.level = level;
+		levelObj.maxLevel = maxLevel;
 		levelObj.currentLevelRequirement = currentLevelRequirement;
 		levelObj.maxXP = maxXP;
 		levelObj.levelPercentage = pct;
@@ -1247,6 +1248,7 @@ public class GuiProfileViewer extends GuiScreen {
 	public static class PetLevel {
 
 		public float level;
+		public float maxLevel;
 		public float currentLevelRequirement;
 		public float maxXP;
 		public float levelPercentage;

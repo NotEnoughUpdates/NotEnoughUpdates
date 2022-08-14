@@ -440,7 +440,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 		String etaStr = null;
 		String etaMaxStr = null;
-		if (currentPet.petLevel.level < 100) {
+		if (currentPet.petLevel.level < currentPet.petLevel.maxLevel) {
 			float remaining = currentPet.petLevel.currentLevelRequirement - currentPet.petLevel.levelXp;
 			if (remaining > 0) {
 				if (xpGain < 1000) {
@@ -452,14 +452,14 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 
-			if (currentPet.petLevel.level < 99 || !NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.contains(6)) {
+			if (currentPet.petLevel.level < (currentPet.petLevel.maxLevel - 1) || !NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.contains(6)) {
 				float remainingMax = currentPet.petLevel.maxXP - currentPet.petLevel.totalXp;
 				if (remaining > 0) {
 					if (xpGain < 1000) {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L100: " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel +  ": " +
 							EnumChatFormatting.YELLOW + "N/A";
 					} else {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L100: " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + Utils.prettyTime((long) (remainingMax) * 1000 * 60 * 60 / (long) xpGain);
 					}
 				}
@@ -904,7 +904,7 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	public static float getXpGain(Pet pet, float xp, String xpType) {
-		if (pet.petLevel.level >= 100) return 0;
+		if (pet.petLevel.level >= pet.petLevel.maxLevel) return 0;
 
 		if (validXpTypes == null)
 			validXpTypes = Lists.newArrayList("mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
