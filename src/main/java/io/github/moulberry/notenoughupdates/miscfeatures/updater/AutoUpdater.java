@@ -179,8 +179,8 @@ public class AutoUpdater {
 
 	public void displayUpdateMessageIfOutOfDate() {
 		File repo = neu.manager.repoLocation;
-		if (repo.exists()) {
-			File updateJson = new File(repo, "update.json");
+		File updateJson = new File(repo, "update.json");
+		if (updateJson.exists()) {
 			try {
 				JsonObject o = neu.manager.getJsonFromFile(updateJson);
 
