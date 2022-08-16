@@ -23,15 +23,13 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -43,7 +41,8 @@ import java.util.Locale;
 
 public class PowerStoneStatsDisplay {
 	private static PowerStoneStatsDisplay instance = null;
-	NumberFormat format = NumberFormat.getInstance(Locale.US);
+	private final NumberFormat format = NumberFormat.getInstance(Locale.US);
+	private boolean dirty = true;
 
 	public static PowerStoneStatsDisplay getInstance() {
 		if (instance == null) {
@@ -54,14 +53,12 @@ public class PowerStoneStatsDisplay {
 
 	@SubscribeEvent
 	public void onTick(TickEvent event) {
-		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		if (currentScreen == null) return;
-		if (!(currentScreen instanceof GuiChest)) return;
-		ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
-		IInventory menu = container.getLowerChestInventory();
-		String title = menu.getDisplayName().getUnformattedText();
+		if (!dirty) return;
 
-		if (!title.equals("SkyBlock Menu")) return;
+		if (!Utils.getOpenChestName().equals("SkyBlock Menu")) {
+			dirty = false;
+			return;
+		}
 
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		Container openContainer = p.openContainer;
@@ -78,8 +75,16 @@ public class PowerStoneStatsDisplay {
 					NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 					if (configProfileSpecific == null) return;
 					configProfileSpecific.magicalPower = Integer.parseInt(rawNumber);
+					dirty = false;
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiOpen(GuiOpenEvent event) {
+		if (event.gui != null) {
+			dirty = true;
 		}
 	}
 
