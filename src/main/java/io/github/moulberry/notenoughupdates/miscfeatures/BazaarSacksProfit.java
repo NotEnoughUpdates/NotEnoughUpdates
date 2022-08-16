@@ -58,13 +58,12 @@ public class BazaarSacksProfit {
 	private final Map<String, Integer> prices = new HashMap<>();
 	private final Map<String, String> names = new HashMap<>();
 	private final List<String> invalidNames = new ArrayList<>();
+	private boolean dirty = true;
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
 		showSellOrderPrice = false;
-		prices.clear();
-		names.clear();
-		invalidNames.clear();
+		dirty = true;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
@@ -82,7 +81,12 @@ public class BazaarSacksProfit {
 		}
 		pressedShiftLast = shift;
 
-		if (prices.isEmpty()) {
+		if (dirty) {
+			dirty = false;
+			prices.clear();
+			names.clear();
+			invalidNames.clear();
+
 			out:
 			for (String line : ItemUtils.getLore(itemStack)) {
 				if (line.contains("§7x ")) {
@@ -146,7 +150,6 @@ public class BazaarSacksProfit {
 			map.put("§a" + formatter.format(amount) + "§7x §f" + name + " §7for §6" + priceFormat + " coins", extraPrice);
 		}
 
-
 		event.toolTip.add(4, "");
 		if (showSellOrderPrice) {
 			event.toolTip.add(4, "§7Sell order price: §6" + formatter.format(totalPrice));
@@ -159,7 +162,7 @@ public class BazaarSacksProfit {
 		int index = 4;
 		for (String name : invalidNames) {
 			index++;
-			event.toolTip.add(4, name + " §cMissing repo data!");
+			event.toolTip.add(4, name + " §c[NEU] Missing Repo data!");
 		}
 		for (String text : TrophyRewardOverlay.sortByValue(map).keySet()) {
 			index++;
