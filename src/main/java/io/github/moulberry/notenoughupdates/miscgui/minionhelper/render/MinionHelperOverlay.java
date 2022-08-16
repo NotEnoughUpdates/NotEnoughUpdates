@@ -101,7 +101,6 @@ public class MinionHelperOverlay {
 				"§cMinion Helper will not filter minions that",
 				"§cdo not meet the collection requirements!"
 			), false, true);
-			//TODO add tutorial how to enable collection api
 			manager.getApi().setNotifyNoCollectionApi(false);
 		}
 
