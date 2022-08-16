@@ -26,6 +26,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.EntityViewer;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.Panorama;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
@@ -64,7 +65,14 @@ public class MobLootRecipe implements NeuRecipe {
 			if (itemStack == null) {
 				itemStack = drop.getItemStack().copy();
 				List<String> arrayList = new ArrayList<>(extra);
-				arrayList.add("§r§e§lDrop Chance: §6" + chance);
+				try {
+					String chanceText = chance.substring(0, chance.length() - 1);
+					int chanceIn = (int) (100.0 / Double.parseDouble(chanceText));
+					String format = GuiProfileViewer.numberFormat.format(chanceIn);
+					arrayList.add("§r§e§lDrop Chance: §61/" + format + " (" + chance + ")");
+				} catch (Exception e) {
+					arrayList.add("§r§e§lDrop Chance: §6" + chance + " §c(Invalid repo data)");
+				}
 				ItemUtils.appendLore(itemStack, arrayList);
 			}
 			return itemStack;
