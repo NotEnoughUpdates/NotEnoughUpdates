@@ -52,6 +52,7 @@ public class MinionHelperApiLoader {
 	private boolean apiReadyToUse = false;
 	private ApiData apiData = null;
 	private boolean notifyNoCollectionApi = false;
+	private long lastLoaded = 0;
 
 	public MinionHelperApiLoader(MinionHelperManager manager) {
 		this.manager = manager;
@@ -75,10 +76,15 @@ public class MinionHelperApiLoader {
 
 		if (dirty) {
 			load();
+		} else {
+			if (System.currentTimeMillis() > lastLoaded + 60_000 * 3) {
+				dirty = true;
+			}
 		}
 	}
 
 	private void load() {
+		lastLoaded = System.currentTimeMillis();
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer == null) return;
 
