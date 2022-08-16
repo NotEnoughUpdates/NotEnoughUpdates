@@ -219,13 +219,22 @@ public class MinionHelperOverlay {
 		}
 		Utils.drawTexturedRect(guiLeft + xSize + 4 + 149, guiTop + 109, 10, 10, 0, 1f, 0, 1f, GL11.GL_NEAREST);
 
-		int a = guiLeft + xSize + 4;
+		int x = guiLeft + xSize + 10;
 		int i = 0;
-		int y = 0;
+		int y = guiTop + 6;
 		FontRenderer fontRendererObj = minecraft.fontRendererObj;
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
-			fontRendererObj.drawString(line, a + 6, guiTop + 6 + y, -1, false);
+
+			if (line.contains("§6")) {
+				String[] split = line.split("§6");
+				line = split[0];
+				String price = "§6§l" + split[1];
+				int lineLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line);
+				fontRendererObj.drawString(price, x + lineLen, y, -1, true);
+			}
+
+			fontRendererObj.drawString(line, x, y, -1, false);
 			i++;
 			if (i == 2) {
 				y += 15;
@@ -272,14 +281,13 @@ public class MinionHelperOverlay {
 			if (index == neededForNextSlot) break;
 		}
 		String format = manager.getPriceCalculation().formatCoins(priceNeeded);
-		//TODO jani
-		String text = color + "Next slot: §3" + neededForNextSlot + " minions §8(" + format + "§8)";
+		format = format.replace(" coins", "");
+		String text = color + "Next slot: §3" + neededForNextSlot + " minions §8- " + format;
 		renderMap.put(text, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
 	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
-		//TODO jani
-		String name = "§8" + prices.size() + (showOnlyAvailable ? " craftable" : "") + " minions ";
+		String name = "§8" + prices.size() + " " + (showOnlyAvailable ? "craftable" : "total") + " minions";
 		renderMap.put(name, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
@@ -353,7 +361,7 @@ public class MinionHelperOverlay {
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String text = entry.getKey();
 			int width = fontRenderer.getStringWidth(StringUtils.cleanColour(text));
-			if (mouseX > x && mouseX < x + width &&
+			if (mouseX > x && mouseX < x + width + 4 &&
 				mouseY > y && mouseY < y + 11) {
 				return entry.getValue();
 			}
