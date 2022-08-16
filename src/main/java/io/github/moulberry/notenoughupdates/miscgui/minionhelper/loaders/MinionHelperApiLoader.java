@@ -149,6 +149,9 @@ public class MinionHelperApiLoader {
 	}
 
 	private int loadPeltCount(JsonObject player) {
+		int localPelts = manager.getLocalPelts();
+		if (localPelts != -1) return localPelts;
+
 		int peltCount = 0;
 		if (player.has("trapper_quest")) {
 			JsonObject jsonObject = player.getAsJsonObject("trapper_quest");

@@ -30,7 +30,7 @@ public class ApiData {
 	private final int barbariansReputation;
 	private final boolean collectionApiDisabled;
 	private final List<String> craftedMinions;
-	private final int peltCount;
+	private int peltCount;
 
 	public ApiData(
 		Map<String, Integer> highestCollectionTier,
@@ -76,5 +76,9 @@ public class ApiData {
 
 	public int getPeltCount() {
 		return peltCount;
+	}
+
+	public void setPeltCount(int peltCount) {
+		this.peltCount = peltCount;
 	}
 }

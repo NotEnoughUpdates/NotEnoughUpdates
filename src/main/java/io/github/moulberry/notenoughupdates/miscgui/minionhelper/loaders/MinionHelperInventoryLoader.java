@@ -24,26 +24,34 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class MinionHelperInventoryLoader {
 	private final MinionHelperManager manager;
 	private final List<String> pagesSeenAlready = new ArrayList<>();
-	private boolean shouldCheckNextSlot = true;
+	private boolean dirty = true;
 
 	private int ticks = 0;
 
 	public MinionHelperInventoryLoader(MinionHelperManager manager) {
 		this.manager = manager;
+	}
+
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		manager.setLocalPelts(-1);
 	}
 
 	@SubscribeEvent
@@ -59,23 +67,34 @@ public class MinionHelperInventoryLoader {
 			checkInventory();
 		} else {
 			pagesSeenAlready.clear();
-			if (shouldCheckNextSlot) {
-				shouldCheckNextSlot = true;
-			}
+			dirty = true;
 		}
 	}
 
 	private void checkInventory() {
 		Container openContainer = Minecraft.getMinecraft().thePlayer.openContainer;
 		if (openContainer instanceof ContainerChest) {
-
-			if (shouldCheckNextSlot) {
-				shouldCheckNextSlot = false;
+			if (dirty) {
+				dirty = false;
 				checkNextSlot(openContainer);
+				checkLocalPelts();
 			}
-
 			loadMinionData(openContainer);
 		}
+	}
+
+	private void checkLocalPelts() {
+		int pelts = -1;
+		for (String name : TabListUtils.getTabList()) {
+			if (name.startsWith("§r §r§fPelts: ")) {
+				name = name.replaceAll(Pattern.quote("§r"), "");
+				String rawNumber = name.split("§5")[1];
+				pelts = Integer.parseInt(rawNumber);
+				break;
+			}
+		}
+
+		manager.setLocalPelts(pelts);
 	}
 
 	private void checkNextSlot(Container openContainer) {
@@ -141,6 +160,6 @@ public class MinionHelperInventoryLoader {
 	}
 
 	public void onProfileSwitch() {
-		shouldCheckNextSlot = true;
+		dirty = true;
 	}
 }

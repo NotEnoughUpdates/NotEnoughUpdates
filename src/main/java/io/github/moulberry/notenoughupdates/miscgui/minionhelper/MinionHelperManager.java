@@ -45,6 +45,7 @@ public class MinionHelperManager {
 	private static MinionHelperManager instance = null;
 	private final Map<String, Minion> minions = new HashMap<>();
 	private int needForNextSlot = -1;
+	private int localPelts = -1;
 
 	private final MinionHelperPriceCalculation priceCalculation = new MinionHelperPriceCalculation(this);
 	private final MinionHelperRequirementsManager requirementsManager = new MinionHelperRequirementsManager(this);
@@ -257,5 +258,19 @@ public class MinionHelperManager {
 			minion.setMinionSource(customSource);
 		}
 		minion.setCustomSource(customSource);
+	}
+
+	public int getLocalPelts() {
+		return localPelts;
+	}
+
+	public void setLocalPelts(int pelts) {
+		localPelts = pelts;
+		if (localPelts != -1){
+			ApiData apiData = api.getApiData();
+			if (apiData != null) {
+				apiData.setPeltCount(localPelts);
+			}
+		}
 	}
 }

@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.commands.dev;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
@@ -29,6 +30,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Specia
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -181,6 +183,14 @@ public class DevTestCommand extends ClientCommandBase {
 		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("minion")) {
 			MinionHelperManager.getInstance().handleCommand(args);
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("copytablist")) {
+			StringBuilder builder = new StringBuilder();
+			for (String name : TabListUtils.getTabList()) {
+				builder.append(name).append("\n");
+			}
+			MiscUtils.copyToClipboard(builder.toString());
+			Utils.addChatMessage("§e[NEU] Copied tablist to clipboard!");
 		}
 	}
 }
