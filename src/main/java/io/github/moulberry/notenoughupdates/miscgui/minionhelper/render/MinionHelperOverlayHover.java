@@ -103,15 +103,14 @@ public class MinionHelperOverlayHover {
 
 		List<String> list = new ArrayList<>();
 
-		//TODO jani
 		if (showOnlyAvailable) {
 			list.add("§aFilter enabled!");
 			list.add("§7Only show minions that can be");
-			list.add("§7crafted and meet requirements");
+			list.add("§7crafted and meet requirements.");
 		} else {
 			list.add("§cFilter disabled!");
 			list.add("§7Show all minions. §cRed ones §7have");
-			list.add("§7missing requirements ");
+			list.add("§7missing requirements.");
 		}
 
 		list.add("");

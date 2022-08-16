@@ -90,7 +90,7 @@ public class MinionHelperOverlay {
 		if (!manager.isReadyToUse()) {
 			LinkedHashMap<String, OverviewLine> map = new LinkedHashMap<>();
 			map.put("§cLoading...", new OverviewText(Collections.emptyList(), () -> {}));
-			render(event, map);
+			render(map);
 			return;
 		}
 
@@ -107,13 +107,13 @@ public class MinionHelperOverlay {
 		LinkedHashMap<String, OverviewLine> renderMap = getRenderMap();
 
 		hover.renderHover(renderMap);
-		render(event, renderMap);
+		render(renderMap);
 
-		renderArrows(event);
+		renderArrows();
 	}
 
-	private void renderArrows(GuiScreenEvent.BackgroundDrawnEvent event) {
-		GuiScreen gui = event.gui;
+	private void renderArrows() {
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 		if (gui instanceof AccessorGuiContainer) {
 			AccessorGuiContainer container = (AccessorGuiContainer) gui;
 			int guiLeft = container.getGuiLeft();
@@ -201,10 +201,10 @@ public class MinionHelperOverlay {
 		return prices;
 	}
 
-	private void render(GuiScreenEvent.BackgroundDrawnEvent event, Map<String, OverviewLine> renderMap) {
+	private void render(Map<String, OverviewLine> renderMap) {
 		Minecraft minecraft = Minecraft.getMinecraft();
-		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) return;
-		Gui gui = event.gui;
+		Gui gui = Minecraft.getMinecraft().currentScreen;
+		if (!(gui instanceof GuiChest)) return;
 		int xSize = ((AccessorGuiContainer) gui).getXSize();
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
@@ -266,7 +266,6 @@ public class MinionHelperOverlay {
 		LinkedHashMap<String, OverviewLine> renderMap
 	) {
 		int neededForNextSlot = manager.getNeedForNextSlot();
-		//TODO jani
 		String color = "§8";
 		if (neededForNextSlot == -1) {
 			renderMap.put(color + "Next slot: ?", new OverviewText(Collections.emptyList(), () -> {}));
