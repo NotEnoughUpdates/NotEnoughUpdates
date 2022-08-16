@@ -1978,4 +1978,8 @@ public class Utils {
 		}
 		return -1;
 	}
+
+	public static String getOpenChestName() {
+		return SBInfo.getInstance().currentlyOpenChestName;
+	}
 }

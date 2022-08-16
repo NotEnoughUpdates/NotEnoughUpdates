@@ -24,7 +24,7 @@ import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -56,8 +56,7 @@ public class AbiphoneWarning extends GuiElement {
 			return false;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
-			SBInfo.getInstance().lastOpenContainerName.startsWith("Abiphone ")) {
+		if (Utils.getOpenChestName().startsWith("Abiphone ")) {
 			return true;
 		} else {
 			showWarning = false;

@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -106,9 +105,7 @@ public class AuctionSearchOverlay {
 			return false;
 		}
 
-		String lastContainer = SBInfo.getInstance().lastOpenContainerName;
-
-		if (lastContainer == null) return false;
+		String lastContainer = Utils.getOpenChestName();
 		if (!lastContainer.equals("Auctions Browser") && !lastContainer.startsWith("Auctions: ")) return false;
 
 		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();

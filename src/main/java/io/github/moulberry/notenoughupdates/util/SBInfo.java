@@ -88,7 +88,11 @@ public class SBInfo {
 
 	public Date currentTimeDate = null;
 
-	public String lastOpenContainerName = "";
+	/**
+	 * Use Utils.getOpenChestName() instead
+	 */
+	@Deprecated
+	public String currentlyOpenChestName = "";
 
 	private long lastManualLocRaw = -1;
 	private long lastLocRaw = -1;
@@ -131,19 +135,18 @@ public class SBInfo {
 			GuiChest chest = (GuiChest) event.gui;
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 
-			lastOpenContainerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+			currentlyOpenChestName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+		} else {
+			currentlyOpenChestName = "";
 		}
 	}
 
 	@SubscribeEvent
 	public void onGuiTick(TickEvent event) {
 		if (tickCount++ % 10 != 0) return;
-		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		if (currentScreen instanceof GuiChest) {
-			ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
-			if ("Profile Management".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) {
-				updateProfileInformation(container);
-			}
+		if (Utils.getOpenChestName().equals("Profile Management")) {
+			ContainerChest container = (ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots;
+			updateProfileInformation(container);
 		}
 	}
 
@@ -226,7 +229,7 @@ public class SBInfo {
 		locraw = null;
 		this.setLocation(null);
 		joinedWorld = System.currentTimeMillis();
-		lastOpenContainerName = "";
+		currentlyOpenChestName = "";
 		hasNewTab = false;
 	}
 
