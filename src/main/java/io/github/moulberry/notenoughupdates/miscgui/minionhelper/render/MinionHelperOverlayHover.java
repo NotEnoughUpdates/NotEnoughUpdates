@@ -237,11 +237,10 @@ public class MinionHelperOverlayHover {
 			}
 
 			String name = NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalName);
-			String amountText = amount != 1 ? amount + "§7x " : "";
 			long price = manager.getPriceCalculation().getPrice(internalName);
 			String priceFormat = manager.getPriceCalculation().formatCoins(
 				price * amount);
-			lines.add(" §8- §a" + amountText + "§f" + name + " " + priceFormat);
+			lines.add(" §8- §a" + amount + "§7x §f" + name + " " + priceFormat);
 		}
 	}
 
