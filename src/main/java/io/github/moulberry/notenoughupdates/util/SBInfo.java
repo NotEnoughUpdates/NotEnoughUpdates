@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeLis
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.init.Blocks;
@@ -127,7 +126,8 @@ public class SBInfo {
 	private int tickCount = 0;
 	public String currentProfile = null;
 
-	@SubscribeEvent
+	//Set the priority HIGH to allow other GuiOpenEvent's to use the new currentlyOpenChestName data
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onGuiOpen(GuiOpenEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 
