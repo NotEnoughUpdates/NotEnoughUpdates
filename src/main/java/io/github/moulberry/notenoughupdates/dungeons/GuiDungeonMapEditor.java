@@ -603,7 +603,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				players.add(Minecraft.getMinecraft().thePlayer.getName());
 				GlStateManager.color(1, 1, 1, 1);
 
-				Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
+				/*Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
 					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition,
 					size, size, () -> {
 					ScaledResolution scaledResolution = Utils.pushGuiScale(2);
@@ -619,7 +619,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 					);
 					Utils.pushGuiScale(-1);
 				}, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor()
-				).withScale(2));
+				).withScale(2));*/
 				return;
 			}
 		}

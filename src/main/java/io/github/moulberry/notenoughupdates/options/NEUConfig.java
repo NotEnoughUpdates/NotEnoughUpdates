@@ -68,23 +68,43 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class NEUConfig extends Config {
-	private void editOverlay(String activeConfig, TextOverlay overlay, Position position) {
-		Vector2f size = overlay.getDummySize();
-		int width = (int) size.x;
-		int height = (int) size.y;
-		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(position, width, height, () -> {
-			overlay.renderDummy();
-			OverlayManager.dontRenderOverlay = overlay.getClass();
+	private void editOverlay() {
+		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>() {
+			{
+				put(OverlayManager.farmingOverlay, skillOverlays.farmingPosition);
+				put(OverlayManager.miningOverlay, mining.overlayPosition);
+				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
+				put(OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
+				put(OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
+				put(OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
+				put(OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
+				put(OverlayManager.petInfoOverlay, petOverlay.petInfoPosition);
+				put(OverlayManager.timersOverlay, miscOverlays.todoPosition);
+				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
+				put(OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
+				put(OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
+				put(OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
+				put(OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
+				put(OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
+			}
+		};
+//		for (TextOverlay overlay : overlayPositions.keySet()) {
+//			Position pos = overlayPositions.get(overlay);
+//		}
+		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(overlayPositions, () -> {
 		}, () -> {
 		}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor)));
 	}
@@ -106,25 +126,23 @@ public class NEUConfig extends Config {
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neumap");
 				return;
 			case 1:
-				editOverlay(activeConfigCategory, OverlayManager.miningOverlay, mining.overlayPosition);
+			case 4:
+				editOverlay();
 				return;
 			case 2:
-				Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
+				/*Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
 					NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition,
 					NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12, () -> {
 				},
 					() -> {
 					}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor)
-				));
+				));*/
 				return;
 			case 3:
-				editOverlay(activeConfigCategory, OverlayManager.farmingOverlay, skillOverlays.farmingPosition);
-				return;
-			case 4:
-				editOverlay(activeConfigCategory, OverlayManager.petInfoOverlay, petOverlay.petInfoPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.farmingOverlay, skillOverlays.farmingPosition);
 				return;
 			case 5:
-				editOverlay(activeConfigCategory, OverlayManager.timersOverlay, miscOverlays.todoPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.timersOverlay, miscOverlays.todoPosition);
 				return;
 			case 6:
 				NotEnoughUpdates.INSTANCE.openGui = new NEUOverlayPlacements();
@@ -136,13 +154,13 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.openGui = new GuiEnchantColour();
 				return;
 			case 9:
-				editOverlay(activeConfigCategory, OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
 				return;
 			case 10:
-				editOverlay(activeConfigCategory, OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
 				return;
 			case 11:
-				editOverlay(activeConfigCategory, OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
 				return;
 			case 12:
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/dn");
@@ -151,7 +169,7 @@ public class NEUConfig extends Config {
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/pv");
 				return;
 			case 14:
-				editOverlay(activeConfigCategory, OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
 				return;
 			case 15:
 				String command = NotEnoughUpdates.INSTANCE.config.misc.fariySoul ? "/neusouls on" : "/neusouls off";
@@ -164,10 +182,10 @@ public class NEUConfig extends Config {
 				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neusouls unclear");
 				return;
 			case 18:
-				editOverlay(activeConfigCategory, OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
 				return;
 			case 19:
-				editOverlay(activeConfigCategory, OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
+				//editOverlay(activeConfigCategory, OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
 				return;
 			case 20:
 				FairySouls.getInstance().setTrackFairySouls(NotEnoughUpdates.INSTANCE.config.misc.trackFairySouls);
