@@ -65,17 +65,27 @@ public class MobLootRecipe implements NeuRecipe {
 			if (itemStack == null) {
 				itemStack = drop.getItemStack().copy();
 				List<String> arrayList = new ArrayList<>(extra);
-				try {
-					String chanceText = chance.substring(0, chance.length() - 1);
-					int chanceIn = (int) (100.0 / Double.parseDouble(chanceText));
-					String format = GuiProfileViewer.numberFormat.format(chanceIn);
-					arrayList.add("§r§e§lDrop Chance: §61/" + format + " (" + chance + ")");
-				} catch (Exception e) {
-					arrayList.add("§r§e§lDrop Chance: §6" + chance + " §c(Invalid repo data)");
-				}
+				arrayList.add("§r§e§lDrop Chance: §6" + formatDropChance());
 				ItemUtils.appendLore(itemStack, arrayList);
 			}
 			return itemStack;
+		}
+
+		private String formatDropChance() {
+			if (!chance.endsWith("%")) {
+				return chance + " §cInvalid repo data!";
+			}
+
+			String chanceText = chance.substring(0, chance.length() - 1);
+			int chanceIn;
+			try {
+				chanceIn = (int) (100.0 / Double.parseDouble(chanceText));
+			} catch (NumberFormatException e) {
+				return chance + " §cInvalid repo data!";
+			}
+
+			String format = GuiProfileViewer.numberFormat.format(chanceIn);
+			return "1/" + format + " (" + chance + ")";
 		}
 	}
 
