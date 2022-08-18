@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.core.config.gui;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -30,12 +31,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.Vec4b;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class GuiPositionEditor extends GuiScreen {
 	private final ArrayList<Position> positions;
@@ -68,16 +74,41 @@ public class GuiPositionEditor extends GuiScreen {
 		grabbedDefaults.add(0);
 		grabbedDefaults.add(0);
 		for (TextOverlay overlay : overlayPositions.keySet()) {
-			pos.add(overlayPositions.get(overlay));
-			ogPos.add(pos.get(i).clone());
-			width.add((int) overlay.getDummySize().x);
-			height.add((int) overlay.getDummySize().y);
-			renderCallbac.add(() -> {
-				overlay.renderDummy();
-				OverlayManager.dontRenderOverlay = overlay.getClass();
-			});
+			if (i != 15) {
+				pos.add(overlayPositions.get(overlay));
+				ogPos.add(pos.get(i).clone());
+				width.add((int) overlay.getDummySize().x);
+				height.add((int) overlay.getDummySize().y);
+				renderCallbac.add(() -> {
+					overlay.renderDummy();
+					OverlayManager.dontRenderOverlay = overlay.getClass();
+				});
+			}
 			i++;
 		}
+		Map<String, Vec4b> decorations = new HashMap<>();
+		Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
+		decorations.put(Minecraft.getMinecraft().thePlayer.getName(), vec4b);
+		HashSet<String> players = new HashSet<>();
+		players.add(Minecraft.getMinecraft().thePlayer.getName());
+		GlStateManager.color(1, 1, 1, 1);
+		int mapSize = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
+
+		renderCallbac.add(() -> {
+				ScaledResolution scaledResolution = Utils.pushGuiScale(2);
+				new DungeonMap().renderMap(
+					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, mapSize) + mapSize / 2,
+					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, mapSize) + mapSize / 2,
+					NotEnoughUpdates.INSTANCE.colourMap,
+					decorations,
+					0,
+					players,
+					false,
+					0
+				);
+				Utils.pushGuiScale(-1);
+			}
+		);
 		this.positions = pos;
 		this.originalPositions = ogPos;
 		this.renderCallback = renderCallbac;
