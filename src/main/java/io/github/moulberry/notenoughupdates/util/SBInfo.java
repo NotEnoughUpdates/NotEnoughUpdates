@@ -92,6 +92,7 @@ public class SBInfo {
 	 */
 	@Deprecated
 	public String currentlyOpenChestName = "";
+	public String lastOpenChestName = "";
 
 	private long lastManualLocRaw = -1;
 	private long lastLocRaw = -1;
@@ -136,6 +137,7 @@ public class SBInfo {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 
 			currentlyOpenChestName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+			lastOpenChestName = currentlyOpenChestName;
 		} else {
 			currentlyOpenChestName = "";
 		}
@@ -230,6 +232,7 @@ public class SBInfo {
 		this.setLocation(null);
 		joinedWorld = System.currentTimeMillis();
 		currentlyOpenChestName = "";
+		lastOpenChestName = "";
 		hasNewTab = false;
 	}
 
