@@ -116,6 +116,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.dungeon_chest_worth;
@@ -717,7 +718,7 @@ public class RenderListener {
 						StringBuilder cost = new StringBuilder();
 						for (int i = 0; i < line6.length(); i++) {
 							char c = line6.charAt(i);
-							if ("0123456789".indexOf(c) >= 0) {
+							if (Character.isDigit(c)) {
 								cost.append(c);
 							}
 						}
@@ -733,6 +734,23 @@ public class RenderListener {
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
+						String displayName = item.getDisplayName();
+						if (displayName.contains(" Essence §8x")) {
+							String type = io.github.moulberry.notenoughupdates.core.util.StringUtils.substringBetween(
+								displayName,
+								"§d",
+								" Essence"
+							);
+							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type.toUpperCase());
+							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
+								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
+								int amount = Integer.parseInt(displayName.split(Pattern.quote("§8x"))[1]);
+								double price = bazaarPrice * amount;
+								itemValues.put(displayName, price);
+								totalValue += price;
+							}
+							continue;
+						}
 						if (internal != null) {
 							internal = internal.replace("\u00CD", "I").replace("\u0130", "I");
 							float bazaarPrice = -1;

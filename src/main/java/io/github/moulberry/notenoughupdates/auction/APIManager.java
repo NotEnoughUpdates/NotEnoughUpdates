@@ -794,9 +794,9 @@ public class APIManager {
 		return keys;
 	}
 
-	public JsonObject getBazaarInfo(String internalname) {
+	public JsonObject getBazaarInfo(String internalName) {
 		if (bazaarJson == null) return null;
-		JsonElement e = bazaarJson.get(internalname);
+		JsonElement e = bazaarJson.get(internalName);
 		if (e == null) {
 			return null;
 		}
