@@ -84,7 +84,7 @@ import java.util.List;
 import java.util.Map;
 
 public class NEUConfig extends Config {
-	private void editOverlay() {
+	public void editOverlay() {
 		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>() {
 			{
 				put(OverlayManager.farmingOverlay, skillOverlays.farmingPosition);
@@ -97,13 +97,9 @@ public class NEUConfig extends Config {
 				put(OverlayManager.petInfoOverlay, petOverlay.petInfoPosition);
 				put(OverlayManager.timersOverlay, miscOverlays.todoPosition);
 				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
-				put(OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
 				put(OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
-				put(OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
-				put(OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
-				put(OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
 				put(OverlayManager.fuelBar, mining.drillFuelBarPosition); //TODO: Scuffed
-				put(OverlayManager.farmingOverlay, dungeonMap.dmPosition);
+				put(OverlayManager.mapOverlay, dungeonMap.dmPosition); //TODO: Scuffed
 			}
 		};
 //		for (TextOverlay overlay : overlayPositions.keySet()) {

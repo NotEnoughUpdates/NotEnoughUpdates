@@ -64,49 +64,28 @@ public class GuiPositionEditor extends GuiScreen {
 		Runnable positionChangedCallback,
 		Runnable closedCallback
 	) {
-		int i = 0;
 		ArrayList<Position> pos = new ArrayList<>();
 		ArrayList<Position> ogPos = new ArrayList<>();
 		ArrayList<Runnable> renderCallbac = new ArrayList<>();
 		ArrayList<Integer> width = new ArrayList<>();
 		ArrayList<Integer> height = new ArrayList<>();
-		ArrayList<Integer> grabbedDefaults = new ArrayList<>();
-		grabbedDefaults.add(0);
-		grabbedDefaults.add(0);
-		for (TextOverlay overlay : overlayPositions.keySet()) {
-			if (i != 15) {
-				pos.add(overlayPositions.get(overlay));
-				ogPos.add(pos.get(i).clone());
-				width.add((int) overlay.getDummySize().x);
-				height.add((int) overlay.getDummySize().y);
+		for (int i = 0; i < overlayPositions.size(); i++) {
+			TextOverlay overlay = new ArrayList<>(overlayPositions.keySet()).get(i);
+			System.out.println(i);
+			System.out.println(overlay);
+			pos.add(overlayPositions.get(overlay));
+			ogPos.add(pos.get(i).clone());
+			width.add((int) overlay.getDummySize().x);
+			height.add((int) overlay.getDummySize().y);
+			if (i != 11) {
 				renderCallbac.add(() -> {
 					overlay.renderDummy();
 					OverlayManager.dontRenderOverlay = overlay.getClass();
 				});
 			}
-			i++;
 		}
-		Map<String, Vec4b> decorations = new HashMap<>();
-		Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
-		decorations.put(Minecraft.getMinecraft().thePlayer.getName(), vec4b);
-		HashSet<String> players = new HashSet<>();
-		players.add(Minecraft.getMinecraft().thePlayer.getName());
-		GlStateManager.color(1, 1, 1, 1);
-		int mapSize = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
 
 		renderCallbac.add(() -> {
-				ScaledResolution scaledResolution = Utils.pushGuiScale(2);
-				new DungeonMap().renderMap(
-					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, mapSize) + mapSize / 2,
-					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, mapSize) + mapSize / 2,
-					NotEnoughUpdates.INSTANCE.colourMap,
-					decorations,
-					0,
-					players,
-					false,
-					0
-				);
-				Utils.pushGuiScale(-1);
 			}
 		);
 		this.positions = pos;
@@ -128,6 +107,28 @@ public class GuiPositionEditor extends GuiScreen {
 	public void onGuiClosed() {
 		super.onGuiClosed();
 		closedCallback.run();
+	}
+
+	private void renderMap() {
+		Map<String, Vec4b> decorations = new HashMap<>();
+		Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
+		decorations.put(Minecraft.getMinecraft().thePlayer.getName(), vec4b);
+		HashSet<String> players = new HashSet<>();
+		players.add(Minecraft.getMinecraft().thePlayer.getName());
+		GlStateManager.color(1, 1, 1, 1);
+		int mapSize = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
+		ScaledResolution scaledResolution = Utils.pushGuiScale(2);
+		new DungeonMap().renderMap(
+			NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, mapSize) + mapSize / 2,
+			NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, mapSize) + mapSize / 2,
+			NotEnoughUpdates.INSTANCE.colourMap,
+			decorations,
+			0,
+			players,
+			false,
+			0
+		);
+		Utils.pushGuiScale(-1);
 	}
 
 	@Override
@@ -154,6 +155,7 @@ public class GuiPositionEditor extends GuiScreen {
 				grabbedY += position.moveY(mouseY - grabbedY, elementHeight, scaledResolution);
 			}
 
+			renderMap();
 			renderCallback.get(positions.indexOf(position)).run();
 
 			int x = position.getAbsX(scaledResolution, elementWidth);

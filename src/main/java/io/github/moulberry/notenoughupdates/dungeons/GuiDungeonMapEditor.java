@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.DungeonMapConfig;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -602,7 +603,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				HashSet<String> players = new HashSet<>();
 				players.add(Minecraft.getMinecraft().thePlayer.getName());
 				GlStateManager.color(1, 1, 1, 1);
-
+				NotEnoughUpdates.INSTANCE.config.editOverlay();
 				/*Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
 					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition,
 					size, size, () -> {

@@ -40,6 +40,7 @@ public class OverlayManager {
 	public static CrystalHollowOverlay crystalHollowOverlay;
 	public static SlayerOverlay slayerOverlay;
 	public static TextOverlay fuelBar;
+	public static TextOverlay mapOverlay;
 	public static final List<TextOverlay> textOverlays = new ArrayList<>();
 
 	static {
@@ -298,9 +299,17 @@ public class OverlayManager {
 		List<String> fuelDummy = Lists.newArrayList(
 			"\u00a73This is a fuel bar"
 		);
-		fuelBar = new FarmingOverlay(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition, () -> {
+		fuelBar = new FishingSkillOverlay(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition, () -> {
 			List<String> strings = new ArrayList<>();
 			strings.add(fuelDummy.get(0));
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
+		List<String> mapDummy = Lists.newArrayList(
+			"\u00a73This is the map"
+		);
+		mapOverlay = new FishingSkillOverlay(NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			strings.add(mapDummy.get(0));
 			return strings;
 		}, () -> TextOverlayStyle.BACKGROUND);
 
@@ -314,6 +323,7 @@ public class OverlayManager {
 		textOverlays.add(crystalHollowOverlay);
 		textOverlays.add(slayerOverlay);
 		textOverlays.add(fuelBar);
+		textOverlays.add(mapOverlay);
 	}
 
 }
