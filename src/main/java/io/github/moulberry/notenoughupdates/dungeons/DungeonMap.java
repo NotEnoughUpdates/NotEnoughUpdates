@@ -1637,7 +1637,7 @@ public class DungeonMap {
 				Position pos = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition;
 
 				int size = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
-				ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+				ScaledResolution scaledResolution = Utils.pushGuiScale(2);
 				renderMap(
 					pos.getAbsX(scaledResolution, size / 2) + size / 2,
 					pos.getAbsY(scaledResolution, size / 2) + size / 2,

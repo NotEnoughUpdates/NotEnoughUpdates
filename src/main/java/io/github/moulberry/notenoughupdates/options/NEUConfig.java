@@ -98,8 +98,8 @@ public class NEUConfig extends Config {
 				put(OverlayManager.timersOverlay, miscOverlays.todoPosition);
 				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
 				put(OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
-				put(OverlayManager.fuelBar, mining.drillFuelBarPosition); //TODO: Scuffed
-				put(OverlayManager.mapOverlay, dungeonMap.dmPosition); //TODO: Scuffed
+				put(OverlayManager.fuelBar, mining.drillFuelBarPosition);
+				//put(OverlayManager.mapOverlay, dungeonMap.dmPosition); //TODO: Scuffed
 			}
 		};
 //		for (TextOverlay overlay : overlayPositions.keySet()) {

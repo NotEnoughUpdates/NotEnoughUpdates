@@ -74,23 +74,4 @@ public class LocationEdit {
 	@ConfigAccordionId(id = 1)
 	@ConfigEditorButton(runnableId = 7, buttonText = "Open")
 	public boolean openEditorButton = true;
-
-	@ConfigOption(
-		name = "Mining Overlays",
-		desc = ""
-	)
-	@ConfigEditorAccordion(id = 2)
-	public boolean miningoverlayAccordion = false;
-
-	@Expose
-	@ConfigOption(
-		name = "Edit Fuel Bar Position",
-		desc = "Change the position of the drill fuel bar"
-	)
-	@ConfigEditorButton(
-		runnableId = 2,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 2)
-	public Position drillFuelBarPosition = new Position(0, -100, true, false);
 }

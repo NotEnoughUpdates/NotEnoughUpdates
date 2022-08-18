@@ -99,15 +99,6 @@ public class SkillOverlays {
 	public boolean useBZPrice = true;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Farming Overlay Position",
-		desc = "Change the position of the Farming overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 3,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 0)
 	public Position farmingPosition = new Position(10, 200);
 
 	@Expose
@@ -158,15 +149,6 @@ public class SkillOverlays {
 	public List<Integer> miningText = new ArrayList<>(Arrays.asList(0, 8, 1, 2, 3, 4, 5, 7));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Mining Overlay Position",
-		desc = "Change the position of the Mining overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 11,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 1)
 	public Position miningPosition = new Position(10, 200);
 
 	@Expose
@@ -219,15 +201,6 @@ public class SkillOverlays {
 	public List<Integer> fishingText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Fishing Overlay Position",
-		desc = "Change the position of the Fishing overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 14,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 3)
 	public Position fishingPosition = new Position(10, 200);
 
 	@Expose
@@ -312,15 +285,6 @@ public class SkillOverlays {
 	public List<Integer> combatText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Combat Overlay Position",
-		desc = "Change the position of the Combat overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 19,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 4)
 	public Position combatPosition = new Position(10, 200);
 
 	@Expose

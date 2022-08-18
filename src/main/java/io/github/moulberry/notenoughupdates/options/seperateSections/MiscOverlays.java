@@ -387,15 +387,6 @@ public class MiscOverlays {
 	public int defaultColour = 15;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Todo Overlay Position",
-		desc = "Change the position of the Todo overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 5,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 0)
 	public Position todoPosition = new Position(100, 0);
 
 	@Expose

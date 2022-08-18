@@ -149,7 +149,7 @@ public class GuiPositionEditor extends GuiScreen {
 		mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 		drawDefaultBackground();
-		renderMap();
+		//renderMap();
 		renderDrill = true;
 		for (Position position : positions) {
 			int elementHeight = elementHeights.get(positions.indexOf(position));
