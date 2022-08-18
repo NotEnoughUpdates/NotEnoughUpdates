@@ -45,7 +45,6 @@ public class GuiPositionEditor extends GuiScreen {
 	private final ArrayList<Runnable> renderCallback;
 	private final Runnable positionChangedCallback;
 	private final Runnable closedCallback;
-	private boolean clicked = false;
 	private LinkedHashMap<TextOverlay, Position> overlayPositions;
 	private int grabbedX = 0;
 	private int grabbedY = 0;
@@ -119,7 +118,7 @@ public class GuiPositionEditor extends GuiScreen {
 		for (Position position : positions) {
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
-			if (clicked) {
+			if (position.getClicked()) {
 				grabbedX += position.moveX(mouseX - grabbedX, elementWidth, scaledResolution);
 				grabbedY += position.moveY(mouseY - grabbedY, elementHeight, scaledResolution);
 			}
@@ -160,6 +159,7 @@ public class GuiPositionEditor extends GuiScreen {
 			}
 			mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 			mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+			boolean overlayClicked = false;
 			for (Position position : positions) {
 				int elementHeight = elementHeights.get(positions.indexOf(position));
 				int elementWidth = elementWidths.get(positions.indexOf(position));
@@ -167,12 +167,13 @@ public class GuiPositionEditor extends GuiScreen {
 				int y = position.getAbsY(scaledResolution, elementHeight);
 				if (position.isCenterX()) x -= elementWidth / 2;
 				if (position.isCenterY()) y -= elementHeight / 2;
-
-				if (mouseX >= x && mouseY >= y &&
-					mouseX <= x + elementWidth && mouseY <= y + elementHeight) {
-					clicked = true;
-					grabbedX = mouseX;
-					grabbedY = mouseY;
+				if (!position.getClicked()) {
+					if (mouseX >= x && mouseY >= y &&
+						mouseX <= x + elementWidth && mouseY <= y + elementHeight) {
+						position.setClicked(true);
+						grabbedX = mouseX;
+						grabbedY = mouseY;
+					}
 				}
 
 				if (guiScaleOverride >= 0) {
@@ -189,7 +190,7 @@ public class GuiPositionEditor extends GuiScreen {
 			int elementWidth = elementWidths.get(positions.indexOf(position));
 			if (keyCode == Keyboard.KEY_R) {
 				position.set(originalPositions.get(positions.indexOf(position)));
-			} else if (!clicked) {
+			} else if (!position.getClicked()) {
 				boolean shiftHeld = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 				int dist = shiftHeld ? 10 : 1;
 				if (keyCode == Keyboard.KEY_DOWN) {
@@ -209,7 +210,9 @@ public class GuiPositionEditor extends GuiScreen {
 	@Override
 	protected void mouseReleased(int mouseX, int mouseY, int state) {
 		super.mouseReleased(mouseX, mouseY, state);
-		clicked = false;
+		for (Position position : positions) {
+			position.setClicked(false);
+		}
 	}
 
 	@Override
@@ -218,7 +221,7 @@ public class GuiPositionEditor extends GuiScreen {
 		for (Position position : positions) {
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
-			if (clicked) {
+			if (position.getClicked()) {
 				ScaledResolution scaledResolution;
 				if (guiScaleOverride >= 0) {
 					scaledResolution = Utils.pushGuiScale(guiScaleOverride);
