@@ -39,6 +39,7 @@ public class OverlayManager {
 	public static BonemerangOverlay bonemerangOverlay;
 	public static CrystalHollowOverlay crystalHollowOverlay;
 	public static SlayerOverlay slayerOverlay;
+	public static TextOverlay fuelBar;
 	public static final List<TextOverlay> textOverlays = new ArrayList<>();
 
 	static {
@@ -294,6 +295,15 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 
+		List<String> fuelDummy = Lists.newArrayList(
+			"\u00a73This is a fuel bar"
+		);
+		fuelBar = new FarmingOverlay(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			strings.add(fuelDummy.get(0));
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
+
 		textOverlays.add(miningOverlay);
 		textOverlays.add(farmingOverlay);
 		textOverlays.add(miningSkillOverlay);
@@ -303,6 +313,7 @@ public class OverlayManager {
 		textOverlays.add(bonemerangOverlay);
 		textOverlays.add(crystalHollowOverlay);
 		textOverlays.add(slayerOverlay);
+		textOverlays.add(fuelBar);
 	}
 
 }

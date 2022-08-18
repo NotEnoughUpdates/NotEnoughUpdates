@@ -99,6 +99,7 @@ public class NEUConfig extends Config {
 				put(OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
 				put(OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
 				put(OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
+				put(OverlayManager.fuelBar, mining.drillFuelBarPosition); //TODO: Scuffed
 			}
 		};
 //		for (TextOverlay overlay : overlayPositions.keySet()) {
