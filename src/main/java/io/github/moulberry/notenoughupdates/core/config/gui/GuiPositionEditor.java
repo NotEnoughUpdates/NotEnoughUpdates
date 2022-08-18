@@ -51,14 +51,14 @@ public class GuiPositionEditor extends GuiScreen {
 	private final ArrayList<Runnable> renderCallback;
 	private final Runnable positionChangedCallback;
 	private final Runnable closedCallback;
-	private LinkedHashMap<TextOverlay, Position> overlayPositions;
 	private int grabbedX = 0;
 	private int grabbedY = 0;
+
+	public static boolean renderDrill = false;
 
 	private int guiScaleOverride = -1;
 
 	public GuiPositionEditor(
-		/*Position position, int elementWidth, int elementHeight,*/
 		LinkedHashMap<TextOverlay, Position> overlayPositions,
 		Runnable renderCallback,
 		Runnable positionChangedCallback,
@@ -71,13 +71,11 @@ public class GuiPositionEditor extends GuiScreen {
 		ArrayList<Integer> height = new ArrayList<>();
 		for (int i = 0; i < overlayPositions.size(); i++) {
 			TextOverlay overlay = new ArrayList<>(overlayPositions.keySet()).get(i);
-			System.out.println(i);
-			System.out.println(overlay);
 			pos.add(overlayPositions.get(overlay));
 			ogPos.add(pos.get(i).clone());
 			width.add((int) overlay.getDummySize().x);
 			height.add((int) overlay.getDummySize().y);
-			if (i != 11) {
+			if (i < 10) {
 				renderCallbac.add(() -> {
 					overlay.renderDummy();
 					OverlayManager.dontRenderOverlay = overlay.getClass();
@@ -85,6 +83,9 @@ public class GuiPositionEditor extends GuiScreen {
 			}
 		}
 
+		renderCallbac.add(() -> {
+			}
+		);
 		renderCallbac.add(() -> {
 			}
 		);
@@ -107,6 +108,7 @@ public class GuiPositionEditor extends GuiScreen {
 	public void onGuiClosed() {
 		super.onGuiClosed();
 		closedCallback.run();
+		renderDrill = false;
 	}
 
 	private void renderMap() {
@@ -117,7 +119,7 @@ public class GuiPositionEditor extends GuiScreen {
 		players.add(Minecraft.getMinecraft().thePlayer.getName());
 		GlStateManager.color(1, 1, 1, 1);
 		int mapSize = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
-		ScaledResolution scaledResolution = Utils.pushGuiScale(2);
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		new DungeonMap().renderMap(
 			NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, mapSize) + mapSize / 2,
 			NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, mapSize) + mapSize / 2,
@@ -147,15 +149,21 @@ public class GuiPositionEditor extends GuiScreen {
 		mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 		drawDefaultBackground();
+		renderMap();
+		renderDrill = true;
 		for (Position position : positions) {
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
+			if (positions.indexOf(position) == 11) { // Has to be the map
+				Utils.pushGuiScale(2);
+			} else {
+				Utils.pushGuiScale(-1);
+			}
 			if (position.getClicked()) {
 				grabbedX += position.moveX(mouseX - grabbedX, elementWidth, scaledResolution);
 				grabbedY += position.moveY(mouseY - grabbedY, elementHeight, scaledResolution);
 			}
 
-			renderMap();
 			renderCallback.get(positions.indexOf(position)).run();
 
 			int x = position.getAbsX(scaledResolution, elementWidth);
@@ -165,9 +173,8 @@ public class GuiPositionEditor extends GuiScreen {
 			if (position.isCenterY()) y -= elementHeight / 2;
 			Gui.drawRect(x, y, x + elementWidth, y + elementHeight, 0x80404040);
 
-			if (guiScaleOverride >= 0) {
-				Utils.pushGuiScale(-1);
-			}
+			Utils.pushGuiScale(-1);
+
 
 			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			Utils.drawStringCentered("Position Editor", Minecraft.getMinecraft().fontRendererObj,
@@ -192,8 +199,12 @@ public class GuiPositionEditor extends GuiScreen {
 			}
 			mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 			mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-			boolean overlayClicked = false;
 			for (Position position : positions) {
+				if (positions.indexOf(position) == 11) { // Has to be the map
+					Utils.pushGuiScale(2);
+				} else {
+					Utils.pushGuiScale(-1);
+				}
 				int elementHeight = elementHeights.get(positions.indexOf(position));
 				int elementWidth = elementWidths.get(positions.indexOf(position));
 				int x = position.getAbsX(scaledResolution, elementWidth);
@@ -209,9 +220,7 @@ public class GuiPositionEditor extends GuiScreen {
 					}
 				}
 
-				if (guiScaleOverride >= 0) {
 					Utils.pushGuiScale(-1);
-				}
 			}
 		}
 	}
@@ -256,10 +265,11 @@ public class GuiPositionEditor extends GuiScreen {
 			int elementWidth = elementWidths.get(positions.indexOf(position));
 			if (position.getClicked()) {
 				ScaledResolution scaledResolution;
-				if (guiScaleOverride >= 0) {
-					scaledResolution = Utils.pushGuiScale(guiScaleOverride);
+				ScaledResolution oldScaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+				if (positions.indexOf(position) == 11) { // Has to be the map
+					scaledResolution = Utils.pushGuiScale(2);
 				} else {
-					scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+					scaledResolution = Utils.pushGuiScale(-1);
 				}
 				mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 				mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
@@ -268,9 +278,7 @@ public class GuiPositionEditor extends GuiScreen {
 				grabbedY += position.moveY(mouseY - grabbedY, elementHeight, scaledResolution);
 				positionChangedCallback.run();
 
-				if (guiScaleOverride >= 0) {
-					Utils.pushGuiScale(-1);
-				}
+				Utils.pushGuiScale(-1);
 			}
 		}
 	}
