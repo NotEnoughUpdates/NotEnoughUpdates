@@ -668,6 +668,10 @@ public class Utils {
 		return (float) Math.round(value * scale) / scale;
 	}
 
+	public static int roundToNearestInt(double value) {
+		return (int) Math.round(value);
+	}
+
 	// Parses Roman numerals, allowing for single character irregular subtractive notation (e.g. IL is 49, IIL is invalid)
 	public static int parseRomanNumeral(String input) {
 		int prevVal = 0;
@@ -837,15 +841,15 @@ public class Utils {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 	}
 
-	public static ItemStack createItemStack(Item item, String displayname, String... lore) {
-		return createItemStack(item, displayname, 0, lore);
+	public static ItemStack createItemStack(Item item, String displayName, String... lore) {
+		return createItemStack(item, displayName, 0, lore);
 	}
 
-	public static ItemStack createItemStack(Block item, String displayname, String... lore) {
-		return createItemStack(Item.getItemFromBlock(item), displayname, lore);
+	public static ItemStack createItemStack(Block item, String displayName, String... lore) {
+		return createItemStack(Item.getItemFromBlock(item), displayName, lore);
 	}
 
-	public static ItemStack createItemStack(Item item, String displayname, int damage, String... lore) {
+	public static ItemStack createItemStack(Item item, String displayName, int damage, String... lore) {
 		ItemStack stack = new ItemStack(item, 1, damage);
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagCompound display = new NBTTagCompound();
@@ -855,7 +859,7 @@ public class Utils {
 			Lore.appendTag(new NBTTagString(line));
 		}
 
-		display.setString("Name", displayname);
+		display.setString("Name", displayName);
 		display.setTag("Lore", Lore);
 
 		tag.setTag("display", display);
@@ -873,6 +877,8 @@ public class Utils {
 		String... lore
 	) {
 		NBTTagCompound tag = itemStack.getTagCompound();
+		if (tag == null)
+			tag = new NBTTagCompound();
 		NBTTagCompound display = tag.getCompoundTag("display");
 		NBTTagList Lore = new NBTTagList();
 
@@ -1421,12 +1427,12 @@ public class Utils {
 		file.delete();
 	}
 
-	public static char getPrimaryColourCode(String displayname) {
+	public static char getPrimaryColourCode(String displayName) {
 		int lastColourCode = -99;
 		int currentColour = 0;
 		int[] mostCommon = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		for (int i = 0; i < displayname.length(); i++) {
-			char c = displayname.charAt(i);
+		for (int i = 0; i < displayName.length(); i++) {
+			char c = displayName.charAt(i);
 			if (c == '\u00A7') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
@@ -1453,8 +1459,8 @@ public class Utils {
 		return "0123456789abcdef".charAt(currentColour);
 	}
 
-	public static Color getPrimaryColour(String displayname) {
-		int colourInt = Minecraft.getMinecraft().fontRendererObj.getColorCode(getPrimaryColourCode(displayname));
+	public static Color getPrimaryColour(String displayName) {
+		int colourInt = Minecraft.getMinecraft().fontRendererObj.getColorCode(getPrimaryColourCode(displayName));
 		return new Color(colourInt).darker();
 	}
 
@@ -1934,16 +1940,18 @@ public class Utils {
 	}
 
 	public static void showOutdatedRepoNotification() {
-		NotificationHandler.displayNotification(Lists.newArrayList(
-				EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-				EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
-				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET + EnumChatFormatting.RED +" and restart your game" +
-					" to see if that fixes the issue.", EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD + "discord.gg/moulberry" +
-					EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
-					"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
-			),
-			true, true
-		);
+		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
+			NotificationHandler.displayNotification(Lists.newArrayList(
+					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
+					EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
+					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET + EnumChatFormatting.RED +" and restart your game" +
+						" to see if that fixes the issue.", EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD + "discord.gg/moulberry" +
+						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
+						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
+				),
+				true, true
+			);
+		}
 	}
 
 	/**
@@ -1969,5 +1977,13 @@ public class Utils {
 			}
 		}
 		return -1;
+	}
+
+	public static String getOpenChestName() {
+		return SBInfo.getInstance().currentlyOpenChestName;
+	}
+
+	public static String getLastOpenChestName() {
+		return SBInfo.getInstance().lastOpenChestName;
 	}
 }

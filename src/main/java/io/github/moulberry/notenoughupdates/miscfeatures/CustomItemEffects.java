@@ -273,6 +273,7 @@ public class CustomItemEffects {
 	private boolean usingEtherwarp = false;
 	private RaycastResult etherwarpRaycast = null;
 	private int lastEtherwarpUse = 0;
+	private String denyTpReason = null;
 
 	@SubscribeEvent
 	public void onOverlayDrawn(RenderGameOverlayEvent.Post event) {
@@ -281,40 +282,50 @@ public class CustomItemEffects {
 			ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 			String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
-			if (usingEtherwarp && NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
-				String denyTpReason = null;
+			WorldClient world = Minecraft.getMinecraft().theWorld;
+			if (usingEtherwarp) {
+				denyTpReason = null;
 				if (etherwarpRaycast == null) {
 					denyTpReason = "Too far!";
 				} else {
 					BlockPos pos = etherwarpRaycast.pos;
 
-					if (!etherwarpRaycast.state.getBlock().isCollidable() ||
-						etherwarpRaycast.state.getBlock().getCollisionBoundingBox(
-							Minecraft.getMinecraft().theWorld,
-							etherwarpRaycast.pos,
-							etherwarpRaycast.state
-						) == null) {
+					Block block = etherwarpRaycast.state.getBlock();
+					if (!block.isCollidable() ||
+						//Don't allow teleport at this block
+						block == Blocks.carpet || block == Blocks.skull ||
+						block.getCollisionBoundingBox(world, etherwarpRaycast.pos, etherwarpRaycast.state) == null &&
+							//Allow teleport at this block
+							block != Blocks.wall_sign && block != Blocks.standing_sign) {
 						denyTpReason = "Not solid!";
 					} else {
-						WorldClient world = Minecraft.getMinecraft().theWorld;
-						Block above = world.getBlockState(pos.add(0, 1, 0)).getBlock();
-						if (above != Blocks.air && above.isCollidable() &&
-							above.getCollisionBoundingBox(Minecraft.getMinecraft().theWorld, pos.add(0, 1, 0),
-								world.getBlockState(pos.add(0, 1, 0))
-							) != null ||
-							world.getBlockState(pos.add(0, 2, 0)).getBlock() != Blocks.air) {
+						BlockPos blockPosAbove = pos.add(0, 1, 0);
+						Block blockAbove = world.getBlockState(blockPosAbove).getBlock();
+
+						Block twoBlockAbove = world.getBlockState(pos.add(0, 2, 0)).getBlock();
+						if (blockAbove != Blocks.air &&
+							//Allow teleport to the block below this block
+							blockAbove != Blocks.carpet && blockAbove != Blocks.skull && blockAbove.isCollidable() &&
+							blockAbove.getCollisionBoundingBox(world, blockPosAbove, world.getBlockState(blockPosAbove)) != null ||
+							//Don't allow teleport to the block below this block
+							blockAbove == Blocks.wall_sign || block == Blocks.standing_sign ||
+							//Allow teleport to the block 2 blocks below this block
+							twoBlockAbove != Blocks.air && twoBlockAbove != Blocks.double_plant && twoBlockAbove != Blocks.carpet &&
+								blockAbove != Blocks.skull) {
 							denyTpReason = "No air above!";
 						}
 					}
 				}
 
-				if (denyTpReason != null) {
-					ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-					Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
-						Minecraft.getMinecraft().fontRendererObj,
-						scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
-					);
-					GlStateManager.color(1, 1, 1, 1);
+				if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
+					if (denyTpReason != null) {
+						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+						Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
+							Minecraft.getMinecraft().fontRendererObj,
+							scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
+						);
+						GlStateManager.color(1, 1, 1, 1);
+					}
 				}
 			}
 
@@ -326,7 +337,7 @@ public class CustomItemEffects {
 				Minecraft.getMinecraft().objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
 				onPrivateIsland) {
 
-				IBlockState hover = Minecraft.getMinecraft().theWorld.getBlockState(
+				IBlockState hover = world.getBlockState(
 					Minecraft.getMinecraft().objectMouseOver.getBlockPos().offset(
 						Minecraft.getMinecraft().objectMouseOver.sideHit, 1));
 				if (hover.getBlock() == Blocks.air) {
@@ -338,14 +349,14 @@ public class CustomItemEffects {
 						TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
 
 						IBlockState match =
-							Minecraft.getMinecraft().theWorld.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
+							world.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
 						Item matchItem = Item.getItemFromBlock(match.getBlock());
 						if (matchItem != null) {
 							ItemStack matchStack = new ItemStack(matchItem, 1,
 								match
 									.getBlock()
 									.getDamageValue(
-										Minecraft.getMinecraft().theWorld,
+										world,
 										Minecraft.getMinecraft().objectMouseOver.getBlockPos()
 									)
 							);
@@ -603,7 +614,8 @@ public class CustomItemEffects {
 			double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) event.partialTicks;
 			double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) event.partialTicks;
 
-			if (tick - lastEtherwarpUse > 10) {
+			//Don't need to wait 10 ticks when zoom is disabled
+			if (tick - lastEtherwarpUse > 10 || !NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
 				boolean aotv = Minecraft.getMinecraft().thePlayer.isSneaking() &&
 					(heldInternal.equals("ASPECT_OF_THE_VOID") || heldInternal.equals("ASPECT_OF_THE_END"));
 				if (aotv || heldInternal.equals("ETHERWARP_CONDUIT")) {
@@ -632,20 +644,30 @@ public class CustomItemEffects {
 
 							if (etherwarpRaycast != null &&
 								NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpBlockOverlay) {
-								AxisAlignedBB bb = etherwarpRaycast.state.getBlock().getSelectedBoundingBox(
-																										 Minecraft.getMinecraft().theWorld,
-																										 etherwarpRaycast.pos
-																									 )
-																												 .expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
-								drawFilledBoundingBox(bb, 1f, NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour);
+								if (denyTpReason == null || !NotEnoughUpdates.INSTANCE.config.itemOverlays.disableOverlayWhenFailed) {
+									AxisAlignedBB box = etherwarpRaycast.state.getBlock().getSelectedBoundingBox(
+										Minecraft.getMinecraft().theWorld,
+										etherwarpRaycast.pos
+									);
+									AxisAlignedBB bb = box.expand(0.01D, 0.01D, 0.01D).offset(-d0, -d1, -d2);
+									drawFilledBoundingBox(
+										bb,
+										1f,
+										NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+									);
 
-								GlStateManager.disableDepth();
-								drawOutlineBoundingBox(bb, 2f, NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour);
-								GlStateManager.enableDepth();
+									GlStateManager.disableDepth();
+									drawOutlineBoundingBox(
+										bb,
+										2f,
+										NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpHighlightColour
+									);
+									GlStateManager.enableDepth();
 
-								GlStateManager.depthMask(true);
-								GlStateManager.enableTexture2D();
-								GlStateManager.disableBlend();
+									GlStateManager.depthMask(true);
+									GlStateManager.enableTexture2D();
+									GlStateManager.disableBlend();
+								}
 
 								if (NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
 									float distFactor = 1 -

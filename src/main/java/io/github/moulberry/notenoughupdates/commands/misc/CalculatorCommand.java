@@ -47,20 +47,20 @@ public class CalculatorCommand extends ClientCommandBase {
 		if ((args.length == 1 && Objects.equals(args[0], "help")) || args.length == 0) {
 			sender.addChatMessage(new ChatComponentText(
 				"\n§e[NEU] §5It's a calculator.\n" +
-				"§eFor Example §b/neucalc 3m*7k§e.\n" +
-				"§eYou can also use suffixes (k, m, b, t, s)§e.\n" +
-				"§eThe \"s\" suffix acts as 64.\n" +
-				"§eTurn on Sign Calculator in /neu misc to also support this in sign popups.\n"));
+					"§eFor Example §b/neucalc 3m*7k§e.\n" +
+					"§eYou can also use suffixes (k, m, b, t, s)§e.\n" +
+					"§eThe \"s\" suffix acts as 64.\n" +
+					"§eTurn on Sign Calculator in /neu misc to also support this in sign popups and the neu search bar.\n"));
 			return;
 		}
 		String source = String.join(" ", args);
 		try {
 			BigDecimal calculate = Calculator.calculate(source);
-			DecimalFormat formatter = new DecimalFormat("#,###.00");
-			String lr = formatter.format(calculate);
+			DecimalFormat formatter = new DecimalFormat("#,##0.##");
+			String format = formatter.format(calculate);
 			sender.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.WHITE + source + " = " + EnumChatFormatting.GREEN +
-					lr
+				EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.WHITE + source + " " + EnumChatFormatting.YELLOW +
+					"= " + EnumChatFormatting.GREEN + format
 			));
 		} catch (Calculator.CalculatorException e) {
 			sender.addChatMessage(new ChatComponentText(

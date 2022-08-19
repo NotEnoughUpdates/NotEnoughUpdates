@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -59,7 +58,8 @@ public class AuctionSearchOverlay {
 	private static final ResourceLocation SEARCH_OVERLAY_TEXTURE_TAB_COMPLETED = new ResourceLocation(
 		"notenoughupdates:auc_search/ah_search_overlay_tab_completed.png");
 	private static final ResourceLocation STAR = new ResourceLocation("notenoughupdates:auc_search/star.png");
-	private static final ResourceLocation MASTER_STAR = new ResourceLocation("notenoughupdates:auc_search/master_star.png");
+	private static final ResourceLocation MASTER_STAR =
+		new ResourceLocation("notenoughupdates:auc_search/master_star.png");
 	private static final ResourceLocation STAR_BOARD = new ResourceLocation("notenoughupdates:auc_search/star_board.png");
 
 	private static final GuiElementTextField textField = new GuiElementTextField("", 200, 20, 0);
@@ -106,9 +106,7 @@ public class AuctionSearchOverlay {
 			return false;
 		}
 
-		String lastContainer = SBInfo.getInstance().lastOpenContainerName;
-
-		if (lastContainer == null) return false;
+		String lastContainer = Utils.getLastOpenChestName();
 		if (!lastContainer.equals("Auctions Browser") && !lastContainer.startsWith("Auctions: ")) return false;
 
 		TileEntitySign tes = ((AccessorGuiEditSign) Minecraft.getMinecraft().currentScreen).getTileSign();

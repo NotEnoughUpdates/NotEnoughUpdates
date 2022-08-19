@@ -94,7 +94,7 @@ public class CustomAH extends Gui {
 	private boolean shouldUpdateSearch = false;
 	private boolean shouldSortItems = false;
 
-	private int startingBid = 0;
+	private long startingBid = 0;
 	private String currentAucId = null;
 
 	private int clickedMainCategory = -1;
@@ -640,7 +640,7 @@ public class CustomAH extends Gui {
 									}
 								}
 								if (priceNumbers.length() > 0) {
-									startingBid = Integer.parseInt(priceNumbers.toString());
+									startingBid = Long.parseLong(priceNumbers.toString());
 								}
 							}
 						}
@@ -679,7 +679,7 @@ public class CustomAH extends Gui {
 									boolean hasAuctionPrice = auctionInfo != null;
 									boolean hasBazaarPrice = bazaarInfo != null;
 
-									int lowestBin = manager.auctionManager.getLowestBin(internalname);
+									long lowestBin = manager.auctionManager.getLowestBin(internalname);
 
 									NumberFormat format = NumberFormat.getInstance(Locale.US);
 
@@ -1375,7 +1375,7 @@ public class CustomAH extends Gui {
 			}
 		}
 		if (getBinPriceFilterAmount() > -1) {
-			int lowestBin =
+			long lowestBin =
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(
 					auc.getStack()));
 			if (lowestBin > 0) {
@@ -1578,18 +1578,18 @@ public class CustomAH extends Gui {
 				if (auc2 == null) return -1;
 
 				if (sortMode == SORT_MODE_HIGH) {
-					int price1 = Math.max(auc1.highest_bid_amount, auc1.starting_bid);
-					int price2 = Math.max(auc2.highest_bid_amount, auc2.starting_bid);
-					int diff = price2 - price1;
+					long price1 = Math.max(auc1.highest_bid_amount, auc1.starting_bid);
+					long price2 = Math.max(auc2.highest_bid_amount, auc2.starting_bid);
+					long diff = price2 - price1;
 					if (diff != 0) {
-						return diff;
+						return Long.compare(price2, price1);
 					}
 				} else if (sortMode == SORT_MODE_LOW) {
-					int price1 = Math.max(auc1.highest_bid_amount, auc1.starting_bid);
-					int price2 = Math.max(auc2.highest_bid_amount, auc2.starting_bid);
-					int diff = price1 - price2;
+					long price1 = Math.max(auc1.highest_bid_amount, auc1.starting_bid);
+					long price2 = Math.max(auc2.highest_bid_amount, auc2.starting_bid);
+					long diff = price1 - price2;
 					if (diff != 0) {
-						return diff;
+						return Long.compare(price1, price2);
 					}
 				} else {
 					long end1 = auc1.end;
@@ -1679,16 +1679,16 @@ public class CustomAH extends Gui {
 		priceField.setText((int) (priceI * factor) + end);
 	}
 
-	private int getPriceFilterAmount() {
+	private long getPriceFilterAmount() {
 		return getNumberFromTextBox(priceFilterField);
 	}
 
-	private int getNumberFromTextBox(GuiTextField textField) {
+	private long getNumberFromTextBox(GuiTextField textField) {
 		if (textField.getText().equals("")) {
 			return -2;
 		}
 		try {
-			int parsed = Integer.parseInt(textField.getText());
+			long parsed = Long.parseLong(textField.getText());
 			if (parsed < 0) {
 				return -1;
 			}
@@ -1698,7 +1698,7 @@ public class CustomAH extends Gui {
 		}
 	}
 
-	private int getBinPriceFilterAmount() {
+	private long getBinPriceFilterAmount() {
 		return getNumberFromTextBox(binPriceFilterField);
 	}
 

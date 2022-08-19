@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -31,11 +30,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class XPInformation {
 	private static final XPInformation INSTANCE = new XPInformation();
@@ -231,15 +228,16 @@ public class XPInformation {
 	};
 
 	private void onApiUpdated(ProfileViewer.Profile profile) {
-		JsonObject skillInfo = profile.getSkillInfo(null);
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
 
 		for (String skill : skills) {
 			SkillInfo info = new SkillInfo();
 
-			float level = skillInfo.get("level_skill_" + skill).getAsFloat();
+			ProfileViewer.Level levelInfo = skyblockInfo.get(skill);
+			float level = levelInfo.level;
 
-			info.totalXp = skillInfo.get("experience_skill_" + skill).getAsFloat();
-			info.currentXpMax = skillInfo.get("maxxp_skill_" + skill).getAsFloat();
+			info.totalXp = levelInfo.totalXp;
+			info.currentXpMax = levelInfo.maxXpForLevel;
 			info.level = (int) level;
 			info.currentXp = (level % 1) * info.currentXpMax;
 			info.fromApi = true;
@@ -247,41 +245,4 @@ public class XPInformation {
 			skillInfoMap.put(skill.toLowerCase(), info);
 		}
 	}
-
-	public double getPetLevel(String petId, double exp, String rarity) {
-		if (Constants.PETS == null || !Constants.PETS.has("pet_levels")) {
-			Utils.showOutdatedRepoNotification();
-			return 0;
-		}
-		Stream<JsonElement> pet_levels =
-			StreamSupport.stream(Constants.PETS.get("pet_levels").getAsJsonArray().spliterator(), false);
-		if (!Constants.PETS.has("pet_rarity_offset")) {
-			Utils.showOutdatedRepoNotification();
-			return 0;
-		}
-		int pet_rarity_offset = Constants.PETS.getAsJsonObject("pet_rarity_offset").get(rarity).getAsInt();
-		if (!Constants.PETS.has("custom_pet_leveling")) {
-			Utils.showOutdatedRepoNotification();
-			return 0;
-		}
-		JsonObject custom_pet_leveling = Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petId);
-		List<Integer> xpLevelsRequired =
-			pet_levels.skip(pet_rarity_offset).limit(100).map(JsonElement::getAsInt).collect(Collectors.toList());
-		if (custom_pet_leveling != null && custom_pet_leveling.get("type").getAsInt() == 1)
-			xpLevelsRequired.addAll(StreamSupport
-				.stream(custom_pet_leveling.getAsJsonArray("pet_levels").spliterator(), false)
-				.map(JsonElement::getAsInt)
-				.collect(Collectors.toList()));
-		double remainingExp = exp;
-		for (int i = 0; i < xpLevelsRequired.size(); i++) {
-			int xpForCurrentLevel = xpLevelsRequired.get(i);
-			if (remainingExp >= xpForCurrentLevel) {
-				remainingExp -= xpForCurrentLevel;
-			} else {
-				return i + 1 + remainingExp / xpForCurrentLevel;
-			}
-		}
-		return xpLevelsRequired.size();
-	}
-
 }

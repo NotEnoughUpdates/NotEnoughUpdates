@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -54,9 +53,9 @@ public class AuctionBINWarning extends GuiElement {
 	private boolean showWarning = false;
 	private List<String> sellingTooltip;
 	private String sellingName;
-	private int sellingPrice;
-	private int lowestPrice;
-	private int buyPercentage;
+	private long sellingPrice;
+	private long lowestPrice;
+	private long buyPercentage;
 	private int sellStackAmount;
 	private boolean isALoss = true;
 
@@ -67,8 +66,7 @@ public class AuctionBINWarning extends GuiElement {
 			return false;
 		}
 
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
-			SBInfo.getInstance().lastOpenContainerName.startsWith("Create BIN Auction")) {
+		if (Utils.getOpenChestName().startsWith("Create BIN Auction")) {
 			return true;
 		} else {
 			sellingTooltip = null;
@@ -96,7 +94,7 @@ public class AuctionBINWarning extends GuiElement {
 
 				if (priceMatcher.matches()) {
 					try {
-						sellingPrice = Integer.parseInt(priceMatcher.group(1).replace(",", ""));
+						sellingPrice = Long.parseLong(priceMatcher.group(1).replace(",", ""));
 					} catch (NumberFormatException ignored) {
 					}
 				}

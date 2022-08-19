@@ -26,7 +26,6 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
-import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -73,7 +72,7 @@ public class ItemTooltipListener {
 	private final NotEnoughUpdates neu;
 	private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
 	private final HashSet<String> percentStats = new HashSet<>();
-	DecimalFormat myFormatter = new DecimalFormat("###,###.###");
+	DecimalFormat myFormatter = new DecimalFormat("#,###,###.###");
 	private String currentRarity = "COMMON";
 	private boolean copied = false;
 	private boolean showReforgeStoneStats = true;
@@ -559,7 +558,7 @@ public class ItemTooltipListener {
 
 					String missingItem = null;
 					int totalValue = 0;
-					HashMap<String, Float> itemValues = new HashMap<>();
+					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
@@ -572,7 +571,7 @@ public class ItemTooltipListener {
 							}
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
-							float worth = -1;
+							double worth = -1;
 							if (bazaarPrice > 0) {
 								worth = bazaarPrice;
 							} else {
@@ -584,9 +583,9 @@ public class ItemTooltipListener {
 										JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 										if (auctionInfo != null) {
 											if (auctionInfo.has("clean_price")) {
-												worth = (int) auctionInfo.get("clean_price").getAsFloat();
+												worth = (long)auctionInfo.get("clean_price").getAsDouble();
 											} else {
-												worth = (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+												worth = (long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
 										}
 										break;
@@ -675,7 +674,7 @@ public class ItemTooltipListener {
 						newTooltip.add(neu + EnumChatFormatting.YELLOW + "Profit/Loss: " + plStringBIN);
 					}
 
-					for (Map.Entry<String, Float> entry : itemValues.entrySet()) {
+					for (Map.Entry<String, Double> entry : itemValues.entrySet()) {
 						newTooltip.add(neu + entry.getKey() + prefix + "+" + format.format(entry.getValue().intValue()));
 					}
 				}
@@ -791,8 +790,7 @@ public class ItemTooltipListener {
 					}
 
 					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
-						event.itemStack.getDisplayName(),
-						NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(event.itemStack.getTagCompound())
+						event.itemStack.getTagCompound()
 					);
 					if (pet == null) {
 						return;

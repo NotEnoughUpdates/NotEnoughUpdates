@@ -24,10 +24,11 @@
 - Run the `gen<IntelliJ/Eclipse>Runs` gradle task. In IntelliJ that can be done in the gradle tab on the right side of your IDE.
 - Optionally, run the `genSources` gradle task.
 - Run the `Minecraft Client` to make sure that everything works.
+  - Note: if you are using OSX, remove the `XstartOnFirstThread` JVM option
 
 ## Logging into Hypixel in a development environment
 
-Use [DevAuth](https://github.com/DJtheRedstoner/DevAuth). Download the `forge-legacy` version, and put it into the `run/mods` folder. Then follow the configuration instructions in the [DevAuth README](https://github.com/DJtheRedstoner/DevAuth#configuration-file)
+Use [DevAuth](https://github.com/DJtheRedstoner/DevAuth). You do **not** need to download the jar, just follow the configuration instructions in the [DevAuth README](https://github.com/DJtheRedstoner/DevAuth#configuration-file)
 
 ## Hot Reloading
 
@@ -73,6 +74,7 @@ public static final int HOTFIX_VERSION_ID = 0; /* Reset the HOTFIX_VERSION_ID ba
   "pre_version": "0.0", /* Reset to 0.0 */
   "pre_version_id": 0, /* Reset to 0 */
   "update_link": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/tag/<VERSIONNAME>", /* Change download link to the github release */
+  "update_direct": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/download/<VERSIONNAME>/NotEnoughUpdates-<VERSIONNAME>.jar", /* Change direct link to a direct download link */
 }
 ```
 
@@ -103,7 +105,8 @@ public static final int PRE_VERSION_ID = 1; /* Increment the PRE_VERSION_ID */
   "pre_update_msg": "§7§m§l--------------------§5§l[§c§lNEU§5§l]§7§m§l--------------------\n\n§7A new pre-release, v§52.0-PRE{pre_version}§7, is now available!\n ", /* Update the version name. Remove old patch notes; Optionally add in a short new patch note. */
   "pre_version": "0.0", /* Set to a new string (preferably increase the major version every time, except for hotfixes on the prerelease stream) */
   "pre_version_id": 0, /* Set to PRE_VERSION_ID from java */
-  "update_link": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/tag/<VERSIONNAME>", /* Change download link to the github release */
+  "pre_update_link": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/tag/<VERSIONNAME>", /* Change download link to the github release */
+  "pre_update_direct": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/download/<VERSIONNAME>/NotEnoughUpdates-<VERSIONNAME>.jar", /* Change direct link to a direct download link */
 }
 ```
 
@@ -135,6 +138,7 @@ public static final int HOTFIX_VERSION_ID = 1; /* Increment the HOTFIX_VERSION_I
   "version_id": 20100, /* Same as version */
   "update_msg": "§7§m§l--------------------§6§l[§c§lNEU§6§l]§7§m§l--------------------\n\n§7A new version, v§6{version}§7, is now available!\n ", /* Update the version name. Don't  remove old patch notes; Optionally add in a short new patch note. Indicate that there is a hotfix present */
   "update_link": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/tag/<VERSIONNAME>", /* Change download link to the github release */
+  "update_direct": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/releases/download/<VERSIONNAME>/NotEnoughUpdates-<VERSIONNAME>.jar", /* Change direct link to a direct download link */
 }
 ```
 

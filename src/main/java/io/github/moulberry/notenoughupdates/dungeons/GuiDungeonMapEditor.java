@@ -284,7 +284,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 							break;
 						case 8:
 							mapDesc = "Simple gray border";
-							mapCredit = "TomEngMaster";
+							mapCredit = "Lucy";
 							break;
 						case 9:
 							mapDesc = "Viney wood border";

@@ -180,4 +180,12 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean powerStoneStats = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Bazaar Sacks Profit",
+		desc = "Orders the items in your sacks in the bazaar inventory and adding buy order toggle"
+	)
+	@ConfigEditorBoolean
+	public boolean bazaarSacksProfit = true;
 }
