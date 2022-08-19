@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinSkyclientCosmetics {
 
 	@Dynamic
-	@Inject(method = "onWorldLoad", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "onWorldLoad", at = @At("HEAD"), cancellable = true, remap = false)
 	public void onWorldLoad(WorldEvent.Load event, CallbackInfo ci) {
 		ci.cancel();
 	}
