@@ -114,6 +114,15 @@ public class Dungeons {
 	@ConfigAccordionId(id = 1)
 	public boolean useKismetOnDungeonProfit = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Include Essence Cost",
+		desc = "Include Bazaar Essence Sell Cost in the Profit Calculation for Dungeon Chests"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean useEssenceCostFromBazaar = true;
+
 	@ConfigOption(
 		name = "Dungeon Win Overlay",
 		desc = ""

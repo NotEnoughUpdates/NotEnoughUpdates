@@ -735,7 +735,7 @@ public class RenderListener {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
 						String displayName = item.getDisplayName();
-						if (displayName.contains(" Essence §8x")) {
+						if (displayName.contains(" Essence §8x") && neu.config.dungeons.useEssenceCostFromBazaar) {
 							String type = io.github.moulberry.notenoughupdates.core.util.StringUtils.substringBetween(
 								displayName,
 								"§d",
