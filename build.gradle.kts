@@ -154,12 +154,6 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 		from(tasks.shadowJar)
 		input.set(tasks.shadowJar.get().archiveFile)
 		doLast {
-				this as RemapJarTask
-				@Suppress("Since15") // Not a concern since we build in a modern version of java.
-				val zipFs = FileSystems.newFileSystem(archiveFile.get().asFile.toPath())
-				val moduleInfoPath = zipFs.getPath("/module-info.class")
-				Files.copy(file("src/main/resources/META-INF/versions/9/module-info.class").toPath(), moduleInfoPath)
-				zipFs.close()
 				println("Jar name: ${archiveFile.get().asFile}")
 		}
 }
