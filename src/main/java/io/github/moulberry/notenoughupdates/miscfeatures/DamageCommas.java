@@ -47,7 +47,7 @@ public class DamageCommas {
 	private static final char STAR = '\u2727';
 	private static final Pattern PATTERN_CRIT = Pattern.compile(
 		"\u00a7f" + STAR + "((?:\u00a7.\\d(?:§.,)?)+)\u00a7." + STAR + "(.*)");
-	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("\u00a77(\\d+)(.*)");
+	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("\u00a77([\\d+,]*)(.*)");
 
 	public static IChatComponent replaceName(EntityLivingBase entity) {
 		if (!entity.hasCustomName()) return entity.getDisplayName();
@@ -91,8 +91,10 @@ public class DamageCommas {
 		try {
 			int number = Integer.parseInt(numbers);
 
-			if (number > 999 && NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle2) {
+			if (number > 999) {
 				newFormatted.append(Utils.shortNumberFormat(number, 0));
+			} else {
+				return name;
 			}
 		} catch (NumberFormatException e) {
 			replacementMap.put(entity, null);
