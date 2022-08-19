@@ -73,6 +73,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -81,6 +82,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1943,9 +1945,13 @@ public class Utils {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-					EnumChatFormatting.RED + "Data used for many NEU features is not up to date, this should normally not be the case.",
-					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET + EnumChatFormatting.RED +" and restart your game" +
-						" to see if that fixes the issue.", EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD + "discord.gg/moulberry" +
+					EnumChatFormatting.RED +
+						"Data used for many NEU features is not up to date, this should normally not be the case.",
+					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+						EnumChatFormatting.RED + " and restart your game" +
+						" to see if that fixes the issue.",
+					EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
+						"discord.gg/moulberry" +
 						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 				),
@@ -1977,6 +1983,13 @@ public class Utils {
 			}
 		}
 		return -1;
+	}
+
+	public static UUID parseDashlessUUID(String dashlessUuid) {
+		// From: https://stackoverflow.com/a/30760478/
+		BigInteger most = new BigInteger(dashlessUuid.substring(0, 16), 16);
+		BigInteger least = new BigInteger(dashlessUuid.substring(16, 32), 16);
+		return new UUID(most.longValue(), least.longValue());
 	}
 
 	public static String getOpenChestName() {
