@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -161,6 +162,10 @@ public class DevTestCommand extends ClientCommandBase {
 			NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA +
 				"I would never search"));
+			return;
+		}
+		if(args.length == 1 && args [0].equalsIgnoreCase("bluehair")) {
+			PronounDB.test();
 			return;
 		}
 		if (args.length == 2 && args[0].equalsIgnoreCase("openGui")) {
