@@ -75,7 +75,7 @@ public class SkillOverlays {
 		exampleText = {
 			"\u00a7bCounter: \u00a7e37,547,860",
 			"\u00a7bCrops/m: \u00a7e38.29",
-			"\u00a7bFarm: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
+			"\u00a7bFarming: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
@@ -145,7 +145,7 @@ public class SkillOverlays {
 		exampleText = {
 			"\u00a7bCompact: \u00a7e547,860",
 			"\u00a7bBlocks/m: \u00a7e38.29",
-			"\u00a7bMine: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
+			"\u00a7bMininh: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
