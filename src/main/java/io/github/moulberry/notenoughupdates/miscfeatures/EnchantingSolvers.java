@@ -97,12 +97,12 @@ public class EnchantingSolvers {
 		}
 
 		String openChestName = Utils.getOpenChestName();
-		if (!openChestName.contains("stakes")) {
-			if (openChestName.startsWith("chronomatron")) {
+		if (!openChestName.contains("Stakes")) {
+			if (openChestName.startsWith("Chronomatron")) {
 				currentSolver = SolverType.CHRONOMATRON;
-			} else if (openChestName.startsWith("ultrasequencer")) {
+			} else if (openChestName.startsWith("Ultrasequencer")) {
 				currentSolver = SolverType.ULTRASEQUENCER;
-			} else if (openChestName.startsWith("superpairs")) {
+			} else if (openChestName.startsWith("Superpairs")) {
 				currentSolver = SolverType.SUPERPAIRS;
 			}
 		}
