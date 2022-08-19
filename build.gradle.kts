@@ -19,7 +19,6 @@
 
 
 import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.internal.impldep.org.apache.ivy.osgi.util.ZipUtil
 import java.io.ByteArrayOutputStream
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -160,8 +159,8 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 				val zipFs = FileSystems.newFileSystem(archiveFile.get().asFile.toPath())
 				val moduleInfoPath = zipFs.getPath("/module-info.class")
 				Files.copy(file("src/main/resources/META-INF/versions/9/module-info.class").toPath(), moduleInfoPath)
-				println(Files.exists(moduleInfoPath))
 				zipFs.close()
+				println("Jar name: ${archiveFile.get().asFile}")
 		}
 }
 
@@ -179,13 +178,6 @@ tasks.shadowJar {
 }
 
 tasks.assemble.get().dependsOn(remapJar)
-
-tasks.remapJar{
-
-		doLast{
-				println("Jar name :" + archiveFileName.get())
-		}
-}
 
 tasks.processResources {
 		filesMatching("mcmod.info") {
