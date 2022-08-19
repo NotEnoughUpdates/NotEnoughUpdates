@@ -1982,4 +1982,8 @@ public class Utils {
 	public static String getOpenChestName() {
 		return SBInfo.getInstance().currentlyOpenChestName;
 	}
+
+	public static String getLastOpenChestName() {
+		return SBInfo.getInstance().lastOpenChestName;
+	}
 }

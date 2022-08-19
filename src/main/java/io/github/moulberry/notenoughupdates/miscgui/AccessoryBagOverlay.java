@@ -875,7 +875,7 @@ public class AccessoryBagOverlay {
 	private static boolean inAccessoryBag = false;
 
 	public static boolean isInAccessoryBag() {
-		return inAccessoryBag;
+		return inAccessoryBag && NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay;
 	}
 
 	public static void renderOverlay() {
