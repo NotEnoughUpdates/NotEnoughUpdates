@@ -46,6 +46,7 @@ public class ItemTooltipRngListener {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
 		if (!Utils.getOpenChestName().endsWith(" RNG Meter")) return;
+		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterFractionDisplay) return;
 
 		List<String> newToolTip = new ArrayList<>();
 		int id = 0;

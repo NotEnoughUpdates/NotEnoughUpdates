@@ -180,4 +180,12 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean powerStoneStats = true;
+
+	@Expose
+	@ConfigOption(
+		name = "RNG Meter Fraction",
+		desc = "Show the fraction instead of the percentage in the slayer rng meter inventory"
+	)
+	@ConfigEditorBoolean
+	public boolean rngMeterFractionDisplay = true;
 }
