@@ -26,6 +26,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.EntityViewer;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.Panorama;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
@@ -64,10 +65,27 @@ public class MobLootRecipe implements NeuRecipe {
 			if (itemStack == null) {
 				itemStack = drop.getItemStack().copy();
 				List<String> arrayList = new ArrayList<>(extra);
-				arrayList.add("§r§e§lDrop Chance: §6" + chance);
+				arrayList.add("§r§e§lDrop Chance: §6" + formatDropChance());
 				ItemUtils.appendLore(itemStack, arrayList);
 			}
 			return itemStack;
+		}
+
+		private String formatDropChance() {
+			if (!chance.endsWith("%")) {
+				return chance + " §cInvalid repo data!";
+			}
+
+			String chanceText = chance.substring(0, chance.length() - 1);
+			int chanceIn;
+			try {
+				chanceIn = (int) (100.0 / Double.parseDouble(chanceText));
+			} catch (NumberFormatException e) {
+				return chance + " §cInvalid repo data!";
+			}
+
+			String format = GuiProfileViewer.numberFormat.format(chanceIn);
+			return "1/" + format + " (" + chance + ")";
 		}
 	}
 
