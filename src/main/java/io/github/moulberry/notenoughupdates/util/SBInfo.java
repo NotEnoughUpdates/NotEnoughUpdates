@@ -300,7 +300,7 @@ public class SBInfo {
 		}
 		try {
 			if (currentTime - lastMayorUpdate > 300 * 1000) {
-				mayorJson = getCurrentMayor();
+				getCurrentMayor();
 				lastMayorUpdate = currentTime;
 			}
 		} catch (ExecutionException | InterruptedException e) {
@@ -431,14 +431,14 @@ public class SBInfo {
 		}
 	}
 
-	public static JsonObject getCurrentMayor() throws ExecutionException, InterruptedException {
-		CompletableFuture<JsonObject> hypixelApiAsync = NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+	public void getCurrentMayor() throws ExecutionException, InterruptedException {
+		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 			"resources/skyblock/election",
 			new HashMap<>()
-		);
-		return hypixelApiAsync.get();
+		).thenAcceptAsync(newJson -> mayorJson = newJson);
 	}
+
 
 	public JsonObject getMayorJson() {
 		return mayorJson;
