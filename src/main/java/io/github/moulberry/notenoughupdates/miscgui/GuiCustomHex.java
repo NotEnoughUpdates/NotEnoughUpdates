@@ -229,6 +229,7 @@ public class GuiCustomHex extends Gui {
 	}
 
 	public boolean shouldOverride(String containerName) {
+		CalendarOverlay.ableToClickCalendar = true;
 		if (containerName == null) {
 			shouldOverrideET = false;
 			shouldOverrideFast = false;
@@ -244,6 +245,7 @@ public class GuiCustomHex extends Gui {
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
+		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast);
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) return (shouldOverrideET || shouldOverrideFast);
 		if (!shouldOverrideFast) {
 			currentState = EnchantState.NO_ITEM;
@@ -1097,7 +1099,6 @@ public class GuiCustomHex extends Gui {
 
 			//Enchant name
 			String name = WordUtils.capitalizeFully(enchanterCurrentEnch.enchId.replace("_", " "));
-			System.out.println(name);
 			if (name.equalsIgnoreCase("Bane of Arthropods")) {
 				name = "Bane of Arth.";
 			} else if (name.equalsIgnoreCase("Projectile Protection")) {
