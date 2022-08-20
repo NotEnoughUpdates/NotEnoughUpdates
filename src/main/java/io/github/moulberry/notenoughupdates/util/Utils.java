@@ -1966,7 +1966,6 @@ public class Utils {
 	 * 6 = SPECIAL
 	 * 7 = VERY SPECIAL
 	 */
-
 	public static int getRarityFromLore(JsonArray lore) {
 		for (int i = lore.size() - 1; i >= 0; i--) {
 			String line = lore.get(i).getAsString();
