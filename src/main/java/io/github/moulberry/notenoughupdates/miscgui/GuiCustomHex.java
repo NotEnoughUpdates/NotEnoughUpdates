@@ -85,7 +85,8 @@ public class GuiCustomHex extends Gui {
 		ADDING_ENCHANT,
 		SWITCHING_DONT_UPDATE,
 		INVALID_ITEM,
-		HAS_ITEM
+		HAS_ITEM,
+		HAS_ITEM_IN_HEX
 	}
 
 	private class Enchantment {
@@ -173,7 +174,7 @@ public class GuiCustomHex extends Gui {
 	private int guiLeft;
 	private int guiTop;
 	private boolean shouldOverrideFast = false;
-
+ private boolean shouldOverrideET = false;
 	public float pageOpen;
 	public float pageOpenLast;
 	public float pageOpenRandom;
@@ -230,8 +231,16 @@ public class GuiCustomHex extends Gui {
 	public boolean shouldOverride(String containerName) {
 		if (containerName == null) return false;
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-			(containerName.length() >= 7 && Objects.equals("The Hex", containerName.substring(0, "The Hex".length()))) &&
+			(containerName.length() >= 8 && Objects.equals("The Hex ", containerName.substring(0, "The Hex ".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
+
+		shouldOverrideET = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
+			(containerName.length() >= 12 && Objects.equals("Enchant Item", containerName.substring(0, "Enchant Item".length()))) &&
+			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
+		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		ContainerChest cc = (ContainerChest) chest.inventorySlots;
+		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
+		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) return (shouldOverrideET || shouldOverrideFast);
 		if (!shouldOverrideFast) {
 			currentState = EnchantState.NO_ITEM;
 			applicable.clear();
@@ -247,24 +256,25 @@ public class GuiCustomHex extends Gui {
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
-		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(12);
+		//ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(12);
+		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
 		//ItemStack stack = cc.getLowerChestInventory().getStackInSlot(23);
-		ItemStack arrowStack = cc.getLowerChestInventory().getStackInSlot(45);
+		ItemStack enchantingItemStackHex = cc.getLowerChestInventory().getStackInSlot(25);
+		ItemStack hopperStack = cc.getLowerChestInventory().getStackInSlot(51);
 		ItemStack enchantGuideStack = cc.getLowerChestInventory().getStackInSlot(50);
-		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(22);
 
 		int lastPage = currentPage;
 
 		this.lastState = currentState;
-		if (arrowStack != null && arrowStack.getItem() == Items.arrow && enchantingItem != null) {
+		if (hopperStack != null && hopperStack.getItem() != Item.getItemFromBlock(Blocks.hopper) && enchantingItem != null) {
 			currentState = EnchantState.ADDING_ENCHANT;
-		} else if (hexStack == null || enchantingItemStack == null) {
+		} else if (enchantingItemStack == null) {
 			if (currentState == EnchantState.SWITCHING_DONT_UPDATE || currentState == EnchantState.NO_ITEM) {
 				currentState = EnchantState.NO_ITEM;
 			} else {
 				currentState = EnchantState.SWITCHING_DONT_UPDATE;
 			}
-		} else if (hexStack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) {
+		} else {
 			ItemStack sanityCheckStack = cc.getLowerChestInventory().getStackInSlot(12);
 			if (sanityCheckStack == null || sanityCheckStack.getItem() == Items.enchanted_book) {
 				currentState = EnchantState.HAS_ITEM;
@@ -272,12 +282,12 @@ public class GuiCustomHex extends Gui {
 			} else {
 				currentState = EnchantState.SWITCHING_DONT_UPDATE;
 			}
-		} else if (hexStack.getItemDamage() == 14) {
+		} /*else if (stack.getItemDamage() == 1) {
 			currentState = EnchantState.INVALID_ITEM;
-		} else if (hexStack.getItemDamage() == 7) {
+		} else {
 			currentState = EnchantState.NO_ITEM;
-		}
-		System.out.println(currentState);
+		}*/
+		//System.out.println(currentState);
 
 		if (currentState == EnchantState.HAS_ITEM) {
 			ItemStack pageUpStack = cc.getLowerChestInventory().getStackInSlot(17);
@@ -407,9 +417,8 @@ public class GuiCustomHex extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										System.out.println(enchId);
-										//enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
-										//enchId = levelMatcher.group(1);
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
 										Utils.getRawTooltip(book), enchLevel, false, true
@@ -484,7 +493,7 @@ public class GuiCustomHex extends Gui {
 											}
 											Matcher nameMatcher = ENCHANT_NAME_PATTERN.matcher(name);
 											if (nameMatcher.matches()) {
-												name = nameMatcher.group(1) + "balls";
+												name = nameMatcher.group(1);
 											}
 
 											if (playerEnchantIds.containsKey(enchId)) {
@@ -1326,7 +1335,12 @@ public class GuiCustomHex extends Gui {
 		}
 
 		//Item enchant input
-		ItemStack itemEnchantInput = cc.getSlot(19).getStack();
+		ItemStack itemEnchantInput;
+		if (currentState == EnchantState.HAS_ITEM_IN_HEX) {
+			itemEnchantInput = cc.getSlot(22).getStack();
+		} else {
+			itemEnchantInput = cc.getSlot(19).getStack();
+		}
 		if (itemEnchantInput != null && itemEnchantInput.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) {
 			itemEnchantInput = enchantingItem;
 		}
@@ -1534,7 +1548,7 @@ public class GuiCustomHex extends Gui {
 
 	public boolean mouseInput(int mouseX, int mouseY) {
 		if (Mouse.getEventButtonState() &&
-			(currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT)) {
+			(currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT || currentState == EnchantState.HAS_ITEM_IN_HEX)) {
 			if (mouseY > guiTop + 6 && mouseY < guiTop + 6 + 15) {
 				String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
 				int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
@@ -1577,7 +1591,7 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
-		if (currentState == EnchantState.HAS_ITEM) {
+		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.HAS_ITEM_IN_HEX) {
 			if (Mouse.getEventButtonState()) {
 				if (mouseX > guiLeft + X_SIZE / 2 - searchField.getWidth() / 2 &&
 					mouseX < guiLeft + X_SIZE / 2 + searchField.getWidth() / 2 &&
@@ -1834,7 +1848,7 @@ public class GuiCustomHex extends Gui {
 							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
 							GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
-							if (currentState == EnchantState.HAS_ITEM) {
+							if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.HAS_ITEM_IN_HEX) {
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
 								ItemStack stack =

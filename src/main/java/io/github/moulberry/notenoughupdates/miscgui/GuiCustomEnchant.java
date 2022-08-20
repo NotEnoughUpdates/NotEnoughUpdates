@@ -238,6 +238,10 @@ public class GuiCustomEnchant extends Gui {
 			removable.clear();
 			expectedMaxPage = 1;
 		}
+		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		ContainerChest cc = (ContainerChest) chest.inventorySlots;
+		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
+		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) return false;
 		return shouldOverrideFast;
 	}
 
@@ -249,12 +253,13 @@ public class GuiCustomEnchant extends Gui {
 
 		ItemStack stack = cc.getLowerChestInventory().getStackInSlot(23);
 		ItemStack arrowStack = cc.getLowerChestInventory().getStackInSlot(45);
-		ItemStack enchantGuideStack = cc.getLowerChestInventory().getStackInSlot(50);
 		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
+		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
 
 		int lastPage = currentPage;
 
 		this.lastState = currentState;
+		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) return;
 		if (arrowStack != null && arrowStack.getItem() == Items.arrow && enchantingItem != null) {
 			currentState = EnchantState.ADDING_ENCHANT;
 		} else if (stack == null || enchantingItemStack == null) {
@@ -482,7 +487,7 @@ public class GuiCustomEnchant extends Gui {
 											}
 											Matcher nameMatcher = ENCHANT_NAME_PATTERN.matcher(name);
 											if (nameMatcher.matches()) {
-												name = nameMatcher.group(1) + "balls";
+												name = nameMatcher.group(1);
 											}
 
 											if (playerEnchantIds.containsKey(enchId)) {
