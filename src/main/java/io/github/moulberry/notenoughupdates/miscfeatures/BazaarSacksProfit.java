@@ -89,6 +89,11 @@ public class BazaarSacksProfit {
 
 			out:
 			for (String line : ItemUtils.getLore(itemStack)) {
+
+				if (line.equals("§8Loading...")) {
+					dirty = true;
+					return;
+				}
 				if (line.contains("§7x ")) {
 					String[] split = line.split("§7x ");
 					String rawAmount = StringUtils.cleanColour(split[0]).replace(",", "").substring(1);
