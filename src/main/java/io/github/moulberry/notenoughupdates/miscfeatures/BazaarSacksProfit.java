@@ -68,7 +68,7 @@ public class BazaarSacksProfit {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onItemTooltipLow(ItemTooltipEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.bazaarSacksProfit) return;
+		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bazaarSacksProfit) return;
 		if (!inBazaar()) return;
 
 		ItemStack itemStack = event.itemStack;

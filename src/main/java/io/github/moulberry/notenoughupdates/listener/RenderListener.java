@@ -52,6 +52,7 @@ import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
+import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -412,6 +413,11 @@ public class RenderListener {
 
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.render();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -967,6 +973,11 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.mouseEvent();
+			event.setCanceled(true);
+			return;
+		}
 		if (RancherBootOverlay.shouldReplace()) {
 			RancherBootOverlay.mouseEvent();
 			event.setCanceled(true);
@@ -1438,6 +1449,11 @@ public class RenderListener {
 
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.keyEvent();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}
