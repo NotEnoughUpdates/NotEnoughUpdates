@@ -298,15 +298,10 @@ public class SBInfo {
 			lastLocRaw = System.currentTimeMillis();
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
-		try {
 			if (currentTime - lastMayorUpdate > 300 * 1000) {
 				updateMayor();
 				lastMayorUpdate = currentTime;
 			}
-		} catch (ExecutionException | InterruptedException e) {
-			System.out.println("Error while requesting to resources/skyblock/election");
-		}
-
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
