@@ -135,12 +135,18 @@ public class GuiCustomEnchant extends Gui {
 
 				if (level >= 1 && Constants.ENCHANTS.has("enchants_xp_cost")) {
 					JsonObject allCosts = Constants.ENCHANTS.getAsJsonObject("enchants_xp_cost");
+					JsonObject maxLevel = null;
+					if (Constants.ENCHANTS.has("max_xp_table_levels")) {
+						maxLevel = Constants.ENCHANTS.getAsJsonObject("max_xp_table_levels");
+					}
+
 					if (allCosts.has(enchId)) {
 						JsonArray costs = allCosts.getAsJsonArray(enchId);
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
-								this.xpCost = costs.get(costs.size() - 1).getAsInt();
+								int cost = (maxLevel != null && maxLevel.has(enchId) ? maxLevel.get(enchId).getAsInt() : costs.size());
+								this.xpCost = costs.get(cost - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
 								this.xpCost = costs.get(level - 1).getAsInt();
 							} else {
@@ -284,7 +290,6 @@ public class GuiCustomEnchant extends Gui {
 		} else {
 			currentState = EnchantState.NO_ITEM;
 		}
-		System.out.println(currentState);
 
 		if (currentState == EnchantState.HAS_ITEM) {
 			ItemStack pageUpStack = cc.getLowerChestInventory().getStackInSlot(17);
@@ -402,7 +407,7 @@ public class GuiCustomEnchant extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
+									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace("-", "_");
 									String name = Utils.cleanColour(book.getDisplayName());
 									int enchLevel = -1;
 									if (name.equalsIgnoreCase("Bane of Arthropods")) {
@@ -473,7 +478,7 @@ public class GuiCustomEnchant extends Gui {
 								if (ea != null) {
 									NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 									if (enchantments != null) {
-										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
+										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
 										String name = Utils.cleanColour(book.getDisplayName());
 

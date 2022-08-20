@@ -149,7 +149,7 @@ public class NEUEventListener {
 				GuiCustomEnchant.getInstance().tick();
 			}
 			if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
-				GuiCustomHex.getInstance().tick();
+				GuiCustomHex.getInstance().tick(containerName);
 			}
 		}
 

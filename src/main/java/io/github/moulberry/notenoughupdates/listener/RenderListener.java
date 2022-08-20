@@ -430,7 +430,7 @@ public class RenderListener {
 		}
 
 		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
-			GuiCustomHex.getInstance().render(event.renderPartialTicks);
+			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
 			event.setCanceled(true);
 			return;
 		}
