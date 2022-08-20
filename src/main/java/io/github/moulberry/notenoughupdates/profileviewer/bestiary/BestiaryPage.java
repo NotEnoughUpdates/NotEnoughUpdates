@@ -112,6 +112,13 @@ public class BestiaryPage extends GuiProfileViewerPage {
 
 		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
 		Color color = new Color(128, 128, 128, 255);
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + "Bestiary Level: ",
+			EnumChatFormatting.GRAY + "" + (float) getBestiaryTiers(profileInfo) / 10,
+			guiLeft + 220,
+			guiTop + 50,
+			110
+		);
 		if (mobs != null) {
 			for (int i = 0; i < mobs.size(); i++) {
 				String mob = mobs.get(i);
@@ -218,13 +225,6 @@ public class BestiaryPage extends GuiProfileViewerPage {
 						);
 					}
 				}
-				Utils.renderAlignedString(
-					EnumChatFormatting.RED + "Bestiary Level: ",
-					EnumChatFormatting.GRAY + "" + (float) getBestiaryTiers(profileInfo) / 10,
-					guiLeft + 220,
-					guiTop + 50,
-					110
-				);
 			}
 		}
 		if (tooltipToDisplay != null) {
