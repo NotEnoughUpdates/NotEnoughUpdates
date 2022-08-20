@@ -1970,15 +1970,6 @@ public class Utils {
 	 * 7 = VERY SPECIAL
 	 */
 
-	public static JsonObject getCurrentMayor() throws ExecutionException, InterruptedException {
-		CompletableFuture<JsonObject> hypixelApiAsync = NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"resources/skyblock/election",
-			new HashMap<>()
-		);
-		return hypixelApiAsync.get();
-	}
-
 	public static int getRarityFromLore(JsonArray lore) {
 		for (int i = lore.size() - 1; i >= 0; i--) {
 			String line = lore.get(i).getAsString();

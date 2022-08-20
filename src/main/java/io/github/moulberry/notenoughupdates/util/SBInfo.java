@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -285,7 +286,6 @@ public class SBInfo {
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
-
 	public void tick() {
 		boolean tempIsInDungeon = false;
 
@@ -300,13 +300,13 @@ public class SBInfo {
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
 		try {
-		if (currentTime - lastMayorUpdate > 300 * 1000) {
-			mayorJson = Utils.getCurrentMayor();
-			lastMayorUpdate = currentTime;
-		}
-			} catch (ExecutionException | InterruptedException e) {
-				throw new RuntimeException(e);
+			if (currentTime - lastMayorUpdate > 300 * 1000) {
+				mayorJson = getCurrentMayor();
+				lastMayorUpdate = currentTime;
 			}
+		} catch (ExecutionException | InterruptedException e) {
+			System.out.println("Error while requesting to resources/skyblock/election");
+		}
 
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
@@ -430,6 +430,15 @@ public class SBInfo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static JsonObject getCurrentMayor() throws ExecutionException, InterruptedException {
+		CompletableFuture<JsonObject> hypixelApiAsync = NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+			"resources/skyblock/election",
+			new HashMap<>()
+		);
+		return hypixelApiAsync.get();
 	}
 
 	public JsonObject getMayorJson() {
