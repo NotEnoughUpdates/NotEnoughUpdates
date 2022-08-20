@@ -89,7 +89,7 @@ public class SBInfo {
 
 	public Date currentTimeDate = null;
 
-	private JsonObject mayorJson;
+	private JsonObject mayorJson = new JsonObject();
 
 	/**
 	 * Use Utils.getOpenChestName() instead
@@ -302,7 +302,6 @@ public class SBInfo {
 		try {
 		if (currentTime - lastMayorUpdate > 300 * 1000) {
 			mayorJson = Utils.getCurrentMayor();
-			System.out.println(mayorJson);
 			lastMayorUpdate = currentTime;
 		}
 			} catch (ExecutionException | InterruptedException e) {

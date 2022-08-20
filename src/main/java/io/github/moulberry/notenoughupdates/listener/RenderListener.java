@@ -530,7 +530,7 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
-						if(inDungeonPage) {
+						if (inDungeonPage) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -658,7 +658,7 @@ public class RenderListener {
 							}
 						}
 
-						if(inDungeonPage) {
+						if (inDungeonPage) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -924,12 +924,12 @@ public class RenderListener {
 					JsonObject mayorJson = SBInfo.getInstance().getMayorJson();
 					JsonElement mayor = mayorJson.get("mayor");
 					if (mayorJson.has("mayor") && mayor != null && mayor.getAsJsonObject().has("name") &&
-						mayor.getAsJsonObject().get("name").getAsString().equals("Foxy")
+						mayor.getAsJsonObject().get("name").getAsString().equals("Derpy")
 						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
-							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString()+ "shMayor Derpy active!",
+							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "shMayor Derpy active!",
 							Minecraft.getMinecraft().fontRendererObj,
-							guiLeft + xSize + 4+10	,
+							guiLeft + xSize + 4 + 10,
 							guiTop + 85,
 							true,
 							0,
@@ -1100,7 +1100,7 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
-						if(inDungeonPage) {
+						if (inDungeonPage) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
