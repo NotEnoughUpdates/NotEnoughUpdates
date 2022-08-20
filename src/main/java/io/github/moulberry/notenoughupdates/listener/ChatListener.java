@@ -198,8 +198,8 @@ public class ChatListener {
 				timeSinceLastBoss2 = timeSinceLastBoss;
 				timeSinceLastBoss = System.currentTimeMillis();
 			}
-		} else if (unformatted.startsWith("   RNGesus Meter:")) {
-			RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
+		} else if (unformatted.startsWith("   RNG Meter")) {
+			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {
 			//matcher.group(1);
 			SlayerOverlay.slayerLVL = matcher.group(2);
