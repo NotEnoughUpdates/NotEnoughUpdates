@@ -235,7 +235,7 @@ public class GuiCustomHex extends Gui {
 			return false;
 		}
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-			(containerName.length() >= 8 && Objects.equals("The Hex ", containerName.substring(0, "The Hex ".length()))) &&
+			(containerName.length() >= 22 && Objects.equals("The Hex ➜ Enchant Item", containerName.substring(0, "The Hex ➜ Enchant Item".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 
 		shouldOverrideET = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
@@ -409,7 +409,7 @@ public class GuiCustomHex extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
+									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace("-", "_");
 									String name = Utils.cleanColour(book.getDisplayName());
 									int enchLevel = -1;
 									if (name.equalsIgnoreCase("Bane of Arthropods")) {
@@ -418,6 +418,8 @@ public class GuiCustomHex extends Gui {
 										name = "Projectile Prot";
 									} else if (name.equalsIgnoreCase("Blast Protection")) {
 										name = "Blast Prot";
+									} else if (name.equalsIgnoreCase("Turbo-Mushrooms")) {
+										name = "Turbo-Mush";
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
@@ -480,7 +482,7 @@ public class GuiCustomHex extends Gui {
 								if (ea != null) {
 									NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 									if (enchantments != null) {
-										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
+										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
 										String name = Utils.cleanColour(book.getDisplayName());
 
@@ -492,8 +494,8 @@ public class GuiCustomHex extends Gui {
 												name = "Projectile Prot";
 											} else if (name.equalsIgnoreCase("Blast Protection")) {
 												name = "Blast Prot";
-											} else if (name.equalsIgnoreCase("Luck of the Sea")) {
-												name = "Luck of Sea";
+											} else if (name.equalsIgnoreCase("Turbo-Mushrooms")) {
+												name = "Turbo-Mush";
 											}
 											Matcher nameMatcher = ENCHANT_NAME_PATTERN.matcher(name);
 											if (nameMatcher.matches()) {
@@ -1095,6 +1097,7 @@ public class GuiCustomHex extends Gui {
 
 			//Enchant name
 			String name = WordUtils.capitalizeFully(enchanterCurrentEnch.enchId.replace("_", " "));
+			System.out.println(name);
 			if (name.equalsIgnoreCase("Bane of Arthropods")) {
 				name = "Bane of Arth.";
 			} else if (name.equalsIgnoreCase("Projectile Protection")) {
@@ -1103,6 +1106,8 @@ public class GuiCustomHex extends Gui {
 				name = "Blast Prot";
 			} else if (name.equalsIgnoreCase("Luck of the Sea")) {
 				name = "Luck of Sea";
+			} else if (name.equalsIgnoreCase("Turbo Mushrooms")) {
+				name = "Turbo-Mush";
 			}
 			Utils.drawStringCentered(
 				name,
