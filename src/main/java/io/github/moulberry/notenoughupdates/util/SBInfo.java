@@ -431,7 +431,7 @@ public class SBInfo {
 		}
 	}
 
-	public void updateMayor() throws ExecutionException, InterruptedException {
+	public void updateMayor() {
 		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 			"resources/skyblock/election",
