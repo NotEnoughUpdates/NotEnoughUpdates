@@ -300,7 +300,7 @@ public class SBInfo {
 		}
 		try {
 			if (currentTime - lastMayorUpdate > 300 * 1000) {
-				getCurrentMayor();
+				updateMayor();
 				lastMayorUpdate = currentTime;
 			}
 		} catch (ExecutionException | InterruptedException e) {
@@ -431,7 +431,7 @@ public class SBInfo {
 		}
 	}
 
-	public void getCurrentMayor() throws ExecutionException, InterruptedException {
+	public void updateMayor() throws ExecutionException, InterruptedException {
 		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
 			"resources/skyblock/election",
