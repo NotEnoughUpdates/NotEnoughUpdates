@@ -806,6 +806,15 @@ public class APIManager {
 		return keys;
 	}
 
+	public double getBazaarOrBin(String internalName) {
+		JsonObject bazaarInfo = manager.auctionManager.getBazaarInfo(internalName);
+		if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
+			return bazaarInfo.get("curr_buy").getAsFloat();
+		} else {
+			return manager.auctionManager.getLowestBin(internalName);
+		}
+	}
+
 	public JsonObject getBazaarInfo(String internalName) {
 		if (bazaarJson == null) return null;
 		JsonElement e = bazaarJson.get(internalName);

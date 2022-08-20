@@ -113,7 +113,7 @@ public class BazaarSacksProfit {
 							}
 						}
 					}
-					System.out.println("no bazaar item in repo found for '" + bazaarName + "'");
+					System.err.println("no bazaar item in repo found for '" + bazaarName + "'");
 					invalidNames.add(bazaarName);
 				}
 			}
