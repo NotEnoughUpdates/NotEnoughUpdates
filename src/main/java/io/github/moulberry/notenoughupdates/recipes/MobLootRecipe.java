@@ -73,7 +73,7 @@ public class MobLootRecipe implements NeuRecipe {
 
 		private String formatDropChance() {
 			if (!chance.endsWith("%")) {
-				return chance + " §cInvalid repo data!";
+				return chance;
 			}
 
 			String chanceText = chance.substring(0, chance.length() - 1);
@@ -81,7 +81,7 @@ public class MobLootRecipe implements NeuRecipe {
 			try {
 				chanceIn = (int) (100.0 / Double.parseDouble(chanceText));
 			} catch (NumberFormatException e) {
-				return chance + " §cInvalid repo data!";
+				return chance;
 			}
 
 			String format = GuiProfileViewer.numberFormat.format(chanceIn);
