@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -77,14 +78,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Bank Balance",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(bankBalance, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(bankBalance),
 			guiLeft + xStart,
 			guiTop + yStartTop,
 			76
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Purse",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(purseBalance, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(purseBalance),
 			guiLeft + xStart,
 			guiTop + yStartTop + yOffset,
 			76
@@ -204,7 +205,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "Total Slayer XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(totalSlayerXP, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(totalSlayerXP),
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 4,
 				76
@@ -233,7 +234,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Highest Bid",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(auctions_highest_bid, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(auctions_highest_bid),
 			guiLeft + xStart + xOffset,
 			guiTop + yStartTop + yOffset,
 			76
@@ -254,14 +255,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Gold Spent",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(auctions_gold_spent, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(auctions_gold_spent),
 			guiLeft + xStart + xOffset,
 			guiTop + yStartTop + yOffset * 4,
 			76
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Gold Earned",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(auctions_gold_earned, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(auctions_gold_earned),
 			guiLeft + xStart + xOffset,
 			guiTop + yStartTop + yOffset * 5,
 			76

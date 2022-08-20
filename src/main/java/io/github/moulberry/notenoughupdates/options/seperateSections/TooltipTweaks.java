@@ -188,4 +188,12 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean rngMeterFractionDisplay = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Essence Price In Shop",
+		desc = "Show the essence price in the essence shop in the dungeon hub"
+	)
+	@ConfigEditorBoolean
+	public boolean essencePriceInEssenceShop = true;
 }

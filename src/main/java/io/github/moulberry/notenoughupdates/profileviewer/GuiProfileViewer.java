@@ -19,11 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -135,7 +135,6 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 
-	private static final char[] c = new char[] { 'k', 'm', 'b', 't' };
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
 	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {
 		{
@@ -268,19 +267,9 @@ public class GuiProfileViewer extends GuiScreen {
 		return levelObj;
 	}
 
-
+	@Deprecated
 	public static String shortNumberFormat(double n, int iteration) {
-		if (n < 1000) {
-			if (n % 1 == 0) {
-				return Integer.toString((int) n);
-			} else {
-				return String.format("%.2f", n);
-			}
-		}
-
-		double d = ((long) n / 100) / 10.0;
-		boolean isRound = (d * 10) % 10 == 0;
-		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(d, iteration + 1);
+		return StringUtils.shortNumberFormat(n, iteration);
 	}
 
 	public static int getGuiLeft() {
@@ -977,9 +966,9 @@ public class GuiProfileViewer extends GuiScreen {
 					int maxXp = (int) levelObj.maxXpForLevel;
 					levelStr =
 						EnumChatFormatting.DARK_PURPLE +
-							shortNumberFormat(Math.round((level % 1) * maxXp), 0) +
+							StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
 							"/" +
-							shortNumberFormat(maxXp, 0);
+							StringUtils.shortNumberFormat(maxXp);
 				}
 				if (totalXpStr != null) {
 					tooltipToDisplay = Utils.createList(levelStr, totalXpStr);

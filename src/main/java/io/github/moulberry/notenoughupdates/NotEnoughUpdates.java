@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
+import io.github.moulberry.notenoughupdates.listener.ItemTooltipEssenceShopListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipRngListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
@@ -285,6 +286,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new ChatListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipRngListener(this));
+		MinecraftForge.EVENT_BUS.register(new ItemTooltipEssenceShopListener(this));
 		MinecraftForge.EVENT_BUS.register(new RenderListener(this));
 		MinecraftForge.EVENT_BUS.register(new OldAnimationChecker());
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());

@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -316,7 +317,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ARROW")),
 			guiLeft + 173,
 			guiTop + 101,
-			"" + (arrowCount > 999 ? GuiProfileViewer.shortNumberFormat(arrowCount, 0) : arrowCount),
+			"" + (arrowCount > 999 ? StringUtils.shortNumberFormat(arrowCount) : arrowCount),
 			true
 		);
 		Utils.drawItemStackWithText(

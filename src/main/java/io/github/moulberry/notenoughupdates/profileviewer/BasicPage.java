@@ -19,28 +19,18 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
-
 import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
@@ -62,6 +52,18 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
+import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class BasicPage extends GuiProfileViewerPage {
 
@@ -559,9 +561,9 @@ public class BasicPage extends GuiProfileViewerPage {
 									EnumChatFormatting.GRAY +
 									"Progress: " +
 									EnumChatFormatting.DARK_PURPLE +
-									GuiProfileViewer.shortNumberFormat(Math.round((level % 1) * maxXp), 0) +
+										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
 									"/" +
-									GuiProfileViewer.shortNumberFormat(maxXp, 0)
+										StringUtils.shortNumberFormat(maxXp)
 								);
 						}
 						String totalXpS = GuiProfileViewer.numberFormat.format((int) skyblockInfo.get(entry.getKey()).totalXp);
