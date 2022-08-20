@@ -77,6 +77,8 @@ public class GuiCustomEnchant extends Gui {
 	private static final int EXPERIENCE_ORB_COUNT = 30;
 
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
+	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
+	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
 
 	private enum EnchantState {
 		NO_ITEM,
@@ -228,8 +230,10 @@ public class GuiCustomEnchant extends Gui {
 	public boolean shouldOverride(String containerName) {
 		if (containerName == null) return false;
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-			Objects.equals("Enchant Item",
-				containerName.substring(0, "Enchant Item".length())) &&
+			Objects.equals(
+				"Enchant Item",
+				containerName.substring(0, "Enchant Item".length())
+			) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		if (!shouldOverrideFast) {
 			currentState = EnchantState.NO_ITEM;
@@ -392,39 +396,45 @@ public class GuiCustomEnchant extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
-										String name = Utils.cleanColour(book.getDisplayName());
-										if (name.equalsIgnoreCase("Bane of Arthropods")) {
-											name = "Bane of Arth.";
-										} else if (name.equalsIgnoreCase("Projectile Protection")) {
-											name = "Projectile Prot";
-										} else if (name.equalsIgnoreCase("Blast Protection")) {
-											name = "Blast Prot";
-										}
-										Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-											Utils.getRawTooltip(book), enchantments.getInteger(enchId), false, true
-										);
-										enchantment.displayLore.remove(0);
+									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_");
+									String name = Utils.cleanColour(book.getDisplayName());
+									int enchLevel = -1;
+									if (name.equalsIgnoreCase("Bane of Arthropods")) {
+										name = "Bane of Arth.";
+									} else if (name.equalsIgnoreCase("Projectile Protection")) {
+										name = "Projectile Prot";
+									} else if (name.equalsIgnoreCase("Blast Protection")) {
+										name = "Blast Prot";
+									}
+									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
+									if (levelMatcher.matches()) {
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										enchId = levelMatcher.group(1);
+									}
+									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
+										Utils.getRawTooltip(book), enchLevel, false, true
+									);
+									enchantment.displayLore.remove(0);
 
-										if (removingEnchantPlayerLevel == -1 && playerEnchantIds.containsKey(enchId)) {
-											removingEnchantPlayerLevel = playerEnchantIds.get(enchId);
-										}
+									if (removingEnchantPlayerLevel == -1 && playerEnchantIds.containsKey(enchId)) {
+										removingEnchantPlayerLevel = playerEnchantIds.get(enchId);
+									}
 
-										if (removingEnchantPlayerLevel >= 0 && enchantment.level < removingEnchantPlayerLevel) {
-											continue;
-										}
+									if (removingEnchantPlayerLevel >= 0 && enchantment.level < removingEnchantPlayerLevel) {
+										continue;
+									}
 
-										if (enchanterCurrentEnch == null) {
+									if (enchanterCurrentEnch == null) {
+										enchanterCurrentEnch = enchantment;
+									} else if (updateLevel) {
+										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
 											enchanterCurrentEnch = enchantment;
-										} else if (updateLevel) {
-											if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
-												enchanterCurrentEnch = enchantment;
-											} else if (removingEnchantPlayerLevel >= 0 && enchantment.level < enchanterCurrentEnch.level) {
-												enchanterCurrentEnch = enchantment;
-											}
+										} else if (removingEnchantPlayerLevel >= 0 && enchantment.level < enchanterCurrentEnch.level) {
+											enchanterCurrentEnch = enchantment;
 										}
+									}
 
-										enchanterEnchLevels.put(enchantment.level, enchantment);
+									enchanterEnchLevels.put(enchantment.level, enchantment);
 								}
 							}
 						}
@@ -472,6 +482,10 @@ public class GuiCustomEnchant extends Gui {
 											} else if (name.equalsIgnoreCase("Luck of the Sea")) {
 												name = "Luck of Sea";
 											}
+											Matcher nameMatcher = ENCHANT_NAME_PATTERN.matcher(name);
+											if (nameMatcher.matches()) {
+												name = nameMatcher.group(1) + "balls";
+											}
 
 											if (playerEnchantIds.containsKey(enchId)) {
 												Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
@@ -482,7 +496,7 @@ public class GuiCustomEnchant extends Gui {
 												}
 											} else {
 												Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-													Utils.getRawTooltip(book), enchantments.getInteger(enchId), true, true
+													Utils.getRawTooltip(book), 1, true, true
 												);
 												applicable.add(enchantment);
 											}
