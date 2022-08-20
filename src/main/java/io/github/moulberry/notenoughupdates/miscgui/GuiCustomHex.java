@@ -67,8 +67,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GuiCustomEnchant extends Gui {
-	private static final GuiCustomEnchant INSTANCE = new GuiCustomEnchant();
+public class GuiCustomHex extends Gui {
+	private static final GuiCustomHex INSTANCE = new GuiCustomHex();
 	private static final ResourceLocation TEXTURE = new ResourceLocation("notenoughupdates:custom_enchant_gui.png");
 	private static final ResourceLocation ENCHANTMENT_TABLE_BOOK_TEXTURE = new ResourceLocation(
 		"textures/entity/enchanting_table_book.png");
@@ -223,14 +223,14 @@ public class GuiCustomEnchant extends Gui {
 	private long cancelButtonAnimTime = 0;
 	private long confirmButtonAnimTime = 0;
 
-	public static GuiCustomEnchant getInstance() {
+	public static GuiCustomHex getInstance() {
 		return INSTANCE;
 	}
 
 	public boolean shouldOverride(String containerName) {
 		if (containerName == null) return false;
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-			(containerName.length() >= 12 && Objects.equals("Enchant Item", containerName.substring(0, "Enchant Item".length()))) &&
+			(containerName.length() >= 7 && Objects.equals("The Hex", containerName.substring(0, "The Hex".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		if (!shouldOverrideFast) {
 			currentState = EnchantState.NO_ITEM;
@@ -247,23 +247,24 @@ public class GuiCustomEnchant extends Gui {
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
-		ItemStack stack = cc.getLowerChestInventory().getStackInSlot(23);
+		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(12);
+		//ItemStack stack = cc.getLowerChestInventory().getStackInSlot(23);
 		ItemStack arrowStack = cc.getLowerChestInventory().getStackInSlot(45);
 		ItemStack enchantGuideStack = cc.getLowerChestInventory().getStackInSlot(50);
-		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
+		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(22);
 
 		int lastPage = currentPage;
 
 		this.lastState = currentState;
 		if (arrowStack != null && arrowStack.getItem() == Items.arrow && enchantingItem != null) {
 			currentState = EnchantState.ADDING_ENCHANT;
-		} else if (stack == null || enchantingItemStack == null) {
+		} else if (hexStack == null || enchantingItemStack == null) {
 			if (currentState == EnchantState.SWITCHING_DONT_UPDATE || currentState == EnchantState.NO_ITEM) {
 				currentState = EnchantState.NO_ITEM;
 			} else {
 				currentState = EnchantState.SWITCHING_DONT_UPDATE;
 			}
-		} else if (stack.getItem() != Items.dye) {
+		} else if (hexStack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) {
 			ItemStack sanityCheckStack = cc.getLowerChestInventory().getStackInSlot(12);
 			if (sanityCheckStack == null || sanityCheckStack.getItem() == Items.enchanted_book) {
 				currentState = EnchantState.HAS_ITEM;
@@ -271,9 +272,9 @@ public class GuiCustomEnchant extends Gui {
 			} else {
 				currentState = EnchantState.SWITCHING_DONT_UPDATE;
 			}
-		} else if (stack.getItemDamage() == 1) {
+		} else if (hexStack.getItemDamage() == 14) {
 			currentState = EnchantState.INVALID_ITEM;
-		} else {
+		} else if (hexStack.getItemDamage() == 7) {
 			currentState = EnchantState.NO_ITEM;
 		}
 		System.out.println(currentState);
@@ -406,8 +407,9 @@ public class GuiCustomEnchant extends Gui {
 									}
 									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
 									if (levelMatcher.matches()) {
-										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
-										enchId = levelMatcher.group(1);
+										System.out.println(enchId);
+										//enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										//enchId = levelMatcher.group(1);
 									}
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
 										Utils.getRawTooltip(book), enchLevel, false, true

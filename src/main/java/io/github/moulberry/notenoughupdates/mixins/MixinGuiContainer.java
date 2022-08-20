@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -189,6 +190,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	public void isMouseOverSlot(Slot slotIn, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
 		StorageOverlay.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		GuiCustomEnchant.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
+		GuiCustomHex.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AuctionBINWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AbiphoneWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 	}

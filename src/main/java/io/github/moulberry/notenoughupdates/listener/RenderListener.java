@@ -44,6 +44,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
@@ -434,6 +435,12 @@ public class RenderListener {
 			return;
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
+			GuiCustomHex.getInstance().render(event.renderPartialTicks);
+			event.setCanceled(true);
+			return;
+		}
+
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 		boolean customAhActive =
@@ -573,6 +580,7 @@ public class RenderListener {
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
 			if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) return;
+			if (GuiCustomHex.getInstance().shouldOverride(containerName)) return;
 		}
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
@@ -983,6 +991,12 @@ public class RenderListener {
 
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().mouseInput(mouseX, mouseY)) {
+			event.setCanceled(true);
+			return;
+		}
+
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().mouseInput(mouseX, mouseY)) {
 			event.setCanceled(true);
 			return;
 		}
@@ -1441,6 +1455,12 @@ public class RenderListener {
 
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().keyboardInput()) {
+			event.setCanceled(true);
+			return;
+		}
+
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().keyboardInput()) {
 			event.setCanceled(true);
 			return;
 		}

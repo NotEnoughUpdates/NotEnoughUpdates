@@ -35,6 +35,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -146,6 +147,9 @@ public class NEUEventListener {
 
 			if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
 				GuiCustomEnchant.getInstance().tick();
+			}
+			if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
+				GuiCustomHex.getInstance().tick();
 			}
 		}
 
