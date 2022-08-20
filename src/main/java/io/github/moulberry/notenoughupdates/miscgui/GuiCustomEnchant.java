@@ -228,7 +228,10 @@ public class GuiCustomEnchant extends Gui {
 	}
 
 	public boolean shouldOverride(String containerName) {
-		if (containerName == null) return false;
+		if (containerName == null) {
+			shouldOverrideFast = false;
+			return false;
+		}
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
 			(containerName.length() >= 12 && Objects.equals("Enchant Item", containerName.substring(0, "Enchant Item".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();

@@ -229,7 +229,11 @@ public class GuiCustomHex extends Gui {
 	}
 
 	public boolean shouldOverride(String containerName) {
-		if (containerName == null) return false;
+		if (containerName == null) {
+			shouldOverrideET = false;
+			shouldOverrideFast = false;
+			return false;
+		}
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
 			(containerName.length() >= 8 && Objects.equals("The Hex ", containerName.substring(0, "The Hex ".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
@@ -1334,6 +1338,31 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
+		if (currentState == EnchantState.HAS_ITEM) {
+			int left = guiLeft + X_SIZE / 2 - 56;
+			int top = guiTop + 83;
+			//Cancel button
+			if (System.currentTimeMillis() - cancelButtonAnimTime < 500) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+					0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
+				);
+				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
+					guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040
+				);
+			} else {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+				);
+				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
+					guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040
+				);
+			}
+		}
+
 		//Item enchant input
 		ItemStack itemEnchantInput;
 		if (currentState == EnchantState.HAS_ITEM_IN_HEX) {
@@ -1593,6 +1622,23 @@ public class GuiCustomHex extends Gui {
 
 		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.HAS_ITEM_IN_HEX) {
 			if (Mouse.getEventButtonState()) {
+				int left = guiLeft + X_SIZE / 2 - 56;
+				int top = guiTop + 83;
+
+				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
+					mouseY > top + 18 && mouseY <= top + 18 + 14) {
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+
+					cancelButtonAnimTime = System.currentTimeMillis();
+				}
+
 				if (mouseX > guiLeft + X_SIZE / 2 - searchField.getWidth() / 2 &&
 					mouseX < guiLeft + X_SIZE / 2 + searchField.getWidth() / 2 &&
 					mouseY > guiTop + 80 && mouseY < guiTop + 96) {
