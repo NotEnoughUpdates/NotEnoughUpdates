@@ -61,7 +61,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+(\\d+)");
 	private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
 	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+(\\d+)");
-	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+(\\d+)");
+	private static final Pattern FISHING_SPEED_PATTERN = Pattern.compile("^Fishing Speed: \\+(\\d+)");
 	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {
 		{
 			put("inv_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory"));
@@ -276,8 +276,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 					inventoryInfo,
 					3,
 					new String[] { "inv_contents", "ender_chest_contents" },
-					new String[] { "FISHING ROD" },
-					FISHSPEED_PATTERN
+					new String[] { "FISHING ROD", "FISHING WEAPON" },
+					FISHING_SPEED_PATTERN
 				);
 		}
 
