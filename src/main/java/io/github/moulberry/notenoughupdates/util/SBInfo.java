@@ -62,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,6 +89,8 @@ public class SBInfo {
 
 	public Date currentTimeDate = null;
 
+	private JsonObject mayorJson;
+
 	/**
 	 * Use Utils.getOpenChestName() instead
 	 */
@@ -97,6 +100,7 @@ public class SBInfo {
 	private long lastManualLocRaw = -1;
 	private long lastLocRaw = -1;
 	public long joinedWorld = -1;
+	private long lastMayorUpdate;
 	public long unloadedWorld = -1;
 	private JsonObject locraw = null;
 	public boolean isInDungeon = false;
@@ -281,6 +285,7 @@ public class SBInfo {
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
+
 	public void tick() {
 		boolean tempIsInDungeon = false;
 
@@ -294,6 +299,15 @@ public class SBInfo {
 			lastLocRaw = System.currentTimeMillis();
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
+		try {
+		if (currentTime - lastMayorUpdate > 300 * 1000) {
+			mayorJson = Utils.getCurrentMayor();
+			System.out.println(mayorJson);
+			lastMayorUpdate = currentTime;
+		}
+			} catch (ExecutionException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
@@ -417,5 +431,9 @@ public class SBInfo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public JsonObject getMayorJson() {
+		return mayorJson;
 	}
 }

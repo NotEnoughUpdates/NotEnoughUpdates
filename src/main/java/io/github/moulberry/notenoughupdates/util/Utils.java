@@ -81,6 +81,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1966,6 +1969,16 @@ public class Utils {
 	 * 6 = SPECIAL
 	 * 7 = VERY SPECIAL
 	 */
+
+	public static JsonObject getCurrentMayor() throws ExecutionException, InterruptedException {
+		CompletableFuture<JsonObject> hypixelApiAsync = NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+			"resources/skyblock/election",
+			new HashMap<>()
+		);
+		return hypixelApiAsync.get();
+	}
+
 	public static int getRarityFromLore(JsonArray lore) {
 		for (int i = lore.size() - 1; i >= 0; i--) {
 			String line = lore.get(i).getAsString();
