@@ -70,7 +70,7 @@ public class EnvironmentScan {
 								"",
 								"NotEnoughUpdates only works in Minecraft 1.8.9, with Forge 11.15.1+",
 								"Please relaunch NotEnoughUpdates in the correct environment.",
-								"If you are in using Minecraft 1.8.9 with Forge 11.15.1+ installed, please contact support.",
+								"If you are using Minecraft 1.8.9 with Forge 11.15.1+ installed, please contact support.",
 								"Click OK to launch anyways."
 				);
 		}
