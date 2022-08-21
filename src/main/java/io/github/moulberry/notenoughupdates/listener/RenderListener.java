@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -142,6 +143,7 @@ public class RenderListener {
 	private String correctingItem;
 	private boolean typing;
 	private HashMap<String, String> cachedDefinitions;
+	private boolean inDungeonPage = false;
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -535,6 +537,12 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
+						if (inDungeonPage) {
+							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 100) {
+								x += 185;
+							}
+						}
 
 						GlStateManager.color(1, 1, 1, 1f);
 
@@ -657,6 +665,13 @@ public class RenderListener {
 							}
 						}
 
+						if (inDungeonPage) {
+							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 100) {
+								x += 185;
+							}
+						}
+
 						if (x - guiLeft >= 85 && x - guiLeft <= 115 && y - guiTop >= 4 && y - guiTop <= 25) {
 							disableCraftingText = true;
 						}
@@ -704,7 +719,6 @@ public class RenderListener {
 
 	private void renderDungeonChestOverlay(GuiScreen gui) {
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc == 3) return;
-
 		if (gui instanceof GuiChest && NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc != 2) {
 			try {
 				int xSize = ((AccessorGuiContainer) gui).getXSize();
@@ -716,8 +730,9 @@ public class RenderListener {
 				IInventory lower = cc.getLowerChestInventory();
 
 				ItemStack rewardChest = lower.getStackInSlot(31);
-				if (rewardChest != null && rewardChest.getDisplayName().endsWith(
-					EnumChatFormatting.GREEN + "Open Reward Chest")) {
+				this.inDungeonPage = rewardChest != null && rewardChest.getDisplayName().endsWith(
+					EnumChatFormatting.GREEN + "Open Reward Chest");
+				if (inDungeonPage) {
 					int chestCost = 0;
 					try {
 						String line6 = Utils.cleanColour(neu.manager.getLoreFromNBT(rewardChest.getTagCompound())[6]);
@@ -930,6 +945,21 @@ public class RenderListener {
 							160
 						);
 					}
+					JsonObject mayorJson = SBInfo.getInstance().getMayorJson();
+					JsonElement mayor = mayorJson.get("mayor");
+					if (mayorJson.has("mayor") && mayor != null && mayor.getAsJsonObject().has("name") &&
+						mayor.getAsJsonObject().get("name").getAsString().equals("Derpy")
+						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
+						Utils.drawStringScaled(
+							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "shMayor Derpy active!",
+							Minecraft.getMinecraft().fontRendererObj,
+							guiLeft + xSize + 4 + 10,
+							guiTop + 85,
+							true,
+							0,
+							1.3f
+						);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1097,6 +1127,12 @@ public class RenderListener {
 						if (NEUOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
+							}
+						}
+						if (inDungeonPage) {
+							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
+								y < guiTop + 100) {
+								x += 185;
 							}
 						}
 

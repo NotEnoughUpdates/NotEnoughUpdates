@@ -123,6 +123,15 @@ public class Dungeons {
 	@ConfigAccordionId(id = 1)
 	public boolean useEssenceCostFromBazaar = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Warning if Derpy active",
+		desc = "Shows a warning if the mayor Derpy is active"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean shouldWarningDerpy  = true;
+
 	@ConfigOption(
 		name = "Dungeon Win Overlay",
 		desc = ""
