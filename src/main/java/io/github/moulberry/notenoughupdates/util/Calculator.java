@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 
 public class Calculator {
 	public static BigDecimal calculate(String source) throws CalculatorException {
+		source = source.toLowerCase();
 		return evaluate(shuntingYard(lex(source)));
 	}
 

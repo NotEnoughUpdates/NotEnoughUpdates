@@ -181,13 +181,30 @@ public class TooltipTweaks {
 	@ConfigEditorBoolean
 	public boolean powerStoneStats = true;
 
+	@ConfigOption(
+		name = "RNG Meter",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 1)
+	public boolean rngMeter = false;
+
 	@Expose
 	@ConfigOption(
-		name = "RNG Meter Fraction",
+		name = "Fraction Display",
 		desc = "Show the fraction instead of the percentage in the slayer and dungeon rng meter inventory"
 	)
 	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
 	public boolean rngMeterFractionDisplay = true;
+
+	@Expose
+	@ConfigOption(
+		name = " Profit Per Score/XP",
+		desc = "Show the amount of coins per Score/XP in the rng meter inventory"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean rngMeterProfitPerUnit = true;
 
 	@Expose
 	@ConfigOption(

@@ -20,12 +20,12 @@
 package io.github.moulberry.notenoughupdates.listener;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.util.StringUtils;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -46,10 +46,11 @@ public class ItemTooltipRngListener {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
 		if (!Utils.getOpenChestName().endsWith(" RNG Meter")) return;
-		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterFractionDisplay) return;
 
 		List<String> newToolTip = new ArrayList<>();
-		int id = 0;
+
+		int baseChance = -1;
+		boolean nextNeeded = false;
 		for (String line : event.toolTip) {
 			if (line.contains("Odds:")) {
 
@@ -59,40 +60,74 @@ public class ItemTooltipRngListener {
 				}
 				pressedShiftLast = shift;
 
-				if (!showSlayerRngFractures) {
-					newToolTip.add(line);
-					newToolTip.add("§8[Press SHIFT to show odds as fractures]");
+				String[] split = line.split(Pattern.quote(" §7("));
+				String start = split[0];
+				String string = StringUtils.cleanColour(split[1]);
+				string = string.replace("%", "").replace(")", "");
+
+				String addText;
+				if (!string.contains(" ")) {
+					baseChance = calculateChance(string);
+					String format = GuiProfileViewer.numberFormat.format(baseChance);
+					addText = " §7(1/" + format + ")";
 				} else {
-					String[] split = line.split(Pattern.quote(" §7("));
-					String start = split[0];
-					String string = StringUtils.stripControlCodes(split[1]);
-					string = string.replace("%", "").replace(")", "");
-
-					if (!string.contains(" ")) {
-						String format = calculateChance(string);
-						newToolTip.add(id, start + " §7(1/" + format + ")");
-					} else {
-						split = string.split(" ");
-						String base = calculateChance(split[0]);
-						String increased = calculateChance(split[1]);
-
-						newToolTip.add(start + " §7(§8§m1/" + base + "§r §71/" + increased + ")");
-					}
-					newToolTip.add("§8[Press SHIFT to show odds as percentages]");
+					split = string.split(" ");
+					baseChance = calculateChance(split[0]);
+					String base = GuiProfileViewer.numberFormat.format(baseChance);
+					String increased = GuiProfileViewer.numberFormat.format(calculateChance(split[1]));
+					addText = " §7(§8§m1/" + base + "§r §71/" + increased + ")";
 				}
-			} else {
-				newToolTip.add(line);
+
+				if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterFractionDisplay) {
+					if (showSlayerRngFractures) {
+						newToolTip.add(start + addText);
+						newToolTip.add("§8[Press SHIFT to show odds as percentages]");
+					} else {
+						newToolTip.add(line);
+						newToolTip.add("§8[Press SHIFT to show odds as fractures]");
+					}
+					continue;
+				}
 			}
-			id++;
+
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterProfitPerUnit) {
+				if (nextNeeded || line.contains("Dungeon Score:") || line.contains("Slayer XP:")) {
+					nextNeeded = false;
+					if (line.contains("/§d")) {
+						String textNeeded = line.split(Pattern.quote("/§d"))[1].replace(",", "");
+						int needed;
+						try {
+							needed = Calculator.calculate(textNeeded).intValue();
+						} catch (Calculator.CalculatorException e) {
+							needed = -1;
+						}
+						String internalName = neu.manager.getInternalNameForItem(event.itemStack);
+
+						double bin = neu.manager.auctionManager.getBazaarOrBin(internalName);
+						if (bin > 0) {
+							double coinsPer = bin / needed;
+							String name = Utils.getOpenChestName().contains("Catacombs") ? "Score" : "XP";
+							String format = StringUtils.shortNumberFormat(coinsPer);
+							String formatCoinsPer = "§7Coins per " + name + ": §6" + format + " coins";
+							newToolTip.add(line);
+							newToolTip.add(formatCoinsPer);
+							continue;
+						}
+					}
+				}
+				if (line.contains("Progress:")) {
+					nextNeeded = true;
+				}
+			}
+			newToolTip.add(line);
 		}
 
 		event.toolTip.clear();
 		event.toolTip.addAll(newToolTip);
 	}
 
-	@NotNull
-	private String calculateChance(String string) {
+	private int calculateChance(String string) {
 		int chance = (int) (100.0 / Double.parseDouble(string));
-		return GuiProfileViewer.numberFormat.format(chance);
+		return chance;
 	}
 }
