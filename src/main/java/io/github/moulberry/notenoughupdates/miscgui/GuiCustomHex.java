@@ -58,10 +58,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -79,6 +81,8 @@ public class GuiCustomHex extends Gui {
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
 	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
+
+	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 
 	private enum EnchantState {
 		NO_ITEM,
@@ -99,6 +103,7 @@ public class GuiCustomHex extends Gui {
 		public int xpCost = -1;
 		public boolean overMaxLevel = false;
 		public boolean conflicts = false;
+		public int price = -1;
 
 		public Enchantment(
 			int slotIndex, String enchantName, String enchId, List<String> displayLore, int level,
@@ -109,6 +114,10 @@ public class GuiCustomHex extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
+			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTMENT_" + enchId.toUpperCase() + "_" + level);
+			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
+				this.price = bazaarInfo.get("curr_buy").getAsInt();
+			}
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -528,6 +537,14 @@ public class GuiCustomHex extends Gui {
 									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
 										Utils.getRawTooltip(book), enchLevel, false, true
 									);
+									int index = 0;
+									for (String lore : enchantment.displayLore) {
+										if (lore.contains("N/A") && enchantment.price > 0) {
+											String price = numberFormat.format(enchantment.price);
+											enchantment.displayLore.set(index, "\u00a76" + price + ".0 Coins");
+										}
+										index++;
+									}
 									enchantment.displayLore.remove(0);
 
 									if (removingEnchantPlayerLevel == -1 && playerEnchantIds.containsKey(enchId)) {
@@ -539,6 +556,7 @@ public class GuiCustomHex extends Gui {
 									}
 
 									if (enchanterCurrentEnch == null) {
+										System.out.println(enchantment.displayLore);
 										enchanterCurrentEnch = enchantment;
 									} else if (updateLevel) {
 										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
@@ -748,7 +766,8 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace("-","_");
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace("-",
+									"_");
 								String name = Utils.cleanColour(book.getDisplayName());
 								if (itemId.equalsIgnoreCase("_")) continue;
 								if (searchField.getText().trim().isEmpty() ||
