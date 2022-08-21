@@ -56,6 +56,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
+import org.omg.CORBA.UNKNOWN;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.text.NumberFormat;
@@ -94,6 +95,16 @@ public class GuiCustomHex extends Gui {
 		HAS_ITEM_IN_BOOKS
 	}
 
+	private enum ItemType {
+		HOT_POTATO,
+		FUMING_POTATO,
+		BOOK_OF_STATS,
+		ART_OF_WAR,
+		ART_OF_PEACE,
+		FARMING_DUMMY,
+		UNKNOWN
+	}
+
 	private class Enchantment {
 		public int slotIndex;
 		public String enchantName;
@@ -114,7 +125,8 @@ public class GuiCustomHex extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
-			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTMENT_" + enchId.toUpperCase() + "_" + level);
+			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(
+				"ENCHANTMENT_" + enchId.toUpperCase() + "_" + level);
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
@@ -175,6 +187,7 @@ public class GuiCustomHex extends Gui {
 		public float price = -1;
 		public boolean overMaxLevel = false;
 		public boolean conflicts = false;
+		public ItemType itemType = ItemType.UNKNOWN;
 
 		public HexItem(
 			int slotIndex, String itemName, String itemId, List<String> displayLore,
@@ -187,6 +200,29 @@ public class GuiCustomHex extends Gui {
 			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(itemId);
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsFloat();
+			}
+			switch (itemId) {
+				default:
+					this.itemType = ItemType.UNKNOWN;
+					break;
+				case "HOT_POTATO_BOOK":
+					this.itemType = ItemType.HOT_POTATO;
+					break;
+				case "FUMING_POTATO_BOOK":
+					this.itemType = ItemType.FUMING_POTATO;
+					break;
+				case "BOOK_OF_STATS":
+					this.itemType = ItemType.BOOK_OF_STATS;
+					break;
+				case "THE_ART_OF_WAR":
+					this.itemType = ItemType.ART_OF_WAR;
+					break;
+				case "FARMING_FOR_DUMMIES":
+					this.itemType = ItemType.FARMING_DUMMY;
+					break;
+				case "THE_ART_OF_PEACE":
+					this.itemType = ItemType.ART_OF_PEACE;
+					break;
 			}
 
 			/*if (Constants.ENCHANTS != null) {
@@ -556,7 +592,6 @@ public class GuiCustomHex extends Gui {
 									}
 
 									if (enchanterCurrentEnch == null) {
-										System.out.println(enchantment.displayLore);
 										enchanterCurrentEnch = enchantment;
 									} else if (updateLevel) {
 										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
@@ -766,8 +801,10 @@ public class GuiCustomHex extends Gui {
 						if (ea != null) {
 							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 							if (enchantments != null) {
-								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace("-",
-									"_");
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace(
+									"-",
+									"_"
+								);
 								String name = Utils.cleanColour(book.getDisplayName());
 								if (itemId.equalsIgnoreCase("_")) continue;
 								if (searchField.getText().trim().isEmpty() ||
@@ -783,7 +820,57 @@ public class GuiCustomHex extends Gui {
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), true, true
 										);
-										applicableItem.add(item);
+										if (item.itemType != ItemType.UNKNOWN) {
+											int potatoCount = 0;
+											int killCount = 0;
+											int warCount = 0;
+											int ffdCount = 0;
+											if (enchantingItem != null) {
+												NBTTagCompound tagItem = enchantingItem.getTagCompound();
+												if (tagItem != null) {
+													NBTTagCompound extra = tagItem.getCompoundTag("ExtraAttributes");
+													if (extra != null) {
+														potatoCount = extra.getInteger("hot_potato_count");
+														killCount = extra.getInteger("stats_book");
+														warCount = extra.getInteger("art_of_war_count");
+														ffdCount = extra.getInteger("farming_for_dummies_count");
+													}
+												}
+											}
+											if (item.itemType == ItemType.HOT_POTATO) {
+												if (potatoCount < 10) {
+													applicableItem.add(item);
+												} else {
+													removableItem.add(item);
+												}
+											} else if (item.itemType == ItemType.FUMING_POTATO) {
+												if (potatoCount >= 10 && potatoCount < 15) {
+													applicableItem.add(item);
+												} else if (potatoCount >= 15) {
+													removableItem.add(item);
+												}
+											} else if (item.itemType == ItemType.BOOK_OF_STATS) {
+												if (killCount > 0) {
+													removableItem.add(item);
+												} else {
+													applicableItem.add(item);
+												}
+											} else if (item.itemType == ItemType.ART_OF_WAR) {
+												if (warCount > 0) {
+													removableItem.add(item);
+												} else {
+													applicableItem.add(item);
+												}
+											} else if (item.itemType == ItemType.FARMING_DUMMY) {
+												if (ffdCount < 5) {
+													applicableItem.add(item);
+												} else {
+													removableItem.add(item);
+												}
+											}
+										} else {
+											applicableItem.add(item);
+										}
 									}
 								} else {
 									if (playerEnchantIds.containsKey(itemId)) {
@@ -867,12 +954,7 @@ public class GuiCustomHex extends Gui {
 
 		drawGradientRect(0, 0, width, height, 0xc0101010, 0xd0101010);
 
-		//Base Texture
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
-		Utils.drawTexturedRect(guiLeft, guiTop, X_SIZE, Y_SIZE,
-			0, X_SIZE / 512f, 0, Y_SIZE / 512f, GL11.GL_NEAREST
-		);
+		renderBaseTexture();
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Applicable", guiLeft + 7, guiTop + 7, 0x404040, false);
 		Minecraft.getMinecraft().fontRendererObj.drawString("Removable", guiLeft + 247, guiTop + 7, 0x404040, false);
@@ -896,104 +978,10 @@ public class GuiCustomHex extends Gui {
 			);
 		}
 
-		//Settings Buttons
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
-		//On Settings Button
-		Utils.drawTexturedRect(guiLeft + 295, guiTop + 147, 16, 16,
-			0, 16 / 512f, 387 / 512f, (387 + 16) / 512f, GL11.GL_NEAREST
-		);
-		//Incompatible Settings Button
-        /*float incompatibleMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants * 16 / 512f;
-        Utils.drawTexturedRect(guiLeft + 295 + 18, guiTop + 147, 16, 16,
-                incompatibleMinU, incompatibleMinU + 16 / 512f, 403 / 512f, (403 + 16) / 512f, GL11.GL_NEAREST);*/
-		//Sorting Settings Button
-		float sortingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting * 16 / 512f;
-		Utils.drawTexturedRect(guiLeft + 295, guiTop + 147 + 18, 16, 16,
-			sortingMinU, sortingMinU + 16 / 512f, 419 / 512f, (419 + 16) / 512f, GL11.GL_NEAREST
-		);
-		//Ordering Settings Button
-		float orderingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering * 16 / 512f;
-		Utils.drawTexturedRect(guiLeft + 295 + 18, guiTop + 147 + 18, 16, 16,
-			orderingMinU, orderingMinU + 16 / 512f, 435 / 512f, (435 + 16) / 512f, GL11.GL_NEAREST
-		);
+		tooltipToDisplay = renderSettings(mouseX, mouseY, tooltipToDisplay);
 
-		if (mouseX >= guiLeft + 294 && mouseX < guiLeft + 294 + 36 &&
-			mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
-			int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
-			switch (index) {
-				case 0:
-					Gui.drawRect(guiLeft + 295, guiTop + 147, guiLeft + 295 + 16, guiTop + 147 + 16, 0x80ffffff);
-					tooltipToDisplay = createTooltip("Enable GUI", 0, "On", "Off");
-					break;
-                /*case 1:
-                    Gui.drawRect(guiLeft + 295 + 18, guiTop + 147, guiLeft + 295 + 16 + 18, guiTop + 147 + 16, 0x80ffffff);
-                    tooltipToDisplay = createTooltip("Incompatible Enchants",
-                            NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants,
-                            "Highlight", "Hide");
-                    tooltipToDisplay.add(1, EnumChatFormatting.GRAY + "How to display enchants that are");
-                    tooltipToDisplay.add(2, EnumChatFormatting.GRAY + "incompatible with your current item,");
-                    tooltipToDisplay.add(3, EnumChatFormatting.GRAY + "eg. Smite on a sword with Sharpness");
-                    break;*/
-				case 2:
-					Gui.drawRect(guiLeft + 295, guiTop + 147 + 18, guiLeft + 295 + 16, guiTop + 147 + 16 + 18, 0x80ffffff);
-					tooltipToDisplay = createTooltip("Sort enchants...",
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting,
-						"By Cost", "Alphabetically"
-					);
-					break;
-				case 3:
-					Gui.drawRect(
-						guiLeft + 295 + 18,
-						guiTop + 147 + 18,
-						guiLeft + 295 + 16 + 18,
-						guiTop + 147 + 16 + 18,
-						0x80ffffff
-					);
-					tooltipToDisplay = createTooltip("Order enchants...",
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering,
-						"Ascending", "Descending"
-					);
-					break;
-			}
-		}
 
-		//Left scroll bar
-		{
-			int offset;
-			if (applicable.size() <= 6) {
-				offset = 0;
-			} else if (isScrollingLeft && clickedScrollOffset >= 0) {
-				offset = mouseY - clickedScrollOffset;
-				if (offset < 0) offset = 0;
-				if (offset > 96 - 15) offset = 96 - 15;
-			} else {
-				offset = Math.round((96 - 15) * (leftScroll.getValue() / (float) ((applicable.size() - 6) * 16)));
-			}
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-			GlStateManager.color(1, 1, 1, 1);
-			Utils.drawTexturedRect(guiLeft + 104, guiTop + 18 + offset, 12, 15,
-				0, 12 / 512f, 313 / 512f, (313 + 15) / 512f, GL11.GL_NEAREST
-			);
-		}
-		//Right scroll bar
-		{
-			int offset;
-			if (removable.size() <= 6) {
-				offset = 0;
-			} else if (!isScrollingLeft && clickedScrollOffset >= 0) {
-				offset = mouseY - clickedScrollOffset;
-				if (offset < 0) offset = 0;
-				if (offset > 96 - 15) offset = 96 - 15;
-			} else {
-				offset = Math.round((96 - 15) * (rightScroll.getValue() / (float) ((removable.size() - 6) * 16)));
-			}
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-			GlStateManager.color(1, 1, 1, 1);
-			Utils.drawTexturedRect(guiLeft + 344, guiTop + 18 + offset, 12, 15,
-				0, 12 / 512f, 313 / 512f, (313 + 15) / 512f, GL11.GL_NEAREST
-			);
-		}
+		renderScrollBars(applicable, removable, mouseY);
 
 		//Enchant book model
 		renderEnchantBook(scaledResolution, partialTicks);
@@ -1010,21 +998,7 @@ public class GuiCustomHex extends Gui {
 			GlStateManager.enableDepth();
 		}
 
-		//Enchant arrow
-		if (arrowAmount.getValue() > 0) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-			GlStateManager.color(1, 1, 1, 1);
-			float w = 22 * arrowAmount.getValue();
-			if (removingEnchantPlayerLevel < 0) {
-				Utils.drawTexturedRect(guiLeft + 134, guiTop + 58, w, 16,
-					0, w / 512f, 297 / 512f, (297 + 16) / 512f, GL11.GL_NEAREST
-				);
-			} else {
-				Utils.drawTexturedRect(guiLeft + 230 - w, guiTop + 58, w, 16,
-					(44 - w) / 512f, 44 / 512f, 297 / 512f, (297 + 16) / 512f, GL11.GL_NEAREST
-				);
-			}
-		}
+		renderArrow();
 
 		//Text if no enchants appear
 		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
@@ -1594,28 +1568,7 @@ public class GuiCustomHex extends Gui {
 		}
 
 		if (currentState == EnchantState.HAS_ITEM) {
-			int left = guiLeft + X_SIZE / 2 - 56;
-			int top = guiTop + 83;
-			//Cancel button
-			if (System.currentTimeMillis() - cancelButtonAnimTime < 500) {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-				GlStateManager.color(1, 1, 1, 1);
-				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
-					0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
-				);
-				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040
-				);
-			} else {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-				GlStateManager.color(1, 1, 1, 1);
-				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
-					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
-				);
-				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040
-				);
-			}
+			renderCancel();
 		}
 
 		//Item enchant input
@@ -1668,52 +1621,10 @@ public class GuiCustomHex extends Gui {
 
 		GlStateManager.translate(0, 0, 300);
 
-		//Orb animation
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
-		GlStateManager.disableDepth();
-		for (ExperienceOrb orb : orbs) {
-			int orbX = Math.round(orb.xLast + (orb.x - orb.xLast) * partialTicks);
-			int orbY = Math.round(orb.yLast + (orb.y - orb.yLast) * partialTicks);
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(orbX, orbY, 0);
-			GlStateManager.rotate(orb.rotationDeg, 0, 0, 1);
+		renderOrbAnim(partialTicks);
 
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-			float velSq = orb.xVel * orb.xVel + orb.yVel * orb.yVel;
-			float opacity = Math.min(2, Math.max(0.5f, length / 16)) * Math.min(2, Math.max(0.5f, velSq / 40));
-			if (opacity > 1) opacity = 1;
-			opacity = (float) Math.sqrt(opacity);
-			GlStateManager.color(1, 1, 1, opacity);
-
-			Utils.drawTexturedRect(
-				-8,
-				-8,
-				16,
-				16,
-				((orb.type % 3) * 16) / 512f,
-				(16 + (orb.type % 3) * 16) / 512f,
-				(217 + orb.type / 3 * 16) / 512f,
-				(217 + 16 + orb.type / 3 * 16) / 512f,
-				GL11.GL_NEAREST
-			);
-			GlStateManager.popMatrix();
-		}
-		GlStateManager.enableDepth();
-
-		if (stackOnMouse != null) {
-			if (disallowClick) {
-				Utils.drawItemStack(new ItemStack(Item.getItemFromBlock(Blocks.barrier)), mouseX - 8, mouseY - 8);
-			} else {
-				Utils.drawItemStack(stackOnMouse, mouseX - 8, mouseY - 8);
-			}
-		} else if (tooltipToDisplay != null) {
-			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1,
-				Minecraft.getMinecraft().fontRendererObj
-			);
-		}
+		renderMouseStack(stackOnMouse, disallowClick, mouseX, mouseY,
+			width, height, tooltipToDisplay);
 		GlStateManager.translate(0, 0, -300);
 	}
 
@@ -1747,15 +1658,10 @@ public class GuiCustomHex extends Gui {
 
 		drawGradientRect(0, 0, width, height, 0xc0101010, 0xd0101010);
 
-		//Base Texture
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
-		Utils.drawTexturedRect(guiLeft, guiTop, X_SIZE, Y_SIZE,
-			0, X_SIZE / 512f, 0, Y_SIZE / 512f, GL11.GL_NEAREST
-		);
+		renderBaseTexture();
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("Applicable", guiLeft + 7, guiTop + 7, 0x404040, false);
-		Minecraft.getMinecraft().fontRendererObj.drawString("Removable", guiLeft + 247, guiTop + 7, 0x404040, false);
+		Minecraft.getMinecraft().fontRendererObj.drawString("Applied", guiLeft + 247, guiTop + 7, 0x404040, false);
 
 		//Page Text
 		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
@@ -1776,91 +1682,9 @@ public class GuiCustomHex extends Gui {
 			);
 		}
 
-		//Settings Buttons
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
-		//On Settings Button
-		Utils.drawTexturedRect(guiLeft + 295, guiTop + 147, 16, 16,
-			0, 16 / 512f, 387 / 512f, (387 + 16) / 512f, GL11.GL_NEAREST
-		);
-		//Sorting Settings Button
-		float sortingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting * 16 / 512f;
-		Utils.drawTexturedRect(guiLeft + 295, guiTop + 147 + 18, 16, 16,
-			sortingMinU, sortingMinU + 16 / 512f, 419 / 512f, (419 + 16) / 512f, GL11.GL_NEAREST
-		);
-		//Ordering Settings Button
-		float orderingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering * 16 / 512f;
-		Utils.drawTexturedRect(guiLeft + 295 + 18, guiTop + 147 + 18, 16, 16,
-			orderingMinU, orderingMinU + 16 / 512f, 435 / 512f, (435 + 16) / 512f, GL11.GL_NEAREST
-		);
+		tooltipToDisplay = renderSettings(mouseX, mouseY, tooltipToDisplay);
 
-		if (mouseX >= guiLeft + 294 && mouseX < guiLeft + 294 + 36 &&
-			mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
-			int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
-			switch (index) {
-				case 0:
-					Gui.drawRect(guiLeft + 295, guiTop + 147, guiLeft + 295 + 16, guiTop + 147 + 16, 0x80ffffff);
-					tooltipToDisplay = createTooltip("Enable GUI", 0, "On", "Off");
-					break;
-				case 2:
-					Gui.drawRect(guiLeft + 295, guiTop + 147 + 18, guiLeft + 295 + 16, guiTop + 147 + 16 + 18, 0x80ffffff);
-					tooltipToDisplay = createTooltip("Sort enchants...",
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting,
-						"By Cost", "Alphabetically"
-					);
-					break;
-				case 3:
-					Gui.drawRect(
-						guiLeft + 295 + 18,
-						guiTop + 147 + 18,
-						guiLeft + 295 + 16 + 18,
-						guiTop + 147 + 16 + 18,
-						0x80ffffff
-					);
-					tooltipToDisplay = createTooltip("Order enchants...",
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering,
-						"Ascending", "Descending"
-					);
-					break;
-			}
-		}
-
-		//Left scroll bar
-		{
-			int offset;
-			if (applicableItem.size() <= 6) {
-				offset = 0;
-			} else if (isScrollingLeft && clickedScrollOffset >= 0) {
-				offset = mouseY - clickedScrollOffset;
-				if (offset < 0) offset = 0;
-				if (offset > 96 - 15) offset = 96 - 15;
-			} else {
-				offset = Math.round((96 - 15) * (leftScroll.getValue() / (float) ((applicableItem.size() - 6) * 16)));
-			}
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-			GlStateManager.color(1, 1, 1, 1);
-			Utils.drawTexturedRect(guiLeft + 104, guiTop + 18 + offset, 12, 15,
-				0, 12 / 512f, 313 / 512f, (313 + 15) / 512f, GL11.GL_NEAREST
-			);
-		}
-		//Right scroll bar
-		{
-			int offset;
-			if (removableItem.size() <= 6) {
-				offset = 0;
-			} else if (!isScrollingLeft && clickedScrollOffset >= 0) {
-				offset = mouseY - clickedScrollOffset;
-				if (offset < 0) offset = 0;
-				if (offset > 96 - 15) offset = 96 - 15;
-			} else {
-				offset = Math.round((96 - 15) * (rightScroll.getValue() / (float) ((removableItem.size() - 6) * 16)));
-			}
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-			GlStateManager.color(1, 1, 1, 1);
-			Utils.drawTexturedRect(guiLeft + 344, guiTop + 18 + offset, 12, 15,
-				0, 12 / 512f, 313 / 512f, (313 + 15) / 512f, GL11.GL_NEAREST
-			);
-		}
+		renderScrollBars(applicable, removable, mouseY);
 
 		//Enchant book model
 		renderEnchantBook(scaledResolution, partialTicks);
@@ -1877,21 +1701,7 @@ public class GuiCustomHex extends Gui {
 			GlStateManager.enableDepth();
 		}
 
-		//Enchant arrow
-		if (arrowAmount.getValue() > 0) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-			GlStateManager.color(1, 1, 1, 1);
-			float w = 22 * arrowAmount.getValue();
-			if (removingEnchantPlayerLevel < 0) {
-				Utils.drawTexturedRect(guiLeft + 134, guiTop + 58, w, 16,
-					0, w / 512f, 297 / 512f, (297 + 16) / 512f, GL11.GL_NEAREST
-				);
-			} else {
-				Utils.drawTexturedRect(guiLeft + 230 - w, guiTop + 58, w, 16,
-					(44 - w) / 512f, 44 / 512f, 297 / 512f, (297 + 16) / 512f, GL11.GL_NEAREST
-				);
-			}
-		}
+		renderArrow();
 
 		//Text if no enchants appear
 		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT ||
@@ -1933,7 +1743,7 @@ public class GuiCustomHex extends Gui {
 				Utils.drawStringCentered("another page?", Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 248 + 48, guiTop + 58, true, 0xffff5555
 				);
-			} else if (removable.isEmpty() && !searchRemovedFromRemovable) {
+			} else if (removableItem.isEmpty() && !searchRemovedFromRemovable) {
 				Utils.drawStringCentered("No removable", Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 248 + 48, guiTop + 28, true, 0xffff5555
 				);
@@ -1972,7 +1782,7 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 
-			String levelStr = "" + item.price;
+			String levelStr = getIconStr(item);
 			int colour = 0xc8ff8f;
 			if (item.price > playerXpLevel) {
 				colour = 0xff5555;
@@ -2030,7 +1840,7 @@ public class GuiCustomHex extends Gui {
 		for (int i = 0; i < 7; i++) {
 			int index = i + rightScroll.getValue() / 16;
 
-			if (removable.size() <= index) break;
+			if (removableItem.size() <= index) break;
 			HexItem item = removableItem.get(index);
 
 			int top = guiTop - (rightScroll.getValue() % 16) + 18 + 16 * i;
@@ -2051,7 +1861,7 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 
-			String levelStr = "" + item.price;
+			String levelStr = getIconStr(item);
 			if (item.price < 0) levelStr = "?";
 			int colour = 0xc8ff8f;
 			if (item.price > playerXpLevel) {
@@ -2245,7 +2055,7 @@ public class GuiCustomHex extends Gui {
 			}*/
 
 			//Enchant level
-			levelStr = "" + enchanterCurrentItem.level;
+			levelStr = "" /*+ enchanterCurrentItem.level*/;
 			if (enchanterCurrentItem.price < 0) levelStr = "?";
 			levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
 			Minecraft.getMinecraft().fontRendererObj.drawString(
@@ -2460,29 +2270,8 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
-		if (currentState == EnchantState.HAS_ITEM) {
-			int left = guiLeft + X_SIZE / 2 - 56;
-			int top = guiTop + 83;
-			//Cancel button
-			if (System.currentTimeMillis() - cancelButtonAnimTime < 500) {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-				GlStateManager.color(1, 1, 1, 1);
-				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
-					0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
-				);
-				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040
-				);
-			} else {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-				GlStateManager.color(1, 1, 1, 1);
-				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
-					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
-				);
-				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040
-				);
-			}
+		if (currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
+			renderCancel();
 		}
 
 		//Item enchant input
@@ -2535,6 +2324,212 @@ public class GuiCustomHex extends Gui {
 
 		GlStateManager.translate(0, 0, 300);
 
+		renderOrbAnim(partialTicks);
+
+		renderMouseStack(stackOnMouse, disallowClick, mouseX, mouseY,
+			width, height, tooltipToDisplay);
+		GlStateManager.translate(0, 0, -300);
+	}
+
+	private String getIconStr(HexItem item) {
+		String levelStr = "";
+		if (item.itemType != ItemType.UNKNOWN) {
+			int potatoCount = 0;
+			int killCount = 0;
+			int warCount = 0;
+			int ffdCount = 0;
+			if (enchantingItem != null) {
+				NBTTagCompound tagItem = enchantingItem.getTagCompound();
+				if (tagItem != null) {
+					NBTTagCompound ea = tagItem.getCompoundTag("ExtraAttributes");
+					if (ea != null) {
+						potatoCount = ea.getInteger("hot_potato_count");
+						killCount = ea.getInteger("stats_book");
+						warCount = ea.getInteger("art_of_war_count");
+						ffdCount = ea.getInteger("farming_for_dummies_count");
+					}
+				}
+			}
+			if (item.itemType == ItemType.HOT_POTATO) {
+				if (potatoCount <= 10) {
+					levelStr = "" + potatoCount;
+				} else {
+					levelStr = "✔";
+				}
+			} else if (item.itemType == ItemType.FUMING_POTATO) {
+				if (potatoCount <= 10) {
+					levelStr = "" + 0;
+				} else {
+					levelStr = "" + (potatoCount - 10);
+				}
+			} else if (item.itemType == ItemType.BOOK_OF_STATS) {
+				if (killCount > 0) {
+					levelStr = "✔";
+				} else {
+					levelStr = "✖";
+				}
+			} else if (item.itemType == ItemType.ART_OF_WAR) {
+				if (warCount > 0) {
+					levelStr = "✔";
+				} else {
+					levelStr = "✖";
+				}
+			} else if (item.itemType == ItemType.FARMING_DUMMY) {
+				if (ffdCount < 5) {
+					levelStr = "" + ffdCount;
+				} else {
+					levelStr = "✔";
+				}
+			}
+		} else {
+			levelStr = "?";
+		}
+		return levelStr;
+	}
+
+	private void renderBaseTexture() {
+		//Base Texture
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+		GlStateManager.color(1, 1, 1, 1);
+		Utils.drawTexturedRect(guiLeft, guiTop, X_SIZE, Y_SIZE,
+			0, X_SIZE / 512f, 0, Y_SIZE / 512f, GL11.GL_NEAREST
+		);
+	}
+
+	private List<String> renderSettings(int mouseX, int mouseY, List<String> tooltipToDisplay) {
+		//Settings Buttons
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+		GlStateManager.color(1, 1, 1, 1);
+		//On Settings Button
+		Utils.drawTexturedRect(guiLeft + 295, guiTop + 147, 16, 16,
+			0, 16 / 512f, 387 / 512f, (387 + 16) / 512f, GL11.GL_NEAREST
+		);
+		//Sorting Settings Button
+		float sortingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting * 16 / 512f;
+		Utils.drawTexturedRect(guiLeft + 295, guiTop + 147 + 18, 16, 16,
+			sortingMinU, sortingMinU + 16 / 512f, 419 / 512f, (419 + 16) / 512f, GL11.GL_NEAREST
+		);
+		//Ordering Settings Button
+		float orderingMinU = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering * 16 / 512f;
+		Utils.drawTexturedRect(guiLeft + 295 + 18, guiTop + 147 + 18, 16, 16,
+			orderingMinU, orderingMinU + 16 / 512f, 435 / 512f, (435 + 16) / 512f, GL11.GL_NEAREST
+		);
+
+		if (mouseX >= guiLeft + 294 && mouseX < guiLeft + 294 + 36 &&
+			mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
+			int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
+			switch (index) {
+				case 0:
+					Gui.drawRect(guiLeft + 295, guiTop + 147, guiLeft + 295 + 16, guiTop + 147 + 16, 0x80ffffff);
+					tooltipToDisplay = createTooltip("Enable GUI", 0, "On", "Off");
+					break;
+				case 2:
+					Gui.drawRect(guiLeft + 295, guiTop + 147 + 18, guiLeft + 295 + 16, guiTop + 147 + 16 + 18, 0x80ffffff);
+					tooltipToDisplay = createTooltip("Sort enchants...",
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting,
+						"By Cost", "Alphabetically"
+					);
+					break;
+				case 3:
+					Gui.drawRect(
+						guiLeft + 295 + 18,
+						guiTop + 147 + 18,
+						guiLeft + 295 + 16 + 18,
+						guiTop + 147 + 16 + 18,
+						0x80ffffff
+					);
+					tooltipToDisplay = createTooltip("Order enchants...",
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering,
+						"Ascending", "Descending"
+					);
+					break;
+			}
+		}
+		return tooltipToDisplay;
+	}
+
+	private void renderScrollBars(List applicable, List removable, int mouseY) {
+		//Left scroll bar
+		{
+			int offset;
+			if (applicable.size() <= 6) {
+				offset = 0;
+			} else if (isScrollingLeft && clickedScrollOffset >= 0) {
+				offset = mouseY - clickedScrollOffset;
+				if (offset < 0) offset = 0;
+				if (offset > 96 - 15) offset = 96 - 15;
+			} else {
+				offset = Math.round((96 - 15) * (leftScroll.getValue() / (float) ((applicable.size() - 6) * 16)));
+			}
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + 104, guiTop + 18 + offset, 12, 15,
+				0, 12 / 512f, 313 / 512f, (313 + 15) / 512f, GL11.GL_NEAREST
+			);
+		}
+		//Right scroll bar
+		{
+			int offset;
+			if (removable.size() <= 6) {
+				offset = 0;
+			} else if (!isScrollingLeft && clickedScrollOffset >= 0) {
+				offset = mouseY - clickedScrollOffset;
+				if (offset < 0) offset = 0;
+				if (offset > 96 - 15) offset = 96 - 15;
+			} else {
+				offset = Math.round((96 - 15) * (rightScroll.getValue() / (float) ((removable.size() - 6) * 16)));
+			}
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + 344, guiTop + 18 + offset, 12, 15,
+				0, 12 / 512f, 313 / 512f, (313 + 15) / 512f, GL11.GL_NEAREST
+			);
+		}
+	}
+
+	private void renderArrow() {
+		//Enchant arrow
+		if (arrowAmount.getValue() > 0) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			float w = 22 * arrowAmount.getValue();
+			if (removingEnchantPlayerLevel < 0) {
+				Utils.drawTexturedRect(guiLeft + 134, guiTop + 58, w, 16,
+					0, w / 512f, 297 / 512f, (297 + 16) / 512f, GL11.GL_NEAREST
+				);
+			} else {
+				Utils.drawTexturedRect(guiLeft + 230 - w, guiTop + 58, w, 16,
+					(44 - w) / 512f, 44 / 512f, 297 / 512f, (297 + 16) / 512f, GL11.GL_NEAREST
+				);
+			}
+		}
+	}
+
+	private void renderCancel() {
+		int top = guiTop + 83;
+		//Cancel button
+		if (System.currentTimeMillis() - cancelButtonAnimTime < 500) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+				0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
+			);
+			Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040
+			);
+		} else {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+				0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+			);
+			Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040
+			);
+		}
+	}
+
+	private void renderOrbAnim(float partialTicks) {
 		//Orb animation
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
 		GlStateManager.color(1, 1, 1, 1);
@@ -2569,7 +2564,11 @@ public class GuiCustomHex extends Gui {
 			GlStateManager.popMatrix();
 		}
 		GlStateManager.enableDepth();
+	}
 
+	private void renderMouseStack(ItemStack stackOnMouse, boolean disallowClick,
+																int mouseX, int mouseY, int width, int height,
+																List<String> tooltipToDisplay) {
 		if (stackOnMouse != null) {
 			if (disallowClick) {
 				Utils.drawItemStack(new ItemStack(Item.getItemFromBlock(Blocks.barrier)), mouseX - 8, mouseY - 8);
@@ -2581,7 +2580,6 @@ public class GuiCustomHex extends Gui {
 				Minecraft.getMinecraft().fontRendererObj
 			);
 		}
-		GlStateManager.translate(0, 0, -300);
 	}
 
 	private void spawnExperienceOrbs(int startX, int startY, int targetX, int targetY, int baseType) {
