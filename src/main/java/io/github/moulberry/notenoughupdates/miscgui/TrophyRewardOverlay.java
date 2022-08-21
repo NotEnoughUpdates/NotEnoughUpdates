@@ -70,7 +70,7 @@ public class TrophyRewardOverlay {
 	 * This adds support for the /neureloadrepo command
 	 */
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void reload(RepositoryReloadEvent event) {
+	public void onRepoReload(RepositoryReloadEvent event) {
 		reloadNeeded = true;
 	}
 

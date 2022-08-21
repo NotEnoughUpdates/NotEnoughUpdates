@@ -208,6 +208,15 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Dungeon/Slayer Needed Counter",
+		desc = "Show the amount of dungeon runs or slayer bosses needed for the rng meter to fill up"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean rngMeterRunsNeeded = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Essence Price In Shop",
 		desc = "Show the essence price in the essence shop in the dungeon hub"
 	)
