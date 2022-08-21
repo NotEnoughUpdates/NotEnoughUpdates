@@ -33,6 +33,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -1038,11 +1039,11 @@ public class PetInfoOverlay extends TextOverlay {
 
 				Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
 				if (event.message.getUnformattedText().startsWith("You summoned your") ||
-					System.currentTimeMillis() - NEUOverlay.cachedPetTimer < 500) {
-					NEUOverlay.cachedPetTimer = System.currentTimeMillis();
-					NEUOverlay.shouldUseCachedPet = false;
+					System.currentTimeMillis() - EquipmentOverlay.cachedPetTimer < 500) {
+					EquipmentOverlay.cachedPetTimer = System.currentTimeMillis();
+					EquipmentOverlay.shouldUseCachedPet = false;
 				} else if (autopetMatcher.matches()) {
-					NEUOverlay.shouldUseCachedPet = false;
+					EquipmentOverlay.shouldUseCachedPet = false;
 					try {
 						lastLevelHovered = Integer.parseInt(autopetMatcher.group(1));
 					} catch (NumberFormatException ignored) {

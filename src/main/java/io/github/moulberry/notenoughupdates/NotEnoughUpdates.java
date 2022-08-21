@@ -64,6 +64,7 @@ import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -280,6 +281,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(CrystalWishingCompassSolver.getInstance());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
+		MinecraftForge.EVENT_BUS.register(new EquipmentOverlay());
 		MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(new ChatListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
