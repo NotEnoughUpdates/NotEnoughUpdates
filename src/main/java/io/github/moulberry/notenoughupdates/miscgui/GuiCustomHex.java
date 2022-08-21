@@ -56,6 +56,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
+import org.omg.CORBA.PUBLIC_MEMBER;
+import org.omg.CORBA.UNKNOWN;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.text.NumberFormat;
@@ -102,7 +104,32 @@ public class GuiCustomHex extends Gui {
 		ART_OF_WAR,
 		ART_OF_PEACE,
 		FARMING_DUMMY,
-		UNKNOWN
+		RECOMB,
+		SILEX,
+		RUBY_SCROLL,
+		SAPPHIRE_SCROLL,
+		JASPER_SCROLL,
+		AMETHYST_SCROLL,
+		AMBER_SCROLL,
+		OPAL_SCROLL,
+		FIRST_STAR(1),
+		SECOND_STAR(2),
+		THIRD_STAR(3),
+		FOURTH_STAR(4),
+		FIFTH_STAR(5),
+		FIRST_MASTER_STAR(6),
+		SECOND_MASTER_STAR(7),
+		THIRD_MASTER_STAR(8),
+		FOURTH_MASTER_STAR(9),
+		FIFTH_MASTER_STAR(10),
+		UNKNOWN;
+
+		private int starLevel = -1;
+
+		ItemType() {}
+		ItemType(int starLevel) {
+			this.starLevel = starLevel;
+		}
 	}
 
 	private class Enchantment {
@@ -184,7 +211,7 @@ public class GuiCustomHex extends Gui {
 		public List<String> displayLore;
 		public List<String> itemCosts;
 		public int level;
-		public float price = -1;
+		public int price = -1;
 		public boolean overMaxLevel = false;
 		public boolean conflicts = false;
 		public ItemType itemType = ItemType.UNKNOWN;
@@ -197,10 +224,6 @@ public class GuiCustomHex extends Gui {
 			this.itemName = itemName;
 			this.itemId = itemId;
 			this.displayLore = displayLore;
-			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(itemId);
-			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
-				this.price = bazaarInfo.get("curr_buy").getAsFloat();
-			}
 			switch (itemId) {
 				default:
 					this.itemType = ItemType.UNKNOWN;
@@ -223,7 +246,59 @@ public class GuiCustomHex extends Gui {
 				case "THE_ART_OF_PEACE":
 					this.itemType = ItemType.ART_OF_PEACE;
 					break;
+				case "RECOMBOBULATOR_3000":
+					this.itemType = ItemType.RECOMB;
+					break;
+				case "SILEX":
+					this.itemId = "SIL_EX";
+					this.itemType = ItemType.SILEX;
+					break;
+				case "RUBY_POWER_SCROLL":
+					this.itemType = ItemType.RUBY_SCROLL;
+					break;
+				case "SAPPHIRE_POWER_SCROLL":
+					this.itemType = ItemType.SAPPHIRE_SCROLL;
+					break;
+				case "JASPER_POWER_SCROLL":
+					this.itemType = ItemType.JASPER_SCROLL;
+					break;
+				case "AMETHYST_POWER_SCROLL":
+					this.itemType = ItemType.AMETHYST_SCROLL;
+					break;
+				case "AMBER_POWER_SCROLL":
+					this.itemType = ItemType.AMBER_SCROLL;
+					break;
+				case "OPAL_POWER_SCROLL":
+					this.itemType = ItemType.OPAL_SCROLL;
+					break;
+				case "FIRST_MASTER_STAR":
+					this.itemType = ItemType.FIRST_MASTER_STAR;
+					break;
+				case "SECOND_MASTER_STAR":
+					this.itemType = ItemType.SECOND_MASTER_STAR;
+					break;
+				case "THIRD_MASTER_STAR":
+					this.itemType = ItemType.THIRD_MASTER_STAR;
+					break;
+				case "FOURTH_MASTER_STAR":
+					this.itemType = ItemType.FOURTH_MASTER_STAR;
+					break;
+				case "FIFTH_MASTER_STAR":
+					this.itemType = ItemType.FIFTH_MASTER_STAR;
+					break;
 			}
+			if (!this.isMasterStar() && itemId.contains("✪")) {
+				if (itemId.contains("✪✪✪✪✪")) this.itemType = ItemType.FIFTH_STAR;
+				else if (itemId.contains("✪✪✪✪")) this.itemType = ItemType.FOURTH_STAR;
+				else if (itemId.contains("✪✪✪")) this.itemType = ItemType.THIRD_STAR;
+				else if (itemId.contains("✪✪")) this.itemType = ItemType.SECOND_STAR;
+				else if (itemId.contains("✪")) this.itemType = ItemType.FIRST_STAR;
+			}
+			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(this.itemId);
+			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
+				this.price = bazaarInfo.get("curr_buy").getAsInt();
+			}
+			if ("SIL_EX".equals(this.itemId)) this.itemId = "SILEX";
 
 			/*if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -268,6 +343,24 @@ public class GuiCustomHex extends Gui {
 
 				}
 			}*/
+		}
+
+		public boolean isPowerScroll() {
+			return itemType == ItemType.RUBY_SCROLL || itemType == ItemType.SAPPHIRE_SCROLL ||
+				itemType == ItemType.JASPER_SCROLL || itemType == ItemType.AMETHYST_SCROLL ||
+				itemType == ItemType.AMBER_SCROLL || itemType == ItemType.OPAL_SCROLL;
+		}
+
+		public boolean isDungeonStar() {
+			return itemType == ItemType.FIRST_STAR || itemType == ItemType.SECOND_STAR ||
+				itemType == ItemType.THIRD_STAR || itemType == ItemType.FOURTH_STAR ||
+				itemType == ItemType.FIFTH_STAR;
+		}
+
+		public boolean isMasterStar() {
+			return itemType == ItemType.FIRST_MASTER_STAR || itemType == ItemType.SECOND_MASTER_STAR ||
+				itemType == ItemType.THIRD_MASTER_STAR || itemType == ItemType.FOURTH_MASTER_STAR ||
+				itemType == ItemType.FIFTH_MASTER_STAR;
 		}
 	}
 
@@ -388,11 +481,10 @@ public class GuiCustomHex extends Gui {
 	public void tick(String containerName) {
 		if (containerName.contains("Enchant Item")) {
 			tickEnchants();
-		} else if (containerName.contains("Books")) {
+		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
 			tickBooks();
 		} else {
-			System.out.println("BBBBB");
-			tickEnchants();
+			tickBooks();
 		}
 	}
 
@@ -428,12 +520,7 @@ public class GuiCustomHex extends Gui {
 			} else {
 				currentState = EnchantState.SWITCHING_DONT_UPDATE;
 			}
-		} /*else if (stack.getItemDamage() == 1) {
-			currentState = EnchantState.INVALID_ITEM;
-		} else {
-			currentState = EnchantState.NO_ITEM;
-		}*/
-		//System.out.println(currentState);
+		}
 
 		if (currentState == EnchantState.HAS_ITEM) {
 			ItemStack pageUpStack = cc.getLowerChestInventory().getStackInSlot(17);
@@ -808,12 +895,29 @@ public class GuiCustomHex extends Gui {
 								);
 								String name = Utils.cleanColour(book.getDisplayName());
 								if (itemId.equalsIgnoreCase("_")) continue;
+								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
 								if (searchField.getText().trim().isEmpty() ||
 									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
 									if (name.equalsIgnoreCase("Hot Potato Book")) {
 										name = "Hot Potato";
 									} else if (name.equalsIgnoreCase("Fuming Potato Book")) {
 										name = "Fuming Potato";
+									} else if (name.equalsIgnoreCase("Recombobulator 3000")) {
+										name = "Recombobulator";
+									} else if (name.contains("Power Scroll")) {
+										name = name.replace("Power ", "");
+									} else if (name.contains("\u272a")) {
+										name = name.replaceAll("[^✪]*", "");
+									} else if (name.equalsIgnoreCase("First Master Star")) {
+										name = "Master Star \u00a7c➊";
+									} else if (name.equalsIgnoreCase("Second Master Star")) {
+										name = "Master Star \u00a7c➋";
+									} else if (name.equalsIgnoreCase("Third Master Star")) {
+										name = "Master Star \u00a7c➌";
+									} else if (name.equalsIgnoreCase("Fourth Master Star")) {
+										name = "Master Star \u00a7c➍";
+									} else if (name.equalsIgnoreCase("Fifth Master Star")) {
+										name = "Master Star \u00a7c➎";
 									}
 									if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
@@ -833,6 +937,9 @@ public class GuiCustomHex extends Gui {
 											int killCount = 0;
 											int warCount = 0;
 											int ffdCount = 0;
+											int recombCount = 0;
+											int effLevel = 0;
+											int starCount = 0;
 											if (enchantingItem != null) {
 												NBTTagCompound tagItem = enchantingItem.getTagCompound();
 												if (tagItem != null) {
@@ -842,6 +949,12 @@ public class GuiCustomHex extends Gui {
 														killCount = extra.getInteger("stats_book");
 														warCount = extra.getInteger("art_of_war_count");
 														ffdCount = extra.getInteger("farming_for_dummies_count");
+														recombCount = extra.getInteger("rarity_upgrades");
+														starCount = extra.getInteger("upgrade_level");
+														NBTTagCompound enchs = extra.getCompoundTag("enchantments");
+														if (enchs != null) {
+															effLevel = enchs.getInteger("efficiency");
+														}
 													}
 												}
 											}
@@ -875,6 +988,19 @@ public class GuiCustomHex extends Gui {
 												} else {
 													removableItem.add(item);
 												}
+											} else if (item.itemType == ItemType.RECOMB) {
+												if (recombCount > 0) removableItem.add(item);
+												else applicableItem.add(item);
+											} else if (item.itemType == ItemType.SILEX) {
+												if (effLevel >= 5 && effLevel < 10) applicableItem.add(item);
+												else if (effLevel == 10) removableItem.add(item);
+											} else if (item.isPowerScroll()) {
+												applicableItem.add(item);
+											} else if (item.isMasterStar()) {
+												applicableItem.add(item);
+											} else if (item.isDungeonStar()) {
+												if (starCount >= item.itemType.starLevel) removableItem.add(item);
+												else applicableItem.add(item);
 											} else {
 												applicableItem.add(item);
 											}
@@ -926,11 +1052,10 @@ public class GuiCustomHex extends Gui {
 	public void render(float partialTicks, String containerName) {
 		if (containerName.contains("Enchant Item")) {
 			renderEnchantment(partialTicks);
-		} else if (containerName.contains("Books")) {
+		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
 			renderBooks(partialTicks);
 		} else {
-			System.out.println("AAAAAAAA");
-			renderEnchantment(partialTicks);
+			renderBooks(partialTicks);
 		}
 	}
 
@@ -1872,7 +1997,6 @@ public class GuiCustomHex extends Gui {
 			}
 
 			String levelStr = getIconStr(item);
-			if (item.price < 0) levelStr = "?";
 			int colour = 0xc8ff8f;
 			/*if (item.price > playerXpLevel) {
 				colour = 0xff5555;
@@ -2034,12 +2158,69 @@ public class GuiCustomHex extends Gui {
 			);
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
+			String priceStr = "" + numberFormat.format(enchanterCurrentItem.price) + " Coins";
+			int priceWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(priceStr);
+			int priceTop = 60;
+			int x = 180;
+			int color = 0x2d2102;
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2 - 1,
+				priceTop + 4,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2 + 1,
+				priceTop + 4,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2,
+				priceTop + 4 - 1,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2,
+				priceTop + 4 + 1,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2,
+				priceTop + 4,
+				0xea82ff,
+				false
+			);
+
 			//Enchant name
 			String name = WordUtils.capitalizeFully(enchanterCurrentItem.itemId.replace("_", " "));
 			if (name.equalsIgnoreCase("Hot Potato Book")) {
 				name = "Hot Potato";
 			} else if (name.equalsIgnoreCase("Fuming Potato Book")) {
 				name = "Fuming Potato";
+			} else if (name.equalsIgnoreCase("Recombobulator 3000")) {
+				name = "Recombobulator";
+			} else if (name.contains("Power Scroll")) {
+				name = name.replace("Power ", "");
+			} else if (name.contains("\u272a")) {
+				name = name.replaceAll("[^✪]*", "");
+			} else if (name.equalsIgnoreCase("First Master Star")) {
+				name = "Master Star \u00a7c➊";
+			} else if (name.equalsIgnoreCase("Second Master Star")) {
+				name = "Master Star \u00a7c➋";
+			} else if (name.equalsIgnoreCase("Third Master Star")) {
+				name = "Master Star \u00a7c➌";
+			} else if (name.equalsIgnoreCase("Fourth Master Star")) {
+				name = "Master Star \u00a7c➍";
+			} else if (name.equalsIgnoreCase("Fifth Master Star")) {
+				name = "Master Star \u00a7c➎";
 			}
 			Utils.drawStringCentered(
 				name,
@@ -2343,6 +2524,9 @@ public class GuiCustomHex extends Gui {
 			int killCount = 0;
 			int warCount = 0;
 			int ffdCount = 0;
+			int recombCount = 0;
+			int effLevel = 0;
+			int starCount = 0;
 			if (enchantingItem != null) {
 				NBTTagCompound tagItem = enchantingItem.getTagCompound();
 				if (tagItem != null) {
@@ -2352,6 +2536,12 @@ public class GuiCustomHex extends Gui {
 						killCount = ea.getInteger("stats_book");
 						warCount = ea.getInteger("art_of_war_count");
 						ffdCount = ea.getInteger("farming_for_dummies_count");
+						recombCount = ea.getInteger("rarity_upgrades");
+						starCount = ea.getInteger("upgrade_level");
+						NBTTagCompound enchs = ea.getCompoundTag("enchantments");
+						if (enchs != null) {
+							effLevel = enchs.getInteger("efficiency");
+						}
 					}
 				}
 			}
@@ -2387,6 +2577,19 @@ public class GuiCustomHex extends Gui {
 				} else {
 					levelStr = "✔";
 				}
+			} else if (item.itemType == ItemType.RECOMB) {
+				if (recombCount > 0) levelStr = "✔";
+				else levelStr = "✖";
+			} else if (item.itemType == ItemType.SILEX) {
+				if (effLevel < 10) levelStr = "✖";
+				else levelStr = "✔";
+			} else if (item.isPowerScroll()) {
+				levelStr = "✖";
+			} else if (item.isMasterStar()) {
+				levelStr = "✖";
+			} else if (item.isDungeonStar()) {
+				if (starCount >= item.itemType.starLevel) levelStr = "✔";
+				else levelStr = "✖";
 			}
 		} else {
 			levelStr = "?";
@@ -3168,7 +3371,6 @@ public class GuiCustomHex extends Gui {
 									currentState = EnchantState.ADDING_BOOK;
 									enchanterCurrentItem = item;
 								} else if (currentState == EnchantState.ADDING_BOOK && enchanterCurrentItem == item) {
-									System.out.println("b");
 									currentState = EnchantState.HAS_ITEM_IN_BOOKS;
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
@@ -3246,10 +3448,8 @@ public class GuiCustomHex extends Gui {
 								if (currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
 									currentState = EnchantState.ADDING_BOOK;
 									enchanterCurrentItem = item;
-									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									//TODO: Above should set state, below should send click
 								} else if (currentState == EnchantState.ADDING_BOOK && enchanterCurrentItem == item) {
-									System.out.println("b");
 									currentState = EnchantState.HAS_ITEM_IN_BOOKS;
 									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
