@@ -184,7 +184,7 @@ public class TooltipTweaks {
 	@Expose
 	@ConfigOption(
 		name = "RNG Meter Fraction",
-		desc = "Show the fraction instead of the percentage in the slayer rng meter inventory"
+		desc = "Show the fraction instead of the percentage in the slayer and dungeon rng meter inventory"
 	)
 	@ConfigEditorBoolean
 	public boolean rngMeterFractionDisplay = true;
