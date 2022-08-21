@@ -2160,7 +2160,7 @@ public class GuiCustomHex extends Gui {
 
 			String priceStr = "" + numberFormat.format(enchanterCurrentItem.price) + " Coins";
 			int priceWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(priceStr);
-			int priceTop = 60;
+			int priceTop = guiTop + 10;
 			int x = 180;
 			int color = 0x2d2102;
 			Minecraft.getMinecraft().fontRendererObj.drawString(
