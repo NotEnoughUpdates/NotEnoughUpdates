@@ -133,6 +133,8 @@ public class CustomAH extends Gui {
 	public int guiLeft = -1;
 	public int guiTop = -1;
 
+	private String lastSearch = "";
+
 	private final Category CATEGORY_SWORD = new Category("sword", "Swords", "diamond_sword");
 	private final Category CATEGORY_ARMOR = new Category("armor", "Armor", "diamond_chestplate");
 	private final Category CATEGORY_BOWS = new Category("bow", "Bows", "bow");
@@ -275,7 +277,11 @@ public class CustomAH extends Gui {
 	}
 
 	public void setSearch(String search) {
-		searchField.setText(search);
+		if (search == null) {
+			searchField.setText(lastSearch);
+		} else {
+			searchField.setText(search);
+		}
 		updateSearch();
 	}
 
@@ -1488,13 +1494,13 @@ public class CustomAH extends Gui {
 						}
 					}
 					if (NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch) {
-						NotEnoughUpdates.INSTANCE.config.hidden.lastNeuAhSearch = "";
+						lastSearch = "";
 					}
 				} else {
 					String query = searchField.getText();
 
 					if (NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch) {
-						NotEnoughUpdates.INSTANCE.config.hidden.lastNeuAhSearch = query;
+						lastSearch = query;
 					}
 					Set<String> dontMatch = new HashSet<>();
 
