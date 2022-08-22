@@ -390,10 +390,8 @@ public class Navigation {
 			&& NotEnoughUpdates.INSTANCE.config.misc.untrackCloseWaypoints
 			&& island.equals(SBInfo.getInstance().mode)) {
 			EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
-			if (thePlayer != null) {
-				if (thePlayer.getDistanceSq(position) < 16)
-					untrackWaypoint();
-			}
+			if (thePlayer != null && thePlayer.getDistanceSq(position) < 16)
+				untrackWaypoint();
 		}
 	}
 
