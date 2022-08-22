@@ -47,17 +47,17 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
-import org.omg.CORBA.PUBLIC_MEMBER;
-import org.omg.CORBA.UNKNOWN;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.text.NumberFormat;
@@ -122,11 +122,19 @@ public class GuiCustomHex extends Gui {
 		THIRD_MASTER_STAR(8),
 		FOURTH_MASTER_STAR(9),
 		FIFTH_MASTER_STAR(10),
+		WOOD_SINGULARITY,
+		IMPLOSION_SCROLL,
+		SHADOW_WARP_SCROLL,
+		WITHER_SHIELD_SCROLL,
+		TUNER,
+		REFORGE,
+		RANDOM_REFORGE,
 		UNKNOWN;
 
 		private int starLevel = -1;
 
 		ItemType() {}
+
 		ItemType(int starLevel) {
 			this.starLevel = starLevel;
 		}
@@ -286,6 +294,32 @@ public class GuiCustomHex extends Gui {
 				case "FIFTH_MASTER_STAR":
 					this.itemType = ItemType.FIFTH_MASTER_STAR;
 					break;
+				case "WOOD_SINGULARITY":
+					this.itemType = ItemType.WOOD_SINGULARITY;
+					break;
+				case "IMPLOSION":
+					this.itemType = ItemType.IMPLOSION_SCROLL;
+					break;
+				case "WITHER_SHIELD":
+					this.itemType = ItemType.WITHER_SHIELD_SCROLL;
+					break;
+				case "SHADOW_WARP":
+					this.itemType = ItemType.SHADOW_WARP_SCROLL;
+					break;
+				case "TRANSMISSION_TUNER":
+					this.itemType = ItemType.TUNER;
+					break;
+				case "RANDOM_REFORGE":
+					this.itemType = ItemType.RANDOM_REFORGE;
+					break;
+			}
+			if (this.itemType == ItemType.UNKNOWN) {
+				for (String string : displayLore) {
+					if ((string.contains("Applies the") && string.contains("reforge")) || string.contains("reforge when combined")) {
+						this.itemType = ItemType.REFORGE;
+						break;
+					}
+				}
 			}
 			if (!this.isMasterStar() && itemId.contains("✪")) {
 				if (itemId.contains("✪✪✪✪✪")) this.itemType = ItemType.FIFTH_STAR;
@@ -299,50 +333,6 @@ public class GuiCustomHex extends Gui {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
 			if ("SIL_EX".equals(this.itemId)) this.itemId = "SILEX";
-
-			/*if (Constants.ENCHANTS != null) {
-				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
-					JsonArray pools = Constants.ENCHANTS.getAsJsonArray("enchant_pools");
-					out:
-					for (int i = 0; i < pools.size(); i++) {
-						JsonArray pool = pools.get(i).getAsJsonArray();
-
-						boolean hasThis = false;
-						boolean hasApplied = false;
-
-						for (int j = 0; j < pool.size(); j++) {
-							String enchIdPoolElement = pool.get(j).getAsString();
-							if (itemId.equalsIgnoreCase(enchIdPoolElement)) {
-								hasThis = true;
-							} else if (playerEnchantIds.containsKey(enchIdPoolElement)) {
-								hasApplied = true;
-							}
-							if (hasThis && hasApplied) {
-								this.conflicts = true;
-								break out;
-							}
-						}
-					}
-				}
-
-				if (level >= 1 && Constants.ENCHANTS.has("enchants_xp_cost")) {
-					JsonObject allCosts = Constants.ENCHANTS.getAsJsonObject("enchants_xp_cost");
-					if (allCosts.has(itemId)) {
-						JsonArray costs = allCosts.getAsJsonArray(itemId);
-
-						if (costs.size() >= 1) {
-							if (useMaxLevelForCost) {
-								this.price = costs.get(costs.size() - 1).getAsInt();
-							} else if (level - 1 < costs.size()) {
-								this.price = costs.get(level - 1).getAsInt();
-							} else {
-								overMaxLevel = true;
-							}
-						}
-					}
-
-				}
-			}*/
 		}
 
 		public boolean isPowerScroll() {
@@ -361,6 +351,40 @@ public class GuiCustomHex extends Gui {
 			return itemType == ItemType.FIRST_MASTER_STAR || itemType == ItemType.SECOND_MASTER_STAR ||
 				itemType == ItemType.THIRD_MASTER_STAR || itemType == ItemType.FOURTH_MASTER_STAR ||
 				itemType == ItemType.FIFTH_MASTER_STAR;
+		}
+
+		public String getReforge() {
+			JsonObject reforgeStones = Constants.REFORGESTONES;
+			if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase())) {
+				JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase()).getAsJsonObject();
+				if (reforgeInfo != null) {
+					return Utils.getElementAsString(reforgeInfo.get("reforgeName"), "");
+				}
+
+			}
+			return "";
+		}
+
+		public int getPrice() {
+			if (this.itemType == ItemType.RANDOM_REFORGE) {
+				for (String string : displayLore) {
+					if (string.contains("Coins")) {
+						try {
+							price = Integer.parseInt(StringUtils
+								.stripControlCodes(string)
+								.replace(" Coins", "")
+								.replace(",", "")
+								.trim());
+						} catch (NumberFormatException ignored) {
+						}
+					}
+				}
+			}
+			return price;
+		}
+
+		public boolean isHypeScroll() {
+			return itemType == ItemType.IMPLOSION_SCROLL || itemType == ItemType.WITHER_SHIELD_SCROLL || itemType == ItemType.SHADOW_WARP_SCROLL;
 		}
 	}
 
@@ -384,6 +408,7 @@ public class GuiCustomHex extends Gui {
 	private int guiTop;
 	private boolean shouldOverrideFast = false;
 	private boolean shouldOverrideET = false;
+	private boolean inReforgeScreen = false;
 	public float pageOpen;
 	public float pageOpenLast;
 	public float pageOpenRandom;
@@ -446,6 +471,7 @@ public class GuiCustomHex extends Gui {
 		if (containerName == null) {
 			shouldOverrideET = false;
 			shouldOverrideFast = false;
+			inReforgeScreen = false;
 			return false;
 		}
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
@@ -456,8 +482,8 @@ public class GuiCustomHex extends Gui {
 			(containerName.length() >= 12 && Objects.equals(
 				"Enchant Item",
 				containerName.substring(0, "Enchant Item".length())
-			)) &&
-			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
+			)) &&	NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
+		inReforgeScreen = shouldOverrideFast && containerName.contains("Reforges");
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
@@ -879,9 +905,18 @@ public class GuiCustomHex extends Gui {
 		applicableItem.clear();
 		removableItem.clear();
 		if (currentState == EnchantState.HAS_ITEM_IN_BOOKS || currentState == EnchantState.ADDING_BOOK) {
+			boolean hasRandomReforge = false;
 			for (int i = 0; i < 15; i++) {
 				int slotIndex = 12 + (i % 5) + (i / 5) * 9;
 				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
+				ItemStack randomReforge = cc.getLowerChestInventory().getStackInSlot(48);
+				if (inReforgeScreen && !hasRandomReforge && randomReforge != null) {
+					HexItem reforgeItem = new HexItem(48, "Basic Reforge", "RANDOM_REFORGE",
+						Utils.getRawTooltip(randomReforge), true, true
+					);
+					applicableItem.add(reforgeItem);
+					hasRandomReforge = true;
+				}
 				if (book != null) {
 					NBTTagCompound tagBook = book.getTagCompound();
 					if (tagBook != null) {
@@ -918,6 +953,8 @@ public class GuiCustomHex extends Gui {
 										name = "Master Star \u00a7c➍";
 									} else if (name.equalsIgnoreCase("Fifth Master Star")) {
 										name = "Master Star \u00a7c➎";
+									} else if (name.equalsIgnoreCase("The Art Of Peace")) {
+										name = "Art Of Peace";
 									}
 									if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
@@ -932,7 +969,7 @@ public class GuiCustomHex extends Gui {
 											Utils.getRawTooltip(book), true, true
 										);
 										enchanterItemLevels.put(item.level, item);
-										if (item.itemType != ItemType.UNKNOWN) {
+										if (item.itemType != ItemType.UNKNOWN || inReforgeScreen) {
 											int potatoCount = 0;
 											int killCount = 0;
 											int warCount = 0;
@@ -940,6 +977,13 @@ public class GuiCustomHex extends Gui {
 											int recombCount = 0;
 											int effLevel = 0;
 											int starCount = 0;
+											int singularityCount = 0;
+											int tunerCount = 0;
+											int peaceCount = 0;
+											boolean shadowWarp = false;
+											boolean witherShield = false;
+											boolean implosion = false;
+											String reforge = "";
 											if (enchantingItem != null) {
 												NBTTagCompound tagItem = enchantingItem.getTagCompound();
 												if (tagItem != null) {
@@ -951,56 +995,89 @@ public class GuiCustomHex extends Gui {
 														ffdCount = extra.getInteger("farming_for_dummies_count");
 														recombCount = extra.getInteger("rarity_upgrades");
 														starCount = extra.getInteger("upgrade_level");
+														singularityCount = extra.getInteger("wood_singularity_count");
+														tunerCount = extra.getInteger("tuned_transmission");
+														peaceCount = extra.getInteger("art_of_peace_count");
+														reforge = extra.getString("modifier");
 														NBTTagCompound enchs = extra.getCompoundTag("enchantments");
+														NBTTagList scrolls = extra.getTagList("ability_scroll", 8);
 														if (enchs != null) {
 															effLevel = enchs.getInteger("efficiency");
+														}
+														if (scrolls != null) {
+															for (int index = 0; index < scrolls.tagCount(); index++) {
+																if (scrolls.getStringTagAt(index).equals("IMPLOSION_SCROLL")) {
+																	implosion = true;
+																} else if (scrolls.getStringTagAt(index).equals("SHADOW_WARP_SCROLL")) {
+																	shadowWarp = true;
+																} else if (scrolls.getStringTagAt(index).equals("WITHER_SHIELD_SCROLL")) {
+																	witherShield = true;
+																}
+															}
 														}
 													}
 												}
 											}
 											if (item.itemType == ItemType.HOT_POTATO) {
-												if (potatoCount < 10) {
-													applicableItem.add(item);
-												} else {
-													removableItem.add(item);
-												}
+												if (potatoCount < 10) applicableItem.add(item);
+												else removableItem.add(item);
+
 											} else if (item.itemType == ItemType.FUMING_POTATO) {
-												if (potatoCount >= 10 && potatoCount < 15) {
-													applicableItem.add(item);
-												} else if (potatoCount >= 15) {
-													removableItem.add(item);
-												}
+												if (potatoCount >= 10 && potatoCount < 15) applicableItem.add(item);
+												else if (potatoCount >= 15) removableItem.add(item);
+
 											} else if (item.itemType == ItemType.BOOK_OF_STATS) {
-												if (killCount > 0) {
-													removableItem.add(item);
-												} else {
-													applicableItem.add(item);
-												}
+												if (killCount > 0) removableItem.add(item);
+												else applicableItem.add(item);
+
 											} else if (item.itemType == ItemType.ART_OF_WAR) {
-												if (warCount > 0) {
-													removableItem.add(item);
-												} else {
-													applicableItem.add(item);
-												}
+												if (warCount > 0) removableItem.add(item);
+												else applicableItem.add(item);
+
 											} else if (item.itemType == ItemType.FARMING_DUMMY) {
-												if (ffdCount < 5) {
-													applicableItem.add(item);
-												} else {
-													removableItem.add(item);
-												}
+												if (ffdCount < 5) applicableItem.add(item);
+												else removableItem.add(item);
+
 											} else if (item.itemType == ItemType.RECOMB) {
 												if (recombCount > 0) removableItem.add(item);
 												else applicableItem.add(item);
+
 											} else if (item.itemType == ItemType.SILEX) {
 												if (effLevel >= 5 && effLevel < 10) applicableItem.add(item);
 												else if (effLevel == 10) removableItem.add(item);
+
 											} else if (item.isPowerScroll()) {
 												applicableItem.add(item);
+
 											} else if (item.isMasterStar()) {
 												applicableItem.add(item);
+
 											} else if (item.isDungeonStar()) {
 												if (starCount >= item.itemType.starLevel) removableItem.add(item);
 												else applicableItem.add(item);
+
+											} else if (item.itemType == ItemType.WOOD_SINGULARITY) {
+												if (singularityCount > 0) removableItem.add(item);
+												else applicableItem.add(item);
+
+											} else if (item.isHypeScroll()) {
+												if (shadowWarp) removableItem.add(item);
+												else if (implosion) removableItem.add(item);
+												else if (witherShield) removableItem.add(item);
+												else applicableItem.add(item);
+
+											} else if (item.itemType == ItemType.TUNER) {
+												if (tunerCount >= 4) removableItem.add(item);
+												else applicableItem.add(item);
+
+											} else if (item.itemType == ItemType.REFORGE) {
+												if (item.getReforge().equalsIgnoreCase(reforge)) removableItem.add(item);
+												else applicableItem.add(item);
+
+											} else if (item.itemType == ItemType.ART_OF_PEACE) {
+												if (peaceCount > 0) removableItem.add(item);
+												else applicableItem.add(item);
+
 											} else {
 												applicableItem.add(item);
 											}
@@ -1050,6 +1127,7 @@ public class GuiCustomHex extends Gui {
 	}
 
 	public void render(float partialTicks, String containerName) {
+		//inReforgeScreen = containerName.contains("Reforges");
 		if (containerName.contains("Enchant Item")) {
 			renderEnchantment(partialTicks);
 		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
@@ -1819,7 +1897,7 @@ public class GuiCustomHex extends Gui {
 
 		tooltipToDisplay = renderSettings(mouseX, mouseY, tooltipToDisplay);
 
-		renderScrollBars(applicable, removable, mouseY);
+		renderScrollBars(applicableItem, applicableItem, mouseY);
 
 		//Enchant book model
 		renderEnchantBook(scaledResolution, partialTicks);
@@ -2158,7 +2236,8 @@ public class GuiCustomHex extends Gui {
 			);
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
-			String priceStr = "" + numberFormat.format(enchanterCurrentItem.price) + " Coins";
+			String priceStr = "" + numberFormat.format(enchanterCurrentItem.getPrice()) + " Coins";
+			if (enchanterCurrentItem.price < 0) priceStr = "";
 			int priceWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(priceStr);
 			int priceTop = guiTop + 10;
 			int x = 180;
@@ -2527,6 +2606,13 @@ public class GuiCustomHex extends Gui {
 			int recombCount = 0;
 			int effLevel = 0;
 			int starCount = 0;
+			int singularityCount = 0;
+			int tunerCount = 0;
+			int peaceCount = 0;
+			boolean shadowWarp = false;
+			boolean witherShield = false;
+			boolean implosion = false;
+			String reforge = "";
 			if (enchantingItem != null) {
 				NBTTagCompound tagItem = enchantingItem.getTagCompound();
 				if (tagItem != null) {
@@ -2538,9 +2624,25 @@ public class GuiCustomHex extends Gui {
 						ffdCount = ea.getInteger("farming_for_dummies_count");
 						recombCount = ea.getInteger("rarity_upgrades");
 						starCount = ea.getInteger("upgrade_level");
+						singularityCount = ea.getInteger("wood_singularity_count");
+						tunerCount = ea.getInteger("tuned_transmission");
+						peaceCount = ea.getInteger("art_of_peace_count");
+						reforge = ea.getString("modifier");
 						NBTTagCompound enchs = ea.getCompoundTag("enchantments");
+						NBTTagList scrolls = ea.getTagList("ability_scroll", 8);
 						if (enchs != null) {
 							effLevel = enchs.getInteger("efficiency");
+						}
+						if (scrolls != null) {
+							for (int index = 0; index < scrolls.tagCount(); index++) {
+								if (scrolls.getStringTagAt(index).equals("IMPLOSION_SCROLL")) {
+									implosion = true;
+								} else if (scrolls.getStringTagAt(index).equals("SHADOW_WARP_SCROLL")) {
+									shadowWarp = true;
+								} else if (scrolls.getStringTagAt(index).equals("WITHER_SHIELD_SCROLL")) {
+									witherShield = true;
+								}
+							}
 						}
 					}
 				}
@@ -2589,6 +2691,25 @@ public class GuiCustomHex extends Gui {
 				levelStr = "✖";
 			} else if (item.isDungeonStar()) {
 				if (starCount >= item.itemType.starLevel) levelStr = "✔";
+				else levelStr = "✖";
+			} else if (item.itemType == ItemType.WOOD_SINGULARITY) {
+				if (singularityCount > 0) levelStr = "✔";
+				else levelStr = "✖";
+			} else if (item.isHypeScroll()) {
+				if (shadowWarp) levelStr = "✔";
+				else if (implosion) levelStr = "✔";
+				else if (witherShield) levelStr = "✔";
+				else levelStr = "✖";
+			} else if (item.itemType == ItemType.TUNER) {
+				if (tunerCount >= 4) levelStr = "✔";
+				else levelStr = "✖";
+			} else if (item.itemType == ItemType.REFORGE) {
+				if (item.getReforge().equalsIgnoreCase(reforge)) levelStr = "✔";
+				else levelStr = "✖";
+			} else if (item.itemType == ItemType.RANDOM_REFORGE) {
+				levelStr = "?";
+			} else if (item.itemType == ItemType.ART_OF_PEACE) {
+				if (peaceCount > 0) levelStr = "✔";
 				else levelStr = "✖";
 			}
 		} else {
@@ -2877,6 +2998,11 @@ public class GuiCustomHex extends Gui {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		GlStateManager.enableDepth();
+	}
+
+	private boolean isInEnchanting() {
+		return currentState == EnchantState.ADDING_ENCHANT || currentState == EnchantState.HAS_ITEM ||
+			currentState == EnchantState.SWITCHING_DONT_UPDATE;
 	}
 
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
@@ -3483,8 +3609,12 @@ public class GuiCustomHex extends Gui {
 			}
 
 			LerpingInteger lerpingInteger = isScrollingLeft ? leftScroll : rightScroll;
-
-			int elementsCount = isScrollingLeft ? applicable.size() : removable.size();
+			int elementsCount;
+			if (!isInEnchanting()) {
+				elementsCount = isScrollingLeft ? applicableItem.size() : removableItem.size();
+			} else {
+				elementsCount = isScrollingLeft ? applicable.size() : removable.size();
+			}
 			int max = (elementsCount - 6) * 16;
 
 			int newTarget = lerpingInteger.getTarget() + scroll;
