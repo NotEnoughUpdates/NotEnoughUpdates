@@ -25,6 +25,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -383,6 +384,9 @@ public class EquipmentOverlay {
 			petSlot = null;
 		}
 
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if(profileSpecific == null)return null;
+
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
@@ -391,13 +395,13 @@ public class EquipmentOverlay {
 					//would crash without internalName when trying to construct the ItemStack again
 					itemToSave.add("internalname", new JsonPrimitive("_"));
 				}
-				NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.put(armourSlot, itemToSave);
+				profileSpecific.savedEquipment.put(armourSlot, itemToSave);
 				return itemStack;
 			}
 		} else {
-			if (NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment.containsKey(armourSlot)) {
+			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
 				//don't use cache since the internalName is identical in most cases
-				return NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.config.getProfileSpecific().savedEquipment
+				return NotEnoughUpdates.INSTANCE.manager.jsonToStack(profileSpecific.savedEquipment
 					.get(armourSlot)
 					.getAsJsonObject(), false);
 			}
