@@ -1487,8 +1487,15 @@ public class CustomAH extends Gui {
 							auctionIdsNew.add(entry.getKey());
 						}
 					}
+					if (NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch) {
+						NotEnoughUpdates.INSTANCE.config.hidden.lastNeuAhSearch = "";
+					}
 				} else {
 					String query = searchField.getText();
+
+					if (NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch) {
+						NotEnoughUpdates.INSTANCE.config.hidden.lastNeuAhSearch = query;
+					}
 					Set<String> dontMatch = new HashSet<>();
 
 					HashSet<String> allMatch = new HashSet<>();

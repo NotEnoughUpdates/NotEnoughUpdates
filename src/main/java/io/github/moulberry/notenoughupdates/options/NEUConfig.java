@@ -465,6 +465,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean hasOpenedWaypointMenu = false;
 
+		@Expose
+		public String lastNeuAhSearch = "";
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
