@@ -25,12 +25,14 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
+import io.github.moulberry.notenoughupdates.miscfeatures.NewApiKeyHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.network.play.server.S2DPacketOpenWindow;
@@ -124,10 +126,15 @@ public class MixinNetHandlerPlayClient {
 		ItemCooldowns.processBlockChangePacket(packetIn);
 	}
 
-	@Inject(method = "addToSendQueue", at = @At("HEAD"))
+	@Inject(method = "addToSendQueue", at = @At("HEAD"), cancellable = true)
 	public void addToSendQueue(Packet packet, CallbackInfo ci) {
 		if (packet instanceof C0EPacketClickWindow) {
 			StorageManager.getInstance().clientSendWindowClick((C0EPacketClickWindow) packet);
+		}
+		if (packet instanceof C01PacketChatMessage) {
+			if (NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet)) {
+				ci.cancel();
+			}
 		}
 	}
 
