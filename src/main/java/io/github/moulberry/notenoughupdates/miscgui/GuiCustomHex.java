@@ -2648,69 +2648,69 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 			if (item.itemType == ItemType.HOT_POTATO) {
-				if (potatoCount < 10) {
-					levelStr = "" + potatoCount;
-				} else {
-					levelStr = "✔";
-				}
+				if (potatoCount < 10) levelStr = "" + potatoCount;
+				else levelStr = "✔";
+
 			} else if (item.itemType == ItemType.FUMING_POTATO) {
-				if (potatoCount <= 10) {
-					levelStr = "" + 0;
-				} else if (potatoCount < 15) {
-					levelStr = "" + (potatoCount - 10);
-				} else {
-					levelStr = "✔";
-				}
+				if (potatoCount <= 10) levelStr = "" + 0;
+				else if (potatoCount < 15) levelStr = "" + (potatoCount - 10);
+				else levelStr = "✔";
+
 			} else if (item.itemType == ItemType.BOOK_OF_STATS) {
-				if (killCount > 0) {
-					levelStr = "✔";
-				} else {
-					levelStr = "✖";
-				}
+				if (killCount > 0) levelStr = "✔";
+				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.ART_OF_WAR) {
-				if (warCount > 0) {
-					levelStr = "✔";
-				} else {
-					levelStr = "✖";
-				}
+				if (warCount > 0) levelStr = "✔";
+				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.FARMING_DUMMY) {
-				if (ffdCount < 5) {
-					levelStr = "" + ffdCount;
-				} else {
-					levelStr = "✔";
-				}
+				if (ffdCount < 5) levelStr = "" + ffdCount;
+				else levelStr = "✔";
+
 			} else if (item.itemType == ItemType.RECOMB) {
 				if (recombCount > 0) levelStr = "✔";
 				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.SILEX) {
 				if (effLevel < 10) levelStr = "✖";
 				else levelStr = "✔";
+
 			} else if (item.isPowerScroll()) {
 				levelStr = "✖";
+
 			} else if (item.isMasterStar()) {
 				levelStr = "✖";
+
 			} else if (item.isDungeonStar()) {
 				if (starCount >= item.itemType.starLevel) levelStr = "✔";
 				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.WOOD_SINGULARITY) {
 				if (singularityCount > 0) levelStr = "✔";
 				else levelStr = "✖";
+
 			} else if (item.isHypeScroll()) {
 				if (shadowWarp) levelStr = "✔";
 				else if (implosion) levelStr = "✔";
 				else if (witherShield) levelStr = "✔";
 				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.TUNER) {
 				if (tunerCount >= 4) levelStr = "✔";
 				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.REFORGE) {
 				if (item.getReforge().equalsIgnoreCase(reforge)) levelStr = "✔";
 				else levelStr = "✖";
+
 			} else if (item.itemType == ItemType.RANDOM_REFORGE) {
 				levelStr = "?";
+
 			} else if (item.itemType == ItemType.ART_OF_PEACE) {
 				if (peaceCount > 0) levelStr = "✔";
 				else levelStr = "✖";
+
 			}
 		} else {
 			levelStr = "?";
