@@ -69,5 +69,5 @@ NeuAuctionHouse {
 		desc = "Saving the last query when closing the neuah"
 	)
 	@ConfigEditorBoolean
-	public boolean saveLastSearch = false;
+	public boolean saveLastSearch = true;
 }
