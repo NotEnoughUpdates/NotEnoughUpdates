@@ -401,8 +401,10 @@ public class EquipmentOverlay {
 		} else {
 			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
 				//don't use cache since the internalName is identical in most cases
-				return NotEnoughUpdates.INSTANCE.manager.jsonToStack(profileSpecific.savedEquipment
-					.get(armourSlot)
+				//
+				JsonObject jsonObject = profileSpecific.savedEquipment
+					.get(armourSlot);
+				if(jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject
 					.getAsJsonObject(), false);
 			}
 		}
