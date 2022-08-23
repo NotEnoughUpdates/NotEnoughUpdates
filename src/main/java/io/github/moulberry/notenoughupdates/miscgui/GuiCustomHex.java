@@ -2396,7 +2396,7 @@ public class GuiCustomHex extends Gui {
 				priceStr,
 				guiLeft + x - priceWidth / 2,
 				priceTop + 4,
-				0xea82ff,
+				0xfcba03,
 				false
 			);
 
