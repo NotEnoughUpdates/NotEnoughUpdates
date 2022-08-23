@@ -134,6 +134,7 @@ public class GuiCustomHex extends Gui {
 		RANDOM_REFORGE,
 		MANA_DISINTEGRATOR,
 		HEX_ITEM,
+		TOTAL_UPGRADES,
 		UNKNOWN;
 
 		private int starLevel = -1;
@@ -319,6 +320,9 @@ public class GuiCustomHex extends Gui {
 					break;
 				case "MANA_DISINTEGRATOR":
 					this.itemType = ItemType.MANA_DISINTEGRATOR;
+					break;
+				case "TOTAL_UPGRADES":
+					this.itemType = ItemType.TOTAL_UPGRADES;
 					break;
 			}
 			if (this.itemType == ItemType.UNKNOWN) {
@@ -1204,10 +1208,18 @@ public class GuiCustomHex extends Gui {
 		searchRemovedFromApplicable = false;
 		applicableItem.clear();
 		removableItem.clear();
+		boolean hasHexItem = false;
 		if (currentState == EnchantState.HAS_ITEM_IN_HEX) {
 			for (int i = 0; i < 9; i++) {
 				int slotIndex = 15 + (i % 3) + (i / 3) * 9;
 				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
+				if (!hasHexItem && glassStack != null) {
+					HexItem item = new HexItem(slotIndex, "Total Upgrades", "TOTAL_UPGRADES" + i,
+						Utils.getRawTooltip(glassStack), true, true
+					);
+					removableItem.add(item);
+					hasHexItem = true;
+				}
 				if (book != null) {
 					NBTTagCompound tagBook = book.getTagCompound();
 					if (tagBook != null) {
@@ -2646,7 +2658,7 @@ public class GuiCustomHex extends Gui {
 		renderEnchantBook(scaledResolution, partialTicks);
 
 		//Can't be enchanted text
-		if (currentState == EnchantState.INVALID_ITEM) {
+		if (currentState == EnchantState.INVALID_ITEM_HEX) {
 			GlStateManager.disableDepth();
 			Utils.drawStringCentered("This item can't", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + X_SIZE / 2, guiTop + 88, true, 0xffff5555
@@ -2739,7 +2751,7 @@ public class GuiCustomHex extends Gui {
 		}
 		GlScissorStack.pop(scaledResolution);
 
-		/*//Removable enchants (right)
+		//Removable enchants (right)
 		GlScissorStack.push(0, guiTop + 18, width, guiTop + 18 + 96, scaledResolution);
 		for (int i = 0; i < 7; i++) {
 			int index = i + rightScroll.getValue() / 16;
@@ -2767,9 +2779,9 @@ public class GuiCustomHex extends Gui {
 
 			String levelStr = getIconStr(item);
 			int colour = 0xc8ff8f;
-			*//*if (item.price > playerXpLevel) {
+			if (item.price > playerXpLevel) {
 				colour = 0xff5555;
-			}*//*
+			}
 
 			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
 			Minecraft.getMinecraft().fontRendererObj.drawString(
@@ -2812,7 +2824,7 @@ public class GuiCustomHex extends Gui {
 				guiLeft + 248 + 16 + 2 + textOffset, top + 4 + textOffset, 0xffffffdd, true
 			);
 		}
-		GlScissorStack.pop(scaledResolution);*/
+		GlScissorStack.pop(scaledResolution);
 
 		//Player Inventory Items
 		Minecraft.getMinecraft().fontRendererObj.drawString(Minecraft.getMinecraft().thePlayer.inventory
@@ -3720,7 +3732,7 @@ public class GuiCustomHex extends Gui {
 						chest.inventorySlots.windowId,
 						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
 					));
-
+					enchantingItem = null;
 					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentItem.level == removingEnchantPlayerLevel) {
 						spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
 					} else {
