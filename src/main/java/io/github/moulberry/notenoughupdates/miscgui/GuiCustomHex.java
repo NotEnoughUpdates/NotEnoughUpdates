@@ -2358,46 +2358,6 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 
-			//Enchant cost
-			String levelStr = "" + enchanterCurrentItem.price;
-			if (enchanterCurrentItem.price < 0) levelStr = "?";
-
-			int colour = 0xc8ff8f;
-			/*if (enchanterCurrentItem.price > playerXpLevel) {
-				colour = 0xff5555;
-			}*/
-
-			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2 - 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2 + 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2,
-				top + 4 - 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2,
-				top + 4 + 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
-
 			String priceStr = "" + numberFormat.format(enchanterCurrentItem.getPrice()) + " Coins";
 			if (enchanterCurrentItem.price < 0) priceStr = "";
 			int priceWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(priceStr);
