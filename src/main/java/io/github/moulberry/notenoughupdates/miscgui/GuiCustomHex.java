@@ -58,7 +58,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
-import org.omg.CORBA.UNKNOWN;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.text.NumberFormat;
@@ -72,6 +71,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public class GuiCustomHex extends Gui {
 	private static final GuiCustomHex INSTANCE = new GuiCustomHex();
 	private static final ResourceLocation TEXTURE = new ResourceLocation("notenoughupdates:custom_enchant_gui.png");
@@ -223,12 +223,11 @@ public class GuiCustomHex extends Gui {
 		public String itemName;
 		public String itemId;
 		public List<String> displayLore;
-		public List<String> itemCosts;
 		public int level;
 		public int price = -1;
 		public boolean overMaxLevel = false;
 		public boolean conflicts = false;
-		public ItemType itemType = ItemType.UNKNOWN;
+		public ItemType itemType;
 
 		public HexItem(
 			int slotIndex, String itemName, String itemId, List<String> displayLore,
@@ -536,9 +535,7 @@ public class GuiCustomHex extends Gui {
 		//ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(12);
 		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
 		//ItemStack stack = cc.getLowerChestInventory().getStackInSlot(23);
-		ItemStack enchantingItemStackHex = cc.getLowerChestInventory().getStackInSlot(25);
 		ItemStack hopperStack = cc.getLowerChestInventory().getStackInSlot(51);
-		ItemStack enchantGuideStack = cc.getLowerChestInventory().getStackInSlot(50);
 
 		int lastPage = currentPage;
 
@@ -827,13 +824,10 @@ public class GuiCustomHex extends Gui {
 
 		//Update book model state
 		if (lastState != currentState) {
-			while (true) {
+			do {
 				this.pageOpenRandom += (float) (this.random.nextInt(4) - this.random.nextInt(4));
 
-				if (this.pageOpen > this.pageOpenRandom + 1.0F || this.pageOpen < this.pageOpenRandom - 1.0F) {
-					break;
-				}
-			}
+			} while (!(this.pageOpen > this.pageOpenRandom + 1.0F) && !(this.pageOpen < this.pageOpenRandom - 1.0F));
 		}
 
 		this.pageOpenLast = this.pageOpen;
@@ -859,7 +853,6 @@ public class GuiCustomHex extends Gui {
 		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
 		ItemStack anvilStack = cc.getLowerChestInventory().getStackInSlot(28);
 
-		int lastPage = currentPage;
 
 		this.lastState = currentState;
 
@@ -1142,7 +1135,6 @@ public class GuiCustomHex extends Gui {
 		ItemStack glassStack = cc.getLowerChestInventory().getStackInSlot(12);
 		//ItemStack anvilStack = cc.getLowerChestInventory().getStackInSlot(28);
 
-		int lastPage = currentPage;
 
 		this.lastState = currentState;
 
@@ -1214,7 +1206,7 @@ public class GuiCustomHex extends Gui {
 				int slotIndex = 15 + (i % 3) + (i / 3) * 9;
 				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
 				if (!hasHexItem && glassStack != null) {
-					HexItem item = new HexItem(slotIndex, "Total Upgrades", "TOTAL_UPGRADES" + i,
+					HexItem item = new HexItem(slotIndex, "Total Upgrades", "TOTAL_UPGRADES",
 						Utils.getRawTooltip(glassStack), true, true
 					);
 					removableItem.add(item);
@@ -3457,7 +3449,6 @@ public class GuiCustomHex extends Gui {
 		if (currentState == EnchantState.HAS_ITEM ||
 			currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
 			if (Mouse.getEventButtonState()) {
-				int left = guiLeft + X_SIZE / 2 - 56;
 				int top = guiTop + 83;
 
 				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
