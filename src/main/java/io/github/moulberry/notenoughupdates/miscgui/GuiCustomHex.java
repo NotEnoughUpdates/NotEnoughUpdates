@@ -97,7 +97,11 @@ public class GuiCustomHex extends Gui {
 		HAS_ITEM_IN_BOOKS,
 		ADDING_BOOK,
 		NO_ITEM_IN_HEX,
-		INVALID_ITEM_HEX
+		INVALID_ITEM_HEX,
+		HAS_ITEM_IN_GEMSTONE,
+		ADDING_GEMSTONE,
+		APPLYING_GEMSTONE
+
 	}
 
 	private enum ItemType {
@@ -135,6 +139,7 @@ public class GuiCustomHex extends Gui {
 		MANA_DISINTEGRATOR,
 		HEX_ITEM,
 		TOTAL_UPGRADES,
+		GEMSTONE,
 		UNKNOWN;
 
 		private int starLevel = -1;
@@ -422,6 +427,7 @@ public class GuiCustomHex extends Gui {
 	private int guiTop;
 	private boolean shouldOverrideFast = false;
 	private boolean shouldOverrideET = false;
+	private boolean shouldOverrideGemstones = false;
 	public float pageOpen;
 	public float pageOpenLast;
 	public float pageOpenRandom;
@@ -486,22 +492,28 @@ public class GuiCustomHex extends Gui {
 			shouldOverrideFast = false;
 			return false;
 		}
-		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
+		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
+		shouldOverrideFast = config &&
 			(containerName.length() >= 7 && Objects.equals("The Hex", containerName.substring(0, "The Hex".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 
-		shouldOverrideET = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
+		shouldOverrideET = config &&
 			(containerName.length() >= 12 && Objects.equals(
 				"Enchant Item",
 				containerName.substring(0, "Enchant Item".length())
 			)) && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
+		shouldOverrideGemstones = config &&
+			(containerName.length() >= 12 && Objects.equals(
+				"Gemstones ➜",
+				containerName.substring(0, "Gemstones ➜".length())
+			)) && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
-		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast);
+		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones);
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle)
 			return (shouldOverrideET || shouldOverrideFast);
-		if (!shouldOverrideFast && !shouldOverrideET) {
+		if (!shouldOverrideFast && !shouldOverrideET && !shouldOverrideGemstones) {
 			currentState = EnchantState.NO_ITEM;
 			applicable.clear();
 			removable.clear();
@@ -510,7 +522,7 @@ public class GuiCustomHex extends Gui {
 			expectedMaxPage = 1;
 			enchanterCurrentItem = null;
 		}
-		return shouldOverrideFast;
+		return (shouldOverrideFast || shouldOverrideGemstones);
 	}
 
 	private int tickCounter = 0;
@@ -521,8 +533,10 @@ public class GuiCustomHex extends Gui {
 			tickHex();
 		} else if (containerName.contains("Enchant Item")) {
 			tickEnchants();
-		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
+		} else if (containerName.contains("Books") || containerName.contains("Modifiers") || containerName.contains("Reforges") || containerName.contains("Item Upgrades")) {
 			tickBooks();
+		} else if (containerName.contains("Gemstones")) {
+			tickGemstones();
 		} else {
 			tickBooks();
 		}
@@ -1269,6 +1283,141 @@ public class GuiCustomHex extends Gui {
 		}
 	}
 
+	private void tickGemstones() {
+		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		ContainerChest cc = (ContainerChest) chest.inventorySlots;
+
+		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
+		ItemStack portalStack = cc.getLowerChestInventory().getStackInSlot(28);
+
+		int lastPage = currentPage;
+		this.lastState = currentState;
+		if (portalStack != null && portalStack.getItem() == Item.getItemFromBlock(Blocks.end_portal_frame) &&
+			currentState != EnchantState.ADDING_GEMSTONE && !shouldOverrideGemstones && currentState != EnchantState.APPLYING_GEMSTONE) {
+			currentState = EnchantState.HAS_ITEM_IN_GEMSTONE;
+			enchantingItem = enchantingItemStack;
+		} else if (portalStack != null && portalStack.getItem() == Item.getItemFromBlock(Blocks.end_portal_frame) &&
+			shouldOverrideGemstones && currentState != EnchantState.APPLYING_GEMSTONE) {
+			currentState = EnchantState.ADDING_GEMSTONE;
+		} else if (currentState == EnchantState.HAS_ITEM_IN_GEMSTONE && enchantingItem == null &&
+			enchantingItemStack != null) {
+			enchantingItem = enchantingItemStack;
+		}
+
+		List<ExperienceOrb> toRemove = new ArrayList<>();
+		for (ExperienceOrb orb : orbs) {
+			float targetDeltaX = guiLeft + orbTargetX - orb.x;
+			float targetDeltaY = guiTop + orbTargetY - orb.y;
+
+			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
+
+			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
+				toRemove.add(orb);
+				continue;
+			}
+
+			orb.xVel += targetDeltaX * 2 / length;
+			orb.yVel += targetDeltaY * 2 / length;
+
+			orb.xVel *= 0.90;
+			orb.yVel *= 0.90;
+
+			orb.xLast = orb.x;
+			orb.yLast = orb.y;
+			orb.x += orb.xVel;
+			orb.y += orb.yVel;
+		}
+		orbs.removeAll(toRemove);
+
+		if (++tickCounter >= 20) {
+			tickCounter = 0;
+		}
+
+		if (currentState == EnchantState.APPLYING_GEMSTONE) {
+			if (arrowAmount.getTarget() != 1) {
+				arrowAmount.setTarget(1);
+				arrowAmount.resetTimer();
+			}
+		} else {
+			if (arrowAmount.getTarget() != 0) {
+				arrowAmount.setTarget(0);
+				arrowAmount.resetTimer();
+			}
+		}
+
+		isChangingEnchLevel = false;
+
+		searchRemovedFromRemovable = false;
+		searchRemovedFromApplicable = false;
+		applicableItem.clear();
+		removableItem.clear();
+		if (isInGemstones()) {
+			for (int i = 0; i < 15; i++) {
+				int slotIndex = 12 + (i % 5) + (i / 5) * 9;
+				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
+				if (book != null) {
+					NBTTagCompound tagBook = book.getTagCompound();
+					if (tagBook != null) {
+						NBTTagCompound ea = tagBook.getCompoundTag("ExtraAttributes");
+						if (ea != null) {
+							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
+							if (enchantments != null) {
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace(
+									"-",
+									"_"
+								);
+								String name = Utils.cleanColour(book.getDisplayName());
+								if (itemId.equalsIgnoreCase("_")) continue;
+								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
+								if (searchField.getText().trim().isEmpty() ||
+									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+									if (name.contains("Gemstone")) {
+										name = name.replace(" Gemstone", "").substring(2);
+									}
+									if (playerEnchantIds.containsKey(itemId)) {
+										HexItem item = new HexItem(slotIndex, name, itemId,
+											Utils.getRawTooltip(book), false, false
+										);
+										if (!item.overMaxLevel) {
+											removableItem.add(item);
+										}
+										enchanterItemLevels.put(item.level, item);
+									} else {
+										HexItem item = new HexItem(slotIndex, name, itemId,
+											Utils.getRawTooltip(book), true, true
+										);
+										enchanterItemLevels.put(item.level, item);
+										if (item.itemType != ItemType.UNKNOWN) {
+
+											if (item.itemName.length() > 14) item.itemName = item.itemName.substring(0, 14);
+										} else {
+											applicableItem.add(item);
+										}
+									}
+								} else {
+									if (playerEnchantIds.containsKey(itemId)) {
+										searchRemovedFromRemovable = true;
+									} else {
+										searchRemovedFromApplicable = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			NEUConfig cfg = NotEnoughUpdates.INSTANCE.config;
+			int mult = cfg.enchantingSolvers.enchantOrdering == 0 ? 1 : -1;
+			Comparator<HexItem> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
+				Comparator.comparingInt(e -> (int) (mult * e.price)) :
+				(c1, c2) -> mult *
+					c1.itemId.toLowerCase().compareTo(c2.itemId.toLowerCase());
+			removableItem.sort(comparator);
+			applicableItem.sort(comparator);
+		}
+		this.pageOpenLast = this.pageOpen;
+	}
+
 	private List<String> createTooltip(String title, int selectedOption, String... options) {
 		String selPrefix = EnumChatFormatting.DARK_AQUA + " \u25b6 ";
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
@@ -1294,6 +1443,8 @@ public class GuiCustomHex extends Gui {
 			renderEnchantment(partialTicks);
 		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
 			renderBooks(partialTicks);
+		} else if (containerName.contains("Gemstones")) {
+			renderGemstones(partialTicks);
 		} else {
 			renderBooks(partialTicks);
 		}
@@ -2911,6 +3062,393 @@ public class GuiCustomHex extends Gui {
 		GlStateManager.translate(0, 0, -300);
 	}
 
+	private void renderGemstones(float partialTicks) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return;
+
+		int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
+
+		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		ContainerChest cc = (ContainerChest) chest.inventorySlots;
+
+		leftScroll.tick();
+		rightScroll.tick();
+		arrowAmount.tick();
+
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+		int width = scaledResolution.getScaledWidth();
+		int height = scaledResolution.getScaledHeight();
+		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
+		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+
+		guiLeft = (width - X_SIZE) / 2;
+		guiTop = (height - Y_SIZE) / 2;
+
+		List<String> tooltipToDisplay = null;
+		boolean disallowClick = false;
+		ItemStack stackOnMouse = Minecraft.getMinecraft().thePlayer.inventory.getItemStack();
+		int itemHoverX = -1;
+		int itemHoverY = -1;
+		boolean hoverLocked = false;
+
+		drawGradientRect(0, 0, width, height, 0xc0101010, 0xd0101010);
+
+		renderBaseTexture();
+
+		Minecraft.getMinecraft().fontRendererObj.drawString("Applicable", guiLeft + 7, guiTop + 7, 0x404040, false);
+		Minecraft.getMinecraft().fontRendererObj.drawString("Applied", guiLeft + 247, guiTop + 7, 0x404040, false);
+
+		//Page Text
+		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
+			String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
+			int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
+			Utils.drawStringCentered(pageStr, Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + X_SIZE / 2, guiTop + 14, false, 0x404040
+			);
+
+			//Page Arrows
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - pageStrLen / 2 - 2 - 15, guiTop + 6, 15, 15,
+				0, 15 / 512f, 372 / 512f, 387 / 512f, GL11.GL_NEAREST
+			);
+			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2, guiTop + 6, 15, 15,
+				15 / 512f, 30 / 512f, 372 / 512f, 387 / 512f, GL11.GL_NEAREST
+			);
+		}
+
+		//Cancel button
+		{
+			int top = guiTop + 83;
+			if (System.currentTimeMillis() - cancelButtonAnimTime < 500) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+					0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
+				);
+				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
+					guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040
+				);
+			} else {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+				);
+				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
+					guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040
+				);
+			}
+		}
+
+		tooltipToDisplay = renderSettings(mouseX, mouseY, tooltipToDisplay);
+
+		renderScrollBars(applicableItem, applicableItem, mouseY);
+
+		//Enchant book model
+		renderEnchantBook(scaledResolution, partialTicks);
+
+		//Can't be enchanted text
+		if (currentState == EnchantState.INVALID_ITEM_HEX) {
+			GlStateManager.disableDepth();
+			Utils.drawStringCentered("This item can't", Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + X_SIZE / 2, guiTop + 88, true, 0xffff5555
+			);
+			Utils.drawStringCentered("be enchanted", Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + X_SIZE / 2, guiTop + 98, true, 0xffff5555
+			);
+			GlStateManager.enableDepth();
+		}
+
+		renderArrow();
+
+		//Available enchants (left)
+		GlScissorStack.push(0, guiTop + 18, width, guiTop + 18 + 96, scaledResolution);
+		for (int i = 0; i < 7; i++) {
+			int index = i + leftScroll.getValue() / 16;
+
+			if (applicableItem.size() <= index) break;
+			HexItem item = applicableItem.get(index);
+
+			int top = guiTop - (leftScroll.getValue() % 16) + 18 + 16 * i;
+			int vOffset = enchanterCurrentItem != null && enchanterCurrentItem.itemId.equals(item.itemId) ? 16 : 0;
+			int uOffset = item.conflicts ? 112 : 0;
+			int textOffset = vOffset / 16;
+
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + 8, top, 96, 16,
+				uOffset / 512f, (96 + uOffset) / 512f, (249 + vOffset) / 512f, (249 + 16 + vOffset) / 512f, GL11.GL_NEAREST
+			);
+
+			if (mouseX > guiLeft + 8 && mouseX <= guiLeft + 8 + 96 &&
+				mouseY > top && mouseY <= top + 16) {
+				disallowClick = true;
+				if (item.displayLore != null) {
+					tooltipToDisplay = item.displayLore;
+				}
+			}
+
+			String levelStr = getIconStr(item);
+			int colour = 0xc8ff8f;
+			if (item.price > playerXpLevel) {
+				colour = 0xff5555;
+			}
+
+			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 16 - levelWidth / 2 - 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 16 - levelWidth / 2 + 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 16 - levelWidth / 2,
+				top + 4 - 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 16 - levelWidth / 2,
+				top + 4 + 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 16 - levelWidth / 2,
+				top + 4,
+				colour,
+				false
+			);
+
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				item.itemName,
+				guiLeft + 8 + 16 + 2 + textOffset,
+				top + 4 + textOffset,
+				0xffffffdd,
+				true
+			);
+		}
+		GlScissorStack.pop(scaledResolution);
+
+		//Removable enchants (right)
+		GlScissorStack.push(0, guiTop + 18, width, guiTop + 18 + 96, scaledResolution);
+		for (int i = 0; i < 7; i++) {
+			int index = i + rightScroll.getValue() / 16;
+
+			if (removableItem.size() <= index) break;
+			HexItem item = removableItem.get(index);
+
+			int top = guiTop - (rightScroll.getValue() % 16) + 18 + 16 * i;
+			int vOffset = enchanterCurrentItem != null && enchanterCurrentItem.itemId.equals(item.itemId) ? 16 : 0;
+			int textOffset = vOffset / 16;
+
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(guiLeft + 248, top, 96, 16,
+				0, 96 / 512f, (249 + vOffset) / 512f, (249 + 16 + vOffset) / 512f, GL11.GL_NEAREST
+			);
+
+			if (mouseX > guiLeft + 248 && mouseX <= guiLeft + 248 + 96 &&
+				mouseY > top && mouseY <= top + 16) {
+				disallowClick = true;
+				if (item.displayLore != null) {
+					tooltipToDisplay = item.displayLore;
+				}
+			}
+
+			String levelStr = getIconStr(item);
+			int colour = 0xc8ff8f;
+			if (item.price > playerXpLevel) {
+				colour = 0xff5555;
+			}
+
+			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 256 - levelWidth / 2 - 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 256 - levelWidth / 2 + 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 256 - levelWidth / 2,
+				top + 4 - 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 256 - levelWidth / 2,
+				top + 4 + 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				guiLeft + 256 - levelWidth / 2,
+				top + 4,
+				colour,
+				false
+			);
+
+			Minecraft.getMinecraft().fontRendererObj.drawString(item.itemName,
+				guiLeft + 248 + 16 + 2 + textOffset, top + 4 + textOffset, 0xffffffdd, true
+			);
+		}
+		GlScissorStack.pop(scaledResolution);
+
+		//Player Inventory Items
+		Minecraft.getMinecraft().fontRendererObj.drawString(Minecraft.getMinecraft().thePlayer.inventory
+				.getDisplayName()
+				.getUnformattedText(),
+			guiLeft + 102, guiTop + Y_SIZE - 96 + 2, 0x404040
+		);
+		int inventoryStartIndex = cc.getLowerChestInventory().getSizeInventory();
+		GlStateManager.enableDepth();
+		for (int i = 0; i < 36; i++) {
+			int itemX = guiLeft + 102 + 18 * (i % 9);
+			int itemY = guiTop + 133 + 18 * (i / 9);
+
+			if (i >= 27) {
+				itemY += 4;
+			}
+
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(guiLeft + 102 - 8, guiTop + 191 - (inventoryStartIndex / 9 * 18 + 89), 0);
+			Slot slot = cc.getSlot(inventoryStartIndex + i);
+			((AccessorGuiContainer) chest).doDrawSlot(slot);
+			GlStateManager.popMatrix();
+
+			if (mouseX >= itemX && mouseX < itemX + 18 &&
+				mouseY >= itemY && mouseY < itemY + 18) {
+				itemHoverX = itemX;
+				itemHoverY = itemY;
+				hoverLocked = SlotLocking.getInstance().isSlotLocked(slot);
+
+				if (slot.getHasStack()) {
+					tooltipToDisplay = slot.getStack().getTooltip(
+						Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+					);
+				}
+			}
+		}
+
+		if (currentState == EnchantState.ADDING_BOOK &&
+			enchanterCurrentItem != null /*&& !enchanterItemLevels.isEmpty()*/) {
+			int left = guiLeft + X_SIZE / 2 - 56;
+			int top = guiTop + 83;
+
+			int uOffset = enchanterCurrentItem.conflicts ? 112 : 0;
+
+			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(left, top, 112, 16,
+				uOffset / 512f, (112 + uOffset) / 512f, 249 / 512f, (249 + 16) / 512f, GL11.GL_NEAREST
+			);
+
+			if (mouseX > left + 16 && mouseX <= left + 96 &&
+				mouseY > top && mouseY <= top + 16) {
+				disallowClick = true;
+				if (enchanterCurrentItem.displayLore != null) {
+					tooltipToDisplay = enchanterCurrentItem.displayLore;
+				}
+			}
+
+			if (mouseY > top + 18 && mouseY <= top + 18 + 16) {
+				if (mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1) {
+					disallowClick = true;
+					if (enchanterCurrentItem.displayLore != null) {
+						tooltipToDisplay = enchanterCurrentItem.displayLore;
+					}
+				} else if (mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48) {
+					disallowClick = true;
+					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel");
+				}
+			}
+		}
+
+		if (currentState == EnchantState.HAS_ITEM_IN_BOOKS || currentState == EnchantState.ADDING_BOOK) {
+			renderCancel();
+		}
+
+		//Item enchant input
+		ItemStack itemEnchantInput;
+		if (isInHex()) {
+			itemEnchantInput = cc.getSlot(22).getStack();
+		} else {
+			itemEnchantInput = cc.getSlot(19).getStack();
+		}
+		if (itemEnchantInput != null && itemEnchantInput.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) {
+			itemEnchantInput = enchantingItem;
+		}
+		{
+			int itemX = guiLeft + 174;
+			int itemY = guiTop + 58;
+
+			if (itemEnchantInput == null) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(itemX, itemY, 16, 16,
+					0, 16 / 512f, 281 / 512f, (281 + 16) / 512f, GL11.GL_NEAREST
+				);
+			} else {
+				Utils.drawItemStack(itemEnchantInput, itemX, itemY);
+			}
+
+			if (mouseX >= itemX && mouseX < itemX + 18 &&
+				mouseY >= itemY && mouseY < itemY + 18) {
+				itemHoverX = itemX;
+				itemHoverY = itemY;
+
+				if (itemEnchantInput != null) {
+					tooltipToDisplay = itemEnchantInput.getTooltip(
+						Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+					);
+				}
+			}
+		}
+
+		if (!isChangingEnchLevel && itemHoverX >= 0 && itemHoverY >= 0) {
+			GlStateManager.disableDepth();
+			GlStateManager.colorMask(true, true, true, false);
+			Gui.drawRect(itemHoverX, itemHoverY, itemHoverX + 16, itemHoverY + 16,
+				hoverLocked ? 0x80ff8080 : 0x80ffffff
+			);
+			GlStateManager.colorMask(true, true, true, true);
+			GlStateManager.enableDepth();
+		}
+
+		GlStateManager.translate(0, 0, 300);
+
+		renderOrbAnim(partialTicks);
+
+		renderMouseStack(stackOnMouse, disallowClick, mouseX, mouseY,
+			width, height, tooltipToDisplay
+		);
+		GlStateManager.translate(0, 0, -300);
+	}
+
 	private String getIconStr(HexItem item) {
 		String levelStr = "";
 		if (item.itemType != ItemType.UNKNOWN) {
@@ -3331,8 +3869,12 @@ public class GuiCustomHex extends Gui {
 			currentState == EnchantState.NO_ITEM_IN_HEX;
 	}
 
+	private boolean isInGemstones() {
+		return currentState == EnchantState.HAS_ITEM_IN_GEMSTONE || currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE;
+	}
+
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
-		if (shouldOverrideFast && currentState != EnchantState.ADDING_ENCHANT) {
+		if ((shouldOverrideFast || shouldOverrideGemstones) && currentState != EnchantState.ADDING_ENCHANT) {
 			boolean playerInv = slot.inventory == Minecraft.getMinecraft().thePlayer.inventory;
 			int slotId = slot.getSlotIndex();
 			if (playerInv && slotId < 36) {
@@ -3362,7 +3904,7 @@ public class GuiCustomHex extends Gui {
 	public boolean mouseInput(int mouseX, int mouseY) {
 		if (Mouse.getEventButtonState() &&
 			(currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT ||
-				currentState == EnchantState.HAS_ITEM_IN_HEX || currentState == EnchantState.ADDING_BOOK)) {
+				currentState == EnchantState.HAS_ITEM_IN_HEX || currentState == EnchantState.ADDING_BOOK || currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE)) {
 			if (mouseY > guiTop + 6 && mouseY < guiTop + 6 + 15) {
 				String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
 				int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
@@ -3407,7 +3949,7 @@ public class GuiCustomHex extends Gui {
 
 		// Cancel button
 		if (currentState == EnchantState.HAS_ITEM ||
-			currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
+			currentState == EnchantState.HAS_ITEM_IN_BOOKS || currentState == EnchantState.HAS_ITEM_IN_GEMSTONE) {
 			if (Mouse.getEventButtonState()) {
 				int top = guiTop + 83;
 
@@ -3741,6 +4283,106 @@ public class GuiCustomHex extends Gui {
 					return true;
 				}
 			}
+		} else if (currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE) {
+			if (Mouse.getEventButtonState()) {
+				int left = guiLeft + X_SIZE / 2 - 56;
+				int top = guiTop + 83;
+
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, 48, 14,
+					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+				);
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+				);
+
+				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
+					mouseY > top + 18 && mouseY <= top + 18 + 14) {
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+
+					cancelButtonAnimTime = System.currentTimeMillis();
+					currentState = EnchantState.ADDING_GEMSTONE;
+					enchanterCurrentItem = null;
+				} else if (!isChangingEnchLevel && enchanterCurrentItem != null &&
+					(mouseX > left + 16 && mouseX <= left + 96 &&
+						mouseY > top && mouseY <= top + 16) ||
+					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
+						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
+						enchanterCurrentItem.slotIndex);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId,
+						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
+					));
+					enchantingItem = null;
+					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentItem.level == removingEnchantPlayerLevel) {
+						spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+					} else {
+						spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+					}
+
+					confirmButtonAnimTime = System.currentTimeMillis();
+					enchanterCurrentItem = null;
+					currentState = EnchantState.ADDING_GEMSTONE;
+				} else if (mouseX > left + 96 && mouseX <= left + 96 + 16) {
+					if (!isChangingEnchLevel) {
+						if (mouseY > top && mouseY < top + 16) {
+							isChangingEnchLevel = true;
+							return true;
+						}
+					} else {
+						List<HexItem> before = new ArrayList<>();
+						List<HexItem> after = new ArrayList<>();
+
+						for (HexItem item : enchanterItemLevels.values()) {
+							if (item.level < enchanterCurrentItem.level) {
+								before.add(item);
+							} else if (item.level > enchanterCurrentItem.level) {
+								after.add(item);
+							}
+						}
+
+						before.sort(Comparator.comparingInt(o -> -o.level));
+						after.sort(Comparator.comparingInt(o -> o.level));
+
+						int bSize = before.size();
+						int aSize = after.size();
+						for (int i = 0; i < bSize + aSize; i++) {
+							HexItem item;
+							int yIndex;
+							if (i < bSize) {
+								yIndex = -i - 1;
+								item = before.get(i);
+							} else {
+								yIndex = i - bSize + 1;
+								item = after.get(i - bSize);
+							}
+
+							if (mouseY > top + 16 * yIndex && mouseY <= top + 16 * yIndex + 16) {
+								enchanterCurrentItem = item;
+								isChangingEnchLevel = false;
+								return true;
+							}
+						}
+					}
+				}
+
+				if (isChangingEnchLevel) {
+					isChangingEnchLevel = false;
+					return true;
+				}
+			}
 		}
 
 		if (!Mouse.getEventButtonState() && Mouse.getEventButton() < 0 && clickedScrollOffset != -1) {
@@ -3905,7 +4547,7 @@ public class GuiCustomHex extends Gui {
 								return true;
 							}
 						}
-					} else if (!isInHex()) {
+					} else if (!isInHex() && !isInGemstones()) {
 						for (int i = 0; i < 7; i++) {
 							int index = i + leftScroll.getValue() / 16;
 							if (applicableItem.size() <= index) break;
@@ -3941,7 +4583,7 @@ public class GuiCustomHex extends Gui {
 								return true;
 							}
 						}
-					} else if (isInHex()) {
+					} else if (isInHex() && !isInGemstones()) {
 						for (int i = 0; i < 7; i++) {
 							int index = i + leftScroll.getValue() / 16;
 							if (applicableItem.size() <= index) break;
@@ -3963,6 +4605,44 @@ public class GuiCustomHex extends Gui {
 									chest.inventorySlots.windowId,
 									item.slotIndex, 0, 0, stack, transactionID
 								));
+
+								//cancelButtonAnimTime = System.currentTimeMillis();
+
+								return true;
+							}
+						}
+					} else if (currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE) {
+						for (int i = 0; i < 7; i++) {
+							int index = i + leftScroll.getValue() / 16;
+							if (applicableItem.size() <= index) break;
+
+							int top = guiTop - (leftScroll.getValue() % 16) + 18 + 16 * i;
+							if (mouseX > guiLeft + 8 && mouseX <= guiLeft + 8 + 96 &&
+								mouseY > top && mouseY <= top + 16) {
+								HexItem item = applicableItem.get(index);
+
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+								if (currentState == EnchantState.ADDING_GEMSTONE) {
+									currentState = EnchantState.APPLYING_GEMSTONE;
+									enchanterCurrentItem = item;
+								} else if (currentState == EnchantState.APPLYING_GEMSTONE && enchanterCurrentItem == item) {
+									currentState = EnchantState.ADDING_GEMSTONE;
+									EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+									short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+									ItemStack stack =
+										((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
+									Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+										chest.inventorySlots.windowId,
+										item.slotIndex, 0, 0, stack, transactionID
+									));
+
+									cancelButtonAnimTime = System.currentTimeMillis();
+								} else {
+									currentState = EnchantState.ADDING_GEMSTONE;
+									enchanterCurrentItem = null;
+								}
 
 								//cancelButtonAnimTime = System.currentTimeMillis();
 
