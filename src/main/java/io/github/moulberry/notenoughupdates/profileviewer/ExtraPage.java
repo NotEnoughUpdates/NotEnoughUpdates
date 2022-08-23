@@ -116,26 +116,27 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
+		JsonObject guildInfo = profile.getGuildInformation(null);
+		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
+		{
+			if (shouldRenderGuild) {
+				Utils.renderAlignedString(
+					EnumChatFormatting.AQUA + "Guild",
+					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
+					guiLeft + xStart,
+					guiTop + yStartTop + yOffset * 4,
+					76
+				);
+			}
+		}
 		{
 			GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
 				EnumChatFormatting.GREEN + "Pronouns",
 				EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
 				guiLeft + xStart,
-				guiTop + yStartTop + yOffset * 4,
+				guiTop + yStartTop + yOffset * (shouldRenderGuild ? 5 : 4),
 				76
 			));
-		}
-		{
-			JsonObject guildInfo = profile.getGuildInformation(null);
-			if (guildInfo != null && guildInfo.has("name")) {
-				Utils.renderAlignedString(
-					EnumChatFormatting.AQUA + "Guild",
-					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
-					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * (NotEnoughUpdates.INSTANCE.config.profileViewer.showPronounsInPv ? 5 : 4),
-					76
-				);
-			}
 		}
 
 		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_souls_collected"), 0);
