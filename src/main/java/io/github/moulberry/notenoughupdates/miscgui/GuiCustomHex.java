@@ -95,7 +95,9 @@ public class GuiCustomHex extends Gui {
 		HAS_ITEM,
 		HAS_ITEM_IN_HEX,
 		HAS_ITEM_IN_BOOKS,
-		ADDING_BOOK
+		ADDING_BOOK,
+		NO_ITEM_IN_HEX,
+		INVALID_ITEM_HEX
 	}
 
 	private enum ItemType {
@@ -131,6 +133,7 @@ public class GuiCustomHex extends Gui {
 		REFORGE,
 		RANDOM_REFORGE,
 		MANA_DISINTEGRATOR,
+		HEX_ITEM,
 		UNKNOWN;
 
 		private int starLevel = -1;
@@ -334,6 +337,7 @@ public class GuiCustomHex extends Gui {
 				else if (itemId.contains("✪✪")) this.itemType = ItemType.SECOND_STAR;
 				else if (itemId.contains("✪")) this.itemType = ItemType.FIRST_STAR;
 			}
+			if (itemId.contains("HEX_ITEM")) this.itemType = ItemType.HEX_ITEM;
 			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(this.itemId);
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
@@ -511,7 +515,7 @@ public class GuiCustomHex extends Gui {
 	public void tick(String containerName) {
 		if (containerName.equals("The Hex")) {
 			currentState = EnchantState.HAS_ITEM_IN_HEX;
-			//tickHex();
+			tickHex();
 		} else if (containerName.contains("Enchant Item")) {
 			tickEnchants();
 		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
@@ -917,7 +921,8 @@ public class GuiCustomHex extends Gui {
 				int slotIndex = 12 + (i % 5) + (i / 5) * 9;
 				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
 				ItemStack randomReforge = cc.getLowerChestInventory().getStackInSlot(48);
-				if (!hasRandomReforge && randomReforge != null && randomReforge.getItem() == Item.getItemFromBlock(Blocks.anvil)) {
+				if (!hasRandomReforge && randomReforge != null &&
+					randomReforge.getItem() == Item.getItemFromBlock(Blocks.anvil)) { //Make show when in dungeon screen
 					HexItem reforgeItem = new HexItem(48, "Basic Reforge", "RANDOM_REFORGE",
 						Utils.getRawTooltip(randomReforge), true, true
 					);
@@ -1101,6 +1106,141 @@ public class GuiCustomHex extends Gui {
 										} else {
 											applicableItem.add(item);
 										}
+									}
+								} else {
+									if (playerEnchantIds.containsKey(itemId)) {
+										searchRemovedFromRemovable = true;
+									} else {
+										searchRemovedFromApplicable = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			NEUConfig cfg = NotEnoughUpdates.INSTANCE.config;
+			int mult = cfg.enchantingSolvers.enchantOrdering == 0 ? 1 : -1;
+			Comparator<HexItem> comparator = cfg.enchantingSolvers.enchantSorting == 0 ?
+				Comparator.comparingInt(e -> (int) (mult * e.price)) :
+				(c1, c2) -> mult *
+					c1.itemId.toLowerCase().compareTo(c2.itemId.toLowerCase());
+			removableItem.sort(comparator);
+			applicableItem.sort(comparator);
+		}
+	}
+
+	private void tickHex() {
+		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		ContainerChest cc = (ContainerChest) chest.inventorySlots;
+
+		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(22);
+		ItemStack glassStack = cc.getLowerChestInventory().getStackInSlot(12);
+		//ItemStack anvilStack = cc.getLowerChestInventory().getStackInSlot(28);
+
+		int lastPage = currentPage;
+
+		this.lastState = currentState;
+
+		if (enchantingItemStack != null) {
+			if (glassStack.getItem() != null && glassStack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) {
+				if (glassStack.getItemDamage() == 14) {
+					currentState = EnchantState.INVALID_ITEM_HEX;
+				} else if (glassStack.getItemDamage() == 10) {
+					currentState = EnchantState.HAS_ITEM_IN_HEX;
+				} else {
+					currentState = EnchantState.NO_ITEM_IN_HEX;
+				}
+				enchantingItem = enchantingItemStack;
+			}
+		} else {
+			currentState = EnchantState.NO_ITEM_IN_HEX;
+		}
+
+		List<ExperienceOrb> toRemove = new ArrayList<>();
+		for (ExperienceOrb orb : orbs) {
+			float targetDeltaX = guiLeft + orbTargetX - orb.x;
+			float targetDeltaY = guiTop + orbTargetY - orb.y;
+
+			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
+
+			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
+				toRemove.add(orb);
+				continue;
+			}
+
+			orb.xVel += targetDeltaX * 2 / length;
+			orb.yVel += targetDeltaY * 2 / length;
+
+			orb.xVel *= 0.90;
+			orb.yVel *= 0.90;
+
+			orb.xLast = orb.x;
+			orb.yLast = orb.y;
+			orb.x += orb.xVel;
+			orb.y += orb.yVel;
+		}
+		orbs.removeAll(toRemove);
+
+		if (++tickCounter >= 20) {
+			tickCounter = 0;
+		}
+
+		if (currentState == EnchantState.ADDING_BOOK) {
+			if (arrowAmount.getTarget() != 1) {
+				arrowAmount.setTarget(1);
+				arrowAmount.resetTimer();
+			}
+		} else {
+			if (arrowAmount.getTarget() != 0) {
+				arrowAmount.setTarget(0);
+				arrowAmount.resetTimer();
+			}
+		}
+
+		isChangingEnchLevel = false;
+
+		searchRemovedFromRemovable = false;
+		searchRemovedFromApplicable = false;
+		applicableItem.clear();
+		removableItem.clear();
+		if (currentState == EnchantState.HAS_ITEM_IN_HEX) {
+			for (int i = 0; i < 9; i++) {
+				int slotIndex = 15 + (i % 3) + (i / 3) * 9;
+				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
+				if (book != null) {
+					NBTTagCompound tagBook = book.getTagCompound();
+					if (tagBook != null) {
+						NBTTagCompound ea = tagBook.getCompoundTag("ExtraAttributes");
+						if (ea != null) {
+							NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
+							if (enchantments != null) {
+								String itemId = Utils.cleanColour(book.getDisplayName()).toUpperCase().replace(" ", "_").replace(
+									"-",
+									"_"
+								);
+								String name = Utils.cleanColour(book.getDisplayName());
+								if (itemId.equalsIgnoreCase("_")) continue;
+								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
+								if (searchField.getText().trim().isEmpty() ||
+									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+									if (name.equalsIgnoreCase("Ultimate Enchantments")) {
+										name = "Ult Enchants";
+									}
+									if (playerEnchantIds.containsKey(itemId)) {
+										HexItem item = new HexItem(slotIndex, name, itemId,
+											Utils.getRawTooltip(book), false, false
+										);
+										if (!item.overMaxLevel) {
+											removableItem.add(item);
+										}
+										enchanterItemLevels.put(item.level, item);
+									} else {
+										HexItem item = new HexItem(slotIndex, name, "HEX_ITEM" + i,
+											Utils.getRawTooltip(book), true, true
+										);
+										enchanterItemLevels.put(item.level, item);
+										applicableItem.add(item);
 									}
 								} else {
 									if (playerEnchantIds.containsKey(itemId)) {
@@ -2751,7 +2891,7 @@ public class GuiCustomHex extends Gui {
 
 		//Item enchant input
 		ItemStack itemEnchantInput;
-		if (currentState == EnchantState.HAS_ITEM_IN_HEX) {
+		if (isInHex()) {
 			itemEnchantInput = cc.getSlot(22).getStack();
 		} else {
 			itemEnchantInput = cc.getSlot(19).getStack();
@@ -3222,6 +3362,11 @@ public class GuiCustomHex extends Gui {
 			currentState == EnchantState.SWITCHING_DONT_UPDATE;
 	}
 
+	private boolean isInHex() {
+		return currentState == EnchantState.HAS_ITEM_IN_HEX || currentState == EnchantState.INVALID_ITEM_HEX ||
+			currentState == EnchantState.NO_ITEM_IN_HEX;
+	}
+
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
 		if (shouldOverrideFast && currentState != EnchantState.ADDING_ENCHANT) {
 			boolean playerInv = slot.inventory == Minecraft.getMinecraft().thePlayer.inventory;
@@ -3243,7 +3388,7 @@ public class GuiCustomHex extends Gui {
 				} else {
 					cir.setReturnValue(false);
 				}
-			} else if ((slotId == 19 && currentState != EnchantState.HAS_ITEM_IN_HEX) || (slotId == 22 && currentState == EnchantState.HAS_ITEM_IN_HEX)) {
+			} else if ((slotId == 19 && !isInHex()) || (slotId == 22 && isInHex())) {
 				cir.setReturnValue(mouseX >= guiLeft + 173 && mouseX < guiLeft + 173 + 18 &&
 					mouseY >= guiTop + 57 && mouseY < guiTop + 57 + 18);
 			}
@@ -3297,7 +3442,7 @@ public class GuiCustomHex extends Gui {
 		}
 
 		// Cancel button
-		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.HAS_ITEM_IN_HEX ||
+		if (currentState == EnchantState.HAS_ITEM ||
 			currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
 			if (Mouse.getEventButtonState()) {
 				int left = guiLeft + X_SIZE / 2 - 56;
@@ -3533,10 +3678,110 @@ public class GuiCustomHex extends Gui {
 					return true;
 				}
 			}
+		} else if (currentState == EnchantState.HAS_ITEM_IN_HEX) {
+			if (Mouse.getEventButtonState()) {
+				int left = guiLeft + X_SIZE / 2 - 56;
+				int top = guiTop + 83;
+
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, 48, 14,
+					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+				);
+				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+				);
+
+				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
+					mouseY > top + 18 && mouseY <= top + 18 + 14) {
+					/*if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+
+					cancelButtonAnimTime = System.currentTimeMillis();
+					currentState = EnchantState.HAS_ITEM_IN_BOOKS;
+					enchanterCurrentItem = null;*/
+				} else if (!isChangingEnchLevel && enchanterCurrentItem != null &&
+					(mouseX > left + 16 && mouseX <= left + 96 &&
+						mouseY > top && mouseY <= top + 16) ||
+					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
+						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
+						enchanterCurrentItem.slotIndex);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId,
+						enchanterCurrentItem.slotIndex, 0, 0, stack, transactionID
+					));
+
+					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentItem.level == removingEnchantPlayerLevel) {
+						spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+					} else {
+						spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+					}
+
+					confirmButtonAnimTime = System.currentTimeMillis();
+					//enchanterCurrentItem = null;
+					//currentState = EnchantState.HAS_ITEM_IN_BOOKS;
+				} else if (mouseX > left + 96 && mouseX <= left + 96 + 16) {
+					if (!isChangingEnchLevel) {
+						if (mouseY > top && mouseY < top + 16) {
+							isChangingEnchLevel = true;
+							return true;
+						}
+					} else {
+						List<HexItem> before = new ArrayList<>();
+						List<HexItem> after = new ArrayList<>();
+
+						for (HexItem item : enchanterItemLevels.values()) {
+							if (item.level < enchanterCurrentItem.level) {
+								before.add(item);
+							} else if (item.level > enchanterCurrentItem.level) {
+								after.add(item);
+							}
+						}
+
+						before.sort(Comparator.comparingInt(o -> -o.level));
+						after.sort(Comparator.comparingInt(o -> o.level));
+
+						int bSize = before.size();
+						int aSize = after.size();
+						for (int i = 0; i < bSize + aSize; i++) {
+							HexItem item;
+							int yIndex;
+							if (i < bSize) {
+								yIndex = -i - 1;
+								item = before.get(i);
+							} else {
+								yIndex = i - bSize + 1;
+								item = after.get(i - bSize);
+							}
+
+							if (mouseY > top + 16 * yIndex && mouseY <= top + 16 * yIndex + 16) {
+								enchanterCurrentItem = item;
+								isChangingEnchLevel = false;
+								return true;
+							}
+						}
+					}
+				}
+
+				if (isChangingEnchLevel) {
+					isChangingEnchLevel = false;
+					return true;
+				}
+			}
 		}
 
 		if (!Mouse.getEventButtonState() && Mouse.getEventButton() < 0 && clickedScrollOffset != -1) {
-			if (currentState != EnchantState.HAS_ITEM_IN_BOOKS && currentState != EnchantState.ADDING_BOOK) {
+			if (isInEnchanting()) {
 				LerpingInteger lerpingInteger = isClickedScrollLeft ? leftScroll : rightScroll;
 				List<Enchantment> enchantsList = isClickedScrollLeft ? applicable : removable;
 
@@ -3604,7 +3849,7 @@ public class GuiCustomHex extends Gui {
 
 		if (Mouse.getEventButton() == 0) {
 			if (Mouse.getEventButtonState()) {
-				if (currentState != EnchantState.HAS_ITEM_IN_BOOKS && currentState != EnchantState.ADDING_BOOK) {
+				if (isInEnchanting()) {
 					if (mouseX > guiLeft + 104 && mouseX < guiLeft + 104 + 12) {
 						int offset;
 						if (applicable.size() <= 6) {
@@ -3662,7 +3907,7 @@ public class GuiCustomHex extends Gui {
 			if (mouseX > guiLeft + 8 && mouseX < guiLeft + 8 + 96) {
 				if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState() &&
 					Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-					if (currentState != EnchantState.HAS_ITEM_IN_BOOKS && currentState != EnchantState.ADDING_BOOK) {
+					if (isInEnchanting()) {
 						for (int i = 0; i < 7; i++) {
 							int index = i + leftScroll.getValue() / 16;
 							if (applicable.size() <= index) break;
@@ -3697,7 +3942,7 @@ public class GuiCustomHex extends Gui {
 								return true;
 							}
 						}
-					} else {
+					} else if (!isInHex()) {
 						for (int i = 0; i < 7; i++) {
 							int index = i + leftScroll.getValue() / 16;
 							if (applicableItem.size() <= index) break;
@@ -3733,6 +3978,34 @@ public class GuiCustomHex extends Gui {
 								return true;
 							}
 						}
+					} else if (isInHex()) {
+						for (int i = 0; i < 7; i++) {
+							int index = i + leftScroll.getValue() / 16;
+							if (applicableItem.size() <= index) break;
+
+							int top = guiTop - (leftScroll.getValue() % 16) + 18 + 16 * i;
+							if (mouseX > guiLeft + 8 && mouseX <= guiLeft + 8 + 96 &&
+								mouseY > top && mouseY <= top + 16) {
+								HexItem item = applicableItem.get(index);
+
+								if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+								GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+								currentState = EnchantState.HAS_ITEM_IN_BOOKS;
+								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+								ItemStack stack =
+									((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(item.slotIndex);
+								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+									chest.inventorySlots.windowId,
+									item.slotIndex, 0, 0, stack, transactionID
+								));
+
+								//cancelButtonAnimTime = System.currentTimeMillis();
+
+								return true;
+							}
+						}
 					}
 				}
 
@@ -3740,7 +4013,7 @@ public class GuiCustomHex extends Gui {
 			} else if (mouseX > guiLeft + 248 && mouseX < guiLeft + 248 + 96) {
 				if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState() &&
 					Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-					if (currentState != EnchantState.HAS_ITEM_IN_BOOKS && currentState != EnchantState.ADDING_BOOK) {
+					if (isInEnchanting()) {
 						for (int i = 0; i < 7; i++) {
 							int index = i + rightScroll.getValue() / 16;
 							if (removable.size() <= index) break;
@@ -3827,10 +4100,10 @@ public class GuiCustomHex extends Gui {
 
 			LerpingInteger lerpingInteger = isScrollingLeft ? leftScroll : rightScroll;
 			int elementsCount;
-			if (!isInEnchanting()) {
-				elementsCount = isScrollingLeft ? applicableItem.size() : removableItem.size();
-			} else {
+			if (isInEnchanting()) {
 				elementsCount = isScrollingLeft ? applicable.size() : removable.size();
+			} else {
+				elementsCount = isScrollingLeft ? applicableItem.size() : removableItem.size();
 			}
 			int max = (elementsCount - 6) * 16;
 
