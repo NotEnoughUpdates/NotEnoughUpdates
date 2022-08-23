@@ -501,7 +501,7 @@ public class GuiCustomHex extends Gui {
 		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast);
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle)
 			return (shouldOverrideET || shouldOverrideFast);
-		if (!shouldOverrideFast) {
+		if (!shouldOverrideFast && !shouldOverrideET) {
 			currentState = EnchantState.NO_ITEM;
 			applicable.clear();
 			removable.clear();
