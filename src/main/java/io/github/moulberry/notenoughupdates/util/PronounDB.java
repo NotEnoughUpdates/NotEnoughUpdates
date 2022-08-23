@@ -65,10 +65,17 @@ public class PronounDB {
 		}
 	}
 
+
+	private static boolean isDisabled() {
+		JsonObject disabled = Constants.DISABLE;
+		return disabled != null && disabled.has("pronoundb");
+	}
+
 	/**
 	 * Returns an Optional, since JVMs can be *very* funky with KeyStore loading
 	 */
 	public static Optional<JsonObject> performPronouning(String platform, String id) {
+		if (isDisabled()) return Optional.empty();
 		try {
 			URL url = new URL("https://pronoundb.org/api/v1/lookup" +
 				"?platform=" + StringUtils.urlEncode(platform) +

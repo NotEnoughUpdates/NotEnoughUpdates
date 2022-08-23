@@ -18,6 +18,8 @@
  */
 
 import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
+import java.util.*
 
 plugins {
 		idea
@@ -178,7 +180,22 @@ tasks.remapJar{
 		}
 }
 
+val generateBuildFlags by tasks.creating {
+		outputs.upToDateWhen { false }
+		val t = layout.buildDirectory.file("buildflags.properties")
+		outputs.file(t)
+		val props = project.properties.filter { (name, value) -> name.startsWith("neu.buildflags.") }
+		doLast {
+				val p = Properties()
+				p.putAll(props)
+				t.get().asFile.writer(StandardCharsets.UTF_8).use {
+						p.store(it, "Store build time configuration for NEU")
+				}
+		}
+}
+
 tasks.processResources {
+		from(generateBuildFlags)
 		filesMatching("mcmod.info") {
 				expand(
 						"version" to project.version, "mcversion" to "1.8.9"

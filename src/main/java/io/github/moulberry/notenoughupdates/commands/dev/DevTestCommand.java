@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev;
 
+import io.github.moulberry.notenoughupdates.BuildFlags;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
@@ -41,6 +42,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DevTestCommand extends ClientCommandBase {
 
@@ -119,6 +121,14 @@ public class DevTestCommand extends ClientCommandBase {
 				" with the mode " +
 				gamemode));
 		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("buildflags")) {
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				"BuildFlags: \n" +
+					BuildFlags.getAllFlags().entrySet().stream()
+										.map(it -> " + " + it.getKey() + " - " + it.getValue())
+										.collect(Collectors.joining("\n"))));
+			return;
+		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
 			if (args.length == 1) {
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
@@ -164,7 +174,7 @@ public class DevTestCommand extends ClientCommandBase {
 				"I would never search"));
 			return;
 		}
-		if(args.length == 1 && args [0].equalsIgnoreCase("bluehair")) {
+		if (args.length == 1 && args[0].equalsIgnoreCase("bluehair")) {
 			PronounDB.test();
 			return;
 		}
