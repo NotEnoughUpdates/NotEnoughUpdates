@@ -22,7 +22,9 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -114,13 +117,22 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 		{
+			GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
+				EnumChatFormatting.GREEN + "Pronouns",
+				EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
+				guiLeft + xStart,
+				guiTop + yStartTop + yOffset * 4,
+				76
+			));
+		}
+		{
 			JsonObject guildInfo = profile.getGuildInformation(null);
 			if (guildInfo != null && guildInfo.has("name")) {
 				Utils.renderAlignedString(
 					EnumChatFormatting.AQUA + "Guild",
 					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
 					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * 4,
+					guiTop + yStartTop + yOffset * (NotEnoughUpdates.INSTANCE.config.profileViewer.showPronounsInPv ? 5 : 4),
 					76
 				);
 			}
