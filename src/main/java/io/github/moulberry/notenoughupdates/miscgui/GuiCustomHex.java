@@ -147,6 +147,8 @@ public class GuiCustomHex extends Gui {
 		AMBER_GEMSTONE,
 		OPAL_GEMSTONE,
 		TOPAZ_GEMSTONE,
+		CONVERT_TO_DUNGEON,
+		GEMSTONE_SLOT,
 		UNKNOWN;
 
 		private int starLevel = -1;
@@ -336,6 +338,9 @@ public class GuiCustomHex extends Gui {
 				case "TOTAL_UPGRADES":
 					this.itemType = ItemType.TOTAL_UPGRADES;
 					break;
+				case "CONVERT_TO_DUNGEON":
+					this.itemType = ItemType.CONVERT_TO_DUNGEON;
+					break;
 			}
 			if (this.itemType == ItemType.UNKNOWN) {
 				for (String string : displayLore) {
@@ -359,14 +364,18 @@ public class GuiCustomHex extends Gui {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
 			if ("SIL_EX".equals(this.itemId)) this.itemId = "SILEX";
-			if (itemName.contains("Amethyst")) this.itemType = ItemType.AMETHYST_GEMSTONE;
-			if (itemName.contains("Ruby")) this.itemType = ItemType.RUBY_GEMSTONE;
-			if (itemName.contains("Sapphire")) this.itemType = ItemType.SAPPHIRE_GEMSTONE;
-			if (itemName.contains("Jasper")) this.itemType = ItemType.JASPER_GEMSTONE;
-			if (itemName.contains("Jade")) this.itemType = ItemType.JADE_GEMSTONE;
-			if (itemName.contains("Amber")) this.itemType = ItemType.AMBER_GEMSTONE;
-			if (itemName.contains("Opal")) this.itemType = ItemType.OPAL_GEMSTONE;
-			if (itemName.contains("Topaz")) this.itemType = ItemType.TOPAZ_GEMSTONE;
+			if (itemName.contains("Amethyst Gemstone")) this.itemType = ItemType.AMETHYST_GEMSTONE;
+			if (itemName.contains("Ruby Gemstone")) this.itemType = ItemType.RUBY_GEMSTONE;
+			if (itemName.contains("Sapphire Gemstone")) this.itemType = ItemType.SAPPHIRE_GEMSTONE;
+			if (itemName.contains("Jasper Gemstone")) this.itemType = ItemType.JASPER_GEMSTONE;
+			if (itemName.contains("Jade Gemstone")) this.itemType = ItemType.JADE_GEMSTONE;
+			if (itemName.contains("Amber Gemstone")) this.itemType = ItemType.AMBER_GEMSTONE;
+			if (itemName.contains("Opal Gemstone")) this.itemType = ItemType.OPAL_GEMSTONE;
+			if (itemName.contains("Topaz Gemstone")) this.itemType = ItemType.TOPAZ_GEMSTONE;
+			if (itemName.contains("Gemstone Slot")) this.itemType = ItemType.GEMSTONE_SLOT;
+			if (this.itemName.contains(" Gemstone")) {
+				this.itemName = this.itemName.replace(" Gemstone", "").substring(2);
+			}
 			if (isGemstone()) {
 				if (this.itemName.contains("Rough")) this.gemstoneLevel = 0;
 				if (this.itemName.contains("Flawed")) this.gemstoneLevel = 1;
@@ -520,6 +529,7 @@ public class GuiCustomHex extends Gui {
 		if (containerName == null) {
 			shouldOverrideET = false;
 			shouldOverrideFast = false;
+			shouldOverrideGemstones = false;
 			return false;
 		}
 		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
@@ -954,6 +964,7 @@ public class GuiCustomHex extends Gui {
 
 		searchRemovedFromRemovable = false;
 		searchRemovedFromApplicable = false;
+		if (applicableItem.size() < 6) leftScroll.setValue(0);
 		applicableItem.clear();
 		removableItem.clear();
 		if (currentState == EnchantState.HAS_ITEM_IN_BOOKS || currentState == EnchantState.ADDING_BOOK) {
@@ -964,10 +975,27 @@ public class GuiCustomHex extends Gui {
 				ItemStack randomReforge = cc.getLowerChestInventory().getStackInSlot(48);
 				if (!hasRandomReforge && randomReforge != null &&
 					randomReforge.getItem() == Item.getItemFromBlock(Blocks.anvil)) { //Make show when in dungeon screen
-					HexItem reforgeItem = new HexItem(48, "Basic Reforge", "RANDOM_REFORGE",
+					String name = Utils.cleanColour(randomReforge.getDisplayName());
+					String id = Utils.cleanColour(randomReforge.getDisplayName());
+					if (name.equals("Convert to Dungeon Item")) {
+						name = "Dungeonize Item";
+						id = "CONVERT_TO_DUNGEON";
+					} else if (name.equals("Random Basic Reforge")) {
+						name = "Basic Reforge";
+						id = "RANDOM_REFORGE";
+					}
+					HexItem reforgeItem = new HexItem(48, name, id,
 						Utils.getRawTooltip(randomReforge), true, true
 					);
-					applicableItem.add(reforgeItem);
+					boolean hasAdded = false;
+					for (String lore : reforgeItem.displayLore) {
+						if (lore.contains("This item is already a Dungeon")) {
+							removableItem.add(reforgeItem);
+							hasAdded = true;
+							break;
+						}
+					}
+					if (!hasAdded) applicableItem.add(reforgeItem);
 					hasRandomReforge = true;
 				}
 				if (book != null) {
@@ -1011,7 +1039,7 @@ public class GuiCustomHex extends Gui {
 									} else if (name.equalsIgnoreCase("Mana Disintegrator")) {
 										name = "M Disintegrator";
 									}
-									if (playerEnchantIds.containsKey(itemId)) {
+									/*if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), false, false
 										);
@@ -1019,7 +1047,8 @@ public class GuiCustomHex extends Gui {
 											removableItem.add(item);
 										}
 										enchanterItemLevels.put(item.level, item);
-									} else {
+									} else */
+									{
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), true, true
 										);
@@ -1274,7 +1303,7 @@ public class GuiCustomHex extends Gui {
 									if (name.equalsIgnoreCase("Ultimate Enchantments")) {
 										name = "Ult Enchants";
 									}
-									if (playerEnchantIds.containsKey(itemId)) {
+									/*if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), false, false
 										);
@@ -1282,7 +1311,8 @@ public class GuiCustomHex extends Gui {
 											removableItem.add(item);
 										}
 										enchanterItemLevels.put(item.level, item);
-									} else {
+									} else */
+									{
 										HexItem item = new HexItem(slotIndex, name, "HEX_ITEM" + i,
 											Utils.getRawTooltip(book), true, true
 										);
@@ -1440,10 +1470,7 @@ public class GuiCustomHex extends Gui {
 								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
 								if (searchField.getText().trim().isEmpty() ||
 									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
-									if (name.contains("Gemstone")) {
-										name = name.replace(" Gemstone", "").substring(2);
-									}
-									if (playerEnchantIds.containsKey(itemId)) {
+									/*if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), false, false
 										);
@@ -1451,7 +1478,8 @@ public class GuiCustomHex extends Gui {
 											removableItem.add(item);
 										}
 										enchanterItemLevels.put(item.level, item);
-									} else {
+									} else */
+									{
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), true, true
 										);
@@ -2272,7 +2300,7 @@ public class GuiCustomHex extends Gui {
 		Minecraft.getMinecraft().fontRendererObj.drawString("Applied", guiLeft + 247, guiTop + 7, 0x404040, false);
 
 		//Page Text
-		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
+		/*if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
 			String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
 			int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
 			Utils.drawStringCentered(pageStr, Minecraft.getMinecraft().fontRendererObj,
@@ -2288,7 +2316,7 @@ public class GuiCustomHex extends Gui {
 			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2, guiTop + 6, 15, 15,
 				15 / 512f, 30 / 512f, 372 / 512f, 387 / 512f, GL11.GL_NEAREST
 			);
-		}
+		}*/
 
 		tooltipToDisplay = renderSettings(mouseX, mouseY, tooltipToDisplay);
 
@@ -2298,7 +2326,7 @@ public class GuiCustomHex extends Gui {
 		renderEnchantBook(scaledResolution, partialTicks);
 
 		//Can't be enchanted text
-		if (currentState == EnchantState.INVALID_ITEM) {
+		/*if (currentState == EnchantState.INVALID_ITEM) {
 			GlStateManager.disableDepth();
 			Utils.drawStringCentered("This item can't", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + X_SIZE / 2, guiTop + 88, true, 0xffff5555
@@ -2307,7 +2335,7 @@ public class GuiCustomHex extends Gui {
 				guiLeft + X_SIZE / 2, guiTop + 98, true, 0xffff5555
 			);
 			GlStateManager.enableDepth();
-		}
+		}*/
 
 		renderArrow();
 
@@ -3180,7 +3208,6 @@ public class GuiCustomHex extends Gui {
 		Minecraft.getMinecraft().fontRendererObj.drawString("Applied", guiLeft + 247, guiTop + 7, 0x404040, false);
 
 		//Page Text
-		System.out.println(currentState);
 		if (currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE) {
 			String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
 			int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
@@ -3198,6 +3225,7 @@ public class GuiCustomHex extends Gui {
 				15 / 512f, 30 / 512f, 372 / 512f, 387 / 512f, GL11.GL_NEAREST
 			);
 		}
+
 		//Confirm button
 		{
 			int top = guiTop + 83;
@@ -3262,18 +3290,6 @@ public class GuiCustomHex extends Gui {
 
 		//Enchant book model
 		renderEnchantBook(scaledResolution, partialTicks);
-
-		//Can't be enchanted text
-		if (currentState == EnchantState.INVALID_ITEM_HEX) {
-			GlStateManager.disableDepth();
-			Utils.drawStringCentered("This item can't", Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + X_SIZE / 2, guiTop + 88, true, 0xffff5555
-			);
-			Utils.drawStringCentered("be enchanted", Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + X_SIZE / 2, guiTop + 98, true, 0xffff5555
-			);
-			GlStateManager.enableDepth();
-		}
 
 		renderArrow();
 
@@ -3469,7 +3485,7 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
-		if (currentState == EnchantState.ADDING_BOOK &&
+		if (currentState == EnchantState.APPLYING_GEMSTONE &&
 			enchanterCurrentItem != null /*&& !enchanterItemLevels.isEmpty()*/) {
 			int left = guiLeft + X_SIZE / 2 - 56;
 			int top = guiTop + 83;
@@ -3545,6 +3561,118 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
+		if (currentState == EnchantState.APPLYING_GEMSTONE) {
+			int left = guiLeft + X_SIZE / 2 - 56;
+			int top = guiTop + 83;
+			//Enchant cost
+			String levelStr = getIconStr(enchanterCurrentItem);
+
+			int colour = 0xc8ff8f;
+			if (enchanterCurrentItem.price > playerXpLevel) {
+				colour = 0xff5555;
+			}
+
+			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 8 - levelWidth / 2 - 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 8 - levelWidth / 2 + 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 8 - levelWidth / 2,
+				top + 4 - 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 8 - levelWidth / 2,
+				top + 4 + 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
+
+			//Enchant name
+			String name = WordUtils.capitalizeFully(enchanterCurrentItem.itemName);
+			if (name.equalsIgnoreCase("Bane of Arthropods")) {
+				name = "Bane of Arth.";
+			} else if (name.equalsIgnoreCase("Projectile Protection")) {
+				name = "Projectile Prot";
+			} else if (name.equalsIgnoreCase("Blast Protection")) {
+				name = "Blast Prot";
+			} else if (name.equalsIgnoreCase("Luck of the Sea")) {
+				name = "Luck of Sea";
+			} else if (name.equalsIgnoreCase("Turbo Mushrooms")) {
+				name = "Turbo-Mush";
+			}
+			Utils.drawStringCentered(
+				name,
+				Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + X_SIZE / 2,
+				top + 8,
+				true,
+				0xffffffdd
+			);
+
+			if (isChangingEnchLevel) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+				GlStateManager.color(1, 1, 1, 1);
+				Utils.drawTexturedRect(left + 96, top, 16, 16,
+					96 / 512f, 112 / 512f, 265 / 512f, (265 + 16) / 512f, GL11.GL_NEAREST
+				);
+			}
+
+			//Enchant level
+			levelStr = "";
+			levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 96 + 8 - levelWidth / 2 - 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 96 + 8 - levelWidth / 2 + 1,
+				top + 4,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 96 + 8 - levelWidth / 2,
+				top + 4 - 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 96 + 8 - levelWidth / 2,
+				top + 4 + 1,
+				0x2d2102,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				levelStr,
+				left + 96 + 8 - levelWidth / 2,
+				top + 4,
+				0xea82ff,
+				false
+			);
+		}
+
 		if (!isChangingEnchLevel && itemHoverX >= 0 && itemHoverY >= 0) {
 			GlStateManager.disableDepth();
 			GlStateManager.colorMask(true, true, true, false);
@@ -3579,6 +3707,7 @@ public class GuiCustomHex extends Gui {
 			int tunerCount = 0;
 			int manaDisintegratorCount = 0;
 			int peaceCount = 0;
+			int dungeonItem = 0;
 			boolean shadowWarp = false;
 			boolean witherShield = false;
 			boolean implosion = false;
@@ -3598,6 +3727,7 @@ public class GuiCustomHex extends Gui {
 						tunerCount = ea.getInteger("tuned_transmission");
 						peaceCount = ea.getInteger("art_of_peace_count");
 						manaDisintegratorCount = ea.getInteger("mana_disintegrator_count");
+						dungeonItem = ea.getInteger("dungeon_item");
 						reforge = ea.getString("modifier");
 						NBTTagCompound enchs = ea.getCompoundTag("enchantments");
 						NBTTagList scrolls = ea.getTagList("ability_scroll", 8);
@@ -3686,6 +3816,33 @@ public class GuiCustomHex extends Gui {
 				if (manaDisintegratorCount >= 10) levelStr = "✔";
 				else levelStr = "✖";
 
+			} else if (item.itemType == ItemType.CONVERT_TO_DUNGEON) {
+				if (dungeonItem > 0) levelStr = "✔";
+				else levelStr = "✖";
+
+			} else if (item.itemType == ItemType.RUBY_GEMSTONE) {
+				levelStr = "❤";
+
+			} else if (item.itemType == ItemType.AMETHYST_GEMSTONE) {
+				levelStr = "❈";
+
+			} else if (item.itemType == ItemType.SAPPHIRE_GEMSTONE) {
+				levelStr = "✎";
+
+			} else if (item.itemType == ItemType.JADE_GEMSTONE) {
+				levelStr = "☘";
+
+			} else if (item.itemType == ItemType.AMBER_GEMSTONE) {
+				levelStr = "⸕";
+
+			} else if (item.itemType == ItemType.TOPAZ_GEMSTONE) {
+				levelStr = "✧";
+
+			} else if (item.itemType == ItemType.JASPER_GEMSTONE) {
+				levelStr = "❁";
+
+			} else if (item.itemType == ItemType.OPAL_GEMSTONE) {
+				levelStr = "❂";
 			}
 		} else {
 			levelStr = "?";
@@ -4421,15 +4578,20 @@ public class GuiCustomHex extends Gui {
 					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
 					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
-					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
-					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+					if (currentState != EnchantState.APPLYING_GEMSTONE) {
+						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
+						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
-					cancelButtonAnimTime = System.currentTimeMillis();
-					currentState = EnchantState.HAS_ITEM_IN_GEMSTONE;
-					enchanterCurrentItem = null;
+						cancelButtonAnimTime = System.currentTimeMillis();
+						currentState = EnchantState.HAS_ITEM_IN_GEMSTONE;
+						enchanterCurrentItem = null;
+					} else {
+						currentState = EnchantState.ADDING_ENCHANT;
+						enchanterCurrentItem = null;
+					}
 				} else if (!isChangingEnchLevel && enchanterCurrentItem != null &&
 					(mouseX > left + 16 && mouseX <= left + 96 &&
 						mouseY > top && mouseY <= top + 16) ||
