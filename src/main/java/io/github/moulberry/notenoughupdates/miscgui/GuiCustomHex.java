@@ -1547,6 +1547,7 @@ public class GuiCustomHex extends Gui {
 	}
 
 	public void render(float partialTicks, String containerName) {
+		if (containerName == null) return;
 		if (containerName.equals("The Hex")) {
 			renderHex(partialTicks);
 		} else if (containerName.contains("Enchant Item")) {
