@@ -122,7 +122,6 @@ public class NEUOverlay extends Gui {
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
 
 	private final NEUManager manager;
-	private final EquipmentOverlay equipmentOverlay = new EquipmentOverlay();
 
 	private final String mobRegex = ".*?((_MONSTER)|(_NPC)|(_ANIMAL)|(_MINIBOSS)|(_BOSS)|(_SC))$";
 	private final String petRegex = ".*?;[0-5]$";
@@ -2200,7 +2199,6 @@ public class NEUOverlay extends Gui {
 		GlStateManager.enableAlpha();
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.disableLighting();
-		equipmentOverlay.renderInfoHuds();
 		Utils.pushGuiScale(-1);
 
 		if (System.currentTimeMillis() - lastSearchMode > 120000 &&

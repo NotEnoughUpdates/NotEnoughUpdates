@@ -26,7 +26,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
@@ -135,6 +134,12 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petXpType;
 		public String petItem;
 		public String skin;
+
+		public String getPetId(boolean withoutBoost) {
+			return petType + ";" + (withoutBoost ? rarity.petId - 1 : rarity.petId);
+
+		}
+
 	}
 
 	public static class PetConfig {
@@ -244,7 +249,8 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private static Pet getClosestPet(String petType, int petId, String petItem, float petLevel) {
-		Set<Pet> pets = config.petMap.values().stream().filter(pet -> pet.petType.equals(petType) && pet.rarity.petId == petId).collect(
+		Set<Pet> pets = config.petMap.values().stream().filter(pet -> pet.petType.equals(petType) &&
+			pet.rarity.petId == petId).collect(
 			Collectors.toSet());
 
 		if (pets.isEmpty()) {
@@ -255,7 +261,10 @@ public class PetInfoOverlay extends TextOverlay {
 			return pets.iterator().next();
 		}
 
-		Set<Pet> itemMatches = pets.stream().filter(pet -> Objects.equals(petItem, pet.petItem)).collect(Collectors.toSet());
+		Set<Pet> itemMatches = pets
+			.stream()
+			.filter(pet -> Objects.equals(petItem, pet.petItem))
+			.collect(Collectors.toSet());
 
 		if (itemMatches.size() == 1) {
 			return itemMatches.iterator().next();
@@ -453,11 +462,12 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 
-			if (currentPet.petLevel.level < (currentPet.petLevel.maxLevel - 1) || !NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.contains(6)) {
+			if (currentPet.petLevel.level < (currentPet.petLevel.maxLevel - 1) ||
+				!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.contains(6)) {
 				float remainingMax = currentPet.petLevel.maxXP - currentPet.petLevel.totalXp;
 				if (remaining > 0) {
 					if (xpGain < 1000) {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel +  ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + "N/A";
 					} else {
 						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
@@ -564,7 +574,7 @@ public class PetInfoOverlay extends TextOverlay {
 				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
 				petType = petInfo.get("type").getAsString();
 				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
-				level = GuiProfileViewer. getPetLevel(
+				level = GuiProfileViewer.getPetLevel(
 					petType,
 					rarity.name(),
 					Utils.getElementAsFloat(petInfo.get("exp"), 0) // Should only default if from item list and repo missing exp:0
@@ -783,7 +793,8 @@ public class PetInfoOverlay extends TextOverlay {
 		if (currentPet.rarity.petId == 5) {
 			mythicRarity = 4;
 		}
-		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
+		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
 		if (petItem != null) {
 			Vector2f position = getPosition(overlayWidth, overlayHeight);
 			int x = (int) position.x;
@@ -800,7 +811,8 @@ public class PetInfoOverlay extends TextOverlay {
 
 		Pet currentPet2 = getCurrentPet2();
 		if (currentPet2 != null) {
-			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
+			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
 			if (petItem2 != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight);
 				int x = (int) position.x;
