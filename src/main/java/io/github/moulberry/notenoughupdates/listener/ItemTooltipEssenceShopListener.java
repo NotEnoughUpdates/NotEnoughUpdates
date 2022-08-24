@@ -37,7 +37,7 @@ public class ItemTooltipEssenceShopListener {
 	}
 
 	@SubscribeEvent
-	public void slayerRngChance(ItemTooltipEvent event) {
+	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
 		if (!Utils.getOpenChestName().endsWith(" Essence Shop")) return;

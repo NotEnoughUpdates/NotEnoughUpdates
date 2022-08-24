@@ -56,7 +56,7 @@ public class ItemTooltipRngListener {
 	}
 
 	@SubscribeEvent
-	public void slayerRngChance(ItemTooltipEvent event) {
+	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!neu.isOnSkyblock()) return;
 		if (event.toolTip == null) return;
 		if (!Utils.getOpenChestName().endsWith(" RNG Meter") && !slayerData.containsKey(Utils.getOpenChestName())) return;
@@ -125,7 +125,7 @@ public class ItemTooltipRngListener {
 	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, String name) {
 		String internalName = neu.manager.getInternalNameForItem(stack);
 		double bin = neu.manager.auctionManager.getBazaarOrBin(internalName);
-		if (bin < 0) return null;
+		if (bin <= 0) return null;
 
 		double coinsPer = (bin / needed) * multiplier;
 		String format = StringUtils.shortNumberFormat(coinsPer);
@@ -190,6 +190,7 @@ public class ItemTooltipRngListener {
 			!leveling.has("slayer_highest_tier") ||
 			!leveling.has("slayer_tier_colors") ||
 			!leveling.has("rng_meter_dungeon_score")) {
+			Utils.showOutdatedRepoNotification();
 			return;
 		}
 
@@ -268,7 +269,7 @@ public class ItemTooltipRngListener {
 			progressString = toolTip.remove(toolTip.size() - 1);
 		}
 
-		toolTip.add("§9Stats for " + name + "\u00a79: [\u00a7l\u00a7m< \u00a79Switch\u00a7l\u27a1\u00a79]");
+		toolTip.add("§9Stats for " + name + "§9: [§l§m< §9Switch§l➡§9]");
 		toolTip.add(
 			"   §7" + labelPlural + " having: §e" + runsHavingFormat + " §7(of §e" + runsNeededFormat + " §7needed)");
 
