@@ -65,7 +65,6 @@ public class PronounDB {
 		}
 	}
 
-
 	private static boolean isDisabled() {
 		JsonObject disabled = Constants.DISABLE;
 		return disabled != null && disabled.has("pronoundb");
@@ -198,6 +197,10 @@ public class PronounDB {
 				return PronounChoice.findPronounsForId(pronouns.getAsString());
 		}
 		return Optional.empty();
+	}
+
+	public static Optional<PronounChoice> getPronounsFor(String platform, String name) {
+		return performPronouning(platform, name).flatMap(PronounDB::parsePronouns);
 	}
 
 	public static Optional<PronounChoice> getPronounsFor(UUID minecraftPlayer) {
