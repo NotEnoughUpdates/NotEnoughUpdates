@@ -118,6 +118,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -144,6 +145,8 @@ public class RenderListener {
 	private boolean typing;
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
+
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§dUndead Essence §8x(.*)");
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -765,10 +768,13 @@ public class RenderListener {
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type.toUpperCase());
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
-								int amount = Integer.parseInt(displayName.split(Pattern.quote("§8x"))[1]);
-								double price = bazaarPrice * amount;
-								itemValues.put(displayName, price);
-								totalValue += price;
+								Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
+								if (matcher.matches()) {
+									int amount = Integer.parseInt(matcher.group(1));
+									double price = bazaarPrice * amount;
+									itemValues.put(displayName, price);
+									totalValue += price;
+								}
 							}
 							continue;
 						}

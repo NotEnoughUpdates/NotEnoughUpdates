@@ -28,9 +28,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ItemTooltipEssenceShopListener {
 	private final NotEnoughUpdates neu;
+
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§5§o§d(.*) (.*) Essence");
 
 	public ItemTooltipEssenceShopListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -49,21 +53,22 @@ public class ItemTooltipEssenceShopListener {
 
 			if (next) {
 				next = false;
-				String string = StringUtils.cleanColour(line);
-				String[] split = string.split(" ");
-				String rawNumber = split[0].replace(",", "");
-				int amount = Integer.parseInt(rawNumber);
-				String type = split[1];
+				Matcher matcher = ESSENCE_PATTERN.matcher(line);
+				if (matcher.matches()) {
+					String rawNumber = matcher.group(1).replace(",", "");
+					int amount = Integer.parseInt(rawNumber);
+					String type = matcher.group(2);
 
-				String essenceName = "ESSENCE_" + type.toUpperCase();
-				JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(essenceName);
+					String essenceName = "ESSENCE_" + type.toUpperCase();
+					JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(essenceName);
 
-				if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
-					float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
-					double price = bazaarPrice * amount;
-					String format = StringUtils.shortNumberFormat(price);
-					newToolTip.add(line + " §7(§6" + format + " coins§7)");
-					continue;
+					if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
+						float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
+						double price = bazaarPrice * amount;
+						String format = StringUtils.shortNumberFormat(price);
+						newToolTip.add(line + " §7(§6" + format + " coins§7)");
+						continue;
+					}
 				}
 			}
 

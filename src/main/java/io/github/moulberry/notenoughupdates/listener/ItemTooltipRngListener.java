@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemTooltipRngListener {
@@ -47,6 +48,14 @@ public class ItemTooltipRngListener {
 	private int currentSelected = 0;
 	private boolean pressedArrowLast = false;
 	private boolean repoReloadNeeded = true;
+
+	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o§7Odds: (.*) §7\\(§7(.*)%\\)");
+	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o§7Odds: (.*) §7\\(§8§m(.*)%§r §7(.*)%\\)");
+
+	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(Dungeon Score|Slayer XP): §d(.*)§5/§d(.*)");
+	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile("§5§o§d-(.*)- §d(.*)§5/§d(.*)");
+
+	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.*) RNG Meter");
 
 	private final Map<String, Integer> dungeonData = new LinkedHashMap<>();
 	private final Map<String, LinkedHashMap<String, Integer>> slayerData = new LinkedHashMap<>();
@@ -74,25 +83,29 @@ public class ItemTooltipRngListener {
 			}
 
 			if (nextLineProgress || line.contains("Dungeon Score:") || line.contains("Slayer XP:")) {
-				if (line.contains("/§d")) {
-					String[] split = line.split(Pattern.quote("/§d"));
-					String textNeeded = split[1].replace(",", "");
-					int needed;
-					try {
-						needed = Calculator.calculate(textNeeded).intValue();
-					} catch (Calculator.CalculatorException e) {
-						needed = -1;
-					}
+				Matcher matcher = RUNS_PATTERN.matcher(line);
+				Matcher matcherSelected = RUNS_SELECTED_PATTERN.matcher(line);
+				Matcher m = null;
+				if (matcher.matches()) {
+					m = matcher;
+				} else if (matcherSelected.matches()) {
+					m = matcherSelected;
+				}
 
+				if (m != null) {
 					int having;
-					split = split[0].split(" ");
-					String nextHaving = StringUtils.cleanColour(split[split.length - 1].replace(",", ""));
 					try {
-						having = Calculator.calculate(nextHaving).intValue();
+						having = Calculator.calculate(m.group(2).replace(",", "")).intValue();
 					} catch (Calculator.CalculatorException e) {
 						having = -1;
 					}
 
+					int needed;
+					try {
+						needed = Calculator.calculate(m.group(3).replace(",", "")).intValue();
+					} catch (Calculator.CalculatorException e) {
+						needed = -1;
+					}
 					if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterRunsNeeded) {
 						runsRequired(newToolTip, having, needed, nextLineProgress, event.itemStack);
 					}
@@ -139,27 +152,32 @@ public class ItemTooltipRngListener {
 		}
 		pressedShiftLast = shift;
 
-		String[] split = line.split(Pattern.quote(" §7("));
-		String start = split[0];
-		String string = StringUtils.cleanColour(split[1]);
-		string = string.replace("%", "").replace(")", "");
+		String result;
+		Matcher matcher = ODDS_PATTERN.matcher(line);
+		Matcher matcherSelected = ODDS_SELECTED_PATTERN.matcher(line);
+		if (matcher.matches()) {
+			String odds = matcher.group(1);
+			int baseChance = calculateChance(matcher.group(2));
+			String baseFormat = GuiProfileViewer.numberFormat.format(baseChance);
 
-		String addText;
-		int baseChance;
-		if (!string.contains(" ")) {
-			baseChance = calculateChance(string);
-			String format = GuiProfileViewer.numberFormat.format(baseChance);
-			addText = " §7(1/" + format + ")";
+			String fractionFormat = "§7(1/" + baseFormat + ")";
+			result = odds + " " + fractionFormat;
+		} else if (matcherSelected.matches()) {
+			String odds = matcherSelected.group(1);
+			int baseChance = calculateChance(matcherSelected.group(2));
+			String baseFormat = GuiProfileViewer.numberFormat.format(baseChance);
+
+			int increasedChance = calculateChance(matcherSelected.group(3));
+			String increased = GuiProfileViewer.numberFormat.format(increasedChance);
+			String fractionFormat = "§7(§8§m1/" + baseFormat + "§r §71/" + increased + ")";
+
+			result = odds + " " + fractionFormat;
 		} else {
-			split = string.split(" ");
-			baseChance = calculateChance(split[0]);
-			String base = GuiProfileViewer.numberFormat.format(baseChance);
-			String increased = GuiProfileViewer.numberFormat.format(calculateChance(split[1]));
-			addText = " §7(§8§m1/" + base + "§r §71/" + increased + ")";
+			return;
 		}
 
 		if (showSlayerRngFractures) {
-			newToolTip.add(start + addText);
+			newToolTip.add("§7Odds: " + result);
 			newToolTip.add("§8[Press SHIFT to show odds as percentages]");
 		} else {
 			newToolTip.add(line);
@@ -243,8 +261,13 @@ public class ItemTooltipRngListener {
 			labelPlural = "Runs";
 			labelSingular = "Run";
 		} else { // Slayer
-			String[] split = openChestName.split(" ");
-			String slayerName = split[0] + " " + split[1];
+			Matcher matcher = SLAYER_INVENTORY_TITLE_PATTERN.matcher(openChestName);
+			if (!matcher.matches()) {
+				//Happens for the first 4-5 ticks after inventory opens. Thanks hypixel
+				return;
+			}
+
+			String slayerName = matcher.group(1);
 			runsData = slayerData.get(slayerName);
 			labelPlural = "Bosses";
 			labelSingular = "Boss";
@@ -290,7 +313,7 @@ public class ItemTooltipRngListener {
 		boolean left = Keyboard.isKeyDown(Keyboard.KEY_LEFT);
 		boolean right = Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
 		if (!pressedArrowLast && (left || right)) {
-			if (left) {
+			if (Utils.getOpenChestName().contains("Catacombs") ? right : left) {
 				currentSelected--;
 			} else {
 				currentSelected++;
