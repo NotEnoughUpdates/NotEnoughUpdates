@@ -132,9 +132,7 @@ public class MixinNetHandlerPlayClient {
 			StorageManager.getInstance().clientSendWindowClick((C0EPacketClickWindow) packet);
 		}
 		if (packet instanceof C01PacketChatMessage) {
-			if (NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet)) {
-				ci.cancel();
-			}
+			NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet);
 		}
 	}
 

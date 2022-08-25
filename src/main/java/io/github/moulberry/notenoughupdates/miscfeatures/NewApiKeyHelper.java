@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.util.ChatComponentText;
 
 public class NewApiKeyHelper {
 	private static final NewApiKeyHelper INSTANCE = new NewApiKeyHelper();
@@ -29,15 +30,14 @@ public class NewApiKeyHelper {
 		return INSTANCE;
 	}
 
-	public boolean hookPacketChatMessage(C01PacketChatMessage packet) {
+	public void hookPacketChatMessage(C01PacketChatMessage packet) {
 		String message = packet.getMessage().toLowerCase();
-		if (message.equals("/api new")) return false;
+		if (message.equals("/api new")) return;
 
 		if (message.replace(" ", "").startsWith("/apinew")) {
-			Minecraft.getMinecraft().thePlayer.sendChatMessage("/api new");
-			return true;
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				"§e[NotEnoughUpdates] §7You just executed §c" + packet.getMessage() +
+					"§7. Did you mean to execute §e/api new§7?"));
 		}
-
-		return false;
 	}
 }
