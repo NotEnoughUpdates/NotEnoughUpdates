@@ -49,13 +49,13 @@ public class ItemTooltipRngListener {
 	private boolean pressedArrowLast = false;
 	private boolean repoReloadNeeded = true;
 
-	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o§7Odds: (.*) §7\\(§7(.*)%\\)");
-	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o§7Odds: (.*) §7\\(§8§m(.*)%§r §7(.*)%\\)");
+	private final Pattern ODDS_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§7(.*)%\\)");
+	private final Pattern ODDS_SELECTED_PATTERN = Pattern.compile("§5§o§7Odds: (.+) §7\\(§8§m(.*)%§r §7(.+)%\\)");
 
-	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(Dungeon Score|Slayer XP): §d(.*)§5/§d(.*)");
-	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile("§5§o§d-(.*)- §d(.*)§5/§d(.*)");
+	private final Pattern RUNS_PATTERN = Pattern.compile("§5§o§7(Dungeon Score|Slayer XP): §d(.*)§5/§d(.+)");
+	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile("§5§o§d-(.+)- §d(.*)§5/§d(.+)");
 
-	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.*) RNG Meter");
+	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.+) RNG Meter");
 
 	private final Map<String, Integer> dungeonData = new LinkedHashMap<>();
 	private final Map<String, LinkedHashMap<String, Integer>> slayerData = new LinkedHashMap<>();

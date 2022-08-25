@@ -146,7 +146,7 @@ public class RenderListener {
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
 
-	private final Pattern ESSENCE_PATTERN = Pattern.compile("§dUndead Essence §8x(.*)");
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -759,22 +759,16 @@ public class RenderListener {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
 						String displayName = item.getDisplayName();
-						if (displayName.contains(" Essence §8x") && neu.config.dungeons.useEssenceCostFromBazaar) {
-							String type = io.github.moulberry.notenoughupdates.core.util.StringUtils.substringBetween(
-								displayName,
-								"§d",
-								" Essence"
-							);
-							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type.toUpperCase());
+						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
+						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
+							String type = matcher.group(1).toUpperCase();
+							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
-								Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
-								if (matcher.matches()) {
-									int amount = Integer.parseInt(matcher.group(1));
-									double price = bazaarPrice * amount;
-									itemValues.put(displayName, price);
-									totalValue += price;
-								}
+								int amount = Integer.parseInt(matcher.group(2));
+								double price = bazaarPrice * amount;
+								itemValues.put(displayName, price);
+								totalValue += price;
 							}
 							continue;
 						}

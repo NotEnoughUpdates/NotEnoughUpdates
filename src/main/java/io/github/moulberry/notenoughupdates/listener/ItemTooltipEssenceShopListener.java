@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public class ItemTooltipEssenceShopListener {
 	private final NotEnoughUpdates neu;
 
-	private final Pattern ESSENCE_PATTERN = Pattern.compile("§5§o§d(.*) (.*) Essence");
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§5§o§d([\\d,]+) (.+) Essence");
 
 	public ItemTooltipEssenceShopListener(NotEnoughUpdates neu) {
 		this.neu = neu;
