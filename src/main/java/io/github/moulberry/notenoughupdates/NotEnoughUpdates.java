@@ -88,6 +88,7 @@ import net.minecraft.world.biome.BiomeGenHell;
 import net.minecraft.world.biome.BiomeGenJungle;
 import net.minecraft.world.biome.BiomeGenMesa;
 import net.minecraft.world.biome.BiomeGenSnow;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -242,7 +243,6 @@ public class NotEnoughUpdates {
 				config.apiKey = null;
 			}
 
-
 			//add the trophy fishing tab to the config
 			if (config.profileViewer.pageLayout.size() == 8) {
 				config.profileViewer.pageLayout.add(8);
@@ -281,7 +281,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(CrystalWishingCompassSolver.getInstance());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
-		MinecraftForge.EVENT_BUS.register(new EquipmentOverlay());
+		MinecraftForge.EVENT_BUS.register( EquipmentOverlay.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(new ChatListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
@@ -375,6 +375,12 @@ public class NotEnoughUpdates {
 			currChatMessage = null;
 		} else {
 			currChatMessage = message;
+		}
+	}
+
+	public void trySendCommand(String message) {
+		if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, message) == 0) {
+			sendChatMessage(message);
 		}
 	}
 

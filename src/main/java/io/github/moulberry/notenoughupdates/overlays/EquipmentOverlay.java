@@ -19,40 +19,42 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.events.GuiInventoryBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
-import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class EquipmentOverlay {
+	public static EquipmentOverlay INSTANCE = new EquipmentOverlay();
 
+	// <editor-fold desc="resources">
 	private static final ResourceLocation ARMOR_DISPLAY = new ResourceLocation(
 		"notenoughupdates:armordisplay/armordisplay.png");
 	private static final ResourceLocation ARMOR_DISPLAY_GREY = new ResourceLocation(
@@ -89,284 +91,234 @@ public class EquipmentOverlay {
 		"notenoughupdates:petdisplay/petdisplayarmor_fsr.png");
 	private static final ResourceLocation PET_ARMOR_DISPLAY_TRANSPARENT = new ResourceLocation(
 		"notenoughupdates:petdisplay/petdisplayarmor_transparent.png");
+	//</editor-fold>
 
+	//<editor-fold desc="dynamic resources">
+	public ResourceLocation getCustomEquipmentTexture(boolean isPetRendering) {
+		switch (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle) {
+			case 0:
+				return ARMOR_DISPLAY;
+			case 1:
+				return ARMOR_DISPLAY_GREY;
+			case 2:
+				return ARMOR_DISPLAY_DARK;
+			case 3:
+				return isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
+			case 4:
+				return ARMOR_DISPLAY_FSR;
+		}
+		return null;
+	}
 
-	private static boolean renderingPetHud;
-	private static boolean renderingArmorHud;
-	public static boolean shouldUseCachedPet;
-	public static long cachedPetTimer;
+	public ResourceLocation getCustomPetTexture(boolean isArmorRendering) {
+		switch (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle) {
+			case 0:
+				return isArmorRendering ? PET_ARMOR_DISPLAY : PET_DISPLAY;
+			case 1:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_GREY : PET_DISPLAY_GREY;
+			case 2:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_DARK : PET_DISPLAY_DARK;
+			case 3:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_TRANSPARENT : PET_DISPLAY_TRANSPARENT;
+			case 4:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_FSR : PET_DISPLAY_FSR;
+		}
+		return null;
+	}
+	//</editor-fold>
 
-	public void renderInfoHuds() {
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+	//<editor-fold desc="pixel constants">
+	public static final int EQUIPMENT_SLOT_OFFSET_Y = 8;
+	public static final int ARMOR_OVERLAY_OVERHAND_WIDTH = 24;
+	public static final int ARMOR_OVERLAY_HEIGHT = 86;
+	public static final int ARMOR_OVERLAY_WIDTH = 31;
+	public static final int PET_OVERLAY_OFFSET_Y = ARMOR_OVERLAY_HEIGHT - 14 /* overlaying pixels */;
+	//</editor-fold>
 
-		Utils.resetGuiScale();
-		Utils.pushGuiScale(Minecraft.getMinecraft().gameSettings.guiScale);
+	public boolean isRenderingPet;
 
+	public boolean shouldRenderPets;
+	public boolean shouldRenderArmorHud;
+
+	public ItemStack petStack;
+
+	private List<String> tooltipsToDisplay;
+
+	//<editor-fold desc="events">
+
+	@SubscribeEvent
+	public void onGuiTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.START || event.side != Side.CLIENT) return;
+		updateGuiInfo(Minecraft.getMinecraft().currentScreen);
+	}
+
+	@SubscribeEvent
+	public void onGuiInit(GuiScreenEvent.InitGuiEvent event) {
+		updateGuiInfo(event.gui);
+	}
+
+	@SubscribeEvent
+	public void onRenderGuiPost(GuiInventoryBackgroundDrawnEvent event) {
+		if (!(event.getContainer() instanceof GuiInventory)) return;
+		GuiInventory inventory = ((GuiInventory) event.getContainer());
+		renderGuis(inventory);
+	}
+
+	@SubscribeEvent
+	public void onMouseClick(GuiScreenEvent.MouseInputEvent event) {
+		if (!(event.gui instanceof GuiInventory)) return;
+		GuiInventory inventory = ((GuiInventory) event.gui);
+		renderGuis(inventory);
+	}
+
+	//</editor-fold>
+
+	public void renderGuis(GuiInventory inventory) {
 		int width = Utils.peekGuiScale().getScaledWidth();
 		int height = Utils.peekGuiScale().getScaledHeight();
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 
-		if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud &&
-			NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
-			&& NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			if (getWardrobeSlot(10) != null) {
-				slot1 = getWardrobeSlot(10);
-				slot2 = getWardrobeSlot(19);
-				slot3 = getWardrobeSlot(28);
-				slot4 = getWardrobeSlot(37);
+		GL11.glColor4f(1F, 1F, 1F, 1F);
+		GlStateManager.disableLighting();
+		if (shouldRenderArmorHud)
+			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
+		if (shouldRenderPets)
+			renderPets(inventory, mouseX, mouseY, width, height);
+		GlStateManager.enableLighting();
+	}
+
+	public void renderEquipmentGui(GuiInventory guiScreen, int mouseX, int mouseY, int width, int height) {
+		AccessorGuiContainer container = ((AccessorGuiContainer) guiScreen);
+
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop();
+
+		ResourceLocation equipmentTexture = getCustomEquipmentTexture(isRenderingPet);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
+
+		Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
+
+		List<String> tooltipToDisplay = new ArrayList<>();
+		drawSlot(slot1, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, mouseX, mouseY, tooltipToDisplay);
+		drawSlot(slot2, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 18, mouseX, mouseY, tooltipToDisplay);
+		drawSlot(slot3, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 36, mouseX, mouseY, tooltipToDisplay);
+		drawSlot(slot4, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 54, mouseX, mouseY, tooltipToDisplay);
+
+		if (slot1 == null) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, 16, 16, GL11.GL_NEAREST);
+
+			if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 16)
+				&& NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand
+				&& Mouse.getEventButtonState()
+				&& Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+				NotEnoughUpdates.INSTANCE.trySendCommand("/equipment");
 			}
-			if (guiScreen instanceof GuiInventory) {
-				renderingArmorHud = true;
 
-				List<String> tooltipToDisplay = null;
-				if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 0) {
-					Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY);
-				}
-				if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 1) {
-					Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_GREY);
-				}
-				if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 2) {
-					Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_DARK);
-				}
-				if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 3) {
-					if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 &&
-						NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petSlot != null) {
-						Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT_PET);
-					} else {
-						Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_TRANSPARENT);
-					}
-				}
-				if (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle == 4) {
-					Minecraft.getMinecraft().getTextureManager().bindTexture(ARMOR_DISPLAY_FSR);
-				}
+		}
+		if (tooltipToDisplay.size() > 0 &&
+			Utils.isWithinRect(
+				mouseX, mouseY,
+				overlayLeft, overlayTop,
+				ARMOR_OVERLAY_OVERHAND_WIDTH, ARMOR_OVERLAY_HEIGHT
+			)) {
+			Utils.drawHoveringText(
+				tooltipToDisplay,
+				mouseX,
+				mouseY,
+				width,
+				height,
+				-1,
+				Minecraft.getMinecraft().fontRendererObj
+			);
+		}
 
-				GlStateManager.color(1, 1, 1, 1);
-				GL11.glTranslatef(0, 0, 401);
-				float yNumber = (float) (height - 167) / 2f;
-				Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
-				GlStateManager.bindTexture(0);
+	}
 
-				Utils.drawItemStack(slot1, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105), true);
-				Utils.drawItemStack(slot2, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 18, true);
-				Utils.drawItemStack(slot3, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 36, true);
-				Utils.drawItemStack(slot4, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 54, true);
-				if (slot1 == null) {
-					Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
-					GlStateManager.color(1, 1, 1, 1);
-					Utils.drawTexturedRect(((width - 208) / 2f), ((height + 60) / 2f - 105), 16, 16, GL11.GL_NEAREST);
-					GlStateManager.bindTexture(0);
+	private ItemStack getRepoPetStack() {
+		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
+		PetInfoOverlay.Pet currentPet = PetInfoOverlay.getCurrentPet();
+		if (currentPet == null) return null;
+		ItemStack item = manager.createItem(currentPet.getPetId(false));
+		if (item != null) {
+			return item;
+		}
+		item = manager.createItem(currentPet.getPetId(true));
+		return item;
+	}
 
-					tooltipToDisplay = Lists.newArrayList(
-						EnumChatFormatting.RED + "Warning",
-						EnumChatFormatting.GREEN + "You need to open /equipment",
-						EnumChatFormatting.GREEN + "To cache your armour"
-					);
-					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 &&
-							NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
-							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-								if (Mouse.getEventButtonState()) {
-									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/equipment") ==
-										0) {
-										NotEnoughUpdates.INSTANCE.sendChatMessage("/equipment");
-									}
-								}
-							}
-						}
-						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
-							Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
-						}
-					}
-					GL11.glTranslatef(0, 0, -401);
-				}
-				if (slot1 != null && slot2 != null && slot3 != null && slot4 != null) {
-					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 &&
-							NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand) {
-							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-								if (Mouse.getEventButtonState()) {
-									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/equipment") ==
-										0) {
-										NotEnoughUpdates.INSTANCE.sendChatMessage("/equipment");
-									}
-								}
-							}
-						}
+	private void updateGuiInfo(GuiScreen screen) {
+		if (!(screen instanceof GuiInventory)
+			|| !NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
+			|| !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			shouldRenderPets = shouldRenderArmorHud = false;
+			return;
+		}
+		petStack = getRepoPetStack();
+		if (getWardrobeSlot(10) != null) {
+			slot1 = getWardrobeSlot(10);
+			slot2 = getWardrobeSlot(19);
+			slot3 = getWardrobeSlot(28);
+			slot4 = getWardrobeSlot(37);
+		}
+		shouldRenderPets = NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petStack != null;
+		shouldRenderArmorHud = NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud;
+	}
 
-						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 16) {
-							tooltipToDisplay = slot1.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(
-									tooltipToDisplay,
-									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
-									mouseY,
-									width,
-									height,
-									-1,
-									fr
-								);
-							}
-						}
-						if (mouseY >= ((height + 60) / 2f - 105) + 18 && mouseY <= ((height + 60) / 2f - 105) + 34) {
-							tooltipToDisplay = slot2.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(
-									tooltipToDisplay,
-									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
-									mouseY,
-									width,
-									height,
-									-1,
-									fr
-								);
-							}
-						}
-						if (mouseY >= ((height + 60) / 2f - 105) + 36 && mouseY <= ((height + 60) / 2f - 105) + 52) {
-							tooltipToDisplay = slot3.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(
-									tooltipToDisplay,
-									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
-									mouseY,
-									width,
-									height,
-									-1,
-									fr
-								);
-							}
-						}
-						if (mouseY >= ((height + 60) / 2f - 105) + 54 && mouseY <= ((height + 60) / 2f - 105) + 70) {
-							tooltipToDisplay = slot4.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-							if (shouldShowEquipmentTooltip(tooltipToDisplay)) {
-								Utils.drawHoveringText(
-									tooltipToDisplay,
-									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
-									mouseY,
-									width,
-									height,
-									-1,
-									fr
-								);
-							}
-						}
-					}
-					GL11.glTranslatef(0, 0, -401);
-				}
+	private void drawSlot(ItemStack stack, int x, int y, int mouseX, int mouseY, List<String> tooltip) {
+		if (stack == null) return;
+		Utils.drawItemStack(stack, x, y, true);
+		if (Utils.isWithinRect(mouseX, mouseY, x, y, 16, 16)) {
+			List<String> tt = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			if (shouldShowEquipmentTooltip(tt))
+				tooltip.addAll(tt);
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand
+				&& Mouse.getEventButtonState()) {
+				NotEnoughUpdates.INSTANCE.trySendCommand("/equipment");
 			}
 		}
-		if (PetInfoOverlay.getCurrentPet() != null) {
-			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay
-				&& (NotEnoughUpdates.INSTANCE.manager
-				.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId))
-				.hasDisplayName()
-				|| NotEnoughUpdates.INSTANCE.manager
-				.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get(PetInfoOverlay.getCurrentPet().petType + ";" + (PetInfoOverlay.getCurrentPet().rarity.petId - 1)))
-				.hasDisplayName())
-				&& NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect &&
-				NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-				if (!NotEnoughUpdates.INSTANCE.manager
-					.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager
-							.getItemInformation()
-							.get(PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId))
-					.hasDisplayName()) {
-					petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-							PetInfoOverlay.getCurrentPet().petType + ";" + (PetInfoOverlay.getCurrentPet().rarity.petId - 1)));
-				} else {
-					petSlot = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-							PetInfoOverlay.getCurrentPet().petType + ";" + PetInfoOverlay.getCurrentPet().rarity.petId));
-				}
-				if (petSlot == null) {
-					return;
-				}
-				petSlot.getTagCompound().setBoolean(
-					"NEUHIDEPETTOOLTIP",
-					NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip
-				);
-				ItemStack petInfo = petSlot;
+	}
 
-				if (guiScreen instanceof GuiInventory) {
-					GL11.glTranslatef(0, 0, 401);
-					if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 1) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_GREY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 2) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_DARK);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_TRANSPARENT);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 4) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_FSR);
-						}
-					} else {
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 1) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_GREY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 2) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_DARK);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_TRANSPARENT);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 4) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_FSR);
-						}
-					}
+	public void renderPets(GuiInventory inventory, int mouseX, int mouseY, int width, int height) {
+		ItemUtils.getOrCreateTag(petStack).setBoolean(
+			"NEUHIDEPETTOOLTIP",
+			NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip
+		);
+		ItemStack petInfo = petStack;
 
-					GlStateManager.color(1, 1, 1, 1);
-					float yNumber = (float) (height - 23) / 2f;
-					Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
-					GlStateManager.bindTexture(0);
+		ResourceLocation customPetTexture = getCustomPetTexture(isRenderingArmorHud());
+		Minecraft.getMinecraft().getTextureManager().bindTexture(customPetTexture);
+		GlStateManager.color(1, 1, 1, 1);
 
-					Utils.drawItemStack(petInfo, (int) ((width - 208) / 2f), (int) ((height + 60) / 2f - 105) + 72, true);
-					renderingPetHud = true;
+		AccessorGuiContainer container = ((AccessorGuiContainer) inventory);
 
-					List<String> tooltipToDisplay = null;
-					if (petInfo != null) {
-						if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
-							if (mouseY >= ((height + 60) / 2f - 105) + 72 && mouseY <= ((height + 60) / 2f - 105) + 88 &&
-								NotEnoughUpdates.INSTANCE.config.petOverlay.sendPetsCommand) {
-								if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-									if (Mouse.getEventButtonState()) {
-										if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/pets") ==
-											0) {
-											NotEnoughUpdates.INSTANCE.sendChatMessage("/pets");
-										}
-									}
-								}
-								tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-								Utils.drawHoveringText(
-									tooltipToDisplay,
-									mouseX - calculateTooltipXOffset(tooltipToDisplay, fr),
-									mouseY,
-									width,
-									height,
-									-1,
-									fr
-								);
-								GL11.glTranslatef(0, 0, -80);
-							}
-						}
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 
-					}
-				}
+		Utils.drawTexturedRect(overlayLeft, overlayTop, 31, 32, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
+
+		Utils.drawItemStack(petInfo, overlayLeft + 8, overlayTop + 8, true);
+
+		List<String> tooltipToDisplay = null;
+		if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 16)) {
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.sendPetsCommand
+				&& Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null
+				&& Mouse.getEventButtonState()) {
+				NotEnoughUpdates.INSTANCE.trySendCommand("/pets");
 			}
+			tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+			Utils.drawHoveringText(
+				tooltipToDisplay,
+				mouseX - calculateTooltipXOffset(tooltipToDisplay, Minecraft.getMinecraft().fontRendererObj),
+				mouseY,
+				width,
+				height,
+				-1,
+				Minecraft.getMinecraft().fontRendererObj
+			);
 		}
 	}
 
@@ -381,11 +333,10 @@ public class EquipmentOverlay {
 			slot2 = null;
 			slot3 = null;
 			slot4 = null;
-			petSlot = null;
 		}
 
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
-		if(profileSpecific == null)return null;
+		if (profileSpecific == null) return null;
 
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
@@ -404,7 +355,7 @@ public class EquipmentOverlay {
 				//
 				JsonObject jsonObject = profileSpecific.savedEquipment
 					.get(armourSlot);
-				if(jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject
+				if (jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject
 					.getAsJsonObject(), false);
 			}
 		}
@@ -439,12 +390,13 @@ public class EquipmentOverlay {
 	}
 
 	public static boolean isRenderingArmorHud() {
-		return renderingArmorHud;
+		return INSTANCE.shouldRenderArmorHud;
 	}
 
 	public static boolean isRenderingPetHud() {
-		return renderingPetHud;
+		return INSTANCE.shouldRenderPets;
 	}
+
 	private boolean shouldShowEquipmentTooltip(List<String> toolTip) {
 		return !toolTip.get(0).equals("§o§7Empty Equipment Slot§r");
 	}
@@ -469,12 +421,10 @@ public class EquipmentOverlay {
 		return offset + 20;
 	}
 
-
 	public ItemStack slot1 = null;
 	public ItemStack slot2 = null;
 	public ItemStack slot3 = null;
 	public ItemStack slot4 = null;
-	public ItemStack petSlot = null;
 	private String lastProfile;
 
 }
