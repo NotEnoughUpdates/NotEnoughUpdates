@@ -1050,12 +1050,7 @@ public class PetInfoOverlay extends TextOverlay {
 				String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 
 				Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
-				if (event.message.getUnformattedText().startsWith("You summoned your") ||
-					System.currentTimeMillis() - EquipmentOverlay.cachedPetTimer < 500) {
-					EquipmentOverlay.cachedPetTimer = System.currentTimeMillis();
-					EquipmentOverlay.shouldUseCachedPet = false;
-				} else if (autopetMatcher.matches()) {
-					EquipmentOverlay.shouldUseCachedPet = false;
+				if (autopetMatcher.matches()) {
 					try {
 						lastLevelHovered = Integer.parseInt(autopetMatcher.group(1));
 					} catch (NumberFormatException ignored) {
