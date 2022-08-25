@@ -50,8 +50,13 @@ public class AhCommand extends ClientCommandBase {
 			NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.clearSearch();
 			NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.updateSearch();
 
-			if (args.length > 0)
+			if (args.length > 0) {
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.setSearch(StringUtils.join(args, " "));
+			} else {
+				if (NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch) {
+					NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.setSearch(null);
+				}
+			}
 		}
 	}
 }

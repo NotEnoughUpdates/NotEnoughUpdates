@@ -24,7 +24,8 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
-public class NeuAuctionHouse {
+public class
+NeuAuctionHouse {
 	@Expose
 	@ConfigOption(
 		name = "Enable NeuAH",
@@ -61,4 +62,12 @@ public class NeuAuctionHouse {
 	)
 	@ConfigEditorBoolean
 	public boolean priceFiltering = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Save Last Search",
+		desc = "Saving the last query when closing the neuah"
+	)
+	@ConfigEditorBoolean
+	public boolean saveLastSearch = true;
 }
