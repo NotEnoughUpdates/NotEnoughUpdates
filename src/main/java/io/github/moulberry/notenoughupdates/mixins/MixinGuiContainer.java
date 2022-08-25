@@ -30,7 +30,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
-import io.github.moulberry.notenoughupdates.miscgui.GuiCustomHex;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;

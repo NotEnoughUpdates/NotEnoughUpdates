@@ -44,7 +44,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
-import io.github.moulberry.notenoughupdates.miscgui.GuiCustomHex;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
