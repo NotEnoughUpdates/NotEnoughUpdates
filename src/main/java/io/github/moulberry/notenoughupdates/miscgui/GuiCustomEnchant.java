@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -73,8 +74,6 @@ public class GuiCustomEnchant extends Gui {
 	private static final ResourceLocation ENCHANTMENT_TABLE_BOOK_TEXTURE = new ResourceLocation(
 		"textures/entity/enchanting_table_book.png");
 	private static final ModelBook MODEL_BOOK = new ModelBook();
-
-	private static final int EXPERIENCE_ORB_COUNT = 30;
 
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
@@ -160,21 +159,7 @@ public class GuiCustomEnchant extends Gui {
 		}
 	}
 
-	public static class ExperienceOrb {
-		public float x;
-		public float y;
-		public float xLast;
-		public float yLast;
-		public float xVel;
-		public float yVel;
-
-		public int type;
-		public int rotationDeg;
-	}
-
-	private final List<ExperienceOrb> orbs = new ArrayList<>();
-	private int orbTargetX = 0;
-	private int orbTargetY = 0;
+	public OrbDisplay orbDisplay = new OrbDisplay();
 
 	private int guiLeft;
 	private int guiTop;
@@ -239,7 +224,10 @@ public class GuiCustomEnchant extends Gui {
 			return false;
 		}
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-			(containerName.length() >= 12 && Objects.equals("Enchant Item", containerName.substring(0, "Enchant Item".length()))) &&
+			(containerName.length() >= 12 && Objects.equals(
+				"Enchant Item",
+				containerName.substring(0, "Enchant Item".length())
+			)) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		if (!shouldOverrideFast) {
 			currentState = EnchantState.NO_ITEM;
@@ -323,30 +311,7 @@ public class GuiCustomEnchant extends Gui {
 			}
 		}
 
-		List<ExperienceOrb> toRemove = new ArrayList<>();
-		for (ExperienceOrb orb : orbs) {
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-
-			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
-				toRemove.add(orb);
-				continue;
-			}
-
-			orb.xVel += targetDeltaX * 2 / length;
-			orb.yVel += targetDeltaY * 2 / length;
-
-			orb.xVel *= 0.90;
-			orb.yVel *= 0.90;
-
-			orb.xLast = orb.x;
-			orb.yLast = orb.y;
-			orb.x += orb.xVel;
-			orb.y += orb.yVel;
-		}
-		orbs.removeAll(toRemove);
+		orbDisplay.physicsTickOrbs();
 
 		if (++tickCounter >= 20) {
 			tickCounter = 0;
@@ -407,7 +372,10 @@ public class GuiCustomEnchant extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace("-", "_");
+									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace(
+										"-",
+										"_"
+									);
 									String name = Utils.cleanColour(book.getDisplayName());
 									int enchLevel = -1;
 									if (name.equalsIgnoreCase("Bane of Arthropods")) {
@@ -478,7 +446,11 @@ public class GuiCustomEnchant extends Gui {
 								if (ea != null) {
 									NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 									if (enchantments != null) {
-										String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace("-", "_");
+										String enchId = Utils
+											.cleanColour(book.getDisplayName())
+											.toLowerCase()
+											.replace(" ", "_")
+											.replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
 										String name = Utils.cleanColour(book.getDisplayName());
 
@@ -1383,37 +1355,11 @@ public class GuiCustomEnchant extends Gui {
 
 		//Orb animation
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
 		GlStateManager.disableDepth();
-		for (ExperienceOrb orb : orbs) {
-			int orbX = Math.round(orb.xLast + (orb.x - orb.xLast) * partialTicks);
-			int orbY = Math.round(orb.yLast + (orb.y - orb.yLast) * partialTicks);
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(orbX, orbY, 0);
-			GlStateManager.rotate(orb.rotationDeg, 0, 0, 1);
-
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-			float velSq = orb.xVel * orb.xVel + orb.yVel * orb.yVel;
-			float opacity = Math.min(2, Math.max(0.5f, length / 16)) * Math.min(2, Math.max(0.5f, velSq / 40));
-			if (opacity > 1) opacity = 1;
-			opacity = (float) Math.sqrt(opacity);
-			GlStateManager.color(1, 1, 1, opacity);
-
-			Utils.drawTexturedRect(
-				-8,
-				-8,
-				16,
-				16,
-				((orb.type % 3) * 16) / 512f,
-				(16 + (orb.type % 3) * 16) / 512f,
-				(217 + orb.type / 3 * 16) / 512f,
-				(217 + 16 + orb.type / 3 * 16) / 512f,
-				GL11.GL_NEAREST
-			);
-			GlStateManager.popMatrix();
-		}
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(guiLeft, guiTop, 0);
+		orbDisplay.renderOrbs(partialTicks);
+		GlStateManager.popMatrix();
 		GlStateManager.enableDepth();
 
 		if (stackOnMouse != null) {
@@ -1428,37 +1374,6 @@ public class GuiCustomEnchant extends Gui {
 			);
 		}
 		GlStateManager.translate(0, 0, -300);
-	}
-
-	private void spawnExperienceOrbs(int startX, int startY, int targetX, int targetY, int baseType) {
-		orbs.clear();
-
-		this.orbTargetX = targetX;
-		this.orbTargetY = targetY;
-
-		Random rand = new Random();
-		for (int i = 0; i < EXPERIENCE_ORB_COUNT; i++) {
-			ExperienceOrb orb = new ExperienceOrb();
-			orb.x = startX;
-			orb.y = startY;
-			orb.xLast = startX;
-			orb.yLast = startY;
-			orb.xVel = rand.nextFloat() * 20 - 10;
-			orb.yVel = rand.nextFloat() * 20 - 10;
-			orb.type = baseType;
-
-			float typeRand = rand.nextFloat();
-			if (typeRand < 0.6) {
-				orb.type += 0;
-			} else if (typeRand < 0.9) {
-				orb.type += 1;
-			} else {
-				orb.type += 2;
-			}
-			orb.rotationDeg = rand.nextInt(4) * 90;
-
-			orbs.add(orb);
-		}
 	}
 
 	private void renderEnchantBook(ScaledResolution scaledresolution, float partialTicks) {
@@ -1644,9 +1559,9 @@ public class GuiCustomEnchant extends Gui {
 					int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 					if (playerXpLevel >= enchanterCurrentEnch.xpCost) {
 						if (removingEnchantPlayerLevel >= 0 && enchanterCurrentEnch.level == removingEnchantPlayerLevel) {
-							spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+							orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
 						} else {
-							spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+							orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
 						}
 					}
 
