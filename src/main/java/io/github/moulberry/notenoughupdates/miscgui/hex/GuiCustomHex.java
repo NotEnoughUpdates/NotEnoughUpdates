@@ -233,7 +233,6 @@ public class GuiCustomHex extends Gui {
 			return false;
 		}
 		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
-		boolean inBz = false;
 		final List<String> gemList = new ArrayList<>(Arrays.asList("\u2764", "\u2748", "\u270e", "\u2618", "\u2e15", "\u2727", "\u2741", "\u2742"));
 		shouldOverrideFast = config &&
 			(containerName.length() >= 7 && Objects.equals("The Hex", containerName.substring(0, "The Hex".length()))) &&
@@ -245,18 +244,19 @@ public class GuiCustomHex extends Gui {
 				containerName.substring(0, "Enchant Item".length())
 			)) && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 
-		for (String string : gemList) {
-			if (containerName.contains(string)) {
-				inBz = true;
-				break;
-			}
-		}
-
 		shouldOverrideGemstones = config &&
 			(containerName.length() >= 12 && Objects.equals(
 				"Gemstones ➜",
 				containerName.substring(0, "Gemstones ➜".length())
-			)) && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && !inBz;
+			)) && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
+		if (shouldOverrideGemstones) {
+			for (String string : gemList) {
+				if (containerName.contains(string)) {
+					shouldOverrideGemstones = false;
+					break;
+				}
+			}
+		}
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
