@@ -112,8 +112,8 @@ import java.util.Set;
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
 	public static final String VERSION = "2.1.0-REL";
-	public static final int VERSION_ID = 20000;
-	public static final int PRE_VERSION_ID = 1;
+	public static final int VERSION_ID = 20100;
+	public static final int PRE_VERSION_ID = 0;
 	public static final int HOTFIX_VERSION_ID = 0;
 	/**
 	 * Registers the biomes for the crystal hollows here so optifine knows they exists
