@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui;
+package io.github.moulberry.notenoughupdates.miscgui.hex;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -28,6 +28,8 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -52,7 +54,6 @@ import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -72,7 +73,6 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public class GuiCustomHex extends Gui {
 	private static final GuiCustomHex INSTANCE = new GuiCustomHex();
 	private static final ResourceLocation TEXTURE = new ResourceLocation("notenoughupdates:custom_enchant_gui.png");
@@ -88,80 +88,7 @@ public class GuiCustomHex extends Gui {
 
 	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 
-	private enum EnchantState {
-		NO_ITEM,
-		ADDING_ENCHANT,
-		SWITCHING_DONT_UPDATE,
-		INVALID_ITEM,
-		HAS_ITEM,
-		HAS_ITEM_IN_HEX,
-		HAS_ITEM_IN_BOOKS,
-		ADDING_BOOK,
-		NO_ITEM_IN_HEX,
-		INVALID_ITEM_HEX,
-		HAS_ITEM_IN_GEMSTONE,
-		ADDING_GEMSTONE,
-		APPLYING_GEMSTONE
-
-	}
-
-	private enum ItemType {
-		HOT_POTATO,
-		FUMING_POTATO,
-		BOOK_OF_STATS,
-		ART_OF_WAR,
-		ART_OF_PEACE,
-		FARMING_DUMMY,
-		RECOMB,
-		SILEX,
-		RUBY_SCROLL,
-		SAPPHIRE_SCROLL,
-		JASPER_SCROLL,
-		AMETHYST_SCROLL,
-		AMBER_SCROLL,
-		OPAL_SCROLL,
-		FIRST_STAR(1),
-		SECOND_STAR(2),
-		THIRD_STAR(3),
-		FOURTH_STAR(4),
-		FIFTH_STAR(5),
-		FIRST_MASTER_STAR(6),
-		SECOND_MASTER_STAR(7),
-		THIRD_MASTER_STAR(8),
-		FOURTH_MASTER_STAR(9),
-		FIFTH_MASTER_STAR(10),
-		WOOD_SINGULARITY,
-		IMPLOSION_SCROLL,
-		SHADOW_WARP_SCROLL,
-		WITHER_SHIELD_SCROLL,
-		TUNER,
-		REFORGE,
-		RANDOM_REFORGE,
-		MANA_DISINTEGRATOR,
-		HEX_ITEM,
-		TOTAL_UPGRADES,
-		RUBY_GEMSTONE,
-		AMETHYST_GEMSTONE,
-		SAPPHIRE_GEMSTONE,
-		JASPER_GEMSTONE,
-		JADE_GEMSTONE,
-		AMBER_GEMSTONE,
-		OPAL_GEMSTONE,
-		TOPAZ_GEMSTONE,
-		CONVERT_TO_DUNGEON,
-		GEMSTONE_SLOT,
-		UNKNOWN;
-
-		private int starLevel = -1;
-
-		ItemType() {}
-
-		ItemType(int starLevel) {
-			this.starLevel = starLevel;
-		}
-	}
-
-	private class Enchantment {
+	public class Enchantment {
 		public int slotIndex;
 		public String enchantName;
 		public String enchId;
@@ -233,235 +160,7 @@ public class GuiCustomHex extends Gui {
 		}
 	}
 
-	private class HexItem {
-		public int slotIndex;
-		public String itemName;
-		public String itemId;
-		public List<String> displayLore;
-		public int level;
-		public int price = -1;
-		public boolean overMaxLevel = false;
-		public boolean conflicts = false;
-		public ItemType itemType;
-		public int gemstoneLevel = -1;
-
-		public HexItem(
-			int slotIndex, String itemName, String itemId, List<String> displayLore,
-			boolean useMaxLevelForCost, boolean checkConflicts
-		) {
-			this.slotIndex = slotIndex;
-			this.itemName = itemName;
-			this.itemId = itemId;
-			this.displayLore = displayLore;
-			switch (itemId) {
-				default:
-					this.itemType = ItemType.UNKNOWN;
-					break;
-				case "HOT_POTATO_BOOK":
-					this.itemType = ItemType.HOT_POTATO;
-					break;
-				case "FUMING_POTATO_BOOK":
-					this.itemType = ItemType.FUMING_POTATO;
-					break;
-				case "BOOK_OF_STATS":
-					this.itemType = ItemType.BOOK_OF_STATS;
-					break;
-				case "THE_ART_OF_WAR":
-					this.itemType = ItemType.ART_OF_WAR;
-					break;
-				case "FARMING_FOR_DUMMIES":
-					this.itemType = ItemType.FARMING_DUMMY;
-					break;
-				case "THE_ART_OF_PEACE":
-					this.itemType = ItemType.ART_OF_PEACE;
-					break;
-				case "RECOMBOBULATOR_3000":
-					this.itemType = ItemType.RECOMB;
-					break;
-				case "SILEX":
-					this.itemId = "SIL_EX";
-					this.itemType = ItemType.SILEX;
-					break;
-				case "RUBY_POWER_SCROLL":
-					this.itemType = ItemType.RUBY_SCROLL;
-					break;
-				case "SAPPHIRE_POWER_SCROLL":
-					this.itemType = ItemType.SAPPHIRE_SCROLL;
-					break;
-				case "JASPER_POWER_SCROLL":
-					this.itemType = ItemType.JASPER_SCROLL;
-					break;
-				case "AMETHYST_POWER_SCROLL":
-					this.itemType = ItemType.AMETHYST_SCROLL;
-					break;
-				case "AMBER_POWER_SCROLL":
-					this.itemType = ItemType.AMBER_SCROLL;
-					break;
-				case "OPAL_POWER_SCROLL":
-					this.itemType = ItemType.OPAL_SCROLL;
-					break;
-				case "FIRST_MASTER_STAR":
-					this.itemType = ItemType.FIRST_MASTER_STAR;
-					break;
-				case "SECOND_MASTER_STAR":
-					this.itemType = ItemType.SECOND_MASTER_STAR;
-					break;
-				case "THIRD_MASTER_STAR":
-					this.itemType = ItemType.THIRD_MASTER_STAR;
-					break;
-				case "FOURTH_MASTER_STAR":
-					this.itemType = ItemType.FOURTH_MASTER_STAR;
-					break;
-				case "FIFTH_MASTER_STAR":
-					this.itemType = ItemType.FIFTH_MASTER_STAR;
-					break;
-				case "WOOD_SINGULARITY":
-					this.itemType = ItemType.WOOD_SINGULARITY;
-					break;
-				case "IMPLOSION":
-					this.itemType = ItemType.IMPLOSION_SCROLL;
-					break;
-				case "WITHER_SHIELD":
-					this.itemType = ItemType.WITHER_SHIELD_SCROLL;
-					break;
-				case "SHADOW_WARP":
-					this.itemType = ItemType.SHADOW_WARP_SCROLL;
-					break;
-				case "TRANSMISSION_TUNER":
-					this.itemType = ItemType.TUNER;
-					break;
-				case "RANDOM_REFORGE":
-					this.itemType = ItemType.RANDOM_REFORGE;
-					break;
-				case "MANA_DISINTEGRATOR":
-					this.itemType = ItemType.MANA_DISINTEGRATOR;
-					break;
-				case "TOTAL_UPGRADES":
-					this.itemType = ItemType.TOTAL_UPGRADES;
-					break;
-				case "CONVERT_TO_DUNGEON":
-					this.itemType = ItemType.CONVERT_TO_DUNGEON;
-					break;
-			}
-			if (this.itemType == ItemType.UNKNOWN) {
-				for (String string : displayLore) {
-					if ((string.contains("Applies the") && string.contains("reforge")) ||
-						string.contains("reforge when combined")) {
-						this.itemType = ItemType.REFORGE;
-						break;
-					}
-				}
-			}
-			if (!this.isMasterStar() && itemId.contains("✪")) {
-				if (itemId.contains("✪✪✪✪✪")) this.itemType = ItemType.FIFTH_STAR;
-				else if (itemId.contains("✪✪✪✪")) this.itemType = ItemType.FOURTH_STAR;
-				else if (itemId.contains("✪✪✪")) this.itemType = ItemType.THIRD_STAR;
-				else if (itemId.contains("✪✪")) this.itemType = ItemType.SECOND_STAR;
-				else if (itemId.contains("✪")) this.itemType = ItemType.FIRST_STAR;
-			}
-			if (itemId.contains("HEX_ITEM")) this.itemType = ItemType.HEX_ITEM;
-			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(this.itemId);
-			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
-				this.price = bazaarInfo.get("curr_buy").getAsInt();
-			}
-			if ("SIL_EX".equals(this.itemId)) this.itemId = "SILEX";
-			if (itemName.contains("Amethyst Gemstone")) this.itemType = ItemType.AMETHYST_GEMSTONE;
-			if (itemName.contains("Ruby Gemstone")) this.itemType = ItemType.RUBY_GEMSTONE;
-			if (itemName.contains("Sapphire Gemstone")) this.itemType = ItemType.SAPPHIRE_GEMSTONE;
-			if (itemName.contains("Jasper Gemstone")) this.itemType = ItemType.JASPER_GEMSTONE;
-			if (itemName.contains("Jade Gemstone")) this.itemType = ItemType.JADE_GEMSTONE;
-			if (itemName.contains("Amber Gemstone")) this.itemType = ItemType.AMBER_GEMSTONE;
-			if (itemName.contains("Opal Gemstone")) this.itemType = ItemType.OPAL_GEMSTONE;
-			if (itemName.contains("Topaz Gemstone")) this.itemType = ItemType.TOPAZ_GEMSTONE;
-			if (itemName.contains("Gemstone Slot")) this.itemType = ItemType.GEMSTONE_SLOT;
-			if (this.itemName.contains(" Gemstone")) {
-				this.itemName = this.itemName.replace(" Gemstone", "").substring(2);
-			}
-			if (isGemstone()) {
-				if (this.itemName.contains("Rough")) this.gemstoneLevel = 0;
-				if (this.itemName.contains("Flawed")) this.gemstoneLevel = 1;
-				if (this.itemName.contains("Fine")) this.gemstoneLevel = 2;
-				if (this.itemName.contains("Flawless")) this.gemstoneLevel = 3;
-				if (this.itemName.contains("Perfect")) this.gemstoneLevel = 4;
-			}
-		}
-
-		public boolean isPowerScroll() {
-			return itemType == ItemType.RUBY_SCROLL || itemType == ItemType.SAPPHIRE_SCROLL ||
-				itemType == ItemType.JASPER_SCROLL || itemType == ItemType.AMETHYST_SCROLL ||
-				itemType == ItemType.AMBER_SCROLL || itemType == ItemType.OPAL_SCROLL;
-		}
-
-		public boolean isDungeonStar() {
-			return itemType == ItemType.FIRST_STAR || itemType == ItemType.SECOND_STAR ||
-				itemType == ItemType.THIRD_STAR || itemType == ItemType.FOURTH_STAR ||
-				itemType == ItemType.FIFTH_STAR;
-		}
-
-		public boolean isMasterStar() {
-			return itemType == ItemType.FIRST_MASTER_STAR || itemType == ItemType.SECOND_MASTER_STAR ||
-				itemType == ItemType.THIRD_MASTER_STAR || itemType == ItemType.FOURTH_MASTER_STAR ||
-				itemType == ItemType.FIFTH_MASTER_STAR;
-		}
-
-		public String getReforge() {
-			JsonObject reforgeStones = Constants.REFORGESTONES;
-			if (reforgeStones != null && reforgeStones.has(this.itemId.toUpperCase())) {
-				JsonObject reforgeInfo = reforgeStones.get(this.itemId.toUpperCase()).getAsJsonObject();
-				if (reforgeInfo != null) {
-					return Utils.getElementAsString(reforgeInfo.get("reforgeName"), "");
-				}
-
-			}
-			return "";
-		}
-
-		public int getPrice() {
-			if (this.itemType == ItemType.RANDOM_REFORGE) {
-				for (String string : displayLore) {
-					if (string.contains("Coins")) {
-						try {
-							price = Integer.parseInt(StringUtils
-								.stripControlCodes(string)
-								.replace(" Coins", "")
-								.replace(",", "")
-								.trim());
-						} catch (NumberFormatException ignored) {
-						}
-					}
-				}
-			}
-			return price;
-		}
-
-		public boolean isHypeScroll() {
-			return itemType == ItemType.IMPLOSION_SCROLL || itemType == ItemType.WITHER_SHIELD_SCROLL ||
-				itemType == ItemType.SHADOW_WARP_SCROLL;
-		}
-
-		public boolean isGemstone() {
-			return itemType == ItemType.RUBY_GEMSTONE || itemType == ItemType.AMETHYST_GEMSTONE ||
-				itemType == ItemType.SAPPHIRE_GEMSTONE || itemType == ItemType.JASPER_GEMSTONE ||
-				itemType == ItemType.JADE_GEMSTONE || itemType == ItemType.AMBER_GEMSTONE ||
-				itemType == ItemType.OPAL_GEMSTONE || itemType == ItemType.TOPAZ_GEMSTONE;
-		}
-	}
-
-	public static class ExperienceOrb {
-		public float x;
-		public float y;
-		public float xLast;
-		public float yLast;
-		public float xVel;
-		public float yVel;
-
-		public int type;
-		public int rotationDeg;
-	}
-
-	private final List<ExperienceOrb> orbs = new ArrayList<>();
-	private int orbTargetX = 0;
-	private int orbTargetY = 0;
+	public OrbDisplay orbDisplay = new OrbDisplay();
 
 	private int guiLeft;
 	private int guiTop;
@@ -658,30 +357,7 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
-		List<ExperienceOrb> toRemove = new ArrayList<>();
-		for (ExperienceOrb orb : orbs) {
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-
-			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
-				toRemove.add(orb);
-				continue;
-			}
-
-			orb.xVel += targetDeltaX * 2 / length;
-			orb.yVel += targetDeltaY * 2 / length;
-
-			orb.xVel *= 0.90;
-			orb.yVel *= 0.90;
-
-			orb.xLast = orb.x;
-			orb.yLast = orb.y;
-			orb.x += orb.xVel;
-			orb.y += orb.yVel;
-		}
-		orbs.removeAll(toRemove);
+		orbDisplay.physicsTickOrbs();
 
 		if (++tickCounter >= 20) {
 			tickCounter = 0;
@@ -930,30 +606,7 @@ public class GuiCustomHex extends Gui {
 			enchantingItem = enchantingItemStack;
 		}
 
-		List<ExperienceOrb> toRemove = new ArrayList<>();
-		for (ExperienceOrb orb : orbs) {
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-
-			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
-				toRemove.add(orb);
-				continue;
-			}
-
-			orb.xVel += targetDeltaX * 2 / length;
-			orb.yVel += targetDeltaY * 2 / length;
-
-			orb.xVel *= 0.90;
-			orb.yVel *= 0.90;
-
-			orb.xLast = orb.x;
-			orb.yLast = orb.y;
-			orb.x += orb.xVel;
-			orb.y += orb.yVel;
-		}
-		orbs.removeAll(toRemove);
+		orbDisplay.physicsTickOrbs();
 
 		if (++tickCounter >= 20) {
 			tickCounter = 0;
@@ -1152,7 +805,7 @@ public class GuiCustomHex extends Gui {
 												applicableItem.add(item);
 
 											} else if (item.isDungeonStar()) {
-												if (starCount >= item.itemType.starLevel) removableItem.add(item);
+												if (starCount >= item.itemType.getStarLevel()) removableItem.add(item);
 												else applicableItem.add(item);
 
 											} else if (item.itemType == ItemType.WOOD_SINGULARITY) {
@@ -1236,30 +889,7 @@ public class GuiCustomHex extends Gui {
 			currentState = EnchantState.NO_ITEM_IN_HEX;
 		}
 
-		List<ExperienceOrb> toRemove = new ArrayList<>();
-		for (ExperienceOrb orb : orbs) {
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-
-			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
-				toRemove.add(orb);
-				continue;
-			}
-
-			orb.xVel += targetDeltaX * 2 / length;
-			orb.yVel += targetDeltaY * 2 / length;
-
-			orb.xVel *= 0.90;
-			orb.yVel *= 0.90;
-
-			orb.xLast = orb.x;
-			orb.yLast = orb.y;
-			orb.x += orb.xVel;
-			orb.y += orb.yVel;
-		}
-		orbs.removeAll(toRemove);
+		orbDisplay.physicsTickOrbs();
 
 		if (++tickCounter >= 20) {
 			tickCounter = 0;
@@ -1409,30 +1039,7 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
-		List<ExperienceOrb> toRemove = new ArrayList<>();
-		for (ExperienceOrb orb : orbs) {
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-
-			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
-				toRemove.add(orb);
-				continue;
-			}
-
-			orb.xVel += targetDeltaX * 2 / length;
-			orb.yVel += targetDeltaY * 2 / length;
-
-			orb.xVel *= 0.90;
-			orb.yVel *= 0.90;
-
-			orb.xLast = orb.x;
-			orb.yLast = orb.y;
-			orb.x += orb.xVel;
-			orb.y += orb.yVel;
-		}
-		orbs.removeAll(toRemove);
+		orbDisplay.physicsTickOrbs();
 
 		if (++tickCounter >= 20) {
 			tickCounter = 0;
@@ -3796,7 +3403,7 @@ public class GuiCustomHex extends Gui {
 				levelStr = "✖";
 
 			} else if (item.isDungeonStar()) {
-				if (starCount >= item.itemType.starLevel) levelStr = "✔";
+				if (starCount >= item.itemType.getStarLevel()) levelStr = "✔";
 				else levelStr = "✖";
 
 			} else if (item.itemType == ItemType.WOOD_SINGULARITY) {
@@ -4006,39 +3613,10 @@ public class GuiCustomHex extends Gui {
 
 	private void renderOrbAnim(float partialTicks) {
 		//Orb animation
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
-		GlStateManager.disableDepth();
-		for (ExperienceOrb orb : orbs) {
-			int orbX = Math.round(orb.xLast + (orb.x - orb.xLast) * partialTicks);
-			int orbY = Math.round(orb.yLast + (orb.y - orb.yLast) * partialTicks);
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(orbX, orbY, 0);
-			GlStateManager.rotate(orb.rotationDeg, 0, 0, 1);
-
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-			float velSq = orb.xVel * orb.xVel + orb.yVel * orb.yVel;
-			float opacity = Math.min(2, Math.max(0.5f, length / 16)) * Math.min(2, Math.max(0.5f, velSq / 40));
-			if (opacity > 1) opacity = 1;
-			opacity = (float) Math.sqrt(opacity);
-			GlStateManager.color(1, 1, 1, opacity);
-
-			Utils.drawTexturedRect(
-				-8,
-				-8,
-				16,
-				16,
-				((orb.type % 3) * 16) / 512f,
-				(16 + (orb.type % 3) * 16) / 512f,
-				(217 + orb.type / 3 * 16) / 512f,
-				(217 + 16 + orb.type / 3 * 16) / 512f,
-				GL11.GL_NEAREST
-			);
-			GlStateManager.popMatrix();
-		}
-		GlStateManager.enableDepth();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(guiLeft, guiTop, 0);
+		orbDisplay.renderOrbs(partialTicks);
+		GlStateManager.popMatrix();
 	}
 
 	private void renderMouseStack(
@@ -4056,37 +3634,6 @@ public class GuiCustomHex extends Gui {
 			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1,
 				Minecraft.getMinecraft().fontRendererObj
 			);
-		}
-	}
-
-	private void spawnExperienceOrbs(int startX, int startY, int targetX, int targetY, int baseType) {
-		orbs.clear();
-
-		this.orbTargetX = targetX;
-		this.orbTargetY = targetY;
-
-		Random rand = new Random();
-		for (int i = 0; i < EXPERIENCE_ORB_COUNT; i++) {
-			ExperienceOrb orb = new ExperienceOrb();
-			orb.x = startX;
-			orb.y = startY;
-			orb.xLast = startX;
-			orb.yLast = startY;
-			orb.xVel = rand.nextFloat() * 20 - 10;
-			orb.yVel = rand.nextFloat() * 20 - 10;
-			orb.type = baseType;
-
-			float typeRand = rand.nextFloat();
-			if (typeRand < 0.6) {
-				orb.type += 0;
-			} else if (typeRand < 0.9) {
-				orb.type += 1;
-			} else {
-				orb.type += 2;
-			}
-			orb.rotationDeg = rand.nextInt(4) * 90;
-
-			orbs.add(orb);
 		}
 	}
 
@@ -4318,9 +3865,9 @@ public class GuiCustomHex extends Gui {
 					int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 					if (playerXpLevel >= enchanterCurrentEnch.xpCost) {
 						if (removingEnchantPlayerLevel >= 0 && enchanterCurrentEnch.level == removingEnchantPlayerLevel) {
-							spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+							orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
 						} else {
-							spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+							orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
 						}
 					}
 
@@ -4417,9 +3964,9 @@ public class GuiCustomHex extends Gui {
 					));
 
 					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentItem.level == removingEnchantPlayerLevel) {
-						spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+						orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
 					} else {
-						spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+						orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
 					}
 
 					confirmButtonAnimTime = System.currentTimeMillis();
@@ -4517,9 +4064,9 @@ public class GuiCustomHex extends Gui {
 					));
 					enchantingItem = null;
 					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentItem.level == removingEnchantPlayerLevel) {
-						spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+						orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
 					} else {
-						spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+						orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
 					}
 
 					confirmButtonAnimTime = System.currentTimeMillis();
@@ -4622,9 +4169,9 @@ public class GuiCustomHex extends Gui {
 					));
 					enchantingItem = null;
 					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentItem.level == removingEnchantPlayerLevel) {
-						spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+						orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
 					} else {
-						spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+						orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
 					}
 
 					confirmButtonAnimTime = System.currentTimeMillis();
