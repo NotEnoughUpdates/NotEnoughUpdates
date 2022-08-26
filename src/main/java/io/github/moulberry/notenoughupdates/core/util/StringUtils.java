@@ -23,6 +23,9 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class StringUtils {
@@ -82,5 +85,13 @@ public class StringUtils {
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
 		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(d, iteration + 1);
+	}
+
+	public static String urlEncode(String something) {
+		try {
+			return URLEncoder.encode(something, StandardCharsets.UTF_8.name());
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e); // UTF 8 should always be present
+		}
 	}
 }

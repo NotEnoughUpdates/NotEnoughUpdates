@@ -22,8 +22,10 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
@@ -39,6 +41,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -115,9 +118,10 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
+		JsonObject guildInfo = profile.getGuildInformation(null);
+		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
 		{
-			JsonObject guildInfo = profile.getGuildInformation(null);
-			if (guildInfo != null && guildInfo.has("name")) {
+			if (shouldRenderGuild) {
 				Utils.renderAlignedString(
 					EnumChatFormatting.AQUA + "Guild",
 					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
@@ -126,6 +130,15 @@ public class ExtraPage extends GuiProfileViewerPage {
 					76
 				);
 			}
+		}
+		{
+			GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
+				EnumChatFormatting.GREEN + "Pronouns",
+				EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
+				guiLeft + xStart,
+				guiTop + yStartTop + yOffset * (shouldRenderGuild ? 5 : 4),
+				76
+			));
 		}
 
 		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_souls_collected"), 0);
