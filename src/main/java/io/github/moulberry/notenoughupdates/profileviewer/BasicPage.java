@@ -616,10 +616,10 @@ public class BasicPage extends GuiProfileViewerPage {
 							getInstance()
 								.tooltipToDisplay.add(
 									EnumChatFormatting.GRAY +
-									"Progress: " +
-									EnumChatFormatting.DARK_PURPLE +
+										"Progress: " +
+										EnumChatFormatting.DARK_PURPLE +
 										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
-									"/" +
+										"/" +
 										StringUtils.shortNumberFormat(maxXp)
 								);
 						}
