@@ -690,7 +690,7 @@ public class ItemTooltipListener {
 					if (i - 2 < 0) {
 						break;
 					}
-					newTooltip.addAll(i - 1, petToolTipXPExtend(event));
+					if (!Utils.getOpenChestName().startsWith("Auctions:")) newTooltip.addAll(i - 1, petToolTipXPExtend(event));
 					break;
 				}
 			}
@@ -723,7 +723,6 @@ public class ItemTooltipListener {
 			//7 is just a random number i chose, prob no pets with less lines than 7
 			if (event.toolTip.size() > 7) {
 				if (Utils.cleanColour(event.toolTip.get(1)).matches(petToolTipRegex)) {
-
 					GuiProfileViewer.PetLevel petlevel = null;
 
 					//this is the item itself
