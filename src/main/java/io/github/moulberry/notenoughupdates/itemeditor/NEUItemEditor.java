@@ -89,9 +89,23 @@ public class NEUItemEditor extends GuiScreen {
 			} catch (NBTException ignored) {
 			}
 		}
-		nbtTag.getCompoundTag("ExtraAttributes").removeTag("uuid");
-		nbtTag.getCompoundTag("ExtraAttributes").removeTag("timestamp");
+		NBTTagCompound extraAttributes = nbtTag.getCompoundTag("ExtraAttributes");
+		extraAttributes.removeTag("uuid");
+		extraAttributes.removeTag("timestamp");
 
+		if (extraAttributes.hasKey("petInfo")) {
+			try {
+				NBTTagCompound petInfo = JsonToNBT.getTagFromJson(extraAttributes.getString("petInfo"));
+
+				petInfo.removeTag("\"heldItem\"");
+				petInfo.setString("\"exp\"", "0.0");
+				petInfo.setString("\"candyUsed\"", "0");
+				petInfo.removeTag("\"uuid\"");
+
+				extraAttributes.setString("petInfo", petInfo.toString());
+			} catch (NBTException ignored) {
+			}
+		}
 		savedRepoItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().getOrDefault(internalName, null);
 
 		internalName = internalName == null ? "" : internalName;
@@ -161,7 +175,7 @@ public class NEUItemEditor extends GuiScreen {
 
 		rightOptions.add(new GuiElementButton("Remove enchants", Color.RED.getRGB(), () -> {
 			nbtTag.removeTag("ench");
-			nbtTag.getCompoundTag("ExtraAttributes").removeTag("enchantments");
+			extraAttributes.removeTag("enchantments");
 		}));
 		rightOptions.add(new GuiElementButton(
 			"Add enchant glint",
