@@ -445,7 +445,14 @@ public class GuiCustomHex extends Gui {
 						Enchantment xpBottleEnch = new Enchantment(50, name, id,
 							Utils.getRawTooltip(xpBottle), 1, true, false
 						);
-						applicable.add(xpBottleEnch);
+						boolean hasHasXpBottle = false;
+						for (Enchantment ench : applicable) {
+							if (ench.enchId.equals("XP_BOTTLE")) {
+								hasHasXpBottle = true;
+								break;
+							}
+						}
+						if (!hasHasXpBottle) applicable.add(xpBottleEnch);
 						hasXpBottle = true;
 					}
 					if (book != null && book.getItem() == Items.enchanted_book) {
@@ -3862,7 +3869,7 @@ public class GuiCustomHex extends Gui {
 					} else {
 						currentState = EnchantState.HAS_ITEM_IN_BOOKS;
 					}
-
+					searchField.setText("");
 					cancelButtonAnimTime = System.currentTimeMillis();
 					enchanterCurrentItem = null;
 				}
