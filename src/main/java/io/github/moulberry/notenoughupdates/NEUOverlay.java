@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
@@ -37,27 +36,21 @@ import io.github.moulberry.notenoughupdates.mbgui.MBGuiElement;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
-import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -73,8 +66,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -102,7 +93,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -176,6 +166,7 @@ public class NEUOverlay extends Gui {
 	private List<JsonObject> selectedItemGroup = null;
 
 	private boolean itemPaneOpen = false;
+	private long itemPaneShouldOpen = -1;
 
 	private int page = 0;
 
@@ -251,12 +242,20 @@ public class NEUOverlay extends Gui {
 				}
 				if (Mouse.getEventButtonState()) {
 					setSearchBarFocus(true);
+					if (!NotEnoughUpdates.INSTANCE.config.itemlist.openWhenSearching) {
+						itemPaneOpen = false;
+						if (!searchMode) {
+							itemPaneShouldOpen = System.currentTimeMillis() + 300;
+						}
+					}
+
 					if (Mouse.getEventButton() == 1) { //Right mouse button down
 						textField.setText("");
 						updateSearch();
 					} else {
 						if (System.currentTimeMillis() - millisLastLeftClick < 300) {
 							searchMode = !searchMode;
+							itemPaneShouldOpen = -1;
 							lastSearchMode = System.currentTimeMillis();
 							if (searchMode && NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus) {
 								NotificationHandler.displayNotification(Lists.newArrayList(
@@ -1862,6 +1861,10 @@ public class NEUOverlay extends Gui {
 			(int) (fgFavourite2.getBlue() * 0.8f), fgFavourite2.getAlpha()
 		);
 
+		if (itemPaneShouldOpen != -1 && System.currentTimeMillis() > itemPaneShouldOpen) {
+			itemPaneOpen = true;
+			itemPaneShouldOpen = -1;
+		}
 		if (itemPaneOpen) {
 			if (itemPaneTabOffset.getValue() == 0) {
 				if (itemPaneOffsetFactor.getTarget() != 2 / 3f) {
