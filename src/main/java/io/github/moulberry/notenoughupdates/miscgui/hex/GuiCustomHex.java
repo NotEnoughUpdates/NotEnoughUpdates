@@ -108,10 +108,18 @@ public class GuiCustomHex extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
+			boolean isUlt = false;
+			for (String lore : displayLore) {
+				if (lore.contains("§l")) isUlt = true;
+				break;
+			}
 			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(
-				"ENCHANTMENT_" + enchId.toUpperCase() + "_" + level);
+				(isUlt ? "ULTIMATE_" : "") + enchId.toUpperCase() + ";" + level);
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
+			}
+			if (this.enchId.equals("prosecute")) {
+				this.enchId = "PROSECUTE";
 			}
 
 			if (Constants.ENCHANTS != null) {
@@ -167,6 +175,7 @@ public class GuiCustomHex extends Gui {
 	private boolean shouldOverrideFast = false;
 	private boolean shouldOverrideET = false;
 	private boolean shouldOverrideGemstones = false;
+	private boolean shouldOverrideXp = false;
 	public float pageOpen;
 	public float pageOpenLast;
 	public float pageOpenRandom;
@@ -230,10 +239,21 @@ public class GuiCustomHex extends Gui {
 			shouldOverrideET = false;
 			shouldOverrideFast = false;
 			shouldOverrideGemstones = false;
+			shouldOverrideXp = false;
+			searchField.setText("");
 			return false;
 		}
 		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
-		final List<String> gemList = new ArrayList<>(Arrays.asList("\u2764", "\u2748", "\u270e", "\u2618", "\u2e15", "\u2727", "\u2741", "\u2742"));
+		final List<String> gemList = new ArrayList<>(Arrays.asList(
+			"\u2764",
+			"\u2748",
+			"\u270e",
+			"\u2618",
+			"\u2e15",
+			"\u2727",
+			"\u2741",
+			"\u2742"
+		));
 		shouldOverrideFast = config &&
 			(containerName.length() >= 7 && Objects.equals("The Hex", containerName.substring(0, "The Hex".length()))) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
@@ -257,13 +277,17 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 		}
+
+		shouldOverrideXp = config &&
+			(containerName.length() >= 21 && Objects.equals("Bottles of Enchanting", containerName.substring(0, "Bottles of Enchanting".length()))) &&
+			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
-		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones);
+		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle)
 			return (shouldOverrideET || shouldOverrideFast);
-		if (!shouldOverrideFast && !shouldOverrideET && !shouldOverrideGemstones) {
+		if (!shouldOverrideFast && !shouldOverrideET && !shouldOverrideGemstones && !shouldOverrideXp) {
 			currentState = EnchantState.NO_ITEM;
 			applicable.clear();
 			removable.clear();
@@ -271,8 +295,9 @@ public class GuiCustomHex extends Gui {
 			removableItem.clear();
 			expectedMaxPage = 1;
 			enchanterCurrentItem = null;
+			searchField.setText("");
 		}
-		return (shouldOverrideFast || shouldOverrideGemstones);
+		return (shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
 	}
 
 	private int tickCounter = 0;
@@ -284,7 +309,7 @@ public class GuiCustomHex extends Gui {
 		} else if (containerName.contains("Enchant Item")) {
 			tickEnchants();
 		} else if (containerName.contains("Books") || containerName.contains("Modifiers") || containerName.contains(
-			"Reforges") || containerName.contains("Item Upgrades")) {
+			"Reforges") || containerName.contains("Item Upgrades") || containerName.equals("Bottles of Enchanting")) {
 			tickBooks();
 		} else if (containerName.contains("Gemstones")) {
 			tickGemstones();
@@ -408,9 +433,21 @@ public class GuiCustomHex extends Gui {
 			if (currentState == EnchantState.ADDING_ENCHANT) {
 				removingEnchantPlayerLevel = -1;
 				boolean updateLevel = enchanterCurrentEnch == null;
+				boolean hasXpBottle = false;
 				for (int i = 0; i < 27; i++) {
 					int slotIndex = 9 + i;
 					ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
+					ItemStack xpBottle = cc.getLowerChestInventory().getStackInSlot(50);
+					if (!hasXpBottle && xpBottle != null &&
+						xpBottle.getItem() == Items.experience_bottle) { //Make show when in dungeon screen
+						String name = "Buy Xp Bottles";
+						String id = "XP_BOTTLE";
+						Enchantment xpBottleEnch = new Enchantment(50, name, id,
+							Utils.getRawTooltip(xpBottle), 1, true, false
+						);
+						applicable.add(xpBottleEnch);
+						hasXpBottle = true;
+					}
 					if (book != null && book.getItem() == Items.enchanted_book) {
 						NBTTagCompound tagBook = book.getTagCompound();
 						if (tagBook != null) {
@@ -491,10 +528,22 @@ public class GuiCustomHex extends Gui {
 				searchRemovedFromApplicable = false;
 				applicable.clear();
 				removable.clear();
+				boolean hasXpBottle = false;
 				if (currentState == EnchantState.HAS_ITEM) {
 					for (int i = 0; i < 15; i++) {
 						int slotIndex = 12 + (i % 5) + (i / 5) * 9;
 						ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
+						ItemStack xpBottle = cc.getLowerChestInventory().getStackInSlot(50);
+						if (!hasXpBottle && xpBottle != null &&
+							xpBottle.getItem() == Items.experience_bottle) { //Make show when in dungeon screen
+							String name = "Buy Xp Bottles";
+							String id = "XP_BOTTLE";
+							Enchantment xpBottleEnch = new Enchantment(50, name, id,
+								Utils.getRawTooltip(xpBottle), 1, true, false
+							);
+							applicable.add(xpBottleEnch);
+							hasXpBottle = true;
+						}
 						if (book != null) {
 							NBTTagCompound tagBook = book.getTagCompound();
 							if (tagBook != null) {
@@ -508,6 +557,9 @@ public class GuiCustomHex extends Gui {
 											.replace(" ", "_")
 											.replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
+										if (enchId.equals("prosecute")) {
+											enchId = "PROSECUTE";
+										}
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
@@ -603,6 +655,10 @@ public class GuiCustomHex extends Gui {
 			enchantingItem = enchantingItemStack;
 		} else if (currentState == EnchantState.HAS_ITEM_IN_BOOKS && enchantingItem == null &&
 			enchantingItemStack != null) {
+			enchantingItem = enchantingItemStack;
+		} else if (anvilStack != null && anvilStack.getItem() == Item.getItemFromBlock(Blocks.enchanting_table) &&
+			currentState != EnchantState.ADDING_BOOK) {
+			currentState = EnchantState.HAS_ITEM_IN_BOOKS;
 			enchantingItem = enchantingItemStack;
 		}
 
@@ -823,7 +879,7 @@ public class GuiCustomHex extends Gui {
 												else applicableItem.add(item);
 
 											} else if (item.itemType == ItemType.REFORGE) {
-												if (item.getReforge().equalsIgnoreCase(reforge)) removableItem.add(item);
+												if (item.getReforge().equalsIgnoreCase(reforge) && !reforge.equals("")) removableItem.add(item);
 												else applicableItem.add(item);
 
 											} else if (item.itemType == ItemType.ART_OF_PEACE) {
@@ -1170,7 +1226,7 @@ public class GuiCustomHex extends Gui {
 			renderHex(partialTicks);
 		} else if (containerName.contains("Enchant Item")) {
 			renderEnchantment(partialTicks);
-		} else if (containerName.contains("Books") || containerName.contains("Modifiers")) {
+		} else if (containerName.contains("Books") || containerName.contains("Modifiers") || containerName.contains("Bottles of Enchanting")) {
 			renderBooks(partialTicks);
 		} else if (containerName.contains("Gemstones")) {
 			renderGemstones(partialTicks);
@@ -3707,7 +3763,7 @@ public class GuiCustomHex extends Gui {
 	}
 
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
-		if ((shouldOverrideFast || shouldOverrideGemstones) && currentState != EnchantState.ADDING_ENCHANT) {
+		if ((shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp) && currentState != EnchantState.ADDING_ENCHANT) {
 			boolean playerInv = slot.inventory == Minecraft.getMinecraft().thePlayer.inventory;
 			int slotId = slot.getSlotIndex();
 			if (playerInv && slotId < 36) {

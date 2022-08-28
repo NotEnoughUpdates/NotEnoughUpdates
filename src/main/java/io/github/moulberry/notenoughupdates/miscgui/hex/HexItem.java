@@ -45,7 +45,7 @@ public class HexItem {
 	) {
 		this.slotIndex = slotIndex;
 		this.itemName = itemName;
-		this.itemId = itemId;
+		this.itemId = itemId.replace("'S", "");
 		this.displayLore = displayLore;
 		switch (itemId) {
 			default:
@@ -136,6 +136,18 @@ public class HexItem {
 			case "CONVERT_TO_DUNGEON":
 				this.itemType = ItemType.CONVERT_TO_DUNGEON;
 				break;
+			case "EXPERIENCE_BOTTLE":
+				this.itemType = ItemType.EXPERIENCE_BOTTLE;
+				break;
+			case "GRAND_EXPERIENCE_BOTTLE":
+				this.itemType = ItemType.GRAND_EXPERIENCE_BOTTLE;
+				break;
+			case "TITANIC_EXPERIENCE_BOTTLE":
+				this.itemType = ItemType.TITANIC_EXPERIENCE_BOTTLE;
+				break;
+			case "COLOSSAL_EXPERIENCE_BOTTLE":
+				this.itemType = ItemType.COLOSSAL_EXPERIENCE_BOTTLE;
+				break;
 		}
 		if (this.itemType == ItemType.UNKNOWN) {
 			for (String string : displayLore) {
@@ -152,6 +164,12 @@ public class HexItem {
 			else if (itemId.contains("✪✪✪")) this.itemType = ItemType.THIRD_STAR;
 			else if (itemId.contains("✪✪")) this.itemType = ItemType.SECOND_STAR;
 			else if (itemId.contains("✪")) this.itemType = ItemType.FIRST_STAR;
+		}
+		if (this.itemId.contains("EXPERIENCE_BOTTLE")) {
+			this.itemId = this.itemId.replace("EXPERIENCE_BOTTLE", "EXP_BOTTLE");
+		}
+		if (this.itemId.contains("END_STONE_GEODE")) {
+			this.itemId = this.itemId.replace("END_STONE_GEODE", "ENDSTONE_GEODE");
 		}
 		if (itemId.contains("HEX_ITEM")) this.itemType = ItemType.HEX_ITEM;
 		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(this.itemId);
@@ -170,6 +188,10 @@ public class HexItem {
 		if (itemName.contains("Gemstone Slot")) this.itemType = ItemType.GEMSTONE_SLOT;
 		if (this.itemName.contains(" Gemstone")) {
 			this.itemName = this.itemName.replace(" Gemstone", "").substring(2);
+		} else if (this.itemName.contains(" Experience Bottle")) {
+			this.itemName = this.itemName.replace("Experience Bottle", "");
+		} else if (this.itemName.equals("Experience Bottle")) {
+			this.itemName = "Exp Bottle";
 		}
 		if (isGemstone()) {
 			if (this.itemName.contains("Rough")) this.gemstoneLevel = 0;

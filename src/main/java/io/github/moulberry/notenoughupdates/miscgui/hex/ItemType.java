@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.hex;
 
+import org.omg.CORBA.UNKNOWN;
+
 enum ItemType {
 	HOT_POTATO,
 	FUMING_POTATO,
@@ -64,6 +66,10 @@ enum ItemType {
 	TOPAZ_GEMSTONE,
 	CONVERT_TO_DUNGEON,
 	GEMSTONE_SLOT,
+	EXPERIENCE_BOTTLE,
+	GRAND_EXPERIENCE_BOTTLE,
+	TITANIC_EXPERIENCE_BOTTLE,
+	COLOSSAL_EXPERIENCE_BOTTLE,
 	UNKNOWN;
 
 	private int starLevel = -1;

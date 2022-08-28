@@ -106,6 +106,10 @@ public class GuiCustomEnchant extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
+			if (this.enchId.equals("prosecute")) {
+				this.enchId = "PROSECUTE";
+			}
+
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -452,6 +456,9 @@ public class GuiCustomEnchant extends Gui {
 											.replace(" ", "_")
 											.replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
+										if (enchId.equals("prosecute")) {
+											enchId = "PROSECUTE";
+										}
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
