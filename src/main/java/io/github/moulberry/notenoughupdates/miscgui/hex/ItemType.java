@@ -19,8 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.hex;
 
-import org.omg.CORBA.UNKNOWN;
-
 enum ItemType {
 	HOT_POTATO,
 	FUMING_POTATO,
