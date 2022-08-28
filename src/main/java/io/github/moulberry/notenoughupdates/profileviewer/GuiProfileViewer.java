@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,7 +28,9 @@ import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
+import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -53,6 +54,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,6 +65,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class GuiProfileViewer extends GuiScreen {
 
@@ -73,69 +77,72 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation pv_bingo = new ResourceLocation("notenoughupdates:pv_bingo.png");
 	public static final ResourceLocation pv_stranded = new ResourceLocation("notenoughupdates:pv_stranded.png");
 	public static final ResourceLocation pv_unknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
-	public static final ResourceLocation resource_packs = new ResourceLocation("minecraft:textures/gui/resource_packs.png");
+	public static final ResourceLocation resource_packs =
+		new ResourceLocation("minecraft:textures/gui/resource_packs.png");
 	public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS = new HashMap<String, HashMap<String, Float>>() {
-		{
-			put(
-				"PET_ITEM_BIG_TEETH_COMMON",
-				new HashMap<String, Float>() {
-					{
-						put("CRIT_CHANCE", 5f);
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS =
+		new HashMap<String, HashMap<String, Float>>() {
+			{
+				put(
+					"PET_ITEM_BIG_TEETH_COMMON",
+					new HashMap<String, Float>() {
+						{
+							put("CRIT_CHANCE", 5f);
+						}
 					}
-				}
-			);
-			put(
-				"PET_ITEM_HARDENED_SCALES_UNCOMMON",
-				new HashMap<String, Float>() {
-					{
-						put("DEFENCE", 25f);
+				);
+				put(
+					"PET_ITEM_HARDENED_SCALES_UNCOMMON",
+					new HashMap<String, Float>() {
+						{
+							put("DEFENCE", 25f);
+						}
 					}
-				}
-			);
-			put(
-				"PET_ITEM_LUCKY_CLOVER",
-				new HashMap<String, Float>() {
-					{
-						put("MAGIC_FIND", 7f);
+				);
+				put(
+					"PET_ITEM_LUCKY_CLOVER",
+					new HashMap<String, Float>() {
+						{
+							put("MAGIC_FIND", 7f);
+						}
 					}
-				}
-			);
-			put(
-				"PET_ITEM_SHARPENED_CLAWS_UNCOMMON",
-				new HashMap<String, Float>() {
-					{
-						put("CRIT_DAMAGE", 15f);
+				);
+				put(
+					"PET_ITEM_SHARPENED_CLAWS_UNCOMMON",
+					new HashMap<String, Float>() {
+						{
+							put("CRIT_DAMAGE", 15f);
+						}
 					}
-				}
-			);
-		}
-	};
-	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT = new HashMap<String, HashMap<String, Float>>() {
-		{
-			put(
-				"PET_ITEM_IRON_CLAWS_COMMON",
-				new HashMap<String, Float>() {
-					{
-						put("CRIT_DAMAGE", 1.4f);
-						put("CRIT_CHANCE", 1.4f);
+				);
+			}
+		};
+	public static final HashMap<String, HashMap<String, Float>> PET_STAT_BOOSTS_MULT =
+		new HashMap<String, HashMap<String, Float>>() {
+			{
+				put(
+					"PET_ITEM_IRON_CLAWS_COMMON",
+					new HashMap<String, Float>() {
+						{
+							put("CRIT_DAMAGE", 1.4f);
+							put("CRIT_CHANCE", 1.4f);
+						}
 					}
-				}
-			);
-			put(
-				"PET_ITEM_TEXTBOOK",
-				new HashMap<String, Float>() {
-					{
-						put("INTELLIGENCE", 2f);
+				);
+				put(
+					"PET_ITEM_TEXTBOOK",
+					new HashMap<String, Float>() {
+						{
+							put("INTELLIGENCE", 2f);
+						}
 					}
-				}
-			);
-		}
-	};
+				);
+			}
+		};
 
 	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 
-	private static final char[] c = new char[] { 'k', 'm', 'b', 't' };
+	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
 	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {
 		{
@@ -151,6 +158,14 @@ public class GuiProfileViewer extends GuiScreen {
 	private static int guiTop;
 	private static ProfileViewer.Profile profile;
 	private static String profileId = null;
+	public static AsyncDependencyLoader<Optional<PronounDB.PronounChoice>> pronouns =
+		AsyncDependencyLoader.withEqualsInvocation(
+			() ->
+				NotEnoughUpdates.INSTANCE.config.profileViewer.showPronounsInPv
+					? Optional.ofNullable(profile).map(it -> Utils.parseDashlessUUID(it.getUuid()))
+					: Optional.<UUID>empty(),
+			uuid -> CompletableFuture.supplyAsync(() -> uuid.flatMap(PronounDB::getPronounsFor))
+		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
@@ -268,7 +283,6 @@ public class GuiProfileViewer extends GuiScreen {
 		return levelObj;
 	}
 
-
 	public static String shortNumberFormat(double n, int iteration) {
 		if (n < 1000) {
 			if (n % 1 == 0) {
@@ -280,7 +294,10 @@ public class GuiProfileViewer extends GuiScreen {
 
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(d, iteration + 1);
+		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(
+			d,
+			iteration + 1
+		);
 	}
 
 	public static int getGuiLeft() {
@@ -429,7 +446,17 @@ public class GuiProfileViewer extends GuiScreen {
 				//Render Open In Skycrypt button
 				renderBlurredBackground(width, height, guiLeft + 100 + 6 + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
-				Utils.drawTexturedRect(guiLeft + 100 + 6, guiTop + sizeY + 3, 100, 20, 0, 100 / 200f, 0, 20 / 185f, GL11.GL_NEAREST);
+				Utils.drawTexturedRect(
+					guiLeft + 100 + 6,
+					guiTop + sizeY + 3,
+					100,
+					20,
+					0,
+					100 / 200f,
+					0,
+					20 / 185f,
+					GL11.GL_NEAREST
+				);
 				Utils.drawStringCenteredScaledMaxWidth(
 					"Open in Skycrypt",
 					Minecraft.getMinecraft().fontRendererObj,
@@ -567,7 +594,14 @@ public class GuiProfileViewer extends GuiScreen {
 						}
 					}
 
-					Utils.drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, guiLeft + sizeX / 2f, guiTop + 101, true, 0);
+					Utils.drawStringCentered(
+						str,
+						Minecraft.getMinecraft().fontRendererObj,
+						guiLeft + sizeX / 2f,
+						guiTop + 101,
+						true,
+						0
+					);
 
 					//This is just here to inform the player what to do
 					//like typing /api new or telling them to go find a psychotherapist
@@ -846,7 +880,8 @@ public class GuiProfileViewer extends GuiScreen {
 					Desktop desk = Desktop.getDesktop();
 					desk.browse(
 						new URI(
-							"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" + profileId
+							"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+								profileId
 						)
 					);
 					Utils.playPressSound();
@@ -970,7 +1005,8 @@ public class GuiProfileViewer extends GuiScreen {
 				String levelStr;
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs")) totalXpStr =
-					EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + numberFormat.format(levelObj.totalXp);
+					EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
+						numberFormat.format(levelObj.totalXp);
 				if (levelObj.maxed) {
 					levelStr = EnumChatFormatting.GOLD + "MAXED!";
 				} else {
@@ -1150,14 +1186,21 @@ public class GuiProfileViewer extends GuiScreen {
 					);
 				blurShaderHorz.getShaderManager().getShaderUniform("BlurDir").set(1, 0);
 				blurShaderHorz.setProjectionMatrix(createProjectionMatrix(width, height));
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 		if (blurShaderVert == null) {
 			try {
-				blurShaderVert = new Shader(Minecraft.getMinecraft().getResourceManager(), "blur", blurOutputHorz, blurOutputVert);
+				blurShaderVert = new Shader(
+					Minecraft.getMinecraft().getResourceManager(),
+					"blur",
+					blurOutputHorz,
+					blurOutputVert
+				);
 				blurShaderVert.getShaderManager().getShaderUniform("BlurDir").set(0, 1);
 				blurShaderVert.setProjectionMatrix(createProjectionMatrix(width, height));
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 		if (blurShaderHorz != null && blurShaderVert != null) {
 			if (15 != lastBgBlurFactor) {

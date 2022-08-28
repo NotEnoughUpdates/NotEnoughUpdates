@@ -72,6 +72,10 @@ public class MobLootRecipe implements NeuRecipe {
 		}
 
 		private String formatDropChance() {
+			if (chance == null) {
+				return "";
+			}
+			
 			if (!chance.endsWith("%")) {
 				return chance;
 			}
