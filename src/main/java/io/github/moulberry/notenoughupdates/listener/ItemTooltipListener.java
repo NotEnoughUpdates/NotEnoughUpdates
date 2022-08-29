@@ -690,7 +690,7 @@ public class ItemTooltipListener {
 					if (i - 2 < 0) {
 						break;
 					}
-					if (!Utils.getOpenChestName().startsWith("Auctions:")) newTooltip.addAll(i - 1, petToolTipXPExtend(event));
+					if (Utils.getOpenChestName().endsWith("Pets")) newTooltip.addAll(i - 1, petToolTipXPExtend(event));//also appears in storage
 					break;
 				}
 			}
