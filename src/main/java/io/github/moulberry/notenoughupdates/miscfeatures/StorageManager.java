@@ -61,7 +61,6 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.network.play.server.S30PacketWindowItems;
-import org.lwjgl.Sys;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -74,8 +73,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
