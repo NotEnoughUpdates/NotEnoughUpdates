@@ -226,7 +226,7 @@ public class EquipmentOverlay {
 			)) {
 			Utils.drawHoveringText(
 				tooltipToDisplay,
-				mouseX,
+				mouseX - calculateTooltipXOffset(tooltipToDisplay, Minecraft.getMinecraft().fontRendererObj),
 				mouseY,
 				width,
 				height,
