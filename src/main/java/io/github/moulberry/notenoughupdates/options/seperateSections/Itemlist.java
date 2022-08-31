@@ -53,6 +53,15 @@ public class Itemlist {
 
 	@Expose
 	@ConfigOption(
+		name = "Open when searching",
+		desc = "Open the Itemlist when in container search mode by double clicking the search bar"
+	)
+	@ConfigEditorBoolean
+	public boolean openWhenSearching = false;
+
+
+	@Expose
+	@ConfigOption(
 		name = "Item Style",
 		desc = "Sets the style of the background behind items"
 	)

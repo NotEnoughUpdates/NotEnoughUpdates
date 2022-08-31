@@ -53,6 +53,7 @@ import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
+import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -521,12 +522,12 @@ public class RenderListener {
 								x -= 68 - 200;
 							}
 						}
-						if (NEUOverlay.isRenderingArmorHud()) {
+						if (EquipmentOverlay.isRenderingArmorHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 								x -= 25;
 							}
 						}
-						if (NEUOverlay.isRenderingPetHud()) {
+						if (EquipmentOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
 							}
@@ -648,12 +649,12 @@ public class RenderListener {
 								x -= 68 - 200;
 							}
 						}
-						if (NEUOverlay.isRenderingArmorHud()) {
+						if (EquipmentOverlay.isRenderingArmorHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 								x -= 25;
 							}
 						}
-						if (NEUOverlay.isRenderingPetHud()) {
+						if (EquipmentOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
 							}
@@ -1091,12 +1092,12 @@ public class RenderListener {
 								x -= 68 - 200;
 							}
 						}
-						if (NEUOverlay.isRenderingArmorHud()) {
+						if (EquipmentOverlay.isRenderingArmorHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 								x -= 25;
 							}
 						}
-						if (NEUOverlay.isRenderingPetHud()) {
+						if (EquipmentOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
 							}
