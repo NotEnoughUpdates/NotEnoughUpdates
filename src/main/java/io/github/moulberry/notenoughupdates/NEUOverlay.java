@@ -2938,4 +2938,72 @@ public class NEUOverlay extends Gui {
 	public float getInfoPaneOffsetFactor() {
 		return infoPaneOffsetFactor.getValue() * getWidthMult();
 	}
+
+	public ResourceLocation getCustomEquipmentTexture(boolean isPetRendering) {
+		switch (NotEnoughUpdates.INSTANCE.config.customArmour.colourStyle) {
+			case 0:
+				return ARMOR_DISPLAY;
+			case 1:
+				return ARMOR_DISPLAY_GREY;
+			case 2:
+				return ARMOR_DISPLAY_DARK;
+			case 3:
+				return isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
+			case 4:
+				return ARMOR_DISPLAY_FSR;
+		}
+		return null;
+	}
+
+	public ResourceLocation getCustomPetTexture(boolean isArmorRendering) {
+		switch (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle) {
+			case 0:
+				return isArmorRendering ? PET_ARMOR_DISPLAY : PET_DISPLAY;
+			case 1:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_GREY : PET_DISPLAY_GREY;
+			case 2:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_DARK : PET_DISPLAY_DARK;
+			case 3:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_TRANSPARENT : PET_DISPLAY_TRANSPARENT;
+			case 4:
+				return isArmorRendering ? PET_ARMOR_DISPLAY_FSR : PET_DISPLAY_FSR;
+		}
+		return null;
+	}
+
+	public void renderPreviewArmorHud() {
+		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) return;
+
+		Utils.resetGuiScale();
+		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
+
+		int width = Utils.peekGuiScale().getScaledWidth();
+		int height = Utils.peekGuiScale().getScaledHeight();
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomEquipmentTexture(NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petSlot != null));
+
+		GlStateManager.color(1, 1, 1, 1);
+		GL11.glTranslatef(0, 0, 401);
+		float yNumber = (float) (height - 167) / 2f;
+		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
+	}
+
+	public void renderPreviewPetInvHud() {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) return;
+
+		Utils.resetGuiScale();
+		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
+
+		int width = Utils.peekGuiScale().getScaledWidth();
+		int height = Utils.peekGuiScale().getScaledHeight();
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomPetTexture(NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud));
+
+		GlStateManager.color(1, 1, 1, 1);
+		GL11.glTranslatef(0, 0, 401);
+		float yNumber = (float) (height - 23) / 2f;
+		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
+	}
 }

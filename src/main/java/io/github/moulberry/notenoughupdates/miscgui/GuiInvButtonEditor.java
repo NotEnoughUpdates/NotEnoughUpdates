@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
@@ -316,6 +317,13 @@ public class GuiInvButtonEditor extends GuiScreen {
 		GlStateManager.color(1, 1, 1, 1);
 		Utils.drawTexturedRect(guiLeft, guiTop, xSize, ySize, 0, xSize / 256f, 0, ySize / 256f, GL11.GL_NEAREST);
 
+		if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+			NotEnoughUpdates.INSTANCE.overlay.renderPreviewArmorHud();
+		}
+		if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
+			NotEnoughUpdates.INSTANCE.overlay.renderPreviewPetInvHud();
+		}
+
 		for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
 			int x = guiLeft + button.x;
 			int y = guiTop + button.y;
@@ -324,6 +332,17 @@ public class GuiInvButtonEditor extends GuiScreen {
 			}
 			if (button.anchorBottom) {
 				y += ySize;
+			}
+
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+					x -= 25;
+				}
+			}
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
+				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+					x -= 25;
+				}
 			}
 
 			if (button.isActive()) {
@@ -358,7 +377,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(custom_ench_colour);
 		GlStateManager.color(1, 1, 1, 1);
 		Utils.drawTexturedRect(
-			guiLeft - 88 - 2 - 22,
+			guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 2,
 			88,
 			20,
@@ -369,7 +388,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 			GL11.GL_NEAREST
 		);
 		Utils.drawTexturedRect(
-			guiLeft - 88 - 2 - 22,
+			guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 2 + 24,
 			88,
 			20,
@@ -382,7 +401,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Load preset",
 			fontRendererObj,
-			guiLeft - 44 - 2 - 22,
+			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 8,
 			false,
 			86,
@@ -391,7 +410,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		Utils.drawStringCenteredScaledMaxWidth(
 			"from Clipboard",
 			fontRendererObj,
-			guiLeft - 44 - 2 - 22,
+			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16,
 			false,
 			86,
@@ -400,7 +419,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Save preset",
 			fontRendererObj,
-			guiLeft - 44 - 2 - 22,
+			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 8 + 24,
 			false,
 			86,
@@ -409,7 +428,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		Utils.drawStringCenteredScaledMaxWidth(
 			"to Clipboard",
 			fontRendererObj,
-			guiLeft - 44 - 2 - 22,
+			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16 + 24,
 			false,
 			86,
@@ -417,7 +436,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 
 		if (!validShareContents()) {
-			Gui.drawRect(guiLeft - 88 - 2 - 22, guiTop + 2, guiLeft - 2 - 22, guiTop + 2 + 20, 0x80000000);
+			Gui.drawRect(guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0), guiTop + 2, guiLeft - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0), guiTop + 2 + 20, 0x80000000);
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
@@ -459,6 +478,17 @@ public class GuiInvButtonEditor extends GuiScreen {
 			}
 			if (editingButton.anchorBottom) {
 				y += ySize;
+			}
+
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+					x -= 25;
+				}
+			}
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
+				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+					x -= 25;
+				}
 			}
 
 			GlStateManager.translate(0, 0, 300);
@@ -739,6 +769,17 @@ public class GuiInvButtonEditor extends GuiScreen {
 			}
 			if (button.anchorBottom) {
 				y += ySize;
+			}
+
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
+				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+					x -= 25;
+				}
+			}
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
+				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+					x -= 25;
+				}
 			}
 
 			if (mouseX >= x && mouseY >= y &&
