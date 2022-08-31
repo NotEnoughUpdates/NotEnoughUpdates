@@ -2974,46 +2974,36 @@ public class NEUOverlay extends Gui {
 	public void renderPreviewArmorHud() {
 		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) return;
 
-		synchronized ("") {
+		Utils.resetGuiScale();
+		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
 
-			Utils.resetGuiScale();
-			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
+		int width = Utils.peekGuiScale().getScaledWidth();
+		int height = Utils.peekGuiScale().getScaledHeight();
 
-			int width = Utils.peekGuiScale().getScaledWidth();
-			int height = Utils.peekGuiScale().getScaledHeight();
+		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomEquipmentTexture(NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petSlot != null));
 
-			Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomEquipmentTexture(
-				NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petSlot != null));
-
-			GlStateManager.color(1, 1, 1, 1);
-			GL11.glTranslatef(0, 0, 401);
-			float yNumber = (float) (height - 167) / 2f;
-			Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
-			GlStateManager.bindTexture(0);
-		}
+		GlStateManager.color(1, 1, 1, 1);
+		GL11.glTranslatef(0, 0, 401);
+		float yNumber = (float) (height - 167) / 2f;
+		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
 	}
 
 	public void renderPreviewPetInvHud() {
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) return;
 
-		synchronized ("") {
+		Utils.resetGuiScale();
+		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
 
-			Utils.resetGuiScale();
-			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
+		int width = Utils.peekGuiScale().getScaledWidth();
+		int height = Utils.peekGuiScale().getScaledHeight();
 
-			int width = Utils.peekGuiScale().getScaledWidth();
-			int height = Utils.peekGuiScale().getScaledHeight();
+		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomPetTexture(NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud));
 
-			Minecraft
-				.getMinecraft()
-				.getTextureManager()
-				.bindTexture(getCustomPetTexture(NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud));
-
-			GlStateManager.color(1, 1, 1, 1);
-			GL11.glTranslatef(0, 0, 401);
-			float yNumber = (float) (height - 23) / 2f;
-			Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
-			GlStateManager.bindTexture(0);
-		}
+		GlStateManager.color(1, 1, 1, 1);
+		GL11.glTranslatef(0, 0, 401);
+		float yNumber = (float) (height - 23) / 2f;
+		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
 	}
 }
