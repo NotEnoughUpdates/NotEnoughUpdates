@@ -31,20 +31,7 @@ import java.util.ArrayList;
 
 public class OneConfigCompat extends IOneConfigCompat {
 
-	public static ArrayList<Mod> getModList() {
-		try {
-			Class<?> oneClass = Class.forName("cc.polyfrost.oneconfig.internal.config.core.ConfigCore");
-			Field mods = oneClass.getDeclaredField("mods");
-			//noinspection unchecked
-			return (ArrayList<Mod>) mods.get(null);
-		} catch (ClassNotFoundException | IllegalAccessException | ClassCastException | SecurityException |
-						 NoSuchFieldException e) {
-			System.err.println("Failed to load ConfigCore.mods. Bug ");
-			return new ArrayList<>();
-		}
-	}
-
-	Mod mod = new Mod("NotEnoughUpdates", ModType.SKYBLOCK /*, TODO: icon loading*/);
+	Mod mod = new Mod("NotEnoughUpdates", ModType.SKYBLOCK, "/assets/notenoughupdates/logo.png");
 
 	OneMoulConfig omc;
 

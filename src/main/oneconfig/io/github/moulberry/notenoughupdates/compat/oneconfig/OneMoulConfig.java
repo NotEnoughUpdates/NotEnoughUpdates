@@ -24,10 +24,8 @@ import cc.polyfrost.oneconfig.config.data.InfoType;
 import cc.polyfrost.oneconfig.config.data.Mod;
 import cc.polyfrost.oneconfig.config.elements.OptionSubcategory;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigButton;
-import cc.polyfrost.oneconfig.gui.elements.config.ConfigColorElement;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigDropdown;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigInfo;
-import cc.polyfrost.oneconfig.gui.elements.config.ConfigKeyBind;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigSlider;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigSwitch;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigTextBox;
@@ -43,13 +41,8 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
-import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
 
 public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 
@@ -58,6 +51,7 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 
 	public OneMoulConfig(Mod modData, Config moulConfig, Runnable saveCallback) {
 		super(modData, "_SHOULD_NOT_BE_WRITTEN.json");
+		if (moulConfig == null) throw new IllegalArgumentException("mfw no moulconfig");
 		this.moulConfig = moulConfig;
 		this.saveCallback = saveCallback;
 		initialize();
@@ -65,16 +59,14 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 
 	@Override
 	public void initialize() {
-		if (moulConfig != null) {
 			mod.config = this;
-			OneConfigCompat.getModList().add(mod);
 
 			try {
 				processMoulConfig();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-		}
+		cc.polyfrost.oneconfig.config.Config.register(mod);
 	}
 
 	private void processMoulConfig() throws IllegalAccessException {

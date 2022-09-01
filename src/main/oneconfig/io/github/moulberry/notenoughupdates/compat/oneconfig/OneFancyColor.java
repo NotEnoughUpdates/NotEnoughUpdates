@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.compat.oneconfig;
 import cc.polyfrost.oneconfig.config.core.OneColor;
 import cc.polyfrost.oneconfig.gui.elements.config.ConfigColorElement;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import lombok.var;
 
 import java.awt.*;
 import java.lang.invoke.MethodHandle;
@@ -62,12 +63,17 @@ public class OneFancyColor extends ConfigColorElement {
 	}
 
 	private static MethodHandle hsbaAccessor;
+	private static MethodHandle databitAccessor;
 
 	static {
 		try {
 			Field f = OneColor.class.getDeclaredField("hsba");
+			Field f2 = OneColor.class.getDeclaredField("dataBit");
 			f.setAccessible(true);
-			hsbaAccessor = MethodHandles.lookup().unreflectGetter(f);
+			f2.setAccessible(true);
+			var lookup = MethodHandles.lookup();
+			hsbaAccessor = lookup.unreflectGetter(f);
+			databitAccessor = lookup.unreflectGetter(f2);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
@@ -81,10 +87,18 @@ public class OneFancyColor extends ConfigColorElement {
 		}
 	}
 
+	private static int getDataBit(OneColor color) {
+		try {
+			return (int) databitAccessor.invokeExact(color);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Override
 	protected void set(Object object) throws IllegalAccessException {
 		OneColor color = (OneColor) object;
-		int dataBit = color.getDataBit();
+		float dataBit = getDataBit(color) / 1000F;
 		short[] hsba = getHsba(color);
 		int argb = OneColor.HSBAtoARGB(hsba[0], hsba[1], hsba[2], hsba[3]);
 		Color color1 = new Color(argb, true);
