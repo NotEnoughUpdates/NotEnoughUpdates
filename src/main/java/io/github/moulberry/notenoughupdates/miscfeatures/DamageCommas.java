@@ -56,6 +56,7 @@ public class DamageCommas {
 
 		IChatComponent name = entity.getDisplayName();
 		if (!NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle2) return name;
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return name;
 
 		if (replacementMap.containsKey(entity)) {
 			ChatComponentText component = replacementMap.get(entity);
