@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: NEU Support
     url: https://discord.gg/moulberry
-    about: "Please ask for support in #neu-support on Moulberrys discord."
+    about: "Please ask for support in #neu-support on Moulberry's discord."
   - name: Report security vulnerabilitie
     url: https://discord.gg/moulberry
-    about: "If you wish to discuss a bug *with security implications* privately, please open a ticket in Moulberrys discord using /new in #bot-commands"
+    about: "If you wish to discuss a bug *with security implications* privately, please open a ticket in Moulberry's discord using /new in #bot-commands"
