@@ -607,7 +607,7 @@ public class AuctionSearchOverlay {
 						close();
 						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(
-							NotEnoughUpdates.INSTANCE.config, "AH Search GUI"));
+							NotEnoughUpdates.INSTANCE.config, "AH Tweaks"));
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {

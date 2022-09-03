@@ -42,6 +42,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -521,7 +522,7 @@ public class BazaarSearchOverlay {
 						close();
 						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(
-							NotEnoughUpdates.INSTANCE.config, "Bazaar Search GUI"));
+							NotEnoughUpdates.INSTANCE.config, "Bazaar Tweaks"));
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {
@@ -537,7 +538,6 @@ public class BazaarSearchOverlay {
 								if (searchString.contains("Enchanted Book") && str.contains(";")) {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 									String[] split = Utils.cleanColour(lore[0]).trim().split(" ");
-									split[split.length - 1] = "";
 
 									searchString = StringUtils.join(split, " ").trim();
 								}
