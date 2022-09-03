@@ -353,7 +353,7 @@ public class EquipmentOverlay {
 					tooltipToDisplay = Lists.newArrayList(
 						EnumChatFormatting.RED + "Warning",
 						EnumChatFormatting.GREEN + "You need to open /equipment",
-						EnumChatFormatting.GREEN + "to cache your armour"
+						EnumChatFormatting.GREEN + "To cache your armour"
 					);
 					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 &&
@@ -487,40 +487,6 @@ public class EquipmentOverlay {
 
 				if (guiScreen instanceof GuiInventory) {
 					GL11.glTranslatef(0, 0, 401);
-					if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 1) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_GREY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 2) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_DARK);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_TRANSPARENT);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 4) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_DISPLAY_FSR);
-						}
-					} else {
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 0) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 1) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_GREY);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 2) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_DARK);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_TRANSPARENT);
-						}
-						if (NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 4) {
-							Minecraft.getMinecraft().getTextureManager().bindTexture(PET_ARMOR_DISPLAY_FSR);
-						}
-					}
-
 					GlStateManager.color(1, 1, 1, 1);
 					float yNumber = (float) (height - 23) / 2f;
 					Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
