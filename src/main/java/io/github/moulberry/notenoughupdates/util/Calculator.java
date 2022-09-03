@@ -25,11 +25,12 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 public class Calculator {
 	public static BigDecimal calculate(String source) throws CalculatorException {
-		source = source.toLowerCase();
+		source = source.toLowerCase(Locale.ROOT);
 		return evaluate(shuntingYard(lex(source)));
 	}
 
