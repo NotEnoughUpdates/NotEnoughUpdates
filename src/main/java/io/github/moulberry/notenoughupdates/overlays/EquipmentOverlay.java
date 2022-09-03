@@ -353,7 +353,7 @@ public class EquipmentOverlay {
 					tooltipToDisplay = Lists.newArrayList(
 						EnumChatFormatting.RED + "Warning",
 						EnumChatFormatting.GREEN + "You need to open /equipment",
-						EnumChatFormatting.GREEN + "To cache your armour"
+						EnumChatFormatting.GREEN + "to cache your armour"
 					);
 					if (mouseX >= ((width - 208) / 2f) && mouseX < ((width - 208) / 2f) + 16) {
 						if (mouseY >= ((height + 60) / 2f - 105) && mouseY <= ((height + 60) / 2f - 105) + 70 &&
