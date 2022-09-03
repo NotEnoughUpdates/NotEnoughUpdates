@@ -49,7 +49,7 @@ public class DamageCommas {
 	private static final Pattern PATTERN_CRIT = Pattern.compile(
 		"\u00a7f" + STAR + "((?:\u00a7.\\d(?:§.,)?)+)\u00a7." + STAR + "(.*)");
 	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(\u00a7.)([\\d+,]*)(.*)");
-	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(\u00a7.)" + OVERLOAD_STAR + "((?:\u00a7.[\\d,])+)(\u00a7.)" + OVERLOAD_STAR);
+	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(\u00a7.)" + OVERLOAD_STAR + "((?:\u00a7.[\\d,])+)(\u00a7.)" + OVERLOAD_STAR + "\u00a7r");
 
 	public static IChatComponent replaceName(EntityLivingBase entity) {
 		if (!entity.hasCustomName()) return entity.getDisplayName();
@@ -72,23 +72,23 @@ public class DamageCommas {
 		String suffix;
 
 		Matcher matcherCrit = PATTERN_CRIT.matcher(formatted);
+		Matcher matcherOverload = OVERLOAD_PATTERN.matcher(formatted);
 		if (matcherCrit.matches()) {
 			crit = true;
 			numbers = StringUtils.cleanColour(matcherCrit.group(1)).replace(",", "");
 			prefix = "\u00a7f" + STAR;
 			suffix = "\u00a7f" + STAR + matcherCrit.group(2);
-		} else {
+		} else if (matcherOverload.matches()) {
+				crit = true;
+        numbers = StringUtils.cleanColour(matcherOverload.group(2)).replace(",", "");
+        prefix = matcherOverload.group(1) + OVERLOAD_STAR;
+        suffix = matcherOverload.group(3) + OVERLOAD_STAR + "\u00a7r";
+			} else {
 			Matcher matcherNoCrit = PATTERN_NO_CRIT.matcher(formatted);
-			Matcher matcherOverload = OVERLOAD_PATTERN.matcher(formatted);
 			if (matcherNoCrit.matches()) {
 				numbers = matcherNoCrit.group(2).replace(",", "");
 				prefix = matcherNoCrit.group(1);
 				suffix = "\u00A7r" + matcherNoCrit.group(3);
-			} else if (matcherOverload.matches()) {
-				crit = true;
-        numbers = StringUtils.cleanColour(matcherOverload.group(2)).replace(",", "");
-        prefix = matcherOverload.group(1) + OVERLOAD_STAR;
-        suffix = matcherOverload.group(3) + OVERLOAD_STAR;
 			} else {
 				replacementMap.put(entity, null);
 				return name;
