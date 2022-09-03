@@ -354,6 +354,7 @@ public class RenderListener {
 			NotificationHandler.renderNotification();
 
 		}
+		inDungeonPage = false;
 		if ((NotificationHandler.shouldRenderOverlay(event.gui) || event.gui instanceof CustomAHGui) &&
 			neu.isOnSkyblock()) {
 			ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());

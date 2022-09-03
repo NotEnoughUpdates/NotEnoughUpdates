@@ -1,0 +1,14 @@
+# This mods.toml is loaded by forge 1.13-1.19 and is only here to make forge display an error message
+modLoader = "javafml"
+loaderVersion = "[12,)"
+license = "LGPL"
+
+[[mods]]
+modId="notenoughupdateserrordisplay"
+version="99.99"
+displayName="NotEnoughUpdates (1.8.9)"
+description='''
+This mod description is only here to warn you about using the wrong version of Minecraft and Forge.
+'''
+
+

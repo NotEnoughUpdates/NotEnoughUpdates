@@ -198,14 +198,16 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths)
 								);
 								if (level != null) {
-									tooltipToDisplay.add(
-										EnumChatFormatting.GRAY +
-										"Progress: " +
-										EnumChatFormatting.AQUA +
+									String progressStr;
+									if (level.maxed) {
+										progressStr = EnumChatFormatting.GOLD + "MAXED!";
+									} else {
+										progressStr =EnumChatFormatting.AQUA +
 											StringUtils.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel)) +
-										"/" +
-											StringUtils.shortNumberFormat(level.maxXpForLevel)
-									);
+											"/" +
+											StringUtils.shortNumberFormat(level.maxXpForLevel);
+									}
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + progressStr);
 								}
 							}
 						}
