@@ -521,7 +521,7 @@ public class BazaarSearchOverlay {
 						close();
 						Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 						NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(
-							NotEnoughUpdates.INSTANCE.config, "Bazaar Search GUI"));
+							NotEnoughUpdates.INSTANCE.config, "Bazaar Tweaks"));
 					}
 				}
 			} else if (Mouse.getEventButton() == 0) {
