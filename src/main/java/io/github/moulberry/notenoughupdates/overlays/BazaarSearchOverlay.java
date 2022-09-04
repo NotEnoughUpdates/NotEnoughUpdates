@@ -36,13 +36,11 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -538,8 +536,11 @@ public class BazaarSearchOverlay {
 								if (searchString.contains("Enchanted Book") && str.contains(";")) {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 									String[] split = Utils.cleanColour(lore[0]).trim().split(" ");
-
-									if (StringUtils.join(split, " ").trim() != null) searchString = StringUtils.join(split, " ").trim();
+									StringBuilder newSearchString = new StringBuilder(32);
+									for (String s : split) {
+										newSearchString.append(s).append(' ');
+									}
+									searchString = newSearchString.toString().trim();
 								}
 
 								searchStringExtra = " ";
