@@ -73,7 +73,10 @@ public class ItemUtils {
 	}
 
 	public static List<String> getLore(ItemStack is) {
-		NBTTagCompound tagCompound = is.getTagCompound();
+		return getLore(is.getTagCompound());
+	}
+
+	public static List<String> getLore(NBTTagCompound tagCompound) {
 		if (tagCompound == null) {
 			return Collections.emptyList();
 		}
@@ -84,4 +87,13 @@ public class ItemUtils {
 		}
 		return list;
 	}
+
+	public static String getDisplayName(NBTTagCompound compound) {
+		if (compound == null) return null;
+		String string = compound.getCompoundTag("display").getString("Name");
+		if (string == null || string.isEmpty())
+			return null;
+		return string;
+	}
+
 }

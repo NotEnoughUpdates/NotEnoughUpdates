@@ -28,6 +28,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -42,7 +43,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StringUtils;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -104,8 +104,13 @@ public class ItemTooltipListener {
 	public void onItemTooltipLow(ItemTooltipEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
 
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
-		if (internalname == null) {
+		String internalName = NotEnoughUpdates.INSTANCE.manager
+			.createItemResolutionQuery()
+			.withCurrentGuiContext()
+			.withItemStack(event.itemStack)
+			.resolveInternalName();
+
+		if (internalName == null) {
 			return;
 		}
 		petToolTipXPExtendPetMenu(event);
@@ -155,7 +160,8 @@ public class ItemTooltipListener {
 							for (int j = 0; j < Utils.rarityArrC.length; j++) {
 								for (Map.Entry<String, JsonElement> entry : enchantsObj.entrySet()) {
 									if (line.contains(Utils.rarityArrC[j] + " " + entry.getKey()) || line.contains(
-										Utils.rarityArrC[j] + " DUNGEON " + entry.getKey()) || line.contains("SHINY " + Utils.rarityArrC[j].replaceAll("§.§.","") + " DUNGEON " + entry.getKey())) {
+										Utils.rarityArrC[j] + " DUNGEON " + entry.getKey()) || line.contains(
+										"SHINY " + Utils.rarityArrC[j].replaceAll("§.§.", "") + " DUNGEON " + entry.getKey())) {
 										allItemEnchs = entry.getValue().getAsJsonArray();
 										break out;
 									}
@@ -180,7 +186,7 @@ public class ItemTooltipListener {
 				NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showReforgeStats) {
 				JsonObject reforgeStones = Constants.REFORGESTONES;
 
-				if (reforgeStones != null && reforgeStones.has(internalname)) {
+				if (reforgeStones != null && reforgeStones.has(internalName)) {
 					boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 					if (!pressedShiftLast && shift) {
 						showReforgeStoneStats = !showReforgeStoneStats;
@@ -195,7 +201,7 @@ public class ItemTooltipListener {
 						newTooltip.add(EnumChatFormatting.DARK_GRAY + "[Press SHIFT to hide extra info]");
 					}
 
-					JsonObject reforgeInfo = reforgeStones.get(internalname).getAsJsonObject();
+					JsonObject reforgeInfo = reforgeStones.get(internalName).getAsJsonObject();
 					JsonArray requiredRaritiesArray = reforgeInfo.get("requiredRarities").getAsJsonArray();
 
 					if (showReforgeStoneStats && requiredRaritiesArray.size() > 0) {
@@ -526,7 +532,7 @@ public class ItemTooltipListener {
 						newTooltip.add("");
 						newTooltip.add(EnumChatFormatting.GRAY + "[SHIFT for Price Info]");
 					} else {
-						ItemPriceInformation.addToTooltip(newTooltip, internalname, event.itemStack);
+						ItemPriceInformation.addToTooltip(newTooltip, internalName, event.itemStack);
 					}
 				}
 			}
@@ -583,9 +589,10 @@ public class ItemTooltipListener {
 										JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 										if (auctionInfo != null) {
 											if (auctionInfo.has("clean_price")) {
-												worth = (long)auctionInfo.get("clean_price").getAsDouble();
+												worth = (long) auctionInfo.get("clean_price").getAsDouble();
 											} else {
-												worth = (long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
+												worth =
+													(long) (auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsDouble());
 											}
 										}
 										break;
@@ -703,7 +710,7 @@ public class ItemTooltipListener {
 		event.toolTip.addAll(newTooltip);
 
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showPriceInfoInvItem) {
-			ItemPriceInformation.addToTooltip(event.toolTip, internalname, event.itemStack);
+			ItemPriceInformation.addToTooltip(event.toolTip, internalName, event.itemStack);
 		}
 
 		if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUHIDEPETTOOLTIP") &&
@@ -824,14 +831,14 @@ public class ItemTooltipListener {
 		if (event.toolTip == null) return;
 
 		if (event.toolTip.size() > 2 && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.hideDefaultReforgeStats) {
-			String secondLine = StringUtils.stripControlCodes(event.toolTip.get(1));
+			String secondLine = StringUtils.cleanColour(event.toolTip.get(1));
 			if (secondLine.equals("Reforge Stone")) {
 				Integer startIndex = null;
 				Integer cutoffIndex = null;
 				//loop from the back of the List to find the wanted index sooner
 				for (int i = event.toolTip.size() - 1; i >= 0; i--) {
 					//rarity or mining level requirement
-					String line = StringUtils.stripControlCodes(event.toolTip.get(i));
+					String line = StringUtils.cleanColour(event.toolTip.get(i));
 					if (line.contains("REFORGE STONE") || line.contains("Requires Mining Skill Level")) {
 						cutoffIndex = i;
 					}
