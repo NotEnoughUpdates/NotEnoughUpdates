@@ -690,7 +690,7 @@ public class ItemTooltipListener {
 					if (i - 2 < 0) {
 						break;
 					}
-					if (Utils.getOpenChestName().endsWith("Pets")) newTooltip.addAll(i - 1, petToolTipXPExtend(event));
+					newTooltip.addAll(i - 1, petToolTipXPExtend(event));
 					break;
 				}
 			}
