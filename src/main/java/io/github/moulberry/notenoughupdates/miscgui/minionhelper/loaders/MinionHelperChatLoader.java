@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.loaders;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -28,9 +27,20 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class MinionHelperChatLoader {
 
 	private final MinionHelperManager manager;
+
+	//§aYou crafted a §eTier I Redstone Minion§a! That's a new one!
+	// §aCraft §e7 §amore unique Minions to unlock your §e9th Minion slot§a!
+	private final Pattern PATTERN_OWN_MINION = Pattern.compile(
+		"§aYou crafted a §eTier (\\S+) (.+) Minion§a! That's a new one!(\\r\\n|\\r|\\n)(.*)");
+
+	//§b[MVP§3+§b] Eisengolem§f §acrafted a §eTier I Birch Minion§a!
+	private final Pattern PATTERN_COOP_MINION = Pattern.compile("(.+)§f §acrafted a §eTier (\\S+) (.+) Minion§a!");
 
 	public MinionHelperChatLoader(MinionHelperManager manager) {
 		this.manager = manager;
@@ -43,20 +53,20 @@ public class MinionHelperChatLoader {
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 
 		try {
-			if (message.startsWith("§r§aYou crafted a §eTier ") && message.contains("§a! That's a new one!")) {
-				String text = StringUtils.substringBetween(message, "§eTier ", "§a! That's");
-				String rawTier = text.split(" ")[0];
+			Matcher ownMatcher = PATTERN_OWN_MINION.matcher(message);
+			if (ownMatcher.matches()) {
+				String name = ownMatcher.group(1) + " Minion";
+				String rawTier = ownMatcher.group(2);
 				int tier = Utils.parseRomanNumeral(rawTier);
-				String name = text.substring(rawTier.length() + 1);
 
 				setCrafted(manager.getMinionByName(name, tier));
 			}
 
-			if (message.contains("§f §acrafted a §eTier ") && message.contains(" Minion§a!")) {
-				String text = StringUtils.substringBetween(message, "§eTier ", "§a!");
-				String rawTier = text.split(" ")[0];
+			Matcher coopMatcher = PATTERN_COOP_MINION.matcher(message);
+			if (coopMatcher.matches()) {
+				String name = coopMatcher.group(2) + " Minion";
+				String rawTier = coopMatcher.group(3);
 				int tier = Utils.parseRomanNumeral(rawTier);
-				String name = text.substring(rawTier.length() + 1);
 
 				setCrafted(manager.getMinionByName(name, tier));
 				manager.getOverlay().resetCache();
