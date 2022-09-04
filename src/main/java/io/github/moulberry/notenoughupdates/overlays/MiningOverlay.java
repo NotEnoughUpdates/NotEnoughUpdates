@@ -441,7 +441,9 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 			if (forgeDisplay) {
 				overlayStrings = new ArrayList<>();
-				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab || Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
+
+				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
+					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 1 &&
 						!SBInfo.getInstance().isInDungeon) {
 						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));

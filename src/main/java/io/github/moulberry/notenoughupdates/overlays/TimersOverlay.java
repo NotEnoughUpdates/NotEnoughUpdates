@@ -235,7 +235,8 @@ public class TimersOverlay extends TextTabOverlay {
 		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (hidden == null) return;
 
-		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab && !Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
+		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab &&
+			!Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
 			overlayStrings = null;
 			return;
 		}

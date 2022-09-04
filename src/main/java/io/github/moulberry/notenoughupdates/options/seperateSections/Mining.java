@@ -210,7 +210,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Forge Tab",
-		desc = "Only show the forge display when pressing tab key\n" +
+		desc = "Only show the forge display when tab list is open\n" +
 			"\u00A7cThis only works outside of Dwarven Caves!"
 	)
 	@ConfigEditorBoolean

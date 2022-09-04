@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 	private boolean lastTabState = false;
 
 	public void realTick() {
-		boolean currentTabState = Keyboard.isKeyDown(Keyboard.KEY_TAB);
+		boolean currentTabState = Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode());
 		if (lastTabState != currentTabState) {
 			lastTabState = currentTabState;
 			update();

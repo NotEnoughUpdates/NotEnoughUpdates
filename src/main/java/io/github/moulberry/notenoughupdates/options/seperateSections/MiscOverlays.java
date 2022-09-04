@@ -53,7 +53,7 @@ public class MiscOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Todo Overlay Tab",
-		desc = "Only show the todo overlay when pressing tab key"
+		desc = "Only show the todo overlay when tab list is open"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
