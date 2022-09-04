@@ -52,8 +52,6 @@ public class MinionHelperManager {
 	private final MinionHelperApiLoader api = new MinionHelperApiLoader(this);
 	private final MinionHelperRepoLoader repo = new MinionHelperRepoLoader(this);
 	private final MinionHelperOverlay overlay = new MinionHelperOverlay(this);
-	private final MinionHelperTooltips tooltips = new MinionHelperTooltips(this);
-	private final MinionHelperChatLoader chatLoader = new MinionHelperChatLoader(this);
 	private final MinionHelperInventoryLoader inventoryLoader = new MinionHelperInventoryLoader(this);
 
 	public static MinionHelperManager getInstance() {
@@ -68,8 +66,8 @@ public class MinionHelperManager {
 		MinecraftForge.EVENT_BUS.register(api);
 		MinecraftForge.EVENT_BUS.register(repo);
 		MinecraftForge.EVENT_BUS.register(overlay);
-		MinecraftForge.EVENT_BUS.register(tooltips);
-		MinecraftForge.EVENT_BUS.register(chatLoader);
+		MinecraftForge.EVENT_BUS.register(new MinionHelperTooltips(this));
+		MinecraftForge.EVENT_BUS.register(new MinionHelperChatLoader(this));
 		MinecraftForge.EVENT_BUS.register(inventoryLoader);
 	}
 
@@ -86,8 +84,8 @@ public class MinionHelperManager {
 		return name.equalsIgnoreCase("Crafted Minions");
 	}
 
-	public boolean isReadyToUse() {
-		return repo.isRepoReadyToUse() && api.isApiReadyToUse();
+	public boolean notReady() {
+		return !repo.isRepoReadyToUse() || !api.isApiReadyToUse();
 	}
 
 	public Minion getMinionById(String internalName) {

@@ -46,7 +46,7 @@ public class MinionHelperTooltips {
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.tooltip) return;
-		if (!manager.isReadyToUse()) return;
+		if (manager.notReady()) return;
 
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		if (!pressedShiftLast && shift) {

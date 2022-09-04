@@ -87,7 +87,7 @@ public class MinionHelperOverlay {
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
-		if (!manager.isReadyToUse()) {
+		if (manager.notReady()) {
 			LinkedHashMap<String, OverviewLine> map = new LinkedHashMap<>();
 			map.put("§cLoading...", new OverviewText(Collections.emptyList(), () -> {}));
 			render(map);
@@ -127,7 +127,7 @@ public class MinionHelperOverlay {
 	public void onMouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
-		if (!manager.isReadyToUse()) return;
+		if (manager.notReady()) return;
 		if (!Mouse.getEventButtonState()) return;
 
 		OverviewLine overviewLine = getObjectOverMouse(getRenderMap());
@@ -177,7 +177,7 @@ public class MinionHelperOverlay {
 	public void onMouseClick(GuiScreenEvent.KeyboardInputEvent.Pre event) {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
-		if (!manager.isReadyToUse()) return;
+		if (manager.notReady()) return;
 
 		int totalPages = getTotalPages();
 		if (ArrowPagesUtils.onPageSwitchKey(currentPage, totalPages, pageChange -> {
