@@ -231,10 +231,6 @@ public class MinionHelperManager {
 		return api;
 	}
 
-	public MinionHelperRepoLoader getRepo() {
-		return repo;
-	}
-
 	public MinionHelperOverlay getOverlay() {
 		return overlay;
 	}

@@ -45,7 +45,6 @@ public class MinionHelperRepoLoader {
 	private final MinionHelperManager manager;
 	private boolean dirty = true;
 	private int ticks = 0;
-	private final Map<String, String> displayNameCache = new HashMap<>();
 	private boolean repoReadyToUse = false;
 	private final MinionHelperRepoMinionLoader minionLoader;
 	boolean errorWhileLoading = false;
@@ -210,7 +209,6 @@ public class MinionHelperRepoLoader {
 
 	public void setDirty() {
 		dirty = true;
-		displayNameCache.clear();
 		repoReadyToUse = false;
 	}
 

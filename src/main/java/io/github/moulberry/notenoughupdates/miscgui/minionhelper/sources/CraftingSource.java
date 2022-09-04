@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources;
 
 import com.google.common.collect.ArrayListMultimap;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 
 public class CraftingSource extends MinionSource {
 	//name -> amount
