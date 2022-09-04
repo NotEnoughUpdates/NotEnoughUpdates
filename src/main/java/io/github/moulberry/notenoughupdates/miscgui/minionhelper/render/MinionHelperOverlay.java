@@ -188,13 +188,13 @@ public class MinionHelperOverlay {
 		}
 	}
 
-	private Map<Minion, Long> getMissing() {
-		Map<Minion, Long> prices = new HashMap<>();
+	private Map<Minion, Double> getMissing() {
+		Map<Minion, Double> prices = new HashMap<>();
 		for (Minion minion : manager.getAllMinions().values()) {
 
 			if (!minion.doesMeetRequirements() && showOnlyAvailable) continue;
 			if (!minion.isCrafted()) {
-				long price = manager.getPriceCalculation().calculateUpgradeCosts(minion, true);
+				double price = manager.getPriceCalculation().calculateUpgradeCosts(minion, true);
 				prices.put(minion, price);
 			}
 		}
@@ -247,7 +247,7 @@ public class MinionHelperOverlay {
 	private LinkedHashMap<String, OverviewLine> getRenderMap() {
 		if (cacheRenderMap != null) return cacheRenderMap;
 
-		Map<Minion, Long> prices = getMissing();
+		Map<Minion, Double> prices = getMissing();
 		LinkedHashMap<String, OverviewLine> renderMap = new LinkedHashMap<>();
 
 		addTitle(prices, renderMap);
@@ -262,7 +262,7 @@ public class MinionHelperOverlay {
 	}
 
 	private void addNeedToNextSlot(
-		Map<Minion, Long> prices,
+		Map<Minion, Double> prices,
 		LinkedHashMap<String, OverviewLine> renderMap
 	) {
 		int neededForNextSlot = manager.getNeedForNextSlot();
@@ -272,9 +272,9 @@ public class MinionHelperOverlay {
 			return;
 		}
 
-		long priceNeeded = 0;
+		double priceNeeded = 0;
 		int index = 0;
-		for (Long price : TrophyRewardOverlay.sortByValue(prices).values()) {
+		for (Double price : TrophyRewardOverlay.sortByValue(prices).values()) {
 			priceNeeded += price;
 			index++;
 			if (index == neededForNextSlot) break;
@@ -285,15 +285,15 @@ public class MinionHelperOverlay {
 		renderMap.put(text, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
-	private void addTitle(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
+	private void addTitle(Map<Minion, Double> prices, LinkedHashMap<String, OverviewLine> renderMap) {
 		String name = "§8" + prices.size() + " " + (showOnlyAvailable ? "craftable" : "total") + " minions";
 		renderMap.put(name, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
-	private void addMinions(Map<Minion, Long> prices, LinkedHashMap<String, OverviewLine> renderMap) {
+	private void addMinions(Map<Minion, Double> prices, LinkedHashMap<String, OverviewLine> renderMap) {
 		int skipPreviousPages = currentPage * maxPerPage;
 		int i = 0;
-		Map<Minion, Long> sort = TrophyRewardOverlay.sortByValue(prices);
+		Map<Minion, Double> sort = TrophyRewardOverlay.sortByValue(prices);
 		for (Minion minion : sort.keySet()) {
 			if (i >= skipPreviousPages) {
 				String displayName = minion.getDisplayName();
@@ -322,7 +322,7 @@ public class MinionHelperOverlay {
 	private int getTotalPages() {
 		if (cacheTotalPages != -1) return cacheTotalPages;
 
-		Map<Minion, Long> prices = getMissing();
+		Map<Minion, Double> prices = getMissing();
 		int totalPages = (int) ((double) prices.size() / maxPerPage);
 		if (prices.size() % maxPerPage != 0) {
 			totalPages++;

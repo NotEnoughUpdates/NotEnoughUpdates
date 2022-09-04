@@ -236,9 +236,8 @@ public class MinionHelperOverlayHover {
 			}
 
 			String name = NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalName);
-			long price = manager.getPriceCalculation().getPrice(internalName);
-			String priceFormat = manager.getPriceCalculation().formatCoins(
-				price * amount);
+			double price = manager.getPriceCalculation().getPrice(internalName);
+			String priceFormat = manager.getPriceCalculation().formatCoins(price * amount);
 			lines.add(" §8- §a" + amount + "§7x §f" + name + " " + priceFormat);
 		}
 	}

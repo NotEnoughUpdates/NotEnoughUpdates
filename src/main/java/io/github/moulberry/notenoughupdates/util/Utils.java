@@ -77,6 +77,7 @@ import java.math.BigInteger;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -146,6 +147,7 @@ public class Utils {
 	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
 	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
 	private static long startTime = 0;
+	private static DecimalFormat simpleDoubleFormat = new DecimalFormat("0.0");
 
 	public static <T> ArrayList<T> createList(T... values) {
 		ArrayList<T> list = new ArrayList<>();
@@ -328,6 +330,10 @@ public class Utils {
 	}
 
 	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 3 && n > 0) {
+			return simpleDoubleFormat.format(n);
+		}
+
 		if (n < 1000 && iteration == 0) return "" + (int) n;
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;

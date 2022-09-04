@@ -71,7 +71,7 @@ public class MinionHelperPriceCalculation {
 			}
 		}
 
-		long costs = calculateUpgradeCosts(minion, upgradeOnly);
+		double costs = calculateUpgradeCosts(minion, upgradeOnly);
 		String result = formatCoins(costs, !upgradeOnly ? "§o" : "");
 
 		if (source instanceof NpcSource) {
@@ -91,7 +91,7 @@ public class MinionHelperPriceCalculation {
 		return result;
 	}
 
-	public long calculateUpgradeCosts(Minion minion, boolean upgradeOnly) {
+	public double calculateUpgradeCosts(Minion minion, boolean upgradeOnly) {
 		MinionSource source = minion.getMinionSource();
 
 		if (upgradeOnly) {
@@ -106,7 +106,7 @@ public class MinionHelperPriceCalculation {
 
 		} else if (source instanceof NpcSource) {
 			NpcSource npcSource = (NpcSource) source;
-			long upgradeCost = getCosts(minion, upgradeOnly, npcSource.getItems());
+			double upgradeCost = getCosts(minion, upgradeOnly, npcSource.getItems());
 			long coins = npcSource.getCoins();
 			upgradeCost += coins;
 
@@ -116,12 +116,12 @@ public class MinionHelperPriceCalculation {
 		return 0;
 	}
 
-	private long getCosts(Minion minion, boolean upgradeOnly, ArrayListMultimap<String, Integer> items) {
-		long upgradeCost = 0;
+	private double getCosts(Minion minion, boolean upgradeOnly, ArrayListMultimap<String, Integer> items) {
+		double upgradeCost = 0;
 		for (Map.Entry<String, Integer> entry : items.entries()) {
 			String internalName = entry.getKey();
 			if (internalName.equals("SKYBLOCK_PELT")) continue;
-			long price = getPrice(internalName);
+			double price = getPrice(internalName);
 			int amount = entry.getValue();
 			upgradeCost += price * amount;
 		}
@@ -134,7 +134,7 @@ public class MinionHelperPriceCalculation {
 		return upgradeCost;
 	}
 
-	public long getPrice(String internalName) {
+	public double getPrice(String internalName) {
 		//Is minion
 		if (internalName.contains("_GENERATOR_")) {
 			return calculateUpgradeCosts(manager.getMinionById(internalName), false);
@@ -147,28 +147,29 @@ public class MinionHelperPriceCalculation {
 				System.err.println("curr_sell does not exist for '" + internalName + "'");
 				return 0;
 			}
-			return (long) bazaarInfo.get("curr_sell").getAsDouble();
+			return bazaarInfo.get("curr_sell").getAsDouble();
 		}
 
 		//is ah bin
-		long avgBinPrice = (long) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
+		double avgBinPrice = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalName);
 		if (avgBinPrice >= 1) return avgBinPrice;
 
 		//is ah without bin
 		JsonObject auctionInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalName);
 		if (auctionInfo == null) {
 			//only wood axe and similar useless items
-			return 0;
+			return 1;
 		}
-		return (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+		return (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
 	}
 
-	public String formatCoins(long coins) {
+	public String formatCoins(double coins) {
 		return formatCoins(coins, "");
 	}
 
-	public String formatCoins(long coins, String extraFormat) {
-		String format = Utils.shortNumberFormat(coins, 0);
+	public String formatCoins(double coins, String extraFormat) {
+		int i = coins < 3 ? 1 : 0;
+		String format = Utils.shortNumberFormat(coins, i);
 		return "§6" + extraFormat + format + " coins";
 	}
 }
