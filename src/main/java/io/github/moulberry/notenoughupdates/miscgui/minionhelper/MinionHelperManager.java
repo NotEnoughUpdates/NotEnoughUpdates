@@ -82,8 +82,8 @@ public class MinionHelperManager {
 		Container inventoryContainer = minecraft.thePlayer.openContainer;
 		if (!(inventoryContainer instanceof ContainerChest)) return false;
 		ContainerChest containerChest = (ContainerChest) inventoryContainer;
-		return containerChest.getLowerChestInventory().getDisplayName()
-												 .getUnformattedText().equalsIgnoreCase("Crafted Minions");
+		String name = containerChest.getLowerChestInventory().getDisplayName().getUnformattedText();
+		return name.equalsIgnoreCase("Crafted Minions");
 	}
 
 	public boolean isReadyToUse() {
@@ -266,7 +266,7 @@ public class MinionHelperManager {
 
 	public void setLocalPelts(int pelts) {
 		localPelts = pelts;
-		if (localPelts != -1){
+		if (localPelts != -1) {
 			ApiData apiData = api.getApiData();
 			if (apiData != null) {
 				apiData.setPeltCount(localPelts);
