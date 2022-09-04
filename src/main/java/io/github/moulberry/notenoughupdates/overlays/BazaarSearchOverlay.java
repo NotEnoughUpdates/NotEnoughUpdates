@@ -539,7 +539,7 @@ public class BazaarSearchOverlay {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 									String[] split = Utils.cleanColour(lore[0]).trim().split(" ");
 
-									searchString = StringUtils.join(split, " ").trim();
+									if (StringUtils.join(split, " ").trim() != null) searchString = StringUtils.join(split, " ").trim();
 								}
 
 								searchStringExtra = " ";
