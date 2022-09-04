@@ -37,6 +37,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.time.ZoneId;
@@ -50,7 +51,7 @@ import java.util.regex.Pattern;
 
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
-public class TimersOverlay extends TextOverlay {
+public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
 		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([0-9]*?:?[0-9]*?:?[0-9]*)\u00a7r");
 
@@ -233,6 +234,11 @@ public class TimersOverlay extends TextOverlay {
 
 		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (hidden == null) return;
+
+		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab && !Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
+			overlayStrings = null;
+			return;
+		}
 
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
