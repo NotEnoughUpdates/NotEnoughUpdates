@@ -212,6 +212,7 @@ public class EquipmentOverlay {
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRect(overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, 16, 16, GL11.GL_NEAREST);
 
+			tooltipToDisplay = Lists.newArrayList(
 				EnumChatFormatting.RED + "Warning",
 				EnumChatFormatting.GREEN + "You need to open /equipment",
 				EnumChatFormatting.GREEN + "to cache your armour"
