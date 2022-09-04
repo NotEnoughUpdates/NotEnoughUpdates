@@ -535,12 +535,9 @@ public class BazaarSearchOverlay {
 								searchString = Utils.cleanColour(stack.getDisplayName().replaceAll("\\[.+]", "")).trim();
 								if (searchString.contains("Enchanted Book") && str.contains(";")) {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-									String[] split = Utils.cleanColour(lore[0]).trim().split(" ");
-									StringBuilder newSearchString = new StringBuilder(32);
-									for (String s : split) {
-										newSearchString.append(s).append(' ');
+									if (lore != null) {
+										searchString = Utils.cleanColour(lore[0]);
 									}
-									searchString = newSearchString.toString().trim();
 								}
 
 								searchStringExtra = " ";
