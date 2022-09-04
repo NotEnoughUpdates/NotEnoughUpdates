@@ -38,7 +38,6 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3i;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -389,7 +388,7 @@ public class Navigation {
 			&& NotEnoughUpdates.INSTANCE.config.misc.untrackCloseWaypoints
 			&& island.equals(SBInfo.getInstance().mode)) {
 			EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
-			if (thePlayer.getDistanceSq(position) < 16)
+			if (thePlayer != null && thePlayer.getDistanceSq(position) < 16)
 				untrackWaypoint();
 		}
 	}

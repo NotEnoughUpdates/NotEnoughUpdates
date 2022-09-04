@@ -85,13 +85,13 @@ public class GuiItemRecipe extends GuiScreen {
 			if (!tabs.contains(recipe.getType()))
 				tabs.add(recipe.getType());
 		}
+		changeRecipe(0, 0);
 	}
 
 	@Override
 	public void initGui() {
 		this.guiLeft = (width - this.xSize) / 2;
 		this.guiTop = (height - this.ySize) / 2;
-		changeRecipe(0, 0);
 	}
 
 	public NeuRecipe getCurrentRecipe() {

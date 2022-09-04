@@ -19,61 +19,48 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
-import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Map;
+
 public class SenitherDungeonsWeight extends DungeonsWeight {
 
-	public SenitherDungeonsWeight(JsonObject player) {
+	public SenitherDungeonsWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
 	public void getClassWeight(String className) {
-		float currentClassXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + className), 0);
-		double currentClassLevel = ProfileViewer.getLevel(
-			Utils.getElement(Constants.LEVELING, "catacombs").getAsJsonArray(),
-			currentClassXp,
-			Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps.catacombs"), 50),
-			false
-		)
-			.level;
+		ProfileViewer.Level currentClass = player.get(className);
 		double base =
-			Math.pow(currentClassLevel, 4.5) *
+			Math.pow(currentClass.level, 4.5) *
 			Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.classes." + className), 0);
 
-		if (currentClassXp <= CATACOMBS_LEVEL_50_XP) {
+		if (currentClass.totalXp <= CATACOMBS_LEVEL_50_XP) {
 			weightStruct.add(new WeightStruct(base));
 			return;
 		}
 
-		double remaining = currentClassXp - CATACOMBS_LEVEL_50_XP;
+		double remaining = currentClass.totalXp - CATACOMBS_LEVEL_50_XP;
 		double splitter = (4 * CATACOMBS_LEVEL_50_XP) / base;
 		weightStruct.add(new WeightStruct(Math.floor(base), Math.pow(remaining / splitter, 0.968)));
 	}
 
 	@Override
 	public void getDungeonWeight() {
-		float catacombsSkillXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_catacombs"), 0);
+		ProfileViewer.Level catacombs = player.get("catacombs");
+		double base =
+			Math.pow(catacombs.level, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.catacombs"), 0);
 
-		double level = ProfileViewer.getLevel(
-			Utils.getElement(Constants.LEVELING, "catacombs").getAsJsonArray(),
-			catacombsSkillXp,
-			Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps.catacombs"), 50),
-			false
-		)
-			.level;
-		double base = Math.pow(level, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.catacombs"), 0);
-
-		if (catacombsSkillXp <= CATACOMBS_LEVEL_50_XP) {
+		if (catacombs.totalXp <= CATACOMBS_LEVEL_50_XP) {
 			weightStruct.add(new WeightStruct(base));
 			return;
 		}
 
-		double remaining = catacombsSkillXp - CATACOMBS_LEVEL_50_XP;
+		double remaining = catacombs.totalXp - CATACOMBS_LEVEL_50_XP;
 		double splitter = (4 * CATACOMBS_LEVEL_50_XP) / base;
 		weightStruct.add(new WeightStruct(Math.floor(base), Math.pow(remaining / splitter, 0.968)));
 	}

@@ -234,6 +234,15 @@ public class ItemOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Disable overlay when fail",
+		desc = "Don't display the etherwarp block overlay when you can't TP to the block"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 7)
+	public boolean disableOverlayWhenFailed = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Highlight Colour",
 		desc = "Change the colour of the etherwarp target block outline"
 	)

@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.listener;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -45,7 +44,6 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.init.Items;
@@ -58,9 +56,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,73 +74,6 @@ public class NEUEventListener {
 
 	public NEUEventListener(NotEnoughUpdates neu) {
 		this.neu = neu;
-	}
-
-	private void displayUpdateMessage(JsonObject updateJson, String updateMessage, String downloadLink) {
-		int firstWidth = -1;
-
-		for (String line : Iterables.concat(Arrays.asList(updateMessage.split("\n")), Arrays.asList("Download here"))) {
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-			boolean isDownloadLink = line.equals("Download here");
-			int width = fr.getStringWidth(line);
-			if (firstWidth == -1) {
-				firstWidth = width;
-			}
-			int missingLen = firstWidth - width;
-			if (missingLen > 0) {
-				StringBuilder sb = new StringBuilder(missingLen / 4 / 2 +line.length());
-				for (int i = 0; i < missingLen / 4 / 2; i++) { /* fr.getCharWidth(' ') == 4 */
-					sb.append(" ");
-				}
-				sb.append(line);
-				line = sb.toString();
-			}
-			ChatComponentText cp = new ChatComponentText(line);
-			if (isDownloadLink)
-				cp.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, downloadLink));
-			Minecraft.getMinecraft().thePlayer.addChatMessage(cp);
-		}
-		neu.displayLinks(updateJson, firstWidth);
-		NotificationHandler.displayNotification(Arrays.asList(
-			"§eThere is a new version of NotEnoughUpdates available.",
-			"§eCheck the chat for more information"
-		), true);
-	}
-
-	private void displayUpdateMessageIfOutOfDate() {
-		File repo = neu.manager.repoLocation;
-		if (repo.exists()) {
-			File updateJson = new File(repo, "update.json");
-			try {
-				JsonObject o = neu.manager.getJsonFromFile(updateJson);
-
-				int fullReleaseVersion =
-					o.has("version_id") && o.get("version_id").isJsonPrimitive() ? o.get("version_id").getAsInt() : -1;
-				int preReleaseVersion =
-					o.has("version_id") && o.get("version_id").isJsonPrimitive() ? o.get("version_id").getAsInt() : -1;
-				int hotfixVersion =
-					o.has("hotfix_id") && o.get("hotfix_id").isJsonPrimitive() ? o.get("hotfix_id").getAsInt() : -1;
-
-				boolean hasFullReleaseAvailableForUpgrade = fullReleaseVersion > NotEnoughUpdates.VERSION_ID;
-				boolean hasHotfixAvailableForUpgrade =
-					fullReleaseVersion == NotEnoughUpdates.VERSION_ID && hotfixVersion > NotEnoughUpdates.HOTFIX_VERSION_ID;
-				boolean hasPreReleaseAvailableForUpdate =
-					fullReleaseVersion == NotEnoughUpdates.VERSION_ID && preReleaseVersion > NotEnoughUpdates.PRE_VERSION_ID;
-
-				int updateChannel = NotEnoughUpdates.INSTANCE.config.notifications.updateChannel; /* 1 = Full, 2 = Pre */
-				if (hasFullReleaseAvailableForUpgrade || (hasHotfixAvailableForUpgrade && updateChannel == 1)) {
-					displayUpdateMessage(o, o.get("update_msg").getAsString(), o.get("update_link").getAsString());
-				} else if (hasPreReleaseAvailableForUpdate && updateChannel == 2) {
-					displayUpdateMessage(o, o.get("pre_update_msg").getAsString(), o.get("pre_update_link").getAsString());
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"§e[NEU] §cThere has been an error checking for updates. Check the log or join the discord for more information.").setChatStyle(
-					Utils.createClickStyle(
-						ClickEvent.Action.OPEN_URL, "https://discord.gg/moulberry")));
-			}
-		}
 	}
 
 	@SubscribeEvent
@@ -266,7 +195,7 @@ public class NEUEventListener {
 					joinedSB = true;
 
 					if (NotEnoughUpdates.INSTANCE.config.notifications.updateChannel != 0) {
-						displayUpdateMessageIfOutOfDate();
+						NotEnoughUpdates.INSTANCE.autoUpdater.displayUpdateMessageIfOutOfDate();
 					}
 
 					if (NotEnoughUpdates.INSTANCE.config.notifications.doRamNotif) {

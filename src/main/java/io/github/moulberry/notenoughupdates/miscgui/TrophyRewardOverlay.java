@@ -31,7 +31,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -78,7 +77,6 @@ public class TrophyRewardOverlay {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onItemTooltipLow(ItemTooltipEvent event) {
 		if (!inTrophyFishingInventory()) return;
-		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardTooltips) return;
 
 		ItemStack itemStack = event.itemStack;
 		if (itemStack == null) return;
@@ -100,7 +98,6 @@ public class TrophyRewardOverlay {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!inTrophyFishingInventory()) return;
-		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardOverlay) return;
 
 		GuiScreen screen = Minecraft.getMinecraft().currentScreen;
 		if (!(screen instanceof GuiChest)) return;
@@ -276,6 +273,7 @@ public class TrophyRewardOverlay {
 
 	public static boolean inTrophyFishingInventory() {
 		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return false;
+		if (!NotEnoughUpdates.INSTANCE.config.fishing.trophyRewardOverlay) return false;
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (minecraft == null || minecraft.thePlayer == null) return false;

@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev;
 
+import io.github.moulberry.notenoughupdates.BuildFlags;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
@@ -29,6 +30,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Locati
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -44,6 +46,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DevTestCommand extends ClientCommandBase {
 
@@ -122,6 +125,14 @@ public class DevTestCommand extends ClientCommandBase {
 				" with the mode " +
 				gamemode));
 		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("buildflags")) {
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				"BuildFlags: \n" +
+					BuildFlags.getAllFlags().entrySet().stream()
+										.map(it -> " + " + it.getKey() + " - " + it.getValue())
+										.collect(Collectors.joining("\n"))));
+			return;
+		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
 			if (args.length == 1) {
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
@@ -165,6 +176,10 @@ public class DevTestCommand extends ClientCommandBase {
 		if (args.length == 1 && args[0].equalsIgnoreCase("searchmode")) {
 			NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
 			Utils.addChatMessage(EnumChatFormatting.AQUA + "I would never search");
+			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("bluehair")) {
+			PronounDB.test();
 			return;
 		}
 		if (args.length == 2 && args[0].equalsIgnoreCase("openGui")) {

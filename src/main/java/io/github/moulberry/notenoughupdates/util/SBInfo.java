@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Locati
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.init.Blocks;
@@ -88,11 +87,19 @@ public class SBInfo {
 
 	public Date currentTimeDate = null;
 
-	public String lastOpenContainerName = "";
+	private JsonObject mayorJson = new JsonObject();
+
+	/**
+	 * Use Utils.getOpenChestName() instead
+	 */
+	@Deprecated
+	public String currentlyOpenChestName = "";
+	public String lastOpenChestName = "";
 
 	private long lastManualLocRaw = -1;
 	private long lastLocRaw = -1;
 	public long joinedWorld = -1;
+	private long lastMayorUpdate;
 	public long unloadedWorld = -1;
 	private JsonObject locraw = null;
 	public boolean isInDungeon = false;
@@ -123,7 +130,8 @@ public class SBInfo {
 	private int tickCount = 0;
 	public String currentProfile = null;
 
-	@SubscribeEvent
+	//Set the priority HIGH to allow other GuiOpenEvent's to use the new currentlyOpenChestName data
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onGuiOpen(GuiOpenEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 
@@ -131,19 +139,19 @@ public class SBInfo {
 			GuiChest chest = (GuiChest) event.gui;
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 
-			lastOpenContainerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+			currentlyOpenChestName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
+			lastOpenChestName = currentlyOpenChestName;
+		} else {
+			currentlyOpenChestName = "";
 		}
 	}
 
 	@SubscribeEvent
 	public void onGuiTick(TickEvent event) {
 		if (tickCount++ % 10 != 0) return;
-		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		if (currentScreen instanceof GuiChest) {
-			ContainerChest container = (ContainerChest) ((GuiChest) currentScreen).inventorySlots;
-			if ("Profile Management".equals(container.getLowerChestInventory().getDisplayName().getUnformattedText())) {
-				updateProfileInformation(container);
-			}
+		if (Utils.getOpenChestName().equals("Profile Management")) {
+			ContainerChest container = (ContainerChest) ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots;
+			updateProfileInformation(container);
 		}
 	}
 
@@ -225,7 +233,8 @@ public class SBInfo {
 		locraw = null;
 		this.setLocation(null);
 		joinedWorld = System.currentTimeMillis();
-		lastOpenContainerName = "";
+		currentlyOpenChestName = "";
+		lastOpenChestName = "";
 		hasNewTab = false;
 	}
 
@@ -290,7 +299,10 @@ public class SBInfo {
 			lastLocRaw = System.currentTimeMillis();
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
-
+			if (currentTime - lastMayorUpdate > 300 * 1000) {
+				updateMayor();
+				lastMayorUpdate = currentTime;
+			}
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
@@ -413,6 +425,19 @@ public class SBInfo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void updateMayor() {
+		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
+			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
+			"resources/skyblock/election",
+			new HashMap<>()
+		).thenAcceptAsync(newJson -> mayorJson = newJson);
+	}
+
+
+	public JsonObject getMayorJson() {
+		return mayorJson;
 	}
 
 	public void setCurrentProfile(String newProfile) {

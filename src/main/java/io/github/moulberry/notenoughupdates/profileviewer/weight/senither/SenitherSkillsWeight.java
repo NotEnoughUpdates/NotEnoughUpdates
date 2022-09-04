@@ -20,16 +20,17 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Map;
+
 public class SenitherSkillsWeight extends SkillsWeight {
 
-	public SenitherSkillsWeight(JsonObject player) {
+	public SenitherSkillsWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
@@ -39,7 +40,7 @@ public class SenitherSkillsWeight extends SkillsWeight {
 		double exponent = curWeights.get(0).getAsDouble();
 		double divider = curWeights.get(1).getAsDouble();
 
-		float currentSkillXp = Utils.getElementAsFloat(Utils.getElement(player, "experience_skill_" + skillName), 0);
+		float currentSkillXp = player.get(skillName).totalXp;
 
 		if (currentSkillXp > 0) {
 			int maxLevel = skillName.equals("farming")
@@ -53,7 +54,7 @@ public class SenitherSkillsWeight extends SkillsWeight {
 			)
 				.level;
 
-			double maxLevelExp = maxLevel == 50 ? 55172425 : 111672425;
+			double maxLevelExp = maxLevel == 50 ? SKILLS_LEVEL_50 : SKILLS_LEVEL_60;
 			double base = Math.pow(level * 10, 0.5 + exponent + (level / 100)) / 1250;
 			if (currentSkillXp <= maxLevelExp) {
 				weightStruct.add(new WeightStruct(base));

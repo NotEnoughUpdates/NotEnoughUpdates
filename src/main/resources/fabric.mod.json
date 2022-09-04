@@ -1,0 +1,10 @@
+{
+  "id": "notenoughupdates",
+  "version": "9999.0",
+  "schemaVersion": 1,
+  "entrypoints": {
+    "main": [
+      "io.github.moulberry.notenoughupdates.envcheck.FabricEntrypoint"
+    ]
+  }
+}

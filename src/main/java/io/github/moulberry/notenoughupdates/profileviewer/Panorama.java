@@ -38,15 +38,13 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class Panorama {
+
 	private static final TexLoc tl = new TexLoc(97, 19, Keyboard.KEY_P);
 	private static final TexLoc tl2 = new TexLoc(37, 80, Keyboard.KEY_L);
-
+	private static final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
 	private static ResourceLocation backgroundTexture = null;
-
 	private static int lastWidth = 0;
 	private static int lastHeight = 0;
-
-	private static final HashMap<String, ResourceLocation[]> panoramasMap = new HashMap<>();
 
 	public static synchronized ResourceLocation[] getPanoramasForLocation(String location, String identifier) {
 		if (panoramasMap.containsKey(location + identifier)) return panoramasMap.get(location + identifier);
@@ -63,8 +61,7 @@ public class Panorama {
 			try {
 				ResourceLocation[] panoramasArray = new ResourceLocation[6];
 				for (int i = 0; i < 6; i++) {
-					panoramasArray[i] =
-						new ResourceLocation("notenoughupdates:panoramas/" + location + "/panorama_" + i + ".jpg");
+					panoramasArray[i] = new ResourceLocation("notenoughupdates:panoramas/" + location + "/panorama_" + i + ".jpg");
 					Minecraft.getMinecraft().getResourceManager().getResource(panoramasArray[i]);
 				}
 				panoramasMap.put(location + identifier, panoramasArray);
@@ -172,7 +169,6 @@ public class Panorama {
 							float scale = (float) Math.sqrt(3 / distSq);
 
 							worldrenderer.pos(xr * scale, yr * scale, scale).tex(x2, y2).color(255, 255, 255, 255).endVertex();
-
 						}
 
 						tessellator.draw();
@@ -196,12 +192,16 @@ public class Panorama {
 			GlStateManager.enableDepth();
 		}
 
-		if (backgroundTexture == null || lastWidth != width * scaledresolution.getScaleFactor() ||
-			lastHeight != height * scaledresolution.getScaleFactor()) {
-			DynamicTexture viewportTexture =
-				new DynamicTexture(width * scaledresolution.getScaleFactor(), height * scaledresolution.getScaleFactor());
-			backgroundTexture =
-				Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation("background", viewportTexture);
+		if (
+			backgroundTexture == null ||
+			lastWidth != width * scaledresolution.getScaleFactor() ||
+			lastHeight != height * scaledresolution.getScaleFactor()
+		) {
+			DynamicTexture viewportTexture = new DynamicTexture(
+				width * scaledresolution.getScaleFactor(),
+				height * scaledresolution.getScaleFactor()
+			);
+			backgroundTexture = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation("background", viewportTexture);
 			lastWidth = width * scaledresolution.getScaleFactor();
 			lastHeight = height * scaledresolution.getScaleFactor();
 		}
@@ -224,14 +224,10 @@ public class Panorama {
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		worldrenderer.pos(x, y + height, 0)
-								 .tex(0, 1).endVertex();
-		worldrenderer.pos(x + width, y + height, 0)
-								 .tex(0, 0).endVertex();
-		worldrenderer.pos(x + width, y, 0)
-								 .tex(1, 0).endVertex();
-		worldrenderer.pos(x, y, 0)
-								 .tex(1, 1).endVertex();
+		worldrenderer.pos(x, y + height, 0).tex(0, 1).endVertex();
+		worldrenderer.pos(x + width, y + height, 0).tex(0, 0).endVertex();
+		worldrenderer.pos(x + width, y, 0).tex(1, 0).endVertex();
+		worldrenderer.pos(x, y, 0).tex(1, 1).endVertex();
 		tessellator.draw();
 	}
 }

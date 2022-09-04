@@ -19,20 +19,22 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
-import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SlayerWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
+import java.util.Map;
+
 public class LilySlayerWeight extends SlayerWeight {
 
-	public LilySlayerWeight(JsonObject player) {
+	public LilySlayerWeight(Map<String, ProfileViewer.Level> player) {
 		super(player);
 	}
 
 	public void getSlayerWeight(String slayerName) {
-		int currentSlayerXp = Utils.getElementAsInt(Utils.getElement(player, "experience_slayer_" + slayerName), 0);
+		int currentSlayerXp = (int) player.get(slayerName).totalXp;
 
 		double score;
 		double d = currentSlayerXp / 100000.0;
@@ -56,7 +58,7 @@ public class LilySlayerWeight extends SlayerWeight {
 		double weight;
 		switch (slayerName) {
 			case "zombie":
-				weight = (effectiveScore / 8390.64) + (currentSlayerXp / 1000000.0);
+				weight = (effectiveScore / 9250) + (currentSlayerXp / 1000000.0);
 				break;
 			case "spider":
 				weight = (effectiveScore / 7019.57) + ((currentSlayerXp * 1.6) / 1000000);
@@ -65,10 +67,10 @@ public class LilySlayerWeight extends SlayerWeight {
 				weight = (effectiveScore / 2982.06) + ((currentSlayerXp * 3.6) / 1000000);
 				break;
 			case "enderman":
-				weight = (effectiveScore / 1118.81) + ((currentSlayerXp * 10.0) / 1000000);
+				weight = (effectiveScore / 996.3003) + ((currentSlayerXp * 10.0) / 1000000);
 				break;
 			case "blaze":
-				weight = (effectiveScore / 751.281) + ((currentSlayerXp * 15.0) / 1000000);
+				weight = (effectiveScore / 935.0455) + ((currentSlayerXp * 10.0) / 1000000);
 				break;
 			default:
 				return;

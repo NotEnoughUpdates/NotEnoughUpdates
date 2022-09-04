@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: NEU Support
+    url: https://discord.gg/moulberry
+    about: "Please ask for support in #neu-support on Moulberry's discord."
+  - name: Report security vulnerabilities
+    url: https://discord.gg/moulberry
+    about: "If you wish to discuss a bug *with security implications* privately, please open a ticket in Moulberry's discord using /new in #bot-commands"

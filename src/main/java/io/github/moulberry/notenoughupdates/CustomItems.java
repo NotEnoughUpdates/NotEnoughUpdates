@@ -110,11 +110,11 @@ public class CustomItems {
 	 * SHAAAAAAAAAAAAAAAAAAME
 	 */
 
-	private static JsonObject create(String internalname, String itemid, String displayname, String... lore) {
+	private static JsonObject create(String internalname, String itemid, String displayName, String... lore) {
 		JsonObject json = new JsonObject();
 		json.addProperty("itemid", itemid);
 		json.addProperty("internalname", internalname);
-		json.addProperty("displayname", EnumChatFormatting.RED + displayname);
+		json.addProperty("displayname", EnumChatFormatting.RED + displayName);
 		JsonArray jsonlore = new JsonArray();
 		for (String line : lore) {
 			jsonlore.add(new JsonPrimitive(EnumChatFormatting.GRAY + line));

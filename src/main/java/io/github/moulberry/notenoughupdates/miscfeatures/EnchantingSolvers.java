@@ -96,20 +96,14 @@ public class EnchantingSolvers {
 			return;
 		}
 
-		if (event.gui instanceof GuiChest) {
-			GuiChest chest = (GuiChest) event.gui;
-			ContainerChest container = (ContainerChest) chest.inventorySlots;
-			String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-			String lower = containerName.toLowerCase();
-
-			if (!lower.contains("stakes")) {
-				if (lower.startsWith("chronomatron")) {
-					currentSolver = SolverType.CHRONOMATRON;
-				} else if (lower.startsWith("ultrasequencer")) {
-					currentSolver = SolverType.ULTRASEQUENCER;
-				} else if (lower.startsWith("superpairs")) {
-					currentSolver = SolverType.SUPERPAIRS;
-				}
+		String openChestName = Utils.getOpenChestName();
+		if (!openChestName.contains("Stakes")) {
+			if (openChestName.startsWith("Chronomatron")) {
+				currentSolver = SolverType.CHRONOMATRON;
+			} else if (openChestName.startsWith("Ultrasequencer")) {
+				currentSolver = SolverType.ULTRASEQUENCER;
+			} else if (openChestName.startsWith("Superpairs")) {
+				currentSolver = SolverType.SUPERPAIRS;
 			}
 		}
 	}

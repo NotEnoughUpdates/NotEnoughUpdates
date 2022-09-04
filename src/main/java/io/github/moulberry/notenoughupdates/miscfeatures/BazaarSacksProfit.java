@@ -58,13 +58,12 @@ public class BazaarSacksProfit {
 	private final Map<String, Integer> prices = new HashMap<>();
 	private final Map<String, String> names = new HashMap<>();
 	private final List<String> invalidNames = new ArrayList<>();
+	private boolean dirty = true;
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
 		showSellOrderPrice = false;
-		prices.clear();
-		names.clear();
-		invalidNames.clear();
+		dirty = true;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
@@ -82,7 +81,12 @@ public class BazaarSacksProfit {
 		}
 		pressedShiftLast = shift;
 
-		if (prices.isEmpty()) {
+		if (dirty) {
+			dirty = false;
+			prices.clear();
+			names.clear();
+			invalidNames.clear();
+
 			out:
 			for (String line : ItemUtils.getLore(itemStack)) {
 				if (line.contains("§7x ")) {
@@ -96,8 +100,8 @@ public class BazaarSacksProfit {
 						String internalName = entry.getKey();
 						JsonObject object = entry.getValue();
 						if (object.has("displayname")) {
-							String displayname = object.get("displayname").getAsString();
-							if (displayname.equals(bazaarName)) {
+							String name = object.get("displayname").getAsString();
+							if (name.equals(bazaarName)) {
 								prices.put(internalName, amount);
 								names.put(internalName, bazaarName);
 								continue out;
@@ -146,6 +150,7 @@ public class BazaarSacksProfit {
 			map.put("§a" + formatter.format(amount) + "§7x §f" + name + " §7for §6" + priceFormat + " coins", extraPrice);
 		}
 
+		event.toolTip.add(4, "");
 		if (showSellOrderPrice) {
 			event.toolTip.add(4, "§7Sell order price: §6" + formatter.format(totalPrice));
 		} else {
@@ -153,14 +158,18 @@ public class BazaarSacksProfit {
 		}
 
 		event.toolTip.add(4, "");
+		event.toolTip.removeIf(line -> line.equals("§5§o"));
+		int index = 4;
 		for (String name : invalidNames) {
-			event.toolTip.add(4, name + " §cMissing repo data!");
+			index++;
+			event.toolTip.add(4, name + " §c[NEU] Missing Repo data!");
 		}
 		for (String text : TrophyRewardOverlay.sortByValue(map).keySet()) {
+			index++;
 			event.toolTip.add(4, text);
 		}
+		event.toolTip.add(index, "");
 
-		event.toolTip.add("");
 		if (!showSellOrderPrice) {
 			event.toolTip.add("§8[Press SHIFT to show sell order price]");
 		} else {

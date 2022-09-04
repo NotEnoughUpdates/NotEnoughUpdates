@@ -19,11 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.commands.profile;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
@@ -35,16 +35,19 @@ import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class PeekCommand extends ClientCommandBase {
 
 	private ScheduledExecutorService peekCommandExecutorService = null;
+	private ScheduledFuture<?> peekScheduledFuture = null;
 
 	public PeekCommand() {
 		super("peek");
@@ -69,23 +72,23 @@ public class PeekCommand extends ClientCommandBase {
 			} else {
 				profile.resetCache();
 
-				if (peekCommandExecutorService == null || peekCommandExecutorService.isShutdown()) {
+				if (peekCommandExecutorService == null) {
 					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
-				} else {
+				}
+
+				if (peekScheduledFuture != null && !peekScheduledFuture.isDone()) {
 					Utils.addChatMessage(
 						EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one.");
-					peekCommandExecutorService.shutdownNow();
-					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
+					peekScheduledFuture.cancel(true);
 				}
 
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
 					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
 
 				long startTime = System.currentTimeMillis();
-				peekCommandExecutorService.schedule(new Runnable() {
+				peekScheduledFuture = peekCommandExecutorService.schedule(new Runnable() {
 					public void run() {
 						if (System.currentTimeMillis() - startTime > 10 * 1000) {
-
 							Minecraft.getMinecraft().ingameGUI
 								.getChatGUI()
 								.printChatMessageWithOptionalDeletion(new ChatComponentText(
@@ -103,7 +106,7 @@ public class PeekCommand extends ClientCommandBase {
 
 							PlayerStats.Stats stats = profile.getStats(null);
 							if (stats == null) return;
-							JsonObject skill = profile.getSkillInfo(null);
+							Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
 
 							Minecraft.getMinecraft().ingameGUI
 								.getChatGUI()
@@ -112,26 +115,23 @@ public class PeekCommand extends ClientCommandBase {
 									Utils.getElementAsString(profile.getHypixelProfile().get("displayname"), name) + "'s Info " +
 									EnumChatFormatting.STRIKETHROUGH + "-=-"), id);
 
-							if (skill == null) {
-								Utils.addChatMessage(EnumChatFormatting.YELLOW + "Skills api disabled!");
+							if (skyblockInfo == null) {
+								Utils.addChatMessage(EnumChatFormatting.YELLOW + "Skills API disabled!");
 							} else {
 								float totalSkillLVL = 0;
 								float totalSkillCount = 0;
 
-								for (Map.Entry<String, JsonElement> entry : skill.entrySet()) {
-									if (entry.getKey().startsWith("level_skill")) {
-										if (entry.getKey().contains("runecrafting")) continue;
-										if (entry.getKey().contains("carpentry")) continue;
-										totalSkillLVL += entry.getValue().getAsFloat();
-										totalSkillCount++;
-									}
+								List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+								for (String skillName : skills) {
+									totalSkillLVL += skyblockInfo.get(skillName).level;
+									totalSkillCount++;
 								}
 
-								float combat = Utils.getElementAsFloat(skill.get("level_skill_combat"), 0);
-								float zombie = Utils.getElementAsFloat(skill.get("level_slayer_zombie"), 0);
-								float spider = Utils.getElementAsFloat(skill.get("level_slayer_spider"), 0);
-								float wolf = Utils.getElementAsFloat(skill.get("level_slayer_wolf"), 0);
-								float enderman = Utils.getElementAsFloat(skill.get("level_slayer_enderman"), 0);
+								float combat = skyblockInfo.get("combat").level;
+								float zombie = skyblockInfo.get("zombie").level;
+								float spider = skyblockInfo.get("spider").level;
+								float wolf = skyblockInfo.get("wolf").level;
+								float enderman = skyblockInfo.get("enderman").level;
 
 								float avgSkillLVL = totalSkillLVL / totalSkillCount;
 
@@ -172,7 +172,7 @@ public class PeekCommand extends ClientCommandBase {
 								overallScore += enderman * enderman / 81f;
 								overallScore += avgSkillLVL / 20f;
 
-								int cata = (int) Utils.getElementAsFloat(skill.get("level_skill_catacombs"), 0);
+								int cata = (int) skyblockInfo.get("catacombs").level;
 								EnumChatFormatting cataPrefix = cata > 15
 									? (cata > 25 ? EnumChatFormatting.GREEN : EnumChatFormatting.YELLOW)
 									: EnumChatFormatting.RED;
@@ -278,7 +278,7 @@ public class PeekCommand extends ClientCommandBase {
 
 							peekCommandExecutorService.shutdownNow();
 						} else {
-							peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
+							peekScheduledFuture = peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
 						}
 					}
 				}, 200, TimeUnit.MILLISECONDS);

@@ -59,6 +59,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class APIManager {
 	private final NEUManager manager;
@@ -409,6 +411,7 @@ public class APIManager {
 				int page = pagesToDownload.pop();
 				getPageFromAPI(page);
 			} catch (NoSuchElementException ignored) {
+				return;
 			} //Weird race condition?
 		}
 	}
@@ -701,6 +704,16 @@ public class APIManager {
 		);
 	}
 
+	private static final Pattern BAZAAR_ENCHANTMENT_PATTERN = Pattern.compile("ENCHANTMENT_(\\D*)_(\\d+)");
+
+	public String transformHypixelBazaarToNEUItemId(String hypixelId) {
+		Matcher matcher = BAZAAR_ENCHANTMENT_PATTERN.matcher(hypixelId);
+		if (matcher.matches()) {
+			return matcher.group(1) + ";" + matcher.group(2);
+		}
+		return hypixelId.replace(":", "-");
+	}
+
 	public void updateBazaar() {
 		manager.hypixelApi.getHypixelApiAsync(
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
@@ -737,7 +750,7 @@ public class APIManager {
 							}
 						}
 
-						bazaarJson.add(entry.getKey().replace(":", "-"), productInfo);
+						bazaarJson.add(transformHypixelBazaarToNEUItemId(entry.getKey()), productInfo);
 					}
 				}
 				GuiPriceGraph.addToCache(bazaarJson, true);
