@@ -47,10 +47,10 @@ public class MinionHelperInventoryLoader {
 	private int ticks = 0;
 
 	//§7Craft §b5 §7more §aunique §7minions
-	private final Pattern PATTERN_MINIONS_NEEDED = Pattern.compile("§7Craft §b(\\d) §7more §aunique §7minions");
+	private final Pattern PATTERN_MINIONS_NEEDED = Pattern.compile("§7Craft §b(\\d+) §7more §aunique( §7minions)?");
 
 	//§r §r§fPelts: §r§59§r
-	private final Pattern PATTERN_PELTS = Pattern.compile("§r §r§fPelts: §r§5(\\d)§r");
+	private final Pattern PATTERN_PELTS = Pattern.compile("§r §r§fPelts: §r§5(\\d+)§r");
 
 	public MinionHelperInventoryLoader(MinionHelperManager manager) {
 		this.manager = manager;
