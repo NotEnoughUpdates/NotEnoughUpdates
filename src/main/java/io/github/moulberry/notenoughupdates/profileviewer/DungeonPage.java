@@ -194,9 +194,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (F7 > 50) {
 					F7 = 50;
 				}
-				float xpF5 = 2000 * (F5 / 100 + 1);
-				float xpF6 = 4000 * (F6 / 100 + 1);
-				float xpF7 = 20000 * (F7 / 100 + 1);
+				float xpF5 = 2400 * (F5 / 100 + 1);
+				float xpF6 = 4880 * (F6 / 100 + 1);
+				float xpF7 = 28000 * (F7 / 100 + 1);
 				if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 					xpF5 *= 1.1;
 					xpF6 *= 1.1;
@@ -304,6 +304,13 @@ public class DungeonPage extends GuiProfileViewerPage {
 							0
 						)
 					);
+				float M7 =
+					(
+						Utils.getElementAsFloat(
+							Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.tier_completions." + 7),
+							0
+						)
+					);
 				if (M3 > 50) {
 					M3 = 50;
 				}
@@ -316,22 +323,28 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (M6 > 50) {
 					M6 = 50;
 				}
-				float xpM3 = 36500 * (M3 / 100 + 1);
-				float xpM4 = 48500 * (M4 / 100 + 1);
+				if (M7 > 50) {
+					M7 = 50;
+				}
+				float xpM3 = 35000 * (M3 / 100 + 1);
+				float xpM4 = 55000 * (M4 / 100 + 1);
 				float xpM5 = 70000 * (M5 / 100 + 1);
 				float xpM6 = 100000 * (M6 / 100 + 1);
+				float xpM7 = 300000 * (M7 / 100 + 1);
 				//No clue if M3 or M4 xp values are right
 				if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 					xpM3 *= 1.1;
 					xpM4 *= 1.1;
 					xpM5 *= 1.1;
 					xpM6 *= 1.1;
+					xpM7 *= 1.1;
 				}
 
 				long runsM3 = (int) Math.ceil(floorLevelToXP / xpM3);
 				long runsM4 = (int) Math.ceil(floorLevelToXP / xpM4);
 				long runsM5 = (int) Math.ceil(floorLevelToXP / xpM5);
 				long runsM6 = (int) Math.ceil(floorLevelToXP / xpM6);
+				long runsM7 = (int) Math.ceil(floorLevelToXP / xpM7);
 
 				float timeM3 = Utils.getElementAsFloat(
 					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.3"),
@@ -349,6 +362,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.6"),
 					0
 				);
+				float timeM7 = Utils.getElementAsFloat(
+					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.7"),
+					0
+				);
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
@@ -356,6 +373,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 						String.format("# M4 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM4, 0), runsM4),
 						String.format("# M5 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM5, 0), runsM5),
 						String.format("# M6 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM6, 0), runsM6),
+						String.format("# M7 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM7, 0), runsM7),
 						""
 					);
 				boolean hasTime = false;
@@ -377,6 +395,11 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (timeM6 > 1000) {
 					getInstance()
 						.tooltipToDisplay.add(String.format("Expected Time (M6) : %s", Utils.prettyTime(runsM6 * (long) (timeM6 * 1.2))));
+					hasTime = true;
+				}
+				if (timeM7 > 1000) {
+					getInstance()
+						.tooltipToDisplay.add(String.format("Expected Time (M7) : %s", Utils.prettyTime(runsM7 * (long) (timeM7 * 1.2))));
 					hasTime = true;
 				}
 				if (hasTime) {
