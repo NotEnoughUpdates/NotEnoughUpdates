@@ -40,7 +40,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
@@ -2203,7 +2202,6 @@ public class NEUOverlay extends Gui {
 		GlStateManager.enableAlpha();
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.disableLighting();
-		EquipmentOverlay.INSTANCE.renderInfoHuds();
 		Utils.pushGuiScale(-1);
 
 		if (System.currentTimeMillis() - lastSearchMode > 120000 &&
