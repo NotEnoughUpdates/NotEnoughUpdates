@@ -356,7 +356,7 @@ public class ItemPriceInformation {
 		boolean shortNumber = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.shortNumberFormatPrices;
 		String number = (shortNumber && price > 1000
 			? Utils.shortNumberFormat(price, 0)
-			: format.format(price));
+			: price > 5 ? format.format((int) price) : format.format(price));
 		return "§e§l" + label + "§6§l" + number + " coins";
 	}
 
