@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +51,7 @@ public class ItemPriceInformation {
 	private static File file;
 	private static HashSet<String> auctionableItems = null;
 	private static Gson gson;
-	private static final NumberFormat format = NumberFormat.getInstance(Locale.US);
+	private static final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
 
 	public static boolean addToTooltip(List<String> tooltip, String internalname, ItemStack stack) {
 		return addToTooltip(tooltip, internalname, stack, true);
