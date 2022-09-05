@@ -258,14 +258,15 @@ public class EquipmentOverlay {
 	}
 
 	private void updateGuiInfo(GuiScreen screen) {
+		if (getWardrobeSlot(10) != null) {
+			slot1 = getWardrobeSlot(10);
+			slot2 = getWardrobeSlot(19);
+			slot3 = getWardrobeSlot(28);
+			slot4 = getWardrobeSlot(37);
+		}
+
 		if (screen instanceof GuiChest) {
 			petStack = getRepoPetStack();
-			if (getWardrobeSlot(10) != null) {
-				slot1 = getWardrobeSlot(10);
-				slot2 = getWardrobeSlot(19);
-				slot3 = getWardrobeSlot(28);
-				slot4 = getWardrobeSlot(37);
-			}
 		}
 		if (!(screen instanceof GuiInventory)
 			|| !NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
@@ -362,7 +363,6 @@ public class EquipmentOverlay {
 		} else {
 			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
 				//don't use cache since the internalName is identical in most cases
-				//
 				JsonObject jsonObject = profileSpecific.savedEquipment
 					.get(armourSlot);
 				if (jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject
