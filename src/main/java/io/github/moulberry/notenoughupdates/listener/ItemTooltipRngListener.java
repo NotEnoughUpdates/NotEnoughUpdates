@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 public class ItemTooltipRngListener {
 	private final NotEnoughUpdates neu;
-	private boolean showSlayerRngFractures = false;
+	private boolean showSlayerRngFractions = false;
 	private boolean pressedShiftLast = false;
 	private int currentSelected = 0;
 	private boolean pressedArrowLast = false;
@@ -148,7 +148,7 @@ public class ItemTooltipRngListener {
 	private void fractionDisplay(List<String> newToolTip, String line) {
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		if (!pressedShiftLast && shift) {
-			showSlayerRngFractures = !showSlayerRngFractures;
+			showSlayerRngFractions = !showSlayerRngFractions;
 		}
 		pressedShiftLast = shift;
 
@@ -176,12 +176,12 @@ public class ItemTooltipRngListener {
 			return;
 		}
 
-		if (showSlayerRngFractures) {
+		if (showSlayerRngFractions) {
 			newToolTip.add("§7Odds: " + result);
 			newToolTip.add("§8[Press SHIFT to show odds as percentages]");
 		} else {
 			newToolTip.add(line);
-			newToolTip.add("§8[Press SHIFT to show odds as fractures]");
+			newToolTip.add("§8[Press SHIFT to show odds as fractions]");
 		}
 	}
 
