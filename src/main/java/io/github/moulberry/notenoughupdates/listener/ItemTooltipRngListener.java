@@ -294,7 +294,7 @@ public class ItemTooltipRngListener {
 
 		toolTip.add("§9Stats for " + name + "§9: [§l§m< §9Switch§l➡§9]");
 		toolTip.add(
-			"   §7" + labelPlural + " having: §e" + runsHavingFormat + " §7(of §e" + runsNeededFormat + " §7needed)");
+			"   §7" + labelPlural + " completed: §e" + runsHavingFormat + " §7(of §e" + runsNeededFormat + " §7needed)");
 
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterProfitPerUnit) {
 			String formatCoinsPer = getFormatCoinsPer(stack, needed, gainPerRun, labelSingular);
