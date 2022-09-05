@@ -245,7 +245,7 @@ public class NEUOverlay extends Gui {
 					if (!NotEnoughUpdates.INSTANCE.config.itemlist.openWhenSearching) {
 						itemPaneOpen = false;
 						if (!searchMode) {
-							itemPaneShouldOpen = System.currentTimeMillis() + 300;
+							itemPaneShouldOpen = System.currentTimeMillis() + 200;
 						}
 					}
 

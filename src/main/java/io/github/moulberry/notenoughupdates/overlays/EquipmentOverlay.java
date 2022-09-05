@@ -182,12 +182,13 @@ public class EquipmentOverlay {
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 		GL11.glColor4f(1F, 1F, 1F, 1F);
-		GlStateManager.disableLighting();
-		if (shouldRenderArmorHud)
+		if (shouldRenderArmorHud) {
 			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
-		if (shouldRenderPets)
+		}
+
+		if (shouldRenderPets) {
 			renderPets(inventory, mouseX, mouseY, width, height);
-		GlStateManager.enableLighting();
+		}
 	}
 
 	public void renderEquipmentGui(GuiInventory guiScreen, int mouseX, int mouseY, int width, int height) {
