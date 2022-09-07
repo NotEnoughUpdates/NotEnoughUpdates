@@ -144,8 +144,6 @@ public class EquipmentOverlay {
 
 	public ItemStack petStack;
 
-	private List<String> tooltipsToDisplay;
-
 	//<editor-fold desc="events">
 
 	@SubscribeEvent
@@ -163,13 +161,6 @@ public class EquipmentOverlay {
 	public void onRenderGuiPost(GuiInventoryBackgroundDrawnEvent event) {
 		if (!(event.getContainer() instanceof GuiInventory)) return;
 		GuiInventory inventory = ((GuiInventory) event.getContainer());
-		renderGuis(inventory);
-	}
-
-	@SubscribeEvent
-	public void onMouseClick(GuiScreenEvent.MouseInputEvent event) {
-		if (!(event.gui instanceof GuiInventory)) return;
-		GuiInventory inventory = ((GuiInventory) event.gui);
 		renderGuis(inventory);
 	}
 
