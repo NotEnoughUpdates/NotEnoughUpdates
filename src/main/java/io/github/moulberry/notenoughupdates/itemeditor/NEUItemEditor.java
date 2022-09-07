@@ -35,8 +35,10 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
@@ -93,19 +95,6 @@ public class NEUItemEditor extends GuiScreen {
 		extraAttributes.removeTag("uuid");
 		extraAttributes.removeTag("timestamp");
 
-		if (extraAttributes.hasKey("petInfo")) {
-			try {
-				NBTTagCompound petInfo = JsonToNBT.getTagFromJson(extraAttributes.getString("petInfo"));
-
-				petInfo.removeTag("\"heldItem\"");
-				petInfo.setString("\"exp\"", "0.0");
-				petInfo.setString("\"candyUsed\"", "0");
-				petInfo.removeTag("\"uuid\"");
-
-				extraAttributes.setString("petInfo", petInfo.toString());
-			} catch (NBTException ignored) {
-			}
-		}
 		savedRepoItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().getOrDefault(internalName, null);
 
 		internalName = internalName == null ? "" : internalName;
