@@ -111,6 +111,7 @@ public class ItemResolutionQuery {
 					resolvedName = resolveEnchantedBookNameFromNBT();
 					break;
 				case "PARTY_HAT_CRAB":
+				case "PARTY_HAT_CRAB_ANIMATED":
 					resolvedName = resolveCrabHatName();
 					break;
 			}
@@ -186,8 +187,9 @@ public class ItemResolutionQuery {
 	}
 
 	private String resolveCrabHatName() {
+		int crabHatYear = getExtraAttributes().getInteger("party_hat_year");
 		String color = getExtraAttributes().getString("party_hat_color");
-		return "PARTY_HAT_CRAB_" + color.toUpperCase(Locale.ROOT);
+		return "PARTY_HAT_CRAB_" + color.toUpperCase(Locale.ROOT) + (crabHatYear == 2022 ? "_ANIMATED" : "");
 	}
 
 	private String resolveEnchantedBookNameFromNBT() {
