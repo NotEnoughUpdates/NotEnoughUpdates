@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.itemeditor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -92,6 +93,19 @@ public class NEUItemEditor extends GuiScreen {
 		NBTTagCompound extraAttributes = nbtTag.getCompoundTag("ExtraAttributes");
 		extraAttributes.removeTag("uuid");
 		extraAttributes.removeTag("timestamp");
+
+		if (extraAttributes.hasKey("petInfo")) {
+			JsonObject jsonObject = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(
+				extraAttributes.getString("petInfo"),
+				JsonObject.class
+			);
+
+			jsonObject.remove("heldItem");
+			jsonObject.add("exp", new JsonPrimitive(0));
+			jsonObject.add("candyUsed", new JsonPrimitive(0));
+
+			extraAttributes.setString("petInfo", jsonObject.toString());
+		}
 
 		savedRepoItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().getOrDefault(internalName, null);
 
