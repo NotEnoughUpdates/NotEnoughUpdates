@@ -25,14 +25,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -47,6 +43,12 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.UUID;
 
 public class DungeonPage extends GuiProfileViewerPage {
 
@@ -172,7 +174,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Until Cata " + floorLevelTo + ": ",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(floorLevelToXP, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat((double) floorLevelToXP),
 				x,
 				y + 16,
 				sectionWidth
@@ -222,9 +224,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
-						String.format("# F5 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpF5, 0), runsF5),
-						String.format("# F6 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpF6, 0), runsF6),
-						String.format("# F7 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpF7, 0), runsF7),
+						String.format("# F5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF5), runsF5),
+						String.format("# F6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF6), runsF6),
+						String.format("# F7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF7), runsF7),
 						""
 					);
 				boolean hasTime = false;
@@ -369,11 +371,11 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
-						String.format("# M3 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM3, 0), runsM3),
-						String.format("# M4 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM4, 0), runsM4),
-						String.format("# M5 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM5, 0), runsM5),
-						String.format("# M6 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM6, 0), runsM6),
-						String.format("# M7 Runs (%s xp) : %d", GuiProfileViewer.shortNumberFormat(xpM7, 0), runsM7),
+						String.format("# M3 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM3), runsM3),
+						String.format("# M4 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM4), runsM4),
+						String.format("# M5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM5), runsM5),
+						String.format("# M6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM6), runsM6),
+            String.format("# M7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM7), runsM7),
 						""
 					);
 				boolean hasTime = false;
@@ -505,7 +507,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (Total)  ",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(secrets, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(secrets),
 				x,
 				miscTopY + 20,
 				sectionWidth
@@ -519,7 +521,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Mob Kills (Total)  ",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(mobKills, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mobKills),
 				x,
 				miscTopY + 40,
 				sectionWidth

@@ -54,6 +54,7 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
+import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -120,6 +121,8 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.dungeon_chest_worth;
@@ -146,6 +149,8 @@ public class RenderListener {
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
 	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
+
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -418,6 +423,11 @@ public class RenderListener {
 
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.render();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -737,7 +747,7 @@ public class RenderListener {
 						StringBuilder cost = new StringBuilder();
 						for (int i = 0; i < line6.length(); i++) {
 							char c = line6.charAt(i);
-							if ("0123456789".indexOf(c) >= 0) {
+							if (Character.isDigit(c)) {
 								cost.append(c);
 							}
 						}
@@ -753,6 +763,20 @@ public class RenderListener {
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
+						String displayName = item.getDisplayName();
+						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
+						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
+							String type = matcher.group(1).toUpperCase();
+							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type);
+							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
+								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
+								int amount = Integer.parseInt(matcher.group(2));
+								double price = bazaarPrice * amount;
+								itemValues.put(displayName, price);
+								totalValue += price;
+							}
+							continue;
+						}
 						if (internal != null) {
 							internal = internal.replace("\u00CD", "I").replace("\u0130", "I");
 							float bazaarPrice = -1;
@@ -984,6 +1008,11 @@ public class RenderListener {
 		}
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.mouseEvent();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.mouseEvent();
 			event.setCanceled(true);
 			return;
 		}
@@ -1464,6 +1493,11 @@ public class RenderListener {
 
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.keyEvent();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}

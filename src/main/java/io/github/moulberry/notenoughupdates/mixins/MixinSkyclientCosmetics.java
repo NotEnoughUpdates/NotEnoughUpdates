@@ -17,24 +17,23 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.events;
+package io.github.moulberry.notenoughupdates.mixins;
 
-import java.io.File;
+import net.minecraftforge.event.world.WorldEvent;
+import org.spongepowered.asm.mixin.Dynamic;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class RepositoryReloadEvent extends NEUEvent {
-	private final File baseFile;
-	private final boolean isFirstLoad;
+@Pseudo
+@Mixin(targets = "co.skyclient.scc.SkyclientCosmetics")
+public class MixinSkyclientCosmetics {
 
-	public RepositoryReloadEvent(File baseFile, boolean isFirstLoad) {
-		this.baseFile = baseFile;
-		this.isFirstLoad = isFirstLoad;
-	}
-
-	public boolean isFirstLoad() {
-		return isFirstLoad;
-	}
-
-	public File getRepositoryRoot() {
-		return baseFile;
+	@Dynamic
+	@Inject(method = "onWorldLoad", at = @At("HEAD"), cancellable = true, remap = false)
+	public void onWorldLoad(WorldEvent.Load event, CallbackInfo ci) {
+		ci.cancel();
 	}
 }

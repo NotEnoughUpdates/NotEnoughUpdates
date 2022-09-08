@@ -22,10 +22,15 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.opengl.GL11;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,15 +39,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.opengl.GL11;
 
 public class ExtraPage extends GuiProfileViewerPage {
 
@@ -79,14 +78,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Bank Balance",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(bankBalance, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(bankBalance),
 			guiLeft + xStart,
 			guiTop + yStartTop,
 			76
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Purse",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(purseBalance, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(purseBalance),
 			guiLeft + xStart,
 			guiTop + yStartTop + yOffset,
 			76
@@ -161,7 +160,17 @@ public class ExtraPage extends GuiProfileViewerPage {
 			float totalSlayerCount = 0;
 			float totalSlayerXP = 0;
 
-			List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+			List<String> skills = Arrays.asList(
+				"taming",
+				"mining",
+				"foraging",
+				"enchanting",
+				"farming",
+				"combat",
+				"fishing",
+				"alchemy",
+				"carpentry"
+			);
 			List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 
 			for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
@@ -206,7 +215,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "Total Slayer XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(totalSlayerXP, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(totalSlayerXP),
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 4,
 				76
@@ -214,11 +223,17 @@ public class ExtraPage extends GuiProfileViewerPage {
 		}
 
 		float auctions_bids = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_bids"), 0);
-		float auctions_highest_bid = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_highest_bid"), 0);
+		float auctions_highest_bid = Utils.getElementAsFloat(
+			Utils.getElement(profileInfo, "stats.auctions_highest_bid"),
+			0
+		);
 		float auctions_won = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_won"), 0);
 		float auctions_created = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_created"), 0);
 		float auctions_gold_spent = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_gold_spent"), 0);
-		float auctions_gold_earned = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_gold_earned"), 0);
+		float auctions_gold_earned = Utils.getElementAsFloat(
+			Utils.getElement(profileInfo, "stats.auctions_gold_earned"),
+			0
+		);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Auction Bids",
@@ -229,7 +244,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Highest Bid",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(auctions_highest_bid, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(auctions_highest_bid),
 			guiLeft + xStart + xOffset,
 			guiTop + yStartTop + yOffset,
 			76
@@ -250,14 +265,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Gold Spent",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(auctions_gold_spent, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(auctions_gold_spent),
 			guiLeft + xStart + xOffset,
 			guiTop + yStartTop + yOffset * 4,
 			76
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Gold Earned",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(auctions_gold_earned, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(auctions_gold_earned),
 			guiLeft + xStart + xOffset,
 			guiTop + yStartTop + yOffset * 5,
 			76
@@ -276,8 +291,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 			Utils.getElement(profileInfo, "slayer_bosses.zombie.boss_kills_tier_4"),
 			0
 		);
-		float wolf_boss_kills_tier_2 = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.wolf.boss_kills_tier_2"), 0);
-		float wolf_boss_kills_tier_3 = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.wolf.boss_kills_tier_3"), 0);
+		float wolf_boss_kills_tier_2 = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"slayer_bosses.wolf.boss_kills_tier_2"
+		), 0);
+		float wolf_boss_kills_tier_3 = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"slayer_bosses.wolf.boss_kills_tier_3"
+		), 0);
 		float spider_boss_kills_tier_2 = Utils.getElementAsFloat(
 			Utils.getElement(profileInfo, "slayer_bosses.spider.boss_kills_tier_2"),
 			0
@@ -294,8 +315,14 @@ public class ExtraPage extends GuiProfileViewerPage {
 			Utils.getElement(profileInfo, "slayer_bosses.enderman.boss_kills_tier_3"),
 			0
 		);
-		float blaze_boss_kills_tier_2 = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.blaze.boss_kills_tier_2"), 0);
-		float blaze_boss_kills_tier_3 = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses.blaze.boss_kills_tier_3"), 0);
+		float blaze_boss_kills_tier_2 = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"slayer_bosses.blaze.boss_kills_tier_2"
+		), 0);
+		float blaze_boss_kills_tier_3 = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"slayer_bosses.blaze.boss_kills_tier_3"
+		), 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_AQUA + "Revenant T3",
@@ -376,15 +403,24 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.pet_milestone_ores_mined"), 0);
+		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"stats.pet_milestone_ores_mined"
+		), 0);
 		float pet_milestone_sea_creatures_killed = Utils.getElementAsFloat(
 			Utils.getElement(profileInfo, "stats.pet_milestone_sea_creatures_killed"),
 			0
 		);
 
 		float items_fished = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished"), 0);
-		float items_fished_treasure = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_treasure"), 0);
-		float items_fished_large_treasure = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished_large_treasure"), 0);
+		float items_fished_treasure = Utils.getElementAsFloat(
+			Utils.getElement(profileInfo, "stats.items_fished_treasure"),
+			0
+		);
+		float items_fished_large_treasure = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"stats.items_fished_large_treasure"
+		), 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GREEN + "Ores Mined",
