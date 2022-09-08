@@ -242,12 +242,6 @@ public class NEUOverlay extends Gui {
 				}
 				if (Mouse.getEventButtonState()) {
 					setSearchBarFocus(true);
-					if (!NotEnoughUpdates.INSTANCE.config.itemlist.openWhenSearching) {
-						itemPaneOpen = false;
-						if (!searchMode) {
-							itemPaneShouldOpen = System.currentTimeMillis() + 200;
-						}
-					}
 
 					if (Mouse.getEventButton() == 1) { //Right mouse button down
 						textField.setText("");
@@ -1800,6 +1794,10 @@ public class NEUOverlay extends Gui {
 	public void render(boolean hoverInv) {
 		if (disabled) {
 			return;
+		}
+
+		if (!NotEnoughUpdates.INSTANCE.config.itemlist.openWhenSearching && searchMode) {
+			itemPaneOpen = false;
 		}
 		GlStateManager.enableDepth();
 
