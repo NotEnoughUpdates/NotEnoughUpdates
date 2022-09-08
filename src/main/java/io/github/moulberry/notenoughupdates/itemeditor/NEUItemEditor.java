@@ -95,10 +95,8 @@ public class NEUItemEditor extends GuiScreen {
 		extraAttributes.removeTag("timestamp");
 
 		if (extraAttributes.hasKey("petInfo")) {
-			JsonObject jsonObject = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(
-				extraAttributes.getString("petInfo"),
-				JsonObject.class
-			);
+			String petInfo = extraAttributes.getString("petInfo");
+			JsonObject jsonObject = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(petInfo, JsonObject.class);
 
 			jsonObject.remove("heldItem");
 			jsonObject.add("exp", new JsonPrimitive(0));
