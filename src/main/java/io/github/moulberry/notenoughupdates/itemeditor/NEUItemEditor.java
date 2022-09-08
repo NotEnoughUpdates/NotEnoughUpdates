@@ -93,19 +93,6 @@ public class NEUItemEditor extends GuiScreen {
 		extraAttributes.removeTag("uuid");
 		extraAttributes.removeTag("timestamp");
 
-		if (extraAttributes.hasKey("petInfo")) {
-			try {
-				NBTTagCompound petInfo = JsonToNBT.getTagFromJson(extraAttributes.getString("petInfo"));
-
-				petInfo.removeTag("\"heldItem\"");
-				petInfo.setString("\"exp\"", "0.0");
-				petInfo.setString("\"candyUsed\"", "0");
-				petInfo.removeTag("\"uuid\"");
-
-				extraAttributes.setString("petInfo", petInfo.toString());
-			} catch (NBTException ignored) {
-			}
-		}
 		savedRepoItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().getOrDefault(internalName, null);
 
 		internalName = internalName == null ? "" : internalName;

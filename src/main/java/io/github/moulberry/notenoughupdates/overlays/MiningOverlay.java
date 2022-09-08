@@ -43,6 +43,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.WorldSettings;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ import static net.minecraft.util.EnumChatFormatting.RED;
 import static net.minecraft.util.EnumChatFormatting.RESET;
 import static net.minecraft.util.EnumChatFormatting.YELLOW;
 
-public class MiningOverlay extends TextOverlay {
+public class MiningOverlay extends TextTabOverlay {
 	public MiningOverlay(
 		Position position,
 		Supplier<List<String>> dummyStrings,
@@ -440,11 +441,15 @@ public class MiningOverlay extends TextOverlay {
 			}
 			if (forgeDisplay) {
 				overlayStrings = new ArrayList<>();
-				if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 1 &&
-					!SBInfo.getInstance().isInDungeon) {
-					overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
-				} else if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 2) {
-					overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
+
+				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
+					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+					if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 1 &&
+						!SBInfo.getInstance().isInDungeon) {
+						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
+					} else if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 2) {
+						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
+					}
 				}
 			}
 		}

@@ -74,4 +74,12 @@ public class StringUtils {
 			throw new RuntimeException(e); // UTF 8 should always be present
 		}
 	}
+
+	/**
+	 * taken and modified from https://stackoverflow.com/a/23326014/5507634
+	 */
+	public static String replaceLast(String string, String toReplace, String replacement) {
+		int start = string.lastIndexOf(toReplace);
+		return string.substring(0, start) + replacement + string.substring(start + toReplace.length());
+	}
 }

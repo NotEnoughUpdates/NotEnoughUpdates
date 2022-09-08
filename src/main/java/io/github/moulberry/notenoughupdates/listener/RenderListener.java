@@ -107,6 +107,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -143,6 +145,7 @@ public class RenderListener {
 	private boolean typing;
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
+	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -745,7 +748,7 @@ public class RenderListener {
 					}
 
 					String missingItem = null;
-					int totalValue = 0;
+					double totalValue = 0;
 					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
@@ -789,9 +792,9 @@ public class RenderListener {
 											JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 											if (auctionInfo != null) {
 												if (auctionInfo.has("clean_price")) {
-													worth = (int) auctionInfo.get("clean_price").getAsFloat();
+													worth = auctionInfo.get("clean_price").getAsFloat();
 												} else {
-													worth = (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+													worth = (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
 												}
 											}
 										}
@@ -832,18 +835,17 @@ public class RenderListener {
 						}
 					}
 
-					NumberFormat format = NumberFormat.getInstance(Locale.US);
 					String valueStringBIN1;
 					String valueStringBIN2;
 					if (totalValue >= 0) {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Value (BIN): ";
-						valueStringBIN2 = EnumChatFormatting.GOLD + format.format(totalValue) + " coins";
+						valueStringBIN2 = EnumChatFormatting.GOLD + formatCoins(totalValue) + " coins";
 					} else {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find BIN: ";
 						valueStringBIN2 = missingItem;
 					}
 
-					long profitLossBIN = totalValue - chestCost;
+					double profitLossBIN = totalValue - chestCost;
 
 					boolean kismetUsed = false;
 					// checking for kismet
@@ -857,8 +859,8 @@ public class RenderListener {
 							}
 						}
 					}
-					long kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
-					String kismetStr = EnumChatFormatting.RED + format.format(kismetPrice) + " coins";
+					double kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
+					String kismetStr = EnumChatFormatting.RED + formatCoins(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
 
@@ -868,9 +870,9 @@ public class RenderListener {
 
 					String plStringBIN;
 					if (profitLossBIN >= 0) {
-						plStringBIN = prefix + "+" + format.format(profitLossBIN) + " coins";
+						plStringBIN = prefix + "+" + formatCoins(profitLossBIN) + " coins";
 					} else {
-						plStringBIN = prefix + "-" + format.format(-profitLossBIN) + " coins";
+						plStringBIN = prefix + "-" + formatCoins(-profitLossBIN) + " coins";
 					}
 
 					if (NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc == 1 && !valueStringBIN2.equals(missingItem)) {
@@ -917,7 +919,7 @@ public class RenderListener {
 					for (Map.Entry<String, Double> entry : itemValues.entrySet()) {
 						Utils.renderAlignedString(
 							entry.getKey(),
-							prefix + format.format(entry.getValue().longValue()),
+							prefix + formatCoins(entry.getValue().doubleValue()),
 							guiLeft + xSize + 4 + 10,
 							guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ? (kismetUsed ? 39 : 29) : 29) + (++index) * 10,
 							160
@@ -943,6 +945,10 @@ public class RenderListener {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private String formatCoins(double price) {
+		return format.format(price < 5 ? price : (long) price);
 	}
 
 	/**
