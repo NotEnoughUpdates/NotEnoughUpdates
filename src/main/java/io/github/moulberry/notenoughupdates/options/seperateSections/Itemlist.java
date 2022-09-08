@@ -57,7 +57,7 @@ public class Itemlist {
 		desc = "Open the Itemlist when in container search mode by double clicking the search bar"
 	)
 	@ConfigEditorBoolean
-	public boolean openWhenSearching = false;
+	public boolean openWhenSearching = true;
 
 
 	@Expose
