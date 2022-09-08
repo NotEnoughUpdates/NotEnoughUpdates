@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -223,28 +224,28 @@ public class MiningPage extends GuiProfileViewerPage {
 		//Powder
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_GREEN + "Mithril Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(mithrilPowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 24,
 			115
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.LIGHT_PURPLE + "Gemstone Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(gemstonePowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(gemstonePowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 44,
 			115
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_GREEN + "Total Mithril Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(mithrilPowderTotal + mithrilPowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowderTotal + mithrilPowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 34,
 			115
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.LIGHT_PURPLE + "Total Gemstone Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(gemstonePowderTotal + gemstonePowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(gemstonePowderTotal + gemstonePowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 54,
 			115
@@ -301,7 +302,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Total Placed Crystals:",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(crystalPlacedAmount, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(crystalPlacedAmount),
 			guiLeft + xStart,
 			guiTop + yStartTop + 149,
 			110

@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.bestiary;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -201,10 +202,10 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									if (level.maxed) {
 										progressStr = EnumChatFormatting.GOLD + "MAXED!";
 									} else {
-										progressStr = EnumChatFormatting.AQUA +
-											GuiProfileViewer.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel), 0) +
+										progressStr =EnumChatFormatting.AQUA +
+											StringUtils.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel)) +
 											"/" +
-											GuiProfileViewer.shortNumberFormat(level.maxXpForLevel, 0);
+											StringUtils.shortNumberFormat(level.maxXpForLevel);
 									}
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + progressStr);
 								}

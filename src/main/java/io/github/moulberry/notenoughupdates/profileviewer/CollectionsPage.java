@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -291,7 +292,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 						}
 
 						Utils.drawStringCentered(
-							GuiProfileViewer.shortNumberFormat(amount, 0) + "",
+							StringUtils.shortNumberFormat(amount) + "",
 							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + x + 10,
 							guiTop + y + 26,

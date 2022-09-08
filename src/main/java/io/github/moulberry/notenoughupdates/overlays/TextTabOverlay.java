@@ -17,24 +17,31 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.events;
+package io.github.moulberry.notenoughupdates.overlays;
 
-import java.io.File;
+import io.github.moulberry.notenoughupdates.core.config.Position;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.input.Keyboard;
 
-public class RepositoryReloadEvent extends NEUEvent {
-	private final File baseFile;
-	private final boolean isFirstLoad;
+import java.util.List;
+import java.util.function.Supplier;
 
-	public RepositoryReloadEvent(File baseFile, boolean isFirstLoad) {
-		this.baseFile = baseFile;
-		this.isFirstLoad = isFirstLoad;
+public abstract class TextTabOverlay extends TextOverlay {
+	public TextTabOverlay(
+		Position position,
+		Supplier<List<String>> dummyStrings,
+		Supplier<TextOverlayStyle> styleSupplier
+	) {
+		super(position, dummyStrings, styleSupplier);
 	}
 
-	public boolean isFirstLoad() {
-		return isFirstLoad;
-	}
+	private boolean lastTabState = false;
 
-	public File getRepositoryRoot() {
-		return baseFile;
+	public void realTick() {
+		boolean currentTabState = Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode());
+		if (lastTabState != currentTabState) {
+			lastTabState = currentTabState;
+			update();
+		}
 	}
 }

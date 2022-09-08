@@ -116,6 +116,15 @@ public class Dungeons {
 
 	@Expose
 	@ConfigOption(
+		name = "Include Essence Cost",
+		desc = "Include Bazaar Essence Sell Cost in the Profit Calculation for Dungeon Chests"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean useEssenceCostFromBazaar = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Warning if Derpy active",
 		desc = "Shows a warning if the mayor Derpy is active"
 	)

@@ -195,7 +195,7 @@ public abstract class MixinRenderItem {
 
 	@Inject(method = "renderItemIntoGUI", at = @At("HEAD"))
 	public void renderItemHead(ItemStack stack, int x, int y, CallbackInfo ci) {
-		if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
+		if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen && NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
 			boolean matches = false;
 
 			GuiTextField textField = NotEnoughUpdates.INSTANCE.overlay.getTextField();
@@ -221,7 +221,7 @@ public abstract class MixinRenderItem {
 	@Inject(method = "renderItemIntoGUI", at = @At("RETURN"))
 	public void renderItemReturn(ItemStack stack, int x, int y, CallbackInfo ci) {
 		if (stack != null && stack.stackSize != 1) return;
-		if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
+		if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen && NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
 			boolean matches = false;
 
 			GuiTextField textField = NotEnoughUpdates.INSTANCE.overlay.getTextField();
@@ -252,7 +252,7 @@ public abstract class MixinRenderItem {
 		CallbackInfo ci
 	) {
 		if (stack != null && stack.stackSize != 1) {
-			if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
+			if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen && NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
 				boolean matches = false;
 
 				GuiTextField textField = NotEnoughUpdates.INSTANCE.overlay.getTextField();

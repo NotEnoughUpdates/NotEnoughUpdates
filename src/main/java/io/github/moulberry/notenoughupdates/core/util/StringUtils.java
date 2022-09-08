@@ -67,12 +67,40 @@ public class StringUtils {
 		return Integer.parseInt(str);
 	}
 
+	public static String shortNumberFormat(double n) {
+		return shortNumberFormat(n, 0);
+	}
+
+	private static final char[] c = new char[] { 'k', 'm', 'b', 't' };
+
+	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 1000) {
+			if (n % 1 == 0) {
+				return Integer.toString((int) n);
+			} else {
+				return String.format("%.2f", n);
+			}
+		}
+
+		double d = ((long) n / 100) / 10.0;
+		boolean isRound = (d * 10) % 10 == 0;
+		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(d, iteration + 1);
+	}
+
 	public static String urlEncode(String something) {
 		try {
 			return URLEncoder.encode(something, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e); // UTF 8 should always be present
 		}
+	}
+
+	/**
+	 * taken and modified from https://stackoverflow.com/a/23326014/5507634
+	 */
+	public static String replaceLast(String string, String toReplace, String replacement) {
+		int start = string.lastIndexOf(toReplace);
+		return string.substring(0, start) + replacement + string.substring(start + toReplace.length());
 	}
 
 	public static String removeLastWord(String string, String splitString) {

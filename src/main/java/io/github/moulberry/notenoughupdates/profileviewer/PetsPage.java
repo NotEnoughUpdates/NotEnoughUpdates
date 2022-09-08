@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -498,21 +499,21 @@ public class PetsPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Total XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(exp, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(exp),
 				guiLeft + 319,
 				guiTop + 125,
 				98
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Current LVL XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat((level % 1) * currentLevelRequirement, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat((level % 1) * currentLevelRequirement),
 				guiLeft + 319,
 				guiTop + 143,
 				98
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Required LVL XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(currentLevelRequirement, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(currentLevelRequirement),
 				guiLeft + 319,
 				guiTop + 161,
 				98
