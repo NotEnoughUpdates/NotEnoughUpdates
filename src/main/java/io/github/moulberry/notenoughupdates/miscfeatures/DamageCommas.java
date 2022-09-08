@@ -45,15 +45,18 @@ public class DamageCommas {
 	};
 
 	private static final char STAR = '\u2727';
+	private static final char OVERLOAD_STAR = '\u272F';
 	private static final Pattern PATTERN_CRIT = Pattern.compile(
-		"\u00a7f" + STAR + "((?:\u00a7.\\d)+)\u00a7." + STAR + "(.*)");
-	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("\u00a77(\\d+)(.*)");
+		"\u00a7f" + STAR + "((?:\u00a7.\\d(?:§.,)?)+)\u00a7." + STAR + "(.*)");
+	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(\u00a7.)([\\d+,]*)(.*)");
+	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(\u00a7.)" + OVERLOAD_STAR + "((?:\u00a7.[\\d,])+)(\u00a7.)" + OVERLOAD_STAR + "\u00a7r");
 
 	public static IChatComponent replaceName(EntityLivingBase entity) {
 		if (!entity.hasCustomName()) return entity.getDisplayName();
 
 		IChatComponent name = entity.getDisplayName();
-		if (NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle == 0) return name;
+		if (!NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle2) return name;
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return name;
 
 		if (replacementMap.containsKey(entity)) {
 			ChatComponentText component = replacementMap.get(entity);
@@ -69,17 +72,23 @@ public class DamageCommas {
 		String suffix;
 
 		Matcher matcherCrit = PATTERN_CRIT.matcher(formatted);
+		Matcher matcherOverload = OVERLOAD_PATTERN.matcher(formatted);
 		if (matcherCrit.matches()) {
 			crit = true;
-			numbers = StringUtils.cleanColour(matcherCrit.group(1));
+			numbers = StringUtils.cleanColour(matcherCrit.group(1)).replace(",", "");
 			prefix = "\u00a7f" + STAR;
 			suffix = "\u00a7f" + STAR + matcherCrit.group(2);
-		} else {
+		} else if (matcherOverload.matches()) {
+				crit = true;
+        numbers = StringUtils.cleanColour(matcherOverload.group(2)).replace(",", "");
+        prefix = matcherOverload.group(1) + OVERLOAD_STAR;
+        suffix = matcherOverload.group(3) + OVERLOAD_STAR + "\u00a7r";
+			} else {
 			Matcher matcherNoCrit = PATTERN_NO_CRIT.matcher(formatted);
 			if (matcherNoCrit.matches()) {
-				numbers = matcherNoCrit.group(1);
-				prefix = "\u00A77";
-				suffix = "\u00A7r" + matcherNoCrit.group(2);
+				numbers = matcherNoCrit.group(2).replace(",", "");
+				prefix = matcherNoCrit.group(1);
+				suffix = "\u00A7r" + matcherNoCrit.group(3);
 			} else {
 				replacementMap.put(entity, null);
 				return name;
@@ -91,10 +100,10 @@ public class DamageCommas {
 		try {
 			int number = Integer.parseInt(numbers);
 
-			if (number > 999 && NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle == 2) {
+			if (number > 999) {
 				newFormatted.append(Utils.shortNumberFormat(number, 0));
 			} else {
-				newFormatted.append(NumberFormat.getIntegerInstance().format(number));
+				return name;
 			}
 		} catch (NumberFormatException e) {
 			replacementMap.put(entity, null);

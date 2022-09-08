@@ -54,6 +54,7 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
+import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -107,6 +108,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -118,6 +121,8 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.dungeon_chest_worth;
@@ -143,6 +148,9 @@ public class RenderListener {
 	private boolean typing;
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
+	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
+
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -415,6 +423,11 @@ public class RenderListener {
 
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.render();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -734,7 +747,7 @@ public class RenderListener {
 						StringBuilder cost = new StringBuilder();
 						for (int i = 0; i < line6.length(); i++) {
 							char c = line6.charAt(i);
-							if ("0123456789".indexOf(c) >= 0) {
+							if (Character.isDigit(c)) {
 								cost.append(c);
 							}
 						}
@@ -745,11 +758,25 @@ public class RenderListener {
 					}
 
 					String missingItem = null;
-					int totalValue = 0;
+					double totalValue = 0;
 					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
+						String displayName = item.getDisplayName();
+						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
+						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
+							String type = matcher.group(1).toUpperCase();
+							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo("ESSENCE_" + type);
+							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
+								float bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
+								int amount = Integer.parseInt(matcher.group(2));
+								double price = bazaarPrice * amount;
+								itemValues.put(displayName, price);
+								totalValue += price;
+							}
+							continue;
+						}
 						if (internal != null) {
 							internal = internal.replace("\u00CD", "I").replace("\u0130", "I");
 							float bazaarPrice = -1;
@@ -789,9 +816,9 @@ public class RenderListener {
 											JsonObject auctionInfo = neu.manager.auctionManager.getItemAuctionInfo(internal);
 											if (auctionInfo != null) {
 												if (auctionInfo.has("clean_price")) {
-													worth = (int) auctionInfo.get("clean_price").getAsFloat();
+													worth = auctionInfo.get("clean_price").getAsFloat();
 												} else {
-													worth = (int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
+													worth = (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
 												}
 											}
 										}
@@ -832,18 +859,17 @@ public class RenderListener {
 						}
 					}
 
-					NumberFormat format = NumberFormat.getInstance(Locale.US);
 					String valueStringBIN1;
 					String valueStringBIN2;
 					if (totalValue >= 0) {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Value (BIN): ";
-						valueStringBIN2 = EnumChatFormatting.GOLD + format.format(totalValue) + " coins";
+						valueStringBIN2 = EnumChatFormatting.GOLD + formatCoins(totalValue) + " coins";
 					} else {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find BIN: ";
 						valueStringBIN2 = missingItem;
 					}
 
-					long profitLossBIN = totalValue - chestCost;
+					double profitLossBIN = totalValue - chestCost;
 
 					boolean kismetUsed = false;
 					// checking for kismet
@@ -857,8 +883,8 @@ public class RenderListener {
 							}
 						}
 					}
-					long kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
-					String kismetStr = EnumChatFormatting.RED + format.format(kismetPrice) + " coins";
+					double kismetPrice = neu.manager.auctionManager.getLowestBin("KISMET_FEATHER");
+					String kismetStr = EnumChatFormatting.RED + formatCoins(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
 
@@ -868,9 +894,9 @@ public class RenderListener {
 
 					String plStringBIN;
 					if (profitLossBIN >= 0) {
-						plStringBIN = prefix + "+" + format.format(profitLossBIN) + " coins";
+						plStringBIN = prefix + "+" + formatCoins(profitLossBIN) + " coins";
 					} else {
-						plStringBIN = prefix + "-" + format.format(-profitLossBIN) + " coins";
+						plStringBIN = prefix + "-" + formatCoins(-profitLossBIN) + " coins";
 					}
 
 					if (NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc == 1 && !valueStringBIN2.equals(missingItem)) {
@@ -917,7 +943,7 @@ public class RenderListener {
 					for (Map.Entry<String, Double> entry : itemValues.entrySet()) {
 						Utils.renderAlignedString(
 							entry.getKey(),
-							prefix + format.format(entry.getValue().longValue()),
+							prefix + formatCoins(entry.getValue().doubleValue()),
 							guiLeft + xSize + 4 + 10,
 							guiTop + (neu.config.dungeons.useKismetOnDungeonProfit ? (kismetUsed ? 39 : 29) : 29) + (++index) * 10,
 							160
@@ -943,6 +969,10 @@ public class RenderListener {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private String formatCoins(double price) {
+		return format.format(price < 5 ? price : (long) price);
 	}
 
 	/**
@@ -978,6 +1008,11 @@ public class RenderListener {
 		}
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.mouseEvent();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.mouseEvent();
 			event.setCanceled(true);
 			return;
 		}
@@ -1458,6 +1493,11 @@ public class RenderListener {
 
 		if (AuctionSearchOverlay.shouldReplace()) {
 			AuctionSearchOverlay.keyEvent();
+			event.setCanceled(true);
+			return;
+		}
+		if (BazaarSearchOverlay.shouldReplace()) {
+			BazaarSearchOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}

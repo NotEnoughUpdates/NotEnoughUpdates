@@ -25,6 +25,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -617,9 +618,9 @@ public class BasicPage extends GuiProfileViewerPage {
 									EnumChatFormatting.GRAY +
 										"Progress: " +
 										EnumChatFormatting.DARK_PURPLE +
-										GuiProfileViewer.shortNumberFormat(Math.round((level % 1) * maxXp), 0) +
+										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
 										"/" +
-										GuiProfileViewer.shortNumberFormat(maxXp, 0)
+										StringUtils.shortNumberFormat(maxXp)
 								);
 						}
 						String totalXpS = GuiProfileViewer.numberFormat.format((int) skyblockInfo.get(entry.getKey()).totalXp);

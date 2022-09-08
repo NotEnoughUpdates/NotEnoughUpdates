@@ -20,8 +20,8 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -145,10 +145,10 @@ public class AuctionProfit {
 		String coinsToCollectStr =
 			EnumChatFormatting.BOLD + EnumChatFormatting.DARK_GRAY.toString() + "Coins to collect: " +
 				EnumChatFormatting.RESET + EnumChatFormatting.DARK_GREEN + "" +
-				GuiProfileViewer.shortNumberFormat(coinsToCollect, 0);
+				StringUtils.shortNumberFormat(coinsToCollect);
 		String valueIfSoldStr = EnumChatFormatting.BOLD + EnumChatFormatting.DARK_GRAY.toString() + "Value if all sold: " +
 			EnumChatFormatting.RESET + EnumChatFormatting.DARK_GREEN + "" +
-			GuiProfileViewer.shortNumberFormat(coinsIfAllSold, 0);
+			StringUtils.shortNumberFormat(coinsIfAllSold);
 
 		fontRendererObj.drawString(coinsToCollectStr, a + 6, guiTop + 32, -1, false);
 		fontRendererObj.drawString(valueIfSoldStr, a + 6, guiTop + 42, -1, false);

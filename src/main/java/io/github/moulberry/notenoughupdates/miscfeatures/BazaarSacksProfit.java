@@ -68,7 +68,7 @@ public class BazaarSacksProfit {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onItemTooltipLow(ItemTooltipEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.bazaarSacksProfit) return;
+		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.bazaarSacksProfit) return;
 		if (!inBazaar()) return;
 
 		ItemStack itemStack = event.itemStack;
@@ -89,6 +89,11 @@ public class BazaarSacksProfit {
 
 			out:
 			for (String line : ItemUtils.getLore(itemStack)) {
+
+				if (line.equals("§8Loading...")) {
+					dirty = true;
+					return;
+				}
 				if (line.contains("§7x ")) {
 					String[] split = line.split("§7x ");
 					String rawAmount = StringUtils.cleanColour(split[0]).replace(",", "").substring(1);
@@ -108,7 +113,7 @@ public class BazaarSacksProfit {
 							}
 						}
 					}
-					System.out.println("no bazaar item in repo found for '" + bazaarName + "'");
+					System.err.println("no bazaar item in repo found for '" + bazaarName + "'");
 					invalidNames.add(bazaarName);
 				}
 			}

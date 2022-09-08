@@ -266,8 +266,7 @@ public class ItemTooltipListener {
 							newTooltip.add("");
 						}
 
-						newTooltip.add(EnumChatFormatting.BLUE + "Stats for " + rarityFormatted +
-							"\u00a79: [\u00a7l\u00a7m< \u00a79Switch\u00a7l\u27a1\u00a79]");
+						newTooltip.add(EnumChatFormatting.BLUE + "Stats for " + rarityFormatted + "§9: [§l§m< §9Switch§l➡§9]");
 
 						if (statsE != null && statsE.isJsonObject()) {
 							JsonObject stats = statsE.getAsJsonObject();

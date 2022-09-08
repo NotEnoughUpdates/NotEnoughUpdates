@@ -21,16 +21,12 @@ package io.github.moulberry.notenoughupdates.profileviewer.bestiary;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.awt.*;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -39,6 +35,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class BestiaryPage extends GuiProfileViewerPage {
 
@@ -200,10 +202,10 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									if (level.maxed) {
 										progressStr = EnumChatFormatting.GOLD + "MAXED!";
 									} else {
-										progressStr = EnumChatFormatting.AQUA +
-											GuiProfileViewer.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel), 0) +
+										progressStr =EnumChatFormatting.AQUA +
+											StringUtils.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel)) +
 											"/" +
-											GuiProfileViewer.shortNumberFormat(level.maxXpForLevel, 0);
+											StringUtils.shortNumberFormat(level.maxXpForLevel);
 									}
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + progressStr);
 								}

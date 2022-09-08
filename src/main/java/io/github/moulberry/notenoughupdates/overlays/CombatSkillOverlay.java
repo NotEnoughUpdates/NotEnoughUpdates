@@ -41,6 +41,10 @@ public class CombatSkillOverlay
 	private long lastUpdate = -1;
 	private int killLast = -1;
 	private int kill = -1;
+	private int championTier = -1;
+	private String championTierAmount = "1";
+	private int championXp = -1;
+	private int championXpLast = -1;
 	private final LinkedList<Integer> killQueue = new LinkedList<>();
 
 	private XPInformation.SkillInfo skillInfo = null;
@@ -84,6 +88,7 @@ public class CombatSkillOverlay
 
 		lastUpdate = System.currentTimeMillis();
 		killLast = kill;
+		championXpLast = championXp;
 		xpGainHourLast = xpGainHour;
 		kill = -1;
 
@@ -100,7 +105,65 @@ public class CombatSkillOverlay
 					kill = ea.getInteger("stats_book");
 					killQueue.add(0, kill);
 				}
+				if (ea.hasKey("champion_combat_xp", 99)) {
+					championXp = (int) ea.getDouble("champion_combat_xp");
+				}
 			}
+		}
+
+		if (championXp < 50000) {
+			championTier = 1;
+		} else if (championXp < 100000) {
+			championTier = 2;
+		} else if (championXp < 250000) {
+			championTier = 3;
+		} else if (championXp < 500000) {
+			championTier = 4;
+		} else if (championXp < 1000000) {
+			championTier = 5;
+		} else if (championXp < 1500000) {
+			championTier = 6;
+		} else if (championXp < 2000000) {
+			championTier = 7;
+		} else if (championXp < 2500000) {
+			championTier = 8;
+		} else if (championXp < 3000000) {
+			championTier = 9;
+		} else if (championXp > 3000000) {
+			championTier = 10;
+		}
+
+		switch (championTier) {
+			case 1:
+				championTierAmount = "50,000";
+				break;
+			case 2:
+				championTierAmount = "100,000";
+				break;
+			case 3:
+				championTierAmount = "250,000";
+				break;
+			case 4:
+				championTierAmount = "500,000";
+				break;
+			case 5:
+				championTierAmount = "1,000,000";
+				break;
+			case 6:
+				championTierAmount = "1,500,000";
+				break;
+			case 7:
+				championTierAmount = "2,000,000";
+				break;
+			case 8:
+				championTierAmount = "2,500,000";
+				break;
+			case 9:
+				championTierAmount = "3,000,000";
+				break;
+			case 10:
+				championTierAmount = "Maxed";
+				break;
 		}
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
@@ -165,7 +228,7 @@ public class CombatSkillOverlay
 	public void updateFrequent() {
 		super.updateFrequent();
 
-		if (kill < 0 && !NotEnoughUpdates.INSTANCE.config.skillOverlays.alwaysShowCombatOverlay) {
+		if ((kill < 0 || championXp < 0) && !NotEnoughUpdates.INSTANCE.config.skillOverlays.alwaysShowCombatOverlay) {
 			overlayStrings = null;
 		} else {
 			HashMap<Integer, String> lineMap = new HashMap<>();
@@ -178,6 +241,23 @@ public class CombatSkillOverlay
 				int counterInterp = (int) interp(kill, killLast);
 
 				lineMap.put(0, EnumChatFormatting.AQUA + "Kills: " + EnumChatFormatting.YELLOW + format.format(counterInterp));
+			}
+
+			if (championTier <= 9) {
+				int counterInterp = (int) interp(championXp, championXpLast);
+				lineMap.put(
+					6,
+					EnumChatFormatting.AQUA + "Champion: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + "/" +
+						championTierAmount
+				);
+			}
+			if (championTier == 10) {
+				int counterInterp = (int) interp(championXp, championXpLast);
+				lineMap.put(
+					6,
+					EnumChatFormatting.AQUA + "Champion: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + " " +
+						EnumChatFormatting.RED + championTierAmount
+				);
 			}
 
 			float xpInterp = xpGainHour;

@@ -21,15 +21,9 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.awt.*;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -38,6 +32,14 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class CollectionsPage extends GuiProfileViewerPage {
 
@@ -290,7 +292,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 						}
 
 						Utils.drawStringCentered(
-							GuiProfileViewer.shortNumberFormat(amount, 0) + "",
+							StringUtils.shortNumberFormat(amount) + "",
 							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + x + 10,
 							guiTop + y + 26,
