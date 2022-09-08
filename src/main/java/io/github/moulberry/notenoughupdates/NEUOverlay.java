@@ -242,12 +242,6 @@ public class NEUOverlay extends Gui {
 				}
 				if (Mouse.getEventButtonState()) {
 					setSearchBarFocus(true);
-					if (!NotEnoughUpdates.INSTANCE.config.itemlist.openWhenSearching) {
-						itemPaneOpen = false;
-						if (!searchMode) {
-							itemPaneShouldOpen = System.currentTimeMillis() + 200;
-						}
-					}
 
 					if (Mouse.getEventButton() == 1) { //Right mouse button down
 						textField.setText("");
@@ -1861,6 +1855,9 @@ public class NEUOverlay extends Gui {
 			(int) (fgFavourite2.getBlue() * 0.8f), fgFavourite2.getAlpha()
 		);
 
+		if (!NotEnoughUpdates.INSTANCE.config.itemlist.openWhenSearching && searchMode) {
+			itemPaneOpen = false;
+		}
 		if (itemPaneShouldOpen != -1 && System.currentTimeMillis() > itemPaneShouldOpen) {
 			itemPaneOpen = true;
 			itemPaneShouldOpen = -1;
