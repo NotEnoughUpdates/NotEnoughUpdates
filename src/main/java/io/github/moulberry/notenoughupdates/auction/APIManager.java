@@ -168,6 +168,7 @@ public class APIManager {
 				return stack;
 			} else {
 				JsonObject item = manager.getJsonFromNBT(item_tag);
+				if (item == null) return null;
 				ItemStack stack = manager.jsonToStack(item, false);
 
 				JsonObject itemDefault = manager.getItemInformation().get(item.get("internalname").getAsString());

@@ -45,9 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 public class EnchantingSolvers {
-	private static SolverType currentSolver = SolverType.NONE;
+	public static SolverType currentSolver = SolverType.NONE;
 
-	private enum SolverType {
+	public enum SolverType {
 		NONE,
 		CHRONOMATRON,
 		ULTRASEQUENCER,
