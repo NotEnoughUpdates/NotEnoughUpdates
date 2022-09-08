@@ -42,6 +42,7 @@ import io.github.moulberry.notenoughupdates.commands.misc.CalculatorCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CosmeticsCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CustomizeCommand;
+import io.github.moulberry.notenoughupdates.commands.misc.PronounsCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.UpdateCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.CataCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PeekCommand;
@@ -97,6 +98,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new CalculatorCommand());
 		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
 		ClientCommandHandler.instance.registerCommand(new UpdateCommand(NotEnoughUpdates.INSTANCE));
+		ClientCommandHandler.instance.registerCommand(new PronounsCommand());
 
 		// Fairy Soul Commands
 		ClientCommandHandler.instance.registerCommand(new FairySouls.FairySoulsCommand());

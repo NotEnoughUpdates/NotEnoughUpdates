@@ -89,8 +89,9 @@ public class NEUItemEditor extends GuiScreen {
 			} catch (NBTException ignored) {
 			}
 		}
-		nbtTag.getCompoundTag("ExtraAttributes").removeTag("uuid");
-		nbtTag.getCompoundTag("ExtraAttributes").removeTag("timestamp");
+		NBTTagCompound extraAttributes = nbtTag.getCompoundTag("ExtraAttributes");
+		extraAttributes.removeTag("uuid");
+		extraAttributes.removeTag("timestamp");
 
 		savedRepoItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().getOrDefault(internalName, null);
 
@@ -161,7 +162,7 @@ public class NEUItemEditor extends GuiScreen {
 
 		rightOptions.add(new GuiElementButton("Remove enchants", Color.RED.getRGB(), () -> {
 			nbtTag.removeTag("ench");
-			nbtTag.getCompoundTag("ExtraAttributes").removeTag("enchantments");
+			extraAttributes.removeTag("enchantments");
 		}));
 		rightOptions.add(new GuiElementButton(
 			"Add enchant glint",

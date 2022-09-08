@@ -36,6 +36,8 @@ import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.HypixelApi;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -679,82 +681,18 @@ public class NEUManager {
 		return null;
 	}
 
+	/**
+	 * Replaced with {@link #createItemResolutionQuery()}
+	 */
+	@Deprecated
 	public String getInternalnameFromNBT(NBTTagCompound tag) {
-		String internalname = null;
-		if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
-			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
-
-			if (ea.hasKey("id", 8)) {
-				internalname = ea.getString("id").replaceAll(":", "-");
-			} else {
-				return null;
-			}
-
-			if ("PET".equals(internalname)) {
-				String petInfo = ea.getString("petInfo");
-				if (petInfo.length() > 0) {
-					JsonObject petInfoObject = gson.fromJson(petInfo, JsonObject.class);
-					internalname = petInfoObject.get("type").getAsString();
-					String tier = petInfoObject.get("tier").getAsString();
-					switch (tier) {
-						case "COMMON":
-							internalname += ";0";
-							break;
-						case "UNCOMMON":
-							internalname += ";1";
-							break;
-						case "RARE":
-							internalname += ";2";
-							break;
-						case "EPIC":
-							internalname += ";3";
-							break;
-						case "LEGENDARY":
-							internalname += ";4";
-							break;
-						case "MYTHIC":
-							internalname += ";5";
-							break;
-					}
-				}
-			}
-			if ("ENCHANTED_BOOK".equals(internalname) && ea.hasKey("enchantments", 10)) {
-				NBTTagCompound enchants = ea.getCompoundTag("enchantments");
-
-				for (String enchname : enchants.getKeySet()) {
-					internalname = enchname.toUpperCase() + ";" + enchants.getInteger(enchname);
-					break;
-				}
-			}
-			if ("RUNE".equals(internalname) && ea.hasKey("runes", 10)) {
-				NBTTagCompound rune = ea.getCompoundTag("runes");
-
-				for (String runename : rune.getKeySet()) {
-					internalname = runename.toUpperCase() + "_RUNE" + ";" + rune.getInteger(runename);
-					break;
-				}
-			}
-			if ("PARTY_HAT_CRAB".equals(internalname) && (ea.getString("party_hat_color") != null)) {
-				String crabhat = ea.getString("party_hat_color");
-				internalname = "PARTY_HAT_CRAB" + "_" + crabhat.toUpperCase();
-			}
-		}
-
-		return internalname;
+		return createItemResolutionQuery()
+			.withItemNBT(tag)
+			.resolveInternalName();
 	}
 
 	public String[] getLoreFromNBT(NBTTagCompound tag) {
-		String[] lore = new String[0];
-		NBTTagCompound display = tag.getCompoundTag("display");
-
-		if (display.hasKey("Lore", 9)) {
-			NBTTagList list = display.getTagList("Lore", 8);
-			lore = new String[list.tagCount()];
-			for (int k = 0; k < list.tagCount(); k++) {
-				lore[k] = list.getStringTagAt(k);
-			}
-		}
-		return lore;
+		return ItemUtils.getLore(tag).toArray(new String[0]);
 	}
 
 	public JsonObject getJsonFromNBT(NBTTagCompound tag) {
@@ -914,10 +852,18 @@ public class NEUManager {
 		return getSkullValueFromNBT(tag);
 	}
 
+	public ItemResolutionQuery createItemResolutionQuery() {
+		return new ItemResolutionQuery(this);
+	}
+
+	/**
+	 * Replaced with {@link #createItemResolutionQuery()}
+	 */
+	@Deprecated
 	public String getInternalNameForItem(ItemStack stack) {
-		if (stack == null) return null;
-		NBTTagCompound tag = stack.getTagCompound();
-		return getInternalnameFromNBT(tag);
+		return createItemResolutionQuery()
+			.withItemStack(stack)
+			.resolveInternalName();
 	}
 
 	public String getUUIDForItem(ItemStack stack) {
@@ -1573,9 +1519,13 @@ public class NEUManager {
 		return comp;
 	}
 
-	public ItemStack createItem(String internalname) {
-		JsonObject jsonObject = itemMap.get(internalname);
-		if (jsonObject == null) return null;
-		return jsonToStack(jsonObject);
+	public ItemStack createItem(String internalName) {
+		return createItemResolutionQuery()
+			.withKnownInternalName(internalName)
+			.resolveToItemStack();
+	}
+
+	public boolean isValidInternalName(String internalName) {
+		return itemMap.containsKey(internalName);
 	}
 }

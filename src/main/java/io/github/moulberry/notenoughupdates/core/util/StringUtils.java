@@ -23,6 +23,9 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class StringUtils {
@@ -62,5 +65,21 @@ public class StringUtils {
 		str = cleanColour(str);
 		str = str.replace(",", "");
 		return Integer.parseInt(str);
+	}
+
+	public static String urlEncode(String something) {
+		try {
+			return URLEncoder.encode(something, StandardCharsets.UTF_8.name());
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e); // UTF 8 should always be present
+		}
+	}
+
+	/**
+	 * taken and modified from https://stackoverflow.com/a/23326014/5507634
+	 */
+	public static String replaceLast(String string, String toReplace, String replacement) {
+		int start = string.lastIndexOf(toReplace);
+		return string.substring(0, start) + replacement + string.substring(start + toReplace.length());
 	}
 }
