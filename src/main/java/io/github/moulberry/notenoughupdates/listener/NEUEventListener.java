@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
+import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
@@ -148,6 +149,17 @@ public class NEUEventListener {
 				GuiCustomHex.getInstance().tick(containerName);
 			}
 		}
+
+		//MiningOverlay and TimersOverlay need real tick speed
+		if (neu.hasSkyblockScoreboard()) {
+			for (TextOverlay overlay : OverlayManager.textOverlays) {
+				if (overlay instanceof TextTabOverlay) {
+					TextTabOverlay skillOverlay = (TextTabOverlay) overlay;
+					skillOverlay.realTick();
+				}
+			}
+		}
+
 
 		if (longUpdate) {
 			CrystalOverlay.tick();

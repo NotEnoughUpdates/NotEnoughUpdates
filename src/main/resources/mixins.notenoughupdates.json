@@ -2,6 +2,7 @@
   "package": "io.github.moulberry.notenoughupdates.mixins",
   "refmap": "mixins.notenoughupdates.refmap.json",
   "minVersion": "0.7",
+  "plugin": "io.github.moulberry.notenoughupdates.envcheck.NEUMixinConfigPlugin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AccessorEntityAgeable",
@@ -39,6 +40,7 @@
     "MixinRenderGlobal",
     "MixinRenderItem",
     "MixinRenderList",
+    "MixinSkyclientCosmetics",
     "MixinTextureManager",
     "MixinTileEntitySkullRenderer",
     "MixinTileEntitySpecialRenderer",

@@ -207,6 +207,16 @@ public class Mining {
 	@ConfigAccordionId(id = 2)
 	public int forgeDisplayEnabledLocations = 0;
 
+	@Expose
+	@ConfigOption(
+		name = "Forge Tab",
+		desc = "Only show the forge display when tab list is open\n" +
+			"\u00A7cThis only works outside of Dwarven Caves!"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean forgeDisplayOnlyShowTab = false;
+
 	@ConfigOption(
 		name = "Metal Detector Solver",
 		desc = ""

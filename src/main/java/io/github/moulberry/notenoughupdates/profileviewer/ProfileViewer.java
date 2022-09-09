@@ -1414,6 +1414,8 @@ public class ProfileViewer {
 			collectionInfo.add("total_amounts", totalAmounts);
 			collectionInfo.add("collection_tiers", collectionTiers);
 
+			collectionInfoMap.put(profileName, collectionInfo);
+
 			return collectionInfo;
 		}
 

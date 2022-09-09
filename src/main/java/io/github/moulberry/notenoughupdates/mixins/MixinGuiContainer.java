@@ -126,7 +126,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		else if (!($this instanceof GuiChest))
 			BetterContainers.profileViewerStackIndex = -1;
 
-		if (slot.getStack() == null && NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen) {
+		if (slot.getStack() == null && NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen && NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, 0, 100 + Minecraft.getMinecraft().getRenderItem().zLevel);
 			GlStateManager.depthMask(false);

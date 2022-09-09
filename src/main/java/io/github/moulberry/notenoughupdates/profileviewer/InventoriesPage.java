@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -57,13 +58,15 @@ import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewe
 public class InventoriesPage extends GuiProfileViewerPage {
 
 	public static final ResourceLocation pv_invs = new ResourceLocation("notenoughupdates:pv_invs.png");
-	private static final Pattern DAMAGE_PATTERN = Pattern.compile("^Damage: \\+(\\d+)");
-	private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-	private static final Pattern STRENGTH_PATTERN = Pattern.compile("^Strength: \\+(\\d+)");
-	private static final Pattern FISHSPEED_PATTERN = Pattern.compile("^Increases fishing speed by \\+(\\d+)");
+	private static final ResourceLocation CHEST_GUI_TEXTURE =
+		new ResourceLocation("textures/gui/container/generic_54.png");
+	private static final Pattern FISHING_SPEED_PATTERN = Pattern.compile("^Fishing Speed: \\+(\\d+)");
 	private static final LinkedHashMap<String, ItemStack> invNameToDisplayMap = new LinkedHashMap<String, ItemStack>() {
 		{
-			put("inv_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory"));
+			put(
+				"inv_contents",
+				Utils.createItemStack(Item.getItemFromBlock(Blocks.chest), EnumChatFormatting.GRAY + "Inventory")
+			);
 			put(
 				"ender_chest_contents",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
@@ -82,7 +85,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			put(
 				"personal_vault_contents",
 				Utils.editItemStackInfo(
-					NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("IRON_CHEST")),
+					NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("IRON_CHEST")),
 					EnumChatFormatting.GRAY + "Personal Vault",
 					true
 				)
@@ -263,21 +268,18 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				findBestItems(
 					inventoryInfo,
 					6,
-					new String[] { "inv_contents", "ender_chest_contents" },
-					new String[] { "SWORD", "BOW" },
-					DAMAGE_PATTERN,
-					STRENGTH_PATTERN
+					new String[]{"inv_contents", "ender_chest_contents"},
+					new String[]{"SWORD", "BOW"}
 				);
 		}
 		if (bestRods == null) {
-			bestRods =
-				findBestItems(
-					inventoryInfo,
-					3,
-					new String[] { "inv_contents", "ender_chest_contents" },
-					new String[] { "FISHING ROD" },
-					FISHSPEED_PATTERN
-				);
+			bestRods = findBestItems(
+				inventoryInfo,
+				3,
+				new String[]{"inv_contents", "ender_chest_contents"},
+				new String[]{"FISHING ROD", "FISHING WEAPON"},
+				FISHING_SPEED_PATTERN
+			);
 		}
 
 		for (int i = 0; i < bestWeapons.length; i++) {
@@ -313,21 +315,27 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		}
 
 		Utils.drawItemStackWithText(
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ARROW")),
+			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("ARROW")),
 			guiLeft + 173,
 			guiTop + 101,
-			"" + (arrowCount > 999 ? GuiProfileViewer.shortNumberFormat(arrowCount, 0) : arrowCount),
+			"" + (arrowCount > 999 ? StringUtils.shortNumberFormat(arrowCount) : arrowCount),
 			true
 		);
 		Utils.drawItemStackWithText(
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("GREEN_CANDY")),
+			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("GREEN_CANDY")),
 			guiLeft + 173,
 			guiTop + 119,
 			"" + greenCandyCount,
 			true
 		);
 		Utils.drawItemStackWithText(
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PURPLE_CANDY")),
+			NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+				.getItemInformation()
+				.get("PURPLE_CANDY")),
 			guiLeft + 173,
 			guiTop + 137,
 			"" + purpleCandyCount,
@@ -344,7 +352,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 					}
 				} else if (mouseY < guiTop + 119 + 17) {
 					getInstance().tooltipToDisplay =
-						Utils.createList(EnumChatFormatting.GREEN + "Green Candy " + EnumChatFormatting.GRAY + "x" + greenCandyCount);
+						Utils.createList(
+							EnumChatFormatting.GREEN + "Green Candy " + EnumChatFormatting.GRAY + "x" + greenCandyCount);
 				} else {
 					getInstance().tooltipToDisplay =
 						Utils.createList(
@@ -431,11 +440,14 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 				if (
 					getInstance().inventoryTextField.getText() != null &&
-					!getInstance().inventoryTextField.getText().isEmpty() &&
-					(
-						stack == null ||
-						!NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(stack, getInstance().inventoryTextField.getText())
-					)
+						!getInstance().inventoryTextField.getText().isEmpty() &&
+						(
+							stack == null ||
+								!NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(
+									stack,
+									getInstance().inventoryTextField.getText()
+								)
+						)
 				) {
 					GlStateManager.translate(0, 0, 50);
 					GuiScreen.drawRect(
@@ -585,7 +597,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		purpleCandyCount = -1;
 	}
 
-	private int countItemsInInventory(String internalname, JsonObject inventoryInfo, boolean specific, String... invsToSearch) {
+	private int countItemsInInventory(
+		String internalname,
+		JsonObject inventoryInfo,
+		boolean specific,
+		String... invsToSearch
+	) {
 		int count = 0;
 		for (String inv : invsToSearch) {
 			JsonArray invItems = inventoryInfo.get(inv).getAsJsonArray();
@@ -594,7 +611,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				JsonObject item = invItems.get(i).getAsJsonObject();
 				if (
 					(specific && item.get("internalname").getAsString().equals(internalname)) ||
-					(!specific && item.get("internalname").getAsString().contains(internalname))
+						(!specific && item.get("internalname").getAsString().contains(internalname))
 				) {
 					if (item.has("count")) {
 						count += item.get("count").getAsInt();
@@ -615,7 +632,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		Pattern... importantPatterns
 	) {
 		ItemStack[] bestItems = new ItemStack[numItems];
-		TreeMap<Integer, Set<ItemStack>> map = new TreeMap<>();
+		TreeMap<Long, Set<ItemStack>> map = new TreeMap<>();
 		for (String inv : invsToSearch) {
 			JsonArray invItems = inventoryInfo.get(inv).getAsJsonArray();
 			for (int i = 0; i < invItems.size(); i++) {
@@ -623,22 +640,33 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				JsonObject item = invItems.get(i).getAsJsonObject();
 				JsonArray lore = item.get("lore").getAsJsonArray();
 				if (Utils.checkItemType(lore, true, typeMatches) >= 0) {
-					int importance = 0;
-					for (int j = 0; j < lore.size(); j++) {
-						String line = lore.get(j).getAsString();
-						for (Pattern pattern : importantPatterns) {
-							Matcher matcher = pattern.matcher(Utils.cleanColour(line));
-							if (matcher.find()) {
-								importance += Integer.parseInt(matcher.group(1));
+					long importance = 0;
+					int id = 0;
+					if (importantPatterns.length == 0) {
+						String internalName = item.get("internalname").getAsString();
+						importance += NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalName);
+						importance += ++id;
+					} else {
+						for (int j = 0; j < lore.size(); j++) {
+							String line = lore.get(j).getAsString();
+							for (Pattern pattern : importantPatterns) {
+								Matcher matcher = pattern.matcher(Utils.cleanColour(line));
+								if (matcher.find()) {
+									importance += Integer.parseInt(matcher.group(1));
+								}
 							}
 						}
 					}
-					map.computeIfAbsent(importance, k -> new HashSet<>()).add(NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false));
+					map.computeIfAbsent(importance, k -> new HashSet<>()).add(NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+						item,
+						false
+					));
 				}
 			}
 		}
 		int i = 0;
-		outer:for (int key : map.descendingKeySet()) {
+		outer:
+		for (long key : map.descendingKeySet()) {
 			Set<ItemStack> items = map.get(key);
 			for (ItemStack item : items) {
 				bestItems[i] = item;

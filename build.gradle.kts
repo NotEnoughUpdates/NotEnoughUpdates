@@ -17,7 +17,13 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+import net.fabricmc.loom.task.RemapJarTask
 import java.io.ByteArrayOutputStream
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.charset.StandardCharsets
+import java.util.*
 
 plugins {
 		idea
@@ -96,15 +102,20 @@ repositories {
 		maven("https://jitpack.io")
 }
 
+val shadowImplementation by configurations.creating {
+		configurations.implementation.get().extendsFrom(this)
+}
+
 dependencies {
 		minecraft("com.mojang:minecraft:1.8.9")
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
-		implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+				isTransitive = false // Dependencies of mixin are already bundled by minecraft
+		}
 		annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
-		implementation("com.fasterxml.jackson.core:jackson-core:2.13.1")
-		implementation("info.bliki.wiki:bliki-core:3.1.0")
+		shadowImplementation("info.bliki.wiki:bliki-core:3.1.0")
 		testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 		testAnnotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
@@ -136,6 +147,7 @@ tasks.withType(Jar::class) {
 				this["MixinConfigs"] = "mixins.notenoughupdates.json"
 				this["FMLCorePluginContainsFMLMod"] = "true"
 				this["ForceLoadAsMod"] = "true"
+				this["Manifest-Version"] = "1.0"
 		}
 }
 
@@ -143,42 +155,42 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 		archiveClassifier.set("dep")
 		from(tasks.shadowJar)
 		input.set(tasks.shadowJar.get().archiveFile)
+		doLast {
+				println("Jar name: ${archiveFile.get().asFile}")
+		}
 }
 
 tasks.shadowJar {
 		archiveClassifier.set("dep-dev")
-		exclude(
-				"module-info.class", "LICENSE.txt"
-		)
+		configurations = listOf(shadowImplementation)
+		exclude("**/module-info.class", "LICENSE.txt")
 		dependencies {
-				include(dependency("org.spongepowered:mixin"))
-
-				include(dependency("commons-io:commons-io"))
-				include(dependency("org.apache.commons:commons-lang3"))
-				include(dependency("com.fasterxml.jackson.core:jackson-databind:2.10.2"))
-				include(dependency("com.fasterxml.jackson.core:jackson-annotations:2.10.2"))
-				include(dependency("com.fasterxml.jackson.core:jackson-core:2.10.2"))
-
-				include(dependency("info.bliki.wiki:bliki-core:3.1.0"))
-				include(dependency("org.slf4j:slf4j-api:1.7.18"))
-				include(dependency("org.luaj:luaj-jse:3.0.1"))
+				exclude {
+						it.moduleGroup.startsWith("org.apache.") || it.moduleName in
+										listOf("logback-classic", "commons-logging", "commons-codec", "logback-core")
+				}
 		}
 		fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
-		relocate("com.fasterxml.jackson")
-		relocate("org.eclipse")
-		relocate("org.slf4j")
 }
 
 tasks.assemble.get().dependsOn(remapJar)
 
-tasks.remapJar{
-
-		doLast{
-				println("Jar name :" + archiveFileName.get())
+val generateBuildFlags by tasks.creating {
+		outputs.upToDateWhen { false }
+		val t = layout.buildDirectory.file("buildflags.properties")
+		outputs.file(t)
+		val props = project.properties.filter { (name, value) -> name.startsWith("neu.buildflags.") }
+		doLast {
+				val p = Properties()
+				p.putAll(props)
+				t.get().asFile.writer(StandardCharsets.UTF_8).use {
+						p.store(it, "Store build time configuration for NEU")
+				}
 		}
 }
 
 tasks.processResources {
+		from(generateBuildFlags)
 		filesMatching("mcmod.info") {
 				expand(
 						"version" to project.version, "mcversion" to "1.8.9"
