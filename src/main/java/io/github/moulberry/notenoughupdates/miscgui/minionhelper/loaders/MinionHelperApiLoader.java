@@ -53,6 +53,7 @@ public class MinionHelperApiLoader {
 	private ApiData apiData = null;
 	private boolean notifyNoCollectionApi = false;
 	private long lastLoaded = 0;
+	private boolean invalidApiKey = false;
 
 	public MinionHelperApiLoader(MinionHelperManager manager) {
 		this.manager = manager;
@@ -84,7 +85,6 @@ public class MinionHelperApiLoader {
 	}
 
 	private void load() {
-		System.out.println("load");
 		lastLoaded = System.currentTimeMillis();
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer == null) return;
@@ -104,7 +104,12 @@ public class MinionHelperApiLoader {
 	}
 
 	private void updateInformation(JsonObject entireApiResponse) {
-		System.out.println("updateInformation");
+		if (entireApiResponse == null) {
+			invalidApiKey = true;
+			return;
+		}
+		invalidApiKey = false;
+
 		if (!entireApiResponse.has("success") || !entireApiResponse.get("success").getAsBoolean()) return;
 		JsonArray profiles = entireApiResponse.getAsJsonArray("profiles");
 		for (JsonElement element : profiles) {
@@ -124,7 +129,6 @@ public class MinionHelperApiLoader {
 	}
 
 	private void readData(JsonObject player, JsonObject members) {
-		System.out.println("readData");
 		int magesReputation = 0;
 		int barbariansReputation = 0;
 		if (player.has("nether_island_player_data")) {
@@ -289,5 +293,9 @@ public class MinionHelperApiLoader {
 
 	public boolean isNotifyNoCollectionApi() {
 		return notifyNoCollectionApi;
+	}
+
+	public boolean isInvalidApiKey() {
+		return invalidApiKey;
 	}
 }

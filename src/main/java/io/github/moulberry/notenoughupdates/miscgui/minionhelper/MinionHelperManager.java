@@ -88,6 +88,10 @@ public class MinionHelperManager {
 		return !repo.isReadyToUse() || !api.isReadyToUse();
 	}
 
+	public boolean isInvalidApiKey() {
+		return api.isInvalidApiKey();
+	}
+
 	public Minion getMinionById(String internalName) {
 		if (minions.containsKey(internalName)) {
 			return minions.get(internalName);

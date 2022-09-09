@@ -77,7 +77,9 @@ public class HypixelApi {
 			try {
 				result.complete(getApiSync(urlS));
 			} catch (Exception e) {
-				result.completeExceptionally(e);
+				//I don't think that it is supposed to work this way, but completeExceptionally causes this method to never return and complete null does work for me needs
+				result.complete(null);
+//				result.completeExceptionally(e);
 			}
 		});
 		return result;

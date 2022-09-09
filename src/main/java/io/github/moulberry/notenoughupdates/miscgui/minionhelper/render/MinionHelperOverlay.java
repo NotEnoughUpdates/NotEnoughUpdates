@@ -87,6 +87,12 @@ public class MinionHelperOverlay {
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
+		if (manager.isInvalidApiKey()) {
+			LinkedHashMap<String, OverviewLine> map = new LinkedHashMap<>();
+			map.put("§cInvalid API Key!", new OverviewText(Collections.emptyList(), () -> {}));
+			render(map);
+			return;
+		}
 		if (manager.notReady()) {
 			LinkedHashMap<String, OverviewLine> map = new LinkedHashMap<>();
 			map.put("§cLoading...", new OverviewText(Collections.emptyList(), () -> {}));
