@@ -85,7 +85,7 @@ public class MinionHelperManager {
 	}
 
 	public boolean notReady() {
-		return !repo.isRepoReadyToUse() || !api.isApiReadyToUse();
+		return !repo.isReadyToUse() || !api.isReadyToUse();
 	}
 
 	public Minion getMinionById(String internalName) {

@@ -49,7 +49,7 @@ public class MinionHelperApiLoader {
 	private int ticks = 0;
 	private boolean collectionApiEnabled = true;
 	private boolean ignoreWorldSwitches = false;
-	private boolean apiReadyToUse = false;
+	private boolean readyToUse = false;
 	private ApiData apiData = null;
 	private boolean notifyNoCollectionApi = false;
 	private long lastLoaded = 0;
@@ -84,6 +84,7 @@ public class MinionHelperApiLoader {
 	}
 
 	private void load() {
+		System.out.println("load");
 		lastLoaded = System.currentTimeMillis();
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer == null) return;
@@ -103,6 +104,7 @@ public class MinionHelperApiLoader {
 	}
 
 	private void updateInformation(JsonObject entireApiResponse) {
+		System.out.println("updateInformation");
 		if (!entireApiResponse.has("success") || !entireApiResponse.get("success").getAsBoolean()) return;
 		JsonArray profiles = entireApiResponse.getAsJsonArray("profiles");
 		for (JsonElement element : profiles) {
@@ -122,6 +124,7 @@ public class MinionHelperApiLoader {
 	}
 
 	private void readData(JsonObject player, JsonObject members) {
+		System.out.println("readData");
 		int magesReputation = 0;
 		int barbariansReputation = 0;
 		if (player.has("nether_island_player_data")) {
@@ -145,7 +148,7 @@ public class MinionHelperApiLoader {
 		);
 
 		manager.reloadData();
-		apiReadyToUse = true;
+		readyToUse = true;
 	}
 
 	private int loadPeltCount(JsonObject player) {
@@ -249,12 +252,12 @@ public class MinionHelperApiLoader {
 
 	public void setDirty() {
 		dirty = true;
-		apiReadyToUse = false;
+		readyToUse = false;
 	}
 
 	public void prepareProfileSwitch() {
 		ignoreWorldSwitches = true;
-		apiReadyToUse = false;
+		readyToUse = false;
 	}
 
 	public void onProfileSwitch() {
@@ -264,8 +267,8 @@ public class MinionHelperApiLoader {
 		collectionApiEnabled = true;
 	}
 
-	public boolean isApiReadyToUse() {
-		return apiReadyToUse;
+	public boolean isReadyToUse() {
+		return readyToUse;
 	}
 
 	public ApiData getApiData() {

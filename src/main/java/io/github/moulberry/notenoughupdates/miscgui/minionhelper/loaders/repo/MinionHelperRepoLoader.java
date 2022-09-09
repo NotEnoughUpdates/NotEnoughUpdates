@@ -45,7 +45,7 @@ public class MinionHelperRepoLoader {
 	private final MinionHelperManager manager;
 	private boolean dirty = true;
 	private int ticks = 0;
-	private boolean repoReadyToUse = false;
+	private boolean readyToUse = false;
 	private final MinionHelperRepoMinionLoader minionLoader;
 	boolean errorWhileLoading = false;
 
@@ -89,7 +89,7 @@ public class MinionHelperRepoLoader {
 		testForMissingData();
 
 		manager.reloadData();
-		repoReadyToUse = true;
+		readyToUse = true;
 
 		if (errorWhileLoading) {
 			Utils.showOutdatedRepoNotification();
@@ -209,10 +209,10 @@ public class MinionHelperRepoLoader {
 
 	public void setDirty() {
 		dirty = true;
-		repoReadyToUse = false;
+		readyToUse = false;
 	}
 
-	public boolean isRepoReadyToUse() {
-		return repoReadyToUse;
+	public boolean isReadyToUse() {
+		return readyToUse;
 	}
 }
