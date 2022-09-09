@@ -94,7 +94,7 @@ public class ArrowPagesUtils {
 
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 		Utils.drawStringCenteredScaledMaxWidth(selectedPage, fontRendererObj,
-			guiLeft + pageStringX, guiTop + pageStringY, false, 24, Color.BLACK.getRGB()
+			guiLeft + pageStringX, guiTop + pageStringY, false, 28, Color.BLACK.getRGB()
 		);
 	}
 
