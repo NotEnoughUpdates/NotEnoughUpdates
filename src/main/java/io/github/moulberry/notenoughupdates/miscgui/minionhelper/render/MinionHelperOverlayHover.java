@@ -69,15 +69,8 @@ public class MinionHelperOverlayHover {
 
 		OverviewLine mouseObject = overlay.getObjectOverMouse(renderMap);
 		if (mouseObject != null) {
-			GlStateManager.pushMatrix();
-			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
-			Utils.drawHoveringText(getTooltip(mouseObject),
-				mouseX * scaledresolution.getScaleFactor() / 2,
-				mouseY * scaledresolution.getScaleFactor() / 2,
-				scaledWidth * scaledresolution.getScaleFactor() / 2,
-				scaledHeight * scaledresolution.getScaleFactor() / 2, -1, Minecraft.getMinecraft().fontRendererObj
-			);
-			GlStateManager.popMatrix();
+			Utils.drawHoveringText(getTooltip(mouseObject), mouseX, mouseY,
+				scaledWidth, scaledHeight, -1, Minecraft.getMinecraft().fontRendererObj);
 		}
 
 		renderToggleButton();
