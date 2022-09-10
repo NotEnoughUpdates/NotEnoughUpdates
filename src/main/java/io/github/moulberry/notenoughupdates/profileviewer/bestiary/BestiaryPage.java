@@ -71,6 +71,11 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			int yIndex = 0;
 			for (ItemStack stack : BestiaryData.getBestiaryLocations().keySet()) {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+				if (mouseX > guiLeft + 30 + bestiaryXSize * yIndex && mouseX < guiLeft + 30 + bestiaryXSize * yIndex + 20) {
+					if (mouseY > guiTop + 10 && mouseY < guiTop + 10 + 20) {
+						tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					}
+				}
 				if (stack == selectedBestiaryLocation) {
 					Utils.drawTexturedRect(
 						guiLeft + 30 + bestiaryXSize * yIndex,
@@ -202,7 +207,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									if (level.maxed) {
 										progressStr = EnumChatFormatting.GOLD + "MAXED!";
 									} else {
-										progressStr =EnumChatFormatting.AQUA +
+										progressStr = EnumChatFormatting.AQUA +
 											StringUtils.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel)) +
 											"/" +
 											StringUtils.shortNumberFormat(level.maxXpForLevel);
