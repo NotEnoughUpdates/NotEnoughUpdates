@@ -101,7 +101,7 @@ public class OverlayManager {
 		List<String> powderGrindingDummy = Lists.newArrayList(
 			"\u00a73Chests Found: \u00a7a13",
 			"\u00a73Opened Chests: \u00a7a11",
-			"\u00a73Unopened Chests: \u00a7a2",
+			"\u00a73Unopened Chests: \u00a7c2",
 			"\u00a73Mithril Powder Found: \u00a726,243",
 			"\u00a73Average Mithril Powder/Chest: \u00a72568",
 			"\u00a73Gemstone Powder Found: \u00a7d6,243",

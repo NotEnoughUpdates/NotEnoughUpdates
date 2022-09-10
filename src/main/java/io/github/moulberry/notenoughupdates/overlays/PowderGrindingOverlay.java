@@ -69,7 +69,7 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + openedChestCount);
 						break;
 					case 2:
-						overlayStrings.add("\u00a73Unopened Chests: \u00a7a" + (chestCount - openedChestCount));
+						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + (chestCount - openedChestCount));
 						break;
 					case 3:
 						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" + mithrilPowderFound);
