@@ -153,7 +153,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 							20 * (1 - completedness) / 256f,
 							GL11.GL_NEAREST
 						);
-						GlStateManager.color(1, 185 / 255f, 0, 1);
+						//GlStateManager.color(1, 185 / 255f, 0, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 						Utils.drawTexturedRect(
 							guiLeft + x,
