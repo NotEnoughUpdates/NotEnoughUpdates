@@ -61,6 +61,12 @@ public class GuiEnchantColour extends GuiScreen {
 	public static final ResourceLocation custom_ench_colour = new ResourceLocation(
 		"notenoughupdates:custom_ench_colour.png");
 
+	public static final ResourceLocation scrollBar = new ResourceLocation(
+		"notenoughupdates:dynamic_54/style2/dynamic_54.png");
+
+	public static final ResourceLocation scrollBarBg = new ResourceLocation(
+		"notenoughupdates:custom_trade.png");
+
 	private static final String sharePrefix = "NEUEC/";
 
 	private int guiLeft;
@@ -105,6 +111,16 @@ public class GuiEnchantColour extends GuiScreen {
 		guiLeft = (width - xSize) / 2;
 
 		if (ySize > height) {
+			float scrollPercent = (float) -scroll.getValue() / (ySize - height);
+			float barY = (float) 25 + (height - 50 + ((height - ySize) / 3)) * scrollPercent;
+			Minecraft.getMinecraft().getTextureManager().bindTexture(scrollBarBg);
+			Utils.drawTexturedRect(guiLeft - 10, 25, 8, height - 50, 0, 1, 0, 21 / 78f, GL11.GL_NEAREST);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(scrollBar);
+			Utils.drawTexturedRect(guiLeft - 9, barY,6,height - 50 + ((height - ySize) / 3),0,1,0,21 / 78f,GL11.GL_NEAREST			);
+			/*System.out.println(scrollPercent);
+			System.out.println((float) (height - 50)*scrollPercent);
+			System.out.println(scroll.getValue());
+			System.out.println(height - ySize);*/
 
 			if (scroll.getTarget() > 0) {
 				scroll.setTarget(0);
