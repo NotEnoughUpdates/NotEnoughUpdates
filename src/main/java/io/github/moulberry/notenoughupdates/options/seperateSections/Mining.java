@@ -764,6 +764,18 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Reset Tracker",
+		desc = "Reset all stats for Powder Grinding Tracker"
+	)
+	@ConfigEditorButton(
+		runnableId = 26,
+		buttonText = "Reset"
+	)
+	@ConfigAccordionId(id = 9)
+	public int resetPowderGrindingTracker = 0;
+
+	@Expose
+	@ConfigOption(
 		name = "Puzzler Solver",
 		desc = "Show the correct block to mine for the puzzler puzzle in Dwarven Mines"
 	)

@@ -200,6 +200,12 @@ public class NEUConfig extends Config {
 			case 25:
 				editOverlay(activeConfigCategory, OverlayManager.powderGrindingOverlay, mining.powderGrindingTrackerPosition);
 				return;
+			case 26:
+				OverlayManager.powderGrindingOverlay.chestCount = 0;
+				OverlayManager.powderGrindingOverlay.openedChestCount = 0;
+				OverlayManager.powderGrindingOverlay.mithrilPowderFound = 0;
+				OverlayManager.powderGrindingOverlay.gemstonePowderFound = 0;
+				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
