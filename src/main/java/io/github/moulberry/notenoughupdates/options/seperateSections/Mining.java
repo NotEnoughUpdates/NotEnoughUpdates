@@ -713,6 +713,55 @@ public class Mining {
 	)
 	public int wishingCompassWaypointNames = 0;
 
+	@ConfigOption(
+		name = "Powder Grinding Tracker",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 9)
+	public boolean powderGrindingTrackerAccordion = false;
+
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Tracker",
+		desc = "Show an Overlay with useful information related to Power Grinding"
+	)
+	@ConfigAccordionId(id = 9)
+	@ConfigEditorBoolean
+	public boolean powderGrindingTrackerEnabled = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Tracker Text",
+		desc = "\u00a7eDrag text to change the appearance of the Overlay\n" +
+			"\u00a7rGo to the Crystal Hollows to show this Overlay with useful information"
+	)
+	@ConfigEditorDraggableList(
+		exampleText = {
+			"\u00a73Chests Found: \u00a7a13",
+			"\u00a73Opened Chests: \u00a7a11",
+			"\u00a73Unopened Chests: \u00a7a2",
+			"\u00a73Mithril Powder Found: \u00a726,243",
+			"\u00a73Average Mithril Powder/Chest: \u00a72568",
+			"\u00a73Gemstone Powder Found: \u00a7d6,243",
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+		}
+	)
+	@ConfigAccordionId(id = 9)
+	public List<Integer> powderGrindingTrackerText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+
+	@Expose
+	@ConfigOption(
+		name = "Edit Tracker Position",
+		desc = "Change the position of the Powder Grinding Tracker Overlay (chests and gained powder)"
+	)
+	@ConfigEditorButton(
+		runnableId = 25,
+		buttonText = "Edit"
+	)
+	@ConfigAccordionId(id = 9)
+	public Position powderGrindingTrackerPosition = new Position(10, 150);
+
 	@Expose
 	@ConfigOption(
 		name = "Puzzler Solver",

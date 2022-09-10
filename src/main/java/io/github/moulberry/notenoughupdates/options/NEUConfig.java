@@ -197,6 +197,9 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.openGui =
 					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
 				return;
+			case 25:
+				editOverlay(activeConfigCategory, OverlayManager.powderGrindingOverlay, mining.powderGrindingTrackerPosition);
+				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}

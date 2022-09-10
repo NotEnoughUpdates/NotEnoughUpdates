@@ -254,5 +254,9 @@ public class ChatListener {
 			unformatted.startsWith("  ") || unformatted.startsWith("✦") || unformatted.equals(
 			"  You've earned a Crystal Loot Bundle!"))
 			OverlayManager.crystalHollowOverlay.message(unformatted);
+		if (unformatted.equals("You uncovered a treasure chest!") ||
+			unformatted.equals("You have successfully picked the lock on this chest!")
+				|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
+			OverlayManager.powderGrindingOverlay.message(unformatted);
 	}
 }
