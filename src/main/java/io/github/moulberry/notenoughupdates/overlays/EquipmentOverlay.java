@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
+import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
@@ -39,6 +40,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -142,8 +144,6 @@ public class EquipmentOverlay {
 
 	public ItemStack petStack;
 
-	private List<String> tooltipsToDisplay;
-
 	//<editor-fold desc="events">
 
 	@SubscribeEvent
@@ -164,13 +164,6 @@ public class EquipmentOverlay {
 		renderGuis(inventory);
 	}
 
-	@SubscribeEvent
-	public void onMouseClick(GuiScreenEvent.MouseInputEvent event) {
-		if (!(event.gui instanceof GuiInventory)) return;
-		GuiInventory inventory = ((GuiInventory) event.gui);
-		renderGuis(inventory);
-	}
-
 	//</editor-fold>
 
 	public void renderGuis(GuiInventory inventory) {
@@ -180,12 +173,13 @@ public class EquipmentOverlay {
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 		GL11.glColor4f(1F, 1F, 1F, 1F);
-		GlStateManager.disableLighting();
-		if (shouldRenderArmorHud)
+		if (shouldRenderArmorHud) {
 			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
-		if (shouldRenderPets)
+		}
+
+		if (shouldRenderPets) {
 			renderPets(inventory, mouseX, mouseY, width, height);
-		GlStateManager.enableLighting();
+		}
 	}
 
 	public void renderEquipmentGui(GuiInventory guiScreen, int mouseX, int mouseY, int width, int height) {
@@ -210,6 +204,11 @@ public class EquipmentOverlay {
 			GlStateManager.color(1, 1, 1, 1);
 			Utils.drawTexturedRect(overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, 16, 16, GL11.GL_NEAREST);
 
+			tooltipToDisplay = Lists.newArrayList(
+				EnumChatFormatting.RED + "Warning",
+				EnumChatFormatting.GREEN + "You need to open /equipment",
+				EnumChatFormatting.GREEN + "to cache your armour"
+			);
 			if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 16)
 				&& NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand
 				&& Mouse.getEventButtonState()
@@ -226,7 +225,7 @@ public class EquipmentOverlay {
 			)) {
 			Utils.drawHoveringText(
 				tooltipToDisplay,
-				mouseX,
+				mouseX - calculateTooltipXOffset(tooltipToDisplay, Minecraft.getMinecraft().fontRendererObj),
 				mouseY,
 				width,
 				height,
@@ -250,18 +249,21 @@ public class EquipmentOverlay {
 	}
 
 	private void updateGuiInfo(GuiScreen screen) {
-		if (!(screen instanceof GuiInventory)
-			|| !NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
-			|| !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			shouldRenderPets = shouldRenderArmorHud = false;
-			return;
-		}
-		petStack = getRepoPetStack();
 		if (getWardrobeSlot(10) != null) {
 			slot1 = getWardrobeSlot(10);
 			slot2 = getWardrobeSlot(19);
 			slot3 = getWardrobeSlot(28);
 			slot4 = getWardrobeSlot(37);
+		}
+
+		if (screen instanceof GuiChest) {
+			petStack = getRepoPetStack();
+		}
+		if (!(screen instanceof GuiInventory)
+			|| !NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
+			|| !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+			shouldRenderPets = shouldRenderArmorHud = false;
+			return;
 		}
 		shouldRenderPets = NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && petStack != null;
 		shouldRenderArmorHud = NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud;
@@ -302,7 +304,7 @@ public class EquipmentOverlay {
 
 		Utils.drawItemStack(petInfo, overlayLeft + 8, overlayTop + 8, true);
 
-		List<String> tooltipToDisplay = null;
+		List<String> tooltipToDisplay;
 		if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 16)) {
 			if (NotEnoughUpdates.INSTANCE.config.petOverlay.sendPetsCommand
 				&& Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null
@@ -352,7 +354,6 @@ public class EquipmentOverlay {
 		} else {
 			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
 				//don't use cache since the internalName is identical in most cases
-				//
 				JsonObject jsonObject = profileSpecific.savedEquipment
 					.get(armourSlot);
 				if (jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject

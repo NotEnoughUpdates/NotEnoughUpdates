@@ -283,7 +283,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(CrystalWishingCompassSolver.getInstance());
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
-		MinecraftForge.EVENT_BUS.register( EquipmentOverlay.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(EquipmentOverlay.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(new ChatListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
