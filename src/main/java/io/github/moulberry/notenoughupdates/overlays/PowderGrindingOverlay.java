@@ -56,7 +56,7 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
 		String location = SBInfo.getInstance().getLocation();
 		if (location == null) return;
-		if (location.equals("mining_3") || location.equals("crystal_hollows")) {
+		if (location.equals("crystal_hollows")) {
 
 			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
