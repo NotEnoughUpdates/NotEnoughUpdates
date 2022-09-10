@@ -109,10 +109,6 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
 
 		GlStateManager.color(1, 1, 1, 1);
-		GlStateManager.disableLighting();
-		RenderHelper.enableGUIStandardItemLighting();
-
-		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
 		Color color = new Color(128, 128, 128, 255);
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Bestiary Level: ",
@@ -121,6 +117,10 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			guiTop + 50,
 			110
 		);
+
+		GlStateManager.disableLighting();
+		RenderHelper.enableGUIStandardItemLighting();
+		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
 		if (mobs != null) {
 			for (int i = 0; i < mobs.size(); i++) {
 				String mob = mobs.get(i);
