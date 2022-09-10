@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -104,9 +105,13 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 			boolean mithril = message.endsWith(" Mithril Powder");
 			boolean gemstone = message.endsWith(" Gemstone Powder");
 			if (!(mithril || gemstone)) return;
-			int amount = Integer.parseInt(message.split(" ")[2].replaceAll("\\+", ""));
-			if (mithril) mithrilPowderFound += amount;
-			else gemstonePowderFound += amount;
+			try {
+				int amount = Integer.parseInt(message.split(" ")[2].replaceAll("\\+", ""));
+				if (mithril) mithrilPowderFound += amount;
+				else gemstonePowderFound += amount;
+			} catch (NumberFormatException | IndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
