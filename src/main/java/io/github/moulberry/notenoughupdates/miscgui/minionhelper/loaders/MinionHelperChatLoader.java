@@ -37,7 +37,8 @@ public class MinionHelperChatLoader {
 	//§aYou crafted a §eTier I Redstone Minion§a! That's a new one!
 	// §aCraft §e7 §amore unique Minions to unlock your §e9th Minion slot§a!
 	private final Pattern PATTERN_OWN_MINION = Pattern.compile(
-		"§aYou crafted a §eTier (\\S+) (.+) Minion§a! That's a new one!(\\r\\n|\\r|\\n)(.*)");
+		"§r§aYou crafted a §eTier (\\S+) (.+) Minion§a! That's a new one!(\\r\\n|\\r|\\n)(.*)");
+	//§aYou crafted a §eTier VI Enderman Minion§a! That's a new one!
 
 	//§b[MVP§3+§b] Eisengolem§f §acrafted a §eTier I Birch Minion§a!
 	private final Pattern PATTERN_COOP_MINION = Pattern.compile("(.+)§f §acrafted a §eTier (\\S+) (.+) Minion§a!");
