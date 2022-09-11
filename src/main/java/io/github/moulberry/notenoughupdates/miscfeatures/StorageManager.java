@@ -38,6 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -182,7 +183,7 @@ public class StorageManager {
 	}
 
 	private static void fixPetInfo(ItemStack src) {
-		if (!src.getTagCompound().hasKey("ExtraAttributes") || !src.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("petInfo")) return;
+		if (src.getTagCompound() == null || !src.getTagCompound().hasKey("ExtraAttributes") || !src.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("petInfo")) return;
 		PetInfo oldPetInfo = GSON.fromJson(src.getTagCompound().getCompoundTag("ExtraAttributes").getString("petInfo"), PetInfo.class);
 		src.getTagCompound().getCompoundTag("ExtraAttributes").removeTag("petInfo");
 		try {
