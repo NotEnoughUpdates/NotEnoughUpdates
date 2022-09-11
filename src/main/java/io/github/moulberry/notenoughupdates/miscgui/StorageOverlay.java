@@ -414,7 +414,7 @@ public class StorageOverlay extends GuiElement {
 		if (stackOnMouse != null) {
 			String stackDisplay = Utils.cleanColour(stackOnMouse.getDisplayName());
 			if (stackDisplay.startsWith("Backpack Slot ") || stackDisplay.startsWith("Empty Backpack Slot ") ||
-				stackDisplay.startsWith("Ender Chest Page ")) {
+				stackDisplay.startsWith("Ender Chest Page ") || stackDisplay.startsWith("Locked Backpack Slot ")) {
 				stackOnMouse = null;
 			}
 		}
