@@ -760,7 +760,7 @@ public class Mining {
 		buttonText = "Edit"
 	)
 	@ConfigAccordionId(id = 9)
-	public Position powderGrindingTrackerPosition = new Position(10, 300);
+	public Position powderGrindingTrackerPosition = new Position(10, 265);
 
 	@Expose
 	@ConfigOption(
