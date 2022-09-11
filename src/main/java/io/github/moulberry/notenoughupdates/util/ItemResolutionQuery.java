@@ -194,14 +194,14 @@ public class ItemResolutionQuery {
 
 	private String resolveEnchantedBookNameFromNBT() {
 		NBTTagCompound enchantments = getExtraAttributes().getCompoundTag("enchantments");
-		String enchantName = Iterables.getOnlyElement(enchantments.getKeySet(), null);
+		String enchantName = IteratorUtils.getOnlyElement(enchantments.getKeySet(), null);
 		if (enchantName == null || enchantName.isEmpty()) return null;
 		return enchantName.toUpperCase(Locale.ROOT) + ";" + enchantments.getInteger(enchantName);
 	}
 
 	private String resolveRuneName() {
 		NBTTagCompound runes = getExtraAttributes().getCompoundTag("runes");
-		String runeName = Iterables.getOnlyElement(runes.getKeySet(), null);
+		String runeName = IteratorUtils.getOnlyElement(runes.getKeySet(), null);
 		if (runeName == null || runeName.isEmpty()) return null;
 		return runeName.toUpperCase(Locale.ROOT) + "_RUNE;" + runes.getInteger(runeName);
 	}
