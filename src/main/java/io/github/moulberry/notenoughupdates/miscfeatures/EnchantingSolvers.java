@@ -376,7 +376,6 @@ public class EnchantingSolvers {
 						if (currentTime - millisLastClick > 150 &&
 							(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
 								current.containerIndex == slotId || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT) && (slotId < 45 && slotId > 8)) {
-							System.out.println(slotId);
 							ultrasequencerReplayIndex++;
 							Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
 								2, mode, Minecraft.getMinecraft().thePlayer
