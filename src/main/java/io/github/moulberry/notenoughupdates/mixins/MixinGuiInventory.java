@@ -20,7 +20,9 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.GuiInventoryBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,5 +37,10 @@ public class MixinGuiInventory {
 			RenderListener.disableCraftingText) {
 			ci.cancel();
 		}
+	}
+
+	@Inject(method = "drawGuiContainerBackgroundLayer", at = @At("TAIL"))
+	public void onDrawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY, CallbackInfo ci) {
+		new GuiInventoryBackgroundDrawnEvent((GuiContainer) (Object) this, partialTicks).post();
 	}
 }

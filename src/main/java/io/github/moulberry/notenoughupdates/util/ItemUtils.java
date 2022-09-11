@@ -57,6 +57,13 @@ public class ItemUtils {
 		return skull;
 	}
 
+	public static NBTTagCompound getOrCreateTag(ItemStack is) {
+		if (is.hasTagCompound()) return is.getTagCompound();
+		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		is.setTagCompound(nbtTagCompound);
+		return nbtTagCompound;
+	}
+
 	public static void appendLore(ItemStack is, List<String> moreLore) {
 		NBTTagCompound tagCompound = is.getTagCompound();
 		if (tagCompound == null) {
