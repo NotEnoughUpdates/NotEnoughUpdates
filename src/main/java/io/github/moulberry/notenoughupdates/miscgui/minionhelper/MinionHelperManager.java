@@ -55,7 +55,7 @@ public class MinionHelperManager {
 	private final MinionHelperInventoryLoader inventoryLoader = new MinionHelperInventoryLoader(this);
 	private String debugPlayerUuid;
 	private String debugProfileName;
-	private int debugNeedForNextSlot;
+	private int debugNeedForNextSlot = -1;
 
 	public static MinionHelperManager getInstance() {
 		if (instance == null) {
