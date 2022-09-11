@@ -87,6 +87,10 @@ public class MinionHelperRequirementsManager {
 		} else if (requirement instanceof SlayerRequirement) {
 			SlayerRequirement slayerRequirement = (SlayerRequirement) requirement;
 			String slayer = slayerRequirement.getSlayer();
+			//Because the neu-repo uses 'eman' and the hypixel api is using 'enderman'
+			if (slayer.equals("eman")) {
+				slayer = "enderman";
+			}
 			int need = slayerRequirement.getLevel();
 			Map<String, Integer> slayerTiers = apiData.getSlayerTiers();
 			if (slayerTiers.containsKey(slayer)) {
