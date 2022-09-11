@@ -60,6 +60,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -748,6 +749,30 @@ public class GuiProfileViewer extends GuiScreen {
 
 		lastTime = currentTime;
 
+		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
+			int ignoredTabs = 0;
+			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+			for (int i = 0; i < configList.size(); i++) {
+				ProfileViewerPage iPage = ProfileViewerPage.getById(configList.get(i));
+				if (iPage == null) continue;
+				if (iPage.stack == null || (iPage == ProfileViewerPage.BINGO && !showBingoPage)) {
+					ignoredTabs++;
+					continue;
+				}
+				int i2 = i - ignoredTabs;
+				int x = guiLeft + i2 * 28;
+				int y = guiTop - 28;
+
+				if (mouseX > x && mouseX < x + 28) {
+					if (mouseY > y && mouseY < y + 32) {
+						tooltipToDisplay = Collections.singletonList(iPage.stack
+							.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+							.get(0));
+					}
+				}
+			}
+		}
+
 		if (tooltipToDisplay != null) {
 			List<String> grayTooltip = new ArrayList<>(tooltipToDisplay.size());
 			for (String line : tooltipToDisplay) {
@@ -1231,16 +1256,16 @@ public class GuiProfileViewer extends GuiScreen {
 		LOADING(),
 		INVALID_NAME(),
 		NO_SKYBLOCK(),
-		BASIC(0, Items.paper, "Your Skills"),
-		DUNGEON(1, Item.getItemFromBlock(Blocks.deadbush), "Dungeoneering"),
-		EXTRA(2, Items.book, "Profile Stats"),
-		INVENTORIES(3, Item.getItemFromBlock(Blocks.ender_chest), "Storage"),
-		COLLECTIONS(4, Items.painting, "Collections"),
-		PETS(5, Items.bone, "Pets"),
-		MINING(6, Items.iron_pickaxe, "Heart of the Mountain"),
-		BINGO(7, Items.filled_map, "Bingo"),
-		TROPHY_FISH(8, Items.fishing_rod, "Trophy Fish"),
-		BESTIARY(9, Items.iron_sword, "Bestiary");
+		BASIC(0, Items.paper, "§9Your Skills"),
+		DUNGEON(1, Item.getItemFromBlock(Blocks.deadbush), "§eDungeoneering"),
+		EXTRA(2, Items.book, "§7Profile Stats"),
+		INVENTORIES(3, Item.getItemFromBlock(Blocks.ender_chest), "§bStorage"),
+		COLLECTIONS(4, Items.painting, "§6Collections"),
+		PETS(5, Items.bone, "§aPets"),
+		MINING(6, Items.iron_pickaxe, "§5Heart of the Mountain"),
+		BINGO(7, Items.filled_map, "§zBingo"),
+		TROPHY_FISH(8, Items.fishing_rod, "§3Trophy Fish"),
+		BESTIARY(9, Items.iron_sword, "§cBestiary");
 
 		public final ItemStack stack;
 		public final int id;

@@ -778,6 +778,7 @@ public class MiningOverlay extends TextTabOverlay {
 					.getItemInformation()
 					.get("ANVIL"))
 			);
+			put("First Event", new ItemStack(Items.fireworks, 1, 0));
 		}};
 	}
 }

@@ -38,6 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -555,8 +556,8 @@ public class StorageManager {
 				int index = slot - 9;
 
 				boolean changed = false;
-				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) &&
-					stack.getMetadata() == 14) {
+				if ((stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) &&
+					stack.getMetadata() == 14) || (stack.getItem() == Items.dye && stack.getMetadata() == 8)) {
 					if (storagePresent[index]) changed = true;
 					storagePresent[index] = false;
 					removePage(index);
@@ -596,7 +597,8 @@ public class StorageManager {
 
 				boolean changed = false;
 
-				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) {
+				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)
+					|| (stack.getItem() == Items.dye && stack.getMetadata() == 8)) {
 					if (storagePresent[index]) changed = true;
 					storagePresent[index] = false;
 					removePage(index);
