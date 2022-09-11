@@ -103,6 +103,10 @@ public class BazaarSacksProfit {
 						.getItemInformation()
 						.entrySet()) {
 						String internalName = entry.getKey();
+
+						// Ignoring builder melon, builder clay and builder cactus
+						if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName) == null) continue;
+
 						JsonObject object = entry.getValue();
 						if (object.has("displayname")) {
 							String name = object.get("displayname").getAsString();
