@@ -52,6 +52,12 @@ import java.util.Map;
 
 public class MinionHelperOverlay {
 
+	public static MinionHelperOverlay getInstance() {
+		return instance;
+	}
+
+	private static MinionHelperOverlay instance;
+
 	private final ResourceLocation minionOverlayImage = new ResourceLocation("notenoughupdates:minion_overlay.png");
 	private final ResourceLocation greenCheckImage = new ResourceLocation("notenoughupdates:dungeon_map/green_check.png");
 	private final ResourceLocation whiteCheckImage = new ResourceLocation("notenoughupdates:dungeon_map/white_check.png");
@@ -69,6 +75,7 @@ public class MinionHelperOverlay {
 	private int currentPage = 0;
 
 	public MinionHelperOverlay(MinionHelperManager manager) {
+		instance = this;
 		this.manager = manager;
 		hover = new MinionHelperOverlayHover(this, manager);
 	}
@@ -83,8 +90,7 @@ public class MinionHelperOverlay {
 		cacheTotalPages = -1;
 	}
 
-	@SubscribeEvent
-	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
+	public void render() {
 		if (!manager.inCraftedMinionsInventory()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 		if (manager.isInvalidApiKey()) {
