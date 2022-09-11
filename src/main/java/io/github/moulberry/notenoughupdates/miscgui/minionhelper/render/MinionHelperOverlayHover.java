@@ -39,7 +39,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
@@ -112,15 +111,8 @@ public class MinionHelperOverlayHover {
 		if (mouseX > x && mouseX < x + 16 &&
 			mouseY > y && mouseY < y + 16) {
 
-			GlStateManager.pushMatrix();
-			GlStateManager.scale(2f / scaledresolution.getScaleFactor(), 2f / scaledresolution.getScaleFactor(), 1);
-			Utils.drawHoveringText(list,
-				mouseX * scaledresolution.getScaleFactor() / 2,
-				mouseY * scaledresolution.getScaleFactor() / 2,
-				scaledWidth * scaledresolution.getScaleFactor() / 2,
-				scaledHeight * scaledresolution.getScaleFactor() / 2, -1, Minecraft.getMinecraft().fontRendererObj
-			);
-			GlStateManager.popMatrix();
+			Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1,
+				Minecraft.getMinecraft().fontRendererObj);
 		}
 	}
 
