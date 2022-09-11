@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -61,30 +62,31 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 
 			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
+				NumberFormat format = NumberFormat.getIntegerInstance();
 				switch (index) {
 					case 0:
-						overlayStrings.add("\u00a73Chests Found: \u00a7a" + chestCount);
+						overlayStrings.add("\u00a73Chests Found: \u00a7a" + format.format(chestCount));
 						break;
 					case 1:
-						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + openedChestCount);
+						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + format.format(openedChestCount));
 						break;
 					case 2:
-						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + (chestCount - openedChestCount));
+						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + format.format(chestCount - openedChestCount));
 						break;
 					case 3:
-						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" + mithrilPowderFound);
+						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" + format.format(mithrilPowderFound));
 						break;
 					case 4:
-						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + (
+						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + format.format(
 							openedChestCount > 0 ?
 								mithrilPowderFound / openedChestCount :
 								0));
 						break;
 					case 5:
-						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" + gemstonePowderFound);
+						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" + format.format(gemstonePowderFound));
 						break;
 					case 6:
-						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + (
+						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + format.format(
 							openedChestCount > 0 ?
 								gemstonePowderFound / openedChestCount :
 								0));
