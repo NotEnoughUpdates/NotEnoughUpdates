@@ -21,10 +21,9 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,12 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	public int chestCount = 0;
 	public int openedChestCount = 0;
 	public int mithrilPowderFound = 0;
+	public float lastMithrilPowderFound = 0;
+	public float lastMithrilPowderAverage = 0;
 	public int gemstonePowderFound = 0;
+	public float lastGemstonePowderFound = 0;
+	public float lastGemstonePowderAverage = 0;
+	private long lastUpdate = -1;
 
 	public PowderGrindingOverlay(
 		Position position,
@@ -45,17 +49,39 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 		super(position, dummyStrings, styleSupplier);
 	}
 
+	private float interp(float now, float last) {
+		float interp = now;
+		if (last >= 0 && last != now) {
+			float factor = (System.currentTimeMillis() - lastUpdate) / 1000f;
+			factor = LerpUtils.clampZeroOne(factor);
+			interp = last + (now - last) * factor;
+		}
+		return interp;
+	}
+
 	@Override
 	public void update() {
+		if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerEnabled) {
+			lastUpdate = System.currentTimeMillis();
+			lastMithrilPowderFound = mithrilPowderFound;
+			lastMithrilPowderAverage = openedChestCount > 0 ?
+				1f * mithrilPowderFound / openedChestCount :
+				0;
+			lastGemstonePowderFound = gemstonePowderFound;
+			lastGemstonePowderAverage = openedChestCount > 0 ?
+				1f * gemstonePowderFound / openedChestCount :
+				0;
+		} else overlayStrings = null;
+	}
+
+	@Override
+	public void updateFrequent() {
 		overlayStrings = null;
-		NEUConfig.HiddenProfileSpecific profileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerEnabled) {
 			return;
 		}
 
-		// Get commission and forge info even if the overlay isn't going to be rendered since it is used elsewhere
-		//thanks to "Pure Genie#7250" for helping with this (makes tita alert and waypoints work without mine overlay)
 		String location = SBInfo.getInstance().getLocation();
 		if (location == null) return;
 		if (location.equals("crystal_hollows")) {
@@ -74,22 +100,24 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + format.format(chestCount - openedChestCount));
 						break;
 					case 3:
-						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" + format.format(mithrilPowderFound));
+						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" +
+							format.format(interp(mithrilPowderFound, lastMithrilPowderFound)));
 						break;
 					case 4:
-						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + format.format(
-							openedChestCount > 0 ?
-								mithrilPowderFound / openedChestCount :
-								0));
+						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + format.format(interp(
+							(openedChestCount > 0 ?
+								1f * mithrilPowderFound / openedChestCount :
+								0), lastMithrilPowderAverage)));
 						break;
 					case 5:
-						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" + format.format(gemstonePowderFound));
+						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" +
+							format.format(interp(gemstonePowderFound, lastGemstonePowderFound)));
 						break;
 					case 6:
-						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + format.format(
-							openedChestCount > 0 ?
-								gemstonePowderFound / openedChestCount :
-								0));
+						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + format.format(interp(
+							(openedChestCount > 0 ?
+								1f * gemstonePowderFound / openedChestCount :
+								0), lastGemstonePowderAverage)));
 						break;
 				}
 			}
