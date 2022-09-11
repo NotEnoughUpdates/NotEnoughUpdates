@@ -53,6 +53,9 @@ public class MinionHelperManager {
 	private final MinionHelperRepoLoader repo = new MinionHelperRepoLoader(this);
 	private final MinionHelperOverlay overlay = new MinionHelperOverlay(this);
 	private final MinionHelperInventoryLoader inventoryLoader = new MinionHelperInventoryLoader(this);
+	private String debugPlayerUuid;
+	private String debugProfileName;
+	private int debugNeedForNextSlot;
 
 	public static MinionHelperManager getInstance() {
 		if (instance == null) {
@@ -165,6 +168,27 @@ public class MinionHelperManager {
 		if (args.length > 1) {
 			String parameter = args[1];
 
+			if (parameter.equals("debugplayer")) {
+				if (args.length == 3) {
+					if (args[2].equals("reset")) {
+						Utils.addChatMessage("§e[NEU] Minion debug player reset.");
+						setDebugPlayer(null, null, -1);
+						return;
+					}
+				}
+				if (args.length < 4) {
+					Utils.addChatMessage("§c[NEU] Usage: /neudevtest minion " +
+						"setplayer <player-uuid> <player-profile-name> [need-for-next-slot]");
+					return;
+				}
+				String playerUuid = args[2];
+				String playerProfileName = args[3];
+				int need = args.length == 5 ? Integer.parseInt(args[4]) : -1;
+				setDebugPlayer(playerUuid, playerProfileName, need);
+				Utils.addChatMessage("§e[NEU] Minion debug player set.");
+				return;
+			}
+
 			if (args.length == 2) {
 				if (parameter.equals("clearminion")) {
 					minions.clear();
@@ -221,6 +245,14 @@ public class MinionHelperManager {
 		Utils.addChatMessage("");
 	}
 
+	private void setDebugPlayer(String playerUuid, String playerProfileName, int fakeNeedForNextSlot) {
+		this.debugPlayerUuid = playerUuid;
+		this.debugProfileName = playerProfileName;
+		this.debugNeedForNextSlot = fakeNeedForNextSlot;
+
+		onProfileSwitch();
+	}
+
 	public MinionHelperPriceCalculation getPriceCalculation() {
 		return priceCalculation;
 	}
@@ -270,5 +302,17 @@ public class MinionHelperManager {
 				apiData.setPeltCount(localPelts);
 			}
 		}
+	}
+
+	public String getDebugPlayerUuid() {
+		return debugPlayerUuid;
+	}
+
+	public String getDebugProfileName() {
+		return debugProfileName;
+	}
+
+	public int getDebugNeedForNextSlot() {
+		return debugNeedForNextSlot;
 	}
 }

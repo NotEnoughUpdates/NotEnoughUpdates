@@ -86,11 +86,10 @@ public class MinionHelperApiLoader {
 
 	private void load() {
 		lastLoaded = System.currentTimeMillis();
-		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
-		if (thePlayer == null) return;
 
 		dirty = false;
-		String uuid = thePlayer.getUniqueID().toString().replace("-", "");
+		String uuid = getUuid();
+		if (uuid == null) return;
 		HashMap<String, String> map = new HashMap<String, String>() {{
 			put("uuid", uuid);
 		}};
@@ -101,6 +100,16 @@ public class MinionHelperApiLoader {
 			"skyblock/profiles",
 			map
 		).thenAccept(this::updateInformation);
+	}
+
+	private String getUuid() {
+		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+		if (thePlayer == null) return null;
+
+		String debugPlayerUuid = manager.getDebugPlayerUuid();
+		if (debugPlayerUuid != null) return debugPlayerUuid;
+
+		return thePlayer.getUniqueID().toString().replace("-", "");
 	}
 
 	private void updateInformation(JsonObject entireApiResponse) {
@@ -116,12 +125,12 @@ public class MinionHelperApiLoader {
 			JsonObject profile = element.getAsJsonObject();
 			String profileName = profile.get("cute_name").getAsString();
 			JsonObject members = profile.getAsJsonObject("members");
-			JsonObject player = members.getAsJsonObject(Minecraft.getMinecraft().thePlayer
-				.getUniqueID()
-				.toString()
-				.replace("-", ""));
+			JsonObject player = members.getAsJsonObject(getUuid());
 
-			if (profileName.equals(SBInfo.getInstance().currentProfile)) {
+			String debugProfileName = manager.getDebugProfileName();
+			String currentProfile = debugProfileName != null ? debugProfileName : SBInfo.getInstance().currentProfile;
+
+			if (profileName.equals(currentProfile)) {
 				readData(player, members);
 				return;
 			}

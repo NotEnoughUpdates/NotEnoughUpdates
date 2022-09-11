@@ -86,7 +86,9 @@ public class MinionHelperInventoryLoader {
 				checkNextSlot(openContainer);
 				checkLocalPelts();
 			}
-			loadMinionData(openContainer);
+			if (manager.getDebugPlayerUuid() == null) {
+				loadMinionData(openContainer);
+			}
 		}
 	}
 
@@ -110,7 +112,9 @@ public class MinionHelperInventoryLoader {
 			for (String line : ItemUtils.getLore(informationStack)) {
 				Matcher matcher = PATTERN_MINIONS_NEEDED.matcher(line);
 				if (matcher.matches()) {
-					int needForNextSlot = Integer.parseInt(matcher.group(1));
+					int debugNeedForNextSlot = manager.getDebugNeedForNextSlot();
+					int needForNextSlot = debugNeedForNextSlot != -1 ? debugNeedForNextSlot : Integer.parseInt(matcher.group(1));
+
 					manager.setNeedForNextSlot(needForNextSlot);
 					return;
 				}
