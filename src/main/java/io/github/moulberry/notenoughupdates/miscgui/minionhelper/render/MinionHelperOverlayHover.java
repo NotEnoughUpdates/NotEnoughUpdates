@@ -93,11 +93,10 @@ public class MinionHelperOverlayHover {
 		final int scaledHeight = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-		boolean showOnlyAvailable = overlay.isShowOnlyAvailable();
 
 		List<String> list = new ArrayList<>();
 
-		if (showOnlyAvailable) {
+		if (overlay.isFilterEnabled()) {
 			list.add("§aFilter enabled!");
 			list.add("§7Only show minions that can be");
 			list.add("§7crafted and meet requirements.");

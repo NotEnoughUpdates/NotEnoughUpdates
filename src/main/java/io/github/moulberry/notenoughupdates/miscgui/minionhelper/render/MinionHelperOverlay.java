@@ -63,7 +63,7 @@ public class MinionHelperOverlay {
 	private LinkedHashMap<String, OverviewLine> cacheRenderMap = null;
 	private int cacheTotalPages = -1;
 
-	private boolean showOnlyAvailable = true;
+	private boolean filterEnabled = true;
 
 	private int maxPerPage = 8;
 	private int currentPage = 0;
@@ -198,7 +198,7 @@ public class MinionHelperOverlay {
 		Map<Minion, Double> prices = new HashMap<>();
 		for (Minion minion : manager.getAllMinions().values()) {
 
-			if (!minion.doesMeetRequirements() && showOnlyAvailable) continue;
+			if (!minion.doesMeetRequirements() && filterEnabled) continue;
 			if (!minion.isCrafted()) {
 				double price = manager.getPriceCalculation().calculateUpgradeCosts(minion, true);
 				prices.put(minion, price);
@@ -218,7 +218,7 @@ public class MinionHelperOverlay {
 		GL11.glColor4f(1, 1, 1, 1);
 		GlStateManager.disableLighting();
 		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 1f, 0, 1f, GL11.GL_NEAREST);
-		if (showOnlyAvailable) {
+		if (filterEnabled) {
 			minecraft.getTextureManager().bindTexture(greenCheckImage);
 		} else {
 			minecraft.getTextureManager().bindTexture(whiteCheckImage);
@@ -292,7 +292,7 @@ public class MinionHelperOverlay {
 	}
 
 	private void addTitle(Map<Minion, Double> prices, LinkedHashMap<String, OverviewLine> renderMap) {
-		String name = "§8" + prices.size() + " " + (showOnlyAvailable ? "craftable" : "total") + " minions";
+		String name = "§8" + prices.size() + " " + (filterEnabled ? "craftable" : "total") + " minions";
 		renderMap.put(name, new OverviewText(Collections.emptyList(), () -> {}));
 	}
 
@@ -339,7 +339,7 @@ public class MinionHelperOverlay {
 	}
 
 	private void toggleShowAvailable() {
-		showOnlyAvailable = !showOnlyAvailable;
+		filterEnabled = !filterEnabled;
 		currentPage = 0;
 		resetCache();
 	}
@@ -383,7 +383,7 @@ public class MinionHelperOverlay {
 
 	public void onProfileSwitch() {
 		currentPage = 0;
-		showOnlyAvailable = true;
+		filterEnabled = true;
 	}
 
 	public void setMaxPerPage(int maxPerPage) {
@@ -394,7 +394,7 @@ public class MinionHelperOverlay {
 		this.topLeft = topLeft;
 	}
 
-	public boolean isShowOnlyAvailable() {
-		return showOnlyAvailable;
+	public boolean isFilterEnabled() {
+		return filterEnabled;
 	}
 }
