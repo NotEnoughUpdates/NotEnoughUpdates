@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.Line;
 import io.github.moulberry.notenoughupdates.core.util.Vec3Comparable;
+import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
@@ -345,15 +346,15 @@ public class CrystalWishingCompassSolver {
 	 *                                            per-area structure missing, or because Hypixel.
 	 *                                            Always within 1 block of X=513 Y=106 Z=551.
 	 */
-	public void onSpawnParticle(
-		EnumParticleTypes particleType,
-		double x,
-		double y,
-		double z
-	) {
+	@SubscribeEvent
+	public void onSpawnParticle(SpawnParticleEvent event) {
+		EnumParticleTypes particleType = event.getParticleTypes();
+		double x = event.getXCoord();
+		double y = event.getYCoord();
+		double z = event.getZCoord();
 		if (!NotEnoughUpdates.INSTANCE.config.mining.wishingCompassSolver ||
 			particleType != EnumParticleTypes.VILLAGER_HAPPY ||
-			!SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
+			!"crystal_hollows".equals(SBInfo.getInstance().getLocation())) {
 			return;
 		}
 

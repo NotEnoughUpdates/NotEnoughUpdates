@@ -33,6 +33,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
@@ -362,6 +363,13 @@ public class NEUConfig extends Config {
 		desc = "Pet Overlay"
 	)
 	public PetOverlay petOverlay = new PetOverlay();
+
+	@Expose
+	@Category(
+		name = "World Renderer",
+		desc = "In World Renderers"
+	)
+	public WorldConfig world = new WorldConfig();
 
 	@Expose
 	@Category(

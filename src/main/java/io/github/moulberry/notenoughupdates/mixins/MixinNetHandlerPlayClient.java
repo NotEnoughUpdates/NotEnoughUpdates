@@ -19,10 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
+import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
-import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.NewApiKeyHelper;
@@ -79,22 +78,18 @@ public class MixinNetHandlerPlayClient {
 		double xCoord, double yCoord, double zCoord,
 		double xOffset, double yOffset, double zOffset, int[] params
 	) {
-		CrystalWishingCompassSolver.getInstance().onSpawnParticle(
+		SpawnParticleEvent event = new SpawnParticleEvent(
 			particleTypes,
-			xCoord,
-			yCoord,
-			zCoord
-		);
-		boolean override = FishingHelper.getInstance().onSpawnParticle(
-			particleTypes,
+			isLongDistance,
 			xCoord,
 			yCoord,
 			zCoord,
 			xOffset,
 			yOffset,
-			zOffset
+			zOffset,
+			params
 		);
-		if (!override) {
+		if (!event.post()) {
 			world.spawnParticle(particleTypes, isLongDistance, xCoord, yCoord, zCoord, xOffset, yOffset, zOffset, params);
 		}
 	}

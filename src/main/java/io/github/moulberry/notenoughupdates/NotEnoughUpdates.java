@@ -60,6 +60,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.GlowingMushroomHighlighter;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
@@ -294,6 +295,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
 		MinecraftForge.EVENT_BUS.register(BazaarSacksProfit.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
+		MinecraftForge.EVENT_BUS.register(new GlowingMushroomHighlighter());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

@@ -273,11 +273,15 @@ public class SBInfo {
 		}
 	}
 
+	/**
+	 * @return the current mode, as returned by /locraw, usually equivalent to a skyblock public island type.
+	 */
 	public String getLocation() {
 		return mode;
 	}
 
 	public void setLocation(String location) {
+		location = location == null ? location :location.intern();
 		if (!Objects.equals(this.mode, location)) {
 			MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
 		}
