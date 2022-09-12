@@ -201,10 +201,7 @@ public class NEUConfig extends Config {
 				editOverlay(activeConfigCategory, OverlayManager.powderGrindingOverlay, mining.powderGrindingTrackerPosition);
 				return;
 			case 26:
-				OverlayManager.powderGrindingOverlay.chestCount = 0;
-				OverlayManager.powderGrindingOverlay.openedChestCount = 0;
-				OverlayManager.powderGrindingOverlay.mithrilPowderFound = 0;
-				OverlayManager.powderGrindingOverlay.gemstonePowderFound = 0;
+				OverlayManager.powderGrindingOverlay.reset();
 				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
@@ -585,6 +582,18 @@ public class NEUConfig extends Config {
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose
 		public int magicalPower = 0;
+
+		@Expose
+		public int chestCount = 0;
+
+		@Expose
+		public int openedChestCount = 0;
+
+		@Expose
+		public int mithrilPowderFound = 0;
+
+		@Expose
+		public int gemstonePowderFound = 0;
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

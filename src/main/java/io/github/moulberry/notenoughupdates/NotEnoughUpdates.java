@@ -237,9 +237,6 @@ public class NotEnoughUpdates {
 		SlotLocking.getInstance().loadConfig(new File(neuDir, "slotLocking.json"));
 		ItemPriceInformation.init(new File(neuDir, "auctionable_items.json"), gson);
 
-		if (config != null)
-			if (config.mining.powderGrindingTrackerResetMode == 2) OverlayManager.powderGrindingOverlay.loadData(new File(neuDir, "powderGrinding.json"));
-
 		if (config == null) {
 			config = new NEUConfig();
 			saveConfig();
@@ -368,11 +365,6 @@ public class NotEnoughUpdates {
 		}
 		try {
 			SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			if (config.mining.powderGrindingTrackerResetMode == 2)
-				OverlayManager.powderGrindingOverlay.saveData(new File(neuDir, "powderGrinding.json"), gson);
 		} catch (Exception ignored) {
 		}
 	}
