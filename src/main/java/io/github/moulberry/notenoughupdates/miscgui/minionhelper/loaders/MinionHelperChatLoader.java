@@ -85,14 +85,6 @@ public class MinionHelperChatLoader {
 	}
 
 	private void setCrafted(Minion minion) {
-		minion.setCrafted(true);
-
-		if (!minion.doesMeetRequirements()) {
-			minion.setMeetRequirements(true);
-
-			for (Minion child : manager.getChildren(minion)) {
-				child.setMeetRequirements(true);
-			}
-		}
+		manager.setCrafted(minion);
 	}
 }

@@ -124,7 +124,7 @@ public class MinionHelperManager {
 		return minionName.toUpperCase().replace(" ", "_");
 	}
 
-	public List<Minion> getChildren(Minion minion) {
+	private List<Minion> getChildren(Minion minion) {
 		List<Minion> list = new ArrayList<>();
 		for (Minion other : minions.values()) {
 			if (minion == other.getParent()) {
@@ -154,7 +154,19 @@ public class MinionHelperManager {
 		ApiData apiData = api.getApiData();
 		if (apiData != null) {
 			for (String minion : apiData.getCraftedMinions()) {
-				getMinionById(minion).setCrafted(true);
+				setCrafted(getMinionById(minion));
+			}
+		}
+	}
+
+	public void setCrafted(Minion minion) {
+		minion.setCrafted(true);
+
+		if (minion.getCustomSource() != null) {
+			minion.setMeetRequirements(true);
+
+			for (Minion child : getChildren(minion)) {
+				child.setMeetRequirements(true);
 			}
 		}
 	}
@@ -242,6 +254,8 @@ public class MinionHelperManager {
 		Utils.addChatMessage("§6/neudevtest minion clearapi §7Clears the api data");
 		Utils.addChatMessage("§6/neudevtest minion maxperpage <number> §7Changes the max minions per page number");
 		Utils.addChatMessage("§6/neudevtest minion arrowpos <x, y> §7Changes the position of the page numbers");
+		Utils.addChatMessage("§6/neudevtest minion setplayer <player-uuid> <player-profile-name> [need-for-next-slot] §7" +
+			"See the Minions missing of other player");
 		Utils.addChatMessage("");
 	}
 

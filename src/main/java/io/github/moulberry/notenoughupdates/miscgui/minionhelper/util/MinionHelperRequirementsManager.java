@@ -110,7 +110,7 @@ public class MinionHelperRequirementsManager {
 				return false;
 			}
 		} else if (requirement instanceof CustomRequirement) {
-			return minion.isCrafted();
+			return minion.doesMeetRequirements();
 		}
 
 		return false;
