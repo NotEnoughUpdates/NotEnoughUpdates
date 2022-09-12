@@ -764,6 +764,18 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Tracker Reset Mode",
+		desc = "When the Powder Grinding Tracker should be reset"
+	)
+	@ConfigEditorDropdown(
+		values = {"On World Change", "On Restart", "Never"},
+		initialIndex = 2
+	)
+	@ConfigAccordionId(id = 9)
+	public int powderGrindingTrackerResetMode = 1;
+
+	@Expose
+	@ConfigOption(
 		name = "Reset Tracker",
 		desc = "Reset all stats for Powder Grinding Tracker"
 	)

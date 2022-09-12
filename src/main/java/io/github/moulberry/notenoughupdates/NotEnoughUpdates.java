@@ -35,6 +35,7 @@ import io.github.moulberry.notenoughupdates.listener.ItemTooltipRngListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BazaarSacksProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
@@ -236,6 +237,9 @@ public class NotEnoughUpdates {
 		SlotLocking.getInstance().loadConfig(new File(neuDir, "slotLocking.json"));
 		ItemPriceInformation.init(new File(neuDir, "auctionable_items.json"), gson);
 
+		if (config != null)
+			if (config.mining.powderGrindingTrackerResetMode == 2) OverlayManager.powderGrindingOverlay.loadData(new File(neuDir, "powderGrinding.json"));
+
 		if (config == null) {
 			config = new NEUConfig();
 			saveConfig();
@@ -296,6 +300,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
 		MinecraftForge.EVENT_BUS.register(BazaarSacksProfit.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
+		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
@@ -363,6 +368,11 @@ public class NotEnoughUpdates {
 		}
 		try {
 			SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
+		} catch (Exception ignored) {
+		}
+		try {
+			if (config.mining.powderGrindingTrackerResetMode == 2)
+				OverlayManager.powderGrindingOverlay.saveData(new File(neuDir, "powderGrinding.json"), gson);
 		} catch (Exception ignored) {
 		}
 	}

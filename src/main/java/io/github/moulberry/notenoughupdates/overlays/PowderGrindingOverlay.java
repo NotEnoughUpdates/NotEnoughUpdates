@@ -19,17 +19,39 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class PowderGrindingOverlay extends TextTabOverlay {
+
+	private final static JsonParser PARSER = new JsonParser();
 
 	public int chestCount = 0;
 	public int openedChestCount = 0;
@@ -143,6 +165,61 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void loadData(File file) {
+		String fileContent;
+		try {
+			fileContent = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+				.lines()
+				.collect(Collectors.joining(System.lineSeparator()));
+		} catch (FileNotFoundException ignored) {
+			for (int i = 0; i < 100; i++) System.out.println("File not found");
+			// If the file doesn't exist, return
+			return;
+		}
+
+		try {
+			JsonObject data = (JsonObject) PARSER.parse(fileContent);
+			System.out.println("DATA123:");
+			System.out.println(new Gson().toJson(data));
+			if (data.has("chestCount")) chestCount = data.get("chestCount").getAsInt();
+			if (data.has("openedChestCount")) openedChestCount = data.get("openedChestCount").getAsInt();
+			if (data.has("mithrilPowderFound")) mithrilPowderFound = data.get("mithrilPowderFound").getAsInt();
+			if (data.has("gemstonePowderFound")) gemstonePowderFound = data.get("gemstonePowderFound").getAsInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveData(File file, Gson gson) {
+		try {
+			//noinspection ResultOfMethodCallIgnored
+			file.createNewFile();
+
+			try (
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(file),
+					StandardCharsets.UTF_8
+				))
+			) {
+				JsonObject data = new JsonObject();
+				data.addProperty("chestCount", chestCount);
+				data.addProperty("openedChestCount", openedChestCount);
+				data.addProperty("mithrilPowderFound", mithrilPowderFound);
+				data.addProperty("gemstonePowderFound", gemstonePowderFound);
+				writer.write(gson.toJson(data));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void reset() {
+		chestCount = 0;
+		openedChestCount = 0;
+		mithrilPowderFound = 0;
+		gemstonePowderFound = 0;
 	}
 
 }
