@@ -45,13 +45,17 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
@@ -1966,6 +1970,16 @@ public class StorageOverlay extends GuiElement {
 			switch (buttonIndex) {
 				case 0:
 					NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = false;
+					ChatComponentText storageMessage = new ChatComponentText(
+						EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.YELLOW +
+							"You just disabled the custom storage gui, did you mean to do that? If not click this message to turn it back on.");
+					storageMessage.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/neuenablestorage"));
+					storageMessage.setChatStyle(storageMessage.getChatStyle().setChatHoverEvent(
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+							new ChatComponentText(EnumChatFormatting.YELLOW + "Click to enable the custom storage gui."))));
+					ChatComponentText storageChatMessage = new ChatComponentText("");
+					storageChatMessage.appendSibling(storageMessage);
+					Minecraft.getMinecraft().thePlayer.addChatMessage(storageChatMessage);
 					break;
 				case 1:
 					int size =
