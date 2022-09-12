@@ -18,12 +18,9 @@
  */
 
 
-import net.fabricmc.loom.task.RemapJarTask
-import java.io.ByteArrayOutputStream
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.charset.StandardCharsets
-import java.util.*
+import neubs.NEUBuildFlags
+import neubs.applyPublishingInformation
+import neubs.setVersionFromEnvironment
 
 plugins {
 		idea
@@ -31,42 +28,18 @@ plugins {
 		id("gg.essential.loom") version "0.10.0.+"
 		id("dev.architectury.architectury-pack200") version "0.1.3"
 		id("com.github.johnrengelman.shadow") version "7.1.2"
+		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
+		`maven-publish`
 }
 
+
+apply<NEUBuildFlags>()
 
 // Build metadata
 
 group = "io.github.moulberry"
-val baseVersion = "2.1"
 
-
-val buildExtra = mutableListOf<String>()
-val buildVersion = properties["BUILD_VERSION"] as? String
-if (buildVersion != null) buildExtra.add(buildVersion)
-if (properties["CI"] as? String == "true") buildExtra.add("ci")
-
-val stdout = ByteArrayOutputStream()
-val execResult = exec {
-		commandLine("git", "describe", "--always", "--first-parent", "--abbrev=7")
-		standardOutput = stdout
-		isIgnoreExitValue = true
-}
-if (execResult.exitValue == 0) {
-		buildExtra.add(String(stdout.toByteArray()).trim())
-}
-
-val gitDiffStdout = ByteArrayOutputStream()
-val gitDiffResult = exec {
-		commandLine("git", "status", "--porcelain")
-		standardOutput = gitDiffStdout
-		isIgnoreExitValue = true
-}
-if (gitDiffStdout.toByteArray().isNotEmpty()) {
-		buildExtra.add("dirty")
-}
-
-version = baseVersion + (if (buildExtra.isEmpty()) "" else buildExtra.joinToString(prefix = "+", separator = "."))
-
+setVersionFromEnvironment("2.1")
 
 // Minecraft configuration:
 loom {
@@ -106,6 +79,17 @@ val shadowImplementation by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
 
+val shadowApi by configurations.creating {
+		configurations.implementation.get().extendsFrom(this)
+}
+
+val devEnv by configurations.creating {
+		configurations.runtimeClasspath.get().extendsFrom(this)
+		isCanBeResolved = false
+		isCanBeConsumed = false
+		isVisible = false
+}
+
 dependencies {
 		minecraft("com.mojang:minecraft:1.8.9")
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
@@ -115,17 +99,18 @@ dependencies {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
 		}
 		annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
-		shadowImplementation("info.bliki.wiki:bliki-core:3.1.0")
+		shadowApi("info.bliki.wiki:bliki-core:3.1.0")
 		testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 		testAnnotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
 
-		modRuntimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
+		devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 }
 
 
 
 java {
+		withSourcesJar()
 		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
@@ -162,7 +147,7 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 
 tasks.shadowJar {
 		archiveClassifier.set("dep-dev")
-		configurations = listOf(shadowImplementation)
+		configurations = listOf(shadowImplementation, shadowApi)
 		exclude("**/module-info.class", "LICENSE.txt")
 		dependencies {
 				exclude {
@@ -175,22 +160,8 @@ tasks.shadowJar {
 
 tasks.assemble.get().dependsOn(remapJar)
 
-val generateBuildFlags by tasks.creating {
-		outputs.upToDateWhen { false }
-		val t = layout.buildDirectory.file("buildflags.properties")
-		outputs.file(t)
-		val props = project.properties.filter { (name, value) -> name.startsWith("neu.buildflags.") }
-		doLast {
-				val p = Properties()
-				p.putAll(props)
-				t.get().asFile.writer(StandardCharsets.UTF_8).use {
-						p.store(it, "Store build time configuration for NEU")
-				}
-		}
-}
-
 tasks.processResources {
-		from(generateBuildFlags)
+		from(tasks["generateBuildFlags"])
 		filesMatching("mcmod.info") {
 				expand(
 						"version" to project.version, "mcversion" to "1.8.9"
@@ -201,3 +172,9 @@ tasks.processResources {
 sourceSets.main {
 		output.setResourcesDir(file("$buildDir/classes/java/main"))
 }
+
+applyPublishingInformation(
+		"deobf" to tasks.jar,
+		"all" to tasks.remapJar,
+		"sources" to tasks["sourcesJar"],
+)
