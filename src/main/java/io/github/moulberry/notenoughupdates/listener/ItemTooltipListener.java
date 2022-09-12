@@ -906,15 +906,11 @@ public class ItemTooltipListener {
 			boolean m = Keyboard.isKeyDown(Keyboard.KEY_M);
 			boolean n = Keyboard.isKeyDown(Keyboard.KEY_N);
 			boolean f = Keyboard.isKeyDown(Keyboard.KEY_F);
-			boolean l = Keyboard.isKeyDown(Keyboard.KEY_L);
 
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
 			}
 
-			if (!copied && l) {
-				NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = !NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
-			}
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +
@@ -953,7 +949,7 @@ public class ItemTooltipListener {
 				}
 			}
 
-			copied = k || m || n || f || l;
+			copied = k || m || n || f;
 		}
 	}
 }
