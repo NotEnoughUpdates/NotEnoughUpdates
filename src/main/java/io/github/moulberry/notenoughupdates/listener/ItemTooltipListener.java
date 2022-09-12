@@ -382,6 +382,7 @@ public class ItemTooltipListener {
 				}
 			}
 			if (hasEnchantments || hasAttributes) {
+				ArrayList<String> addedEnchants = new ArrayList<>();
 				for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
 					List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
 					String enchantName = GuiEnchantColour.getColourOpIndex(colourOps, 0);
@@ -475,20 +476,22 @@ public class ItemTooltipListener {
 							String extraMods = extraModifiersBuilder.toString();
 
 							if (!colourCode.equals("z")) {
-								line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
-								line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
-								line = line.replace(
-									"\u00A79\u00A7d\u00A7l" + enchantText,
-									"\u00A7" + colourCode + extraMods + enchantText
-								);
-								line = line.replace(
-									"\u00A7b\u00A7d\u00A7l" + enchantText,
-									"\u00A7" + colourCode + extraMods + enchantText
-								);
-								line = line.replace(
-									"\u00A7l\u00A7d\u00A7l" + enchantText,
-									"\u00A7" + colourCode + extraMods + enchantText
-								);
+								if (!addedEnchants.contains(enchantText)) {
+									line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
+									line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
+									line = line.replace(
+										"\u00A79\u00A7d\u00A7l" + enchantText,
+										"\u00A7" + colourCode + extraMods + enchantText
+									);
+									line = line.replace(
+										"\u00A7b\u00A7d\u00A7l" + enchantText,
+										"\u00A7" + colourCode + extraMods + enchantText
+									);
+									line = line.replace(
+										"\u00A7l\u00A7d\u00A7l" + enchantText,
+										"\u00A7" + colourCode + extraMods + enchantText
+									);
+								}
 							} else {
 								int offset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line.replaceAll(
 									"\\u00A79" + enchantText + ".*",
@@ -516,6 +519,7 @@ public class ItemTooltipListener {
 									Utils.chromaString(enchantText, offset / 12f + index, true)
 								);
 							}
+							addedEnchants.add(enchantText);
 						}
 					}
 				}
