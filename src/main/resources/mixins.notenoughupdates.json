@@ -40,7 +40,6 @@
     "MixinRenderGlobal",
     "MixinRenderItem",
     "MixinRenderList",
-    "MixinSkyclientCosmetics",
     "MixinTextureManager",
     "MixinTileEntitySkullRenderer",
     "MixinTileEntitySpecialRenderer",
