@@ -787,8 +787,10 @@ public class RenderListener {
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
-							if (bazaarPrice > 0) {
+ 							boolean isOnBz = false;
+							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
+								isOnBz = true;
 							} else {
 								switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
 									case 1:
@@ -826,7 +828,7 @@ public class RenderListener {
 								}
 							}
 
-							if (worth > 0 && totalValue >= 0) {
+							if ((worth >= 0 || isOnBz) && totalValue >= 0) {
 								totalValue += worth;
 								String display = item.getDisplayName();
 
