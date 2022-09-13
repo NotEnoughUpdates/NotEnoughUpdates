@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
@@ -59,16 +58,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 	}
 
 	private boolean shouldUpdate() {
-		//prevent rendering when tab completing a command
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
-			return false;
-		}
-
-		//prevent rendering when tab completing in ah search overlay
-		if (AuctionSearchOverlay.shouldReplace()) {
-			return false;
-		}
-
-		return true;
+		//prevent rendering unless no gui is open
+		return Minecraft.getMinecraft().currentScreen == null;
 	}
 }
