@@ -59,10 +59,10 @@ public abstract class TextTabOverlay extends TextOverlay {
 	}
 
 	private boolean shouldUpdate() {
-			//prevent rendering when tab completing a command
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
-				return false;
-			}
+		//prevent rendering when tab completing a command
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
+			return false;
+		}
 
 		//prevent rendering when tab completing in ah search overlay
 		if (AuctionSearchOverlay.shouldReplace()) {
