@@ -75,6 +75,8 @@ public class CalendarOverlay {
 
 	private static boolean enabled = false;
 
+	public static boolean ableToClickCalendar = true;
+
 	public static void setEnabled(boolean enabled) {
 		CalendarOverlay.enabled = enabled;
 	}
@@ -479,8 +481,7 @@ public class CalendarOverlay {
 
 				guiLeft = (width - xSize) / 2;
 				guiTop = 5;
-
-				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize) {
+				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize && ableToClickCalendar) {
 					if (mouseY >= guiTop && mouseY <= guiTop + ySize) {
 						ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neucalendar");
 					}

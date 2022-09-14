@@ -45,6 +45,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
@@ -83,11 +84,12 @@ public class StorageManager {
 	private static final StorageManager INSTANCE = new StorageManager();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-		.registerTypeAdapter(ItemStack.class, new ItemStackDeserilizer()).create();
+		.registerTypeAdapter(ItemStack.class, new ItemStackDeserializer()).create();
 
 	public static class ItemStackSerializer implements JsonSerializer<ItemStack> {
 		@Override
 		public JsonElement serialize(ItemStack src, Type typeOfSrc, JsonSerializationContext context) {
+			fixPetInfo(src);
 			NBTTagCompound tag = src.serializeNBT();
 			return nbtToJson(tag);
 		}
@@ -95,7 +97,7 @@ public class StorageManager {
 
 	private static final Pattern JSON_FIX_REGEX = Pattern.compile("\"([^,:]+)\":");
 
-	public static class ItemStackDeserilizer implements JsonDeserializer<ItemStack> {
+	public static class ItemStackDeserializer implements JsonDeserializer<ItemStack> {
 		@Override
 		public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 			throws JsonParseException {
@@ -133,6 +135,63 @@ public class StorageManager {
 
 	private static JsonObject nbtToJson(NBTTagCompound NBTTagCompound) {
 		return (JsonObject) loadJson(NBTTagCompound);
+	}
+
+	private static class PetInfo {
+		String type;
+		Boolean active;
+		Double exp;
+		String tier;
+		Boolean hideInfo;
+		Integer candyUsed;
+		String uuid;
+		Boolean hideRightClick;
+		String heldItem;
+		String skin;
+
+		private <T> void appendIfNotNull(StringBuilder builder, String key, T value) {
+			if (value != null) {
+				if (builder.indexOf("{") != builder.length()-1) {
+					builder.append(",");
+				}
+				builder.append(key).append(":");
+				if (value instanceof String) {
+					builder.append("\"").append(value).append("\"");
+				} else {
+					builder.append(value);
+				}
+			}
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder object = new StringBuilder();
+			object.append("{");
+			appendIfNotNull(object, "type", type);
+			appendIfNotNull(object, "active", active);
+			appendIfNotNull(object, "exp", exp);
+			appendIfNotNull(object, "tier", tier);
+			appendIfNotNull(object, "hideInfo", hideInfo);
+			appendIfNotNull(object, "candyUsed", candyUsed);
+			appendIfNotNull(object, "uuid", uuid);
+			appendIfNotNull(object, "hideRightClick", hideRightClick);
+			appendIfNotNull(object, "heldItem", heldItem);
+			appendIfNotNull(object, "skin", skin);
+			object.append("}");
+			return object.toString();
+		}
+	}
+
+	private static void fixPetInfo(ItemStack src) {
+		if (src.getTagCompound() == null || !src.getTagCompound().hasKey("ExtraAttributes") || !src.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("petInfo")) return;
+		PetInfo oldPetInfo = GSON.fromJson(src.getTagCompound().getCompoundTag("ExtraAttributes").getString("petInfo"), PetInfo.class);
+		src.getTagCompound().getCompoundTag("ExtraAttributes").removeTag("petInfo");
+		try {
+			src.getTagCompound().getCompoundTag("ExtraAttributes").setTag(
+				"petInfo",
+				JsonToNBT.getTagFromJson(oldPetInfo.toString())
+			);
+		} catch (NBTException | NullPointerException ignored) {}
 	}
 
 	private static JsonElement loadJson(NBTBase tag) {

@@ -45,6 +45,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
@@ -445,11 +446,18 @@ public class RenderListener {
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
+			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
 			GuiCustomEnchant.getInstance().render(event.renderPartialTicks);
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -595,6 +603,7 @@ public class RenderListener {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
+			if (GuiCustomHex.getInstance().shouldOverride(containerName)) return;
 			if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) return;
 		}
 
@@ -1050,11 +1059,17 @@ public class RenderListener {
 			}
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().mouseInput(mouseX, mouseY)) {
+			event.setCanceled(true);
+			return;
+		}
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().mouseInput(mouseX, mouseY)) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -1519,11 +1534,18 @@ public class RenderListener {
 				.getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().keyboardInput()) {
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().keyboardInput()) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);

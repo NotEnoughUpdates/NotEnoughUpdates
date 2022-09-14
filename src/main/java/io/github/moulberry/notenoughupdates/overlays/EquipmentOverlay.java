@@ -422,6 +422,36 @@ public class EquipmentOverlay {
 		return offset + 20;
 	}
 
+	public void renderPreviewArmorHud() {
+		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) return;
+
+		int width = Utils.peekGuiScale().getScaledWidth();
+		int height = Utils.peekGuiScale().getScaledHeight();
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomEquipmentTexture(NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay));
+
+		GlStateManager.color(1, 1, 1, 1);
+		GL11.glTranslatef(0, 0, 401);
+		float yNumber = (float) (height - 167) / 2f;
+		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
+	}
+
+	public void renderPreviewPetInvHud() {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) return;
+
+		int width = Utils.peekGuiScale().getScaledWidth();
+		int height = Utils.peekGuiScale().getScaledHeight();
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomPetTexture(NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud));
+
+		GlStateManager.color(1, 1, 1, 1);
+		GL11.glTranslatef(0, 0, 401);
+		float yNumber = (float) (height - 23) / 2f;
+		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
+		GlStateManager.bindTexture(0);
+	}
+
 	public ItemStack slot1 = null;
 	public ItemStack slot2 = null;
 	public ItemStack slot3 = null;
