@@ -243,7 +243,7 @@ public class GuiCustomHex extends Gui {
 			searchField.setText("");
 			return false;
 		}
-		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
+		boolean config = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableHexGUI;
 		final List<String> gemList = new ArrayList<>(Arrays.asList(
 			"\u2764",
 			"\u2748",
@@ -4334,7 +4334,7 @@ public class GuiCustomHex extends Gui {
 
 				switch (index) {
 					case 0: {
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = false;
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableHexGUI = false;
 						break;
 					}
 					case 2: {

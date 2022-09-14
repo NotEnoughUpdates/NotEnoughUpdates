@@ -28,7 +28,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption
 
 public class Enchanting {
 	@ConfigOption(
-		name = "Enchant Table GUI",
+		name = "Enchant Table / Hex GUI",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 1)
@@ -42,6 +42,15 @@ public class Enchanting {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
 	public boolean enableTableGUI = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Hex GUI",
+		desc = "Show a custom GUI when using the Hex"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean enableHexGUI = true;
 
 	/*@Expose
 	@ConfigOption(

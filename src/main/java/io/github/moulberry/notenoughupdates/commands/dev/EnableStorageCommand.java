@@ -17,23 +17,23 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.mixins;
+package io.github.moulberry.notenoughupdates.commands.dev;
 
-import net.minecraftforge.event.world.WorldEvent;
-import org.spongepowered.asm.mixin.Dynamic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
 
-@Pseudo
-@Mixin(targets = "co.skyclient.scc.SkyclientCosmetics")
-public class MixinSkyclientCosmetics {
+public class EnableStorageCommand extends ClientCommandBase {
 
-	@Dynamic
-	@Inject(method = "onWorldLoad", at = @At("HEAD"), cancellable = true, remap = false)
-	public void onWorldLoad(WorldEvent.Load event, CallbackInfo ci) {
-		ci.cancel();
+	public EnableStorageCommand() {
+		super("neuenablestorage");
 	}
+
+	@Override
+	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+		NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true;
+		NotEnoughUpdates.INSTANCE.saveConfig();
+	}
+
 }

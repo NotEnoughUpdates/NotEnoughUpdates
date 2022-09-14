@@ -382,6 +382,7 @@ public class ItemTooltipListener {
 				}
 			}
 			if (hasEnchantments || hasAttributes) {
+				ArrayList<String> addedEnchants = new ArrayList<>();
 				for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
 					List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
 					String enchantName = GuiEnchantColour.getColourOpIndex(colourOps, 0);
@@ -475,20 +476,22 @@ public class ItemTooltipListener {
 							String extraMods = extraModifiersBuilder.toString();
 
 							if (!colourCode.equals("z")) {
-								line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
-								line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
-								line = line.replace(
-									"\u00A79\u00A7d\u00A7l" + enchantText,
-									"\u00A7" + colourCode + extraMods + enchantText
-								);
-								line = line.replace(
-									"\u00A7b\u00A7d\u00A7l" + enchantText,
-									"\u00A7" + colourCode + extraMods + enchantText
-								);
-								line = line.replace(
-									"\u00A7l\u00A7d\u00A7l" + enchantText,
-									"\u00A7" + colourCode + extraMods + enchantText
-								);
+								if (!addedEnchants.contains(enchantText)) {
+									line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
+									line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
+									line = line.replace(
+										"\u00A79\u00A7d\u00A7l" + enchantText,
+										"\u00A7" + colourCode + extraMods + enchantText
+									);
+									line = line.replace(
+										"\u00A7b\u00A7d\u00A7l" + enchantText,
+										"\u00A7" + colourCode + extraMods + enchantText
+									);
+									line = line.replace(
+										"\u00A7l\u00A7d\u00A7l" + enchantText,
+										"\u00A7" + colourCode + extraMods + enchantText
+									);
+								}
 							} else {
 								int offset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line.replaceAll(
 									"\\u00A79" + enchantText + ".*",
@@ -516,6 +519,7 @@ public class ItemTooltipListener {
 									Utils.chromaString(enchantText, offset / 12f + index, true)
 								);
 							}
+							addedEnchants.add(enchantText);
 						}
 					}
 				}
@@ -689,18 +693,6 @@ public class ItemTooltipListener {
 			index++;
 		}
 
-		for (int i = newTooltip.size() - 1; i >= 0; i--) {
-			String line = Utils.cleanColour(newTooltip.get(i));
-			for (int i1 = 0; i1 < Utils.rarityArr.length; i1++) {
-				if (line.equals(Utils.rarityArr[i1])) {
-					if (i - 2 < 0) {
-						break;
-					}
-					newTooltip.addAll(i - 1, petToolTipXPExtend(event));
-					break;
-				}
-			}
-		}
 
 		pressedShiftLast = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		pressedArrowLast = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
@@ -716,64 +708,6 @@ public class ItemTooltipListener {
 			NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip) {
 			event.toolTip.clear();
 		}
-	}
-
-	private List<String> petToolTipXPExtend(ItemTooltipEvent event) {
-		List<String> tooltipText = new ArrayList<>();
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.petExtendExp) {
-			if (event.itemStack.getTagCompound().hasKey("DisablePetExp")) {
-				if (event.itemStack.getTagCompound().getBoolean("DisablePetExp")) {
-					return tooltipText;
-				}
-			}
-			//7 is just a random number i chose, prob no pets with less lines than 7
-			if (event.toolTip.size() > 7) {
-				if (Utils.cleanColour(event.toolTip.get(1)).matches(petToolTipRegex)) {
-
-					GuiProfileViewer.PetLevel petlevel = null;
-
-					//this is the item itself
-					NBTTagCompound tag = event.itemStack.getTagCompound();
-					if (tag.hasKey("ExtraAttributes")) {
-						if (tag.getCompoundTag("ExtraAttributes").hasKey("petInfo")) {
-							JsonObject petInfo = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(tag
-								.getCompoundTag("ExtraAttributes")
-								.getString("petInfo"), JsonObject.class);
-							if (petInfo.has("exp") && petInfo.get("exp").isJsonPrimitive()) {
-								JsonPrimitive exp = petInfo.getAsJsonPrimitive("exp");
-								String petName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(event.itemStack);
-								//Utils.getRarityFromInt(Utils.checkItemTypePet(event.toolTip))).getAsInt();
-								petlevel = GuiProfileViewer.getPetLevel(
-									petName,
-									Utils.getRarityFromInt(Utils.checkItemTypePet(event.toolTip)),
-									exp.getAsLong()
-								);
-							}
-						}
-					}
-
-					if (petlevel != null) {
-						tooltipText.add("");
-						if (petlevel.totalXp > petlevel.maxXP) {
-							tooltipText.add(EnumChatFormatting.AQUA + "" + EnumChatFormatting.BOLD + "MAX LEVEL");
-						} else {
-							tooltipText.add(
-								EnumChatFormatting.GRAY + "Progress to Level " + (int) Math.floor(petlevel.level + 1) + ": " +
-									EnumChatFormatting.YELLOW + Utils.round(petlevel.levelPercentage * 100, 1) + "%");
-							int levelpercentage = Math.round(petlevel.levelPercentage * 20);
-							tooltipText.add(
-								EnumChatFormatting.DARK_GREEN + String.join("", Collections.nCopies(levelpercentage, "-")) +
-									EnumChatFormatting.WHITE + String.join("", Collections.nCopies(20 - levelpercentage, "-")));
-							tooltipText.add(
-								EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petlevel.levelXp) +
-									EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
-									myFormatter.format(petlevel.currentLevelRequirement) + " EXP");
-						}
-					}
-				}
-			}
-		}
-		return tooltipText;
 	}
 
 	private void petToolTipXPExtendPetMenu(ItemTooltipEvent event) {
@@ -906,15 +840,11 @@ public class ItemTooltipListener {
 			boolean m = Keyboard.isKeyDown(Keyboard.KEY_M);
 			boolean n = Keyboard.isKeyDown(Keyboard.KEY_N);
 			boolean f = Keyboard.isKeyDown(Keyboard.KEY_F);
-			boolean l = Keyboard.isKeyDown(Keyboard.KEY_L);
 
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
 			}
 
-			if (!copied && l) {
-				NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = !NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI;
-			}
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +
@@ -953,7 +883,7 @@ public class ItemTooltipListener {
 				}
 			}
 
-			copied = k || m || n || f || l;
+			copied = k || m || n || f;
 		}
 	}
 }
