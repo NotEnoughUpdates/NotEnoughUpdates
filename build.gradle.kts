@@ -162,7 +162,7 @@ tasks.assemble.get().dependsOn(remapJar)
 
 tasks.processResources {
 		from(tasks["generateBuildFlags"])
-		filesMatching("mcmod.info") {
+		filesMatching(listOf("mcmod.info", "fabric.mod.json", "META-INF/mods.toml")) {
 				expand(
 						"version" to project.version, "mcversion" to "1.8.9"
 				)
