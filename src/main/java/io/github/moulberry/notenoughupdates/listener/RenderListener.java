@@ -45,6 +45,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
@@ -445,11 +446,18 @@ public class RenderListener {
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
+			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
 			GuiCustomEnchant.getInstance().render(event.renderPartialTicks);
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -602,6 +610,7 @@ public class RenderListener {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
+			if (GuiCustomHex.getInstance().shouldOverride(containerName)) return;
 			if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) return;
 		}
 
@@ -800,8 +809,10 @@ public class RenderListener {
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
-							if (bazaarPrice > 0) {
+ 							boolean isOnBz = false;
+							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
+								isOnBz = true;
 							} else {
 								switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
 									case 1:
@@ -839,7 +850,7 @@ public class RenderListener {
 								}
 							}
 
-							if (worth > 0 && totalValue >= 0) {
+							if ((worth >= 0 || isOnBz) && totalValue >= 0) {
 								totalValue += worth;
 								String display = item.getDisplayName();
 
@@ -1061,11 +1072,17 @@ public class RenderListener {
 			}
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().mouseInput(mouseX, mouseY)) {
+			event.setCanceled(true);
+			return;
+		}
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().mouseInput(mouseX, mouseY)) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -1530,11 +1547,18 @@ public class RenderListener {
 				.getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().keyboardInput()) {
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().keyboardInput()) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
