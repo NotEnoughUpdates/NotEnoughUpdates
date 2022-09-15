@@ -84,6 +84,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -394,12 +395,24 @@ public class NEUManager {
 		return getUsagesFor(internalname).stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList());
 	}
 
+	private static class DebugMatch {
+		int index;
+		String match;
+
+		DebugMatch(int index, String match) {
+				this.index = index;
+				this.match = match;
+		}
+	}
+
 	/**
 	 * Searches a string for a query. This method is used to mimic the behaviour of the more complex map-based search
 	 * function. This method is used for the chest-item-search feature.
 	 */
 	public boolean searchString(String toSearch, String query) {
 		int lastQueryMatched = -1;
+		int lastStringMatch = -1;
+		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
 		toSearch = clean(toSearch).toLowerCase();
 		query = clean(query).toLowerCase();
@@ -410,12 +423,36 @@ public class NEUManager {
 		for (int j = 0; j < queryArray.length; j++) {
 			for (int i = 0; i < splitToSearch.length; i++) {
 				if ((queryArray.length - (lastQueryMatched != -1 ? lastQueryMatched : 0)) > (splitToSearch.length - i)) continue;
-				if (splitToSearch[i].startsWith(queryArray[j])) {
+				if (splitToSearch[i].startsWith(queryArray[j]) && ((lastStringMatch != -1 ? lastStringMatch : i-1) == i-1)) {
 					lastQueryMatched = j;
+					lastStringMatch = i;
+					debugMatches.add(new DebugMatch(i, queryArray[j]));
 					continue out;
 				}
 			}
 			return false;
+		}
+		if (lastStringMatch != -1 && NotEnoughUpdates.INSTANCE.config.hidden.showSearchbarDebug) {
+			final String ANSI_RED = "\u001B[31m";
+			final String ANSI_RESET = "\u001B[0m";
+			final String ANSI_YELLOW = "\u001B[33m";
+
+			//create debug message
+			StringBuilder debugBuilder = new StringBuilder();
+			for (int i = 0; i < splitToSearch.length; i++) {
+				final int fi = i;
+				Object[] matches = debugMatches.stream().filter((d) -> d.index == fi).toArray();
+
+				if (matches.length > 0) {
+					debugBuilder.append(ANSI_YELLOW + "[").append(((DebugMatch) matches[0]).match).append("]");
+					debugBuilder.append(ANSI_RED + "[").append(splitToSearch[i]).append("]").append(ANSI_RESET).append(" ");
+				} else {
+					debugBuilder.append(splitToSearch[i]).append(" ");
+				}
+			}
+
+			//yellow = query match and red = string match
+			System.out.println("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t " + debugBuilder);
 		}
 
 		return true;
