@@ -240,7 +240,9 @@ public class EquipmentOverlay {
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		PetInfoOverlay.Pet currentPet = PetInfoOverlay.getCurrentPet();
 		if (currentPet == null) return null;
-		ItemStack item = manager.createItem(currentPet.getPetId(false));
+
+		ItemStack item = ItemUtils.getPetLore(currentPet);
+
 		if (item != null) {
 			return item;
 		}
