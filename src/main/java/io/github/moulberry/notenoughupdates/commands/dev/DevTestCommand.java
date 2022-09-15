@@ -195,9 +195,5 @@ public class DevTestCommand extends ClientCommandBase {
 			double z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f;
 			Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z);
 		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("searchStringDebug")) {
-			NotEnoughUpdates.INSTANCE.config.hidden.showSearchbarDebug = !NotEnoughUpdates.INSTANCE.config.hidden.showSearchbarDebug;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(NotEnoughUpdates.INSTANCE.config.hidden.showSearchbarDebug ? "\u00a7aLook into your client logs next time you activate search mode :)" : "\u00a7cSorry to see you go, hope you got what you wanted :("));
-		}
 	}
 }

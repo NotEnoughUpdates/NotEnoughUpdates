@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
+import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
@@ -432,7 +433,7 @@ public class NEUManager {
 			}
 			return false;
 		}
-		if (lastStringMatch != -1 && NotEnoughUpdates.INSTANCE.config.hidden.showSearchbarDebug) {
+		if (lastStringMatch != -1 && NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.SEARCH)) {
 			final String ANSI_RED = "\u001B[31m";
 			final String ANSI_RESET = "\u001B[0m";
 			final String ANSI_YELLOW = "\u001B[33m";
@@ -452,7 +453,7 @@ public class NEUManager {
 			}
 
 			//yellow = query match and red = string match
-			System.out.println("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t " + debugBuilder);
+			NotEnoughUpdates.LOGGER.info("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t " + debugBuilder);
 		}
 
 		return true;

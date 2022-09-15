@@ -475,9 +475,6 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean hasOpenedWaypointMenu = false;
 
-		@Expose
-		public boolean showSearchbarDebug = false;
-
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
