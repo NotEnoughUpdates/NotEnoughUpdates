@@ -205,4 +205,16 @@ public class LocationEdit {
 	)
 	@ConfigAccordionId(id = 3)
 	public Position combatPosition = new Position(10, 200);
+
+	@Expose
+	@ConfigOption(
+		name = "Edit Tracker Position",
+		desc = "Change the position of the Powder Grinding Tracker Overlay (chests and gained powder)"
+	)
+	@ConfigEditorButton(
+		runnableId = 25,
+		buttonText = "Edit"
+	)
+	@ConfigAccordionId(id = 9)
+	public Position powderGrindingTrackerPosition = new Position(10, 265);
 }
