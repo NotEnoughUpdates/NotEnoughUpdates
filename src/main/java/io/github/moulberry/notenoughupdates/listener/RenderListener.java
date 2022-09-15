@@ -52,12 +52,11 @@ import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.MinionHelperOverlay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
-import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
+import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -582,7 +581,6 @@ public class RenderListener {
 							36 / 256f,
 							GL11.GL_NEAREST
 						);
-						MinionHelperOverlay.getInstance().render();
 
 						if (button.icon != null && !button.icon.trim().isEmpty()) {
 							GuiInvButtonEditor.renderIcon(button.icon, x + 1, y + 1);
