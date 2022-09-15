@@ -118,9 +118,7 @@ public class GuiCustomHex extends Gui {
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
-			if (this.enchId.equals("prosecute")) {
-				this.enchId = "PROSECUTE";
-			}
+			this.enchId = fixEnchantId(this.enchId, true);
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -134,7 +132,7 @@ public class GuiCustomHex extends Gui {
 
 						for (int j = 0; j < pool.size(); j++) {
 							String enchIdPoolElement = pool.get(j).getAsString();
-							if (enchId.equalsIgnoreCase(enchIdPoolElement)) {
+							if (this.enchId.equalsIgnoreCase(enchIdPoolElement)) {
 								hasThis = true;
 							} else if (playerEnchantIds.containsKey(enchIdPoolElement)) {
 								hasApplied = true;
@@ -149,8 +147,8 @@ public class GuiCustomHex extends Gui {
 
 				if (level >= 1 && Constants.ENCHANTS.has("enchants_xp_cost")) {
 					JsonObject allCosts = Constants.ENCHANTS.getAsJsonObject("enchants_xp_cost");
-					if (allCosts.has(enchId)) {
-						JsonArray costs = allCosts.getAsJsonArray(enchId);
+					if (allCosts.has(this.enchId)) {
+						JsonArray costs = allCosts.getAsJsonArray(this.enchId);
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
@@ -279,12 +277,16 @@ public class GuiCustomHex extends Gui {
 		}
 
 		shouldOverrideXp = config &&
-			(containerName.length() >= 21 && Objects.equals("Bottles of Enchanting", containerName.substring(0, "Bottles of Enchanting".length()))) &&
+			(containerName.length() >= 21 && Objects.equals(
+				"Bottles of Enchanting",
+				containerName.substring(0, "Bottles of Enchanting".length())
+			)) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
-		CalendarOverlay.ableToClickCalendar = !(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
+		CalendarOverlay.ableToClickCalendar =
+			!(shouldOverrideET || shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp);
 		if (hexStack != null && hexStack.getItem() == Items.experience_bottle)
 			return (shouldOverrideET || shouldOverrideFast);
 		if (!shouldOverrideFast && !shouldOverrideET && !shouldOverrideGemstones && !shouldOverrideXp) {
@@ -564,9 +566,7 @@ public class GuiCustomHex extends Gui {
 											.replace(" ", "_")
 											.replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
-										if (enchId.equals("prosecute")) {
-											enchId = "PROSECUTE";
-										}
+										enchId = fixEnchantId(enchId, true);
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
@@ -1227,13 +1227,30 @@ public class GuiCustomHex extends Gui {
 		return list;
 	}
 
+	private String fixEnchantId(String enchId, boolean useId) {
+		if (Constants.ENCHANTS != null && Constants.ENCHANTS.has("enchant_mapping_id") &&
+			Constants.ENCHANTS.has("enchant_mapping_item")) {
+			JsonArray mappingFrom = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "id" : "item"));
+			JsonArray mappingTo = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "item" : "id"));
+
+			for (int i = 0; i < mappingFrom.size(); i++) {
+				if (mappingFrom.get(i).getAsString().equals(enchId)) {
+					return mappingTo.get(i).getAsString();
+				}
+			}
+
+		}
+		return enchId;
+	}
+
 	public void render(float partialTicks, String containerName) {
 		if (containerName == null) return;
 		if (containerName.equals("The Hex")) {
 			renderHex(partialTicks);
 		} else if (containerName.contains("Enchant Item")) {
 			renderEnchantment(partialTicks);
-		} else if (containerName.contains("Books") || containerName.contains("Modifiers") || containerName.contains("Bottles of Enchanting")) {
+		} else if (containerName.contains("Books") || containerName.contains("Modifiers") || containerName.contains(
+			"Bottles of Enchanting")) {
 			renderBooks(partialTicks);
 		} else if (containerName.contains("Gemstones")) {
 			renderGemstones(partialTicks);
@@ -1638,7 +1655,7 @@ public class GuiCustomHex extends Gui {
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
 			//Enchant name
-			String name = WordUtils.capitalizeFully(enchanterCurrentEnch.enchId.replace("_", " "));
+			String name = WordUtils.capitalizeFully(fixEnchantId(enchanterCurrentEnch.enchId, false).replace("_", " "));
 			if (name.equalsIgnoreCase("Bane of Arthropods")) {
 				name = "Bane of Arth.";
 			} else if (name.equalsIgnoreCase("Projectile Protection")) {
@@ -3770,7 +3787,8 @@ public class GuiCustomHex extends Gui {
 	}
 
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
-		if ((shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp) && currentState != EnchantState.ADDING_ENCHANT) {
+		if ((shouldOverrideFast || shouldOverrideGemstones || shouldOverrideXp) &&
+			currentState != EnchantState.ADDING_ENCHANT) {
 			boolean playerInv = slot.inventory == Minecraft.getMinecraft().thePlayer.inventory;
 			int slotId = slot.getSlotIndex();
 			if (playerInv && slotId < 36) {
