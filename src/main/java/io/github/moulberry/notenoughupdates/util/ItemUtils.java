@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import com.google.gson.JsonArray;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -101,6 +102,22 @@ public class ItemUtils {
 		if (string == null || string.isEmpty())
 			return null;
 		return string;
+	}
+
+	public static String fixEnchantId(String enchId, boolean useId) {
+		if (Constants.ENCHANTS != null && Constants.ENCHANTS.has("enchant_mapping_id") &&
+			Constants.ENCHANTS.has("enchant_mapping_item")) {
+			JsonArray mappingFrom = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "id" : "item"));
+			JsonArray mappingTo = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "item" : "id"));
+
+			for (int i = 0; i < mappingFrom.size(); i++) {
+				if (mappingFrom.get(i).getAsString().equals(enchId)) {
+					return mappingTo.get(i).getAsString();
+				}
+			}
+
+		}
+		return enchId;
 	}
 
 }

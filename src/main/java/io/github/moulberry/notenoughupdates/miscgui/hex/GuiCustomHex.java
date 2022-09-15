@@ -33,6 +33,7 @@ import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -118,7 +119,7 @@ public class GuiCustomHex extends Gui {
 			if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
 				this.price = bazaarInfo.get("curr_buy").getAsInt();
 			}
-			this.enchId = fixEnchantId(this.enchId, true);
+			this.enchId = ItemUtils.fixEnchantId(this.enchId, true);
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -566,7 +567,7 @@ public class GuiCustomHex extends Gui {
 											.replace(" ", "_")
 											.replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
-										enchId = fixEnchantId(enchId, true);
+										enchId = ItemUtils.fixEnchantId(enchId, true);
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
@@ -1227,22 +1228,6 @@ public class GuiCustomHex extends Gui {
 		return list;
 	}
 
-	private String fixEnchantId(String enchId, boolean useId) {
-		if (Constants.ENCHANTS != null && Constants.ENCHANTS.has("enchant_mapping_id") &&
-			Constants.ENCHANTS.has("enchant_mapping_item")) {
-			JsonArray mappingFrom = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "id" : "item"));
-			JsonArray mappingTo = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "item" : "id"));
-
-			for (int i = 0; i < mappingFrom.size(); i++) {
-				if (mappingFrom.get(i).getAsString().equals(enchId)) {
-					return mappingTo.get(i).getAsString();
-				}
-			}
-
-		}
-		return enchId;
-	}
-
 	public void render(float partialTicks, String containerName) {
 		if (containerName == null) return;
 		if (containerName.equals("The Hex")) {
@@ -1655,7 +1640,9 @@ public class GuiCustomHex extends Gui {
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
 			//Enchant name
-			String name = WordUtils.capitalizeFully(fixEnchantId(enchanterCurrentEnch.enchId, false).replace("_", " "));
+			String name = WordUtils.capitalizeFully(ItemUtils
+				.fixEnchantId(enchanterCurrentEnch.enchId, false)
+				.replace("_", " "));
 			if (name.equalsIgnoreCase("Bane of Arthropods")) {
 				name = "Bane of Arth.";
 			} else if (name.equalsIgnoreCase("Projectile Protection")) {
