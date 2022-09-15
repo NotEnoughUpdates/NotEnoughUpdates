@@ -32,7 +32,6 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -860,8 +859,8 @@ public class PetInfoOverlay extends TextOverlay {
 	);
 
 	public static void onStackClick(ItemStack stack, int windowId, int slotId, int mouseButtonClicked, int mode) {
-		if (mode != 0) return;
-		if (mouseButtonClicked != 0 && mouseButtonClicked != 1) return;
+		if (mode != 0 && mode != 3) return;
+		if (mouseButtonClicked != 0 && mouseButtonClicked != 1 && mouseButtonClicked != 2) return;
 
 		int slotIdMod = (slotId - 10) % 9;
 		if (slotId >= 10 && slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
