@@ -32,7 +32,6 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -1044,10 +1043,9 @@ public class PetInfoOverlay extends TextOverlay {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onChatReceived(ClientChatReceivedEvent event) {
 		NEUConfig config = NotEnoughUpdates.INSTANCE.config;
-		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() &&
-			(config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay)) {
+		String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
+		if (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay) {
 			if (event.type == 0) {
-				String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 
 				Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
 				if (autopetMatcher.matches()) {
