@@ -859,7 +859,6 @@ public class PetInfoOverlay extends TextOverlay {
 	);
 
 	public static void onStackClick(ItemStack stack, int windowId, int slotId, int mouseButtonClicked, int mode) {
-		if (mode != 0 && mode != 3) return;
 		if (mouseButtonClicked != 0 && mouseButtonClicked != 1 && mouseButtonClicked != 2) return;
 
 		int slotIdMod = (slotId - 10) % 9;
