@@ -1043,9 +1043,9 @@ public class PetInfoOverlay extends TextOverlay {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onChatReceived(ClientChatReceivedEvent event) {
 		NEUConfig config = NotEnoughUpdates.INSTANCE.config;
-		String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 		if (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay) {
 			if (event.type == 0) {
+				String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 
 				Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
 				if (autopetMatcher.matches()) {
