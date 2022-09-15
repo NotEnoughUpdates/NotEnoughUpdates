@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -106,10 +107,7 @@ public class GuiCustomEnchant extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
-			if (this.enchId.equals("prosecute")) {
-				this.enchId = "PROSECUTE";
-			}
-
+			this.enchId = ItemUtils.fixEnchantId(enchId, true);
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -143,12 +141,12 @@ public class GuiCustomEnchant extends Gui {
 						maxLevel = Constants.ENCHANTS.getAsJsonObject("max_xp_table_levels");
 					}
 
-					if (allCosts.has(enchId)) {
-						JsonArray costs = allCosts.getAsJsonArray(enchId);
+					if (allCosts.has(this.enchId)) {
+						JsonArray costs = allCosts.getAsJsonArray(this.enchId);
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
-								int cost = (maxLevel != null && maxLevel.has(enchId) ? maxLevel.get(enchId).getAsInt() : costs.size());
+								int cost = (maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
 								this.xpCost = costs.get(cost - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
 								this.xpCost = costs.get(level - 1).getAsInt();
@@ -242,7 +240,10 @@ public class GuiCustomEnchant extends Gui {
 		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
-		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) return false;
+		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) {
+			shouldOverrideFast = false;
+			return false;
+		}
 		return shouldOverrideFast;
 	}
 
@@ -456,9 +457,7 @@ public class GuiCustomEnchant extends Gui {
 											.replace(" ", "_")
 											.replace("-", "_");
 										if (enchId.equalsIgnoreCase("_")) continue;
-										if (enchId.equals("prosecute")) {
-											enchId = "PROSECUTE";
-										}
+										enchId = ItemUtils.fixEnchantId(enchId, true);
 										String name = Utils.cleanColour(book.getDisplayName());
 
 										if (searchField.getText().trim().isEmpty() ||
@@ -1071,7 +1070,9 @@ public class GuiCustomEnchant extends Gui {
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
 			//Enchant name
-			String name = WordUtils.capitalizeFully(enchanterCurrentEnch.enchId.replace("_", " "));
+			String name = WordUtils.capitalizeFully(ItemUtils
+				.fixEnchantId(enchanterCurrentEnch.enchId, false)
+				.replace("_", " "));
 			if (name.equalsIgnoreCase("Bane of Arthropods")) {
 				name = "Bane of Arth.";
 			} else if (name.equalsIgnoreCase("Projectile Protection")) {
