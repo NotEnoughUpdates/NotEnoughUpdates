@@ -256,6 +256,10 @@ public class NotEnoughUpdates {
 			saveConfig();
 		}
 
+		if (config != null)
+			if (config.mining.powderGrindingTrackerResetMode == 2)
+				OverlayManager.powderGrindingOverlay.load();
+
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
@@ -333,6 +337,11 @@ public class NotEnoughUpdates {
 	}
 
 	public void saveConfig() {
+		try {
+			OverlayManager.powderGrindingOverlay.save();
+		} catch (Exception ignored) {
+		}
+
 		try {
 			configFile.createNewFile();
 

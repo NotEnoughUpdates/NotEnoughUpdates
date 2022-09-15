@@ -772,7 +772,7 @@ public class Mining {
 		initialIndex = 2
 	)
 	@ConfigAccordionId(id = 9)
-	public int powderGrindingTrackerResetMode = 1;
+	public int powderGrindingTrackerResetMode = 2;
 
 	@Expose
 	@ConfigOption(
