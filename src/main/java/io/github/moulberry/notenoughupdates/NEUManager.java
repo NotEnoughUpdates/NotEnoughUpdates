@@ -433,7 +433,7 @@ public class NEUManager {
 			}
 			return false;
 		}
-		if (lastStringMatch != -1 && NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.SEARCH)) {
+		if (lastStringMatch != -1 && NEUDebugFlag.SEARCH.isSet()) {
 			final String ANSI_RED = "\u001B[31m";
 			final String ANSI_RESET = "\u001B[0m";
 			final String ANSI_YELLOW = "\u001B[33m";
