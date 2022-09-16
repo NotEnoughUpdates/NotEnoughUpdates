@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.GuiInventoryBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
@@ -134,6 +135,8 @@ public class EquipmentOverlay {
 	public static final int ARMOR_OVERLAY_OVERHAND_WIDTH = 24;
 	public static final int ARMOR_OVERLAY_HEIGHT = 86;
 	public static final int ARMOR_OVERLAY_WIDTH = 31;
+	final static int PET_OVERLAY_HEIGHT = 32;
+	final static int PET_OVERLAY_WIDTH = 31;
 	public static final int PET_OVERLAY_OFFSET_Y = ARMOR_OVERLAY_HEIGHT - 14 /* overlaying pixels */;
 	//</editor-fold>
 
@@ -259,7 +262,7 @@ public class EquipmentOverlay {
 		if (screen instanceof GuiChest) {
 			petStack = getRepoPetStack();
 		}
-		if (!(screen instanceof GuiInventory)
+		if ((!(screen instanceof GuiInventory) && !(screen instanceof GuiInvButtonEditor))
 			|| !NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
 			|| !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			shouldRenderPets = shouldRenderArmorHud = false;
@@ -299,7 +302,7 @@ public class EquipmentOverlay {
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 
-		Utils.drawTexturedRect(overlayLeft, overlayTop, 31, 32, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 		GlStateManager.bindTexture(0);
 
 		Utils.drawItemStack(petInfo, overlayLeft + 8, overlayTop + 8, true);
@@ -423,33 +426,28 @@ public class EquipmentOverlay {
 	}
 
 	public void renderPreviewArmorHud() {
-		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) return;
+		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
+		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
 
-		int width = Utils.peekGuiScale().getScaledWidth();
-		int height = Utils.peekGuiScale().getScaledHeight();
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop();
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomEquipmentTexture(NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay));
+		ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
 
-		GlStateManager.color(1, 1, 1, 1);
-		GL11.glTranslatef(0, 0, 401);
-		float yNumber = (float) (height - 167) / 2f;
-		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 86, GL11.GL_NEAREST);
-		GlStateManager.bindTexture(0);
+		Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 	}
 
 	public void renderPreviewPetInvHud() {
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) return;
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay || !(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
+		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 
-		int width = Utils.peekGuiScale().getScaledWidth();
-		int height = Utils.peekGuiScale().getScaledHeight();
+		ResourceLocation petHudTexture = getCustomPetTexture(shouldRenderArmorHud);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(petHudTexture);
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(getCustomPetTexture(NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud));
-
-		GlStateManager.color(1, 1, 1, 1);
-		GL11.glTranslatef(0, 0, 401);
-		float yNumber = (float) (height - 23) / 2f;
-		Utils.drawTexturedRect((float) ((width - 224.1) / 2f), yNumber, 31, 32, GL11.GL_NEAREST);
-		GlStateManager.bindTexture(0);
+		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 	}
 
 	public ItemStack slot1 = null;
