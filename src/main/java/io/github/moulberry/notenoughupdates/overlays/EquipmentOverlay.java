@@ -242,6 +242,7 @@ public class EquipmentOverlay {
 		if (currentPet == null) return null;
 
 		ItemStack item = ItemUtils.getPetLore(currentPet);
+		item = ItemUtils.petToolTipXPExtendPetOverlay(item);
 
 		if (item != null) {
 			return item;

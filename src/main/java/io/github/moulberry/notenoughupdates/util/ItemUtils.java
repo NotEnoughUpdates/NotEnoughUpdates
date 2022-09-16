@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import net.minecraft.item.ItemStack;
@@ -33,6 +34,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -131,12 +133,14 @@ public class ItemUtils {
 	}
 
 	public static ItemStack getPetLore(PetInfoOverlay.Pet currentPet) {
-		JsonObject pet = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(NotEnoughUpdates.INSTANCE.manager.createItem(currentPet.getPetId(false)));
+		JsonObject pet = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(NotEnoughUpdates.INSTANCE.manager.createItem(
+			currentPet.getPetId(false)));
 		String petname = currentPet.petType;
 		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
 		String heldItem = currentPet.petItem;
 		String skin = currentPet.skin;
-		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(heldItem);
+		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+			heldItem);
 		String tierNum = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier);
 		float exp = currentPet.petLevel.totalXp;
 		if (tierNum == null) return null;
@@ -174,7 +178,8 @@ public class ItemUtils {
 						try {
 							float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
 							replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value + entryBoost.getValue())));
-						} catch (Exception ignored) {}
+						} catch (Exception ignored) {
+						}
 					}
 				}
 				if (petStatBootsMult != null) {
@@ -182,7 +187,8 @@ public class ItemUtils {
 						try {
 							float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
 							replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value * entryBoost.getValue())));
-						} catch (Exception ignored) {}
+						} catch (Exception ignored) {
+						}
 					}
 				}
 			}
@@ -273,7 +279,7 @@ public class ItemUtils {
 			// Adds the missing pet fields to the tag
 			NBTTagCompound extraAttributes = new NBTTagCompound();
 			JsonObject petInfo = new JsonObject();
-			if(tag.hasKey("ExtraAttributes", 10)) {
+			if (tag.hasKey("ExtraAttributes", 10)) {
 				extraAttributes = tag.getCompoundTag("ExtraAttributes");
 				if (extraAttributes.hasKey("petInfo", 8)) {
 					petInfo = new JsonParser().parse(extraAttributes.getString("petInfo")).getAsJsonObject();
@@ -292,6 +298,80 @@ public class ItemUtils {
 			tag.setTag("ExtraAttributes", extraAttributes);
 			stack.setTagCompound(tag);
 		}
+		return stack;
+	}
+
+	private static final DecimalFormat decimalFormatter = new DecimalFormat("#,###,###.###");
+
+	public static ItemStack petToolTipXPExtendPetOverlay(ItemStack stack) {
+		NBTTagCompound tag = stack.getTagCompound() == null ? new NBTTagCompound() : stack.getTagCompound();
+		if (tag.hasKey("display", 10)) {
+			NBTTagCompound display = tag.getCompoundTag("display");
+			if (display.hasKey("Lore", 9)) {
+				NBTTagList lore = display.getTagList("Lore", 8);
+				if (Utils.cleanColour(lore.getStringTagAt(0)).matches(ItemTooltipListener.petToolTipRegex) &&
+					lore.tagCount() > 7) {
+
+					GuiProfileViewer.PetLevel petLevel;
+
+					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
+						stack.getTagCompound()
+					);
+					if (pet == null) return stack;
+					petLevel = pet.petLevel;
+					if (petLevel == null) return stack;
+
+					NBTTagList newLore = new NBTTagList();
+					int maxLvl = 100;
+					if (Constants.PETS != null && Constants.PETS.has("custom_pet_leveling") &&
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").has(pet.petType.toUpperCase()) &&
+						Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(pet.petType.toUpperCase()).has(
+							"max_level")) {
+						maxLvl =
+							Constants.PETS
+								.getAsJsonObject("custom_pet_leveling")
+								.getAsJsonObject(pet.petType.toUpperCase())
+								.get("max_level")
+								.getAsInt();
+					}
+					for (int i = 0; i < lore.tagCount(); i++) {
+						if (i == lore.tagCount() - 2) {
+							newLore.appendTag(new NBTTagString(""));
+							if (petLevel.level >= maxLvl) {
+								newLore.appendTag(new NBTTagString(
+									EnumChatFormatting.AQUA + "" + EnumChatFormatting.BOLD + "MAX LEVEL"));
+							} else {
+								double levelPercent = (Math.round(petLevel.levelPercentage * 1000) / 10.0);
+								newLore.appendTag(new NBTTagString(
+									EnumChatFormatting.GRAY + "Progress to Level " + (int) (petLevel.level + 1) + ": " +
+										EnumChatFormatting.YELLOW + levelPercent + "%"));
+								StringBuilder sb = new StringBuilder();
+
+								for (int j = 0; j < 20; j++) {
+									if (j < (levelPercent / 5)) {
+										sb.append(EnumChatFormatting.DARK_GREEN);
+									} else {
+										sb.append(EnumChatFormatting.GRAY);
+									}
+									sb.append("-");
+								}
+								newLore.appendTag(new NBTTagString(sb.toString()));
+								newLore.appendTag(new NBTTagString(
+									EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW +
+										decimalFormatter.format(petLevel.levelXp) +
+										EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
+										decimalFormatter.format(petLevel.currentLevelRequirement)
+								));
+							}
+						}
+						newLore.appendTag(lore.get(i));
+					}
+					display.setTag("Lore", newLore);
+					tag.setTag("display", display);
+				}
+			}
+		}
+		stack.setTagCompound(tag);
 		return stack;
 	}
 
