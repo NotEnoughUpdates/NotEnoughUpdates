@@ -465,10 +465,12 @@ public class GuiCustomHex extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace(
-										"-",
-										"_"
-									);
+									String enchId = Utils
+										.cleanColour(book.getDisplayName())
+										.toLowerCase()
+										.replace(" ", "_")
+										.replace("-", "_")
+										.replaceAll("[^a-z_]", "");
 									String name = Utils.cleanColour(book.getDisplayName());
 									int enchLevel = -1;
 									if (name.equalsIgnoreCase("Bane of Arthropods")) {
@@ -572,7 +574,8 @@ public class GuiCustomHex extends Gui {
 											.cleanColour(book.getDisplayName())
 											.toLowerCase()
 											.replace(" ", "_")
-											.replace("-", "_");
+											.replace("-", "_")
+											.replaceAll("[^a-z_]", "");
 										if (enchId.equalsIgnoreCase("_")) continue;
 										enchId = ItemUtils.fixEnchantId(enchId, true);
 										String name = Utils.cleanColour(book.getDisplayName());
