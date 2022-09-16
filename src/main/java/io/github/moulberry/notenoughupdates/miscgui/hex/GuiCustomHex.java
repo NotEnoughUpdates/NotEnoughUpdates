@@ -494,6 +494,13 @@ public class GuiCustomHex extends Gui {
 											String price = numberFormat.format(enchantment.price);
 											enchantment.displayLore.set(index, "\u00a76" + price + ".0 Coins");
 										}
+										if (lore.contains("Loading...")) {
+											if (enchantment.price > 0) {
+												enchantment.displayLore.set(index, "\u00a7eClick to buy on the Bazaar!");
+											} else {
+												enchantment.displayLore.set(index, "\u00a7cNot enough supply on the Bazaar!");
+											}
+										}
 										index++;
 									}
 									enchantment.displayLore.remove(0);
@@ -1638,6 +1645,48 @@ public class GuiCustomHex extends Gui {
 				false
 			);
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
+
+			String priceStr = "" + numberFormat.format(enchanterCurrentEnch.price) + " Coins";
+			if (enchanterCurrentEnch.price < 0) priceStr = "";
+			int priceWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(priceStr);
+			int priceTop = guiTop + 16;
+			int x = 180;
+			int color = 0x2d2102;
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2 - 1,
+				priceTop + 4,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2 + 1,
+				priceTop + 4,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2,
+				priceTop + 4 - 1,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2,
+				priceTop + 4 + 1,
+				color,
+				false
+			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(
+				priceStr,
+				guiLeft + x - priceWidth / 2,
+				priceTop + 4,
+				0xfcba03,
+				false
+			);
 
 			//Enchant name
 			String name = WordUtils.capitalizeFully(ItemUtils
