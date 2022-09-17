@@ -282,7 +282,7 @@ public class ItemTooltipRngListener {
 		String name = (String) runsData.keySet().toArray()[currentSelected];
 		int gainPerRun = runsData.get(name);
 
-		int runsNeeded = needed / gainPerRun;
+		int runsNeeded = (int) Math.floor((double) needed / (double) gainPerRun);
 		int runsHaving = having / gainPerRun;
 		String runsNeededFormat = GuiProfileViewer.numberFormat.format(runsNeeded);
 		String runsHavingFormat = GuiProfileViewer.numberFormat.format(runsHaving);
