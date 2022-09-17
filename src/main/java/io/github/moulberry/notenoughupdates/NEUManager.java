@@ -91,6 +91,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -406,12 +409,39 @@ public class NEUManager {
 		}
 	}
 
+
+	private String searchDebug(String[] searchArray, ArrayList<DebugMatch> debugMatches) {
+		//splitToSearch, debugMatches and query
+		final String ANSI_RED = "\u001B[31m";
+		final String ANSI_RESET = "\u001B[0m";
+		final String ANSI_YELLOW = "\u001B[33m";
+
+		//create debug message
+		StringBuilder debugBuilder = new StringBuilder();
+		for (int i = 0; i < searchArray.length; i++) {
+			final int fi = i;
+			Object[] matches = debugMatches.stream().filter((d) -> d.index == fi).toArray();
+
+			if (matches.length > 0) {
+				debugBuilder.append(ANSI_YELLOW + "[").append(((DebugMatch) matches[0]).match).append("]");
+				debugBuilder.append(ANSI_RED + "[").append(searchArray[i]).append("]").append(ANSI_RESET).append(" ");
+			} else {
+				debugBuilder.append(searchArray[i]).append(" ");
+			}
+		}
+
+		//yellow = query match and red = string match
+		return debugBuilder.toString();
+	}
+
 	/**
 	 * Searches a string for a query. This method is used to mimic the behaviour of the more complex map-based search
 	 * function. This method is used for the chest-item-search feature.
 	 */
 	public boolean searchString(String toSearch, String query) {
-		int lastQueryMatched = -1;
+		final String ANSI_RESET = "\u001B[0m";
+		final String ANSI_YELLOW = "\u001B[33m";
+
 		int lastStringMatch = -1;
 		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
@@ -420,43 +450,43 @@ public class NEUManager {
 		String[] splitToSearch = toSearch.split(" ");
 		String[] queryArray = query.split(" ");
 
-		out:
-		for (int j = 0; j < queryArray.length; j++) {
-			for (int i = 0; i < splitToSearch.length; i++) {
-				if ((queryArray.length - (lastQueryMatched != -1 ? lastQueryMatched : 0)) > (splitToSearch.length - i)) continue;
-				if (splitToSearch[i].startsWith(queryArray[j]) && ((lastStringMatch != -1 ? lastStringMatch : i-1) == i-1)) {
-					lastQueryMatched = j;
-					lastStringMatch = i;
-					debugMatches.add(new DebugMatch(i, queryArray[j]));
-					continue out;
-				}
-			}
-			return false;
-		}
-		if (lastStringMatch != -1 && NEUDebugFlag.SEARCH.isSet()) {
-			final String ANSI_RED = "\u001B[31m";
-			final String ANSI_RESET = "\u001B[0m";
-			final String ANSI_YELLOW = "\u001B[33m";
+		{
+			String currentSearch = queryArray[0];
+			int queryIndex = 0;
+			boolean matchedLastQueryItem = false;
 
-			//create debug message
-			StringBuilder debugBuilder = new StringBuilder();
-			for (int i = 0; i < splitToSearch.length; i++) {
-				final int fi = i;
-				Object[] matches = debugMatches.stream().filter((d) -> d.index == fi).toArray();
-
-				if (matches.length > 0) {
-					debugBuilder.append(ANSI_YELLOW + "[").append(((DebugMatch) matches[0]).match).append("]");
-					debugBuilder.append(ANSI_RED + "[").append(splitToSearch[i]).append("]").append(ANSI_RESET).append(" ");
-				} else {
-					debugBuilder.append(splitToSearch[i]).append(" ");
+			for (int k = 0; k < splitToSearch.length; k++) {
+				if ((queryArray.length - (queryIndex-1 != -1 ? queryIndex-1 : 0)) > (splitToSearch.length - k)) continue;
+				if (splitToSearch[k].startsWith(currentSearch)) {
+					if (((lastStringMatch != -1 ? lastStringMatch : k-1) == k-1)) {
+						debugMatches.add(new DebugMatch(k, currentSearch));
+						lastStringMatch = k;
+						if (queryIndex+1 != queryArray.length) {
+							queryIndex++;
+							currentSearch = queryArray[queryIndex];
+						} else {
+							matchedLastQueryItem = true;
+						}
+					}
+				} else if (queryIndex != 0) {
+					queryIndex = 0;
+					currentSearch = queryArray[queryIndex];
+					lastStringMatch = -1;
 				}
 			}
 
-			//yellow = query match and red = string match
-			NotEnoughUpdates.LOGGER.info("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t " + debugBuilder);
-		}
+			if (matchedLastQueryItem) {
+				if (NEUDebugFlag.SEARCH.isSet()) {
+					NotEnoughUpdates.LOGGER.info("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" + searchDebug(splitToSearch, debugMatches));
+				}
+			} else {
+				if (NEUDebugFlag.SEARCH.isSet() && lastStringMatch != -1) {
+					NotEnoughUpdates.LOGGER.info("Found partial match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" + searchDebug(splitToSearch, debugMatches));
+				}
+			}
 
-		return true;
+			return matchedLastQueryItem;
+		}
 	}
 
 	/**
