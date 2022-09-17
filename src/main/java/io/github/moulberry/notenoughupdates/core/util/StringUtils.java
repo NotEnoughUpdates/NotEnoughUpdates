@@ -102,4 +102,17 @@ public class StringUtils {
 		int start = string.lastIndexOf(toReplace);
 		return string.substring(0, start) + replacement + string.substring(start + toReplace.length());
 	}
+
+	public static boolean isNumeric(String string) {
+		if (string == null || string.isEmpty()) {
+			return false;
+		}
+
+		for (char c : string.toCharArray()) {
+			if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
