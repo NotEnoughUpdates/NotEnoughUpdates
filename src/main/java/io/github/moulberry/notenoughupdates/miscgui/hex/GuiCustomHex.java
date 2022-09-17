@@ -148,12 +148,20 @@ public class GuiCustomHex extends Gui {
 
 				if (level >= 1 && Constants.ENCHANTS.has("enchants_xp_cost")) {
 					JsonObject allCosts = Constants.ENCHANTS.getAsJsonObject("enchants_xp_cost");
+					JsonObject maxLevel = null;
+					if (NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel && Constants.ENCHANTS.has(
+						"max_xp_table_levels")) {
+						maxLevel = Constants.ENCHANTS.getAsJsonObject("max_xp_table_levels");
+					}
+
 					if (allCosts.has(this.enchId)) {
 						JsonArray costs = allCosts.getAsJsonArray(this.enchId);
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
-								this.xpCost = costs.get(costs.size() - 1).getAsInt();
+								int cost =
+									(maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
+								this.xpCost = costs.get(cost - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
 								this.xpCost = costs.get(level - 1).getAsInt();
 							} else {
@@ -442,7 +450,7 @@ public class GuiCustomHex extends Gui {
 					ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
 					ItemStack xpBottle = cc.getLowerChestInventory().getStackInSlot(50);
 					if (!hasXpBottle && xpBottle != null &&
-						xpBottle.getItem() == Items.experience_bottle) { //Make show when in dungeon screen
+						xpBottle.getItem() == Items.experience_bottle) {
 						String name = "Buy Xp Bottles";
 						String id = "XP_BOTTLE";
 						Enchantment xpBottleEnch = new Enchantment(50, name, id,
@@ -515,10 +523,23 @@ public class GuiCustomHex extends Gui {
 										continue;
 									}
 
+									boolean aboveMaxLevelFromEt = false;
+									if (NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel && Constants.ENCHANTS != null) {
+										JsonObject maxLevel = null;
+										if (Constants.ENCHANTS.has("max_xp_table_levels")) {
+											maxLevel = Constants.ENCHANTS.getAsJsonObject("max_xp_table_levels");
+										}
+										if (maxLevel != null && maxLevel.has(enchId)) {
+											if (enchantment.level > maxLevel.get(enchId).getAsInt()) {
+												aboveMaxLevelFromEt = true;
+											}
+										}
+									}
+
 									if (enchanterCurrentEnch == null) {
 										enchanterCurrentEnch = enchantment;
 									} else if (updateLevel) {
-										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
+										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level && !aboveMaxLevelFromEt) {
 											enchanterCurrentEnch = enchantment;
 										} else if (removingEnchantPlayerLevel >= 0 && enchantment.level < enchanterCurrentEnch.level) {
 											enchanterCurrentEnch = enchantment;
@@ -554,7 +575,7 @@ public class GuiCustomHex extends Gui {
 						ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
 						ItemStack xpBottle = cc.getLowerChestInventory().getStackInSlot(50);
 						if (!hasXpBottle && xpBottle != null &&
-							xpBottle.getItem() == Items.experience_bottle) { //Make show when in dungeon screen
+							xpBottle.getItem() == Items.experience_bottle) {
 							String name = "Buy Xp Bottles";
 							String id = "XP_BOTTLE";
 							Enchantment xpBottleEnch = new Enchantment(50, name, id,
@@ -712,7 +733,7 @@ public class GuiCustomHex extends Gui {
 				ItemStack book = cc.getLowerChestInventory().getStackInSlot(slotIndex);
 				ItemStack randomReforge = cc.getLowerChestInventory().getStackInSlot(48);
 				if (!hasRandomReforge && randomReforge != null &&
-					randomReforge.getItem() == Item.getItemFromBlock(Blocks.anvil)) { //Make show when in dungeon screen
+					randomReforge.getItem() == Item.getItemFromBlock(Blocks.anvil)) {
 					String name = Utils.cleanColour(randomReforge.getDisplayName());
 					String id = Utils.cleanColour(randomReforge.getDisplayName());
 					if (name.equals("Convert to Dungeon Item")) {
@@ -3624,6 +3645,15 @@ public class GuiCustomHex extends Gui {
 					Gui.drawRect(guiLeft + 295, guiTop + 147, guiLeft + 295 + 16, guiTop + 147 + 16, 0x80ffffff);
 					tooltipToDisplay = createTooltip("Enable GUI", 0, "On", "Off");
 					break;
+				case 1:
+					Gui.drawRect(guiLeft + 295 + 18, guiTop + 147, guiLeft + 295 + 16 + 18, guiTop + 147 + 16, 0x80ffffff);
+					tooltipToDisplay = createTooltip("Max Level",
+						(NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel ? 0 : 1),
+						"Enabled", "Disabled");
+					tooltipToDisplay.add(1, EnumChatFormatting.GRAY + "Show max level of enchant");
+					tooltipToDisplay.add(2, EnumChatFormatting.GRAY + "from either hex or enchantment table");
+					tooltipToDisplay.add(3, EnumChatFormatting.GRAY + "max level");
+					break;
 				case 2:
 					Gui.drawRect(guiLeft + 295, guiTop + 147 + 18, guiLeft + 295 + 16, guiTop + 147 + 16 + 18, 0x80ffffff);
 					tooltipToDisplay = createTooltip("Sort enchants...",
@@ -4392,6 +4422,10 @@ public class GuiCustomHex extends Gui {
 				switch (index) {
 					case 0: {
 						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableHexGUI = false;
+						break;
+					}
+					case 1: {
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel = !NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel;
 						break;
 					}
 					case 2: {
