@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
+import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -43,8 +45,31 @@ public class HypixelApi {
 	private final Gson gson = new Gson();
 	private final ExecutorService es = Executors.newFixedThreadPool(3);
 
+	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
+
 	public CompletableFuture<JsonObject> getHypixelApiAsync(String apiKey, String method, HashMap<String, String> args) {
 		return getApiAsync(generateApiUrl(apiKey, method, args));
+	}
+
+	//TODO create class that calls this method aver EVERY world switch
+	public void updateProfileData() {
+		updateProfileData(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
+	}
+
+	public void updateProfileData(String playerUuid) {
+		//TODO remove
+		Utils.addChatMessage("updateProfileData");
+		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
+
+		HashMap<String, String> map = new HashMap<String, String>() {{
+			put("uuid", playerUuid);
+		}};
+		String apiKey = NotEnoughUpdates.INSTANCE.config.apiData.apiKey;
+		updateTasks.put(playerUuid, getHypixelApiAsync(
+			apiKey,
+			"skyblock/profiles",
+			map
+		).thenAccept(jsonObject -> new ProfileDataLoadedEvent(jsonObject).post()));
 	}
 
 	public void getHypixelApiAsync(

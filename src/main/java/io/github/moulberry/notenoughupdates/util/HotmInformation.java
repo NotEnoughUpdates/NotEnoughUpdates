@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -36,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HotmInformation {
@@ -111,8 +111,6 @@ public class HotmInformation {
 
 	}
 
-	private CompletableFuture<Void> updateTask = CompletableFuture.completedFuture(null);
-
 	private boolean shouldReloadSoon = false;
 
 	public HotmInformation(NotEnoughUpdates neu) {
@@ -135,7 +133,7 @@ public class HotmInformation {
 	public synchronized void onLobbyJoin(WorldEvent.Load event) {
 		if (shouldReloadSoon) {
 			shouldReloadSoon = false;
-			requestUpdate(false);
+			neu.manager.hypixelApi.updateProfileData();
 		}
 	}
 
@@ -154,19 +152,7 @@ public class HotmInformation {
 	@SubscribeEvent
 	public synchronized void onChat(ClientChatReceivedEvent event) {
 		if (event.message.getUnformattedText().equals("Welcome to Hypixel SkyBlock!"))
-			requestUpdate(false);
-	}
-
-	public synchronized void requestUpdate(boolean force) {
-		if (updateTask.isDone() || force) {
-			updateTask = neu.manager.hypixelApi.getHypixelApiAsync(
-				neu.config.apiData.apiKey,
-				"skyblock/profiles",
-				new HashMap<String, String>() {{
-					put("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
-				}}
-			).thenAccept(this::updateInformation);
-		}
+			neu.manager.hypixelApi.updateProfileData();
 	}
 
 	/*
@@ -179,9 +165,13 @@ public class HotmInformation {
 		return QUICK_FORGE_MULTIPLIERS[level - 1];
 	}
 
-	public void updateInformation(JsonObject entireApiResponse) {
-		if (!entireApiResponse.has("success") || !entireApiResponse.get("success").getAsBoolean()) return;
-		JsonArray profiles = entireApiResponse.getAsJsonArray("profiles");
+	@SubscribeEvent
+	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
+		JsonObject data = event.getData();
+		if (data == null) return;
+
+		if (!data.has("success") || !data.get("success").getAsBoolean()) return;
+		JsonArray profiles = data.getAsJsonArray("profiles");
 		for (JsonElement element : profiles) {
 			JsonObject profile = element.getAsJsonObject();
 			String profileName = profile.get("cute_name").getAsString();

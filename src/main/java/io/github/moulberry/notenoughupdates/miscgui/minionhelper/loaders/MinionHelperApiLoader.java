@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.ApiData;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -90,16 +91,8 @@ public class MinionHelperApiLoader {
 		dirty = false;
 		String uuid = getUuid();
 		if (uuid == null) return;
-		HashMap<String, String> map = new HashMap<String, String>() {{
-			put("uuid", uuid);
-		}};
 
-		NotEnoughUpdates neu = NotEnoughUpdates.INSTANCE;
-		neu.manager.hypixelApi.getHypixelApiAsync(
-			neu.config.apiData.apiKey,
-			"skyblock/profiles",
-			map
-		).thenAccept(this::updateInformation);
+		NotEnoughUpdates.INSTANCE.manager.hypixelApi.updateProfileData(uuid);
 	}
 
 	private String getUuid() {
@@ -112,15 +105,17 @@ public class MinionHelperApiLoader {
 		return thePlayer.getUniqueID().toString().replace("-", "");
 	}
 
-	private void updateInformation(JsonObject entireApiResponse) {
-		if (entireApiResponse == null) {
+	@SubscribeEvent
+	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
+		JsonObject data = event.getData();
+		if (data == null) {
 			invalidApiKey = true;
 			return;
 		}
 		invalidApiKey = false;
 
-		if (!entireApiResponse.has("success") || !entireApiResponse.get("success").getAsBoolean()) return;
-		JsonArray profiles = entireApiResponse.getAsJsonArray("profiles");
+		if (!data.has("success") || !data.get("success").getAsBoolean()) return;
+		JsonArray profiles = data.getAsJsonArray("profiles");
 		for (JsonElement element : profiles) {
 			JsonObject profile = element.getAsJsonObject();
 			String profileName = profile.get("cute_name").getAsString();
