@@ -30,8 +30,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
-import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -97,7 +97,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
 						String displayName = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
-						if (displayName.length() - tagName.length() > 0 && tagName.equals(displayName.substring(displayName.length() - tagName.length()))) {
+						if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(displayName.length() - tagName.length()))) {
 							ci.cancel();
 
 							this.zLevel = 100.0F;
