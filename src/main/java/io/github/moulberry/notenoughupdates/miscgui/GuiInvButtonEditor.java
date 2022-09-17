@@ -85,6 +85,15 @@ public class GuiInvButtonEditor extends GuiScreen {
 	private int guiLeft;
 	private int guiTop;
 
+	//region getGuiCoordinates
+	public int getGuiLeft() {
+		return this.guiLeft;
+	}
+	public int getGuiTop() {
+		return this.guiTop;
+	}
+	//endregion
+
 	private static final int BACKGROUND_TYPES = 5;
 	private static final int ICON_TYPES = 3;
 	private int iconTypeIndex = 0;
