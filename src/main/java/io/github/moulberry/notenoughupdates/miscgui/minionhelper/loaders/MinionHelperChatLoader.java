@@ -41,7 +41,8 @@ public class MinionHelperChatLoader {
 	//§aYou crafted a §eTier VI Enderman Minion§a! That's a new one!
 
 	//§b[MVP§3+§b] Eisengolem§f §acrafted a §eTier I Birch Minion§a!
-	private final Pattern PATTERN_COOP_MINION = Pattern.compile("(.+)§f §acrafted a §eTier (\\S+) (.+) Minion§a!");
+	private final Pattern PATTERN_COOP_MINION = Pattern.compile(
+		"(.+)§f §acrafted a §eTier (\\S+) (.+) Minion§a!(§r)?(\\r\\n|\\r|\\n)?(.*)?");
 
 	public MinionHelperChatLoader(MinionHelperManager manager) {
 		this.manager = manager;
@@ -56,18 +57,18 @@ public class MinionHelperChatLoader {
 		try {
 			Matcher ownMatcher = PATTERN_OWN_MINION.matcher(message);
 			if (ownMatcher.matches()) {
-				String name = ownMatcher.group(1) + " Minion";
-				String rawTier = ownMatcher.group(2);
+				String rawTier = ownMatcher.group(1);
 				int tier = Utils.parseRomanNumeral(rawTier);
+				String name = ownMatcher.group(2) + " Minion";
 
 				setCrafted(manager.getMinionByName(name, tier));
 			}
 
 			Matcher coopMatcher = PATTERN_COOP_MINION.matcher(message);
 			if (coopMatcher.matches()) {
-				String name = coopMatcher.group(2) + " Minion";
-				String rawTier = coopMatcher.group(3);
+				String rawTier = coopMatcher.group(2);
 				int tier = Utils.parseRomanNumeral(rawTier);
+				String name = coopMatcher.group(3) + " Minion";
 
 				setCrafted(manager.getMinionByName(name, tier));
 				manager.getOverlay().resetCache();

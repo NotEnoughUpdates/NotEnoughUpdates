@@ -62,6 +62,11 @@ public class MinionHelperRequirementsManager {
 			}
 		}
 
+		Minion parent = minion.getParent();
+		if (parent != null) {
+			return meetAllRequirements(parent);
+		}
+
 		return true;
 	}
 
