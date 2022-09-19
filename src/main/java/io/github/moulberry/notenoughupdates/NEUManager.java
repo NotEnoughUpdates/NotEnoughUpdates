@@ -452,7 +452,7 @@ public class NEUManager {
 			boolean matchedLastQueryItem = false;
 
 			for (int k = 0; k < splitToSearch.length; k++) {
-				if ((queryArray.length - (queryIndex-1 != -1 ? queryIndex-1 : 0)) > (splitToSearch.length - k)) continue;
+				if (queryIndex - 1 != -1 && (queryArray.length - queryIndex) > (splitToSearch.length - k)) continue;
 				if (splitToSearch[k].startsWith(currentSearch)) {
 					if (((lastStringMatch != -1 ? lastStringMatch : k-1) == k-1)) {
 						debugMatches.add(new DebugMatch(k, currentSearch));
