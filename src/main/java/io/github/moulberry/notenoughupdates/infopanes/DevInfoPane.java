@@ -81,7 +81,7 @@ public class DevInfoPane extends TextInfoPane {
 		for (String internalname : manager.auctionManager.getItemAuctionInfoKeySet()) {
 			if (internalname.matches("^.*-[0-9]{1,3}$")) continue;
 			if (!manager.getItemInformation().containsKey(internalname)) {
-				if (internalname.equals("RUNE")) continue;
+				if (internalname.equals("RUNE") || internalname.contains("PARTY_HAT_CRAB")) continue;
 				text += internalname + "\n";
 			}
 		}
