@@ -238,7 +238,7 @@ public class ChatListener {
 			}
 			missingRecipe.set(true);
 		}
-		if (unformatted.startsWith("Sending to server") && neu.isOnSkyblock() &&
+		if (unformatted.startsWith("Sending to server") &&
 			NotEnoughUpdates.INSTANCE.config.misc.streamerMode && e.message instanceof ChatComponentText) {
 			String m = e.message.getFormattedText();
 			String m2 = StreamerMode.filterChat(e.message.getFormattedText());
