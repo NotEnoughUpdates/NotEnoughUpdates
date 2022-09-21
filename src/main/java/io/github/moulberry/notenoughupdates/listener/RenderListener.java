@@ -60,6 +60,7 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.RequestFocusListener;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -408,7 +409,7 @@ public class RenderListener {
 				GL11.glTranslatef(0, 0, 10);
 			}
 			if (hoverInv) {
-				renderDungeonChestOverlay(event.gui);
+				renderDungKuudraChestOverlay(event.gui);
 				if (NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay) {
 					AccessoryBagOverlay.renderOverlay();
 				}
@@ -625,7 +626,7 @@ public class RenderListener {
 		}
 
 		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock() && !hoverInv) {
-			renderDungeonChestOverlay(event.gui);
+			renderDungKuudraChestOverlay(event.gui);
 			if (NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay) {
 				AccessoryBagOverlay.renderOverlay();
 			}
@@ -734,7 +735,7 @@ public class RenderListener {
 		}
 	}
 
-	private void renderDungeonChestOverlay(GuiScreen gui) {
+	private void renderDungKuudraChestOverlay(GuiScreen gui) {
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc == 3) return;
 		if (gui instanceof GuiChest && NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc != 2) {
 			try {
@@ -771,7 +772,9 @@ public class RenderListener {
 					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
-						String internal = neu.manager.getInternalNameForItem(item);
+						if (ItemUtils.isSoulbound(item)) continue;
+
+						String internal = neu.manager.createItemResolutionQuery().withItemStack(item).resolveInternalName();
 						String displayName = item.getDisplayName();
 						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
 						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
