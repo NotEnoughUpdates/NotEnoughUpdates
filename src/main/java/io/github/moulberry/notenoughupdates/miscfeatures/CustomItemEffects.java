@@ -944,6 +944,7 @@ public class CustomItemEffects {
 				} else if ((heldInternal.equals("WATER_BUCKET") || heldInternal.equals("MAGICAL_WATER_BUCKET") &&
 					NotEnoughUpdates.INSTANCE.config.itemOverlays.enablePrismapumpOverlay && onPrivateIsland) &&
 					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+					if (event.target.sideHit.getName() == "up" || event.target.sideHit.getName() == "down") return;
 					BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
 
 					HashSet<BlockPos> verticalSources = new HashSet<>();
