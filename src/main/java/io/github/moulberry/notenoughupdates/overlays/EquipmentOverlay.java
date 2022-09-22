@@ -106,7 +106,7 @@ public class EquipmentOverlay {
 			case 2:
 				return ARMOR_DISPLAY_DARK;
 			case 3:
-				return isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
+				return NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
 			case 4:
 				return ARMOR_DISPLAY_FSR;
 		}
@@ -191,7 +191,7 @@ public class EquipmentOverlay {
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop();
 
-		ResourceLocation equipmentTexture = getCustomEquipmentTexture(isRenderingPet);
+		ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
 
 		Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
@@ -243,7 +243,10 @@ public class EquipmentOverlay {
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		PetInfoOverlay.Pet currentPet = PetInfoOverlay.getCurrentPet();
 		if (currentPet == null) return null;
-		ItemStack item = manager.createItem(currentPet.getPetId(false));
+
+		ItemStack item = ItemUtils.getPetLore(currentPet);
+		item = ItemUtils.petToolTipXPExtendPetOverlay(item);
+
 		if (item != null) {
 			return item;
 		}
@@ -259,7 +262,7 @@ public class EquipmentOverlay {
 			slot4 = getWardrobeSlot(37);
 		}
 
-		if (screen instanceof GuiChest) {
+		if (screen instanceof GuiChest || screen instanceof GuiInventory) {
 			petStack = getRepoPetStack();
 		}
 		if ((!(screen instanceof GuiInventory) && !(screen instanceof GuiInvButtonEditor))

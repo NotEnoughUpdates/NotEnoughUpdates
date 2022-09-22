@@ -1316,7 +1316,7 @@ public class NEUManager {
 								float statMax = entry.getValue().getAsFloat();
 								float statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat();
 								float val = statMin * minMix + statMax * maxMix;
-								String statStr = (statMin > 0 ? "+" : "") + (int) Math.floor(val);
+								String statStr = (statMin > 0 ? "+" : "") + removeUnusedDecimal(Math.floor(val * 10) / 10);
 								replacements.put(entry.getKey(), statStr);
 							}
 						}

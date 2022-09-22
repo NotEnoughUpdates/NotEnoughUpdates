@@ -466,10 +466,10 @@ public class PetInfoOverlay extends TextOverlay {
 				float remainingMax = currentPet.petLevel.maxXP - currentPet.petLevel.totalXp;
 				if (remaining > 0) {
 					if (xpGain < 1000) {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + "N/A";
 					} else {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + Utils.prettyTime((long) (remainingMax) * 1000 * 60 * 60 / (long) xpGain);
 					}
 				}
