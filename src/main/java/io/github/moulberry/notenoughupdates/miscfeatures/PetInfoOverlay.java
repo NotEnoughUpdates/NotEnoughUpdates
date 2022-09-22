@@ -133,10 +133,11 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petXpType;
 		public String petItem;
 		public String skin;
+		public int candyUsed;
 
 		public String getPetId(boolean withoutBoost) {
-			return petType + ";" + (withoutBoost ? rarity.petId - 1 : rarity.petId);
-
+			boolean shouldDecreaseRarity = withoutBoost && "PET_ITEM_TIER_BOOST".equals(petItem);
+			return petType + ";" + (shouldDecreaseRarity ? rarity.petId - 1 : rarity.petId);
 		}
 
 	}

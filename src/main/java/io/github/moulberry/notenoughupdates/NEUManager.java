@@ -1393,6 +1393,7 @@ public class NEUManager {
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache, boolean useReplacements, boolean copyStack) {
+		if (useReplacements) useCache = false;
 		if (json == null) return new ItemStack(Items.painting, 1, 10);
 		String internalname = json.get("internalname").getAsString();
 
