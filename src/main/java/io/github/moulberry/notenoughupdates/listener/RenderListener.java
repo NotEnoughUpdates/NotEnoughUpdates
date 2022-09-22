@@ -703,7 +703,7 @@ public class RenderListener {
 								buttonHovered = button;
 							}
 
-							if (currentTime - buttonHoveredMillis > 600) {
+							if (currentTime - buttonHoveredMillis > NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
 								String command = button.command.trim();
 								if (!command.startsWith("/")) {
 									command = "/" + command;
