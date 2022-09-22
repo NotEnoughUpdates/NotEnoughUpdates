@@ -57,8 +57,6 @@ public class HypixelApi {
 	}
 
 	public void updateProfileData(String playerUuid) {
-		//TODO remove
-		Utils.addChatMessage("updateProfileData");
 		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
 
 		HashMap<String, String> map = new HashMap<String, String>() {{
