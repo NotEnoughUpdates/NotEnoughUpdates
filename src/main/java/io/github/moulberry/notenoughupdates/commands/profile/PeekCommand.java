@@ -122,7 +122,7 @@ public class PeekCommand extends ClientCommandBase {
 								float totalSkillLVL = 0;
 								float totalSkillCount = 0;
 
-								List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+								List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy", "carpentry");
 								for (String skillName : skills) {
 									totalSkillLVL += skyblockInfo.get(skillName).level;
 									totalSkillCount++;
@@ -133,6 +133,7 @@ public class PeekCommand extends ClientCommandBase {
 								float spider = skyblockInfo.get("spider").level;
 								float wolf = skyblockInfo.get("wolf").level;
 								float enderman = skyblockInfo.get("enderman").level;
+								float blaze = skyblockInfo.get("blaze").level;
 
 								float avgSkillLVL = totalSkillLVL / totalSkillCount;
 
@@ -143,6 +144,7 @@ public class PeekCommand extends ClientCommandBase {
 									spider = 1;
 									wolf = 2;
 									enderman = 0;
+									blaze = 0;
 								}
 
 								EnumChatFormatting combatPrefix = combat > 20
@@ -161,6 +163,11 @@ public class PeekCommand extends ClientCommandBase {
 									? EnumChatFormatting.GREEN
 									: EnumChatFormatting.YELLOW)
 									: EnumChatFormatting.RED;
+								EnumChatFormatting blazePrefix = blaze > 3
+									? (blaze > 6
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
 								EnumChatFormatting avgPrefix = avgSkillLVL > 20
 									? (avgSkillLVL > 35
 									? EnumChatFormatting.GREEN
@@ -171,6 +178,7 @@ public class PeekCommand extends ClientCommandBase {
 								overallScore += spider * spider / 81f;
 								overallScore += wolf * wolf / 81f;
 								overallScore += enderman * enderman / 81f;
+								overallScore += blaze * blaze / 81f;
 								overallScore += avgSkillLVL / 20f;
 
 								int cata = (int) skyblockInfo.get("catacombs").level;
@@ -187,8 +195,9 @@ public class PeekCommand extends ClientCommandBase {
 								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 									g + "Slayer: " + zombiePrefix + (int) Math.floor(zombie) + g + "-" +
 										spiderPrefix + (int) Math.floor(spider) + g + "-" +
-										wolfPrefix + (int) Math.floor(wolf) + "-" +
-										endermanPrefix + (int) Math.floor(enderman)));
+										wolfPrefix + (int) Math.floor(wolf) + g+ "-" +
+										endermanPrefix + (int) Math.floor(enderman) + g + "-" +
+										blazePrefix + (int) Math.floor(blaze)));
 							}
 							if (stats == null) {
 								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(

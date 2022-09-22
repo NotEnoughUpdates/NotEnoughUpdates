@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import com.google.gson.JsonArray;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -55,6 +56,13 @@ public class ItemUtils {
 		extraAttributes.setString("id", "SKYBLOCK_COIN");
 		skull.getTagCompound().setTag("ExtraAttributes", extraAttributes);
 		return skull;
+	}
+
+	public static NBTTagCompound getOrCreateTag(ItemStack is) {
+		if (is.hasTagCompound()) return is.getTagCompound();
+		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		is.setTagCompound(nbtTagCompound);
+		return nbtTagCompound;
 	}
 
 	public static void appendLore(ItemStack is, List<String> moreLore) {
@@ -96,4 +104,24 @@ public class ItemUtils {
 		return string;
 	}
 
+	public static String fixEnchantId(String enchId, boolean useId) {
+		if (Constants.ENCHANTS != null && Constants.ENCHANTS.has("enchant_mapping_id") &&
+			Constants.ENCHANTS.has("enchant_mapping_item")) {
+			JsonArray mappingFrom = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "id" : "item"));
+			JsonArray mappingTo = Constants.ENCHANTS.getAsJsonArray("enchant_mapping_" + (useId ? "item" : "id"));
+
+			for (int i = 0; i < mappingFrom.size(); i++) {
+				if (mappingFrom.get(i).getAsString().equals(enchId)) {
+					return mappingTo.get(i).getAsString();
+				}
+			}
+
+		}
+		return enchId;
+	}
+
+	public static boolean isSoulbound(ItemStack item) {
+		return ItemUtils.getLore(item).stream()
+										.anyMatch(line -> line.equals("§8§l* §8Co-op Soulbound §8§l*") || line.equals("§8§l* Soulbound §8§l*"));
+	}
 }

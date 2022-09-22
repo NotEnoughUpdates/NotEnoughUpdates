@@ -399,17 +399,19 @@ public class NEUManager {
 	 * function. This method is used for the chest-item-search feature.
 	 */
 	public boolean searchString(String toSearch, String query) {
-		int lastMatch = -1;
+		int lastQueryMatched = -1;
 
 		toSearch = clean(toSearch).toLowerCase();
 		query = clean(query).toLowerCase();
-		String[] splitToSeach = toSearch.split(" ");
+		String[] splitToSearch = toSearch.split(" ");
+		String[] queryArray = query.split(" ");
+
 		out:
-		for (String s : query.split(" ")) {
-			for (int i = 0; i < splitToSeach.length; i++) {
-				if (!(lastMatch == -1 || lastMatch == i - 1)) continue;
-				if (splitToSeach[i].startsWith(s)) {
-					lastMatch = i;
+		for (int j = 0; j < queryArray.length; j++) {
+			for (int i = 0; i < splitToSearch.length; i++) {
+				if ((queryArray.length - (lastQueryMatched != -1 ? lastQueryMatched : 0)) > (splitToSearch.length - i)) continue;
+				if (splitToSearch[i].startsWith(queryArray[j])) {
+					lastQueryMatched = j;
 					continue out;
 				}
 			}

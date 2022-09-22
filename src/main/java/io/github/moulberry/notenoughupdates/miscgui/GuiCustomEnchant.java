@@ -28,9 +28,11 @@ import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.miscgui.util.OrbDisplay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -74,9 +76,9 @@ public class GuiCustomEnchant extends Gui {
 		"textures/entity/enchanting_table_book.png");
 	private static final ModelBook MODEL_BOOK = new ModelBook();
 
-	private static final int EXPERIENCE_ORB_COUNT = 30;
-
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
+	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
+	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
 
 	private enum EnchantState {
 		NO_ITEM,
@@ -105,6 +107,7 @@ public class GuiCustomEnchant extends Gui {
 			this.enchId = enchId;
 			this.displayLore = displayLore;
 			this.level = level;
+			this.enchId = ItemUtils.fixEnchantId(enchId, true);
 
 			if (Constants.ENCHANTS != null) {
 				if (checkConflicts && Constants.ENCHANTS.has("enchant_pools")) {
@@ -133,12 +136,18 @@ public class GuiCustomEnchant extends Gui {
 
 				if (level >= 1 && Constants.ENCHANTS.has("enchants_xp_cost")) {
 					JsonObject allCosts = Constants.ENCHANTS.getAsJsonObject("enchants_xp_cost");
-					if (allCosts.has(enchId)) {
-						JsonArray costs = allCosts.getAsJsonArray(enchId);
+					JsonObject maxLevel = null;
+					if (Constants.ENCHANTS.has("max_xp_table_levels")) {
+						maxLevel = Constants.ENCHANTS.getAsJsonObject("max_xp_table_levels");
+					}
+
+					if (allCosts.has(this.enchId)) {
+						JsonArray costs = allCosts.getAsJsonArray(this.enchId);
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
-								this.xpCost = costs.get(costs.size() - 1).getAsInt();
+								int cost = (maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
+								this.xpCost = costs.get(cost - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
 								this.xpCost = costs.get(level - 1).getAsInt();
 							} else {
@@ -152,21 +161,7 @@ public class GuiCustomEnchant extends Gui {
 		}
 	}
 
-	public static class ExperienceOrb {
-		public float x;
-		public float y;
-		public float xLast;
-		public float yLast;
-		public float xVel;
-		public float yVel;
-
-		public int type;
-		public int rotationDeg;
-	}
-
-	private final List<ExperienceOrb> orbs = new ArrayList<>();
-	private int orbTargetX = 0;
-	private int orbTargetY = 0;
+	public OrbDisplay orbDisplay = new OrbDisplay();
 
 	private int guiLeft;
 	private int guiTop;
@@ -226,14 +221,28 @@ public class GuiCustomEnchant extends Gui {
 	}
 
 	public boolean shouldOverride(String containerName) {
+		if (containerName == null) {
+			shouldOverrideFast = false;
+			return false;
+		}
 		shouldOverrideFast = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI &&
-			Objects.equals("Enchant Item", containerName) &&
+			(containerName.length() >= 12 && Objects.equals(
+				"Enchant Item",
+				containerName.substring(0, "Enchant Item".length())
+			)) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard();
 		if (!shouldOverrideFast) {
 			currentState = EnchantState.NO_ITEM;
 			applicable.clear();
 			removable.clear();
 			expectedMaxPage = 1;
+		}
+		GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		ContainerChest cc = (ContainerChest) chest.inventorySlots;
+		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
+		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) {
+			shouldOverrideFast = false;
+			return false;
 		}
 		return shouldOverrideFast;
 	}
@@ -245,13 +254,15 @@ public class GuiCustomEnchant extends Gui {
 		ContainerChest cc = (ContainerChest) chest.inventorySlots;
 
 		ItemStack stack = cc.getLowerChestInventory().getStackInSlot(23);
-		ItemStack enchantGuideStack = cc.getLowerChestInventory().getStackInSlot(50);
+		ItemStack arrowStack = cc.getLowerChestInventory().getStackInSlot(45);
 		ItemStack enchantingItemStack = cc.getLowerChestInventory().getStackInSlot(19);
+		ItemStack hexStack = cc.getLowerChestInventory().getStackInSlot(50);
 
 		int lastPage = currentPage;
 
 		this.lastState = currentState;
-		if (enchantGuideStack != null && enchantGuideStack.getItem() != Items.book && enchantingItem != null) {
+		if (hexStack != null && hexStack.getItem() == Items.experience_bottle) return;
+		if (arrowStack != null && arrowStack.getItem() == Items.arrow && enchantingItem != null) {
 			currentState = EnchantState.ADDING_ENCHANT;
 		} else if (stack == null || enchantingItemStack == null) {
 			if (currentState == EnchantState.SWITCHING_DONT_UPDATE || currentState == EnchantState.NO_ITEM) {
@@ -305,30 +316,7 @@ public class GuiCustomEnchant extends Gui {
 			}
 		}
 
-		List<ExperienceOrb> toRemove = new ArrayList<>();
-		for (ExperienceOrb orb : orbs) {
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-
-			if (length < 8 && orb.xVel * orb.xVel + orb.yVel * orb.yVel < 20) {
-				toRemove.add(orb);
-				continue;
-			}
-
-			orb.xVel += targetDeltaX * 2 / length;
-			orb.yVel += targetDeltaY * 2 / length;
-
-			orb.xVel *= 0.90;
-			orb.yVel *= 0.90;
-
-			orb.xLast = orb.x;
-			orb.yLast = orb.y;
-			orb.x += orb.xVel;
-			orb.y += orb.yVel;
-		}
-		orbs.removeAll(toRemove);
+		orbDisplay.physicsTickOrbs();
 
 		if (++tickCounter >= 20) {
 			tickCounter = 0;
@@ -389,40 +377,48 @@ public class GuiCustomEnchant extends Gui {
 							if (ea != null) {
 								NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 								if (enchantments != null) {
-									for (String enchId : enchantments.getKeySet()) {
-										String name = Utils.cleanColour(book.getDisplayName());
-										if (name.equalsIgnoreCase("Bane of Arthropods")) {
-											name = "Bane of Arth.";
-										} else if (name.equalsIgnoreCase("Projectile Protection")) {
-											name = "Projectile Prot";
-										} else if (name.equalsIgnoreCase("Blast Protection")) {
-											name = "Blast Prot";
-										}
-										Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-											Utils.getRawTooltip(book), enchantments.getInteger(enchId), false, true
-										);
-										enchantment.displayLore.remove(0);
-
-										if (removingEnchantPlayerLevel == -1 && playerEnchantIds.containsKey(enchId)) {
-											removingEnchantPlayerLevel = playerEnchantIds.get(enchId);
-										}
-
-										if (removingEnchantPlayerLevel >= 0 && enchantment.level < removingEnchantPlayerLevel) {
-											continue;
-										}
-
-										if (enchanterCurrentEnch == null) {
-											enchanterCurrentEnch = enchantment;
-										} else if (updateLevel) {
-											if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
-												enchanterCurrentEnch = enchantment;
-											} else if (removingEnchantPlayerLevel >= 0 && enchantment.level < enchanterCurrentEnch.level) {
-												enchanterCurrentEnch = enchantment;
-											}
-										}
-
-										enchanterEnchLevels.put(enchantment.level, enchantment);
+									String enchId = Utils.cleanColour(book.getDisplayName()).toLowerCase().replace(" ", "_").replace(
+										"-",
+										"_"
+									);
+									String name = Utils.cleanColour(book.getDisplayName());
+									int enchLevel = -1;
+									if (name.equalsIgnoreCase("Bane of Arthropods")) {
+										name = "Bane of Arth.";
+									} else if (name.equalsIgnoreCase("Projectile Protection")) {
+										name = "Projectile Prot";
+									} else if (name.equalsIgnoreCase("Blast Protection")) {
+										name = "Blast Prot";
 									}
+									Matcher levelMatcher = ENCHANT_LEVEL_PATTERN.matcher(enchId);
+									if (levelMatcher.matches()) {
+										enchLevel = Utils.parseRomanNumeral(levelMatcher.group(2).toUpperCase());
+										enchId = levelMatcher.group(1);
+									}
+									Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
+										Utils.getRawTooltip(book), enchLevel, false, true
+									);
+									enchantment.displayLore.remove(0);
+
+									if (removingEnchantPlayerLevel == -1 && playerEnchantIds.containsKey(enchId)) {
+										removingEnchantPlayerLevel = playerEnchantIds.get(enchId);
+									}
+
+									if (removingEnchantPlayerLevel >= 0 && enchantment.level < removingEnchantPlayerLevel) {
+										continue;
+									}
+
+									if (enchanterCurrentEnch == null) {
+										enchanterCurrentEnch = enchantment;
+									} else if (updateLevel) {
+										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level) {
+											enchanterCurrentEnch = enchantment;
+										} else if (removingEnchantPlayerLevel >= 0 && enchantment.level < enchanterCurrentEnch.level) {
+											enchanterCurrentEnch = enchantment;
+										}
+									}
+
+									enchanterEnchLevels.put(enchantment.level, enchantment);
 								}
 							}
 						}
@@ -455,43 +451,52 @@ public class GuiCustomEnchant extends Gui {
 								if (ea != null) {
 									NBTTagCompound enchantments = ea.getCompoundTag("enchantments");
 									if (enchantments != null) {
-										for (String enchId : enchantments.getKeySet()) {
-											String name = Utils.cleanColour(book.getDisplayName());
+										String enchId = Utils
+											.cleanColour(book.getDisplayName())
+											.toLowerCase()
+											.replace(" ", "_")
+											.replace("-", "_");
+										if (enchId.equalsIgnoreCase("_")) continue;
+										enchId = ItemUtils.fixEnchantId(enchId, true);
+										String name = Utils.cleanColour(book.getDisplayName());
 
-											if (searchField.getText().trim().isEmpty() ||
-												name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
-												if (name.equalsIgnoreCase("Bane of Arthropods")) {
-													name = "Bane of Arth.";
-												} else if (name.equalsIgnoreCase("Projectile Protection")) {
-													name = "Projectile Prot";
-												} else if (name.equalsIgnoreCase("Blast Protection")) {
-													name = "Blast Prot";
-												} else if (name.equalsIgnoreCase("Luck of the Sea")) {
-													name = "Luck of Sea";
-												}
-
-												if (playerEnchantIds.containsKey(enchId)) {
-													Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-														Utils.getRawTooltip(book), playerEnchantIds.get(enchId), false, false
-													);
-													if (!enchantment.overMaxLevel) {
-														removable.add(enchantment);
-													}
-												} else {
-													Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
-														Utils.getRawTooltip(book), enchantments.getInteger(enchId), true, true
-													);
-													applicable.add(enchantment);
-												}
-											} else {
-												if (playerEnchantIds.containsKey(enchId)) {
-													searchRemovedFromRemovable = true;
-												} else {
-													searchRemovedFromApplicable = true;
-												}
+										if (searchField.getText().trim().isEmpty() ||
+											name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
+											if (name.equalsIgnoreCase("Bane of Arthropods")) {
+												name = "Bane of Arth.";
+											} else if (name.equalsIgnoreCase("Projectile Protection")) {
+												name = "Projectile Prot";
+											} else if (name.equalsIgnoreCase("Blast Protection")) {
+												name = "Blast Prot";
+											} else if (name.equalsIgnoreCase("Luck of the Sea")) {
+												name = "Luck of Sea";
+											}
+											Matcher nameMatcher = ENCHANT_NAME_PATTERN.matcher(name);
+											if (nameMatcher.matches()) {
+												name = nameMatcher.group(1);
 											}
 
+											if (playerEnchantIds.containsKey(enchId)) {
+												Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
+													Utils.getRawTooltip(book), playerEnchantIds.get(enchId), false, false
+												);
+												if (!enchantment.overMaxLevel) {
+													removable.add(enchantment);
+												}
+											} else {
+												Enchantment enchantment = new Enchantment(slotIndex, name, enchId,
+													Utils.getRawTooltip(book), 1, true, true
+												);
+												applicable.add(enchantment);
+											}
+										} else {
+											if (playerEnchantIds.containsKey(enchId)) {
+												searchRemovedFromRemovable = true;
+											} else {
+												searchRemovedFromApplicable = true;
+											}
 										}
+
 									}
 								}
 							}
@@ -1065,7 +1070,9 @@ public class GuiCustomEnchant extends Gui {
 			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
 			//Enchant name
-			String name = WordUtils.capitalizeFully(enchanterCurrentEnch.enchId.replace("_", " "));
+			String name = WordUtils.capitalizeFully(ItemUtils
+				.fixEnchantId(enchanterCurrentEnch.enchId, false)
+				.replace("_", " "));
 			if (name.equalsIgnoreCase("Bane of Arthropods")) {
 				name = "Bane of Arth.";
 			} else if (name.equalsIgnoreCase("Projectile Protection")) {
@@ -1356,37 +1363,11 @@ public class GuiCustomEnchant extends Gui {
 
 		//Orb animation
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		GlStateManager.color(1, 1, 1, 1);
 		GlStateManager.disableDepth();
-		for (ExperienceOrb orb : orbs) {
-			int orbX = Math.round(orb.xLast + (orb.x - orb.xLast) * partialTicks);
-			int orbY = Math.round(orb.yLast + (orb.y - orb.yLast) * partialTicks);
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(orbX, orbY, 0);
-			GlStateManager.rotate(orb.rotationDeg, 0, 0, 1);
-
-			float targetDeltaX = guiLeft + orbTargetX - orb.x;
-			float targetDeltaY = guiTop + orbTargetY - orb.y;
-			float length = (float) Math.sqrt(targetDeltaX * targetDeltaX + targetDeltaY * targetDeltaY);
-			float velSq = orb.xVel * orb.xVel + orb.yVel * orb.yVel;
-			float opacity = Math.min(2, Math.max(0.5f, length / 16)) * Math.min(2, Math.max(0.5f, velSq / 40));
-			if (opacity > 1) opacity = 1;
-			opacity = (float) Math.sqrt(opacity);
-			GlStateManager.color(1, 1, 1, opacity);
-
-			Utils.drawTexturedRect(
-				-8,
-				-8,
-				16,
-				16,
-				((orb.type % 3) * 16) / 512f,
-				(16 + (orb.type % 3) * 16) / 512f,
-				(217 + orb.type / 3 * 16) / 512f,
-				(217 + 16 + orb.type / 3 * 16) / 512f,
-				GL11.GL_NEAREST
-			);
-			GlStateManager.popMatrix();
-		}
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(guiLeft, guiTop, 0);
+		orbDisplay.renderOrbs(partialTicks);
+		GlStateManager.popMatrix();
 		GlStateManager.enableDepth();
 
 		if (stackOnMouse != null) {
@@ -1401,37 +1382,6 @@ public class GuiCustomEnchant extends Gui {
 			);
 		}
 		GlStateManager.translate(0, 0, -300);
-	}
-
-	private void spawnExperienceOrbs(int startX, int startY, int targetX, int targetY, int baseType) {
-		orbs.clear();
-
-		this.orbTargetX = targetX;
-		this.orbTargetY = targetY;
-
-		Random rand = new Random();
-		for (int i = 0; i < EXPERIENCE_ORB_COUNT; i++) {
-			ExperienceOrb orb = new ExperienceOrb();
-			orb.x = startX;
-			orb.y = startY;
-			orb.xLast = startX;
-			orb.yLast = startY;
-			orb.xVel = rand.nextFloat() * 20 - 10;
-			orb.yVel = rand.nextFloat() * 20 - 10;
-			orb.type = baseType;
-
-			float typeRand = rand.nextFloat();
-			if (typeRand < 0.6) {
-				orb.type += 0;
-			} else if (typeRand < 0.9) {
-				orb.type += 1;
-			} else {
-				orb.type += 2;
-			}
-			orb.rotationDeg = rand.nextInt(4) * 90;
-
-			orbs.add(orb);
-		}
 	}
 
 	private void renderEnchantBook(ScaledResolution scaledresolution, float partialTicks) {
@@ -1540,9 +1490,9 @@ public class GuiCustomEnchant extends Gui {
 
 							EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 							short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-							ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(48);
+							ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 							Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-								chest.inventorySlots.windowId, 48, 0, 0, stack, transactionID));
+								chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 							cancelButtonAnimTime = System.currentTimeMillis();
 						}
@@ -1592,9 +1542,9 @@ public class GuiCustomEnchant extends Gui {
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(48);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-						chest.inventorySlots.windowId, 48, 0, 0, stack, transactionID));
+						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
 				} else if (!isChangingEnchLevel && enchanterCurrentEnch != null &&
@@ -1617,9 +1567,9 @@ public class GuiCustomEnchant extends Gui {
 					int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
 					if (playerXpLevel >= enchanterCurrentEnch.xpCost) {
 						if (removingEnchantPlayerLevel >= 0 && enchanterCurrentEnch.level == removingEnchantPlayerLevel) {
-							spawnExperienceOrbs(guiLeft + X_SIZE / 2, guiTop + 66, X_SIZE / 2, 36, 3);
+							orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
 						} else {
-							spawnExperienceOrbs(mouseX, mouseY, X_SIZE / 2, 66, 0);
+							orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
 						}
 					}
 
@@ -1790,9 +1740,9 @@ public class GuiCustomEnchant extends Gui {
 							} else if (currentState == EnchantState.ADDING_ENCHANT) {
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-								ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(48);
+								ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-									chest.inventorySlots.windowId, 48, 0, 0, stack, transactionID));
+									chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 								cancelButtonAnimTime = System.currentTimeMillis();
 							}
@@ -1830,9 +1780,9 @@ public class GuiCustomEnchant extends Gui {
 							} else if (currentState == EnchantState.ADDING_ENCHANT) {
 								EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 								short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-								ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(48);
+								ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 								Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-									chest.inventorySlots.windowId, 48, 0, 0, stack, transactionID));
+									chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 								cancelButtonAnimTime = System.currentTimeMillis();
 							}
@@ -1877,9 +1827,9 @@ public class GuiCustomEnchant extends Gui {
 
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(48);
+						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-							chest.inventorySlots.windowId, 48, 0, 0, stack, transactionID));
+							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 						cancelButtonAnimTime = System.currentTimeMillis();
 					}
@@ -1898,9 +1848,9 @@ public class GuiCustomEnchant extends Gui {
 
 					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(48);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-						chest.inventorySlots.windowId, 48, 0, 0, stack, transactionID));
+						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
 					cancelButtonAnimTime = System.currentTimeMillis();
 				}

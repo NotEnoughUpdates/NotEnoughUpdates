@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.EnableStorageCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.NullzeeSphereCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.ReloadRepoCommand;
@@ -74,6 +75,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
 		ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
 		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
+		ClientCommandHandler.instance.registerCommand(new EnableStorageCommand());
 
 		// Profile Commands
 		ClientCommandHandler.instance.registerCommand(new PeekCommand());
