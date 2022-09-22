@@ -195,7 +195,10 @@ public class HotmInformation {
 			Tree tree = new Tree();
 			JsonObject nodes = miningCore.getAsJsonObject("nodes");
 			for (Map.Entry<String, JsonElement> node : nodes.entrySet()) {
-				tree.levels.put(node.getKey(), node.getValue().getAsInt());
+				String key = node.getKey();
+				if (!key.startsWith("toggle_")) {
+					tree.levels.put(key, node.getValue().getAsInt());
+				}
 			}
 			if (miningCore.has("powder_mithril_total")) {
 				tree.totalMithrilPowder = miningCore.get("powder_mithril_total").getAsInt();
