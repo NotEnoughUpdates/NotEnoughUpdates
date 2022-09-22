@@ -106,20 +106,12 @@ public class Constants {
 	}
 
 	public void parseEssenceCosts() {
-		System.out.println(":chatting:" +
-			"" +
-			"" +
-			"" +
-			"" +
-			"" +
-			"" +
-			"" +
-			":chatting:");
-
 		for (Map.Entry<String, JsonElement> entry : ESSENCECOSTS.entrySet()) {
 			NeuRecipe parsed = EssenceUpgrades.parseFromEssenceCostEntry(entry);
 			if (parsed != null) {
 				NotEnoughUpdates.INSTANCE.manager.registerNeuRecipe(parsed);
+			} else {
+				System.out.println("NULL for: " + entry);
 			}
 		}
 	}

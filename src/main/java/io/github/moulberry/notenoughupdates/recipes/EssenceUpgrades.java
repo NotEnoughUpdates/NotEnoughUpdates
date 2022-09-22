@@ -26,10 +26,11 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -42,11 +43,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EssenceUpgrades implements NeuRecipe {
 
-	public static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/aaa.png");
-	public static final List<RenderLocation> buttonLocations = new ArrayList<RenderLocation>() {{
+	private static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/aaa.png");
+	private static final List<RenderLocation> buttonLocations = new ArrayList<RenderLocation>() {{
 		add(new RenderLocation(20, 20));
 		add(new RenderLocation(40, 20));
 		add(new RenderLocation(60, 20));
@@ -60,12 +63,15 @@ public class EssenceUpgrades implements NeuRecipe {
 		add(new RenderLocation(100, 40));
 	}};
 
+	private static final Pattern loreStatPattern = Pattern.compile("^.+: §.\\+(?<value>[\\d.]+).*$");
+
 	private final Ingredient output;
+	private final ItemStack initialItemStack;
 	private final Map<Integer, TierUpgrade> tierUpgradeMap;
 	private final int amountOfTiers;
 	private int selectedTier;
-	private final int outputX = 123;
-	private final int outputY = 65;
+	private static final int outputX = 123;
+	private static final int outputY = 65;
 	private List<RecipeSlot> slots;
 	private GuiItemRecipe guiItemRecipe;
 
@@ -73,9 +79,10 @@ public class EssenceUpgrades implements NeuRecipe {
 		this.output = output;
 		this.tierUpgradeMap = tierUpgradeMap;
 
+		initialItemStack = output.getItemStack().copy();
 		amountOfTiers = tierUpgradeMap.keySet().size();
 		selectedTier = amountOfTiers;
-		slots = buildSlotList();
+		slots = new ArrayList<>();
 	}
 
 	/**
@@ -129,7 +136,6 @@ public class EssenceUpgrades implements NeuRecipe {
 				}
 			}
 		}
-
 		return new EssenceUpgrades(output, upgradeMap);
 	}
 
@@ -145,6 +151,41 @@ public class EssenceUpgrades implements NeuRecipe {
 	 */
 	private List<RecipeSlot> buildSlotList() {
 		List<RecipeSlot> slotList = new ArrayList<>();
+
+		//output item
+		String internalName = output.getInternalItemId();
+		if (internalName == null) {
+			return slotList;
+		}
+		List<String> lore = ItemUtils.getLore(initialItemStack);
+//		JsonArray lore = outputItem.get("lore").getAsJsonArray();
+		List<String> newLore = new ArrayList<>();
+
+		for (String loreEntry : lore) {
+			Matcher matcher = loreStatPattern.matcher(loreEntry);
+			if (matcher.matches()) {
+				String valueString = matcher.group("value");
+				if (valueString == null) {
+					newLore.add(loreEntry);
+					continue;
+				}
+
+				float value = Float.parseFloat(valueString);
+				int matchStart = matcher.start("value");
+				float newValue = value * (1 + (selectedTier / 50f));
+				StringBuilder newLine = new StringBuilder(loreEntry.substring(0, matchStart) + String.format("%.1f", newValue));
+				if (loreEntry.length() != matcher.end("value")) {
+					newLine.append(loreEntry, matcher.end("value"), loreEntry.length() - 1);
+				}
+
+				newLore.add(newLine.toString());
+			} else {
+				//simply append this entry to the new lore
+				newLore.add(loreEntry);
+			}
+		};
+		ItemUtils.setLore(output.getItemStack(), newLore);
+
 		slotList.add(new RecipeSlot(outputX, outputY, output.getItemStack()));
 
 		return slotList;
@@ -169,7 +210,6 @@ public class EssenceUpgrades implements NeuRecipe {
 			0 / 256f,
 			18 / 256f
 		);
-		RenderHelper.enableGUIStandardItemLighting();
 	}
 
 	/**
@@ -245,6 +285,9 @@ public class EssenceUpgrades implements NeuRecipe {
 
 	@Override
 	public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
+		if (slots.isEmpty()) {
+			slots = buildSlotList();
+		}
 		guiItemRecipe = gui;
 //		drawSlot(gui.guiLeft + 50, gui.guiTop + 70);
 		drawButtons(mouseX, mouseY);
