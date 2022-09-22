@@ -100,6 +100,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -120,6 +122,8 @@ public class NotEnoughUpdates {
 	public static final int VERSION_ID = 20100;
 	public static final int PRE_VERSION_ID = 0;
 	public static final int HOTFIX_VERSION_ID = 0;
+
+	public static final Logger LOGGER = LogManager.getLogger("NotEnoughUpdates");
 	/**
 	 * Registers the biomes for the crystal hollows here so optifine knows they exists
 	 */

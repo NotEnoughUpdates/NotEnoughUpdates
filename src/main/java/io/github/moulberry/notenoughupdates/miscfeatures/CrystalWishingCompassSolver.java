@@ -919,7 +919,7 @@ public class CrystalWishingCompassSolver {
 			return;
 		}
 
-		boolean wishingDebugFlagSet = NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.WISHING);
+		boolean wishingDebugFlagSet = NEUDebugFlag.WISHING.isSet();
 		if (outputAlways || wishingDebugFlagSet) {
 			NEUDebugLogger.logAlways(getDiagnosticMessage());
 		}
