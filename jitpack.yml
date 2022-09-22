@@ -1,0 +1,4 @@
+jdk:
+  - openjdk17
+env:
+  CI: true
