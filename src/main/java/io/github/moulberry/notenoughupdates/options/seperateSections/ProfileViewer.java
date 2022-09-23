@@ -98,7 +98,7 @@ public class ProfileViewer {
 	@Expose
 	@ConfigOption(
 		name = "Use Soopy Networth",
-		desc = "Replaces NEU networth with Soopy networth in /pv"
+		desc = "Replaces NEU networth with Soopy networth in /pv and /peek"
 	)
 	@ConfigEditorBoolean
 	public boolean useSoopyNetworth = true;

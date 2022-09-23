@@ -660,7 +660,7 @@ public class ProfileViewer {
 		 * Returns -1 if error
 		 * Returns -2 if still loading
 		 */
-		public long getSoopyNetworth(String profileName){
+		public long getSoopyNetworth(String profileName, Runnable callback){
 			if (profileName == null) profileName = latestProfile;
 			if (soopyNetworth.get(profileName) != null) return soopyNetworth.get(profileName);
 
@@ -688,6 +688,7 @@ public class ProfileViewer {
 							soopyNetworth.put(cuteName, -1l);
 						}
 						updatingSoopyNetworth.set(false);
+						callback.run();
 						return;
 					}
 
@@ -707,6 +708,7 @@ public class ProfileViewer {
 					}
 
 					updatingSoopyNetworth.set(false);
+					callback.run();
 				},
 				() -> {
 					//Something went wrong
@@ -722,6 +724,7 @@ public class ProfileViewer {
 						soopyNetworth.put(cuteName, -1l);
 					}
 					updatingSoopyNetworth.set(false);
+					callback.run();
 				}
 			);
 			return -2;

@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -238,7 +239,21 @@ public class PeekCommand extends ClientCommandBase {
 							float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), -1);
 							float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
 
-							long networth = profile.getNetWorth(null);
+							long networth;
+							if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+								CountDownLatch countDownLatch = new CountDownLatch(1);
+
+								profile.getSoopyNetworth(null, () -> countDownLatch.countDown());
+
+								try { //Wait for async network request
+									countDownLatch.await(10,TimeUnit.SECONDS);
+								} catch (InterruptedException e) {}
+
+								//Now it's waited for network request the data should be cached
+								networth = profile.getSoopyNetworth(null, () -> {});
+							} else {
+								networth = profile.getNetWorth(null);
+							}
 							float money = Math.max(bankBalance + purseBalance, networth);
 							EnumChatFormatting moneyPrefix = money > 50 * 1000 * 1000 ?
 								(money > 200 * 1000 * 1000

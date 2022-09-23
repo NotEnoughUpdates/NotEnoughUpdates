@@ -225,9 +225,9 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		long networth = 0;
+		long networth;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-			networth = profile.getSoopyNetworth(profileId);
+			networth = profile.getSoopyNetworth(profileId, ()->{});
 		} else {
 			networth = profile.getNetWorth(profileId);
 		}
