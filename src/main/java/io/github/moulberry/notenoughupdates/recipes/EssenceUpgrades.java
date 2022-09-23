@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -61,6 +62,20 @@ public class EssenceUpgrades implements NeuRecipe {
 		add(new RenderLocation(60, 40));
 		add(new RenderLocation(80, 40));
 		add(new RenderLocation(100, 40));
+	}};
+
+	private static final List<RenderLocation> slotLocations = new ArrayList<RenderLocation>() {{
+		add(new RenderLocation(20, 60));
+		add(new RenderLocation(45, 60));
+		add(new RenderLocation(70, 60));
+
+		add(new RenderLocation(20, 85));
+		add(new RenderLocation(45, 85));
+		add(new RenderLocation(70, 85));
+
+		add(new RenderLocation(20, 110));
+		add(new RenderLocation(45, 110));
+		add(new RenderLocation(70, 110));
 	}};
 
 	private static final Pattern loreStatPattern = Pattern.compile("^.+: §.\\+(?<value>[\\d.]+).*$");
@@ -125,9 +140,13 @@ public class EssenceUpgrades implements NeuRecipe {
 					Integer tier = Integer.parseInt(requiredItems.getKey());
 					Map<String, Integer> items = new HashMap<>();
 					for (JsonElement element : requiredItems.getValue().getAsJsonArray()) {
+						//todo switch to new things
+						if(true){
+							continue;
+						}
+
 						String[] item = element.getAsString().split("x");
 						String amount = item[item.length - 1];
-
 						String itemName = element.getAsString().substring(0, element.getAsString().length() - amount.length() - 1);
 
 						items.put(itemName, Integer.parseInt(amount));
@@ -174,7 +193,7 @@ public class EssenceUpgrades implements NeuRecipe {
 				int matchStart = matcher.start("value");
 				float newValue = value * (1 + (selectedTier / 50f));
 				StringBuilder newLine = new StringBuilder(loreEntry.substring(0, matchStart) + String.format("%.1f", newValue));
-				if (loreEntry.length() != matcher.end("value")) {
+				if (loreEntry.length() - 1 > matcher.end("value")) {
 					newLine.append(loreEntry, matcher.end("value"), loreEntry.length() - 1);
 				}
 
@@ -183,10 +202,14 @@ public class EssenceUpgrades implements NeuRecipe {
 				//simply append this entry to the new lore
 				newLore.add(loreEntry);
 			}
-		};
+		}
+		;
 		ItemUtils.setLore(output.getItemStack(), newLore);
-
 		slotList.add(new RecipeSlot(outputX, outputY, output.getItemStack()));
+
+		for (RenderLocation slotLocation : slotLocations) {
+			slotList.add(new RecipeSlot(slotLocation.getX() + 1, slotLocation.getY(), new ItemStack(Items.item_frame)));
+		}
 
 		return slotList;
 	}
@@ -291,6 +314,9 @@ public class EssenceUpgrades implements NeuRecipe {
 		guiItemRecipe = gui;
 //		drawSlot(gui.guiLeft + 50, gui.guiTop + 70);
 		drawButtons(mouseX, mouseY);
+		for (RenderLocation slotLocation : slotLocations) {
+			drawSlot(gui.guiLeft + slotLocation.getX(), gui.guiTop + slotLocation.getY());
+		}
 	}
 
 	@Override
