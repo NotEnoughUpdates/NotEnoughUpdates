@@ -666,7 +666,7 @@ public class ProfileViewer {
 
 			JsonArray playerInfo = getSkyblockProfiles(() -> {});
 			if (playerInfo == null) return -2;
-			if(updatingSoopyNetworth.get()) return -2;
+			if (updatingSoopyNetworth.get()) return -2;
 			updatingSoopyNetworth.set(true);
 
 			manager.hypixelApi.postApiAsync(
@@ -674,7 +674,7 @@ public class ProfileViewer {
 				skyblockProfiles.toString(),
 				"application/json",
 				jsonObject -> {
-					if(!jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()){
+					if (!jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
 						//Something went wrong
 						//Set profile networths to -1 to indicate that
 						for (int i = 0; i < skyblockProfiles.size(); i++) {

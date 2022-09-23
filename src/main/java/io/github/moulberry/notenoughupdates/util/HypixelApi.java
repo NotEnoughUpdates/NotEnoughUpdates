@@ -161,7 +161,7 @@ public class HypixelApi {
 		connection.setDoOutput(true);
 
 		OutputStream os = connection.getOutputStream();
-		try{
+		try {
 			os.write(postData.getBytes("utf-8"));
 		} finally {
 			os.close();
