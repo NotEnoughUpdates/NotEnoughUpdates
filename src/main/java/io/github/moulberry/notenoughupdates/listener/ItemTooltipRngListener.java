@@ -27,6 +27,8 @@ import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -135,14 +137,18 @@ public class ItemTooltipRngListener {
 		event.toolTip.addAll(newToolTip);
 	}
 
-	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, String name) {
-		String internalName = neu.manager.getInternalNameForItem(stack);
-		double bin = neu.manager.auctionManager.getBazaarOrBin(internalName);
-		if (bin <= 0) return null;
+	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, String label) {
+		String internalName = neu.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
+		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName);
+		if (profit <= 0) return null;
 
-		double coinsPer = (bin / needed) * multiplier;
+		//ask hypixel nicely to release a 'chest price api' with 4 dimensions for us. the 4 dimensions needed are: item name, floor, normal/mm, s/s+
+//		double chestPrice = grabChestPrice(stack, internalName);
+//		profit -= chestPrice;
+
+		double coinsPer = (profit / needed) * multiplier;
 		String format = StringUtils.shortNumberFormat(coinsPer);
-		return "§7Coins per " + name + ": §6" + format + " coins";
+		return "§7Coins per " + label + ": §6" + format + " coins";
 	}
 
 	private void fractionDisplay(List<String> newToolTip, String line) {
@@ -256,10 +262,12 @@ public class ItemTooltipRngListener {
 		Map<String, Integer> runsData;
 		String labelPlural;
 		String labelSingular;
+		String repoCategory;
 		if (openChestName.contains("Catacombs")) {
 			runsData = dungeonData;
 			labelPlural = "Runs";
 			labelSingular = "Run";
+			repoCategory = "catacombs";
 		} else { // Slayer
 			Matcher matcher = SLAYER_INVENTORY_TITLE_PATTERN.matcher(openChestName);
 			if (!matcher.matches()) {
@@ -271,6 +279,12 @@ public class ItemTooltipRngListener {
 			runsData = slayerData.get(slayerName);
 			labelPlural = "Bosses";
 			labelSingular = "Boss";
+			repoCategory = "slayer";
+		}
+
+		int repoScore = getRepoScore(stack, repoCategory);
+		if (repoScore != -1) {
+			needed = repoScore;
 		}
 
 		handleArrowKeys(runsData);
@@ -282,7 +296,7 @@ public class ItemTooltipRngListener {
 		String name = (String) runsData.keySet().toArray()[currentSelected];
 		int gainPerRun = runsData.get(name);
 
-		int runsNeeded = needed / gainPerRun;
+		int runsNeeded = (int) Math.floor((double) needed / (double) gainPerRun);
 		int runsHaving = having / gainPerRun;
 		String runsNeededFormat = GuiProfileViewer.numberFormat.format(runsNeeded);
 		String runsHavingFormat = GuiProfileViewer.numberFormat.format(runsHaving);
@@ -306,6 +320,49 @@ public class ItemTooltipRngListener {
 		toolTip.add(" ");
 		if (progressString != null) {
 			toolTip.add(progressString);
+		}
+	}
+
+	private int getRepoScore(ItemStack stack, String repoCategory) {
+		ItemResolutionQuery query =
+			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).withCurrentGuiContext();
+		String internalName = query.resolveInternalName();
+
+		JsonObject jsonObject = Constants.RNGSCORE;
+		if (jsonObject == null) {
+			Utils.showOutdatedRepoNotification();
+			return -1;
+		}
+
+		String repoType = grabRepoType(stack);
+		if (!jsonObject.has(repoCategory)) return -1;
+
+		JsonObject category = jsonObject.get(repoCategory).getAsJsonObject();
+		if (!category.has(repoType)) return -1;
+
+		JsonObject typeObject = category.get(repoType).getAsJsonObject();
+		if (!typeObject.has(internalName)) return -1;
+
+		return typeObject.get(internalName).getAsInt();
+	}
+
+	// Determines the floor or the slayer type from where the item can be obtained. E.g. F7, M3, Revenant Horror or Sven Packmaster
+	private String grabRepoType(ItemStack stack) {
+		String openChestName = Utils.getOpenChestName();
+		if (openChestName.contains("Catacombs")) {
+			if (openChestName.equals("Catacombs RNG Meter")) {
+				List<String> list = ItemUtils.getLore(stack);
+				String line = list.get(4);
+				return line.substring(26, 28);
+			} else {
+				// supporting more pages (f7/m7)
+				if (openChestName.contains("(")) {
+					return openChestName.substring(17, 19);
+				}
+				return openChestName.substring(11, 13);
+			}
+		} else {
+			return openChestName.substring(0, openChestName.length() - 9);
 		}
 	}
 
