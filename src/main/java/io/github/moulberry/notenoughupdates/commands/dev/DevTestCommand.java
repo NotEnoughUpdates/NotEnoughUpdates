@@ -113,86 +113,94 @@ public class DevTestCommand extends ClientCommandBase {
 				DEV_FAIL_STRINGS[devFailIndex++]));
 			return;
 		}
-		if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
-			String currentProfile = SBInfo.getInstance().currentProfile;
-			SBInfo.Gamemode gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile);
-			sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD +
-				"You are on Profile " +
-				currentProfile +
-				" with the mode " +
-				gamemode));
-		}
-		if (args.length >= 1 && args[0].equalsIgnoreCase("buildflags")) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				"BuildFlags: \n" +
-					BuildFlags.getAllFlags().entrySet().stream()
-										.map(it -> " + " + it.getKey() + " - " + it.getValue())
-										.collect(Collectors.joining("\n"))));
-			return;
-		}
-		if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
-			if (args.length == 1) {
-				NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
-			} else {
-				NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
-			}
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("zone")) {
-			BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
-			if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
-			SpecialBlockZone zone = CustomBiomes.INSTANCE.getSpecialZone(target);
-			Arrays.asList(
-				new ChatComponentText("Showing Zone Info for: " + target),
-				new ChatComponentText("Zone: " + (zone != null ? zone.name() : "null")),
-				new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
-				new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
-			).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
-			MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo
-				.getInstance()
-				.getLocation()));
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("positiontest")) {
-			NotEnoughUpdates.INSTANCE.openGui = new GuiPositionEditor();
-			return;
-		}
+		if(args.length == 0) return; //error prevention
 
-		if (args.length == 2 && args[0].equalsIgnoreCase("pt")) {
-			EnumParticleTypes t = EnumParticleTypes.valueOf(args[1]);
-			FishingHelper.type = t;
-			return;
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("dev")) {
-			NotEnoughUpdates.INSTANCE.config.hidden.dev = true;
-			return;
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("saveconfig")) {
-			NotEnoughUpdates.INSTANCE.saveConfig();
-			return;
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("searchmode")) {
-			NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA +
-				"I would never search"));
-			return;
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("bluehair")) {
-			PronounDB.test();
-			return;
-		}
-		if (args.length == 2 && args[0].equalsIgnoreCase("openGui")) {
-			try {
-				NotEnoughUpdates.INSTANCE.openGui = (GuiScreen) Class.forName(args[1]).newInstance();
+		switch(args[0].toLowerCase()){
+			case "profileinfo":
+				String currentProfile = SBInfo.getInstance().currentProfile;
+				SBInfo.Gamemode gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile);
+				sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD +
+					"You are on Profile " +
+					currentProfile +
+					" with the mode " +
+					gamemode));
+				return;
+
+			case"buildflags":
 				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"Opening gui: " + NotEnoughUpdates.INSTANCE.openGui));
-			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
-				e.printStackTrace();
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to open this gui."));
-			}
-		}
-		if (args.length == 1 && args[0].equalsIgnoreCase("center")) {
-			double x = Math.floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f;
-			double z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f;
-			Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z);
+					"BuildFlags: \n" +
+						BuildFlags.getAllFlags().entrySet().stream()
+											.map(it -> " + " + it.getKey() + " - " + it.getValue())
+											.collect(Collectors.joining("\n"))));
+				return;
+			case "pricetest":
+				if (args.length == 1) {
+					NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
+				} else {
+					NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(args[1]);
+				}
+				return;
+
+			case "zone":
+				BlockPos target = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+				if (target == null) target = Minecraft.getMinecraft().thePlayer.getPosition();
+				SpecialBlockZone zone = CustomBiomes.INSTANCE.getSpecialZone(target);
+				Arrays.asList(
+					new ChatComponentText("Showing Zone Info for: " + target),
+					new ChatComponentText("Zone: " + (zone != null ? zone.name() : "null")),
+					new ChatComponentText("Location: " + SBInfo.getInstance().getLocation()),
+					new ChatComponentText("Biome: " + CustomBiomes.INSTANCE.getCustomBiome(target))
+				).forEach(Minecraft.getMinecraft().thePlayer::addChatMessage);
+				MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(SBInfo.getInstance().getLocation(), SBInfo
+					.getInstance()
+					.getLocation()));
+				return;
+
+			case "positiontest":
+				NotEnoughUpdates.INSTANCE.openGui = new GuiPositionEditor();
+				return;
+
+			case "pt":
+				EnumParticleTypes t = EnumParticleTypes.valueOf(args[1]);
+				FishingHelper.type = t;
+				return;
+
+			case "dev":
+				NotEnoughUpdates.INSTANCE.config.hidden.dev = true;
+				return;
+
+			case "saveconfig":
+				NotEnoughUpdates.INSTANCE.saveConfig();
+				return;
+
+			case "searchmode":
+				NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true;
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.AQUA +
+					"I would never search"));
+				return;
+
+			case "bluehair":
+				PronounDB.test();
+				return;
+
+			case "opengui":
+				try {
+					NotEnoughUpdates.INSTANCE.openGui = (GuiScreen) Class.forName(args[1]).newInstance();
+					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+						"Opening gui: " + NotEnoughUpdates.INSTANCE.openGui));
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
+					e.printStackTrace();
+					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to open this gui."));
+				}
+				return;
+
+			case "center":
+				double x = Math.floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f;
+				double z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f;
+				Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z);
+				return;
+
+			default:
 		}
 	}
 }
