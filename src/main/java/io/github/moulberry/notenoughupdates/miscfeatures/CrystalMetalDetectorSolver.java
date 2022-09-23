@@ -170,7 +170,7 @@ public class CrystalMetalDetectorSolver {
 					// falls through
 				case FOUND:
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Found solution."));
-					if (NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.METAL) &&
+					if (NEUDebugFlag.METAL.isSet() &&
 						(previousState == SolutionState.INVALID || previousState == SolutionState.FAILED)) {
 						NEUDebugLogger.log(
 							NEUDebugFlag.METAL,

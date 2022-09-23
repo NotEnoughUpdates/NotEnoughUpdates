@@ -753,7 +753,9 @@ public class NEUOverlay extends Gui {
 				if (slot != null) {
 					ItemStack hover = slot.getStack();
 					if (hover != null) {
-						textField.setText("id:" + manager.getInternalNameForItem(hover));
+						if (manager.getInternalNameForItem(hover) != null) {
+							textField.setText("id:" + manager.getInternalNameForItem(hover));
+						}
 						itemPaneOpen = true;
 						updateSearch();
 					}

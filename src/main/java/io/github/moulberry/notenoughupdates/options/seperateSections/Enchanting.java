@@ -85,6 +85,15 @@ public class Enchanting {
 	@ConfigAccordionId(id = 1)
 	public int enchantOrdering = 0;
 
+	@Expose
+	@ConfigOption(
+		name = "Use highest level from /et in /hex",
+		desc = "Show max level from /et in hex instead of highest possible"
+	)
+	@ConfigEditorBoolean()
+	@ConfigAccordionId(id = 1)
+	public boolean maxEnchLevel = false;
+
 	@ConfigOption(
 		name = "Enchanting Solvers",
 		desc = ""

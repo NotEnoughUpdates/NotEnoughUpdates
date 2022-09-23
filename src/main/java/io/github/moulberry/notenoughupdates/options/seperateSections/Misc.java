@@ -229,4 +229,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean abiphoneWarning = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable Coop Warning",
+		desc = "Asks for confirmation when clicking the coop diamond in profile menu"
+	)
+	@ConfigEditorBoolean
+	public boolean coopWarning = true;
+
 }

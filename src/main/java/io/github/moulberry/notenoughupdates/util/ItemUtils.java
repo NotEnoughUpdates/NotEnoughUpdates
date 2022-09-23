@@ -136,4 +136,8 @@ public class ItemUtils {
 		return enchId;
 	}
 
+	public static boolean isSoulbound(ItemStack item) {
+		return ItemUtils.getLore(item).stream()
+										.anyMatch(line -> line.equals("§8§l* §8Co-op Soulbound §8§l*") || line.equals("§8§l* Soulbound §8§l*"));
+	}
 }
