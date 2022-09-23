@@ -190,8 +190,7 @@ public class CustomAH extends Gui {
 	private static final int SORT_MODE_LOW = 1;
 	private static final int SORT_MODE_SOON = 2;
 
-	//    private static final String[] rarities = {"COMMON", "UNCOMMON", "RARE", "EPIC",
-//            "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME", "DIVINE"};
+
 	private static final String[] rarityColours = {
 		"" + EnumChatFormatting.WHITE,
 		"" + EnumChatFormatting.GREEN, "" + EnumChatFormatting.BLUE, "" + EnumChatFormatting.DARK_PURPLE,
