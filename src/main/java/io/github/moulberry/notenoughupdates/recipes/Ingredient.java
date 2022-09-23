@@ -79,7 +79,7 @@ public class Ingredient {
 	}
 
 	public boolean isCoins() {
-		return "SKYBLOCK_COIN".equals(internalItemId);
+		return SKYBLOCK_COIN .equals(internalItemId);
 	}
 
 	public int getCount() {
