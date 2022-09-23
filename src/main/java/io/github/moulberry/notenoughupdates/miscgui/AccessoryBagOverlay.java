@@ -904,7 +904,6 @@ public class AccessoryBagOverlay {
 					if (containerName.trim().contains("(")) {
 						String first = containerName.trim().split("\\(")[1].split("/")[0];
 						Integer currentPageNumber = Integer.parseInt(first);
-						//System.out.println("current:"+currentPageNumber);
 						if (!pagesVisited.contains(currentPageNumber)) {
 							boolean hasStack = false;
 							if (Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerChest) {
