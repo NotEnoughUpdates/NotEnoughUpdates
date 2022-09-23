@@ -100,6 +100,7 @@ public class HypixelApi {
 			try {
 				consumer.accept(postApiSync(urlS, postData, contentType));
 			} catch (Exception e) {
+				e.printStackTrace();
 				error.run();
 			}
 		});

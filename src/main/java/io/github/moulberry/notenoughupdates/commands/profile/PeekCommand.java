@@ -73,7 +73,7 @@ public class PeekCommand extends ClientCommandBase {
 			} else {
 				profile.resetCache();
 
-				if (peekCommandExecutorService == null) {
+				if (peekCommandExecutorService == null || peekCommandExecutorService.isTerminated()) {
 					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
 				}
 
@@ -106,13 +106,32 @@ public class PeekCommand extends ClientCommandBase {
 							boolean isMe = name.equalsIgnoreCase("moulberry");
 
 							PlayerStats.Stats stats = profile.getStats(null);
-							if (stats == null) return;
+							if (stats == null) {
+								peekScheduledFuture = peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
+								return;
+							}
 							Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
+
+							if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+								Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
+									EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock networth..."), id);
+
+								CountDownLatch countDownLatch = new CountDownLatch(1);
+
+								profile.getSoopyNetworth(null, () -> countDownLatch.countDown());
+
+								try { //Wait for async network request
+									countDownLatch.await(10,TimeUnit.SECONDS);
+								} catch (InterruptedException e) {}
+
+								//Now it's waited for network request the data should be cached (accessed in nw section)
+							}
 
 							Minecraft.getMinecraft().ingameGUI
 								.getChatGUI()
 								.printChatMessageWithOptionalDeletion(new ChatComponentText(EnumChatFormatting.GREEN + " " +
-									EnumChatFormatting.STRIKETHROUGH + "-=-" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + " " +
+									EnumChatFormatting.STRIKETHROUGH + "-=-" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN +
+									" " +
 									Utils.getElementAsString(profile.getHypixelProfile().get("displayname"), name) + "'s Info " +
 									EnumChatFormatting.STRIKETHROUGH + "-=-"), id);
 
@@ -241,19 +260,16 @@ public class PeekCommand extends ClientCommandBase {
 
 							long networth;
 							if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-								CountDownLatch countDownLatch = new CountDownLatch(1);
-
-								profile.getSoopyNetworth(null, () -> countDownLatch.countDown());
-
-								try { //Wait for async network request
-									countDownLatch.await(10,TimeUnit.SECONDS);
-								} catch (InterruptedException e) {}
-
-								//Now it's waited for network request the data should be cached
-								networth = profile.getSoopyNetworth(null, () -> {});
+								ProfileViewer.Profile.SoopyNetworthData nwData = profile.getSoopyNetworth(null, () -> {});
+								if (nwData == null) {
+									networth = -2l;
+								} else {
+									networth = nwData.getTotal();
+								}
 							} else {
 								networth = profile.getNetWorth(null);
 							}
+
 							float money = Math.max(bankBalance + purseBalance, networth);
 							EnumChatFormatting moneyPrefix = money > 50 * 1000 * 1000 ?
 								(money > 200 * 1000 * 1000
