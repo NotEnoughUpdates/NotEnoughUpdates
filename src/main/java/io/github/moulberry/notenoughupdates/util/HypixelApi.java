@@ -25,8 +25,10 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -93,6 +95,16 @@ public class HypixelApi {
 		});
 	}
 
+	public void postApiAsync(String urlS, String postData, String contentType, Consumer<JsonObject> consumer, Runnable error) {
+		es.submit(() -> {
+			try {
+				consumer.accept(postApiSync(urlS, postData, contentType));
+			} catch (Exception e) {
+				error.run();
+			}
+		});
+	}
+
 	public void getMyApiAsync(String urlS, Consumer<JsonObject> consumer, Runnable error) {
 		es.submit(() -> {
 			try {
@@ -131,6 +143,29 @@ public class HypixelApi {
 		URLConnection connection = url.openConnection();
 		connection.setConnectTimeout(10000);
 		connection.setReadTimeout(10000);
+
+		String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
+
+		JsonObject json = gson.fromJson(response, JsonObject.class);
+		if (json == null) throw new ConnectException("Invalid JSON");
+		return json;
+	}
+
+	public JsonObject postApiSync(String urlS, String postData, String contentType) throws IOException {
+		URL url = new URL(urlS);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setConnectTimeout(10000);
+		connection.setReadTimeout(10000);
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", contentType);
+		connection.setDoOutput(true);
+
+		OutputStream os = connection.getOutputStream();
+		try{
+			os.write(postData.getBytes("utf-8"));
+		} finally {
+			os.close();
+		}
 
 		String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
 
