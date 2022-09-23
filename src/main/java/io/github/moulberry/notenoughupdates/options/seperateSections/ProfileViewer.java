@@ -94,4 +94,12 @@ public class ProfileViewer {
 	)
 	@ConfigEditorBoolean
 	public boolean showPronounsInPv = BuildFlags.ENABLE_PRONOUNS_IN_PV_BY_DEFAULT;
+
+	@Expose
+	@ConfigOption(
+		name = "Use Soopy Networth",
+		desc = "Replaces NEU networth with Soopy networth in /pv"
+	)
+	@ConfigEditorBoolean
+	public boolean useSoopyNetworth = true;
 }

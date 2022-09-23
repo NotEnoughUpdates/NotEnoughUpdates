@@ -225,7 +225,13 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		long networth = profile.getNetWorth(profileId);
+		long networth = 0;
+		if(NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth){
+			networth = profile.getSoopyNetworth(profileId);
+		}else{
+			networth = profile.getNetWorth(profileId);
+		}
+
 		if (networth > 0) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
@@ -283,6 +289,25 @@ public class BasicPage extends GuiProfileViewerPage {
 				}
 			} catch (Exception ignored) {
 			}
+		}else{
+			//Networth is under 0
+			//If = -1 -> an error occured
+			//If = -2 -> still loading networth
+
+			String stateStr = EnumChatFormatting.RED + "An error occured";
+			if(networth == -2){
+				stateStr = EnumChatFormatting.YELLOW + "Loading...";
+			}
+
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
+				fr,
+				guiLeft + 63,
+				guiTop + 38,
+				true,
+				0
+			);
+
 		}
 
 		if (status != null) {

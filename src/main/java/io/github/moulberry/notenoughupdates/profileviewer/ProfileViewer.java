@@ -578,9 +578,11 @@ public class ProfileViewer {
 		private final HashMap<String, PlayerStats.Stats> stats = new HashMap<>();
 		private final HashMap<String, PlayerStats.Stats> passiveStats = new HashMap<>();
 		private final HashMap<String, Long> networth = new HashMap<>();
+		private final HashMap<String, Long> soopyNetworth = new HashMap<>();
 		private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingSoopyNetworth = new AtomicBoolean(false);
 		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
 		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?\\d+)");
 		private String latestProfile = null;
@@ -652,6 +654,77 @@ public class ProfileViewer {
 				() -> updatingBingoInfo.set(false)
 			);
 			return bingoInformation != null ? bingoInformation : null;
+		}
+
+		/**
+		 * Returns -1 if error
+		 * Returns -2 if still loading
+		 */
+		public long getSoopyNetworth(String profileName){
+			if (profileName == null) profileName = latestProfile;
+			if (soopyNetworth.get(profileName) != null) return soopyNetworth.get(profileName);
+
+			JsonArray playerInfo = getSkyblockProfiles(() -> {});
+			if (playerInfo == null) return -2;
+			if(updatingSoopyNetworth.get()) return -2;
+			updatingSoopyNetworth.set(true);
+
+			manager.hypixelApi.postApiAsync(
+				"https://soopy.dev/api/v2/player_networth/"+this.uuid,
+				skyblockProfiles.toString(),
+				"application/json",
+				jsonObject -> {
+					if(!jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()){
+						//Something went wrong
+						//Set profile networths to -1 to indicate that
+						for (int i = 0; i < skyblockProfiles.size(); i++) {
+							if (!skyblockProfiles.get(i).isJsonObject()) {
+								return;
+							}
+							JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
+
+							String cuteName = profile.get("cute_name").getAsString();
+
+							soopyNetworth.put(cuteName, -1l);
+						}
+						updatingSoopyNetworth.set(false);
+						return;
+					}
+
+					//Success, update networth data
+					for (int i = 0; i < skyblockProfiles.size(); i++) {
+						if (!skyblockProfiles.get(i).isJsonObject()) {
+							return;
+						}
+						JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
+
+						String cuteName = profile.get("cute_name").getAsString();
+						String profileId = profile.get("profile_id").getAsString();
+
+						Long networth = jsonObject.getAsJsonObject("data").get(profileId).getAsLong();
+
+						soopyNetworth.put(cuteName, networth);
+					}
+
+					updatingSoopyNetworth.set(false);
+				},
+				() -> {
+					//Something went wrong
+					//Set profile networths to -1 to indicate that
+					for (int i = 0; i < skyblockProfiles.size(); i++) {
+						if (!skyblockProfiles.get(i).isJsonObject()) {
+							return;
+						}
+						JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
+
+						String cuteName = profile.get("cute_name").getAsString();
+
+						soopyNetworth.put(cuteName, -1l);
+					}
+					updatingSoopyNetworth.set(false);
+				}
+			);
+			return -2;
 		}
 
 		public long getNetWorth(String profileName) {
