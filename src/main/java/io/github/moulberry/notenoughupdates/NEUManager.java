@@ -647,7 +647,6 @@ public class NEUManager {
 		try {
 			NBTTagCompound tag =
 				CompressedStreamTools.readCompressed(new ByteArrayInputStream(Base64.getDecoder().decode(item_bytes)));
-			//System.out.println(tag.toString());
 			return getJsonFromNBT(tag);
 		} catch (IOException e) {
 			return null;
