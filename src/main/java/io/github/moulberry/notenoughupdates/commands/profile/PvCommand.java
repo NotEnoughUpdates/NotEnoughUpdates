@@ -22,7 +22,13 @@ package io.github.moulberry.notenoughupdates.commands.profile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.BlockPos;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PvCommand extends ViewProfileCommand {
 
@@ -37,5 +43,20 @@ public class PvCommand extends ViewProfileCommand {
 		} else {
 			super.processCommand(sender, args);
 		}
+	}
+
+	@Override
+	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+		if (args.length != 1) return null;
+
+		String lastArg = args[args.length - 1];
+		List<String> playerMatches = new ArrayList<>();
+		for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
+			String playerName = player.getName();
+			if (playerName.toLowerCase().startsWith(lastArg.toLowerCase())) {
+				playerMatches.add(playerName);
+			}
+		}
+		return playerMatches;
 	}
 }
