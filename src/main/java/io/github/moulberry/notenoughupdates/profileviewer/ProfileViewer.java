@@ -695,7 +695,8 @@ public class ProfileViewer {
 			}
 
 			public long getCategory(String name) {
-				return categoryWorth.get(name);
+				if(categoryWorth.containsKey(name)) return categoryWorth.get(name)
+				return 0;
 			}
 
 			public String[] getCategories() {
