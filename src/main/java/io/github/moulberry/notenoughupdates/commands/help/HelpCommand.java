@@ -81,7 +81,7 @@ public class HelpCommand extends ClientCommandBase {
 		}
 		String[] helpInfo = {
 			"",
-			"\u00a77Commands marked with a \u00a72\"\u2D35\"\u00a77 require are api key. You can set your api key via \"/api new\" or by manually putting it in the api field in \"/neu\"",
+			"\u00a77Commands marked with a \u00a72\"\u2D35\"\u00a77 require an api key. You can set your api key via \"/api new\" or by manually putting it in the api field in \"/neu\"",
 			"",
 			"\u00a77Arguments marked with a \u00a7b\"?\"\u00a77 are optional.",
 			"",
