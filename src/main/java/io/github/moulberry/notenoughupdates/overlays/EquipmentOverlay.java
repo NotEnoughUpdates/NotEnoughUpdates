@@ -262,7 +262,7 @@ public class EquipmentOverlay {
 			slot4 = getWardrobeSlot(37);
 		}
 
-		if (screen instanceof GuiChest || screen instanceof GuiInventory) {
+		if ((screen instanceof GuiChest || screen instanceof GuiInventory) && NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay){
 			petStack = getRepoPetStack();
 		}
 		if ((!(screen instanceof GuiInventory) && !(screen instanceof GuiInvButtonEditor))

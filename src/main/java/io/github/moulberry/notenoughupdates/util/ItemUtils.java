@@ -173,8 +173,6 @@ public class ItemUtils {
 	}
 
 	public static ItemStack createPetItemstackFromPetInfo(PetInfoOverlay.Pet currentPet) {
-		JsonObject pet = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(NotEnoughUpdates.INSTANCE.manager.createItem(
-			currentPet.getPetId(false)));
 		String petname = currentPet.petType;
 		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
 		String heldItem = currentPet.petItem;
@@ -187,11 +185,6 @@ public class ItemUtils {
 		GuiProfileViewer.PetLevel levelObj = GuiProfileViewer.getPetLevel(petname, tier, exp);
 
 		float level = levelObj.level;
-		float currentLevelRequirement = levelObj.currentLevelRequirement;
-		float maxXP = levelObj.maxXP;
-		pet.addProperty("level", level);
-		pet.addProperty("currentLevelRequirement", currentLevelRequirement);
-		pet.addProperty("maxXP", maxXP);
 
 		ItemStack petItemstack = NotEnoughUpdates.INSTANCE.manager
 			.createItemResolutionQuery()
@@ -206,7 +199,7 @@ public class ItemUtils {
 				"§c§l#neu-support §r§con §ldiscord.gg/moulberry"
 			));
 		}
-		Map<String, String> replacements = NotEnoughUpdates.INSTANCE.manager.getLoreReplacements(
+		Map<String, String> replacements = NotEnoughUpdates.INSTANCE.manager.getPetLoreReplacements(
 			petname,
 			tier,
 			MathHelper.floor_float(level)

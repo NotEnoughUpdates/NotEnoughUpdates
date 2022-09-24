@@ -29,7 +29,8 @@ public class CustomArmour {
 	@Expose
 	@ConfigOption(
 		name = "Enable Equipment Hud",
-		desc = "Shows an overlay in your inventory showing your 4 extra armour slots"
+		desc = "Shows an overlay in your inventory showing your 4 extra armour slots" +
+			"\u00A7cRequires Hide Potion Effects to be enabled"
 	)
 	@ConfigEditorBoolean
 	public boolean enableArmourHud = true;
