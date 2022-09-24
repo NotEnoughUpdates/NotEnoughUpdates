@@ -38,7 +38,8 @@ import java.util.List;
 public class ItemOverlays {
 	@ConfigOption(
 		name = "Treecapitator Overlay",
-		desc = ""
+		desc = "",
+		searchTags = "jungle"
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean treecapAccordion = false;

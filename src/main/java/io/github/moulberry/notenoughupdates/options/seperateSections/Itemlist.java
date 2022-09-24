@@ -146,7 +146,8 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Always show Monsters",
-		desc = "Always show Monster Items in the item list"
+		desc = "Always show Monster Items in the item list",
+		searchTags = "mob"
 	)
 	@ConfigEditorBoolean(
 		runnableId = 21

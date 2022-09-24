@@ -121,9 +121,7 @@ public class Mining {
 
 	@ConfigOption(
 		name = "Dwarven Overlay",
-		desc = "",
-		searchTags = {"mining", "mining overlay"}
-
+		desc = ""
 	)
 	@ConfigEditorAccordion(id = 2)
 	public boolean overlayAccordion = false;

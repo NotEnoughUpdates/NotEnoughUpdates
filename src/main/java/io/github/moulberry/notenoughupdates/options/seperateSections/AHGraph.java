@@ -32,7 +32,8 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Enable AH/BZ Price Graph",
-		desc = "Enable or disable the graph. Disabling this will also make it so that no price data is stored."
+		desc = "Enable or disable the graph. Disabling this will also make it so that no price data is stored.",
+		searchTags = {"auction", "bazaar"}
 	)
 	@ConfigEditorBoolean
 	public boolean graphEnabled = true;

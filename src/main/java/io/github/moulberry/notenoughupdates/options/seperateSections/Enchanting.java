@@ -29,7 +29,8 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption
 public class Enchanting {
 	@ConfigOption(
 		name = "Enchant Table / Hex GUI",
-		desc = ""
+		desc = "",
+		searchTags = "et"
 	)
 	@ConfigEditorAccordion(id = 1)
 	public boolean tableGUIAccordion = false;
