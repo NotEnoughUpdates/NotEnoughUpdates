@@ -58,9 +58,14 @@ public class EssenceUpgrades implements NeuRecipe {
 		add(new RenderLocation(120, 20));
 		add(new RenderLocation(140, 20));
 
-		add(new RenderLocation(60, 40));
-		add(new RenderLocation(80, 40));
-		add(new RenderLocation(100, 40));
+		add(new RenderLocation(10, 40));
+		add(new RenderLocation(30, 40));
+		add(new RenderLocation(50, 40));
+		add(new RenderLocation(70, 40));
+		add(new RenderLocation(90, 40));
+		add(new RenderLocation(110, 40));
+		add(new RenderLocation(130, 40));
+		add(new RenderLocation(150, 40));
 	}};
 
 	private static final List<RenderLocation> slotLocations = new ArrayList<RenderLocation>() {{
@@ -175,7 +180,6 @@ public class EssenceUpgrades implements NeuRecipe {
 			return slotList;
 		}
 		List<String> lore = ItemUtils.getLore(initialItemStack);
-//		JsonArray lore = outputItem.get("lore").getAsJsonArray();
 		List<String> newLore = new ArrayList<>();
 
 		for (String loreEntry : lore) {
@@ -204,6 +208,7 @@ public class EssenceUpgrades implements NeuRecipe {
 		ItemUtils.setLore(output.getItemStack(), newLore);
 		slotList.add(new RecipeSlot(outputX, outputY, output.getItemStack()));
 
+		//other required items and/or coins, if applicable
 		TierUpgrade tierUpgrade = tierUpgradeMap.get(selectedTier);
 
 		int i = 0;
@@ -225,7 +230,6 @@ public class EssenceUpgrades implements NeuRecipe {
 						}
 					}
 					if (itemStack != null) {
-//						itemStack.stackSize = requiredItem.getValue();
 						RenderLocation renderLocation = slotLocations.get(i++);
 						if (renderLocation != null) {
 							slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY(), itemStack));
@@ -299,12 +303,13 @@ public class EssenceUpgrades implements NeuRecipe {
 	 */
 	private void drawButtons(int mouseX, int mouseY) {
 		for (int i = 0; i < amountOfTiers; i++) {
-			RenderLocation buttonLocation = buttonLocations.get(i);
-			if (buttonLocation == null) {
+			if (i >= buttonLocations.size()) {
 				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					EnumChatFormatting.RED + "[NEU] Error: Item has more than 10 possible star upgrades"));
+					EnumChatFormatting.RED + "[NEU] Error: Item has more than " + buttonLocations.size() +
+						" possible star upgrades"));
 				break;
 			}
+			RenderLocation buttonLocation = buttonLocations.get(i);
 
 			int x = guiItemRecipe.guiLeft + buttonLocation.getX();
 			int y = guiItemRecipe.guiTop + buttonLocation.getY();
@@ -325,8 +330,6 @@ public class EssenceUpgrades implements NeuRecipe {
 				false,
 				0x2d4ffc
 			);
-
-//			Minecraft.getMinecraft().fontRendererObj.drawString(String.valueOf(i + 1), x + 5, y + 4, 0x2d4ffc);
 		}
 	}
 
@@ -350,7 +353,7 @@ public class EssenceUpgrades implements NeuRecipe {
 	}
 
 	@Override
-	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY){
+	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
 		drawSlots(slots.size());
 	}
 
