@@ -239,7 +239,7 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-		name = "(W.I.P) Cache Enchants",
+		name = "Cache Tooltip Enchants",
 		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: it will not work on items without uuid (e.g: max attribute and max enchant test items)"
 	)
 	@ConfigEditorBoolean
