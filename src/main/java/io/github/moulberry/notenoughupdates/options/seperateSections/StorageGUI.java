@@ -34,7 +34,8 @@ import org.lwjgl.input.Keyboard;
 public class StorageGUI {
 	@ConfigOption(
 		name = "Storage Overlay",
-		desc = ""
+		desc = "",
+		searchTags = {"ec", "enderchest", "st", "backpack"}
 	)
 	@ConfigEditorAccordion(id = 1)
 	public boolean storageOverlayAccordion = false;
@@ -164,7 +165,8 @@ public class StorageGUI {
 
 	@ConfigOption(
 		name = "Inventory Backpacks",
-		desc = ""
+		desc = "",
+		searchTags = "hotbar"
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean inventorySlotAccordion = false;
