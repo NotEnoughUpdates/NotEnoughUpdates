@@ -237,4 +237,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean coopWarning = true;
 
+	@Expose
+	@ConfigOption(
+		name = "(W.I.P) Cache Enchants",
+		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: it will not work on items without uuid (e.g: max attribute and max enchant test items)"
+	)
+	@ConfigEditorBoolean
+	public boolean cacheItemEnchant = false;//as it's a WIP it's currently set as default off.
+
 }
