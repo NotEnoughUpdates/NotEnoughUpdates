@@ -55,7 +55,6 @@ import java.awt.datatransfer.StringSelection;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +66,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemTooltipListener {
-	private static final String petToolTipRegex =
+	public static final String petToolTipRegex =
 		"((Farming)|(Combat)|(Fishing)|(Mining)|(Foraging)|(Enchanting)|(Alchemy)) ((Mount)|(Pet)|(Morph)).*";
 	private final NotEnoughUpdates neu;
 	private final Pattern xpLevelPattern = Pattern.compile("(.*) (\\xA7e(.*)\\xA76/\\xA7e(.*))");
@@ -711,45 +710,44 @@ public class ItemTooltipListener {
 	}
 
 	private void petToolTipXPExtendPetMenu(ItemTooltipEvent event) {
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.petExtendExp) {
-			//7 is just a random number i chose, prob no pets with less lines than 7
-			if (event.toolTip.size() > 7) {
-				if (Utils.cleanColour(event.toolTip.get(1)).matches(petToolTipRegex)) {
-					GuiProfileViewer.PetLevel petLevel;
+		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.petExtendExp) return;
+		//7 is just a random number i chose, prob no pets with less lines than 7
+		if (event.toolTip.size() < 7) return;
+		if (event.itemStack.getTagCompound().hasKey("NEUHIDEPETTOOLTIP")) return;
+		if (Utils.cleanColour(event.toolTip.get(1)).matches(petToolTipRegex)) {
+			GuiProfileViewer.PetLevel petLevel;
 
-					int xpLine = -1;
-					for (int i = event.toolTip.size() - 1; i >= 0; i--) {
-						Matcher matcher = xpLevelPattern.matcher(event.toolTip.get(i));
-						if (matcher.matches()) {
-							xpLine = i;
-							event.toolTip.set(xpLine, matcher.group(1));
-							break;
-						} else if (event.toolTip.get(i).matches("MAX LEVEL")) {
-							return;
-						}
-					}
-
-					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
-						event.itemStack.getTagCompound()
-					);
-					if (pet == null) {
-						return;
-					}
-					petLevel = pet.petLevel;
-
-					if (petLevel == null || xpLine == -1) {
-						return;
-					}
-
-					event.toolTip.add(
-						xpLine + 1,
-						EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petLevel.levelXp) +
-							EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
-							myFormatter.format(petLevel.currentLevelRequirement)
-					);
-
+			int xpLine = -1;
+			for (int i = event.toolTip.size() - 1; i >= 0; i--) {
+				Matcher matcher = xpLevelPattern.matcher(event.toolTip.get(i));
+				if (matcher.matches()) {
+					xpLine = i;
+					event.toolTip.set(xpLine, matcher.group(1));
+					break;
+				} else if (event.toolTip.get(i).matches("MAX LEVEL")) {
+					return;
 				}
 			}
+
+			PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
+				event.itemStack.getTagCompound()
+			);
+			if (pet == null) {
+				return;
+			}
+			petLevel = pet.petLevel;
+
+			if (petLevel == null || xpLine == -1) {
+				return;
+			}
+
+			event.toolTip.add(
+				xpLine + 1,
+				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petLevel.levelXp) +
+					EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
+					myFormatter.format(petLevel.currentLevelRequirement)
+			);
+
 		}
 	}
 

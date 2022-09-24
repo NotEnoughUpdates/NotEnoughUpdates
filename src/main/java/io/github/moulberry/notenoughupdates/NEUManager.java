@@ -1267,7 +1267,7 @@ public class NEUManager {
 		}
 	}
 
-	public HashMap<String, String> getLoreReplacements(String petname, String tier, int level) {
+	public HashMap<String, String> getPetLoreReplacements(String petname, String tier, int level) {
 		JsonObject petnums = null;
 		if (petname != null && tier != null) {
 			petnums = Constants.PETNUMS;
@@ -1380,7 +1380,7 @@ public class NEUManager {
 								float statMax = entry.getValue().getAsFloat();
 								float statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat();
 								float val = statMin * minMix + statMax * maxMix;
-								String statStr = (statMin > 0 ? "+" : "") + (int) Math.floor(val);
+								String statStr = (statMin > 0 ? "+" : "") + removeUnusedDecimal(Math.floor(val * 10) / 10);
 								replacements.put(entry.getKey(), statStr);
 							}
 						}
@@ -1392,7 +1392,7 @@ public class NEUManager {
 		return replacements;
 	}
 
-	public HashMap<String, String> getLoreReplacements(NBTTagCompound tag, int level) {
+	public HashMap<String, String> getPetLoreReplacements(NBTTagCompound tag, int level) {
 		String petname = null;
 		String tier = null;
 		if (tag != null && tag.hasKey("ExtraAttributes")) {
@@ -1426,7 +1426,7 @@ public class NEUManager {
 				}
 			}
 		}
-		return getLoreReplacements(petname, tier, level);
+		return getPetLoreReplacements(petname, tier, level);
 	}
 
 	public NBTTagList processLore(JsonArray lore, HashMap<String, String> replacements) {
@@ -1457,6 +1457,7 @@ public class NEUManager {
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache, boolean useReplacements, boolean copyStack) {
+		if (useReplacements) useCache = false;
 		if (json == null) return new ItemStack(Items.painting, 1, 10);
 		String internalname = json.get("internalname").getAsString();
 
@@ -1496,7 +1497,7 @@ public class NEUManager {
 			HashMap<String, String> replacements = new HashMap<>();
 
 			if (useReplacements) {
-				replacements = getLoreReplacements(stack.getTagCompound(), -1);
+				replacements = getPetLoreReplacements(stack.getTagCompound(), -1);
 
 				String displayName = json.get("displayname").getAsString();
 				for (Map.Entry<String, String> entry : replacements.entrySet()) {

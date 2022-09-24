@@ -133,10 +133,11 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petXpType;
 		public String petItem;
 		public String skin;
+		public int candyUsed;
 
 		public String getPetId(boolean withoutBoost) {
-			return petType + ";" + (withoutBoost ? rarity.petId - 1 : rarity.petId);
-
+			boolean shouldDecreaseRarity = withoutBoost && "PET_ITEM_TIER_BOOST".equals(petItem);
+			return petType + ";" + (shouldDecreaseRarity ? rarity.petId - 1 : rarity.petId);
 		}
 
 	}
@@ -466,10 +467,10 @@ public class PetInfoOverlay extends TextOverlay {
 				float remainingMax = currentPet.petLevel.maxXP - currentPet.petLevel.totalXp;
 				if (remaining > 0) {
 					if (xpGain < 1000) {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + "N/A";
 					} else {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + Utils.prettyTime((long) (remainingMax) * 1000 * 60 * 60 / (long) xpGain);
 					}
 				}

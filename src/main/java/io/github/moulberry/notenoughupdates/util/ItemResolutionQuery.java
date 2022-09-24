@@ -138,6 +138,13 @@ public class ItemResolutionQuery {
 		return manager.jsonToStack(jsonObject);
 	}
 
+	@Nullable
+	public ItemStack resolveToItemStack(boolean useReplacements) {
+		JsonObject jsonObject = resolveToItemListJson();
+		if (jsonObject == null) return null;
+		return manager.jsonToStack(jsonObject, false, useReplacements);
+	}
+
 	// <editor-fold desc="Resolution Helpers">
 	private boolean isBazaar(IInventory chest) {
 		if (chest.getDisplayName().getFormattedText().startsWith("Bazaar ➜ ")) {
