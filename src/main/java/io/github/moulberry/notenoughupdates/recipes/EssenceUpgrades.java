@@ -30,7 +30,6 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -140,16 +139,15 @@ public class EssenceUpgrades implements NeuRecipe {
 					Integer tier = Integer.parseInt(requiredItems.getKey());
 					Map<String, Integer> items = new HashMap<>();
 					for (JsonElement element : requiredItems.getValue().getAsJsonArray()) {
-						//todo switch to new things
-						if(true){
-							continue;
+						String itemString = element.getAsString();
+
+						int colon = itemString.indexOf(':');
+						if (colon != -1) {
+							String amount = itemString.substring(colon + 1);
+							String requiredItem = itemString.substring(0, colon);
+
+							items.put(requiredItem, Integer.parseInt(amount));
 						}
-
-						String[] item = element.getAsString().split("x");
-						String amount = item[item.length - 1];
-						String itemName = element.getAsString().substring(0, element.getAsString().length() - amount.length() - 1);
-
-						items.put(itemName, Integer.parseInt(amount));
 					}
 					upgradeMap.get(tier).itemsRequired = items;
 				}
@@ -203,12 +201,38 @@ public class EssenceUpgrades implements NeuRecipe {
 				newLore.add(loreEntry);
 			}
 		}
-		;
 		ItemUtils.setLore(output.getItemStack(), newLore);
 		slotList.add(new RecipeSlot(outputX, outputY, output.getItemStack()));
 
-		for (RenderLocation slotLocation : slotLocations) {
-			slotList.add(new RecipeSlot(slotLocation.getX() + 1, slotLocation.getY(), new ItemStack(Items.item_frame)));
+		TierUpgrade tierUpgrade = tierUpgradeMap.get(selectedTier);
+
+		int i = 0;
+		if (tierUpgrade != null) {
+			if (tierUpgrade.getItemsRequired() != null) {
+				for (Map.Entry<String, Integer> requiredItem : tierUpgrade.getItemsRequired().entrySet()) {
+					ItemStack itemStack;
+					if (requiredItem.getKey().equals("SKYBLOCK_COIN")) {
+						Ingredient ingredient = Ingredient.coinIngredient(
+							NotEnoughUpdates.INSTANCE.manager,
+							requiredItem.getValue()
+						);
+						itemStack = ingredient.getItemStack();
+					} else {
+						itemStack = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+							requiredItem.getKey()).resolveToItemStack();
+						if (itemStack != null) {
+							itemStack.stackSize = requiredItem.getValue();
+						}
+					}
+					if (itemStack != null) {
+//						itemStack.stackSize = requiredItem.getValue();
+						RenderLocation renderLocation = slotLocations.get(i++);
+						if (renderLocation != null) {
+							slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY(), itemStack));
+						}
+					}
+				}
+			}
 		}
 
 		return slotList;
@@ -306,17 +330,28 @@ public class EssenceUpgrades implements NeuRecipe {
 		}
 	}
 
+	private void drawSlots(int amount) {
+		//-1 to not count the output slot
+		for (int i = 0; i < amount - 1; i++) {
+			RenderLocation renderLocation = slotLocations.get(i);
+			if (renderLocation != null) {
+				drawSlot(guiItemRecipe.guiLeft + renderLocation.getX(), guiItemRecipe.guiTop + renderLocation.getY());
+			}
+		}
+	}
+
 	@Override
 	public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
+		guiItemRecipe = gui;
 		if (slots.isEmpty()) {
 			slots = buildSlotList();
 		}
-		guiItemRecipe = gui;
-//		drawSlot(gui.guiLeft + 50, gui.guiTop + 70);
 		drawButtons(mouseX, mouseY);
-		for (RenderLocation slotLocation : slotLocations) {
-			drawSlot(gui.guiLeft + slotLocation.getX(), gui.guiTop + slotLocation.getY());
-		}
+	}
+
+	@Override
+	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY){
+		drawSlots(slots.size());
 	}
 
 	@Override
@@ -345,7 +380,7 @@ public class EssenceUpgrades implements NeuRecipe {
 	}
 
 	@Override
-	public JsonObject serialize() {
+	public @Nullable JsonObject serialize() {
 		return null;
 	}
 
@@ -355,7 +390,7 @@ public class EssenceUpgrades implements NeuRecipe {
 	}
 
 	/**
-	 * Simple dataclass holding an x and y value to be used when describing the location of a button
+	 * Simple dataclass holding an x and y value to be used when describing the location of something to be rendered
 	 */
 	private static class RenderLocation {
 		private final int x;
@@ -376,12 +411,12 @@ public class EssenceUpgrades implements NeuRecipe {
 	}
 
 	/**
-	 * Dataclass holding information about the items and essence required to upgrade an item to a specifc tier
+	 * Dataclass holding information about the items and essence required to upgrade an item to a specific tier
 	 */
 	public static class TierUpgrade {
-		private int tier;
-		private String essenceType;
-		private int essenceRequired;
+		private final int tier;
+		private final String essenceType;
+		private final int essenceRequired;
 		private Map<String, Integer> itemsRequired;
 
 		public TierUpgrade(int tier, String essenceType, int essenceRequired, Map<String, Integer> itemsRequired) {

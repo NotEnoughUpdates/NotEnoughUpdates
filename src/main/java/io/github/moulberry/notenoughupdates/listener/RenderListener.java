@@ -1294,7 +1294,7 @@ public class RenderListener {
 												.getAsJsonObject()
 												.get(String.valueOf(stars))
 												.getAsJsonArray()
-												.add(new JsonPrimitive("COINS:" + coinsAmount.replace(",", "")));
+												.add(new JsonPrimitive("SKYBLOCK_COIN:" + coinsAmount.replace(",", "")));
 										} else {
 											String itemString = "_";
 											for (Map.Entry<String, JsonObject> itemEntry : NotEnoughUpdates.INSTANCE.manager
