@@ -868,8 +868,7 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Seasoned Mineman",
 						"§7Level " + seasonMine + "§8/100",
 						"",
-						"§7Increases your Mining",
-						"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7.",
+						"§7Grants §3+" + EnumChatFormatting.DARK_AQUA + seasonMineStat + "☯ Mining Wisdom§7.",
 						"",
 						EnumChatFormatting.GRAY + "Cost",
 						EnumChatFormatting.DARK_GREEN +
@@ -881,8 +880,7 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Seasoned Mineman",
 						"§7Level " + seasonMine + "§8/100",
 						"",
-						"§7Increases your Mining",
-						"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7."
+						"§7Grants §3+" + EnumChatFormatting.DARK_AQUA + seasonMineStat + "☯ Mining Wisdom§7."
 					),
 			100
 		);
