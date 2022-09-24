@@ -113,7 +113,6 @@ public class NEUConfigEditor extends GuiElement {
 
 				String combined = category.name + " " + category.desc + " " + option.name + " " + option.desc + " " +
 					Arrays.toString(option.searchTags);
-				System.out.println(Arrays.toString(option.searchTags));
 				combined = combined.replaceAll("[^a-zA-Z_ ]", "").toLowerCase();
 				for (String word : combined.split("[ _]")) {
 					searchOptionMap.computeIfAbsent(word, k -> new HashSet<>()).add(option);
