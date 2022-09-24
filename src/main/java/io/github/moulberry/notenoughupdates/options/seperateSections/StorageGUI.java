@@ -145,7 +145,8 @@ public class StorageGUI {
 	@Expose
 	@ConfigOption(
 		name = "Selected Storage Colour",
-		desc = "Change the colour used to draw the selected backpack border"
+		desc = "Change the colour used to draw the selected backpack border",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)

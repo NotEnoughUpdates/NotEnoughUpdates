@@ -46,7 +46,8 @@ public class CustomArmour {
 	@Expose
 	@ConfigOption(
 		name = "GUI Style",
-		desc = "Change the colour of the GUI"
+		desc = "Change the colour of the GUI",
+		searchTags = "color"
 	)
 	@ConfigEditorDropdown(
 		values = {"Minecraft", "Grey", "PacksHQ Dark", "Transparent", "FSR"}

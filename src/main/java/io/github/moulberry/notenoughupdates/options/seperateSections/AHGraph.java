@@ -58,7 +58,8 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Graph Colour",
-		desc = "Set a custom colour for the graph."
+		desc = "Set a custom colour for the graph.",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	public String graphColor = "0:255:0:255:0";
@@ -66,7 +67,8 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Secondary Graph Colour",
-		desc = "Set a custom colour for the second graph line."
+		desc = "Set a custom colour for the second graph line.",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	public String graphColor2 = "0:255:255:255:0";

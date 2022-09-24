@@ -46,6 +46,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -110,7 +111,9 @@ public class NEUConfigEditor extends GuiElement {
 			for (ConfigProcessor.ProcessedOption option : category.options.values()) {
 				categoryForOption.put(option, category);
 
-				String combined = category.name + " " + category.desc + " " + option.name + " " + option.desc;
+				String combined = category.name + " " + category.desc + " " + option.name + " " + option.desc + " " +
+					Arrays.toString(option.searchTags);
+				System.out.println(Arrays.toString(option.searchTags));
 				combined = combined.replaceAll("[^a-zA-Z_ ]", "").toLowerCase();
 				for (String word : combined.split("[ _]")) {
 					searchOptionMap.computeIfAbsent(word, k -> new HashSet<>()).add(option);

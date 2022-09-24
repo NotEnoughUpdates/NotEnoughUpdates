@@ -121,7 +121,9 @@ public class Mining {
 
 	@ConfigOption(
 		name = "Dwarven Overlay",
-		desc = ""
+		desc = "",
+		searchTags = {"mining", "mining overlay"}
+
 	)
 	@ConfigEditorAccordion(id = 2)
 	public boolean overlayAccordion = false;
@@ -388,7 +390,8 @@ public class Mining {
 
 	@ConfigOption(
 		name = "Colours",
-		desc = ""
+		desc = "",
+		searchTags = "color"
 	)
 	@ConfigEditorAccordion(id = 6)
 	@ConfigAccordionId(id = 4)
@@ -426,7 +429,8 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Done Color",
-		desc = "Change the colour when the part is given to the NPC."
+		desc = "Change the colour when the part is given to the NPC.",
+		searchTags = "color"
 
 	)
 	@ConfigEditorDropdown(
