@@ -29,6 +29,8 @@ import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
@@ -1019,9 +1021,11 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseY > y - 4 && mouseY < y + 13) {
 				String levelStr;
 				String totalXpStr = null;
-				if (skillName.contains("Catacombs")) totalXpStr =
-					EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						numberFormat.format(levelObj.totalXp);
+				if (skillName.contains("Catacombs")) {
+					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
+							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+							Utils.roundToNearestInt(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
+				}
 				if (levelObj.maxed) {
 					levelStr = EnumChatFormatting.GOLD + "MAXED!";
 				} else {
@@ -1230,6 +1234,23 @@ public class GuiProfileViewer extends GuiScreen {
 			GL11.glPopMatrix();
 
 			Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
+		}
+	}
+
+	public float getPercentage(String skillName, ProfileViewer.Level level) {
+		if(level.maxed) {
+			return 100;
+		}
+		if (skillName.contains("catacombs")) {
+			return (level.totalXp/ DungeonsWeight.CATACOMBS_LEVEL_50_XP)*100;
+		} else if(ExtraPage.slayers.containsKey(skillName)) {
+			return (level.totalXp/1000000)*100;
+		} else {
+			if(level.maxLevel == 60) {
+				return (level.totalXp/ SkillsWeight.SKILLS_LEVEL_60)*100;
+			} else {
+				return (level.totalXp/SkillsWeight.SKILLS_LEVEL_50)*100;
+			}
 		}
 	}
 

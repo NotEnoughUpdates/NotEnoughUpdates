@@ -19,9 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -36,6 +38,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +54,58 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
+	}
+
+	// pls update in the future tyvm !!!
+	final static HashMap<String, Integer> slayers = new HashMap<String, Integer>() {
+		{
+			put("zombie", 5);
+			put("spider", 4);
+			put("wolf", 4);
+			put("enderman", 4);
+			put("blaze", 4);
+		}
+	};
+
+	public void drawEssence(
+		JsonObject profileInfo,
+		float xStart,
+		float yStartTop,
+		float xOffset,
+		float yOffset) {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+		yStartTop = yStartTop + 78;
+		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
+			Utils.showOutdatedRepoNotification();
+			return;
+		}
+		JsonObject parents = Constants.PARENTS;
+		JsonArray essenceArray = parents.get("ESSENCE_WITHER").getAsJsonArray();
+
+		for (int i = 0; i < essenceArray.size(); i++) {
+
+			JsonElement jsonElement = essenceArray.get(i);
+			String essenceName = jsonElement.getAsString();
+
+			TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
+			if (!itemInformation.containsKey(essenceName)) {
+				Utils.showOutdatedRepoNotification();
+				return;
+			}
+			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();
+			if (profileInfo.has(essenceName.toLowerCase())) {
+				int essenceNumber = profileInfo.get(essenceName.toLowerCase()).getAsInt();
+
+				Utils.renderAlignedString(
+					EnumChatFormatting.GOLD + displayName,
+					EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(essenceNumber, 0),
+					guiLeft + xStart + xOffset,
+					guiTop + yStartTop + yOffset * i,
+					76
+				);
+			}
+		}
 	}
 
 	@Override
@@ -171,14 +226,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 				"alchemy",
 				"carpentry"
 			);
-			List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 
 			for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
 				if (skills.contains(entry.getKey())) {
 					totalSkillLVL += entry.getValue().level;
 					totalTrueSkillLVL += Math.floor(entry.getValue().level);
 					totalSkillCount++;
-				} else if (slayers.contains(entry.getKey())) {
+				} else if (slayers.containsKey(entry.getKey())) {
 					totalSlayerLVL += entry.getValue().level;
 					totalSlayerCount++;
 					totalSlayerXP += entry.getValue().totalXp;
@@ -278,131 +332,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		//Slayer values
-		float zombie_boss_kills_tier_2 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.zombie.boss_kills_tier_2"),
-			0
-		);
-		float zombie_boss_kills_tier_3 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.zombie.boss_kills_tier_3"),
-			0
-		);
-		float zombie_boss_kills_tier_4 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.zombie.boss_kills_tier_4"),
-			0
-		);
-		float wolf_boss_kills_tier_2 = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"slayer_bosses.wolf.boss_kills_tier_2"
-		), 0);
-		float wolf_boss_kills_tier_3 = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"slayer_bosses.wolf.boss_kills_tier_3"
-		), 0);
-		float spider_boss_kills_tier_2 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.spider.boss_kills_tier_2"),
-			0
-		);
-		float spider_boss_kills_tier_3 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.spider.boss_kills_tier_3"),
-			0
-		);
-		float enderman_boss_kills_tier_2 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.enderman.boss_kills_tier_2"),
-			0
-		);
-		float enderman_boss_kills_tier_3 = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "slayer_bosses.enderman.boss_kills_tier_3"),
-			0
-		);
-		float blaze_boss_kills_tier_2 = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"slayer_bosses.blaze.boss_kills_tier_2"
-		), 0);
-		float blaze_boss_kills_tier_3 = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
-			"slayer_bosses.blaze.boss_kills_tier_3"
-		), 0);
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Revenant T3",
-			EnumChatFormatting.WHITE.toString() + (int) zombie_boss_kills_tier_2,
-			guiLeft + xStart + xOffset,
-			guiTop + yStartBottom,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Revenant T4",
-			EnumChatFormatting.WHITE.toString() + (int) zombie_boss_kills_tier_3,
-			guiLeft + xStart + xOffset,
-			guiTop + yStartBottom + yOffset,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Revenant T5",
-			EnumChatFormatting.WHITE.toString() + (int) zombie_boss_kills_tier_4,
-			guiLeft + xStart + xOffset,
-			guiTop + yStartBottom + yOffset * 2,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Tarantula T3",
-			EnumChatFormatting.WHITE.toString() + (int) spider_boss_kills_tier_2,
-			guiLeft + xStart + xOffset,
-			guiTop + yStartBottom + yOffset * 3,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Tarantula T4",
-			EnumChatFormatting.WHITE.toString() + (int) spider_boss_kills_tier_3,
-			guiLeft + xStart + xOffset,
-			guiTop + yStartBottom + yOffset * 4,
-			76
-		);
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Sven T3",
-			EnumChatFormatting.WHITE.toString() + (int) wolf_boss_kills_tier_2,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartBottom + yOffset * 0,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Sven T4",
-			EnumChatFormatting.WHITE.toString() + (int) wolf_boss_kills_tier_3,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartBottom + yOffset * 1,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Voidgloom T3",
-			EnumChatFormatting.WHITE.toString() + (int) enderman_boss_kills_tier_2,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartBottom + yOffset * 2,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Voidgloom T4",
-			EnumChatFormatting.WHITE.toString() + (int) enderman_boss_kills_tier_3,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartBottom + yOffset * 3,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Inferno T3",
-			EnumChatFormatting.WHITE.toString() + (int) blaze_boss_kills_tier_2,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartBottom + yOffset * 4,
-			76
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_AQUA + "Inferno T4",
-			EnumChatFormatting.WHITE.toString() + (int) blaze_boss_kills_tier_3,
-			guiLeft + xStart + xOffset * 2,
-			guiTop + yStartBottom + yOffset * 5,
-			76
-		);
-
 		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
 			profileInfo,
 			"stats.pet_milestone_ores_mined"
@@ -458,6 +387,8 @@ public class ExtraPage extends GuiProfileViewerPage {
 			guiTop + yStartTop + yOffset * 5,
 			76
 		);
+
+		drawEssence(profileInfo, xStart, yStartTop, xOffset, yOffset);
 
 		if (topKills == null) {
 			topKills = new TreeMap<>();

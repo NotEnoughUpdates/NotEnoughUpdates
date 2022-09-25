@@ -49,6 +49,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -73,6 +74,13 @@ public class BasicPage extends GuiProfileViewerPage {
 	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
 	public EntityOtherPlayerMP entityPlayer = null;
 	private ResourceLocation playerLocationSkin = null;
+	private final GuiProfileViewer guiProfileViewer;
+
+	private final String[] medalNames = {
+		"§cBronze",
+		"§fSilver",
+		"§6Gold"
+	};
 	private ResourceLocation playerLocationCape = null;
 	private String skinType = null;
 	private boolean loadingProfile = false;
@@ -81,6 +89,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 	public BasicPage(GuiProfileViewer instance) {
 		super(instance);
+		this.guiProfileViewer = instance;
 	}
 
 	@Override
@@ -590,7 +599,8 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				String skillName = entry.getValue().getDisplayName();
 
-				float level = skyblockInfo.get(entry.getKey()).level;
+				ProfileViewer.Level level1 = skyblockInfo.get(entry.getKey());
+				float level = level1.level;
 				int levelFloored = (int) Math.floor(level);
 
 				int x = guiLeft + 237 + 86 * xPosition;
@@ -598,7 +608,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 
-				if (skyblockInfo.get(entry.getKey()).maxed) {
+				if (level1.maxed) {
 					getInstance().renderGoldBar(x, y + 6, 80);
 				} else {
 					getInstance().renderBar(x, y + 6, 80, level % 1);
@@ -607,12 +617,14 @@ public class BasicPage extends GuiProfileViewerPage {
 				if (mouseX > x && mouseX < x + 80) {
 					if (mouseY > y - 4 && mouseY < y + 13) {
 						getInstance().tooltipToDisplay = new ArrayList<>();
-						getInstance().tooltipToDisplay.add(skillName);
-						if (skyblockInfo.get(entry.getKey()).maxed) {
-							getInstance().tooltipToDisplay.add(
+						List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
+						tooltipToDisplay.add(skillName);
+						if (level1.maxed) {
+							tooltipToDisplay.add(
 								EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
-							int maxXp = (int) skyblockInfo.get(entry.getKey()).maxXpForLevel;
+							int maxXp = (int) level1.maxXpForLevel;
+
 							getInstance()
 								.tooltipToDisplay.add(
 									EnumChatFormatting.GRAY +
@@ -620,12 +632,54 @@ public class BasicPage extends GuiProfileViewerPage {
 										EnumChatFormatting.DARK_PURPLE +
 										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
 										"/" +
-										StringUtils.shortNumberFormat(maxXp)
-								);
+										StringUtils.shortNumberFormat(maxXp));
 						}
-						String totalXpS = GuiProfileViewer.numberFormat.format((int) skyblockInfo.get(entry.getKey()).totalXp);
-						getInstance()
-							.tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS);
+						String totalXpS = GuiProfileViewer.numberFormat.format((int) level1.totalXp);
+						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS+
+							EnumChatFormatting.DARK_GRAY + " (" +
+								Utils.roundToNearestInt(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level1)) +
+								"% to " + level1.maxLevel + ")");
+						if (entry.getKey().equals("farming")) {
+							// double drops
+							JsonElement element = Utils.getElement(profileInfo, "jacob2.perks.double_drops");
+							if (element == null) {
+								tooltipToDisplay.add("§7Double Drops: §50%");
+							} else {
+								int double_drops = element.getAsInt();
+								if (double_drops == 15) {
+									tooltipToDisplay.add("§7Double Drops: §6" + (double_drops * 2) + "%");
+								} else tooltipToDisplay.add("§7Double Drops: §5" + (double_drops * 2) + "%");
+							}
+							// medals
+							JsonObject medals_inv = Utils.getElement(profileInfo, "jacob2.medals_inv").getAsJsonObject();
+							tooltipToDisplay.add(" ");
+							for (String medalName : medalNames) {
+								String textWithoutFormattingCodes =
+									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
+								if (medals_inv.has(textWithoutFormattingCodes)) {
+									int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
+										EnumChatFormatting.WHITE + medalAmount);
+								} else {
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
+										EnumChatFormatting.WHITE + "0");
+								}
+							}
+						}
+
+						String slayerNameLower = entry.getKey().toLowerCase();
+						if (ExtraPage.slayers.containsKey(slayerNameLower)) {
+							int maxLevel = ExtraPage.slayers.get(slayerNameLower);
+							for (int i = 0; i < 5; i++) {
+								if (i >= maxLevel) break;
+								float tier = Utils.getElementAsFloat(
+									Utils.getElement(profileInfo, "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
+									0
+								);
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
+									EnumChatFormatting.RED + (int) tier);
+							}
+						}
 					}
 				}
 
