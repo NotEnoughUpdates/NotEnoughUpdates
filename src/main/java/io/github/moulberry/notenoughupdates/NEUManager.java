@@ -434,7 +434,7 @@ public class NEUManager {
 	 * SearchString but with AND | OR support
 	 */
 
-	public boolean MultiSearchString(String match, String query) {
+	public boolean multiSearchString(String match, String query) {
 		boolean totalMatches = false;
 
 		StringBuilder query2 = new StringBuilder();
@@ -519,7 +519,7 @@ public class NEUManager {
 	public boolean doesStackMatchSearch(ItemStack stack, String query) {
 		if (query.startsWith("title:")) {
 			query = query.substring(6);
-			return MultiSearchString(stack.getDisplayName(), query);
+			return multiSearchString(stack.getDisplayName(), query);
 		} else if (query.startsWith("desc:")) {
 			query = query.substring(5);
 			String lore = "";
@@ -533,7 +533,7 @@ public class NEUManager {
 					}
 				}
 			}
-			return MultiSearchString(lore, query);
+			return multiSearchString(lore, query);
 		} else if (query.startsWith("id:")) {
 			query = query.substring(3);
 			String internalName = getInternalNameForItem(stack);
@@ -545,11 +545,11 @@ public class NEUManager {
 				for (char c : query.toCharArray()) {
 					sb.append(c).append(" ");
 				}
-				result = result || MultiSearchString(stack.getDisplayName(), sb.toString());
+				result = result || multiSearchString(stack.getDisplayName(), sb.toString());
 			}
 
 
-			result = result || MultiSearchString(stack.getDisplayName(), query);
+			result = result || multiSearchString(stack.getDisplayName(), query);
 
 			String lore = "";
 			NBTTagCompound tag = stack.getTagCompound();
@@ -563,7 +563,7 @@ public class NEUManager {
 				}
 			}
 
-			result = result || MultiSearchString(lore, query);
+			result = result || multiSearchString(lore, query);
 
 			return result;
 		}
