@@ -92,7 +92,13 @@ public class ItemTooltipListener {
 		final String enchantText;
 		final String preEnchantText;
 
-		EnchantLineModifer(int startIndex, int endIndex, String enchantText, String preEnchantText, modifierType modifierType) {
+		EnchantLineModifer(
+			int startIndex,
+			int endIndex,
+			String enchantText,
+			String preEnchantText,
+			modifierType modifierType
+		) {
 			this.startIndex = startIndex;
 			this.endIndex = endIndex;
 			this.enchantText = enchantText;
@@ -121,21 +127,29 @@ public class ItemTooltipListener {
 		String getWithModifiers(int lineIndex) {
 			String modifiedLine = line;
 
-			for (EnchantLineModifer modifier: modifiers) {
+			for (EnchantLineModifer modifier : modifiers) {
 				if (modifier.modifierType == modifierType.CHROMA) {
 					int startIndex = modifier.startIndex;
+					//get from start of the enchant (will always be the same) to the end of the string.
 					String endOfLine = modifiedLine.substring(startIndex);
 
-					int enchantEndPosition = startIndex + (endOfLine.matches(".*,.*") ? endOfLine.split(",")[0].length()-2 : endOfLine.length());
-					String enchant = modifiedLine.substring(startIndex, enchantEndPosition);
-					enchantEndPosition = enchantEndPosition - (1 + enchant.split(" ")[enchant.split(" ").length - 1].length());
+					//the -2 added to if not the last enchant of the line is because of the color code placed right before the comma
+					int enchantEndPosition =
+						startIndex + (endOfLine.matches(".*,.*") ? endOfLine.split(",")[0].length() - 2 : endOfLine.length());
+					String newEnchant = modifiedLine.substring(startIndex, enchantEndPosition);
+					enchantEndPosition =
+						enchantEndPosition - (1 + newEnchant.split(" ")[newEnchant.split(" ").length - 1].length());
 
-					String subString = modifiedLine.substring(startIndex, modifier.endIndex);
-					int newOffset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(subString);
+					String PreEditSubstring = modifiedLine.substring(startIndex, modifier.endIndex);
+					int offset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(PreEditSubstring);
 
 					modifiedLine = modifiedLine.replace(
 						modifiedLine.substring(startIndex, enchantEndPosition),
-						Utils.chromaString(modifier.enchantText, newOffset / 12f + lineIndex, modifier.preEnchantText.matches(".*\\u00A7d.*"))
+						Utils.chromaString(
+							modifier.enchantText,
+							offset / 12f + lineIndex,
+							modifier.preEnchantText.matches(".*\\u00A7d.*")
+						)
 					);
 				}
 			}
@@ -253,7 +267,6 @@ public class ItemTooltipListener {
 
 		boolean dungeonProfit = false;
 		List<String> newTooltip = new ArrayList<>();
-
 
 		boolean foundEnchants = false;
 		String currentUuid = ItemCustomizeManager.getUuidForItem(event.itemStack);
@@ -471,19 +484,20 @@ public class ItemTooltipListener {
 				Pattern findEnchantPattern = Pattern.compile(".*(?<enchant>[\\w ]+) (?<level>[0-9]+|[IVXLCDM]+)$");
 				Matcher findEnchantMatcher = findEnchantPattern.matcher(line);
 				if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant && !foundEnchants && findEnchantMatcher.matches()) {
-						foundEnchants = true;
-						if ((
-							lastItemUuid == null || currentUuid == null ||
-								(currentUuid != null &&
-									!Objects.equals(lastItemUuid, currentUuid)))) {
-							firstEnchantIndex = k;//k being the line index
-							enchantList.clear();
-						}
+					foundEnchants = true;
+					if ((
+						lastItemUuid == null || currentUuid == null ||
+							(currentUuid != null &&
+								!Objects.equals(lastItemUuid, currentUuid)))) {
+						firstEnchantIndex = k;//k being the line index
+						enchantList.clear();
+					}
 				}
 
 				ArrayList<EnchantLineModifer> modifiers = new ArrayList<>();
 
 				ArrayList<String> addedEnchants = new ArrayList<>();
+				//if cacheItemEnchant option is disabled it will always be length of 0
 				if (enchantList.size() == 0 || enchantList.size() <= k - firstEnchantIndex) {
 					for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
 						List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
@@ -607,7 +621,13 @@ public class ItemTooltipListener {
 										preEnchantText + enchantText,
 										Utils.chromaString(enchantText, newOffset / 12f + k, preEnchantText.matches(".*\\u00A7d.*"))
 									);
-									if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant) modifiers.add(new EnchantLineModifer(startMatch, endMatch, enchantText, preEnchantText, modifierType.CHROMA));
+									if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant) modifiers.add(new EnchantLineModifer(
+										startMatch,
+										endMatch,
+										enchantText,
+										preEnchantText,
+										modifierType.CHROMA
+									));
 								}
 								addedEnchants.add(enchantText);
 							}
@@ -618,15 +638,15 @@ public class ItemTooltipListener {
 				if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant && foundEnchants) {
 					//found enchants in the past
 					if (lastItemUuid == null || !Objects.equals(lastItemUuid, currentUuid)) {
-						//add enchants to list
+						//add enchants to cached list
 						CachedEnchantLine cachedLine = new CachedEnchantLine(line);
-						for (EnchantLineModifer modifier: modifiers) {
+						for (EnchantLineModifer modifier : modifiers) {
 							cachedLine.addModifier(modifier);
 						}
 						enchantList.add(cachedLine);
 					} else {
-						//Will break chroma
 						if (firstEnchantIndex != -1 && enchantList.size() > k - firstEnchantIndex) {
+							//if it has the line, replaces it with the cached line
 							CachedEnchantLine item = enchantList.get(k - firstEnchantIndex);
 							line = item.getWithModifiers(k);
 						}
@@ -800,7 +820,6 @@ public class ItemTooltipListener {
 			}
 		}
 
-
 		pressedShiftLast = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		pressedArrowLast = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
 
@@ -954,7 +973,6 @@ public class ItemTooltipListener {
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
 			}
-
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +
