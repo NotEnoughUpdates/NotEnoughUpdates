@@ -162,6 +162,8 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_basic);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
+		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		if (profileInfo == null) return;
 
 		if (entityPlayer != null && profile.getHypixelProfile() != null) {
 			String playerName = null;
@@ -209,8 +211,11 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						playerName = EnumChatFormatting.GRAY + name;
 						if (rankName != null) {
+							String icon = getIcon(getGameModeType(profileInfo));
 							playerName =
-								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name;
+								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name +
+									(icon.equals("") ? "" : " " + icon);
+							;
 						}
 					}
 				}
@@ -366,9 +371,6 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 			entityPlayer.getDataWatcher().updateObject(10, b);
 		}
-
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
-		if (profileInfo == null) return;
 
 		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
 		JsonObject inventoryInfo = profile.getInventoryInfo(profileId);
@@ -635,10 +637,10 @@ public class BasicPage extends GuiProfileViewerPage {
 										StringUtils.shortNumberFormat(maxXp));
 						}
 						String totalXpS = GuiProfileViewer.numberFormat.format((int) level1.totalXp);
-						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS+
+						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-								Utils.roundToNearestInt(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level1)) +
-								"% to " + level1.maxLevel + ")");
+							Utils.roundToNearestInt(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level1)) +
+							"% to " + level1.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops
 							JsonElement element = Utils.getElement(profileInfo, "jacob2.perks.double_drops");
@@ -703,6 +705,19 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
+	}
+
+	private String getIcon(String gameModeType) {
+		switch (gameModeType) {
+			case "island":
+				return "§a☀";
+			case "bingo":
+				return "§7Ⓑ";
+			case "ironman":
+				return "§7♲";
+			default:
+				return "";
+		}
 	}
 
 	@Override
@@ -891,5 +906,12 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
 		GlStateManager.disableTexture2D();
 		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+	}
+
+	public String getGameModeType(JsonObject profileInfo) {
+		if (profileInfo != null && profileInfo.has("game_mode")) {
+			return profileInfo.get("game_mode").getAsString();
+		}
+		return "";
 	}
 }
