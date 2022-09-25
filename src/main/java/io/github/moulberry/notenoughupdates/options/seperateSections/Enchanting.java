@@ -132,7 +132,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Ultrasequencer Numbers",
-		desc = "Replace the items in the supersequencer with only numbers"
+		desc = "Replace the items in the Ultrasequencer with only numbers"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
