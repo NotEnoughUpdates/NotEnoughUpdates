@@ -431,6 +431,33 @@ public class NEUManager {
 	}
 
 	/**
+	 * SearchString but with AND | OR support
+	 */
+
+	public boolean MultiSearchString(String match, String query) {
+		boolean totalMatches = false;
+
+		StringBuilder query2 = new StringBuilder();
+		char lastOp = '|';
+		for (char c : query.toCharArray()) {
+			if (c == '|' || c == '&') {
+				boolean matches = searchString(match, query2.toString());
+				totalMatches = lastOp == '|' ? totalMatches || matches : totalMatches && matches;
+
+				query2 = new StringBuilder();
+				lastOp = c;
+			} else {
+				query2.append(c);
+			}
+		}
+
+		boolean matches = searchString(match, query2.toString());
+		totalMatches = lastOp == '|' ? totalMatches || matches : totalMatches && matches;
+
+		return totalMatches;
+	}
+
+	/**
 	 * Searches a string for a query. This method is used to mimic the behaviour of the more complex map-based search
 	 * function. This method is used for the chest-item-search feature.
 	 */
@@ -492,7 +519,7 @@ public class NEUManager {
 	public boolean doesStackMatchSearch(ItemStack stack, String query) {
 		if (query.startsWith("title:")) {
 			query = query.substring(6);
-			return searchString(stack.getDisplayName(), query);
+			return MultiSearchString(stack.getDisplayName(), query);
 		} else if (query.startsWith("desc:")) {
 			query = query.substring(5);
 			String lore = "";
@@ -506,7 +533,7 @@ public class NEUManager {
 					}
 				}
 			}
-			return searchString(lore, query);
+			return MultiSearchString(lore, query);
 		} else if (query.startsWith("id:")) {
 			query = query.substring(3);
 			String internalName = getInternalNameForItem(stack);
@@ -518,9 +545,11 @@ public class NEUManager {
 				for (char c : query.toCharArray()) {
 					sb.append(c).append(" ");
 				}
-				result = result || searchString(stack.getDisplayName(), sb.toString());
+				result = result || MultiSearchString(stack.getDisplayName(), sb.toString());
 			}
-			result = result || searchString(stack.getDisplayName(), query);
+
+
+			result = result || MultiSearchString(stack.getDisplayName(), query);
 
 			String lore = "";
 			NBTTagCompound tag = stack.getTagCompound();
@@ -534,7 +563,7 @@ public class NEUManager {
 				}
 			}
 
-			result = result || searchString(lore, query);
+			result = result || MultiSearchString(lore, query);
 
 			return result;
 		}
