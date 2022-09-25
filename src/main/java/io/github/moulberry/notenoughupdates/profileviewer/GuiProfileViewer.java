@@ -1238,18 +1238,20 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	public float getPercentage(String skillName, ProfileViewer.Level level) {
-		if(level.maxed) {
+		if (level.maxed) {
 			return 100;
 		}
 		if (skillName.contains("catacombs")) {
-			return (level.totalXp/ DungeonsWeight.CATACOMBS_LEVEL_50_XP)*100;
-		} else if(ExtraPage.slayers.containsKey(skillName)) {
-			return (level.totalXp/1000000)*100;
+			return (level.totalXp / DungeonsWeight.CATACOMBS_LEVEL_50_XP) * 100;
+		} else if (ExtraPage.slayers.containsKey(skillName)) {
+			return (level.totalXp / 1000000) * 100;
+		} else if (skillName.equalsIgnoreCase("social")) {
+			return (level.totalXp / 272800) * 100;
 		} else {
-			if(level.maxLevel == 60) {
-				return (level.totalXp/ SkillsWeight.SKILLS_LEVEL_60)*100;
+			if (level.maxLevel == 60) {
+				return (level.totalXp / SkillsWeight.SKILLS_LEVEL_60) * 100;
 			} else {
-				return (level.totalXp/SkillsWeight.SKILLS_LEVEL_50)*100;
+				return (level.totalXp / SkillsWeight.SKILLS_LEVEL_50) * 100;
 			}
 		}
 	}
