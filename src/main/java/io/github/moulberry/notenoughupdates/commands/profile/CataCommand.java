@@ -20,13 +20,7 @@
 package io.github.moulberry.notenoughupdates.commands.profile;
 
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CataCommand extends ViewProfileCommand {
 
@@ -38,19 +32,5 @@ public class CataCommand extends ViewProfileCommand {
 	public void processCommand(ICommandSender sender, String[] args) {
 		GuiProfileViewer.currentPage = GuiProfileViewer.ProfileViewerPage.DUNGEON;
 		super.processCommand(sender, args);
-	}
-	@Override
-	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-		if (args.length != 1) return null;
-
-		String lastArg = args[args.length - 1];
-		List<String> playerMatches = new ArrayList<>();
-		for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) {
-			String playerName = player.getName();
-			if (playerName.toLowerCase().startsWith(lastArg.toLowerCase())) {
-				playerMatches.add(playerName);
-			}
-		}
-		return playerMatches;
 	}
 }
