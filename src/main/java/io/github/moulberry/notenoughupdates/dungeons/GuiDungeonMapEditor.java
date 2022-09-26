@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiElementColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditorButForTheDungeonMap;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
@@ -601,8 +602,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				HashSet<String> players = new HashSet<>();
 				players.add(Minecraft.getMinecraft().thePlayer.getName());
 				GlStateManager.color(1, 1, 1, 1);
-				NotEnoughUpdates.INSTANCE.config.editOverlay();
-				/*Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(
+				Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditorButForTheDungeonMap(
 					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition,
 					size, size, () -> {
 					ScaledResolution scaledResolution = Utils.pushGuiScale(2);
@@ -618,7 +618,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 					);
 					Utils.pushGuiScale(-1);
 				}, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor()
-				).withScale(2));*/
+				).withScale(2));
 				return;
 			}
 		}

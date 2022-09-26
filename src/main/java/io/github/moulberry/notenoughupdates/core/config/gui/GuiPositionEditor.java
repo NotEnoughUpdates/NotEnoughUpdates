@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.core.config.gui;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -31,17 +30,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.Vec4b;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class GuiPositionEditor extends GuiScreen {
 	private final ArrayList<Position> positions;
@@ -53,6 +47,7 @@ public class GuiPositionEditor extends GuiScreen {
 	private final Runnable closedCallback;
 	private int grabbedX = 0;
 	private int grabbedY = 0;
+	private int clickedPos = -1;
 
 	public static boolean renderDrill = false;
 
@@ -99,38 +94,12 @@ public class GuiPositionEditor extends GuiScreen {
 			(() -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor));
 	}
 
-	public GuiPositionEditor withScale(int scale) {
-		this.guiScaleOverride = scale;
-		return this;
-	}
-
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
 		closedCallback.run();
 		renderDrill = false;
-	}
-
-	private void renderMap() {
-		Map<String, Vec4b> decorations = new HashMap<>();
-		Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
-		decorations.put(Minecraft.getMinecraft().thePlayer.getName(), vec4b);
-		HashSet<String> players = new HashSet<>();
-		players.add(Minecraft.getMinecraft().thePlayer.getName());
-		GlStateManager.color(1, 1, 1, 1);
-		int mapSize = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
-		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		new DungeonMap().renderMap(
-			NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, mapSize) + mapSize / 2,
-			NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, mapSize) + mapSize / 2,
-			NotEnoughUpdates.INSTANCE.colourMap,
-			decorations,
-			0,
-			players,
-			false,
-			0
-		);
-		Utils.pushGuiScale(-1);
+		clickedPos = -1;
 	}
 
 	@Override
@@ -149,16 +118,10 @@ public class GuiPositionEditor extends GuiScreen {
 		mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 		drawDefaultBackground();
-		//renderMap();
 		renderDrill = true;
 		for (Position position : positions) {
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
-			if (positions.indexOf(position) == 11) { // Has to be the map
-				Utils.pushGuiScale(2);
-			} else {
-				Utils.pushGuiScale(-1);
-			}
 			if (position.getClicked()) {
 				grabbedX += position.moveX(mouseX - grabbedX, elementWidth, scaledResolution);
 				grabbedY += position.moveY(mouseY - grabbedY, elementHeight, scaledResolution);
@@ -174,7 +137,6 @@ public class GuiPositionEditor extends GuiScreen {
 			Gui.drawRect(x, y, x + elementWidth, y + elementHeight, 0x80404040);
 
 			Utils.pushGuiScale(-1);
-
 
 			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			Utils.drawStringCentered("Position Editor", Minecraft.getMinecraft().fontRendererObj,
@@ -199,12 +161,8 @@ public class GuiPositionEditor extends GuiScreen {
 			}
 			mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 			mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-			for (Position position : positions) {
-				if (positions.indexOf(position) == 11) { // Has to be the map
-					Utils.pushGuiScale(2);
-				} else {
-					Utils.pushGuiScale(-1);
-				}
+			for (int i = positions.size() - 1; i >= 0; i--) {
+				Position position = positions.get(i);
 				int elementHeight = elementHeights.get(positions.indexOf(position));
 				int elementWidth = elementWidths.get(positions.indexOf(position));
 				int x = position.getAbsX(scaledResolution, elementWidth);
@@ -214,20 +172,23 @@ public class GuiPositionEditor extends GuiScreen {
 				if (!position.getClicked()) {
 					if (mouseX >= x && mouseY >= y &&
 						mouseX <= x + elementWidth && mouseY <= y + elementHeight) {
+						clickedPos = i;
 						position.setClicked(true);
 						grabbedX = mouseX;
 						grabbedY = mouseY;
+						break;
 					}
 				}
 
-					Utils.pushGuiScale(-1);
+				Utils.pushGuiScale(-1);
 			}
 		}
 	}
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		for (Position position : positions) {
+		if (clickedPos != -1) {
+			Position position = positions.get(clickedPos);
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
 			if (keyCode == Keyboard.KEY_R) {
@@ -264,13 +225,7 @@ public class GuiPositionEditor extends GuiScreen {
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
 			if (position.getClicked()) {
-				ScaledResolution scaledResolution;
-				ScaledResolution oldScaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-				if (positions.indexOf(position) == 11) { // Has to be the map
-					scaledResolution = Utils.pushGuiScale(2);
-				} else {
-					scaledResolution = Utils.pushGuiScale(-1);
-				}
+				ScaledResolution scaledResolution = Utils.pushGuiScale(-1);
 				mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 				mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 

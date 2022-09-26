@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.core.config.Config;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.Category;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
-import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
@@ -69,17 +68,12 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.Vec4b;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,12 +94,8 @@ public class NEUConfig extends Config {
 				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
 				put(OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
 				put(OverlayManager.fuelBar, mining.drillFuelBarPosition);
-				//put(OverlayManager.mapOverlay, dungeonMap.dmPosition); //TODO: Scuffed
 			}
 		};
-//		for (TextOverlay overlay : overlayPositions.keySet()) {
-//			Position pos = overlayPositions.get(overlay);
-//		}
 		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(overlayPositions, () -> {
 		}, () -> {
 		}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor)));

@@ -40,7 +40,6 @@ public class OverlayManager {
 	public static CrystalHollowOverlay crystalHollowOverlay;
 	public static SlayerOverlay slayerOverlay;
 	public static FuelBarDummy fuelBar;
-	public static MapDummy mapOverlay;
 	public static final List<TextOverlay> textOverlays = new ArrayList<>();
 
 	static {
@@ -304,14 +303,6 @@ public class OverlayManager {
 			strings.add(fuelDummy.get(0));
 			return strings;
 		}, () -> TextOverlayStyle.BACKGROUND);
-		List<String> mapDummy = Lists.newArrayList(
-			"\u00a73This is the map"
-		);
-		mapOverlay = new MapDummy(NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition, () -> {
-			List<String> strings = new ArrayList<>();
-			strings.add(mapDummy.get(0));
-			return strings;
-		}, () -> TextOverlayStyle.BACKGROUND);
 
 		textOverlays.add(miningOverlay);
 		textOverlays.add(farmingOverlay);
@@ -323,7 +314,6 @@ public class OverlayManager {
 		textOverlays.add(crystalHollowOverlay);
 		textOverlays.add(slayerOverlay);
 		textOverlays.add(fuelBar);
-		textOverlays.add(mapOverlay);
 	}
 
 }
