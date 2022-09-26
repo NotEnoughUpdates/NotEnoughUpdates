@@ -236,13 +236,13 @@ public class OverlayManager {
 			"\u00a73Electron Transmitter: \u00a7aDone\n" +
 				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
 				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Hearth: \u00a7cMissing\n" +
+				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
 				"\u00a73Control Switch: \u00a7cMissing\n" +
 				"\u00a73FTX 3070: \u00a7cMissing",
 			"\u00a73Electron Transmitter: \u00a7a3\n" +
 				"\u00a73Robotron Reflector: \u00a7e2\n" +
 				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Hearth: \u00a7c0\n" +
+				"\u00a73Synthetic Heart: \u00a7c0\n" +
 				"\u00a73Control Switch: \u00a7c0\n" +
 				"\u00a73FTX 3070: \u00a7c0",
 			"\u00a73Automaton parts: \u00a7a5/6",
