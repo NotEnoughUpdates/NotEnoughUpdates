@@ -56,8 +56,8 @@ public class GuiItemRecipe extends GuiScreen {
 	public static final int SLOT_SPACING = SLOT_SIZE + 2;
 	public static final int BUTTON_WIDTH = 7;
 	public static final int BUTTON_HEIGHT = 11;
-	public static final int TITLE_X = 28;
-	public static final int TITLE_Y = 6;
+	public static final int TITLE_X = 88;
+	public static final int TITLE_Y = 10;
 	public static final int HOTBAR_SLOT_X = 8;
 	public static final int HOTBAR_SLOT_Y = 197;
 	public static final int PLAYER_INVENTORY_X = 8;
@@ -147,13 +147,12 @@ public class GuiItemRecipe extends GuiScreen {
 
 		drawArrows(currentRecipe, mouseX, mouseY);
 
-		Utils.drawStringScaledMaxWidth(
+		Utils.drawStringCentered(
 			currentRecipe.getTitle(),
 			fontRendererObj,
 			guiLeft + TITLE_X,
 			guiTop + TITLE_Y,
 			false,
-			xSize - 38,
 			0x404040
 		);
 
