@@ -241,7 +241,7 @@ public class EssenceUpgrades implements NeuRecipe {
 				if (itemStack != null) {
 					RenderLocation renderLocation = slotLocations.get(i++);
 					if (renderLocation != null) {
-						slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY(), itemStack));
+						slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY()+1, itemStack));
 					}
 				}
 			}
