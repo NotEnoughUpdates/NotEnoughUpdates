@@ -22,33 +22,26 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PetsPage extends GuiProfileViewerPage {
 
@@ -89,7 +82,8 @@ public class PetsPage extends GuiProfileViewerPage {
 
 		String panoramaIdentifier = "day";
 		if (SBInfo.getInstance().currentTimeDate != null) {
-			if (SBInfo.getInstance().currentTimeDate.getHours() <= 6 || SBInfo.getInstance().currentTimeDate.getHours() >= 20) {
+			if (SBInfo.getInstance().currentTimeDate.getHours() <= 6 ||
+				SBInfo.getInstance().currentTimeDate.getHours() >= 20) {
 				panoramaIdentifier = "night";
 			}
 		}
@@ -121,201 +115,22 @@ public class PetsPage extends GuiProfileViewerPage {
 				}
 			});
 			for (JsonObject pet : sortedPets) {
-				String petname = pet.get("type").getAsString();
-				String tier = pet.get("tier").getAsString();
-				String heldItem = Utils.getElementAsString(pet.get("heldItem"), null);
-				String skin = Utils.getElementAsString(pet.get("skin"), null);
-				int candy = pet.get("candyUsed").getAsInt();
-				JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(heldItem);
-				String tierNum = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier);
-				float exp = pet.get("exp").getAsFloat();
-				if (tierNum == null) continue;
-
-				if (
-					pet.has("heldItem") &&
-					!pet.get("heldItem").isJsonNull() &&
-					pet.get("heldItem").getAsString().equals("PET_ITEM_TIER_BOOST")
-				) {
-					tierNum = "" + (Integer.parseInt(tierNum) + 1);
-				}
-
-				GuiProfileViewer.PetLevel levelObj = GuiProfileViewer.getPetLevel(petname, tier, exp);
-
-				float level = levelObj.level;
-				float currentLevelRequirement = levelObj.currentLevelRequirement;
-				float maxXP = levelObj.maxXP;
-				pet.addProperty("level", level);
-				pet.addProperty("currentLevelRequirement", currentLevelRequirement);
-				pet.addProperty("maxXP", maxXP);
-
-				JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(petname + ";" + tierNum);
-				ItemStack stack;
-				if (petItem == null) {
-					stack = getQuestionmarkSkull();
-					NBTTagCompound display = new NBTTagCompound();
-					if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("display")) {
-						display = stack.getTagCompound().getCompoundTag("display");
-					}
-					NBTTagList lore = new NBTTagList();
-					lore.appendTag(new NBTTagString(EnumChatFormatting.RED + "This pet is not saved in the repository"));
-					lore.appendTag(new NBTTagString(""));
-					lore.appendTag(new NBTTagString(EnumChatFormatting.RED + "If you expected it to be there please send a message in"));
-					lore.appendTag(
-						new NBTTagString(
-							EnumChatFormatting.RED.toString() +
-							EnumChatFormatting.BOLD +
-							"#neu-support " +
-							EnumChatFormatting.RESET +
-							EnumChatFormatting.RED +
-							"on " +
-							EnumChatFormatting.BOLD +
-							"discord.gg/moulberry"
-						)
-					);
-
-					display.setTag("Lore", lore);
-					NBTTagCompound tag = stack.getTagCompound() != null ? stack.getTagCompound() : new NBTTagCompound();
-					tag.setTag("display", display);
-					stack.setTagCompound(tag);
-				} else {
-					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem, false, false);
-					HashMap<String, String> replacements = NotEnoughUpdates.INSTANCE.manager.getLoreReplacements(
-						petname,
-						tier,
-						(int) Math.floor(level)
-					);
-
-					if (heldItem != null) {
-						HashMap<String, Float> petStatBoots = GuiProfileViewer.PET_STAT_BOOSTS.get(heldItem);
-						HashMap<String, Float> petStatBootsMult = GuiProfileViewer.PET_STAT_BOOSTS_MULT.get(heldItem);
-						if (petStatBoots != null) {
-							for (Map.Entry<String, Float> entryBoost : petStatBoots.entrySet()) {
-								try {
-									float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
-									replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value + entryBoost.getValue())));
-								} catch (Exception ignored) {}
-							}
-						}
-						if (petStatBootsMult != null) {
-							for (Map.Entry<String, Float> entryBoost : petStatBootsMult.entrySet()) {
-								try {
-									float value = Float.parseFloat(replacements.get(entryBoost.getKey()));
-									replacements.put(entryBoost.getKey(), String.valueOf((int) Math.floor(value * entryBoost.getValue())));
-								} catch (Exception ignored) {}
-							}
-						}
-					}
-
-					NBTTagCompound tag = stack.getTagCompound() == null ? new NBTTagCompound() : stack.getTagCompound();
-					if (tag.hasKey("display", 10)) {
-						NBTTagCompound display = tag.getCompoundTag("display");
-						if (display.hasKey("Lore", 9)) {
-							NBTTagList newLore = new NBTTagList();
-							NBTTagList lore = display.getTagList("Lore", 8);
-							HashMap<Integer, Integer> blankLocations = new HashMap<>();
-							for (int j = 0; j < lore.tagCount(); j++) {
-								String line = lore.getStringTagAt(j);
-								if (line.trim().isEmpty()) {
-									blankLocations.put(blankLocations.size(), j);
-								}
-								for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-									line = line.replace("{" + replacement.getKey() + "}", replacement.getValue());
-								}
-								newLore.appendTag(new NBTTagString(line));
-							}
-							Integer secondLastBlank = blankLocations.get(blankLocations.size() - 2);
-							if (skin != null) {
-								JsonObject petSkin = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("PET_SKIN_" + skin);
-								if (petSkin != null) {
-									try {
-										NBTTagCompound nbt = JsonToNBT.getTagFromJson(petSkin.get("nbttag").getAsString());
-										tag.setTag("SkullOwner", nbt.getTag("SkullOwner"));
-										String name = petSkin.get("displayname").getAsString();
-										if (name != null) {
-											name = Utils.cleanColour(name);
-											newLore.set(0, new NBTTagString(newLore.get(0).toString().replace("\"", "") + ", " + name));
-										}
-									} catch (NBTException e) {
-										e.printStackTrace();
-									}
-								}
-							}
-							for (int i = 0; i < newLore.tagCount(); i++) {
-								String cleaned = Utils.cleanColour(newLore.get(i).toString());
-								if (cleaned.equals("\"Right-click to add this pet to\"")) {
-									newLore.removeTag(i + 1);
-									newLore.removeTag(i);
-									secondLastBlank = i - 1;
-									break;
-								}
-							}
-							NBTTagList temp = new NBTTagList();
-							for (int i = 0; i < newLore.tagCount(); i++) {
-								temp.appendTag(newLore.get(i));
-								if (secondLastBlank != null && i == secondLastBlank) {
-									if (heldItem != null) {
-										temp.appendTag(
-											new NBTTagString(
-												EnumChatFormatting.GOLD + "Held Item: " + heldItemJson.get("displayname").getAsString()
-											)
-										);
-										int blanks = 0;
-										JsonArray heldItemLore = heldItemJson.get("lore").getAsJsonArray();
-										for (int k = 0; k < heldItemLore.size(); k++) {
-											String heldItemLine = heldItemLore.get(k).getAsString();
-											if (heldItemLine.trim().isEmpty()) {
-												blanks++;
-											} else if (blanks == 2) {
-												temp.appendTag(new NBTTagString(heldItemLine));
-											} else if (blanks > 2) {
-												break;
-											}
-										}
-										temp.appendTag(new NBTTagString());
-									}
-									if (candy != 0) {
-										temp.appendTag(new NBTTagString(EnumChatFormatting.GREEN + "(" + candy + "/10) Pet Candy Used"));
-										temp.appendTag(new NBTTagString());
-									}
-									temp.removeTag(temp.tagCount() - 1);
-								}
-							}
-							newLore = temp;
-							display.setTag("Lore", newLore);
-						}
-						if (display.hasKey("Name", 8)) {
-							String displayName = display.getString("Name");
-							for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-								displayName = displayName.replace("{" + replacement.getKey() + "}", replacement.getValue());
-							}
-							display.setTag("Name", new NBTTagString(displayName));
-						}
-						tag.setTag("display", display);
-					}
-
-					// Adds the missing pet fields to the tag
-					NBTTagCompound extraAttributes = new NBTTagCompound();
-					JsonObject petInfo = new JsonObject();
-					if(tag.hasKey("ExtraAttributes", 10)) {
-						extraAttributes = tag.getCompoundTag("ExtraAttributes");
-						if (extraAttributes.hasKey("petInfo", 8)) {
-							petInfo = new JsonParser().parse(extraAttributes.getString("petInfo")).getAsJsonObject();
-						}
-					}
-					petInfo.addProperty("exp", exp);
-					petInfo.addProperty("tier", tier);
-					petInfo.addProperty("type", petname);
-					if (heldItem != null) {
-						petInfo.addProperty("heldItem", heldItem);
-					}
-					if (skin != null) {
-						petInfo.addProperty("skin", skin);
-					}
-					extraAttributes.setString("petInfo", petInfo.toString());
-					tag.setTag("ExtraAttributes", extraAttributes);
-					stack.setTagCompound(tag);
-				}
-				sortedPetsStack.add(stack);
+				PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
+				parsedPet.petType = pet.get("type").getAsString();
+				parsedPet.rarity = PetInfoOverlay.Rarity.valueOf(pet.get("tier").getAsString());
+				parsedPet.petLevel = GuiProfileViewer.getPetLevel(
+					parsedPet.petType,
+					parsedPet.rarity.name(),
+					pet.get("exp").getAsFloat()
+				);
+				parsedPet.petXpType = "unknown";
+				parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
+				parsedPet.skin = Utils.getElementAsString(pet.get("skin"), null);
+				parsedPet.candyUsed = pet.get("candyUsed").getAsInt();
+				sortedPetsStack.add(ItemUtils.createPetItemstackFromPetInfo(parsedPet));
+				pet.addProperty("level", parsedPet.petLevel.level);
+				pet.addProperty("currentLevelRequirement", parsedPet.petLevel.currentLevelRequirement);
+				pet.addProperty("maxXP", parsedPet.petLevel.maxXP);
 			}
 		}
 
@@ -394,7 +209,11 @@ public class PetsPage extends GuiProfileViewerPage {
 			);
 		}
 
-		for (int i = petsPage * 20; i < Math.min(petsPage * 20 + 20, Math.min(sortedPetsStack.size(), sortedPets.size())); i++) {
+		for (
+			int i = petsPage * 20;
+			i < Math.min(petsPage * 20 + 20, Math.min(sortedPetsStack.size(), sortedPets.size()));
+			i++
+		) {
 			JsonObject pet = sortedPets.get(i);
 			ItemStack stack = sortedPetsStack.get(i);
 
@@ -431,7 +250,7 @@ public class PetsPage extends GuiProfileViewerPage {
 		if (selectedPet >= 0) {
 			ItemStack petStack;
 			if (sortedPetsStack.size() <= selectedPet) {
-				petStack = getQuestionmarkSkull();
+				petStack = ItemUtils.createQuestionMarkSkull("§cInvalid pet selection");
 			} else {
 				petStack = sortedPetsStack.get(selectedPet);
 			}
@@ -439,7 +258,8 @@ public class PetsPage extends GuiProfileViewerPage {
 			JsonObject pet = sortedPets.get(selectedPet);
 
 			int x = guiLeft + 280;
-			float y = guiTop + 67 + 15 * (float) Math.sin(((getInstance().currentTime - getInstance().startTime) / 800f) % (2 * Math.PI));
+			float y = guiTop + 67 + 15 * (float) Math.sin(
+				((getInstance().currentTime - getInstance().startTime) / 800f) % (2 * Math.PI));
 
 			int displayLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(display);
 			int halfDisplayLen = displayLen / 2;
@@ -497,21 +317,21 @@ public class PetsPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Total XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(exp, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(exp),
 				guiLeft + 319,
 				guiTop + 125,
 				98
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Current LVL XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat((level % 1) * currentLevelRequirement, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat((level % 1) * currentLevelRequirement),
 				guiLeft + 319,
 				guiTop + 143,
 				98
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Required LVL XP",
-				EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(currentLevelRequirement, 0),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(currentLevelRequirement),
 				guiLeft + 319,
 				guiTop + 161,
 				98
@@ -565,33 +385,5 @@ public class PetsPage extends GuiProfileViewerPage {
 		sortedPets = null;
 		sortedPetsStack = null;
 		selectedPet = -1;
-	}
-
-	private ItemStack getQuestionmarkSkull() {
-		String textureLink = "bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40";
-
-		String b64Decoded = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + textureLink + "\"}}}";
-		String b64Encoded = new String(Base64.getEncoder().encode(b64Decoded.getBytes()));
-
-		ItemStack stack = new ItemStack(Items.skull, 1, 3);
-		NBTTagCompound nbt = new NBTTagCompound();
-		NBTTagCompound skullOwner = new NBTTagCompound();
-		NBTTagCompound properties = new NBTTagCompound();
-		NBTTagList textures = new NBTTagList();
-		NBTTagCompound textures_0 = new NBTTagCompound();
-
-		String uuid = UUID.nameUUIDFromBytes(b64Encoded.getBytes()).toString();
-		skullOwner.setString("Id", uuid);
-		skullOwner.setString("Name", uuid);
-
-		textures_0.setString("Value", b64Encoded);
-		textures.appendTag(textures_0);
-
-		properties.setTag("textures", textures);
-		skullOwner.setTag("Properties", properties);
-		nbt.setTag("SkullOwner", skullOwner);
-		stack.setTagCompound(nbt);
-		stack.setStackDisplayName(EnumChatFormatting.RED + "Unknown Pet");
-		return stack;
 	}
 }

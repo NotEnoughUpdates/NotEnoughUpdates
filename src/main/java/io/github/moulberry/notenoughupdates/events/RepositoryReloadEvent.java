@@ -23,7 +23,7 @@ import java.io.File;
 
 public class RepositoryReloadEvent extends NEUEvent {
 	private final File baseFile;
-	private boolean isFirstLoad;
+	private final boolean isFirstLoad;
 
 	public RepositoryReloadEvent(File baseFile, boolean isFirstLoad) {
 		this.baseFile = baseFile;

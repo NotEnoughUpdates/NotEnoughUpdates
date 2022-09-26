@@ -847,7 +847,7 @@ public class AccessoryBagOverlay {
 				if (info != null)
 					cost1 = info.craftCost;
 				else
-					cost1 = 0;
+					cost1 = -1;
 			}
 			double cost2;
 			JsonObject o2Auc = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(o2);
@@ -858,7 +858,7 @@ public class AccessoryBagOverlay {
 				if (info != null)
 					cost2 = info.craftCost;
 				else
-					cost2 = 0;
+					cost2 = -1;
 			}
 
 			if (cost1 == -1 && cost2 == -1) return o1.compareTo(o2);
@@ -875,7 +875,7 @@ public class AccessoryBagOverlay {
 	private static boolean inAccessoryBag = false;
 
 	public static boolean isInAccessoryBag() {
-		return inAccessoryBag;
+		return inAccessoryBag && NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay;
 	}
 
 	public static void renderOverlay() {

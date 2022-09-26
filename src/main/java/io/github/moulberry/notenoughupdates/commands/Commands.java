@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.EnableStorageCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.NullzeeSphereCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.ReloadRepoCommand;
@@ -42,6 +43,7 @@ import io.github.moulberry.notenoughupdates.commands.misc.CalculatorCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CosmeticsCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CustomizeCommand;
+import io.github.moulberry.notenoughupdates.commands.misc.PronounsCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.UpdateCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.CataCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PeekCommand;
@@ -73,6 +75,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
 		ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
 		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
+		ClientCommandHandler.instance.registerCommand(new EnableStorageCommand());
 
 		// Profile Commands
 		ClientCommandHandler.instance.registerCommand(new PeekCommand());
@@ -97,6 +100,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new CalculatorCommand());
 		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
 		ClientCommandHandler.instance.registerCommand(new UpdateCommand(NotEnoughUpdates.INSTANCE));
+		ClientCommandHandler.instance.registerCommand(new PronounsCommand());
 
 		// Fairy Soul Commands
 		ClientCommandHandler.instance.registerCommand(new FairySouls.FairySoulsCommand());

@@ -75,7 +75,7 @@ public class SkillOverlays {
 		exampleText = {
 			"\u00a7bCounter: \u00a7e37,547,860",
 			"\u00a7bCrops/m: \u00a7e38.29",
-			"\u00a7bFarm: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
+			"\u00a7bFarming: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
@@ -136,7 +136,7 @@ public class SkillOverlays {
 		exampleText = {
 			"\u00a7bCompact: \u00a7e547,860",
 			"\u00a7bBlocks/m: \u00a7e38.29",
-			"\u00a7bMine: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
+			"\u00a7bMining: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
@@ -247,7 +247,7 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "\u00A7cWarning",
-		desc = "The combat display will only show if you have a Book of Stats on the item you are using"
+		desc = "The combat display will only show if you have a Book of Stats or the Champion enchant"
 	)
 	@ConfigEditorFSR(
 		runnableId = 12,
@@ -278,11 +278,12 @@ public class SkillOverlays {
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bETA: \u00a7e13h12m"
+			"\u00a7bETA: \u00a7e13h12m",
+			"\u00a7bChampion XP: \u00a7e3,523"
 		}
 	)
 	@ConfigAccordionId(id = 4)
-	public List<Integer> combatText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
+	public List<Integer> combatText = new ArrayList<>(Arrays.asList(0, 6, 1, 2, 3, 4, 5));
 
 	@Expose
 	public Position combatPosition = new Position(10, 200);
@@ -301,7 +302,7 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Always show combat overlay",
-		desc = "Shows combat overlay even if you dont have Book of Stats"
+		desc = "Shows combat overlay even if you dont have Book of Stats or the Champion enchant"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)

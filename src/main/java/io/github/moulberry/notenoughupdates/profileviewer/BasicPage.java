@@ -19,28 +19,19 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
-
 import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
@@ -62,6 +53,19 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
+import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class BasicPage extends GuiProfileViewerPage {
 
@@ -117,7 +121,8 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		String panoramaIdentifier = "day";
 		if (SBInfo.getInstance().currentTimeDate != null) {
-			if (SBInfo.getInstance().currentTimeDate.getHours() <= 6 || SBInfo.getInstance().currentTimeDate.getHours() >= 20) {
+			if (SBInfo.getInstance().currentTimeDate.getHours() <= 6 ||
+				SBInfo.getInstance().currentTimeDate.getHours() >= 20) {
 				panoramaIdentifier = "night";
 			}
 		}
@@ -133,19 +138,36 @@ public class BasicPage extends GuiProfileViewerPage {
 			Panorama.getPanoramasForLocation(location == null ? "unknown" : location, panoramaIdentifier)
 		);
 
+		if (Utils.isWithinRect(mouseX, mouseY, guiLeft + 23, guiTop + 44, 81, 108)) {
+			Optional<PronounDB.PronounChoice> pronounChoice =
+				GuiProfileViewer.pronouns
+					.peekValue()
+					.flatMap(it -> it); // Flatten: First optional is whether it loaded, second optional is whether it was successful
+			if (pronounChoice.isPresent()) {
+				PronounDB.PronounChoice pronouns = pronounChoice.get();
+				if (pronouns.isConsciousChoice()) {
+					getInstance().tooltipToDisplay = pronouns.render();
+				}
+			}
+		}
+
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_basic);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
 		if (entityPlayer != null && profile.getHypixelProfile() != null) {
 			String playerName = null;
 			if (profile.getHypixelProfile().has("prefix")) {
-				playerName = Utils.getElementAsString(profile.getHypixelProfile().get("prefix"), "") + " " + entityPlayer.getName();
+				playerName = Utils.getElementAsString(profile.getHypixelProfile().get("prefix"), "") + " " +
+					entityPlayer.getName();
 			} else {
 				String rank = Utils.getElementAsString(
 					profile.getHypixelProfile().get("rank"),
 					Utils.getElementAsString(profile.getHypixelProfile().get("newPackageRank"), "NONE")
 				);
-				String monthlyPackageRank = Utils.getElementAsString(profile.getHypixelProfile().get("monthlyPackageRank"), "NONE");
+				String monthlyPackageRank = Utils.getElementAsString(
+					profile.getHypixelProfile().get("monthlyPackageRank"),
+					"NONE"
+				);
 				if (!rank.equals("YOUTUBER") && !monthlyPackageRank.equals("NONE")) {
 					rank = monthlyPackageRank;
 				}
@@ -191,7 +213,13 @@ public class BasicPage extends GuiProfileViewerPage {
 				int x = guiLeft + 63;
 				int y = guiTop + 54;
 
-				GuiScreen.drawRect(x - halfRankPrefixLen - 1, y - 1, x + halfRankPrefixLen + 1, y + 8, new Color(0, 0, 0, 64).getRGB());
+				GuiScreen.drawRect(
+					x - halfRankPrefixLen - 1,
+					y - 1,
+					x + halfRankPrefixLen + 1,
+					y + 8,
+					new Color(0, 0, 0, 64).getRGB()
+				);
 
 				fr.drawString(playerName, x - halfRankPrefixLen, y, 0, true);
 			}
@@ -200,7 +228,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		long networth = profile.getNetWorth(profileId);
 		if (networth > 0) {
 			Utils.drawStringCentered(
-				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(networth),
+				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
+					GuiProfileViewer.numberFormat.format(networth),
 				fr,
 				guiLeft + 63,
 				guiTop + 38,
@@ -211,31 +240,38 @@ public class BasicPage extends GuiProfileViewerPage {
 				double networthInCookies =
 					(
 						networth /
-						NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").get("avg_buy").getAsDouble()
+							NotEnoughUpdates.INSTANCE.manager.auctionManager
+								.getBazaarInfo("BOOSTER_COOKIE")
+								.get("avg_buy")
+								.getAsDouble()
 					);
 				String networthIRLMoney = Long.toString(Math.round(((networthInCookies * 325) / 675) * 4.99));
 				if (
 					mouseX > guiLeft + 8 &&
-					mouseX < guiLeft + 8 + fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth))
+						mouseX < guiLeft + 8 + fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth))
 				) {
 					if (mouseY > guiTop + 32 && mouseY < guiTop + 32 + fr.FONT_HEIGHT) {
 						getInstance().tooltipToDisplay = new ArrayList<>();
 						getInstance()
 							.tooltipToDisplay.add(
 								EnumChatFormatting.GREEN +
-								"Net worth in IRL money: " +
-								EnumChatFormatting.DARK_GREEN +
-								"$" +
-								EnumChatFormatting.GOLD +
-								networthIRLMoney
+									"Net worth in IRL money: " +
+									EnumChatFormatting.DARK_GREEN +
+									"$" +
+									EnumChatFormatting.GOLD +
+									networthIRLMoney
 							);
 						getInstance().tooltipToDisplay.add("");
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "This is calculated using the current");
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "for cookies using gems, then the price of gems");
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "is where we get the amount of IRL money you");
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "theoretically have on skyblock in net worth.");
+							getInstance().tooltipToDisplay.add(
+								EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
+							getInstance().tooltipToDisplay.add(
+								EnumChatFormatting.RED + "for cookies using gems, then the price of gems");
+							getInstance().tooltipToDisplay.add(
+								EnumChatFormatting.RED + "is where we get the amount of IRL money you");
+							getInstance().tooltipToDisplay.add(
+								EnumChatFormatting.RED + "theoretically have on skyblock in net worth.");
 						} else {
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
 						}
@@ -245,7 +281,8 @@ public class BasicPage extends GuiProfileViewerPage {
 						}
 					}
 				}
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 
 		if (status != null) {
@@ -261,9 +298,17 @@ public class BasicPage extends GuiProfileViewerPage {
 					NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("POTATO_CROWN")
 				);
 				potato_crown.addEnchantment(Enchantment.unbreaking, 1656638942); // this number may be useful
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 35, guiTop + 160);
+				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+					new ItemStack(Items.potato),
+					guiLeft + 35,
+					guiTop + 160
+				);
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(potato_crown, guiLeft + 50, guiTop + 162);
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(new ItemStack(Items.potato), guiLeft + 63, guiTop + 160);
+				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+					new ItemStack(Items.potato),
+					guiLeft + 63,
+					guiTop + 160
+				);
 			} else if (online) {
 				locationStr = NotEnoughUpdates.INSTANCE.navigation.getNameForAreaModeOrUnknown(location);
 			}
@@ -370,7 +415,8 @@ public class BasicPage extends GuiProfileViewerPage {
 						},
 						false
 					);
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
@@ -388,9 +434,9 @@ public class BasicPage extends GuiProfileViewerPage {
 						int x = guiLeft + 20;
 						float y =
 							guiTop +
-							82 +
-							15 *
-							(float) Math.sin(((getInstance().currentTime - getInstance().startTime) / 800f) % (2 * Math.PI));
+								82 +
+								15 *
+									(float) Math.sin(((getInstance().currentTime - getInstance().startTime) / 800f) % (2 * Math.PI));
 						GlStateManager.translate(x, y, 0);
 						ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false);
 
@@ -410,7 +456,14 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 		if (entityPlayer != null) {
-			drawEntityOnScreen(guiLeft + 63, guiTop + 128 + 7, 36, guiLeft + 63 - mouseX, guiTop + 129 - mouseY, entityPlayer);
+			drawEntityOnScreen(
+				guiLeft + 63,
+				guiTop + 128 + 7,
+				36,
+				guiLeft + 63 - mouseX,
+				guiTop + 129 - mouseY,
+				entityPlayer
+			);
 		}
 
 		PlayerStats.Stats stats = profile.getStats(profileId);
@@ -426,7 +479,12 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				GlStateManager.color(1, 1, 1, 1);
 				GlStateManager.enableBlend();
-				GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL14.glBlendFuncSeparate(
+					GL11.GL_SRC_ALPHA,
+					GL11.GL_ONE_MINUS_SRC_ALPHA,
+					GL11.GL_ONE,
+					GL11.GL_ONE_MINUS_SRC_ALPHA
+				);
 				Utils.renderAlignedString(
 					statNamePretty,
 					EnumChatFormatting.WHITE.toString() + val,
@@ -445,49 +503,49 @@ public class BasicPage extends GuiProfileViewerPage {
 						getInstance()
 							.tooltipToDisplay.add(
 								EnumChatFormatting.GRAY +
-								"Base " +
-								split.get(1) +
-								": " +
-								EnumChatFormatting.GREEN +
-								base +
-								" " +
-								split.get(0)
+									"Base " +
+									split.get(1) +
+									": " +
+									EnumChatFormatting.GREEN +
+									base +
+									" " +
+									split.get(0)
 							);
 						int passive = Math.round(profile.getPassiveStats(profileId).get(statName) - baseStats.get(statName));
 						getInstance()
 							.tooltipToDisplay.add(
 								EnumChatFormatting.GRAY +
-								"Passive " +
-								split.get(1) +
-								" Bonus: +" +
-								EnumChatFormatting.YELLOW +
-								passive +
-								" " +
-								split.get(0)
+									"Passive " +
+									split.get(1) +
+									" Bonus: +" +
+									EnumChatFormatting.YELLOW +
+									passive +
+									" " +
+									split.get(0)
 							);
 						int itemBonus = Math.round(stats.get(statName) - profile.getPassiveStats(profileId).get(statName));
 						getInstance()
 							.tooltipToDisplay.add(
 								EnumChatFormatting.GRAY +
-								"Item " +
-								split.get(1) +
-								" Bonus: +" +
-								EnumChatFormatting.DARK_PURPLE +
-								itemBonus +
-								" " +
-								split.get(0)
+									"Item " +
+									split.get(1) +
+									" Bonus: +" +
+									EnumChatFormatting.DARK_PURPLE +
+									itemBonus +
+									" " +
+									split.get(0)
 							);
 						int finalStat = Math.round(stats.get(statName));
 						getInstance()
 							.tooltipToDisplay.add(
 								EnumChatFormatting.GRAY +
-								"Final " +
-								split.get(1) +
-								": +" +
-								EnumChatFormatting.RED +
-								finalStat +
-								" " +
-								split.get(0)
+									"Final " +
+									split.get(1) +
+									": +" +
+									EnumChatFormatting.RED +
+									finalStat +
+									" " +
+									split.get(0)
 							);
 					}
 				}
@@ -551,17 +609,18 @@ public class BasicPage extends GuiProfileViewerPage {
 						getInstance().tooltipToDisplay = new ArrayList<>();
 						getInstance().tooltipToDisplay.add(skillName);
 						if (skyblockInfo.get(entry.getKey()).maxed) {
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
+							getInstance().tooltipToDisplay.add(
+								EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
 							int maxXp = (int) skyblockInfo.get(entry.getKey()).maxXpForLevel;
 							getInstance()
 								.tooltipToDisplay.add(
 									EnumChatFormatting.GRAY +
-									"Progress: " +
-									EnumChatFormatting.DARK_PURPLE +
-									GuiProfileViewer.shortNumberFormat(Math.round((level % 1) * maxXp), 0) +
-									"/" +
-									GuiProfileViewer.shortNumberFormat(maxXp, 0)
+										"Progress: " +
+										EnumChatFormatting.DARK_PURPLE +
+										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+										"/" +
+										StringUtils.shortNumberFormat(maxXp)
 								);
 						}
 						String totalXpS = GuiProfileViewer.numberFormat.format((int) skyblockInfo.get(entry.getKey()).totalXp);
@@ -605,23 +664,29 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		return (
 			uuidStr.substring(0, 8) +
-			"-" +
-			uuidStr.substring(8, 12) +
-			"-" +
-			uuidStr.substring(12, 16) +
-			"-" +
-			uuidStr.substring(16, 20) +
-			"-" +
-			uuidStr.substring(20, 32)
+				"-" +
+				uuidStr.substring(8, 12) +
+				"-" +
+				uuidStr.substring(12, 16) +
+				"-" +
+				uuidStr.substring(16, 20) +
+				"-" +
+				uuidStr.substring(20, 32)
 		);
 	}
 
-	private void renderWeight(int mouseX, int mouseY, Map<String, ProfileViewer.Level> skyblockInfo, JsonObject profileInfo) {
+	private void renderWeight(
+		int mouseX,
+		int mouseY,
+		Map<String, ProfileViewer.Level> skyblockInfo,
+		JsonObject profileInfo
+	) {
 		if (skyblockInfo == null) {
 			return;
 		}
 
-		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null || !Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
+		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
+			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
@@ -635,9 +700,9 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
-			"Senither Weight: " +
-			EnumChatFormatting.GOLD +
-			GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
+				"Senither Weight: " +
+				EnumChatFormatting.GOLD +
+				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
 			fr,
 			guiLeft + 63,
 			guiTop + 18,
@@ -646,7 +711,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		);
 
 		int textWidth = fr.getStringWidth(
-			"Senither Weight: " + GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
+			"Senither Weight: " +
+				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
 		);
 		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
 			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
@@ -654,34 +720,40 @@ public class BasicPage extends GuiProfileViewerPage {
 				getInstance()
 					.tooltipToDisplay.add(
 						EnumChatFormatting.GREEN +
-						"Skills: " +
-						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getSkillsWeight().getWeightStruct().getRaw()))
+							"Skills: " +
+							EnumChatFormatting.GOLD +
+							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+								.getSkillsWeight()
+								.getWeightStruct()
+								.getRaw()))
 					);
 				getInstance()
 					.tooltipToDisplay.add(
 						EnumChatFormatting.GREEN +
-						"Slayer: " +
-						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getSlayerWeight().getWeightStruct().getRaw()))
+							"Slayer: " +
+							EnumChatFormatting.GOLD +
+							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+								.getSlayerWeight()
+								.getWeightStruct()
+								.getRaw()))
 					);
 				getInstance()
 					.tooltipToDisplay.add(
 						EnumChatFormatting.GREEN +
-						"Dungeons: " +
-						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(
-							roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
-						)
+							"Dungeons: " +
+							EnumChatFormatting.GOLD +
+							GuiProfileViewer.numberFormat.format(
+								roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
+							)
 					);
 			}
 		}
 
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
-			"Lily Weight: " +
-			EnumChatFormatting.GOLD +
-			GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
+				"Lily Weight: " +
+				EnumChatFormatting.GOLD +
+				GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
 			fr,
 			guiLeft + 63,
 			guiTop + 28,
@@ -698,23 +770,32 @@ public class BasicPage extends GuiProfileViewerPage {
 				getInstance()
 					.tooltipToDisplay.add(
 						EnumChatFormatting.GREEN +
-						"Skills: " +
-						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getSkillsWeight().getWeightStruct().getRaw()))
+							"Skills: " +
+							EnumChatFormatting.GOLD +
+							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+								.getSkillsWeight()
+								.getWeightStruct()
+								.getRaw()))
 					);
 				getInstance()
 					.tooltipToDisplay.add(
 						EnumChatFormatting.GREEN +
-						"Slayer: " +
-						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getSlayerWeight().getWeightStruct().getRaw()))
+							"Slayer: " +
+							EnumChatFormatting.GOLD +
+							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+								.getSlayerWeight()
+								.getWeightStruct()
+								.getRaw()))
 					);
 				getInstance()
 					.tooltipToDisplay.add(
 						EnumChatFormatting.GREEN +
-						"Dungeons: " +
-						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getDungeonsWeight().getWeightStruct().getRaw()))
+							"Dungeons: " +
+							EnumChatFormatting.GOLD +
+							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+								.getDungeonsWeight()
+								.getWeightStruct()
+								.getRaw()))
 					);
 			}
 		}

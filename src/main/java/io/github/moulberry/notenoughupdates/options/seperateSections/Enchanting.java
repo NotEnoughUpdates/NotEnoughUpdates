@@ -28,7 +28,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption
 
 public class Enchanting {
 	@ConfigOption(
-		name = "Enchant Table GUI",
+		name = "Enchant Table / Hex GUI",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 1)
@@ -42,6 +42,15 @@ public class Enchanting {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
 	public boolean enableTableGUI = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Hex GUI",
+		desc = "Show a custom GUI when using the Hex"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean enableHexGUI = true;
 
 	/*@Expose
 	@ConfigOption(
@@ -75,6 +84,15 @@ public class Enchanting {
 	)
 	@ConfigAccordionId(id = 1)
 	public int enchantOrdering = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Use highest level from /et in /hex",
+		desc = "Show max level from /et in hex instead of highest possible"
+	)
+	@ConfigEditorBoolean()
+	@ConfigAccordionId(id = 1)
+	public boolean maxEnchLevel = false;
 
 	@ConfigOption(
 		name = "Enchanting Solvers",
@@ -114,7 +132,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Ultrasequencer Numbers",
-		desc = "Replace the items in the supersequencer with only numbers"
+		desc = "Replace the items in the Ultrasequencer with only numbers"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)

@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
 import io.github.moulberry.notenoughupdates.options.seperateSections.ApiData;
+import io.github.moulberry.notenoughupdates.options.seperateSections.BazaarTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Calendar;
 import io.github.moulberry.notenoughupdates.options.seperateSections.CustomArmour;
 import io.github.moulberry.notenoughupdates.options.seperateSections.DungeonMapConfig;
@@ -390,6 +391,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Bazaar Tweaks",
+		desc = "Tweaks for the Bazaar"
+	)
+	public BazaarTweaks bazaarTweaks = new BazaarTweaks();
+
+	@Expose
+	@Category(
 		name = "AH/BZ Graph",
 		desc = "Graph of auction and bazaar prices"
 	)
@@ -463,6 +471,8 @@ public class NEUConfig extends Config {
 		public ArrayList<String> favourites = new ArrayList<>();
 		@Expose
 		public ArrayList<String> previousAuctionSearches = new ArrayList<>();
+		@Expose
+		public ArrayList<String> previousBazaarSearches = new ArrayList<>();
 		@Expose
 		public ArrayList<String> eventFavourites = new ArrayList<>();
 		@Expose

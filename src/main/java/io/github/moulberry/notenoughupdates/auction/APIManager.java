@@ -59,6 +59,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class APIManager {
 	private final NEUManager manager;
@@ -166,6 +168,7 @@ public class APIManager {
 				return stack;
 			} else {
 				JsonObject item = manager.getJsonFromNBT(item_tag);
+				if (item == null) return null;
 				ItemStack stack = manager.jsonToStack(item, false);
 
 				JsonObject itemDefault = manager.getItemInformation().get(item.get("internalname").getAsString());
@@ -702,6 +705,16 @@ public class APIManager {
 		);
 	}
 
+	private static final Pattern BAZAAR_ENCHANTMENT_PATTERN = Pattern.compile("ENCHANTMENT_(\\D*)_(\\d+)");
+
+	public String transformHypixelBazaarToNEUItemId(String hypixelId) {
+		Matcher matcher = BAZAAR_ENCHANTMENT_PATTERN.matcher(hypixelId);
+		if (matcher.matches()) {
+			return matcher.group(1) + ";" + matcher.group(2);
+		}
+		return hypixelId.replace(":", "-");
+	}
+
 	public void updateBazaar() {
 		manager.hypixelApi.getHypixelApiAsync(
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
@@ -738,7 +751,7 @@ public class APIManager {
 							}
 						}
 
-						bazaarJson.add(entry.getKey().replace(":", "-"), productInfo);
+						bazaarJson.add(transformHypixelBazaarToNEUItemId(entry.getKey()), productInfo);
 					}
 				}
 				GuiPriceGraph.addToCache(bazaarJson, true);
@@ -794,9 +807,18 @@ public class APIManager {
 		return keys;
 	}
 
-	public JsonObject getBazaarInfo(String internalname) {
+	public double getBazaarOrBin(String internalName) {
+		JsonObject bazaarInfo = manager.auctionManager.getBazaarInfo(internalName);
+		if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
+			return bazaarInfo.get("curr_buy").getAsFloat();
+		} else {
+			return manager.auctionManager.getLowestBin(internalName);
+		}
+	}
+
+	public JsonObject getBazaarInfo(String internalName) {
 		if (bazaarJson == null) return null;
-		JsonElement e = bazaarJson.get(internalname);
+		JsonElement e = bazaarJson.get(internalName);
 		if (e == null) {
 			return null;
 		}

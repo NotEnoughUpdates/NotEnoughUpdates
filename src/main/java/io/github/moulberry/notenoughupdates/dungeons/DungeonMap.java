@@ -726,7 +726,7 @@ public class DungeonMap {
 					}
 					GlStateManager.color(1, 1, 1, 1);
 					if ((!NotEnoughUpdates.INSTANCE.config.dungeons.showOwnHeadAsMarker ||
-						playerMarkerMapPositions.size() <= 1 || minU != 1 / 4f) &&
+						playerMarkerMapPositions.size() < 1 || minU != 1 / 4f) &&
 						NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPlayerHeads >= 1 &&
 						playerSkinMap.containsKey(entry.getKey())) {
 						Minecraft.getMinecraft().getTextureManager().bindTexture(playerSkinMap.get(entry.getKey()));

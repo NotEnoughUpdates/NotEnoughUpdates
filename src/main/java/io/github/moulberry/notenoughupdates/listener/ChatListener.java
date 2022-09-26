@@ -198,8 +198,8 @@ public class ChatListener {
 				timeSinceLastBoss2 = timeSinceLastBoss;
 				timeSinceLastBoss = System.currentTimeMillis();
 			}
-		} else if (unformatted.startsWith("   RNGesus Meter:")) {
-			RNGMeter = unformatted.substring("   RNGesus Meter: -------------------- ".length());
+		} else if (unformatted.startsWith("   RNG Meter")) {
+			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {
 			//matcher.group(1);
 			SlayerOverlay.slayerLVL = matcher.group(2);
@@ -238,7 +238,7 @@ public class ChatListener {
 			}
 			missingRecipe.set(true);
 		}
-		if (unformatted.startsWith("Sending to server") && neu.isOnSkyblock() &&
+		if (unformatted.startsWith("Sending to server") &&
 			NotEnoughUpdates.INSTANCE.config.misc.streamerMode && e.message instanceof ChatComponentText) {
 			String m = e.message.getFormattedText();
 			String m2 = StreamerMode.filterChat(e.message.getFormattedText());

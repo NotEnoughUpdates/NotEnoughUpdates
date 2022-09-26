@@ -181,11 +181,45 @@ public class TooltipTweaks {
 	@ConfigEditorBoolean
 	public boolean powerStoneStats = true;
 
+	@ConfigOption(
+		name = "RNG Meter",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 1)
+	public boolean rngMeter = false;
+
 	@Expose
 	@ConfigOption(
-		name = "Bazaar Sacks Profit",
-		desc = "Orders the items in your sacks in the bazaar inventory and adding buy order toggle"
+		name = "Fraction Display",
+		desc = "Show the fraction instead of the percentage in the slayer and dungeon rng meter inventory"
 	)
 	@ConfigEditorBoolean
-	public boolean bazaarSacksProfit = true;
+	@ConfigAccordionId(id = 1)
+	public boolean rngMeterFractionDisplay = true;
+
+	@Expose
+	@ConfigOption(
+		name = " Profit Per Score/XP",
+		desc = "Show the amount of coins per Score/XP in the rng meter inventory"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean rngMeterProfitPerUnit = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Dungeon/Slayer Needed Counter",
+		desc = "Show the amount of dungeon runs or slayer bosses needed for the rng meter to fill up"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean rngMeterRunsNeeded = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Essence Price In Shop",
+		desc = "Show the essence price in the essence shop in the dungeon hub"
+	)
+	@ConfigEditorBoolean
+	public boolean essencePriceInEssenceShop = true;
 }

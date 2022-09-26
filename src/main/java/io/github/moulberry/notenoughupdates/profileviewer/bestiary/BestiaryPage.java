@@ -21,16 +21,12 @@ package io.github.moulberry.notenoughupdates.profileviewer.bestiary;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.awt.*;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -39,6 +35,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class BestiaryPage extends GuiProfileViewerPage {
 
@@ -69,6 +71,11 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			int yIndex = 0;
 			for (ItemStack stack : BestiaryData.getBestiaryLocations().keySet()) {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+				if (mouseX > guiLeft + 30 + bestiaryXSize * yIndex && mouseX < guiLeft + 30 + bestiaryXSize * yIndex + 20) {
+					if (mouseY > guiTop + 10 && mouseY < guiTop + 10 + 20) {
+						tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					}
+				}
 				if (stack == selectedBestiaryLocation) {
 					Utils.drawTexturedRect(
 						guiLeft + 30 + bestiaryXSize * yIndex,
@@ -107,11 +114,18 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
 
 		GlStateManager.color(1, 1, 1, 1);
+		Color color = new Color(128, 128, 128, 255);
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + "Bestiary Level: ",
+			EnumChatFormatting.GRAY + "" + (float) getBestiaryTiers(profileInfo) / 10,
+			guiLeft + 220,
+			guiTop + 50,
+			110
+		);
+
 		GlStateManager.disableLighting();
 		RenderHelper.enableGUIStandardItemLighting();
-
 		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
-		Color color = new Color(128, 128, 128, 255);
 		if (mobs != null) {
 			for (int i = 0; i < mobs.size(); i++) {
 				String mob = mobs.get(i);
@@ -139,7 +153,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 							20 * (1 - completedness) / 256f,
 							GL11.GL_NEAREST
 						);
-						GlStateManager.color(1, 185 / 255f, 0, 1);
+						//GlStateManager.color(1, 185 / 255f, 0, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 						Utils.drawTexturedRect(
 							guiLeft + x,
@@ -189,14 +203,16 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths)
 								);
 								if (level != null) {
-									tooltipToDisplay.add(
-										EnumChatFormatting.GRAY +
-										"Progress: " +
-										EnumChatFormatting.AQUA +
-										GuiProfileViewer.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel), 0) +
-										"/" +
-										GuiProfileViewer.shortNumberFormat(level.maxXpForLevel, 0)
-									);
+									String progressStr;
+									if (level.maxed) {
+										progressStr = EnumChatFormatting.GOLD + "MAXED!";
+									} else {
+										progressStr = EnumChatFormatting.AQUA +
+											StringUtils.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel)) +
+											"/" +
+											StringUtils.shortNumberFormat(level.maxXpForLevel);
+									}
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Progress: " + progressStr);
 								}
 							}
 						}
@@ -218,13 +234,6 @@ public class BestiaryPage extends GuiProfileViewerPage {
 						);
 					}
 				}
-				Utils.renderAlignedString(
-					EnumChatFormatting.RED + "Bestiary Level: ",
-					EnumChatFormatting.GRAY + "" + (float) getBestiaryTiers(profileInfo) / 10,
-					guiLeft + 220,
-					guiTop + 50,
-					110
-				);
 			}
 		}
 		if (tooltipToDisplay != null) {

@@ -52,6 +52,15 @@ public class MiscOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Todo Overlay Tab",
+		desc = "Only show the todo overlay when tab list is open"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean todoOverlayOnlyShowTab = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Todo Text",
 		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
 			"\u00a7rIf you want to see the time until something is available, click \"Add\" and then the respective timer"

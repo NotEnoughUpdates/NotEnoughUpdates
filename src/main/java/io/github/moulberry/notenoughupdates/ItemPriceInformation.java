@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +51,7 @@ public class ItemPriceInformation {
 	private static File file;
 	private static HashSet<String> auctionableItems = null;
 	private static Gson gson;
+	private static final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
 
 	public static boolean addToTooltip(List<String> tooltip, String internalname, ItemStack stack) {
 		return addToTooltip(tooltip, internalname, stack, true);
@@ -103,7 +106,7 @@ public class ItemPriceInformation {
 		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname);
 		double lowestBinAvg = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalname);
 
-		long lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
+		double lowestBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
 		APIManager.CraftInfo craftCost = NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(internalname);
 		boolean bazaarItem = bazaarInfo != null;
 
@@ -119,8 +122,6 @@ public class ItemPriceInformation {
 			}
 		}
 
-		NumberFormat format = NumberFormat.getInstance(Locale.US);
-		boolean shortNumber = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.shortNumberFormatPrices;
 		if (bazaarItem) {
 			List<Integer> lines = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.priceInfoBaz;
 
@@ -145,11 +146,8 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							long bazaarBuyPrice = (long) bazaarInfo.get("avg_buy").getAsFloat() * stackMultiplier;
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Buy: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarBuyPrice > 1000
-								? Utils.shortNumberFormat(bazaarBuyPrice, 0)
-								: format.format(bazaarBuyPrice)) + " coins");
+							double bazaarBuyPrice = bazaarInfo.get("avg_buy").getAsFloat() * stackMultiplier;
+							tooltip.add(formatPrice("Bazaar Buy: ", bazaarBuyPrice));
 						}
 						break;
 					case 1:
@@ -160,11 +158,8 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							long bazaarSellPrice = (long) bazaarInfo.get("avg_sell").getAsFloat() * stackMultiplier;
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Sell: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarSellPrice > 1000
-								? Utils.shortNumberFormat(bazaarSellPrice, 0)
-								: format.format(bazaarSellPrice)) + " coins");
+							double bazaarSellPrice = bazaarInfo.get("avg_sell").getAsDouble() * stackMultiplier;
+							tooltip.add(formatPrice("Bazaar Sell: ", bazaarSellPrice));
 						}
 						break;
 					case 2:
@@ -175,12 +170,8 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							long bazaarInstantBuyPrice = (long) bazaarInfo.get("curr_buy").getAsFloat() * stackMultiplier;
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Insta-Buy: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarInstantBuyPrice > 1000
-								? Utils.shortNumberFormat(bazaarInstantBuyPrice, 0)
-								: format.format(bazaarInstantBuyPrice)) +
-								" coins");
+							double bazaarInstantBuyPrice = bazaarInfo.get("curr_buy").getAsFloat() * stackMultiplier;
+							tooltip.add(formatPrice("Bazaar Insta-Buy: ", bazaarInstantBuyPrice));
 						}
 						break;
 					case 3:
@@ -191,20 +182,13 @@ public class ItemPriceInformation {
 									tooltip.add(EnumChatFormatting.DARK_GRAY + "[SHIFT show x" + shiftStackMultiplier + "]");
 								added = true;
 							}
-							long bazaarInstantSellPrice = (long) bazaarInfo.get("curr_sell").getAsFloat() * stackMultiplier;
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Insta-Sell: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + (shortNumber && bazaarInstantSellPrice > 1000
-								? Utils.shortNumberFormat(
-								bazaarInstantSellPrice,
-								0
-							)
-								: format.format(bazaarInstantSellPrice)) +
-								" coins");
+							double bazaarInstantSellPrice = bazaarInfo.get("curr_sell").getAsFloat() * stackMultiplier;
+							tooltip.add(formatPrice("Bazaar Insta-Sell: ", bazaarInstantSellPrice));
 						}
 						break;
 					case 4:
 						if (craftCost != null && craftCost.fromRecipe) {
-							if ((int) craftCost.craftCost == 0) {
+							if (craftCost.craftCost == 0) {
 								continue;
 							}
 							if (!added) {
@@ -213,10 +197,7 @@ public class ItemPriceInformation {
 							}
 							double cost = craftCost.craftCost;
 							if (shiftPressed) cost = cost * shiftStackMultiplier;
-
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Raw Craft Cost: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-								(shortNumber && cost > 1000 ? Utils.shortNumberFormat(cost, 0) : format.format((int) cost)) + " coins");
+							tooltip.add(formatPrice("Raw Craft Cost: ", cost));
 						}
 						break;
 				}
@@ -236,8 +217,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Lowest BIN: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(lowestBin) + " coins");
+							tooltip.add(formatPrice("Lowest BIN: ", lowestBin));
 						}
 						break;
 					case 1:
@@ -248,21 +228,11 @@ public class ItemPriceInformation {
 							}
 
 							if (auctionInfo.has("clean_price")) {
-								tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Price (Clean): " +
-									EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-									(shortNumber && auctionInfo.get("clean_price").getAsFloat() > 1000 ? Utils.shortNumberFormat(
-										auctionInfo.get("clean_price").getAsFloat(),
-										0
-									) : format.format((int) auctionInfo.get("clean_price").getAsFloat())
-										+ " coins"));
+								double cleanPrice = auctionInfo.get("clean_price").getAsDouble();
+								tooltip.add(formatPrice("AH Price (Clean): ", cleanPrice));
 							} else {
-								int auctionPrice =
-									(int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
-								tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Price: " +
-									EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-									(shortNumber && auctionPrice > 1000
-										? Utils.shortNumberFormat(auctionPrice, 0)
-										: format.format(auctionPrice)) + " coins");
+								double auctionPrice = auctionInfo.get("price").getAsDouble() / auctionInfo.get("count").getAsFloat();
+								tooltip.add(formatPrice("AH Price: ", auctionPrice));
 							}
 
 						}
@@ -292,18 +262,14 @@ public class ItemPriceInformation {
 						break;
 					case 3:
 						if (craftCost != null && craftCost.fromRecipe) {
-							if ((int) craftCost.craftCost == 0) {
+							if (craftCost.craftCost == 0) {
 								continue;
 							}
 							if (!added) {
 								tooltip.add("");
 								added = true;
 							}
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Raw Craft Cost: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-								(shortNumber && craftCost.craftCost > 1000
-									? Utils.shortNumberFormat(craftCost.craftCost, 0)
-									: format.format((int) craftCost.craftCost)) + " coins");
+							tooltip.add(formatPrice("Raw Craft Cost: ", craftCost.craftCost));
 						}
 						break;
 					case 4:
@@ -312,11 +278,7 @@ public class ItemPriceInformation {
 								tooltip.add("");
 								added = true;
 							}
-							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AVG Lowest BIN: " +
-								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-								(shortNumber && lowestBinAvg > 1000
-									? Utils.shortNumberFormat(lowestBinAvg, 0)
-									: format.format(lowestBinAvg)) + " coins");
+							tooltip.add(formatPrice("AVG Lowest BIN: ", lowestBinAvg));
 						}
 						break;
 					case 5:
@@ -391,4 +353,13 @@ public class ItemPriceInformation {
 
 		return false;
 	}
+
+	private static String formatPrice(String label, double price) {
+		boolean shortNumber = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.shortNumberFormatPrices;
+		String number = (shortNumber && price > 1000
+			? Utils.shortNumberFormat(price, 0)
+			: price > 5 ? format.format((int) price) : format.format(price));
+		return "§e§l" + label + "§6§l" + number + " coins";
+	}
+
 }

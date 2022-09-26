@@ -22,12 +22,9 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -38,6 +35,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 public class MiningPage extends GuiProfileViewerPage {
 
@@ -222,28 +224,28 @@ public class MiningPage extends GuiProfileViewerPage {
 		//Powder
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_GREEN + "Mithril Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(mithrilPowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 24,
 			115
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.LIGHT_PURPLE + "Gemstone Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(gemstonePowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(gemstonePowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 44,
 			115
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_GREEN + "Total Mithril Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(mithrilPowderTotal + mithrilPowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowderTotal + mithrilPowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 34,
 			115
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.LIGHT_PURPLE + "Total Gemstone Powder",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(gemstonePowderTotal + gemstonePowder, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(gemstonePowderTotal + gemstonePowder),
 			guiLeft + xStart,
 			guiTop + yStartTop + 54,
 			115
@@ -300,7 +302,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		);
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Total Placed Crystals:",
-			EnumChatFormatting.WHITE + GuiProfileViewer.shortNumberFormat(crystalPlacedAmount, 0),
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(crystalPlacedAmount),
 			guiLeft + xStart,
 			guiTop + yStartTop + 149,
 			110
@@ -866,8 +868,7 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Seasoned Mineman",
 						"§7Level " + seasonMine + "§8/100",
 						"",
-						"§7Increases your Mining",
-						"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7.",
+						"§7Grants §3+" + EnumChatFormatting.DARK_AQUA + seasonMineStat + "☯ Mining Wisdom§7.",
 						"",
 						EnumChatFormatting.GRAY + "Cost",
 						EnumChatFormatting.DARK_GREEN +
@@ -879,8 +880,7 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Seasoned Mineman",
 						"§7Level " + seasonMine + "§8/100",
 						"",
-						"§7Increases your Mining",
-						"§7experience gain by " + EnumChatFormatting.GREEN + seasonMineStat + "%§7."
+						"§7Grants §3+" + EnumChatFormatting.DARK_AQUA + seasonMineStat + "☯ Mining Wisdom§7."
 					),
 			100
 		);

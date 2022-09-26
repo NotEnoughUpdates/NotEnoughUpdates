@@ -126,13 +126,11 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Damage Indicator Style",
-		desc = "Change the style of Skyblock damage indicators to be easier to read\n" +
+		desc = "Change Skyblock damage indicators to use shortened numbers\n" +
 			"\u00A7cSome old animations mods break this feature"
 	)
-	@ConfigEditorDropdown(
-		values = {"Off", "Commas", "Shortened"}
-	)
-	public int damageIndicatorStyle = 1;
+	@ConfigEditorBoolean
+	public boolean damageIndicatorStyle2 = false;
 
 	@Expose
 	@ConfigOption(
@@ -230,5 +228,13 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean abiphoneWarning = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Coop Warning",
+		desc = "Asks for confirmation when clicking the coop diamond in profile menu"
+	)
+	@ConfigEditorBoolean
+	public boolean coopWarning = true;
 
 }
