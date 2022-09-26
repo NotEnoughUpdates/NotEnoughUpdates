@@ -27,17 +27,6 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class LocationEdit {
-	@Expose
-	@ConfigOption(
-		name = "Edit Dungeon Map",
-		desc = "The NEU dungeon map has it's own editor (/neumap).\n" +
-			"Click the button on the left to open it"
-	)
-	@ConfigEditorButton(
-		runnableId = 0,
-		buttonText = "Edit"
-	)
-	public int editDungeonMap = 0;
 
 	@Expose
 	@ConfigOption(
@@ -49,6 +38,18 @@ public class LocationEdit {
 		buttonText = "Edit"
 	)
 	public Position positions = new Position(-1, -1);
+
+	@Expose
+	@ConfigOption(
+		name = "Edit Dungeon Map",
+		desc = "The NEU dungeon map has it's own editor (/neumap).\n" +
+			"Click the button on the left to open it"
+	)
+	@ConfigEditorButton(
+		runnableId = 0,
+		buttonText = "Edit"
+	)
+	public int editDungeonMap = 0;
 
 	@ConfigOption(
 		name = "Inventory",
