@@ -287,7 +287,7 @@ public class EssenceUpgrades implements NeuRecipe {
 				16,
 				176 / 256f,
 				192 / 256f,
-				35 / 256f,
+				34 / 256f,
 				50 / 256f
 			);
 		} else {
