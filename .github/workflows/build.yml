@@ -9,6 +9,7 @@ on:
       - "COPYING"
       - "COPYING.LESSER"
       - ".gitignore"
+      - "Update Notes"
   pull_request:
     branches:
       - "*"
@@ -17,6 +18,7 @@ on:
       - "COPYING"
       - "COPYING.LESSER"
       - ".gitignore"
+      - "Update Notes"
   workflow_dispatch:
 jobs:
   build:
