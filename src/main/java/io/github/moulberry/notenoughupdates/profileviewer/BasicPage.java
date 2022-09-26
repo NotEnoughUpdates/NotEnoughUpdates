@@ -66,6 +66,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.DECIMAL_FORMAT;
 import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class BasicPage extends GuiProfileViewerPage {
@@ -601,19 +602,18 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				String skillName = entry.getValue().getDisplayName();
 
-				ProfileViewer.Level level1 = skyblockInfo.get(entry.getKey());
-				float level = level1.level;
-				int levelFloored = (int) Math.floor(level);
+				ProfileViewer.Level level = skyblockInfo.get(entry.getKey());
+				int levelFloored = (int) Math.floor(level.level);
 
 				int x = guiLeft + 237 + 86 * xPosition;
 				int y = guiTop + 24 + 21 * yPosition;
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 
-				if (level1.maxed) {
+				if (level.maxed) {
 					getInstance().renderGoldBar(x, y + 6, 80);
 				} else {
-					getInstance().renderBar(x, y + 6, 80, level % 1);
+					getInstance().renderBar(x, y + 6, 80, level.level % 1);
 				}
 
 				if (mouseX > x && mouseX < x + 80) {
@@ -621,37 +621,36 @@ public class BasicPage extends GuiProfileViewerPage {
 						getInstance().tooltipToDisplay = new ArrayList<>();
 						List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
 						tooltipToDisplay.add(skillName);
-						if (level1.maxed) {
+						if (level.maxed) {
 							tooltipToDisplay.add(
 								EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
-							int maxXp = (int) level1.maxXpForLevel;
-
+							int maxXp = (int) level.maxXpForLevel;
 							getInstance()
 								.tooltipToDisplay.add(
 									EnumChatFormatting.GRAY +
 										"Progress: " +
 										EnumChatFormatting.DARK_PURPLE +
-										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+										StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
 										"/" +
 										StringUtils.shortNumberFormat(maxXp));
 						}
-						String totalXpS = GuiProfileViewer.numberFormat.format((int) level1.totalXp);
+						String totalXpS = GuiProfileViewer.numberFormat.format((int) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-							Utils.roundToNearestInt(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level1)) +
-							"% to " + level1.maxLevel + ")");
+							DECIMAL_FORMAT.format(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
-							// double drops
-							JsonElement element = Utils.getElement(profileInfo, "jacob2.perks.double_drops");
-							if (element == null) {
-								tooltipToDisplay.add("§7Double Drops: §50%");
-							} else {
-								int double_drops = element.getAsInt();
-								if (double_drops == 15) {
-									tooltipToDisplay.add("§7Double Drops: §6" + (double_drops * 2) + "%");
-								} else tooltipToDisplay.add("§7Double Drops: §5" + (double_drops * 2) + "%");
-							}
+							// double drops + pelts
+							int doubleDrops = Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.double_drops"), 0);
+							int peltCount = Utils.getElementAsInt(Utils.getElement(profileInfo, "trapper_quest.pelt_count"), 0);
+
+							if (doubleDrops == 15) {
+								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
+							} else tooltipToDisplay.add("§7Double Drops: §5" + (doubleDrops * 2) + "%");
+
+							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
+
 							// medals
 							JsonObject medals_inv = Utils.getElement(profileInfo, "jacob2.medals_inv").getAsJsonObject();
 							tooltipToDisplay.add(" ");

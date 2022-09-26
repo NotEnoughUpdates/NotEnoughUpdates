@@ -61,6 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,6 +80,8 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	public static final ResourceLocation pv_ironman = new ResourceLocation("notenoughupdates:pv_ironman.png");
 	public static final ResourceLocation pv_bingo = new ResourceLocation("notenoughupdates:pv_bingo.png");
+
+	public final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 	public static final ResourceLocation pv_stranded = new ResourceLocation("notenoughupdates:pv_stranded.png");
 	public static final ResourceLocation pv_unknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
 	public static final ResourceLocation resource_packs =
@@ -1024,7 +1027,7 @@ public class GuiProfileViewer extends GuiScreen {
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
 							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
-							Utils.roundToNearestInt(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
+						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
 				if (levelObj.maxed) {
 					levelStr = EnumChatFormatting.GOLD + "MAXED!";
