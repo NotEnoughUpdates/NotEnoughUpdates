@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 
 public class EssenceUpgrades implements NeuRecipe {
 
-	private static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/aaa.png");
+	private static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/essence_upgrades_tall.png");
 	private static final List<RenderLocation> buttonLocations = new ArrayList<RenderLocation>() {{
 		add(new RenderLocation(20, 20));
 		add(new RenderLocation(40, 20));
