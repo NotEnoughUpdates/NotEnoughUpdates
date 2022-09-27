@@ -37,20 +37,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -130,28 +126,36 @@ public class ApiUtil {
 		public CompletableFuture<String> requestString() {
 			return buildUrl().thenApplyAsync(url -> {
 				try {
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					if (conn instanceof HttpsURLConnection && ctx != null) {
-						HttpsURLConnection sslConn = (HttpsURLConnection) conn;
-						sslConn.setSSLSocketFactory(ctx.getSocketFactory());
+					InputStream inputStream = null;
+					try {
+						URLConnection conn = url.openConnection();
+						if (conn instanceof HttpsURLConnection && ctx != null) {
+							HttpsURLConnection sslConn = (HttpsURLConnection) conn;
+							sslConn.setSSLSocketFactory(ctx.getSocketFactory());
+						}
+						if (conn instanceof HttpURLConnection) {
+							((HttpURLConnection) conn).setRequestMethod(method);
+						}
+						conn.setConnectTimeout(10000);
+						conn.setReadTimeout(10000);
+						conn.setRequestProperty("User-Agent", USER_AGENT);
+
+						inputStream = conn.getInputStream();
+
+						if (shouldGunzip) {
+							inputStream = new GZIPInputStream(inputStream);
+						}
+
+						// While the assumption of UTF8 isn't always true; it *should* always be true.
+						// Not in the sense that this will hold in most cases (although that as well),
+						// but in the sense that any violation of this better have a good reason.
+						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+					} finally {
+						if (inputStream != null) {
+							inputStream.close();
+						}
 					}
-					conn.setConnectTimeout(10000);
-					conn.setReadTimeout(10000);
-					conn.setRequestProperty("User-Agent", USER_AGENT);
-					conn.setRequestMethod(method);
-
-					InputStream inputStream = conn.getInputStream();
-
-					if (shouldGunzip) {
-						inputStream = new GZIPInputStream(inputStream);
-					}
-
-					// While the assumption of UTF8 isn't always true; it *should* always be true.
-					// Not in the sense that this will hold in most cases (although that as well),
-					// but in the sense that any violation of this better have a good reason.
-					return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 				} catch (IOException e) {
-					e.printStackTrace();
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
 			}, executorService);
