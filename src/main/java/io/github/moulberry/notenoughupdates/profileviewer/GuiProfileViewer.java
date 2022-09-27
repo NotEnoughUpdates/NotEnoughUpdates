@@ -55,7 +55,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -166,7 +165,9 @@ public class GuiProfileViewer extends GuiScreen {
 				NotEnoughUpdates.INSTANCE.config.profileViewer.showPronounsInPv
 					? Optional.ofNullable(profile).map(it -> Utils.parseDashlessUUID(it.getUuid()))
 					: Optional.<UUID>empty(),
-			uuid -> CompletableFuture.supplyAsync(() -> uuid.flatMap(PronounDB::getPronounsFor))
+			uuid -> uuid.isPresent()
+				? PronounDB.getPronounsFor(uuid.get())
+				: CompletableFuture.completedFuture(Optional.empty())
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
