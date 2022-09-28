@@ -49,8 +49,13 @@ public abstract class TextTabOverlay extends TextOverlay {
 	public void realTick() {
 		shouldUpdateOverlay = shouldUpdate();
 		if (shouldUpdateOverlay) {
-			boolean currentTabState =
-				Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode());
+			int keycode = Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode();
+			boolean currentTabState;
+			if (keycode > 0) {
+				currentTabState = Keyboard.isKeyDown(keycode);
+			} else {
+				currentTabState = false;
+			}
 			if (lastTabState != currentTabState) {
 				lastTabState = currentTabState;
 				update();
