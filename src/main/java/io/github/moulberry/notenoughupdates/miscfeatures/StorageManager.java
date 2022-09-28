@@ -294,7 +294,7 @@ public class StorageManager {
 
 	private boolean shouldRenderStorageOverlayCached = false;
 
-	private static final Pattern WINDOW_REGEX = Pattern.compile(".+ Backpack (?:\u2726 )?\\((\\d+)/(\\d+)\\)");
+	private static final Pattern WINDOW_REGEX = Pattern.compile(".+ Backpack (?:✦ )?\\(Slot #(\\d+)\\)");
 	private static final Pattern ECHEST_WINDOW_REGEX = Pattern.compile("Ender Chest \\((\\d+)/(\\d+)\\)");
 
 	public void loadConfig(File file) {
