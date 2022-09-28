@@ -17,23 +17,21 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.mixins;
+package io.github.moulberry.notenoughupdates.miscgui.hex;
 
-import net.minecraftforge.event.world.WorldEvent;
-import org.spongepowered.asm.mixin.Dynamic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+enum EnchantState {
+	NO_ITEM,
+	ADDING_ENCHANT,
+	SWITCHING_DONT_UPDATE,
+	INVALID_ITEM,
+	HAS_ITEM,
+	HAS_ITEM_IN_HEX,
+	HAS_ITEM_IN_BOOKS,
+	ADDING_BOOK,
+	NO_ITEM_IN_HEX,
+	INVALID_ITEM_HEX,
+	HAS_ITEM_IN_GEMSTONE,
+	ADDING_GEMSTONE,
+	APPLYING_GEMSTONE
 
-@Pseudo
-@Mixin(targets = "co.skyclient.scc.SkyclientCosmetics")
-public class MixinSkyclientCosmetics {
-
-	@Dynamic
-	@Inject(method = "onWorldLoad", at = @At("HEAD"), cancellable = true, remap = false)
-	public void onWorldLoad(WorldEvent.Load event, CallbackInfo ci) {
-		ci.cancel();
-	}
 }

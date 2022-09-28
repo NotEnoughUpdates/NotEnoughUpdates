@@ -271,17 +271,21 @@ public class GuiEnchantColour extends GuiScreen {
 		}
 
 		if (mouseX >= guiLeft + xSize + 3 && mouseX < guiLeft + xSize + 39) {
+			boolean renderingTooltip = false;
+
 			if (mouseY >= guiTopSidebar - 34 && mouseY <= guiTopSidebar - 18 && maxedBookFound == 1) {
 				tooltipToDisplay = maxedBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
 				tooltipToDisplay = null;
+				renderingTooltip = true;
 			}
-			if (mouseY >= guiTopSidebar - 52 && mouseY <= guiTopSidebar - 34 && maxedAttBookFound == 1) {
+			if (mouseY >= guiTopSidebar - 52 && mouseY <= guiTopSidebar - 34 && maxedAttBookFound == 1 && !renderingTooltip) {
 				tooltipToDisplay = maxedAttBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
 				tooltipToDisplay = null;
+				renderingTooltip = true;
 			}
-			if (mouseY >= guiTopSidebar - 18 && mouseY <= guiTopSidebar - 2) {
+			if (mouseY >= guiTopSidebar - 18 && mouseY <= guiTopSidebar - 2 && !renderingTooltip) {
 				tooltipToDisplay = Lists.newArrayList(
 					EnumChatFormatting.AQUA + "NEUEC Colouring Guide",
 					EnumChatFormatting.GREEN + "",

@@ -342,8 +342,9 @@ public class EnchantingSolvers {
 
 						if (chronomatronReplayIndex < chronomatronOrder.size()) {
 							String chronomatronCurrent = chronomatronOrder.get(chronomatronReplayIndex);
-							if (!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
-								chronomatronCurrent.equals(displayName) || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT) {
+							if ((!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
+								chronomatronCurrent.equals(displayName) || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT) &&
+								stack.getItem() != Item.getItemFromBlock(Blocks.stained_glass_pane) && slotId != 4 && slotId != 49) {
 								chronomatronReplayIndex++;
 								Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
 									2, mode, Minecraft.getMinecraft().thePlayer
@@ -374,7 +375,7 @@ public class EnchantingSolvers {
 						long currentTime = System.currentTimeMillis();
 						if (currentTime - millisLastClick > 150 &&
 							(!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.preventMisclicks1 ||
-								current.containerIndex == slotId || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT)) {
+								current.containerIndex == slotId || Keyboard.getEventKey() == Keyboard.KEY_LSHIFT) && (slotId < 45 && slotId > 8)) {
 							ultrasequencerReplayIndex++;
 							Minecraft.getMinecraft().playerController.windowClick(windowId, slotId,
 								2, mode, Minecraft.getMinecraft().thePlayer

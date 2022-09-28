@@ -57,7 +57,9 @@ public class DevTestCommand extends ClientCommandBase {
 			"dediamondpro",
 			"lulonaut",
 			"craftyoldminer",
-			"eisengolem"
+			"eisengolem",
+			"whalker",
+			"ascynx"
 		);
 
 	private static final String[] DEV_FAIL_STRINGS = {

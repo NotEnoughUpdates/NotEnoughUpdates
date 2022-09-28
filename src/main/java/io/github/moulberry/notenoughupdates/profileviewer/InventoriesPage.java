@@ -240,28 +240,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		if (currentInventoryIndex < 0) currentInventoryIndex = 0;
 
 		ItemStack[][] inventory = inventories[currentInventoryIndex];
-		if (inventory == null) {
-			if (selectedInventory.equalsIgnoreCase("personal_vault_contents")) {
-				Utils.drawStringCentered(
-					EnumChatFormatting.RED + "Personal Vault API not enabled!",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 317,
-					guiTop + 101,
-					true,
-					0
-				);
-			} else {
-				Utils.drawStringCentered(
-					EnumChatFormatting.RED + "Inventory API not enabled!",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 317,
-					guiTop + 101,
-					true,
-					0
-				);
-			}
-			return;
-		}
 
 		if (bestWeapons == null) {
 			bestWeapons =
@@ -361,6 +339,32 @@ public class InventoriesPage extends GuiProfileViewerPage {
 						);
 				}
 			}
+		}
+
+		if (inventory == null) {
+			String strToRender = "Inventory API not enabled!";
+			if (selectedInventory.equalsIgnoreCase("personal_vault_contents")) {
+				strToRender = "Personal Vault API not enabled!";
+			} else if (selectedInventory.equalsIgnoreCase("backpack_contents")) {
+				strToRender = "Inventory API not enabled";
+				Utils.drawStringCentered(
+					EnumChatFormatting.RED + "Or has no backpacks!",
+					Minecraft.getMinecraft().fontRendererObj,
+					guiLeft + 317,
+					guiTop + 112,
+					true,
+					0
+				);
+			}
+			Utils.drawStringCentered(
+				EnumChatFormatting.RED + strToRender,
+				Minecraft.getMinecraft().fontRendererObj,
+				guiLeft + 317,
+				guiTop + 101,
+				true,
+				0
+			);
+			return;
 		}
 
 		int inventoryRows = inventory.length;

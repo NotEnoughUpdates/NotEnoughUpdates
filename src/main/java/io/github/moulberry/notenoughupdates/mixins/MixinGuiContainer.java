@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
+import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
@@ -31,6 +32,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -96,7 +98,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
 						String displayName = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
-						if (tagName.equals(displayName.substring(displayName.length() - tagName.length()))) {
+						if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(displayName.length() - tagName.length()))) {
 							ci.cancel();
 
 							this.zLevel = 100.0F;
@@ -189,6 +191,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	public void isMouseOverSlot(Slot slotIn, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
 		StorageOverlay.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		GuiCustomEnchant.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
+		GuiCustomHex.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AuctionBINWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AbiphoneWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 	}
@@ -308,6 +311,11 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		}
 
 		if (AbiphoneWarning.getInstance().onMouseClick(slotIn, slotId, clickedButton, clickType)) {
+			ci.cancel();
+			return;
+		}
+
+		if (AntiCoopAdd.onMouseClick(slotIn, slotId, clickedButton, clickType)) {
 			ci.cancel();
 			return;
 		}

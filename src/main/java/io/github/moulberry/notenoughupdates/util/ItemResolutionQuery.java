@@ -19,10 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
-import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -37,6 +38,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,6 +138,13 @@ public class ItemResolutionQuery {
 		return manager.jsonToStack(jsonObject);
 	}
 
+	@Nullable
+	public ItemStack resolveToItemStack(boolean useReplacements) {
+		JsonObject jsonObject = resolveToItemListJson();
+		if (jsonObject == null) return null;
+		return manager.jsonToStack(jsonObject, false, useReplacements);
+	}
+
 	// <editor-fold desc="Resolution Helpers">
 	private boolean isBazaar(IInventory chest) {
 		if (chest.getDisplayName().getFormattedText().startsWith("Bazaar ➜ ")) {
@@ -170,6 +179,40 @@ public class ItemResolutionQuery {
 			}
 			return null;
 		}
+		if (guiName.equals("Catacombs RNG Meter")) {
+			return resolveItemInCatacombsRngMeter();
+		}
+		return null;
+	}
+
+	private String resolveItemInCatacombsRngMeter() {
+		List<String> lore = ItemUtils.getLore(compound);
+		if (lore.size() > 16) {
+			String s = lore.get(15);
+			if (s.equals("§7Selected Drop")) {
+				String displayName = lore.get(16);
+				return getInternalNameByDisplayName(displayName);
+			}
+		}
+
+		return null;
+	}
+
+	private String getInternalNameByDisplayName(String displayName) {
+		String cleanDisplayName = StringUtils.cleanColour(displayName);
+		for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
+			.getItemInformation()
+			.entrySet()) {
+
+			JsonObject object = entry.getValue();
+			if (object.has("displayname")) {
+				String name = object.get("displayname").getAsString();
+				if (StringUtils.cleanColour(name).equals(cleanDisplayName)) {
+					return entry.getKey();
+				}
+			}
+		}
+
 		return null;
 	}
 
