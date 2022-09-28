@@ -127,8 +127,9 @@ public class ApiUtil {
 			return buildUrl().thenApplyAsync(url -> {
 				try {
 					InputStream inputStream = null;
+					URLConnection conn = null;
 					try {
-						URLConnection conn = url.openConnection();
+						conn = url.openConnection();
 						if (conn instanceof HttpsURLConnection && ctx != null) {
 							HttpsURLConnection sslConn = (HttpsURLConnection) conn;
 							sslConn.setSSLSocketFactory(ctx.getSocketFactory());
@@ -151,8 +152,14 @@ public class ApiUtil {
 						// but in the sense that any violation of this better have a good reason.
 						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 					} finally {
-						if (inputStream != null) {
-							inputStream.close();
+						try {
+							if (inputStream != null) {
+								inputStream.close();
+							}
+						} finally {
+							if (conn instanceof HttpURLConnection) {
+								((HttpURLConnection) conn).disconnect();
+							}
 						}
 					}
 				} catch (IOException e) {
