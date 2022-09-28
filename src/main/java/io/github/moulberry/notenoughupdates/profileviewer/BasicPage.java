@@ -327,7 +327,7 @@ public class BasicPage extends GuiProfileViewerPage {
 					GameProfile fakeProfile = Minecraft
 						.getMinecraft()
 						.getSessionService()
-						.fillProfileProperties(new GameProfile(playerUUID, "CoolGuy123"), false);
+						.fillProfileProperties(new GameProfile(playerUUID, "HackedPlayer42"), false);
 					entityPlayer =
 						new EntityOtherPlayerMP(Minecraft.getMinecraft().theWorld, fakeProfile) {
 							public ResourceLocation getLocationSkin() {
