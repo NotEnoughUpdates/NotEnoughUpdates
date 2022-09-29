@@ -887,12 +887,12 @@ public class ProfileViewer {
 								}
 
 								String cuteName = profile.get("cute_name").getAsString();
+								profileNames.add(cuteName);
 								if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
 									lastCuteName = cuteName;
 									break;
 								}
 								if (lastCuteName == null) lastCuteName = cuteName;
-								profileNames.add(cuteName);
 								if (member.has("last_save")) {
 									long lastSave = member.get("last_save").getAsLong();
 									if (lastSave > lastLastSave) {
