@@ -699,7 +699,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							EnumChatFormatting.GRAY + "Level " + potm + EnumChatFormatting.DARK_GRAY + "/7",
 							"",
 							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "50000 Mithril Powder"
+							EnumChatFormatting.DARK_GREEN + "50,000 Mithril Powder"
 						);
 					case 1:
 						return Lists.newArrayList(
@@ -710,7 +710,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"§7§8+§51 Token of the Mountain",
 							"",
 							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "50000 Mithril Powder"
+							EnumChatFormatting.DARK_GREEN + "50,000 Mithril Powder"
 						);
 					case 2:
 						return Lists.newArrayList(
@@ -722,7 +722,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"§7§8+§a1 Forge Slot",
 							"",
 							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "75000 Mithril Powder"
+							EnumChatFormatting.DARK_GREEN + "75,000 Mithril Powder"
 						);
 					case 3:
 						return Lists.newArrayList(
@@ -735,7 +735,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"§7§8+§a1 Commission Slot",
 							"",
 							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "100000 Mithril Powder"
+							EnumChatFormatting.DARK_GREEN + "100,000 Mithril Powder"
 						);
 					case 4:
 						return Lists.newArrayList(
@@ -750,7 +750,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"§7mining §fMithril",
 							"",
 							EnumChatFormatting.GRAY + "Cost",
-							EnumChatFormatting.DARK_GREEN + "125000 Mithril Powder"
+							EnumChatFormatting.DARK_GREEN + "125,000 Mithril Powder"
 						);
 					case 5:
 						return Lists.newArrayList(
@@ -766,7 +766,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"§7§8+§51 Token of the Mountain",
 							"",
 							"§7Cost",
-							"§d500000 Gemstone Powder"
+							"§d500,000 Gemstone Powder"
 						);
 					case 6:
 						return Lists.newArrayList(
@@ -784,7 +784,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"§7mining §dGemstones",
 							"",
 							"§7Cost",
-							"§d750000 Gemstone Powder"
+							"§d750,000 Gemstone Powder"
 						);
 					case 7:
 						return Lists.newArrayList(
