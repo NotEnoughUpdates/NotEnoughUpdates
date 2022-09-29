@@ -55,7 +55,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -458,7 +457,7 @@ public class GuiProfileViewer extends GuiScreen {
 					new Color(63, 224, 208, 255).getRGB()
 				);
 
-				if (profileDropdownSelected && !profile.getProfileNames().isEmpty() && scaledResolution.getScaleFactor() != 4) {
+				if (profileDropdownSelected && !profile.getProfileNames().isEmpty() && scaledResolution.getScaleFactor() < 4) {
 					int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
 
 					int numProfiles = profile.getProfileNames().size();
@@ -912,7 +911,7 @@ public class GuiProfileViewer extends GuiScreen {
 		if (mouseX > guiLeft && mouseX < guiLeft + 100 && profile != null && !profile.getProfileNames().isEmpty()) {
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				if (scaledResolution.getScaleFactor() == 4) {
+				if (scaledResolution.getScaleFactor() >= 4) {
 					profileDropdownSelected = false;
 					int profileNum = 0;
 					for (int index = 0; index < profile.getProfileNames().size(); index++) {
@@ -937,7 +936,7 @@ public class GuiProfileViewer extends GuiScreen {
 				} else {
 					profileDropdownSelected = !profileDropdownSelected;
 				}
-			} else if (scaledResolution.getScaleFactor() != 4 && profileDropdownSelected) {
+			} else if (scaledResolution.getScaleFactor() < 4 && profileDropdownSelected) {
 				int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
 				int extraY = mouseY - (guiTop + sizeY + 23);
 				int index = extraY / dropdownOptionSize;
