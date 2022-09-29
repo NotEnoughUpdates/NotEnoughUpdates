@@ -284,4 +284,12 @@ public class StorageGUI {
 	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_DOWN)
 	@ConfigAccordionId(id = 2)
 	public int arrowDownKey = Keyboard.KEY_DOWN;
+
+
+	@Expose
+	@ConfigOption(
+		name = "Fix SBA's backpack preview",
+		desc = "Fixes backpack preview not working in SBA <= 1.7"
+	)
+	public boolean fixSBABackpack = true;
 }
