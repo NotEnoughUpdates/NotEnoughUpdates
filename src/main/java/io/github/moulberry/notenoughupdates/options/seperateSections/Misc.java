@@ -237,4 +237,16 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean coopWarning = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Filter Skyblock Levels in Chat",
+		desc = "Requires the \"SkyBlock Levels in Chat\" skyblock setting to be on"
+	)
+	@ConfigEditorSlider(
+		minValue = 0,
+		maxValue = 300,
+		minStep = 10
+	)
+	public int filterChatLevel = 0;
+
 }

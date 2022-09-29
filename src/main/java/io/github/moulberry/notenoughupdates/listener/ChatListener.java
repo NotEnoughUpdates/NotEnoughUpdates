@@ -53,6 +53,8 @@ public class ChatListener {
 	private final NotEnoughUpdates neu;
 	private static final Pattern SLAYER_XP = Pattern.compile(
 		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
+
+	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,3})\\] .*");
 	AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
@@ -254,5 +256,11 @@ public class ChatListener {
 			unformatted.startsWith("  ") || unformatted.startsWith("✦") || unformatted.equals(
 			"  You've earned a Crystal Loot Bundle!"))
 			OverlayManager.crystalHollowOverlay.message(unformatted);
+		Matcher LvlMatcher = SKYBLOCK_LVL_MESSAGE.matcher(unformatted);
+		if (LvlMatcher.matches()) {
+			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel && NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
+				e.setCanceled(true);
+			}
+		}
 	}
 }
