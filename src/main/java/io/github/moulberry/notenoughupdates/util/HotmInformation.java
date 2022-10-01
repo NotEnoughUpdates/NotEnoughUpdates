@@ -169,9 +169,11 @@ public class HotmInformation {
 	}
 	@SubscribeEvent
 	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
-		JsonObject entireApiResponse = event.getData();
-		if (!entireApiResponse.has("success") || !entireApiResponse.get("success").getAsBoolean()) return;
-		JsonArray profiles = entireApiResponse.getAsJsonArray("profiles");
+		JsonObject data = event.getData();
+		if (data == null) return;
+
+		if (!data.has("success") || !data.get("success").getAsBoolean()) return;
+		JsonArray profiles = data.getAsJsonArray("profiles");
 		for (JsonElement element : profiles) {
 			JsonObject profile = element.getAsJsonObject();
 			String profileName = profile.get("cute_name").getAsString();
