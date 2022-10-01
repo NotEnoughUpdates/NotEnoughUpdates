@@ -92,7 +92,7 @@ public class MinionHelperApiLoader {
 		String uuid = getUuid();
 		if (uuid == null) return;
 
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.updateProfileData(uuid);
+		NotEnoughUpdates.INSTANCE.manager.apiUtils.updateProfileData(uuid);
 	}
 
 	private String getUuid() {
