@@ -428,11 +428,10 @@ public class SBInfo {
 	}
 
 	public void updateMayor() {
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"resources/skyblock/election",
-			new HashMap<>()
-		).thenAcceptAsync(newJson -> mayorJson = newJson);
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("resources/skyblock/election")
+			.requestJson()
+			.thenAccept(newJson -> mayorJson = newJson);
 	}
 
 

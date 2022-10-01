@@ -404,21 +404,14 @@ public class GuiCosmetics extends GuiScreen {
 								.getSession()
 								.getProfile(), accessToken, serverId);
 
-							if (wantToEquipCape == null) {
-								NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync(
-									"cgi-bin/changecape.py?capeType=null&serverId=" +
-										serverId + "&username=" + userName,
-									System.out::println,
-									() -> System.out.println("Change cape error")
-								);
-							} else {
-								NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync(
-									"cgi-bin/changecape.py?capeType=" + wantToEquipCape + "&serverId=" +
-										serverId + "&username=" + userName,
-									System.out::println,
-									() -> System.out.println("Change cape error")
-								);
-							}
+							String toEquipName = wantToEquipCape == null ? "null" : wantToEquipCape;
+							NotEnoughUpdates.INSTANCE.manager.apiUtils
+								.newMoulberryRequest("cgi-bin/changecape.py")
+								.queryArgument("capeType", toEquipName)
+								.queryArgument("serverId", serverId)
+								.queryArgument("username", userName)
+								.requestString()
+								.thenAccept(System.out::println);
 						} catch (Exception e) {
 							System.out.println("Exception while generating mojang shared secret");
 							e.printStackTrace();
