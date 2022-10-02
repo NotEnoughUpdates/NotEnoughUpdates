@@ -1075,9 +1075,13 @@ public class PetInfoOverlay extends TextOverlay {
 
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-							EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
-								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
+						if (!"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
+							PetInfoOverlay.config.selectedPet = -1;
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
+									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+						}
 					}
 				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
 					"switching to profile"))
