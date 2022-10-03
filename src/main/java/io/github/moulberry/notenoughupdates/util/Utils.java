@@ -116,7 +116,6 @@ public class Utils {
 		"VERY SPECIAL",
 		"SUPREME",
 		"^^ THAT ONE IS DIVINE ^^"
-//, "DIVINE"
 	};
 	public static String[] rarityArrC = new String[]{
 		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
@@ -128,8 +127,6 @@ public class Utils {
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
 		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		//EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
 	};
 	public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
 		put("COMMON", rarityArrC[0]);
@@ -141,7 +138,6 @@ public class Utils {
 		put("SPECIAL", rarityArrC[6]);
 		put("VERY SPECIAL", rarityArrC[7]);
 		put("DIVINE", rarityArrC[8]);
-		// put("DIVINE", rarityArrC[9]);
 	}};
 	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
 	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
@@ -1227,7 +1223,6 @@ public class Utils {
 		while ((lines++ < maxLines) || maxLines < 0) {
 			if (trimmed.length() == str.length()) {
 				drawStringScaled(trimmed, fr, x, y + yOff, shadow, colour, scale);
-				//fr.drawString(trimmed, x, y + yOff, colour, shadow);
 				break;
 			} else if (trimmed.isEmpty()) {
 				yOff -= 12 * scale;
