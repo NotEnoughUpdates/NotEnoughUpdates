@@ -17,28 +17,22 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util;
+package io.github.moulberry.notenoughupdates.miscfeatures.killswitch;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
+import io.github.moulberry.notenoughupdates.util.DelayedChatSender;
+import net.minecraft.util.ChatComponentText;
 
-import java.util.concurrent.Executor;
+public class FeedbackDirective
+	implements KillswitchDirective {
+	private String string;
 
-public class MinecraftExecutor implements Executor {
-
-	public static MinecraftExecutor INSTANCE = new MinecraftExecutor();
-
-	private MinecraftExecutor() {}
+	public FeedbackDirective(String string) {
+		this.string = string;
+	}
 
 	@Override
-	public void execute(@NotNull Runnable runnable) {
-		Minecraft.getMinecraft().addScheduledTask(() -> {
-			try {
-				runnable.run();
-			} catch (Throwable t) {
-				NotEnoughUpdates.LOGGER.error("Unexpected error in NEU main thread execution", t);
-			}
-		});
+	public boolean matches() {
+		DelayedChatSender.sendChatMessage(new ChatComponentText(string));
+		return true;
 	}
 }

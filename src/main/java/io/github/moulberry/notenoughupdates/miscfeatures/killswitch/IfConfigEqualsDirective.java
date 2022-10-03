@@ -17,28 +17,24 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util;
+package io.github.moulberry.notenoughupdates.miscfeatures.killswitch;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
+import com.google.gson.JsonElement;
 
-import java.util.concurrent.Executor;
+import java.util.Objects;
 
-public class MinecraftExecutor implements Executor {
+public class IfConfigEqualsDirective extends ConfigDirective {
+	private final JsonElement expected;
 
-	public static MinecraftExecutor INSTANCE = new MinecraftExecutor();
-
-	private MinecraftExecutor() {}
+	public IfConfigEqualsDirective(String path, JsonElement expected) {
+		super(path);
+		this.expected = expected;
+	}
 
 	@Override
-	public void execute(@NotNull Runnable runnable) {
-		Minecraft.getMinecraft().addScheduledTask(() -> {
-			try {
-				runnable.run();
-			} catch (Throwable t) {
-				NotEnoughUpdates.LOGGER.error("Unexpected error in NEU main thread execution", t);
-			}
-		});
+	public boolean matches() {
+		return getShimmy().map(shimmy ->
+			Objects.equals(shimmy.getJson(), expected)
+		).orElse(false);
 	}
 }

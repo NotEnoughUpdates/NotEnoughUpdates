@@ -59,6 +59,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.killswitch.Killswitch;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
@@ -72,6 +73,7 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.DelayedChatSender;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
@@ -260,6 +262,7 @@ public class NotEnoughUpdates {
 		}
 
 		MinecraftForge.EVENT_BUS.register(this);
+		MinecraftForge.EVENT_BUS.register(new DelayedChatSender());
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
 		MinecraftForge.EVENT_BUS.register(CapeManager.getInstance());
@@ -332,9 +335,11 @@ public class NotEnoughUpdates {
 				tmp.delete();
 			}
 		}));
+		Killswitch.initializeKillswitches();
 	}
 
 	public void saveConfig() {
+		Killswitch.runKillswitchChains();
 		try {
 			configFile.createNewFile();
 

@@ -17,28 +17,25 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util;
+package io.github.moulberry.notenoughupdates.miscfeatures.killswitch;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import java.util.concurrent.Executor;
+import javax.swing.*;
 
-public class MinecraftExecutor implements Executor {
+public class CrashDirective
+	implements KillswitchDirective {
+	public final String message;
 
-	public static MinecraftExecutor INSTANCE = new MinecraftExecutor();
-
-	private MinecraftExecutor() {}
+	public CrashDirective(String message) {this.message = message;}
 
 	@Override
-	public void execute(@NotNull Runnable runnable) {
-		Minecraft.getMinecraft().addScheduledTask(() -> {
-			try {
-				runnable.run();
-			} catch (Throwable t) {
-				NotEnoughUpdates.LOGGER.error("Unexpected error in NEU main thread execution", t);
-			}
-		});
+	public boolean matches() {
+		JOptionPane.showMessageDialog(null, message, "NEU Shutdown", JOptionPane.ERROR_MESSAGE);
+		NotEnoughUpdates.LOGGER.fatal("NEU has to crash due to a killswitch: " + message);
+		FMLCommonHandler.instance().exitJava(1, false);
+		System.exit(1);
+		return false;
 	}
 }

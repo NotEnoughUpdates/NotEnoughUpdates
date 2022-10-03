@@ -17,28 +17,23 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util;
+package io.github.moulberry.notenoughupdates.miscfeatures.killswitch;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Executor;
+import java.util.Optional;
 
-public class MinecraftExecutor implements Executor {
+public abstract class ConfigDirective implements KillswitchDirective {
+	final String path;
 
-	public static MinecraftExecutor INSTANCE = new MinecraftExecutor();
+	protected ConfigDirective(String path) {this.path = path;}
 
-	private MinecraftExecutor() {}
-
-	@Override
-	public void execute(@NotNull Runnable runnable) {
-		Minecraft.getMinecraft().addScheduledTask(() -> {
-			try {
-				runnable.run();
-			} catch (Throwable t) {
-				NotEnoughUpdates.LOGGER.error("Unexpected error in NEU main thread execution", t);
-			}
-		});
+	protected Optional<Shimmy> getShimmy() {
+		NotEnoughUpdates instance = NotEnoughUpdates.INSTANCE;
+		if (instance == null) {
+			return Optional.empty();
+		}
+		return Shimmy.of(instance.config, path.split("\\."));
 	}
+
 }
