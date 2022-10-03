@@ -274,7 +274,7 @@ public class ItemResolutionQuery {
 	private String resolveFromSkyblock() {
 		String internalName = getExtraAttributes().getString("id");
 		if (internalName == null || internalName.isEmpty()) return null;
-		return internalName.toUpperCase(Locale.ROOT);
+		return internalName.toUpperCase(Locale.ROOT).replace(':', '-');
 	}
 
 	// </editor-fold>
