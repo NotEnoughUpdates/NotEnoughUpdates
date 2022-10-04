@@ -39,7 +39,7 @@ public class CosmeticsCommand extends ClientCommandBase {
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.notifications.doFastRenderNotif) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"NEU Cosmetics do not work with Optifine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
+				"NEU Cosmetics do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
 
 		}
 
