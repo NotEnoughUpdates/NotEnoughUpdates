@@ -81,7 +81,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Enable Undercut BIN Warning",
-		desc = "Ask for confirmation when BINing an item for below X% of lowestbin"
+		desc = "Ask for confirmation when BINing an item for below X% of lowest bin"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
@@ -90,7 +90,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Enable Overcut BIN Warning",
-		desc = "Ask for confirmation when BINing an item for over X% of lowestbin"
+		desc = "Ask for confirmation when BINing an item for over X% of lowest bin"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
