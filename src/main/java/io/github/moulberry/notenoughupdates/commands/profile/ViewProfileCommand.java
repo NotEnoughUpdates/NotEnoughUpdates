@@ -39,7 +39,7 @@ public class ViewProfileCommand extends ClientCommandBase {
 	public static final Consumer<String[]> RUNNABLE = (args) -> {
 		if (!OpenGlHelper.isFramebufferEnabled()) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"Some parts of the profile viewer do not work with Optifine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
+				"Some parts of the profile viewer do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
 
 		}
 		if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
