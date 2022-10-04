@@ -68,7 +68,7 @@ public class PeekCommand extends ClientCommandBase {
 		NotEnoughUpdates.profileViewer.getProfileByName(name, profile -> {
 			if (profile == null) {
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-					EnumChatFormatting.RED + "[PEEK] Unknown player or the api is down."), id);
+					EnumChatFormatting.RED + "[PEEK] Unknown player or the Hypixel API is down."), id);
 			} else {
 				profile.resetCache();
 
@@ -78,7 +78,7 @@ public class PeekCommand extends ClientCommandBase {
 
 				if (peekScheduledFuture != null && !peekScheduledFuture.isDone()) {
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one."));
+						EnumChatFormatting.RED + "[PEEK] New peek command was run, cancelling old one."));
 					peekScheduledFuture.cancel(true);
 				}
 
