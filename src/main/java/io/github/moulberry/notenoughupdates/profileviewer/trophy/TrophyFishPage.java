@@ -360,7 +360,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.SILVER, EnumChatFormatting.GRAY));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.BRONZE, EnumChatFormatting.DARK_GRAY));
 		tooltip.add(" ");
-		tooltip.add(EnumChatFormatting.GRAY + "Total: " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format((trophyFishList.get(name).getTotal())));
+		tooltip.add(EnumChatFormatting.GRAY + "Total: " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishList.get(name).getTotal()));
 		return tooltip;
 	}
 
