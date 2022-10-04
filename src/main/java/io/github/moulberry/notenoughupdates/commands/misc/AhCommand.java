@@ -43,7 +43,7 @@ public class AhCommand extends ClientCommandBase {
 		} else if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey.trim().isEmpty()) {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"Can't open NeuAH, apikey is not set. Run /api new and put the result in settings."));
+				"Can't open NEU AH: an api key is not set. Run /api new and put the result in settings."));
 		} else {
 			NotEnoughUpdates.INSTANCE.openGui = new CustomAHGui();
 			NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.lastOpen = System.currentTimeMillis();
