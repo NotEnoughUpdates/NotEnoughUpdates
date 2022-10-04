@@ -201,7 +201,6 @@ public class ChatListener {
 		} else if (unformatted.startsWith("   RNG Meter")) {
 			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {
-			//matcher.group(1);
 			SlayerOverlay.slayerLVL = matcher.group(2);
 			if (!SlayerOverlay.slayerLVL.equals("9")) {
 				SlayerOverlay.slayerXp = matcher.group(3);
