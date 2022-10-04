@@ -70,7 +70,7 @@ public class UpdateCommand extends ClientCommandBase {
 				break;
 			case "url":
 				if (args.length != 2) {
-					sender.addChatMessage(new ChatComponentText("§e[NEU] §cPlease provide an URL"));
+					sender.addChatMessage(new ChatComponentText("§e[NEU] §cPlease provide a URL"));
 				}
 				URL url;
 				try {
@@ -86,7 +86,7 @@ public class UpdateCommand extends ClientCommandBase {
 				neu.autoUpdater.scheduleDownload();
 				break;
 			case "updatemodes":
-				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for autoupdates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
+				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
 				break;
 			default:
 				displayHelp(sender);
