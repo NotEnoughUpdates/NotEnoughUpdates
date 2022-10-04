@@ -361,10 +361,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			BetterContainers.isButtonStack(slotIn.slotNumber, slotIn.getStack()))) {
 			BetterContainers.clickSlot(slotIn.getSlotIndex());
 
-			if (BetterContainers.isBlankStack(slotIn.slotNumber, slotIn.getStack())) {
-				$this.mc.playerController.windowClick($this.inventorySlots.windowId, slotId, 2, clickType, $this.mc.thePlayer);
-				ci.cancel();
-			} else {
+			if (!BetterContainers.isBlankStack(slotIn.slotNumber, slotIn.getStack())) {
 				Utils.playPressSound();
 			}
 		}
