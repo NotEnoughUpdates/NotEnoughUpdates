@@ -113,7 +113,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Set;
 
-@Mod(modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true)
+@Mod(
+	modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true, useMetadata = true,
+	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
 	public static final String VERSION = "2.1.0-REL";
