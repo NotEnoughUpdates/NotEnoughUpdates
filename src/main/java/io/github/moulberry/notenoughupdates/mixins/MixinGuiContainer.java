@@ -361,7 +361,14 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			BetterContainers.isButtonStack(slotIn.slotNumber, slotIn.getStack()))) {
 			BetterContainers.clickSlot(slotIn.getSlotIndex());
 
-			if (!BetterContainers.isBlankStack(slotIn.slotNumber, slotIn.getStack())) {
+			if (BetterContainers.isBlankStack(slotIn.slotNumber, slotIn.getStack())) {
+				GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+				Minecraft.getMinecraft().playerController.windowClick(
+					chest.inventorySlots.windowId,
+					slotId, 2, 3, Minecraft.getMinecraft().thePlayer
+				);
+				ci.cancel();
+			} else {
 				Utils.playPressSound();
 			}
 		}
