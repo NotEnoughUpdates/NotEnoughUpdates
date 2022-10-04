@@ -28,7 +28,7 @@ public class Calendar {
 	@Expose
 	@ConfigOption(
 		name = "Event Notifications",
-		desc = "Display notifications for skyblock calendar events"
+		desc = "Display notifications for SkyBlock calendar events"
 	)
 	@ConfigEditorBoolean
 	public boolean eventNotifications = true;

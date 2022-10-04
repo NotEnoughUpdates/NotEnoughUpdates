@@ -271,7 +271,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							getInstance().tooltipToDisplay.add(
 								EnumChatFormatting.RED + "is where we get the amount of IRL money you");
 							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "theoretically have on skyblock in net worth.");
+								EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
 						} else {
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
 						}

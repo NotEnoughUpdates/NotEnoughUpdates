@@ -83,7 +83,7 @@ public class PeekCommand extends ClientCommandBase {
 				}
 
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
+					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's SkyBlock profile(s)..."), id);
 
 				long startTime = System.currentTimeMillis();
 				peekScheduledFuture = peekCommandExecutorService.schedule(new Runnable() {
@@ -287,7 +287,7 @@ public class PeekCommand extends ClientCommandBase {
 							} else if (overallScore > 2) {
 								overall = EnumChatFormatting.YELLOW + "Ender Non";
 							} else if (overallScore > 1) {
-								overall = EnumChatFormatting.RED + "Played Skyblock";
+								overall = EnumChatFormatting.RED + "Played SkyBlock";
 							}
 
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Overall score: " +

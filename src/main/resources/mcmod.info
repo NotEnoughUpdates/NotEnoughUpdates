@@ -2,7 +2,7 @@
   {
     "modid": "notenoughupdates",
     "name": "NotEnoughUpdates",
-    "description": "Mod that shows recipes and useful info for Hypixel's Skyblock gamemode.",
+    "description": "Mod that shows recipes and useful info for Hypixel's SkyBlock gamemode.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "https://github.com/NotEnoughUpdates/NotEnoughUpdates/",

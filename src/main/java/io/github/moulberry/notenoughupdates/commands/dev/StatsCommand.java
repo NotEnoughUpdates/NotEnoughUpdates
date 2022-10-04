@@ -166,7 +166,7 @@ public class StatsCommand extends ClientCommandBase {
 		builder.append("Forge", ForgeVersion.getVersion());
 		builder.category("Neu Settings");
 		builder.append("API Key", NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isEmpty() ? "FALSE" : "TRUE");
-		builder.append("On Skyblock", NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ? "TRUE" : "FALSE");
+		builder.append("On SkyBlock", NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ? "TRUE" : "FALSE");
 		builder.append(
 			"Mod Version",
 			Loader.instance().getIndexedModList().get(NotEnoughUpdates.MODID).getDisplayVersion()
