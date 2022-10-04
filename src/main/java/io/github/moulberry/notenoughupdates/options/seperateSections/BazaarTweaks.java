@@ -70,12 +70,4 @@ public class BazaarTweaks {
 		@ConfigEditorBoolean
 		@ConfigAccordionId(id = 0)
 		public boolean escFullClose = true;
-
-	@Expose
-	@ConfigOption(
-		name = "Bazaar Sacks Profit",
-		desc = "Orders the items in your sacks in the bazaar inventory and adding buy order toggle"
-	)
-	@ConfigEditorBoolean
-	public boolean bazaarSacksProfit = true;
 }

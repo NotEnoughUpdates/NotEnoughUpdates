@@ -790,11 +790,14 @@ public class PetInfoOverlay extends TextOverlay {
 
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
 		int mythicRarity = currentPet.rarity.petId;
-		if (currentPet.rarity.petId == 5) {
-			mythicRarity = 4;
-		}
 		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
 			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
+
+		if (petItem == null && currentPet.rarity.petId == 5) {
+			petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
+		}
+
 		if (petItem != null) {
 			Vector2f position = getPosition(overlayWidth, overlayHeight);
 			int x = (int) position.x;
@@ -1075,9 +1078,13 @@ public class PetInfoOverlay extends TextOverlay {
 
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-							EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
-								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
+						if (!"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
+							PetInfoOverlay.config.selectedPet = -1;
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
+									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+						}
 					}
 				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
 					"switching to profile"))

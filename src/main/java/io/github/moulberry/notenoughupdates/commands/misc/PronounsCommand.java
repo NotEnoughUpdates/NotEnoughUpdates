@@ -25,7 +25,6 @@ import io.github.moulberry.notenoughupdates.util.MinecraftExecutor;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -75,9 +74,9 @@ public class PronounsCommand extends ClientCommandBase {
 					c.complete(Utils.parseDashlessUUID(uuidString));
 				}
 			});
-			pronouns = c.thenApplyAsync(PronounDB::getPronounsFor);
+			pronouns = c.thenCompose(PronounDB::getPronounsFor);
 		} else {
-			pronouns = CompletableFuture.supplyAsync(() -> PronounDB.getPronounsFor(platform, user));
+			pronouns = PronounDB.getPronounsFor(platform, user);
 		}
 		pronouns.handleAsync((pronounChoice, throwable) -> {
 			if (throwable != null || !pronounChoice.isPresent()) {
@@ -85,7 +84,8 @@ public class PronounsCommand extends ClientCommandBase {
 				return null;
 			}
 			PronounDB.PronounChoice betterPronounChoice = pronounChoice.get();
-			nc.printChatMessageWithOptionalDeletion(new ChatComponentText("§e[NEU] Pronouns for §b" + user + " §eon §b" + platform + "§e:"), id);
+			nc.printChatMessageWithOptionalDeletion(new ChatComponentText(
+				"§e[NEU] Pronouns for §b" + user + " §eon §b" + platform + "§e:"), id);
 			betterPronounChoice.render().forEach(it -> nc.printChatMessage(new ChatComponentText("§e[NEU] §a" + it)));
 			return null;
 		}, MinecraftExecutor.INSTANCE);

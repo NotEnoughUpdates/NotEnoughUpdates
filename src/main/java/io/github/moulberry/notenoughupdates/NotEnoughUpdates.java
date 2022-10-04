@@ -36,7 +36,6 @@ import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
-import io.github.moulberry.notenoughupdates.miscfeatures.BazaarSacksProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
@@ -298,7 +297,6 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
-		MinecraftForge.EVENT_BUS.register(BazaarSacksProfit.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
