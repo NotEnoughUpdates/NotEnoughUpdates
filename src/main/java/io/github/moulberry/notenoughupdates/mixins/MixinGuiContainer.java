@@ -307,7 +307,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		GuiContainer $this = (GuiContainer) (Object) this;
 		SlotClickEvent event = new SlotClickEvent($this, slotIn, slotId, clickedButton, clickType);
 		event.post();
-		System.out.println("Click event post done: "+event.isCanceled());
 		if (event.isCanceled()) {
 			ci.cancel();
 			return;
