@@ -502,6 +502,10 @@ public class SlotLocking {
 			} else {
 				return;
 			}
+			if (from == 39) from = 5;
+			if (from == 38) from = 6;
+			if (from == 37) from = 7;
+			if (from == 36) from = 8;
 			Minecraft.getMinecraft().playerController.windowClick(
 				slotClickEvent.guiContainer.inventorySlots.windowId,
 				from, to, 2, Minecraft.getMinecraft().thePlayer
