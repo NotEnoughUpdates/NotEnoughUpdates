@@ -910,9 +910,11 @@ public class PetInfoOverlay extends TextOverlay {
 					} else {
 						setCurrentPet(newSelected);
 
-						Pet pet = getPetFromStack(event.slot.getStack().getTagCompound());
-						if (pet != null) {
-							config.petMap.put(config.selectedPet, pet);
+						if (event.slot.getStack() != null && event.slot.getStack().getTagCompound() != null) {
+							Pet pet = getPetFromStack(event.slot.getStack().getTagCompound());
+							if (pet != null) {
+								config.petMap.put(config.selectedPet, pet);
+							}
 						}
 					}
 				}
