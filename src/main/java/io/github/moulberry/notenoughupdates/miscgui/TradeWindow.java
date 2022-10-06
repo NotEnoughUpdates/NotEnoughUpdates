@@ -1074,7 +1074,6 @@ public class TradeWindow {
 				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 16) {
 					if (mouseY > guiTop + y && mouseY < guiTop + y + 16) {
 						Slot slot = chest.inventorySlots.getSlotFromInventory(Minecraft.getMinecraft().thePlayer.inventory, index);
-						System.out.println(slot.slotNumber + " " + slot.getStack().getDisplayName());
 						if (!NotEnoughUpdates.INSTANCE.config.slotLocking.lockSlotsInTrade ||
 							!SlotLocking.getInstance().isSlotLocked(slot)) {
 							Minecraft.getMinecraft().playerController.windowClick(
