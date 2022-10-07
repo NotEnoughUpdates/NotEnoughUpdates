@@ -92,25 +92,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 
 		{
-			String lastSaveText = getTimeSinceString(profileInfo, "last_save");
-			if (lastSaveText != null) {
-				Utils.renderAlignedString(
-					EnumChatFormatting.AQUA + "Last Seen",
-					EnumChatFormatting.WHITE + lastSaveText,
-					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * 2,
-					76
-				);
-			}
-		}
-		{
 			String first_join = getTimeSinceString(profileInfo, "first_join");
 			if (first_join != null) {
 				Utils.renderAlignedString(
 					EnumChatFormatting.AQUA + "Joined",
 					EnumChatFormatting.WHITE + first_join,
 					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * 3,
+					guiTop + yStartTop + yOffset * 2,
 					76
 				);
 			}
@@ -123,7 +111,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 					EnumChatFormatting.AQUA + "Guild",
 					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
 					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * 4,
+					guiTop + yStartTop + yOffset * 3,
 					76
 				);
 			}
@@ -133,7 +121,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				EnumChatFormatting.GREEN + "Pronouns",
 				EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
 				guiLeft + xStart,
-				guiTop + yStartTop + yOffset * (shouldRenderGuild ? 5 : 4),
+				guiTop + yStartTop + yOffset * (shouldRenderGuild ? 4 : 3),
 				76
 			));
 		}
