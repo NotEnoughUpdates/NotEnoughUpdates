@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -862,18 +863,19 @@ public class PetInfoOverlay extends TextOverlay {
 		"alchemy"
 	);
 
-	public static void onStackClick(ItemStack stack, int windowId, int slotId, int mouseButtonClicked, int mode) {
-		if (mouseButtonClicked != 0 && mouseButtonClicked != 1 && mouseButtonClicked != 2) return;
+	@SubscribeEvent
+	public void onStackClick(SlotClickEvent event) {
+		if (event.clickedButton != 0 && event.clickedButton != 1 && event.clickedButton != 2) return;
 
-		int slotIdMod = (slotId - 10) % 9;
-		if (slotId >= 10 && slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
+		int slotIdMod = (event.slotId - 10) % 9;
+		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
 
-			if (lower.getSizeInventory() >= 54 && windowId == container.windowId) {
+			if (lower.getSizeInventory() >= 54 && event.guiContainer.inventorySlots.windowId == container.windowId) {
 				int page = 0;
 				boolean isPets = false;
 
@@ -895,7 +897,7 @@ public class PetInfoOverlay extends TextOverlay {
 					boolean isRemoving =
 						removingStack != null && removingStack.getItem() == Items.dye && removingStack.getItemDamage() == 10;
 
-					int newSelected = (slotId - 10) - (slotId - 10) / 9 * 2 + page * 28;
+					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
 
 					lastPetSelect = System.currentTimeMillis();
 
@@ -908,9 +910,11 @@ public class PetInfoOverlay extends TextOverlay {
 					} else {
 						setCurrentPet(newSelected);
 
-						Pet pet = getPetFromStack(stack.getTagCompound());
-						if (pet != null) {
-							config.petMap.put(config.selectedPet, pet);
+						if (event.slot.getStack() != null && event.slot.getStack().getTagCompound() != null) {
+							Pet pet = getPetFromStack(event.slot.getStack().getTagCompound());
+							if (pet != null) {
+								config.petMap.put(config.selectedPet, pet);
+							}
 						}
 					}
 				}

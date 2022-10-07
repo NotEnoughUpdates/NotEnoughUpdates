@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
@@ -43,7 +44,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.commons.lang3.tuple.Triple;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -58,7 +58,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 public class SlotLocking {
 	private static final SlotLocking INSTANCE = new SlotLocking();
@@ -455,22 +454,21 @@ public class SlotLocking {
 		}
 	}
 
-	public void onWindowClick(
-		Slot slotIn,
-		int slotId,
-		int clickedButton,
-		int clickType,
-		Consumer<Triple<Integer, Integer, Integer>> consumer
-	) {
-		LockedSlot locked = getLockedSlot(slotIn);
+	@SubscribeEvent
+	public void onWindowClick(SlotClickEvent slotClickEvent) {
+		LockedSlot locked = getLockedSlot(slotClickEvent.slot);
 		if (locked == null) {
 			return;
-		} else if (locked.locked || (clickType == 2 && SlotLocking.getInstance().isSlotIndexLocked(clickedButton))) {
-			consumer.accept(null);
-		} else if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotBinding && clickType == 1 &&
+		}
+		if (locked.locked ||
+			(slotClickEvent.clickType == 2 && SlotLocking.getInstance().isSlotIndexLocked(slotClickEvent.clickedButton))) {
+			slotClickEvent.setCanceled(true);
+			return;
+		}
+		if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotBinding
+			&& slotClickEvent.clickType == 1 &&
 			locked.boundTo != -1) {
-			GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
-			Slot boundSlot = container.inventorySlots.getSlotFromInventory(
+			Slot boundSlot = slotClickEvent.guiContainer.inventorySlots.getSlotFromInventory(
 				Minecraft.getMinecraft().thePlayer.inventory,
 				locked.boundTo
 			);
@@ -481,29 +479,41 @@ public class SlotLocking {
 
 			LockedSlot boundLocked = getLockedSlot(boundSlot);
 
-			int id = slotIn.getSlotIndex();
-			if (id >= 9 && locked.boundTo >= 0 && locked.boundTo < 8) {
-				if (!boundLocked.locked) {
-					consumer.accept(Triple.of(slotId, locked.boundTo, 2));
-					if (boundLocked == DEFAULT_LOCKED_SLOT) {
-						LockedSlot[] lockedSlots = getDataForProfile();
-						lockedSlots[locked.boundTo] = new LockedSlot();
-						lockedSlots[locked.boundTo].boundTo = id;
-					} else {
-						boundLocked.boundTo = id;
-					}
+			int from, to;
+			int id = slotClickEvent.slot.getSlotIndex();
+			if (id >= 9 && 0 <= locked.boundTo && locked.boundTo < 8 && !boundLocked.locked) {
+				from = id;
+				to = locked.boundTo;
+				if (boundLocked == DEFAULT_LOCKED_SLOT) {
+					LockedSlot[] lockedSlots = getDataForProfile();
+					lockedSlots[locked.boundTo] = new LockedSlot();
+					lockedSlots[locked.boundTo].boundTo = id;
+				} else {
+					boundLocked.boundTo = id;
 				}
-			} else if (id >= 0 && id < 8 && locked.boundTo >= 9 && locked.boundTo <= 39) {
+			} else if (0 <= id && id < 8 && locked.boundTo >= 9 && locked.boundTo <= 39) {
 				if (boundLocked.locked || boundLocked.boundTo != id) {
 					locked.boundTo = -1;
+					return;
 				} else {
-					int boundTo = boundSlot.slotNumber;
-					consumer.accept(Triple.of(boundTo, id, 2));
+					from = boundSlot.slotNumber;
+					to = id;
 				}
+			} else {
+				return;
 			}
+			if (from == 39) from = 5;
+			if (from == 38) from = 6;
+			if (from == 37) from = 7;
+			if (from == 36) from = 8;
+			Minecraft.getMinecraft().playerController.windowClick(
+				slotClickEvent.guiContainer.inventorySlots.windowId,
+				from, to, 2, Minecraft.getMinecraft().thePlayer
+			);
+			slotClickEvent.setCanceled(true);
 		} else if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotBinding && locked.boundTo != -1 &&
 			NotEnoughUpdates.INSTANCE.config.slotLocking.bindingAlsoLocks) {
-			consumer.accept(null);
+			slotClickEvent.setCanceled(true);
 		}
 	}
 
