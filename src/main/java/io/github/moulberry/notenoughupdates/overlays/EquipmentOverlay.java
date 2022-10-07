@@ -140,7 +140,6 @@ public class EquipmentOverlay {
 	public static final int PET_OVERLAY_OFFSET_Y = ARMOR_OVERLAY_HEIGHT - 14 /* overlaying pixels */;
 	//</editor-fold>
 
-	public boolean isRenderingPet;
 
 	public boolean shouldRenderPets;
 	public boolean shouldRenderArmorHud;
