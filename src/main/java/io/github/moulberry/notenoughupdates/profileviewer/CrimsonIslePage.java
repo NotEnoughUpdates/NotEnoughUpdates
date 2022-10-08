@@ -202,7 +202,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 				put(2000, EnumChatFormatting.GREEN + "Green");
 				put(4000, EnumChatFormatting.BLUE + "Blue");
 				put(6000, EnumChatFormatting.GOLD + "Brown");
-				put(7000, EnumChatFormatting.BLACK + "Black");
+				put(7000, EnumChatFormatting.DARK_GRAY + "Black");
 			}};
 
 			Utils.renderAlignedString(
