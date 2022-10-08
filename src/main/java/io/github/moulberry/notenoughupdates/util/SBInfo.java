@@ -61,8 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -435,11 +433,10 @@ public class SBInfo {
 	}
 
 	public void updateMayor() {
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"resources/skyblock/election",
-			new HashMap<>()
-		).thenAcceptAsync(newJson -> mayorJson = newJson);
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("resources/skyblock/election")
+			.requestJson()
+			.thenAccept(newJson -> mayorJson = newJson);
 	}
 
 

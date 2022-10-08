@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -37,6 +38,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -563,4 +565,17 @@ public class BetterContainers {
 			return 0;
 		}
 	}
+
+	@SubscribeEvent
+	public void onMouseClick(SlotClickEvent event) {
+		if (!isOverriding()) return;
+		boolean isBlankStack = BetterContainers.isBlankStack(event.slot.slotNumber, event.slot.getStack());
+		if (!(isBlankStack ||
+			BetterContainers.isButtonStack(event.slot.slotNumber, event.slot.getStack()))) return;
+		clickSlot(event.slotId);
+		if (isBlankStack) {
+			event.usePickblockInstead();
+		}
+	}
+
 }

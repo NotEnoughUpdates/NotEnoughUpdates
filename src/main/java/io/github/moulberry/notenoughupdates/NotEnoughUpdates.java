@@ -35,8 +35,11 @@ import io.github.moulberry.notenoughupdates.listener.ItemTooltipRngListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
+import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
+import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
-import io.github.moulberry.notenoughupdates.miscfeatures.BazaarSacksProfit;
+import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
@@ -115,7 +118,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Set;
 
-@Mod(modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true)
+@Mod(
+	modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true, useMetadata = true,
+	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
 	public static final String VERSION = "2.1.0-REL";
@@ -299,7 +304,10 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
-		MinecraftForge.EVENT_BUS.register(BazaarSacksProfit.getInstance());
+		MinecraftForge.EVENT_BUS.register(new AntiCoopAdd());
+		MinecraftForge.EVENT_BUS.register(AbiphoneWarning.getInstance());
+		MinecraftForge.EVENT_BUS.register(new BetterContainers());
+		MinecraftForge.EVENT_BUS.register(AuctionBINWarning.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new GlowingMushroomHighlighter());
 
