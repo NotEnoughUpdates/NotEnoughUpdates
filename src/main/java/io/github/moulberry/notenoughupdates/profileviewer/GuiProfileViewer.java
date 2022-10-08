@@ -212,6 +212,7 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.BINGO, new BingoPage(this));
 		pages.put(ProfileViewerPage.TROPHY_FISH, new TrophyFishPage(this));
 		pages.put(ProfileViewerPage.BESTIARY, new BestiaryPage(this));
+		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
 	}
 
 	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
@@ -1267,7 +1268,8 @@ public class GuiProfileViewer extends GuiScreen {
 		MINING(6, Items.iron_pickaxe, "§5Heart of the Mountain"),
 		BINGO(7, Items.filled_map, "§zBingo"),
 		TROPHY_FISH(8, Items.fishing_rod, "§3Trophy Fish"),
-		BESTIARY(9, Items.iron_sword, "§cBestiary");
+		BESTIARY(9, Items.iron_sword, "§cBestiary"),
+		CRIMSON_ISLE(10, Item.getItemFromBlock(Blocks.netherrack), "§4Crimson Isle");
 
 		public final ItemStack stack;
 		public final int id;

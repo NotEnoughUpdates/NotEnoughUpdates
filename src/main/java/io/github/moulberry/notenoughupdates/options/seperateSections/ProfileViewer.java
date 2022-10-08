@@ -74,10 +74,11 @@ public class ProfileViewer {
 			"\u00a7eBingo",
 			"\u00a7eTrophy Fish",
 			"\u00a7eBestiary",
+			"\u00a7eCrimson Isle",
 		},
 		allowDeleting = false
 	)
-	public List<Integer> pageLayout = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+	public List<Integer> pageLayout = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
 	@Expose
 	@ConfigOption(
