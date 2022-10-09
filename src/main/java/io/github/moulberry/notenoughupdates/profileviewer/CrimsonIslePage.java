@@ -116,12 +116,16 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 			JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
 
-			// As the last 3 aren't in the game or api, the last 3 will just have 0 as a placeholder
-			String[] kuudraTiers = {"none", "hot"};
+			String[] kuudraTiers = {"none", "hot", "burning", "fiery", "infernal"};
 
 			RenderHelper.enableGUIStandardItemLighting();
 
 			for (int i = 0; i < 5; i++) {
+
+				// Checking the player has completions for each tier
+				// and get the number of completions if they do
+				int completions = kuudraCompletedTiers.has(kuudraTiers[i]) ? kuudraCompletedTiers.get(kuudraTiers[i]).getAsInt() : 0;
+
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
 					KUUDRA_KEYS[i],
 					guiLeft + 8,
@@ -130,7 +134,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 				Utils.renderAlignedString(
 					EnumChatFormatting.RED + KUUDRA_TIERS[i] + ": ",
-					EnumChatFormatting.WHITE + ((i == 0 || i == 1) ? kuudraCompletedTiers.get(kuudraTiers[i]).getAsString() : "0"),
+					EnumChatFormatting.WHITE + String.valueOf(completions),
 					guiLeft + 23,
 					guiTop + 30 + (i * 12),
 					110
@@ -177,23 +181,27 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			String[] dojoGrades = {"F", "D", "C", "B", "A", "S"};
 
 			JsonObject dojoStats = data.getAsJsonObject("dojo");
+			int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
 			int pointsTotal = 0;
 
 			for (int i = 0; i < apiDojoTestNames.size(); i++) {
 				for (Map.Entry<String, JsonElement> dojoData : dojoStats.entrySet()) {
 					if (dojoData.getKey().equals("dojo_points_" + apiDojoTestNames.keySet().toArray()[i])) {
-						Utils.renderAlignedString(
-							apiDojoTestNames.get(apiDojoTestNames.keySet().toArray()[i]) + ": ",
-							EnumChatFormatting.WHITE + dojoData.getValue().getAsString() + " (" +
-								dojoGrades[(dojoData.getValue().getAsInt() / 200) >= 6 ? 5 : (dojoData.getValue().getAsInt() / 200)] + ")",
-							guiLeft + (431 * 0.49f) - 65,
-							guiTop + 30 + (i * 12),
-							130
-						);
-
+						dojoScores[i] = dojoData.getValue().getAsInt();
 						pointsTotal += dojoData.getValue().getAsInt();
 					}
 				}
+			}
+
+			for (int i = 0; i < apiDojoTestNames.size(); i++) {
+				Utils.renderAlignedString(
+					apiDojoTestNames.get(apiDojoTestNames.keySet().toArray()[i]) + ": ",
+					EnumChatFormatting.WHITE + String.valueOf(dojoScores[i]) + " (" +
+						dojoGrades[(dojoScores[i] / 200) >= 6 ? 5 : (dojoScores[i] / 200)] + ")",
+					guiLeft + (431 * 0.49f) - 65,
+					guiTop + 30 + (i * 12),
+					130
+				);
 			}
 
 			LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<Integer, String>() {{
@@ -264,34 +272,45 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 			JsonObject lastMatriarchAttempt = data.getAsJsonObject("matriarch");
 
+			if (!lastMatriarchAttempt.entrySet().isEmpty()) {
+				Utils.renderAlignedString(
+					EnumChatFormatting.GOLD + "Heavy Pearls Acquired: ",
+					EnumChatFormatting.WHITE + lastMatriarchAttempt.get("pearls_collected").getAsString(),
+					guiLeft + 290,
+					guiTop + 119,
+					130
+				);
+
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(lastMatriarchAttempt.get("last_attempt").getAsLong());
+				DateFormat dateFormat = new SimpleDateFormat("EEE d MMM yyyy");
+				DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+				String date = dateFormat.format(calendar.getTime());
+				String time = timeFormat.format(calendar.getTime());
+
+				Utils.renderAlignedString(
+					EnumChatFormatting.GOLD + "Last Attempt: ",
+					EnumChatFormatting.WHITE + date,
+					guiLeft + 290,
+					guiTop + 131,
+					130
+				);
+
+				Utils.renderAlignedString(
+					EnumChatFormatting.GOLD + " ",
+					EnumChatFormatting.WHITE + time,
+					guiLeft + 290,
+					guiTop + 143,
+					130
+				);
+				return;
+			}
+
 			Utils.renderAlignedString(
-				EnumChatFormatting.GOLD + "Heavy Pearls Acquired: ",
-				EnumChatFormatting.WHITE + lastMatriarchAttempt.get("pearls_collected").getAsString(),
+				EnumChatFormatting.RED + "No attempts found!",
+				" ",
 				guiLeft + 290,
 				guiTop + 119,
-				130
-			);
-
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(lastMatriarchAttempt.get("last_attempt").getAsLong());
-			DateFormat dateFormat = new SimpleDateFormat("EEE d MMM yyyy");
-			DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-			String date = dateFormat.format(calendar.getTime());
-			String time = timeFormat.format(calendar.getTime());
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.GOLD + "Last Attempt: ",
-				EnumChatFormatting.WHITE + date,
-				guiLeft + 290,
-				guiTop + 131,
-				130
-			);
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.GOLD + " ",
-				EnumChatFormatting.WHITE + time,
-				guiLeft + 290,
-				guiTop + 143,
 				130
 			);
 		}
@@ -309,9 +328,10 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			HashMap<String, String> factions = new HashMap<String, String>() {{
 				put("mages", EnumChatFormatting.DARK_PURPLE + "Mages");
 				put("barbarians", EnumChatFormatting.RED + "Barbarians");
+				put("N/A", EnumChatFormatting.GRAY + "N/A");
 			}};
 
-			String selectedFaction = data.get("selected_faction").getAsString();
+			String selectedFaction = data.has("selected_faction") ? data.get("selected_faction").getAsString() : "N/A";
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.GREEN + "Faction: ",
@@ -321,8 +341,8 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 				130
 			);
 
-			int mageReputation = data.get("mages_reputation").getAsInt();
-			int barbarianReputation = data.get("barbarians_reputation").getAsInt();
+			int mageReputation = data.has("mages_reputation") ? data.get("mages_reputation").getAsInt() : 0;
+			int barbarianReputation = data.has("barbarians_reputation") ? data.get("barbarians_reputation").getAsInt() : 0;
 
 			LinkedHashMap<Integer, String> factionThresholds = new LinkedHashMap<Integer, String>() {{
 				put(0, "Neutral");
