@@ -95,16 +95,6 @@ public class AutoUpdater {
 		}
 		updateLoader = getUpdateLoader(url);
 		if (updateLoader == null) {
-			logProgress(new ChatComponentText(
-				"Your system does not support auto updates. Please download this update manually. Click here to read more about auto update compatibility (or the link above for manual downloads)")
-				.setChatStyle(
-					new ChatStyle()
-						.setChatHoverEvent(new HoverEvent(
-							HoverEvent.Action.SHOW_TEXT,
-							new ChatComponentText("Click here to read about auto update modalities")
-						))
-						.setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/neuupdate updatemodes"))
-				));
 			return;
 		}
 		updateLoader.greet();
