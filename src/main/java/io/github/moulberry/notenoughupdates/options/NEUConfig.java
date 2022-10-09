@@ -209,6 +209,7 @@ public class NEUConfig extends Config {
 	)
 	public Misc misc = new Misc();
 
+	@Expose
 	@Category(
 		name = "GUI Locations",
 		desc = "Edit the GUI locations of everything here"
