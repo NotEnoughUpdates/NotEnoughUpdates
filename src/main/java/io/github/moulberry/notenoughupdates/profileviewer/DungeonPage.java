@@ -154,10 +154,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 						99,
 						false
 					);
-				if (levelObjCata.level == 50) {
-					levelObjCata.level = 50 + (cataXp - 569809640) / 200000000;
-				}
-
 				levelObjCata.totalXp = cataXp;
 				levelObjCatas.put(profileId, levelObjCata);
 			}
@@ -686,7 +682,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 					ProfileViewer.Level levelObj = ProfileViewer.getLevel(
 						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 						cataXp,
-						99,
+						50,
 						false
 					);
 
@@ -848,17 +844,13 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			JsonArray levelingArray = Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray();
 
-			float remaining = (floorLevelTo < 50) ? -((levelObjCata.level % 1) * levelObjCata.maxXpForLevel) : -((levelObjCata.level % 1) * 200000000);
+			float remaining = -((levelObjCata.level % 1) * levelObjCata.maxXpForLevel);
 
-			for (int level = 0; level < Math.min(floorLevelTo, 99); level++) {
+			for (int level = 0; level < Math.min(floorLevelTo, levelingArray.size()); level++) {
 				if (level < Math.floor(levelObjCata.level)) {
 					continue;
 				}
-				if (level < 50) {
 					remaining += levelingArray.get(level).getAsFloat();
-				} else {
-					remaining += 200000000;
-				}
 			}
 
 			if (remaining < 0) {

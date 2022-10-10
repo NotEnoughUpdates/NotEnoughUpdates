@@ -1023,8 +1023,11 @@ public class GuiProfileViewer extends GuiScreen {
 				if (skillName.contains("Catacombs")) totalXpStr =
 					EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
 						numberFormat.format(levelObj.totalXp);
+				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
-					levelStr = EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")";
+					levelStr = levelObj.maxLevel != 7 ?
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
 				} else {
 					if (skillName.contains("Class Average")) {
 						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
@@ -1035,7 +1038,11 @@ public class GuiProfileViewer extends GuiScreen {
 							EnumChatFormatting.DARK_PURPLE +
 								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
 								"/" +
-								StringUtils.shortNumberFormat(maxXp);
+								StringUtils.shortNumberFormat(maxXp) +
+								// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
+								// a conditional here to add the overflow level rather than above
+								((skillName.contains("Catacombs") && levelObj.level >= 50) ?
+									EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
 					}
 				}
 				if (totalXpStr != null) {
