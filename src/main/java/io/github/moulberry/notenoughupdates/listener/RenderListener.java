@@ -1274,21 +1274,20 @@ public class RenderListener {
 											String[] upgradeNameSplit = upgradeName.substring(3).split(" ");
 											newEntry.addProperty("type", upgradeNameSplit[1]);
 											newEntry.addProperty(starsStr, Integer.parseInt(upgradeNameSplit[0].replace(",", "")));
-											continue; // Don't add essence to the "items" object
+										} else {
+											if (!newEntry.has("items")) {
+												newEntry.add("items", new JsonObject());
+											}
+											if (!newEntry.get("items").getAsJsonObject().has(starsStr)) {
+												newEntry.get("items").getAsJsonObject().add(starsStr, new JsonArray());
+											}
+											newEntry
+												.get("items")
+												.getAsJsonObject()
+												.get(starsStr)
+												.getAsJsonArray()
+												.add(upgradeName + " §8x" + amount);
 										}
-
-										if (!newEntry.has("items")) {
-											newEntry.add("items", new JsonObject());
-										}
-										if (!newEntry.get("items").getAsJsonObject().has(starsStr)) {
-											newEntry.get("items").getAsJsonObject().add(starsStr, new JsonArray());
-										}
-										newEntry
-											.get("items")
-											.getAsJsonObject()
-											.get(starsStr)
-											.getAsJsonArray()
-											.add(upgradeName + " §8x" + amount);
 									}
 								}
 								jsonObject.add(id, newEntry);
