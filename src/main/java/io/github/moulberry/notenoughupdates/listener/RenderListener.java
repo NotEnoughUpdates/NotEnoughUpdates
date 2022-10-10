@@ -1286,7 +1286,7 @@ public class RenderListener {
 												.getAsJsonObject()
 												.get(starsStr)
 												.getAsJsonArray()
-												.add(upgradeName + " §8x" + amount);
+												.add(new JsonPrimitive(upgradeName + " §8x" + amount));
 										}
 									}
 								}
