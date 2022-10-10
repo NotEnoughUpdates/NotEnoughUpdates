@@ -261,9 +261,14 @@ public class NotEnoughUpdates {
 			if (config.profileViewer.pageLayout.size() == 9) {
 				config.profileViewer.pageLayout.add(9);
 			}
-			if ("dangerous".equals(config.apiData.repoBranch)) { // Remove after 2.1 ig
+
+			// Remove after 2.1 ig
+			if ("dangerous".equals(config.apiData.repoBranch) || "rune".equals(config.apiData.repoBranch)) {
 				config.apiData.repoBranch = "master";
+			} else if ("jani270".equals(config.apiData.repoUser)) {
+				config.apiData.repoUser = "NotEnoughUpdates";
 			}
+
 			saveConfig();
 		}
 
