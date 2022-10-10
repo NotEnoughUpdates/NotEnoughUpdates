@@ -1024,14 +1024,19 @@ public class GuiProfileViewer extends GuiScreen {
 					EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
 						numberFormat.format(levelObj.totalXp);
 				if (levelObj.maxed) {
-					levelStr = EnumChatFormatting.GOLD + "MAXED!";
+					levelStr = EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")";
 				} else {
-					int maxXp = (int) levelObj.maxXpForLevel;
-					levelStr =
-						EnumChatFormatting.DARK_PURPLE +
-							StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
-							"/" +
-							StringUtils.shortNumberFormat(maxXp);
+					if (skillName.contains("Class Average")) {
+						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
+						totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
+					} else {
+						int maxXp = (int) levelObj.maxXpForLevel;
+						levelStr =
+							EnumChatFormatting.DARK_PURPLE +
+								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+								"/" +
+								StringUtils.shortNumberFormat(maxXp);
+					}
 				}
 				if (totalXpStr != null) {
 					tooltipToDisplay = Utils.createList(levelStr, totalXpStr);

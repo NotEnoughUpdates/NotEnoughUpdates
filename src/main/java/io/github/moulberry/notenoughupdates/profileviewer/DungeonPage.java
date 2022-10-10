@@ -154,6 +154,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 						99,
 						false
 					);
+				if (levelObjCata.level == 50) {
+					levelObjCata.level = 50 + (cataXp - 569809640) / 200000000;
+				}
+
 				levelObjCata.totalXp = cataXp;
 				levelObjCatas.put(profileId, levelObjCata);
 			}
@@ -224,6 +228,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
+						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY + String.format("%,d", floorLevelToXP),
 						String.format("# F5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF5), runsF5),
 						String.format("# F6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF6), runsF6),
 						String.format("# F7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF7), runsF7),
@@ -371,6 +376,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
+						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY + String.format("%,d", floorLevelToXP),
 						String.format("# M3 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM3), runsM3),
 						String.format("# M4 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM4), runsM4),
 						String.format("# M5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM5), runsM5),
@@ -666,6 +672,8 @@ public class DungeonPage extends GuiProfileViewerPage {
 				activeClass = activeClassElement.getAsString();
 			}
 
+			ProfileViewer.Level classAverage = new ProfileViewer.Level();
+
 			for (int i = 0; i < dungSkillsName.length; i++) {
 				String skillName = dungSkillsName[i];
 
@@ -678,10 +686,20 @@ public class DungeonPage extends GuiProfileViewerPage {
 					ProfileViewer.Level levelObj = ProfileViewer.getLevel(
 						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 						cataXp,
-						50,
+						99,
 						false
 					);
+
+					if (levelObj.level == 50) {
+						levelObj.level = 50 + (cataXp - 569809640) / 200000000;
+					}
+
 					levelObjClasses.put(skillName, levelObj);
+				}
+
+				classAverage.level = (float) (levelObjClasses.values().stream().mapToDouble(l -> l.level).sum() / 5);
+				if (classAverage.level >= 50) {
+					classAverage.maxed = true;
 				}
 
 				String colour = EnumChatFormatting.WHITE.toString();
@@ -692,8 +710,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 				ProfileViewer.Level levelObj = levelObjClasses.get(skillName);
 
 				getInstance()
-					.renderXpBar(colour + skillName, dungSkillsStack[i], x, y + 20 + 29 * i, sectionWidth, levelObj, mouseX, mouseY);
+					.renderXpBar(colour + skillName, dungSkillsStack[i], x, y + 20 + 24 * i, sectionWidth, levelObj, mouseX, mouseY);
 			}
+
+			getInstance().renderXpBar(
+				EnumChatFormatting.WHITE + "Class Average",
+				new ItemStack(Items.nether_star),
+				x,
+				y + 20 + 24 * 5,
+				sectionWidth,
+				classAverage,
+				mouseX, mouseY);
 		}
 
 		drawSideButtons();
@@ -705,7 +732,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		if (mouseX >= guiLeft + 50 && mouseX <= guiLeft + 70 && mouseY >= guiTop + 54 && mouseY <= guiTop + 64) {
+		if (mouseX >= guiLeft + 45 && mouseX <= guiLeft + 65 && mouseY >= guiTop + 54 && mouseY <= guiTop + 64) {
 			dungeonLevelTextField.mouseClicked(mouseX, mouseY, mouseButton);
 		} else {
 			dungeonLevelTextField.otherComponentClick();
@@ -821,13 +848,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			JsonArray levelingArray = Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray();
 
-			float remaining = -((levelObjCata.level % 1) * levelObjCata.maxXpForLevel);
+			float remaining = (floorLevelTo < 50) ? -((levelObjCata.level % 1) * levelObjCata.maxXpForLevel) : -((levelObjCata.level % 1) * 200000000);
 
-			for (int level = 0; level < Math.min(floorLevelTo, levelingArray.size()); level++) {
+			for (int level = 0; level < Math.min(floorLevelTo, 99); level++) {
 				if (level < Math.floor(levelObjCata.level)) {
 					continue;
 				}
-				remaining += levelingArray.get(level).getAsFloat();
+				if (level < 50) {
+					remaining += levelingArray.get(level).getAsFloat();
+				} else {
+					remaining += 200000000;
+				}
 			}
 
 			if (remaining < 0) {
