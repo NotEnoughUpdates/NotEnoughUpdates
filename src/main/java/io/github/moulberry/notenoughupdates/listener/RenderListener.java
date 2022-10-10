@@ -1258,15 +1258,13 @@ public class RenderListener {
 
 										int countIndex = entry.lastIndexOf(" x");
 
-										String amount = "";
-										if (countIndex == -1) {
-											amount = "1";
-										} else {
+										String amount = "1";
+										String upgradeName = entry;
+										if (countIndex =!= -1) {
+											upgradeName = entry.substring(0, countIndex);
 											// +2 to account for " x"
 											amount = entry.substring(countIndex + 2);
 										}
-
-										String upgradeName = entry.substring(0, countIndex);
 
 										if (upgradeName.endsWith(" Essence")) {
 											// First 2 chars are control code
