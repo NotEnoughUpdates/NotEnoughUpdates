@@ -1258,9 +1258,9 @@ public class RenderListener {
 
 										int countIndex = entry.lastIndexOf(" x");
 
-										String amount = "1";
 										String upgradeName = entry;
-										if (countIndex =!= -1) {
+										String amount = "1";
+										if (countIndex != -1) {
 											upgradeName = entry.substring(0, countIndex);
 											// +2 to account for " x"
 											amount = entry.substring(countIndex + 2);
