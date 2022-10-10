@@ -1239,6 +1239,7 @@ public class RenderListener {
 							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
 								int stars = Utils.getNumberOfStars(stack);
 								if (stars == 0) continue;
+								String starsStr = "" + stars;
 
 								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
 								int costIndex = 10000;
@@ -1251,39 +1252,43 @@ public class RenderListener {
 									if (entry.equals("§7Cost")) {
 										costIndex = j;
 									}
+
 									if (j > costIndex) {
 										entry = entry.trim();
-										int index = entry.lastIndexOf('x');
-										String item, amountString;
-										if (index < 0) {
-											item = entry.trim() + " x1";
-											amountString = "x1";
+
+										int countIndex = entry.lastIndexOf(" x");
+
+										String amount = "";
+										if (countIndex == -1) {
+											amount = "1";
 										} else {
-											amountString = entry.substring(index);
-											item = entry.substring(0, index).trim();
+											// +2 to account for " x"
+											amount = entry.substring(countIndex + 2);
 										}
-										item = item.substring(0, item.length() - 3);
-										int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
-										if (item.endsWith("Essence")) {
-											int index2 = entry.indexOf("Essence");
-											String type = item.substring(0, index2).trim().substring(2);
-											newEntry.add("type", new JsonPrimitive(type));
-											newEntry.add(String.valueOf(stars), new JsonPrimitive(amount));
-										} else {
-											String itemString = item + " §8x" + amount;
-											if (!newEntry.has("items")) {
-												newEntry.add("items", new JsonObject());
-											}
-											if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
-												newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
-											}
-											newEntry
-												.get("items")
-												.getAsJsonObject()
-												.get(String.valueOf(stars))
-												.getAsJsonArray()
-												.add(new JsonPrimitive(itemString));
+
+										String upgradeName = entry.substring(0, countIndex);
+
+										if (upgradeName.endsWith(" Essence")) {
+											// First 2 chars are control code
+											// [EssenceCount, EssenceType, "Essence"]
+											String[] upgradeNameSplit = upgradeName.substring(3).split(" ");
+											newEntry.addProperty("type", upgradeNameSplit[1]);
+											newEntry.addProperty(starsStr, Integer.parseInt(upgradeNameSplit[0].replace(",", "")));
+											continue; // Don't add essence to the "items" object
 										}
+
+										if (!newEntry.has("items")) {
+											newEntry.add("items", new JsonObject());
+										}
+										if (!newEntry.get("items").getAsJsonObject().has(starsStr)) {
+											newEntry.get("items").getAsJsonObject().add(starsStr, new JsonArray());
+										}
+										newEntry
+											.get("items")
+											.getAsJsonObject()
+											.get(starsStr)
+											.getAsJsonArray()
+											.add(upgradeName + " §8x" + amount);
 									}
 								}
 								jsonObject.add(id, newEntry);
