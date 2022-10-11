@@ -102,7 +102,10 @@ public class AuctionSearchOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return false;
 
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiEditSign)) {
-			if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) searchString = "";
+			if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) {
+				searchString = "";
+				addToStack(searchString);
+			}
 			return false;
 		}
 
@@ -407,6 +410,7 @@ public class AuctionSearchOverlay {
 				return true;
 			} else {
 				searchString = id;
+				addToStack(searchString);
 				tabCompletionIndex += 1;
 				return true;
 			}
@@ -425,6 +429,7 @@ public class AuctionSearchOverlay {
 				return true;
 			} else {
 				searchString = id;
+				addToStack(searchString);
 				tabCompletionIndex -= 1;
 				return true;
 			}
@@ -483,8 +488,45 @@ public class AuctionSearchOverlay {
 		});
 	}
 
+	private static final ArrayList<String> stringStack = new ArrayList<>();
+	private static int currentStringStackIndex = -1;
+
+	private static void addToStack(String string) {
+		if (stringStack.size() > 20) {
+			stringStack.remove(0);
+		}
+		stringStack.add(string);
+		currentStringStackIndex = stringStack.size() - 1;
+	}
+
 	public static void keyEvent() {
 		boolean ignoreKey = false;
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && textField.getFocus()) {
+			if (currentStringStackIndex == -1) {
+				currentStringStackIndex = stringStack.size() - 1;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_Y)) {
+				//go forward in action stack
+				if (currentStringStackIndex != stringStack.size() - 1) {
+					String newText = stringStack.get(currentStringStackIndex + 1);
+					textField.setText(newText);
+					searchString = newText;
+					currentStringStackIndex+=1;
+				}
+				return;
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+				//go back in action stack
+				if (!stringStack.isEmpty() && currentStringStackIndex > 0 && stringStack.get(currentStringStackIndex-1) != null) {
+					String newText = stringStack.get(currentStringStackIndex-1);
+					textField.setText(newText);
+					searchString = newText;
+					currentStringStackIndex-=1;
+				}
+				return;
+			}
+		}
 
 		if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 			searchStringExtra = "";
@@ -510,6 +552,7 @@ public class AuctionSearchOverlay {
 				} else {
 					tabCompletionIndex = 0;
 					searchString = id;
+					addToStack(searchString);
 				}
 			}
 		}
@@ -530,6 +573,7 @@ public class AuctionSearchOverlay {
 			textField.setText(searchString);
 			textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 			searchString = textField.getText();
+			addToStack(searchString);
 
 			search();
 		}
@@ -595,6 +639,7 @@ public class AuctionSearchOverlay {
 
 						if (Mouse.getEventButton() == 1) {
 							searchString = "";
+							addToStack(searchString);
 							synchronized (autocompletedItems) {
 								autocompletedItems.clear();
 							}
@@ -620,6 +665,7 @@ public class AuctionSearchOverlay {
 							if (mouseX >= width / 2 - 96 && mouseX <= width / 2 + 96 && mouseY >= topY + 30 + num * 22 &&
 								mouseY <= topY + 30 + num * 22 + 20) {
 								searchString = Utils.cleanColour(stack.getDisplayName().replaceAll("\\[.+]", "")).trim();
+								addToStack(searchString);
 								if (searchString.contains("Enchanted Book") && str.contains(";")) {
 									String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 									String[] split = Utils.cleanColour(lore[0]).trim().split(" ");
