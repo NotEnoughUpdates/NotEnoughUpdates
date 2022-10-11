@@ -93,7 +93,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -1036,31 +1035,7 @@ public class NEUOverlay extends Gui {
 			return false;
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && textField.isFocused()) {
-			if (currentStringStackIndex == -1) {
-				currentStringStackIndex = stringStack.size() - 1;
-			}
-
-			if (Keyboard.isKeyDown(Keyboard.KEY_Y)) {
-				//go forward in action stack
-				if (currentStringStackIndex != stringStack.size() - 1) {
-					String newText = stringStack.get(currentStringStackIndex + 1);
-					textField.setText(newText);
-					currentStringStackIndex+=1;
-				}
-				return true;
-			} else if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-				//go back in action stack
-				if (!stringStack.isEmpty() && currentStringStackIndex > 0 && stringStack.get(currentStringStackIndex-1) != null) {
-					String newText = stringStack.get(currentStringStackIndex-1);
-					textField.setText(newText);
-					currentStringStackIndex-=1;
-				}
-				return true;
-			}
-		}
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_Y) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+		if ((Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			displayInformationPane(new DevInfoPane(this, manager));
 		}
 
@@ -1361,18 +1336,6 @@ public class NEUOverlay extends Gui {
 
 	private final ExecutorService searchES = Executors.newSingleThreadExecutor();
 
-	private static final ArrayList<String> stringStack = new ArrayList<>();
-	private static int currentStringStackIndex = -1;
-
-	private static void addToStack(String string) {
-		if (stringStack.size() > 20) {
-			stringStack.remove(0);
-		}
-		stringStack.add(string);
-		currentStringStackIndex = stringStack.size() - 1;
-	}
-
-
 	/**
 	 * Clears the current item list, creating a new TreeSet if necessary.
 	 * Adds all items that match the search AND match the sort mode to the current item list.
@@ -1381,12 +1344,6 @@ public class NEUOverlay extends Gui {
 	public void updateSearch() {
 		SunTzu.randomizeQuote();
 
-
-		if (stringStack.isEmpty() || (stringStack.get(stringStack.size() - 1) != null && !Objects.equals(stringStack.get(
-			stringStack.size() - 1), textField.getText()))) {
-			addToStack(textField.getText());
-			currentStringStackIndex = stringStack.size() - 1;
-		}
 
 		if (searchedItems == null) searchedItems = new TreeSet<>(getItemComparator());
 
