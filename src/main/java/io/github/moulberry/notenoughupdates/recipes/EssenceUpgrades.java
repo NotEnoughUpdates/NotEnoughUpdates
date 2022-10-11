@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -89,7 +90,6 @@ public class EssenceUpgrades implements NeuRecipe {
 	private final Map<Integer, TierUpgrade> tierUpgradeMap;
 	private final int amountOfTiers;
 	private int selectedTier;
-	private String currentEssenceString;
 	private static final int outputX = 123;
 	private static final int outputY = 65;
 	private List<RecipeSlot> slots;
@@ -173,6 +173,7 @@ public class EssenceUpgrades implements NeuRecipe {
 	 * @see EssenceUpgrades#getSlots()
 	 */
 	private List<RecipeSlot> buildSlotList() {
+		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		List<RecipeSlot> slotList = new ArrayList<>();
 
 		//output item
@@ -216,23 +217,35 @@ public class EssenceUpgrades implements NeuRecipe {
 		if (tierUpgrade == null) {
 			return slotList;
 		}
-		currentEssenceString =
-			EnumChatFormatting.DARK_AQUA.toString() + tierUpgrade.getEssenceRequired() + " " + EnumChatFormatting.RESET +
-				tierUpgrade.getEssenceType() +
-				" Essence";
 
-		int i = 0;
+		//required essence
+		String essenceInternalName = "ESSENCE_" + tierUpgrade.getEssenceType().toUpperCase(Locale.ROOT);
+		if (manager.isValidInternalName(essenceInternalName)) {
+			ItemStack essenceItemStack =
+				manager.createItemResolutionQuery().withKnownInternalName(essenceInternalName).resolveToItemStack();
+			if (essenceItemStack != null) {
+				essenceItemStack = essenceItemStack.copy();
+				essenceItemStack.setStackDisplayName(
+					EnumChatFormatting.AQUA.toString() + tierUpgrade.getEssenceRequired() + " " + EnumChatFormatting.DARK_GRAY +
+						tierUpgrade.getEssenceType() + " Essence");
+				essenceItemStack.stackSize = tierUpgrade.getEssenceRequired();
+				RenderLocation renderLocation = slotLocations.get(0);
+				slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY() + 1, essenceItemStack));
+			}
+		}
+
+		int i = 1;
 		if (tierUpgrade.getItemsRequired() != null) {
 			for (Map.Entry<String, Integer> requiredItem : tierUpgrade.getItemsRequired().entrySet()) {
 				ItemStack itemStack;
 				if (requiredItem.getKey().equals("SKYBLOCK_COIN")) {
 					Ingredient ingredient = Ingredient.coinIngredient(
-						NotEnoughUpdates.INSTANCE.manager,
+						manager,
 						requiredItem.getValue()
 					);
 					itemStack = ingredient.getItemStack();
 				} else {
-					itemStack = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+					itemStack = manager.createItemResolutionQuery().withKnownInternalName(
 						requiredItem.getKey()).resolveToItemStack();
 					if (itemStack != null) {
 						itemStack.stackSize = requiredItem.getValue();
@@ -358,15 +371,6 @@ public class EssenceUpgrades implements NeuRecipe {
 			slots = buildSlotList();
 		}
 		drawButtons(mouseX, mouseY);
-
-		Utils.drawStringCentered(
-			currentEssenceString,
-			Minecraft.getMinecraft().fontRendererObj,
-			gui.guiLeft + 88,
-			gui.guiTop + 135,
-			false,
-			0x404040
-		);
 	}
 
 	@Override
