@@ -84,6 +84,7 @@ public class AutoUpdater {
 	UpdateLoader updateLoader;
 
 	public void updateFromURL(URL url) {
+		if (true) return;
 		if (updateLoader != null) {
 			logProgress(
 				"There is already an update in progress, so the auto updater cannot process this update (as it might already be installed or is currently being downloaded). Please restart your client to install another update");

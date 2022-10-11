@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.commands;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
@@ -44,7 +43,6 @@ import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CosmeticsCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CustomizeCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.PronounsCommand;
-import io.github.moulberry.notenoughupdates.commands.misc.UpdateCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.CataCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PeekCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PvCommand;
@@ -99,7 +97,7 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new AhCommand());
 		ClientCommandHandler.instance.registerCommand(new CalculatorCommand());
 		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
-		ClientCommandHandler.instance.registerCommand(new UpdateCommand(NotEnoughUpdates.INSTANCE));
+		//ClientCommandHandler.instance.registerCommand(new UpdateCommand(NotEnoughUpdates.INSTANCE));
 		ClientCommandHandler.instance.registerCommand(new PronounsCommand());
 
 		// Fairy Soul Commands
