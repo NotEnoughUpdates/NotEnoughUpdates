@@ -21,7 +21,9 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.ImmutableList;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -339,6 +341,12 @@ public class GuiItemRecipe extends GuiScreen {
 		int buttonPositionLeftX = topLeft[0];
 		int buttonPositionRightX = buttonPositionLeftX + BUTTON_POSITION_RIGHT_OFFSET_X;
 		int buttonPositionY = topLeft[1];
+
+		if (mouseButton == 3) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getPrevious();
+		} else if (mouseButton == 4) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getNext();
+		}
 
 		if (isWithinRect(
 			mouseX - guiLeft,

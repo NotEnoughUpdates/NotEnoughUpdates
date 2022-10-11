@@ -34,11 +34,13 @@ import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
+import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
+import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
@@ -162,6 +164,11 @@ public class NEUEventListener {
 
 
 		if (longUpdate) {
+
+			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiItemRecipe)) {
+				RecipeHistory.clear();
+			}
+
 			CrystalOverlay.tick();
 			FairySouls.getInstance().tick();
 			XPInformation.getInstance().tick();

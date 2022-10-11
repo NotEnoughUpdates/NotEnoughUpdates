@@ -34,9 +34,10 @@ import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
+import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
-import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -857,7 +858,6 @@ public class NEUManager {
 			case "viewpotion":
 				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
 		}
-		displayGuiItemRecipe(internalName);
 	}
 
 	public void showRecipe(String internalName) {
@@ -961,6 +961,7 @@ public class NEUManager {
 		List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
 		if (usages.isEmpty()) return false;
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(usages, this));
+		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
 	}
 
@@ -969,6 +970,7 @@ public class NEUManager {
 		List<NeuRecipe> recipes = getAvailableRecipesFor(internalName);
 		if (recipes.isEmpty()) return false;
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(recipes, this));
+		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
 	}
 
