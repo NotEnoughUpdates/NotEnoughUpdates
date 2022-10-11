@@ -1256,14 +1256,14 @@ public class RenderListener {
 									if (j > costIndex) {
 										entry = entry.trim();
 
-										int countIndex = entry.lastIndexOf(" x");
+										int countIndex = entry.lastIndexOf(" §8x");
 
 										String upgradeName = entry;
 										String amount = "1";
 										if (countIndex != -1) {
 											upgradeName = entry.substring(0, countIndex);
-											// +2 to account for " x"
-											amount = entry.substring(countIndex + 2);
+											// +4 to account for " §8x"
+											amount = entry.substring(countIndex + 4);
 										}
 
 										if (upgradeName.endsWith(" Essence")) {
