@@ -34,6 +34,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -88,7 +89,8 @@ public class DevTestCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		if (!DEV_TESTERS.contains(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())) {
+		if (!DEV_TESTERS.contains(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())
+			&& !(boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
 			if (devFailIndex >= DEV_FAIL_STRINGS.length) {
 				throw new Error("L") {
 					@Override
