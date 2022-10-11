@@ -55,7 +55,7 @@ public class PronounDB {
 		HE("he", "him", "his"),
 		IT("it", "it", "its"),
 		SHE("she", "her", "hers"),
-		THEY("they", "they", "theirs");
+		THEY("they", "them", "theirs");
 
 		private final String subject;
 		private final String object;

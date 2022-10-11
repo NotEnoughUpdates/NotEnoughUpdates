@@ -385,9 +385,9 @@ public class ItemUtils {
 									if (j < (levelPercent / 5)) {
 										sb.append(EnumChatFormatting.DARK_GREEN);
 									} else {
-										sb.append(EnumChatFormatting.GRAY);
+										sb.append(EnumChatFormatting.WHITE);
 									}
-									sb.append("-");
+									sb.append(EnumChatFormatting.BOLD + "" + EnumChatFormatting.STRIKETHROUGH + " ");
 								}
 								newLore.appendTag(new NBTTagString(sb.toString()));
 								newLore.appendTag(new NBTTagString(
