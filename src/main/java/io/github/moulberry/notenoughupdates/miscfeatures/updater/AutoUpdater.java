@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.util.MoulSigner;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -171,6 +172,14 @@ public class AutoUpdater {
 		File repo = neu.manager.repoLocation;
 		File updateJson = new File(repo, "update.json");
 		if (updateJson.exists()) {
+			if (!MoulSigner.verifySignature(updateJson)) {
+				NotEnoughUpdates.LOGGER.error("update.json found without signature");
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+					"§e[NEU] §cThere has been an error checking for updates. Check the log or join the discord for more information.").setChatStyle(
+					Utils.createClickStyle(
+						ClickEvent.Action.OPEN_URL, "https://discord.gg/moulberry")));
+				return;
+			}
 			try {
 				JsonObject o = neu.manager.getJsonFromFile(updateJson);
 
