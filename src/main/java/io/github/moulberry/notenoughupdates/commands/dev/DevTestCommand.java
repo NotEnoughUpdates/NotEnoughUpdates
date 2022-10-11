@@ -90,7 +90,7 @@ public class DevTestCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (!DEV_TESTERS.contains(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())
-			&& !(boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
+			&& Launch.blackboard.get("fml.deobfuscatedEnvironment") != true) {
 			if (devFailIndex >= DEV_FAIL_STRINGS.length) {
 				throw new Error("L") {
 					@Override
