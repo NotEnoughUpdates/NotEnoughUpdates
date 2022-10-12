@@ -27,8 +27,10 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
@@ -224,9 +226,17 @@ public class EntityViewer extends GuiScreen {
 		float bottomOffset = 0F;
 		EntityLivingBase stack = entity;
 		while (true) {
-
+			if (stack instanceof EntityDragon) {
+				scale = 5;
+				bottomOffset = 6F;
+			} else if (stack instanceof EntityWither) {
+				scale = 15;
+			} else if (stack instanceof EntityGhast) {
+				scale = 8;
+				bottomOffset = 4F;
+			}
 			stack.ticksExisted = Minecraft.getMinecraft().thePlayer.ticksExisted;
-			GuiInventory.drawEntityOnScreen(
+			drawEntityOnScreen(
 				posX,
 				(int) (posY - bottomOffset * scale),
 				scale,
@@ -241,5 +251,45 @@ public class EntityViewer extends GuiScreen {
 			stack = (EntityLivingBase) stack.riddenByEntity;
 		}
 
+	}
+
+	// Need this to flip the ender dragon and make it follow mouse correctly
+	public static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+		GlStateManager.enableColorMaterial();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate((float)posX, (float)posY, 50.0F);
+		GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+		float f = ent.renderYawOffset;
+		float g = ent.rotationYaw;
+		float h = ent.rotationPitch;
+		float i = ent.prevRotationYawHead;
+		float j = ent.rotationYawHead;
+		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+		RenderHelper.enableStandardItemLighting();
+		GlStateManager.rotate((ent instanceof EntityDragon) ? 45.0F : -135.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate((ent instanceof EntityDragon) ? ((float)Math.atan(mouseY / 40.0F)) * 20.0F : -((float)Math.atan(mouseY / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
+		ent.renderYawOffset = (float)Math.atan(mouseX / 40.0F) * 20.0F;
+		ent.rotationYaw = (float)Math.atan(mouseX / 40.0F) * 40.0F;
+		ent.rotationPitch = -((float)Math.atan(mouseY / 40.0F)) * 20.0F;
+		ent.rotationYawHead = ent.rotationYaw;
+		ent.prevRotationYawHead = ent.rotationYaw;
+		GlStateManager.translate(0.0F, 0.0F, 0.0F);
+		RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+		renderManager.setPlayerViewY(180.0F);
+		renderManager.setRenderShadow(false);
+		renderManager.renderEntityWithPosYaw(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+		renderManager.setRenderShadow(true);
+		ent.renderYawOffset = f;
+		ent.rotationYaw = g;
+		ent.rotationPitch = h;
+		ent.prevRotationYawHead = i;
+		ent.rotationYawHead = j;
+		GlStateManager.popMatrix();
+		RenderHelper.disableStandardItemLighting();
+		GlStateManager.disableRescaleNormal();
+		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GlStateManager.disableTexture2D();
+		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 	}
 }
