@@ -1269,7 +1269,7 @@ public class RenderListener {
 										if (upgradeName.endsWith(" Essence")) {
 											// First 2 chars are control code
 											// [EssenceCount, EssenceType, "Essence"]
-											String[] upgradeNameSplit = upgradeName.substring(3).split(" ");
+											String[] upgradeNameSplit = upgradeName.substring(2).split(" ");
 											newEntry.addProperty("type", upgradeNameSplit[1]);
 											newEntry.addProperty(starsStr, Integer.parseInt(upgradeNameSplit[0].replace(",", "")));
 										} else {
