@@ -26,7 +26,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.util.function.Consumer;
 
@@ -62,9 +61,11 @@ public class GuiElementBoolean extends GuiElement {
 
 	@Override
 	public void render() {
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BAR);
+		RenderUtils.drawTexturedRect(x, y, xSize, ySize);
+
 		GlStateManager.color(1, 1, 1, 1);
 		ResourceLocation buttonLoc = GuiTextures.ON;
-		ResourceLocation barLoc = GuiTextures.BAR_ON;
 		long currentMillis = System.currentTimeMillis();
 		long deltaMillis = currentMillis - lastMillis;
 		lastMillis = currentMillis;
@@ -101,25 +102,16 @@ public class GuiElementBoolean extends GuiElement {
 		int animation = (int) (LerpUtils.sigmoidZeroOne(this.animation / 36f) * 36);
 		if (animation < 3) {
 			buttonLoc = GuiTextures.OFF;
-			barLoc = GuiTextures.BAR;
 		} else if (animation < 13) {
 			buttonLoc = GuiTextures.ONE;
-			barLoc = GuiTextures.BAR_ONE;
 		} else if (animation < 23) {
 			buttonLoc = GuiTextures.TWO;
-			barLoc = GuiTextures.BAR_TWO;
 		} else if (animation < 33) {
 			buttonLoc = GuiTextures.THREE;
-			barLoc = GuiTextures.BAR_THREE;
 		}
 
-		GL11.glTranslatef(0, 0, 100);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(buttonLoc);
 		RenderUtils.drawTexturedRect(x + animation, y, 12, 14);
-		GL11.glTranslatef(0, 0, -100);
-
-		Minecraft.getMinecraft().getTextureManager().bindTexture(barLoc);
-		RenderUtils.drawTexturedRect(x, y, xSize, ySize);
 	}
 
 	@Override
