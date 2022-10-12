@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Mixin(GuiTextField.class)
 public abstract class MixinGuiTextField {
@@ -55,6 +54,10 @@ public abstract class MixinGuiTextField {
 	public abstract void setText(String string);
 
 	private void addToStack(String string) {
+		if (currentStringStackIndex != -1 && currentStringStackIndex != stringStack.size() - 1) {
+			//did redo/undo before
+			stringStack.subList(currentStringStackIndex, stringStack.size()).clear();
+		}
 		if (stringStack.size() > 20) {
 			stringStack.remove(0);
 		}
@@ -64,28 +67,16 @@ public abstract class MixinGuiTextField {
 
 	@Inject(method = "setText", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)
 	public void setText_stringStack(String string, CallbackInfo ci) {
-		if (currentStringStackIndex != -1 && currentStringStackIndex != stringStack.size() - 1) {
-			//did redo/undo before
-			stringStack.subList(currentStringStackIndex, stringStack.size()).clear();
-		}
 		addToStack(string.length() > this.maxStringLength ? string.substring(0, this.maxStringLength) : string);
 	}
 
 	@Inject(method = "writeText", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiTextField;moveCursorBy(I)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
 	public void writeText_stringStack(String string, CallbackInfo ci, String string2, String string3, int i, int j, int l) {
-		if (currentStringStackIndex != -1 && currentStringStackIndex != stringStack.size() - 1) {
-			//did redo/undo before
-			stringStack.subList(currentStringStackIndex, stringStack.size()).clear();
-		}
 		addToStack(string2);
 	}
 
 	@Inject(method = "deleteFromCursor", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Predicate;apply(Ljava/lang/Object;)Z"), locals = LocalCapture.PRINT)
 	public void deleteFromCursor_stringStack(int i, CallbackInfo ci, boolean bl, int j, int k, String string) {
-		if (currentStringStackIndex != -1 && currentStringStackIndex != stringStack.size() - 1) {
-			//did redo/undo before
-			stringStack.subList(currentStringStackIndex, stringStack.size()).clear();
-		}
 			addToStack(string);
 	}
 
