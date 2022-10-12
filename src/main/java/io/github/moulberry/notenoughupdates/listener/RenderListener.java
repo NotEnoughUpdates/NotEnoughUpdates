@@ -1284,7 +1284,7 @@ public class RenderListener {
 												.getAsJsonObject()
 												.get(starsStr)
 												.getAsJsonArray()
-												.add(new JsonPrimitive(upgradeName + " §8x" + amount));
+												.add(new JsonPrimitive(upgradeName + (upgradeName.contains("Coins") ? "" : (" §8x" + amount))));
 										}
 									}
 								}
