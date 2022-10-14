@@ -1316,6 +1316,100 @@ public class RenderListener {
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details."));
 				}
+			} else if (lower.getName().contains("Draconic Altar Guide")) {
+				try {
+					for (int i = 0; i < 54; i++) {
+						File file = null;
+						String fileContent = null;
+						JsonObject newEntry = new JsonObject();
+						JsonObject jsonObject = null;
+						String id = null;
+
+						ItemStack stack = lower.getStackInSlot(i);
+						if (stack == null) continue;
+						if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
+							stack.getItem() != Items.arrow) {
+							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
+
+								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+								int costIndex = 10000;
+								id = StringUtils.stripControlCodes(stack.getDisplayName().replace(" ", "_").toUpperCase(Locale.US));
+								id = ItemUtils.fixDraconicId(id);
+								if (!neu.manager.isValidInternalName(id)) continue;
+
+								file = new File(
+									Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
+									"config/notenoughupdates/repo/items/" + id + ".json"
+								);
+								fileContent = new BufferedReader(new InputStreamReader(
+									Files.newInputStream(file.toPath()),
+									StandardCharsets.UTF_8
+								))
+									.lines()
+									.collect(Collectors.joining(System.lineSeparator()));
+								jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+
+								int essence = -1;
+								boolean funny = true;
+								for (int j = 0; j < lore.tagCount(); j++) {
+									String entry = lore.getStringTagAt(j);
+									if (entry.equals("§8§m-----------------")) {
+										costIndex = j;
+									}
+									if (j > costIndex) {
+										if (j == costIndex + 1) {
+											if (entry.startsWith("§7Dragon Essence: §d")) {
+												essence = Integer.parseInt(entry.substring("§7Dragon Essence: §d".length()));
+											} else {
+												funny = false;
+											}
+											continue;
+										} else if (j == costIndex + 2 && funny) continue;
+										entry = entry.trim();
+										if (!newEntry.has("items")) {
+											newEntry.add("items", new JsonArray());
+										}
+										/*if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(j - costIndex))) {
+											newEntry.get("items").getAsJsonObject().add(String.valueOf(j - costIndex), new JsonArray());
+										}*/
+										newEntry
+										.get("items")
+											.getAsJsonArray()
+											.add(new JsonPrimitive(entry.trim()));
+									}
+								}
+								if (essence != -1) jsonObject.add("dragon_essence", new JsonPrimitive(essence));
+								jsonObject.add("items", newEntry.get("items"));
+							}
+						}
+						if (jsonObject == null) continue;
+						if (jsonObject.has("items")) {
+							JsonArray itemsObj = jsonObject.get("items").getAsJsonArray();
+							jsonObject.remove("items");
+							jsonObject.add("items", itemsObj);
+						}
+						Gson gson = new GsonBuilder().setPrettyPrinting().create();
+						try {
+							try (
+								BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+									Files.newOutputStream(file.toPath()),
+									StandardCharsets.UTF_8
+								))
+							) {
+								writer.write(gson.toJson(jsonObject));
+								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+									EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + id));
+							}
+						} catch (IOException ignored) {
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.RED + "Error while writing file."));
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details."));
+				}
 			}
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_RETURN) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			Minecraft mc = Minecraft.getMinecraft();
