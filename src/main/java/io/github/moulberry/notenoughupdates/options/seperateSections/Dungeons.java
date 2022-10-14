@@ -278,7 +278,7 @@ public class Dungeons {
 		desc = "Opens the players' pv when clicking on the Party Finder join message"
 	)
 	@ConfigEditorBoolean
-	public boolean openPvOnPartyJoin = false;
+	public boolean openPvOnPartyJoin = true;
 
 
 }
