@@ -60,7 +60,8 @@ public class DevTestCommand extends ClientCommandBase {
 			"698e199d-6bd1-4b10-ab0c-52fedd1460dc", // craftyoldminer
 			"8a9f1841-48e9-48ed-b14f-76a124e6c9df", // eisengolem
 			"a7d6b3f1-8425-48e5-8acc-9a38ab9b86f7", // whalker
-			"0ce87d5a-fa5f-4619-ae78-872d9c5e07fe"  // ascynx
+			"0ce87d5a-fa5f-4619-ae78-872d9c5e07fe", // ascynx
+			"a049a538-4dd8-43f8-87d5-03f09d48b4dc"  // egirlefe
 		);
 
 	private static final String[] DEV_FAIL_STRINGS = {
