@@ -31,9 +31,9 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -109,14 +109,16 @@ public class ChatListener {
 
 	Pattern pattern = Pattern.compile("Dungeon Finder > (.+) joined the dungeon group! .+");
 
-	private IChatComponent insertPvCommandInMessage(IChatComponent chatComponent) {
-		String message = chatComponent.getUnformattedText();
+	private void insertPvCommandInMessage(IChatComponent chatComponent) {
+		String message = chatComponent.createCopy().getUnformattedText();
 		String username = "";
 		Matcher matcher = pattern.matcher(message);
+		boolean partyFinderJoinMessage = false;
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin &&
 			matcher.matches() &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			username = matcher.group(1);
+			partyFinderJoinMessage = true;
 		}
 		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null &&
 			chatComponent.getChatStyle().getChatClickEvent() != null &&
@@ -127,29 +129,28 @@ public class ChatListener {
 			}
 		}
 
-		if (username.isEmpty()) return chatComponent;
+		if (username.isEmpty()) return;
 
-		ChatStyle finalClickStyle = null;
 		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1 ||
-			NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin) {
-			finalClickStyle = Utils.createClickStyle(
-				ClickEvent.Action.RUN_COMMAND,
-				"/pv " + username,
-				"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-					username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
-					EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
-					EnumChatFormatting.YELLOW + " profile viewer."
-			);
+			(NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin && partyFinderJoinMessage)) {
+			chatComponent.getChatStyle().setChatHoverEvent(new HoverEvent(
+				HoverEvent.Action.SHOW_TEXT,
+				new ChatComponentText(
+					"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+						username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
+						EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
+						EnumChatFormatting.YELLOW + " profile viewer.")
+			));
+			chatComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pv " + username));
 		} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
-			finalClickStyle = Utils.createClickStyle(
-				ClickEvent.Action.RUN_COMMAND,
-				"/ah " + username,
-				"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-					username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
-			);
+			chatComponent.getChatStyle().setChatHoverEvent(new HoverEvent(
+				HoverEvent.Action.SHOW_TEXT,
+				new ChatComponentText(
+					"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+						username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page")
+			));
+			chatComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ah " + username));
 		}
-		chatComponent.setChatStyle(finalClickStyle);
-		return chatComponent;
 	}
 
 	/**
@@ -165,7 +166,8 @@ public class ChatListener {
 			e.message = processChatComponent(e.message);
 			return;
 		} else if (e.type == 0) {
-			e.message = insertPvCommandInMessage(e.message);
+			insertPvCommandInMessage(e.message);
+			return;
 		}
 
 		DungeonWin.onChatMessage(e);
