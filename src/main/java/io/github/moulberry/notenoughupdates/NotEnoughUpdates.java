@@ -44,6 +44,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
+import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.DwarvenMinesWaypoints;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
@@ -283,6 +284,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
 		MinecraftForge.EVENT_BUS.register(new FuelBar());
 		MinecraftForge.EVENT_BUS.register(new AuctionProfit());
+		MinecraftForge.EVENT_BUS.register(new DungeonNpcProfitOverlay());
 		MinecraftForge.EVENT_BUS.register(XPInformation.getInstance());
 		MinecraftForge.EVENT_BUS.register(OverlayManager.petInfoOverlay);
 		MinecraftForge.EVENT_BUS.register(OverlayManager.timersOverlay);
