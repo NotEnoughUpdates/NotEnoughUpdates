@@ -272,4 +272,13 @@ public class Dungeons {
 	@ConfigAccordionId(id = 2)
 	public String dungBatColour = "0:255:12:255:0";
 
+	@Expose
+	@ConfigOption(
+		name = "Open Pv On Join ",
+		desc = "Opens the players' pv when clicking on the Party Finder join message"
+	)
+	@ConfigEditorBoolean
+	public boolean openPvOnPartyJoin = false;
+
+
 }
