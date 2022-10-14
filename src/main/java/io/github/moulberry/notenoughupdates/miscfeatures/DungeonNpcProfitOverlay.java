@@ -78,6 +78,20 @@ public class DungeonNpcProfitOverlay {
 		//render(guiChest);
 	}
 
+	/**
+	 * Tries to create a SkyblockItem from the given lore line.
+	 * <p>
+	 * This involves checking for:
+	 * <ul>
+	 *   <li>Enchanted books</li>
+	 *   <li>Dungeon essence</li>
+	 *   <li>Normal items that can appear in dungeon chests</li>
+	 * </ul>
+	 *
+	 * @param line the line to be parsed
+	 * @return a new SkyblockItem if possible, otherwise null
+	 * @see SkyblockItem
+	 */
 	private @Nullable SkyblockItem tryToParseLoreLine(String line) {
 		Matcher essenceMatcher = essencePattern.matcher(line);
 		Matcher enchantedBookMatcher = enchantedBookPattern.matcher(line);
@@ -127,6 +141,11 @@ public class DungeonNpcProfitOverlay {
 		return null;
 	}
 
+	/**
+	 * Updates the profit applicable for the chests currently visible
+	 *
+	 * @param guiChest the GuiChest containing the Dungeon Chest previews
+	 */
 	private void updateDungeonChests(GuiChest guiChest) {
 		chestProfits.clear();
 		List<Slot> inventorySlots = guiChest.inventorySlots.inventorySlots;
@@ -193,11 +212,33 @@ public class DungeonNpcProfitOverlay {
 		}
 	}
 
+	/**
+	 * Dataclass holding info on a single Dungeon Chest Preview
+	 * <p>
+	 * This includes:
+	 * <ul>
+	 *   <li>The items, represented as a SkyblockItem</li>
+	 *   <li>The cost to open the chest</li>
+	 * </ul>
+	 *
+	 * @see SkyblockItem
+	 */
 	private static class DungeonChest {
 		private List<SkyblockItem> items = new ArrayList<>();
 		private int cost = -1;
 	}
 
+	/**
+	 * Dataclass holding info on a single skyblock item which is part of a DungeonChest
+	 * <p>
+	 * This includes:
+	 * <ul>
+	 *   <li>The internal name of the item</li>
+	 *   <li>The amount</li>
+	 * </ul>
+	 *
+	 * @see DungeonChest
+	 */
 	private static class SkyblockItem {
 		private final String internalName;
 		private final int amount;
