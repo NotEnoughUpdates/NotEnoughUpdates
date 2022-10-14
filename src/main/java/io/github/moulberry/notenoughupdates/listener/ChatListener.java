@@ -107,18 +107,21 @@ public class ChatListener {
 		return newComponent;
 	}
 
-	Pattern pattern = Pattern.compile("Dungeon Finder > (.+) joined the dungeon group! .+");
+	Pattern partyFinderPattern = Pattern.compile("Dungeon Finder > (.+) joined the dungeon group! .+");
 
 	private void insertPvCommandInMessage(IChatComponent chatComponent) {
-		String message = chatComponent.createCopy().getUnformattedText();
+		if (chatComponent.getChatStyle() == null) {
+			return;
+		}
+		String message = chatComponent.getUnformattedText();
 		String username = "";
-		Matcher matcher = pattern.matcher(message);
-		boolean partyFinderJoinMessage = false;
+		Matcher matcher = partyFinderPattern.matcher(message);
+		boolean partyFinderMessage = false;
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin &&
 			matcher.matches() &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			username = matcher.group(1);
-			partyFinderJoinMessage = true;
+			partyFinderMessage = true;
 		}
 		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null &&
 			chatComponent.getChatStyle().getChatClickEvent() != null &&
@@ -132,7 +135,7 @@ public class ChatListener {
 		if (username.isEmpty()) return;
 
 		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1 ||
-			(NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin && partyFinderJoinMessage)) {
+			(NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin && partyFinderMessage)) {
 			chatComponent.getChatStyle().setChatHoverEvent(new HoverEvent(
 				HoverEvent.Action.SHOW_TEXT,
 				new ChatComponentText(
