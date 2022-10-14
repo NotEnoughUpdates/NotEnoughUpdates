@@ -274,7 +274,7 @@ public class Dungeons {
 
 	@Expose
 	@ConfigOption(
-		name = "Open Pv On Join ",
+		name = "Add Pv Command Click on Party Finder Join",
 		desc = "Opens the players' pv when clicking on the Party Finder join message"
 	)
 	@ConfigEditorBoolean
