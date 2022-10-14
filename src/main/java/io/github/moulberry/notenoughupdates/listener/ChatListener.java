@@ -167,7 +167,6 @@ public class ChatListener {
 			return;
 		} else if (e.type == 0) {
 			insertPvCommandInMessage(e.message);
-			return;
 		}
 
 		DungeonWin.onChatMessage(e);
