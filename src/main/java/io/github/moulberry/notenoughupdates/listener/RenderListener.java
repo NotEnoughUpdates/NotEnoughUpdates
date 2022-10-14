@@ -1366,27 +1366,24 @@ public class RenderListener {
 											continue;
 										} else if (j == costIndex + 2 && funny) continue;
 										entry = entry.trim();
-										if (!newEntry.has("items")) {
-											newEntry.add("items", new JsonArray());
+										if (!newEntry.has("dragon_items")) {
+											newEntry.add("dragon_items", new JsonArray());
 										}
-										/*if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(j - costIndex))) {
-											newEntry.get("items").getAsJsonObject().add(String.valueOf(j - costIndex), new JsonArray());
-										}*/
 										newEntry
-										.get("items")
+										.get("dragon_items")
 											.getAsJsonArray()
 											.add(new JsonPrimitive(entry.trim()));
 									}
 								}
 								if (essence != -1) jsonObject.add("dragon_essence", new JsonPrimitive(essence));
-								jsonObject.add("items", newEntry.get("items"));
+								jsonObject.add("dragon_items", newEntry.get("dragon_items"));
 							}
 						}
 						if (jsonObject == null) continue;
-						if (jsonObject.has("items")) {
-							JsonArray itemsObj = jsonObject.get("items").getAsJsonArray();
-							jsonObject.remove("items");
-							jsonObject.add("items", itemsObj);
+						if (jsonObject.has("dragon_items")) {
+							JsonArray itemsObj = jsonObject.get("dragon_items").getAsJsonArray();
+							jsonObject.remove("dragon_items");
+							jsonObject.add("dragon_items", itemsObj);
 						}
 						Gson gson = new GsonBuilder().setPrettyPrinting().create();
 						try {
