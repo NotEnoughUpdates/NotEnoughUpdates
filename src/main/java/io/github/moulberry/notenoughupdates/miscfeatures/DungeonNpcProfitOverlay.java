@@ -28,18 +28,23 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,18 +53,55 @@ import java.util.regex.Pattern;
 
 public class DungeonNpcProfitOverlay {
 
-	public static final ResourceLocation dungeonProfitResource =
+	private static final ResourceLocation dungeonProfitResource =
 		new ResourceLocation("notenoughupdates:dungeon_chest_worth.png");
 
-	private final Pattern chestNamePattern = Pattern.compile(".+ Catacombs - Floor .+");
-	private final Pattern essencePattern = Pattern.compile("^§.(?<essenceType>\\w+) \\w+ §.x(?<essenceAmount>\\d+)$");
-	private final Pattern enchantedBookPattern = Pattern.compile("^§.Enchanted Book \\((?<enchantName>.*)\\)");
-	private List<DungeonChest> chestProfits;
-	private long lastUpdate = -1;
+	private static final Pattern chestNamePattern = Pattern.compile(".+ Catacombs - Floor .+");
+	private static final Pattern essencePattern = Pattern.compile(
+		"^§.(?<essenceType>\\w+) Essence §.x(?<essenceAmount>\\d+)$");
+	private static final Pattern enchantedBookPattern = Pattern.compile("^§.Enchanted Book \\((?<enchantName>.*)\\)");
+	private static List<DungeonChest> chestProfits;
+
+	/**
+	 * Check the current status for the overlay
+	 *
+	 * @return if the overlay is rendering right now
+	 */
+	public static boolean isRendering() {
+		return NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay && chestProfits != null;
+	}
+
+	/**
+	 * Highlight the slot that is being drawn if applicable. Called by MixinGuiContainer
+	 *
+	 * @param slot the slot to be checked
+	 * @see io.github.moulberry.notenoughupdates.mixins.MixinGuiContainer#drawSlot(Slot, CallbackInfo)
+	 */
+	public static void onDrawSlot(Slot slot) {
+		if (isRendering() && NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit) {
+			for (DungeonChest chestProfit : chestProfits) {
+				if (chestProfit.shouldHighlight) {
+					if (slot.slotNumber == chestProfit.slot) {
+						Gui.drawRect(
+							slot.xDisplayPosition,
+							slot.yDisplayPosition,
+							slot.xDisplayPosition + 16,
+							slot.yDisplayPosition + 16,
+							Color.BLUE.getRGB()
+						);
+					}
+				}
+			}
+		}
+	}
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
-		if (!(event.gui instanceof GuiChest)) return;
+		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest)) {
+			chestProfits = null;
+			return;
+		}
+
 		String lastOpenChestName = SBInfo.getInstance().lastOpenChestName;
 		Matcher matcher = chestNamePattern.matcher(lastOpenChestName);
 		if (!matcher.matches()) {
@@ -71,83 +113,16 @@ public class DungeonNpcProfitOverlay {
 		if (chestProfits == null) {
 			chestProfits = new ArrayList<>();
 			updateDungeonChests(guiChest);
-		} else if ((System.currentTimeMillis()) > lastUpdate + 1000) {
-			lastUpdate = System.currentTimeMillis();
-			updateDungeonChests(guiChest);
 		}
-		//render(guiChest);
+		render(guiChest);
 	}
 
 	/**
-	 * Tries to create a SkyblockItem from the given lore line.
-	 * <p>
-	 * This involves checking for:
-	 * <ul>
-	 *   <li>Enchanted books</li>
-	 *   <li>Dungeon essence</li>
-	 *   <li>Normal items that can appear in dungeon chests</li>
-	 * </ul>
-	 *
-	 * @param line the line to be parsed
-	 * @return a new SkyblockItem if possible, otherwise null
-	 * @see SkyblockItem
-	 */
-	private @Nullable SkyblockItem tryToParseLoreLine(String line) {
-		Matcher essenceMatcher = essencePattern.matcher(line);
-		Matcher enchantedBookMatcher = enchantedBookPattern.matcher(line);
-
-		if (enchantedBookMatcher.matches()) {
-			String enchant = StringUtils.cleanColour(enchantedBookMatcher.group("enchantName"));
-
-			for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.entrySet()) {
-				String displayName = StringUtils.cleanColour(entry.getValue().get("displayname").getAsString());
-				if (displayName.equals("Enchanted Book")) {
-					JsonArray lore = entry.getValue().get("lore").getAsJsonArray();
-					String enchantName = StringUtils.cleanColour(lore.get(0).getAsString());
-					if (enchant.equals(enchantName)) {
-						return new SkyblockItem(entry.getKey(), 1);
-					}
-				}
-			}
-		} else if (essenceMatcher.matches()) {
-			String essenceType = essenceMatcher.group("essenceType");
-			String essenceAmount = essenceMatcher.group("essenceAmount");
-			if (essenceType == null || essenceAmount == null) {
-				return null;
-			}
-
-			String internalName = "ESSENCE_" + essenceType.toUpperCase(Locale.ROOT);
-			if (!NotEnoughUpdates.INSTANCE.manager.isValidInternalName(internalName)) {
-				return null;
-			}
-
-			//this can only be an integer if the regex matches
-			int amount = Integer.parseInt(essenceAmount);
-			return new SkyblockItem(internalName, amount);
-		} else {
-			String s = StringUtils.cleanColour(line.trim());
-			for (Map.Entry<String, JsonObject> entries : NotEnoughUpdates.INSTANCE.manager
-				.getItemInformation()
-				.entrySet()) {
-				String displayName = entries.getValue().get("displayname").getAsString();
-				String cleanDisplayName = StringUtils.cleanColour(displayName);
-				if (s.equals(cleanDisplayName)) {
-					return new SkyblockItem(entries.getKey(), 1);
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Updates the profit applicable for the chests currently visible
+	 * Update the profit applicable for the chests currently visible
 	 *
 	 * @param guiChest the GuiChest containing the Dungeon Chest previews
 	 */
 	private void updateDungeonChests(GuiChest guiChest) {
-		chestProfits.clear();
 		List<Slot> inventorySlots = guiChest.inventorySlots.inventorySlots;
 		//loop through the upper chest
 		for (int i = 0; i < 27; i++) {
@@ -160,9 +135,11 @@ public class DungeonNpcProfitOverlay {
 			if (stack != null && stack.getItem() != null && stack.getItem() == Items.skull) {
 				//each item is a DungeonChest
 				DungeonChest dungeonChest = new DungeonChest();
+				dungeonChest.slot = i;
 
 				List<String> lore = ItemUtils.getLore(stack);
 				if ("§7Contents".equals(lore.get(0))) {
+					dungeonChest.name = stack.getDisplayName();
 					List<SkyblockItem> items = new ArrayList<>();
 					for (String s : lore) {
 						//check if this line is showing the cost of opening the Chest
@@ -171,23 +148,37 @@ public class DungeonNpcProfitOverlay {
 							int whitespace = coinString.indexOf(' ');
 							if (whitespace != -1) {
 								String amountString = coinString.substring(0, whitespace).replace(",", "");
-								dungeonChest.cost = Integer.parseInt(amountString);
+								dungeonChest.costToOpen = Integer.parseInt(amountString);
 								continue;
 							}
+						} else if (s.equals("§aFREE")) {
+							dungeonChest.costToOpen = 0;
 						}
 
 						//check if the line can be converted to a SkyblockItem
-						SkyblockItem skyblockItem = tryToParseLoreLine(s);
+						SkyblockItem skyblockItem = SkyblockItem.createFromLoreEntry(s);
 						if (skyblockItem != null) {
 							items.add(skyblockItem);
 						}
 					}
 					dungeonChest.items = items;
-					if (dungeonChest.cost != -1) {
+					if (dungeonChest.costToOpen != -1) {
+						dungeonChest.calculateProfit();
 						chestProfits.add(dungeonChest);
 					}
 				}
 			}
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
+			chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
+			List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
+			copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+
+			copiedList.get(0).shouldHighlight = true;
 		}
 	}
 
@@ -203,10 +194,12 @@ public class DungeonNpcProfitOverlay {
 		for (int i = 0; i < chestProfits.size(); i++) {
 			DungeonChest chestProfit = chestProfits.get(i);
 			Utils.renderAlignedString(
-				": ",
-				"lol",
+				chestProfit.name,
+				(chestProfit.profit > 0
+					? EnumChatFormatting.GREEN.toString()
+					: EnumChatFormatting.RED) + Utils.shortNumberFormat(chestProfit.profit, 0),
 				guiLeft + xSize + 4 + 10,
-				guiTop + 2 + (i * 3),
+				guiTop + 6 + (i * 10),
 				160
 			);
 		}
@@ -225,7 +218,23 @@ public class DungeonNpcProfitOverlay {
 	 */
 	private static class DungeonChest {
 		private List<SkyblockItem> items = new ArrayList<>();
-		private int cost = -1;
+		private int costToOpen = -1;
+		private String name;
+		private int slot;
+		private boolean shouldHighlight = false;
+		private double profit;
+
+		public double getProfit() {
+			return profit;
+		}
+
+		public void calculateProfit() {
+			profit = 0d;
+			for (SkyblockItem item : items) {
+				profit += item.calculateCost();
+			}
+			profit -= costToOpen;
+		}
 	}
 
 	/**
@@ -248,8 +257,79 @@ public class DungeonNpcProfitOverlay {
 			this.amount = amount;
 		}
 
+		/**
+		 * Try to create a SkyblockItem from the given lore line.
+		 * <p>
+		 * This involves checking for:
+		 * <ul>
+		 *   <li>Enchanted books</li>
+		 *   <li>Dungeon essence</li>
+		 *   <li>Normal items that can appear in dungeon chests</li>
+		 * </ul>
+		 *
+		 * @param line the line to be parsed
+		 * @return a new SkyblockItem if possible, otherwise null
+		 */
+		public static @Nullable SkyblockItem createFromLoreEntry(String line) {
+			Matcher essenceMatcher = essencePattern.matcher(line);
+			Matcher enchantedBookMatcher = enchantedBookPattern.matcher(line);
+
+			if (enchantedBookMatcher.matches()) {
+				String enchant = StringUtils.cleanColour(enchantedBookMatcher.group("enchantName"));
+
+				for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.entrySet()) {
+					String displayName = StringUtils.cleanColour(entry.getValue().get("displayname").getAsString());
+					if (displayName.equals("Enchanted Book")) {
+						JsonArray lore = entry.getValue().get("lore").getAsJsonArray();
+						String enchantName = StringUtils.cleanColour(lore.get(0).getAsString());
+						if (enchant.equals(enchantName)) {
+							return new SkyblockItem(entry.getKey(), 1);
+						}
+					}
+				}
+			} else if (essenceMatcher.matches()) {
+				String essenceType = essenceMatcher.group("essenceType");
+				String essenceAmount = essenceMatcher.group("essenceAmount");
+				if (essenceType == null || essenceAmount == null) {
+					return null;
+				}
+
+				String internalName = "ESSENCE_" + essenceType.toUpperCase(Locale.ROOT);
+				if (!NotEnoughUpdates.INSTANCE.manager.isValidInternalName(internalName)) {
+					return null;
+				}
+
+				//this can only be an integer if the regex matches
+				int amount = Integer.parseInt(essenceAmount);
+				return new SkyblockItem(internalName, amount);
+			} else {
+				String s = StringUtils.cleanColour(line.trim());
+				for (Map.Entry<String, JsonObject> entries : NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.entrySet()) {
+					String displayName = entries.getValue().get("displayname").getAsString();
+					String cleanDisplayName = StringUtils.cleanColour(displayName);
+					if (s.equals(cleanDisplayName)) {
+						return new SkyblockItem(entries.getKey(), 1);
+					}
+				}
+			}
+			return null;
+		}
+
+		/**
+		 * Calculate the price of this item, factoring in the amount
+		 *
+		 * @return total price
+		 */
 		public double calculateCost() {
-			return 1d;
+			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName);
+			if (price != -1) {
+				return price * amount;
+			}
+			return 0d;
 		}
 	}
 }
