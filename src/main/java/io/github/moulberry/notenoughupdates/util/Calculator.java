@@ -48,7 +48,7 @@ public class Calculator {
 		int tokenLength;
 	}
 
-	static String binops = "+-*/x";
+	static String binops = "+-*/^x";
 	static String postops = "mkbts";
 	static String digits = "0123456789";
 
@@ -150,6 +150,8 @@ public class Calculator {
 			case "/":
 			case "x":
 				return 1;
+			case "^":
+				return 2;
 		}
 		throw new CalculatorException("Unknown operator " + token.operatorValue, token.tokenStart, token.tokenLength);
 	}
@@ -230,6 +232,9 @@ public class Calculator {
 						BigDecimal right = values.pop().setScale(2, RoundingMode.HALF_UP);
 						BigDecimal left = values.pop().setScale(2, RoundingMode.HALF_UP);
 						switch (command.operatorValue.intern()) {
+							case "^":
+								values.push(left.pow(right.intValue()).setScale(2, RoundingMode.HALF_UP));
+								break;
 							case "x":
 							case "*":
 								values.push(left.multiply(right).setScale(2, RoundingMode.HALF_UP));
