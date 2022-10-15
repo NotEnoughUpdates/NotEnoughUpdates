@@ -61,10 +61,10 @@ public class GuiElementBoolean extends GuiElement {
 
 	@Override
 	public void render() {
+		GlStateManager.color(1, 1, 1, 1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BAR);
 		RenderUtils.drawTexturedRect(x, y, xSize, ySize);
 
-		GlStateManager.color(1, 1, 1, 1);
 		ResourceLocation buttonLoc = GuiTextures.ON;
 		long currentMillis = System.currentTimeMillis();
 		long deltaMillis = currentMillis - lastMillis;
