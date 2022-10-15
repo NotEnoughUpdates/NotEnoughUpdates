@@ -94,6 +94,7 @@ public class NEUItemEditor extends GuiScreen {
 		extraAttributes.removeTag("uuid");
 		extraAttributes.removeTag("timestamp");
 		extraAttributes.removeTag("attributes");
+		extraAttributes.removeTag("originTag");
 
 		if (extraAttributes.hasKey("petInfo")) {
 			String petInfo = extraAttributes.getString("petInfo");
