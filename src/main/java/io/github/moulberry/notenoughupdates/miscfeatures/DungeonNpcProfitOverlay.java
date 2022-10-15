@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
@@ -75,7 +76,7 @@ public class DungeonNpcProfitOverlay {
 	 * Highlight the slot that is being drawn if applicable. Called by MixinGuiContainer
 	 *
 	 * @param slot the slot to be checked
-	 * @see io.github.moulberry.notenoughupdates.mixins.MixinGuiContainer#drawSlot(Slot, CallbackInfo)
+	 * @see io.github.moulberry.notenoughupdates.mixins.MixinGuiContainer#drawSlotRet(Slot, CallbackInfo)
 	 */
 	public static void onDrawSlot(Slot slot) {
 		if (isRendering() && NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit) {
@@ -87,7 +88,7 @@ public class DungeonNpcProfitOverlay {
 							slot.yDisplayPosition,
 							slot.xDisplayPosition + 16,
 							slot.yDisplayPosition + 16,
-							Color.BLUE.getRGB()
+							Color.GREEN.getRGB()
 						);
 					}
 				}
@@ -163,7 +164,7 @@ public class DungeonNpcProfitOverlay {
 					}
 					dungeonChest.items = items;
 					if (dungeonChest.costToOpen != -1) {
-						dungeonChest.calculateProfit();
+						dungeonChest.calculateProfitAndBuildLore();
 						chestProfits.add(dungeonChest);
 					}
 				}
@@ -193,16 +194,37 @@ public class DungeonNpcProfitOverlay {
 
 		for (int i = 0; i < chestProfits.size(); i++) {
 			DungeonChest chestProfit = chestProfits.get(i);
+			int x = guiLeft + xSize + 14;
+			int y = guiTop + 6 + (i * 10);
 			Utils.renderAlignedString(
 				chestProfit.name,
 				(chestProfit.profit > 0
 					? EnumChatFormatting.GREEN.toString()
 					: EnumChatFormatting.RED) + Utils.shortNumberFormat(chestProfit.profit, 0),
-				guiLeft + xSize + 4 + 10,
-				guiTop + 6 + (i * 10),
+				x,
+				y,
 				160
 			);
+
+			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+			int width = scaledResolution.getScaledWidth();
+			int height = scaledResolution.getScaledHeight();
+
+			int mouseX = Utils.getMouseX();
+			int mouseY = Utils.getMouseY();
+
+			if (Utils.isWithinRect(mouseX, mouseY, x, y, 160, 10))
+				Utils.drawHoveringText(
+					chestProfit.lore,
+					mouseX,
+					mouseY,
+					width,
+					height,
+					-1,
+					Minecraft.getMinecraft().fontRendererObj
+				);
 		}
+
 	}
 
 	/**
@@ -218,22 +240,36 @@ public class DungeonNpcProfitOverlay {
 	 */
 	private static class DungeonChest {
 		private List<SkyblockItem> items = new ArrayList<>();
+		private List<String> lore;
 		private int costToOpen = -1;
 		private String name;
 		private int slot;
-		private boolean shouldHighlight = false;
+		private boolean shouldHighlight;
 		private double profit;
 
 		public double getProfit() {
 			return profit;
 		}
 
-		public void calculateProfit() {
+		public void calculateProfitAndBuildLore() {
 			profit = 0d;
+			lore = new ArrayList<>();
+			lore.add(name);
 			for (SkyblockItem item : items) {
-				profit += item.calculateCost();
+				double cost = item.calculateCost();
+				profit += cost;
+				lore.add(
+					EnumChatFormatting.AQUA + " - " + item.getDisplayName() + EnumChatFormatting.RESET + " " +
+						EnumChatFormatting.GREEN +
+						Utils.shortNumberFormat(cost, 0));
 			}
+			lore.add("");
 			profit -= costToOpen;
+			lore.add(
+				EnumChatFormatting.AQUA + "Cost to open: " + EnumChatFormatting.RED + Utils.shortNumberFormat(costToOpen, 0));
+			lore.add(
+				EnumChatFormatting.AQUA + "Total profit: " + (profit > 0 ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) +
+					Utils.shortNumberFormat(profit, 0));
 		}
 	}
 
@@ -330,6 +366,21 @@ public class DungeonNpcProfitOverlay {
 				return price * amount;
 			}
 			return 0d;
+		}
+
+		public String getDisplayName() {
+			JsonObject entry = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+				internalName).resolveToItemListJson();
+			if (entry != null) {
+				String displayName = entry.get("displayname").getAsString();
+				String cleanedDisplayName = StringUtils.cleanColour(displayName);
+				if ("Enchanted Book".equals(cleanedDisplayName)) {
+					return entry.get("lore").getAsJsonArray().get(0).getAsString();
+				} else {
+					return entry.get("displayname").getAsString();
+				}
+			}
+			return "ERROR";
 		}
 	}
 }
