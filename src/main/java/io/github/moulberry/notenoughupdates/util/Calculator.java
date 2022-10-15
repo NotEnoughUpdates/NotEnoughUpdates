@@ -49,7 +49,7 @@ public class Calculator {
 	}
 
 	static String binops = "+-*/^x";
-	static String postops = "mkbts";
+	static String postops = "mkbts%";
 	static String digits = "0123456789";
 
 	static void readDigitsInto(Token token, String source, boolean decimals) {
@@ -284,6 +284,9 @@ public class Calculator {
 								break;
 							case "t":
 								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(2, RoundingMode.HALF_UP));
+								break;
+							case "%":
+								values.push(p.setScale(3, RoundingMode.HALF_UP).divide(new BigDecimal(100), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP));
 								break;
 							default:
 								throw new CalculatorException(
