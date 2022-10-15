@@ -130,6 +130,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final ItemStack COMMISSIONS_ICON = new ItemStack(Items.iron_pickaxe);
 	private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
 	private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
+	private static final ItemStack QUEST_ICON = new ItemStack(Items.book);
 
 	@Override
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -211,6 +212,9 @@ public class TimersOverlay extends TextTabOverlay {
 				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("HEAVY_PEARL"));
+				break;
+			case "Town Quest Board":
+				icon = QUEST_ICON;
 				break;
 		}
 
@@ -386,6 +390,10 @@ public class TimersOverlay extends TextTabOverlay {
 
 		if (!foundGodPotText) {
 			hidden.godPotionDuration = 0;
+		}
+
+		if (SBInfo.getInstance().completedQuests != null && SBInfo.getInstance().completedQuests.size() == 5) {
+			hidden.questBoardCompleted = currentTime;
 		}
 
 		if (!NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlay2) {
@@ -816,6 +824,47 @@ public class TimersOverlay extends TextTabOverlay {
 				DARK_AQUA + "Heavy Pearls: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
+			);
+		}
+
+		if (hidden.questBoardCompleted < midnightReset) {
+			map.put(
+				10,
+				DARK_AQUA + "Town Quest Board: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.questBoardDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+				(hidden.questBoardCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+			map.put(
+				10,
+				DARK_AQUA + "Town Quest Board" +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
+					Utils.prettyTime(timeDiffMidnightNow)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.questBoardDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+			(hidden.questBoardCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+			map.put(
+				10,
+				DARK_AQUA + "Town Quest Board: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
+					Utils.prettyTime(timeDiffMidnightNow)
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.questBoardDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+				(hidden.questBoardCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+			map.put(
+				10,
+				DARK_AQUA + "Town Quest Board: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
+					Utils.prettyTime(timeDiffMidnightNow)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.questBoardDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
+			map.put(
+				10,
+				DARK_AQUA + "Town Quest Board: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
+					Utils.prettyTime(timeDiffMidnightNow)
 			);
 		}
 
