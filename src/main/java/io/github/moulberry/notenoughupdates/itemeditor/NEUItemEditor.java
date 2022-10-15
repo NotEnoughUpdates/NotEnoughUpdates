@@ -93,6 +93,7 @@ public class NEUItemEditor extends GuiScreen {
 		NBTTagCompound extraAttributes = nbtTag.getCompoundTag("ExtraAttributes");
 		extraAttributes.removeTag("uuid");
 		extraAttributes.removeTag("timestamp");
+		extraAttributes.removeTag("attributes");
 
 		if (extraAttributes.hasKey("petInfo")) {
 			String petInfo = extraAttributes.getString("petInfo");
