@@ -34,8 +34,8 @@ public abstract class MixinEntityChargedCreeper {
 
 	@Inject(method = "doRenderLayer(Lnet/minecraft/entity/monster/EntityCreeper;FFFFFFF)V", at = @At("HEAD"), cancellable = true)
 	public void cancelChargedCreeperLayer(EntityCreeper creeper, float f, float g, float partialTicks, float h, float i, float j, float scale, CallbackInfo ci) {
-		//Wither Cloak Creepers: Are invisible, 20 max health, usually less than 7.5M from the player, only existent when active
-		boolean isWitherCloak = creeper.isInvisible() && creeper.getMaxHealth() == 20.0f && creeper.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) < 7.5f && WitherCloakChanger.isCloakActive &&
+		//Wither Cloak Creepers: Is toggled on, Are invisible, 20 max health, usually less than 7.5M from the player, only existent when active, and only in sb obviously
+		boolean isWitherCloak = NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakToggle && creeper.isInvisible() && creeper.getMaxHealth() == 20.0f && creeper.getDistanceToEntity(Minecraft.getMinecraft().thePlayer) < 7.5f && (WitherCloakChanger.isCloakActive || System.currentTimeMillis()-WitherCloakChanger.lastDeactivate < 300) &&
 			NotEnoughUpdates.INSTANCE.isOnSkyblock();
 		if(isWitherCloak) { if(ci.isCancellable()) { ci.cancel(); } }
 	}
