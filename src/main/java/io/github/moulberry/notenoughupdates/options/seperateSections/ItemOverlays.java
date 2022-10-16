@@ -396,7 +396,7 @@ public class ItemOverlays {
 		desc = "Replaces Hypixel Wither Cloak with custom shields due to the Hypixel Wither Cloak being difficult to see through"
 	)
 	@ConfigEditorBoolean
-	public boolean customWitherCloakToggle = false;
+	public boolean customWitherCloakToggle = true;
 
 	@Expose
 	@ConfigAccordionId(id = 7)
