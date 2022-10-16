@@ -59,6 +59,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PowerStoneStatsDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
+import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
@@ -284,6 +285,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new Constants());
 		MinecraftForge.EVENT_BUS.register(new DungeonMap());
 		MinecraftForge.EVENT_BUS.register(new SunTzu());
+		MinecraftForge.EVENT_BUS.register(new WitherCloakChanger());
 		MinecraftForge.EVENT_BUS.register(new MiningStuff());
 		MinecraftForge.EVENT_BUS.register(FairySouls.getInstance());
 		MinecraftForge.EVENT_BUS.register(new CrystalOverlay());
