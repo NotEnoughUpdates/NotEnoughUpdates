@@ -23,14 +23,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,6 +41,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -48,9 +52,42 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private static final ResourceLocation pv_extra = new ResourceLocation("notenoughupdates:pv_extra.png");
 	private TreeMap<Integer, Set<String>> topKills = null;
 	private TreeMap<Integer, Set<String>> topDeaths = null;
+	private int deathScroll = 0;
+	private int killScroll = 0;
+	private int mouseDWheel = 0;
+
 
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
+		getInstance().killDeathSearchTextField.setSize(80, 12);
+	}
+
+	@Override
+	public void keyTyped(char typedChar, int keyCode) throws IOException {
+		super.keyTyped(typedChar, keyCode);
+		if(getInstance().killDeathSearchTextField.getFocus()) {
+			getInstance().killDeathSearchTextField.keyTyped(typedChar, keyCode);
+			killScroll = 0;
+			deathScroll = 0;
+		}
+	}
+
+	@Override
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		//Note: don't know why it made me make it return a boolean, but it fixed the error, so I left it alone.
+
+		//Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
+		if(mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 && mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 && mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
+			getInstance().killDeathSearchTextField.mouseClicked(mouseX, mouseY, mouseButton);
+			getInstance().playerNameTextField.otherComponentClick();
+			return true;
+		}
+
+
+		getInstance().killDeathSearchTextField.otherComponentClick();
+
+		return false;
 	}
 
 	@Override
@@ -480,35 +517,59 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 
+		getInstance().killDeathSearchTextField.render((int) (guiLeft + xStart + xOffset * 3), (int) (guiTop + yStartBottom + 77));
+
+		float killDeathX = guiLeft + xStart + xOffset * 3;
+		if(mouseX >= killDeathX && mouseX <= killDeathX+76) {
+			if(mouseY >= guiTop + yStartTop && mouseY <= guiTop + yStartTop + 65) {
+				if(mouseDWheel != 0) {if(mouseDWheel > 0) {killScroll-=1;} else {killScroll+=1;}} mouseDWheel = Mouse.getDWheel();
+				if(killScroll < 0) {killScroll = 0;}
+			} else if(mouseY >= guiTop + yStartBottom && mouseY <= guiTop + yStartBottom + 65) {
+				if(mouseDWheel != 0) {if(mouseDWheel > 0) {deathScroll-=1;} else {deathScroll+=1;}} mouseDWheel = Mouse.getDWheel();
+				if(deathScroll < 0) {deathScroll = 0;}
+			}
+
+		}
+
 		int index = 0;
+		int skipCount = 0;
 		for (int killCount : topKills.descendingKeySet()) {
-			if (index >= 6) break;
 			Set<String> kills = topKills.get(killCount);
 			for (String killType : kills) {
-				if (index >= 6) break;
-				Utils.renderAlignedString(
-					EnumChatFormatting.YELLOW + killType + " Kills",
-					EnumChatFormatting.WHITE.toString() + killCount,
-					guiLeft + xStart + xOffset * 3,
-					guiTop + yStartTop + yOffset * index,
-					76
-				);
+				boolean isSearch = getInstance().killDeathSearchTextField.getText().isEmpty() || killType.toLowerCase(Locale.ROOT).contains(getInstance().killDeathSearchTextField.getText().toLowerCase(Locale.ROOT));
+				float killY = guiTop + yStartTop + yOffset * ((index-skipCount) - killScroll);
+				if(!isSearch) skipCount++;
+				if(isSearch && killY+6 < guiTop+yStartTop+65 && killY >= guiTop + yStartTop) {
+					Utils.renderAlignedString(
+						EnumChatFormatting.YELLOW + killType + " Kills",
+						EnumChatFormatting.WHITE.toString() + killCount,
+						killDeathX,
+						killY,
+						76
+					);
+				}
+
+
 				index++;
 			}
 		}
 		index = 0;
+		skipCount = 0;
 		for (int deathCount : topDeaths.descendingKeySet()) {
-			if (index >= 6) break;
 			Set<String> deaths = topDeaths.get(deathCount);
 			for (String deathType : deaths) {
-				if (index >= 6) break;
-				Utils.renderAlignedString(
-					EnumChatFormatting.YELLOW + "Deaths: " + deathType,
-					EnumChatFormatting.WHITE.toString() + deathCount,
-					guiLeft + xStart + xOffset * 3,
-					guiTop + yStartBottom + yOffset * index,
-					76
-				);
+				boolean isSearch = getInstance().killDeathSearchTextField.getText().isEmpty() || deathType.toLowerCase(Locale.ROOT).contains(getInstance().killDeathSearchTextField.getText().toLowerCase(Locale.ROOT));
+				float deathY = guiTop + yStartBottom + yOffset * ((index-skipCount) - deathScroll);
+				if(!isSearch) skipCount++;
+				if(isSearch && deathY+6 < guiTop+yStartBottom+65 && deathY >= guiTop + yStartBottom) {
+					Utils.renderAlignedString(
+						EnumChatFormatting.YELLOW + "Deaths: " + deathType,
+						EnumChatFormatting.WHITE.toString() + deathCount,
+						killDeathX,
+						deathY,
+						76
+					);
+				}
 				index++;
 			}
 		}
