@@ -84,7 +84,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Show Waypoint Distance",
-		desc = "Show the distance to each fairy sould waypoint"
+		desc = "Show the distance to each fairy soul waypoint"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
