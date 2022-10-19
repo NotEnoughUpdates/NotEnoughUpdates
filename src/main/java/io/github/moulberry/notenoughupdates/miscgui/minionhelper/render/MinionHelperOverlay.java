@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperMan
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewText;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -38,6 +39,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -64,6 +67,7 @@ public class MinionHelperOverlay {
 	private int cacheTotalPages = -1;
 
 	private boolean filterEnabled = true;
+	private boolean useInstantBuyPrice = true;
 
 	private int maxPerPage = 8;
 	private int currentPage = 0;
@@ -153,10 +157,10 @@ public class MinionHelperOverlay {
 				event.setCanceled(true);
 			}
 		}
-		checkToggleClick();
+		checkButtonClick();
 	}
 
-	private void checkToggleClick() {
+	private void checkButtonClick() {
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 		if (!(gui instanceof GuiChest)) return;
 
@@ -164,18 +168,24 @@ public class MinionHelperOverlay {
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
 
-		int x = guiLeft + xSize + 4 + 149 - 3;
-		int y = guiTop + 109 - 3;
-
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		final int scaledWidth = scaledresolution.getScaledWidth();
 		final int scaledHeight = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
+		int x = guiLeft + xSize + 4 + 149 - 3;
+		int y = guiTop + 109 - 3;
 		if (mouseX > x && mouseX < x + 16 &&
 			mouseY > y && mouseY < y + 16) {
 			toggleShowAvailable();
+		}
+
+		x = guiLeft + xSize + 4 + 149 - 3 - 16 - 3;
+		y = guiTop + 109 - 3;
+		if (mouseX > x && mouseX < x + 16 &&
+			mouseY > y && mouseY < y + 16) {
+			toggleUseInstantBuyPrice();
 		}
 	}
 
@@ -218,12 +228,29 @@ public class MinionHelperOverlay {
 		GL11.glColor4f(1, 1, 1, 1);
 		GlStateManager.disableLighting();
 		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 168, 128, 0, 1f, 0, 1f, GL11.GL_NEAREST);
+
 		if (filterEnabled) {
 			minecraft.getTextureManager().bindTexture(greenCheckImage);
 		} else {
 			minecraft.getTextureManager().bindTexture(whiteCheckImage);
 		}
 		Utils.drawTexturedRect(guiLeft + xSize + 4 + 149, guiTop + 109, 10, 10, 0, 1f, 0, 1f, GL11.GL_NEAREST);
+		GlStateManager.disableLighting();
+
+		RenderHelper.enableGUIStandardItemLighting();
+		ItemStack itemStack;
+		if (useInstantBuyPrice) {
+			itemStack = ItemUtils.getCoinItemStack(10_000_000);
+		} else {
+			itemStack = ItemUtils.getCoinItemStack(100_000);
+		}
+		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+			itemStack,
+			guiLeft + xSize + 4 + 149 - 3 - 16 - 3,
+			guiTop + 109 - 3
+		);
+
+		RenderHelper.disableStandardItemLighting();
 
 		int x = guiLeft + xSize + 10;
 		int i = 0;
@@ -344,6 +371,13 @@ public class MinionHelperOverlay {
 		resetCache();
 	}
 
+	private void toggleUseInstantBuyPrice() {
+		useInstantBuyPrice = !useInstantBuyPrice;
+		currentPage = 0;
+		resetCache();
+		manager.getPriceCalculation().resetCache();
+	}
+
 	OverviewLine getObjectOverMouse(LinkedHashMap<String, OverviewLine> renderMap) {
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 		if (!(gui instanceof GuiChest)) return null;
@@ -384,6 +418,7 @@ public class MinionHelperOverlay {
 	public void onProfileSwitch() {
 		currentPage = 0;
 		filterEnabled = true;
+		useInstantBuyPrice = true;
 	}
 
 	public void setMaxPerPage(int maxPerPage) {
@@ -396,5 +431,9 @@ public class MinionHelperOverlay {
 
 	public boolean isFilterEnabled() {
 		return filterEnabled;
+	}
+
+	public boolean isUseInstantBuyPrice() {
+		return useInstantBuyPrice;
 	}
 }

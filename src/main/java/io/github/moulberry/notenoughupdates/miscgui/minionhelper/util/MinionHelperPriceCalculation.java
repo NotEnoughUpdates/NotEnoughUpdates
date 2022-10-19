@@ -46,6 +46,10 @@ public class MinionHelperPriceCalculation {
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
+		resetCache();
+	}
+
+	public void resetCache() {
 		upgradeCostFormatCache.clear();
 		fullCostFormatCache.clear();
 	}
@@ -143,11 +147,27 @@ public class MinionHelperPriceCalculation {
 		//Is bazaar item
 		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName);
 		if (bazaarInfo != null) {
-			if (!bazaarInfo.has("curr_sell")) {
-				System.err.println("curr_sell does not exist for '" + internalName + "'");
-				return 0;
+			String bazaarMode;
+			if (manager.getOverlay().isUseInstantBuyPrice()) {
+				bazaarMode = "curr_buy";
+			} else {
+				bazaarMode = "curr_sell";
 			}
-			return bazaarInfo.get("curr_sell").getAsDouble();
+			if (!bazaarInfo.has(bazaarMode)) {
+
+				// Use buy order price when no sell offer exist. (e.g. inferno apex)
+				if (bazaarMode.equals("curr_buy")) {
+					bazaarMode = "curr_sell";
+					if (!bazaarInfo.has(bazaarMode)) {
+						System.err.println(bazaarMode + " does not exist for '" + internalName + "'");
+						return 0;
+					}
+				} else {
+					System.err.println(bazaarMode + " does not exist for '" + internalName + "'");
+					return 0;
+				}
+			}
+			return bazaarInfo.get(bazaarMode).getAsDouble();
 		}
 
 		//is ah bin

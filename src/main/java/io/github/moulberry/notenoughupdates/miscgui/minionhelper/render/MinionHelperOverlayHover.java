@@ -73,10 +73,10 @@ public class MinionHelperOverlayHover {
 			);
 		}
 
-		renderToggleButton();
+		renderButtons();
 	}
 
-	private void renderToggleButton() {
+	private void renderButtons() {
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 		if (!(gui instanceof GuiChest)) return;
 
@@ -84,23 +84,37 @@ public class MinionHelperOverlayHover {
 		int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 		int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
 
-		int x = guiLeft + xSize + 4 + 149 - 3;
-		int y = guiTop + 109 - 3;
-
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		final int scaledWidth = scaledresolution.getScaledWidth();
 		final int scaledHeight = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
+
+		int x = guiLeft + xSize + 4 + 149 - 3;
+		int y = guiTop + 109 - 3;
+		if (mouseX > x && mouseX < x + 16 &&
+			mouseY > y && mouseY < y + 16) {
+			renderFilterButton(scaledWidth, scaledHeight, mouseX, mouseY);
+		}
+
+		x = guiLeft + xSize + 4 + 149 - 3 - 16 - 3;
+		y = guiTop + 109 - 3;
+		if (mouseX > x && mouseX < x + 16 &&
+			mouseY > y && mouseY < y + 16) {
+			renderBuyPriceButton(scaledWidth, scaledHeight, mouseX, mouseY);
+		}
+	}
+
+	private void renderFilterButton(int scaledWidth, int scaledHeight, int mouseX, int mouseY) {
 		List<String> list = new ArrayList<>();
 
 		if (overlay.isFilterEnabled()) {
-			list.add("§aFilter enabled!");
+			list.add("§aFilter enabled");
 			list.add("§7Only show minions that can be");
 			list.add("§7crafted and meet requirements.");
 		} else {
-			list.add("§cFilter disabled!");
+			list.add("§cFilter disabled");
 			list.add("§7Show all minions. §cRed ones §7have");
 			list.add("§7missing requirements.");
 		}
@@ -108,12 +122,32 @@ public class MinionHelperOverlayHover {
 		list.add("");
 		list.add("§eClick to toggle!");
 
-		if (mouseX > x && mouseX < x + 16 &&
-			mouseY > y && mouseY < y + 16) {
+		Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1,
+			Minecraft.getMinecraft().fontRendererObj
+		);
+	}
 
-			Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1,
-				Minecraft.getMinecraft().fontRendererObj);
+	private void renderBuyPriceButton(int scaledWidth, int scaledHeight, int mouseX, int mouseY) {
+		List<String> list = new ArrayList<>();
+
+		if (overlay.isUseInstantBuyPrice()) {
+			list.add("§bUse Instant Buy price");
+			list.add("§7Use the price to pay when");
+			list.add("§7buying the item right now.");
+			list.add("§7This will be more expensive!");
+		} else {
+			list.add("§6Use Buy Offer price");
+			list.add("§7Use the price for creating an");
+			list.add("§7offer to buy the item cheaper.");
+			list.add("§7This can take longer!");
 		}
+
+		list.add("");
+		list.add("§eClick to toggle!");
+
+		Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1,
+			Minecraft.getMinecraft().fontRendererObj
+		);
 	}
 
 	private List<String> getTooltip(OverviewLine overviewLine) {
