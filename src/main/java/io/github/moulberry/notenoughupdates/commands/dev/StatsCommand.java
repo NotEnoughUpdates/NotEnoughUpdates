@@ -31,6 +31,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -164,6 +165,7 @@ public class StatsCommand extends ClientCommandBase {
 		builder.append("FPS", String.valueOf(Minecraft.getDebugFPS()));
 		builder.append("Loaded Mods", String.valueOf(activeModCount));
 		builder.append("Forge", ForgeVersion.getVersion());
+		builder.append("Optifine", FMLClientHandler.instance().hasOptifine() ? "TRUE" : "FALSE");
 		builder.category("Neu Settings");
 		builder.append("API Key", NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isEmpty() ? "FALSE" : "TRUE");
 		builder.append("On Skyblock", NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() ? "TRUE" : "FALSE");
