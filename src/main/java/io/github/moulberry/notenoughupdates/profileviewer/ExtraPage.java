@@ -23,7 +23,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -65,7 +64,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 	@Override
 	public void keyTyped(char typedChar, int keyCode) throws IOException {
 		super.keyTyped(typedChar, keyCode);
-		if(getInstance().killDeathSearchTextField.getFocus()) {
+		if (getInstance().killDeathSearchTextField.getFocus()) {
 			getInstance().killDeathSearchTextField.keyTyped(typedChar, keyCode);
 			killScroll = 0;
 			deathScroll = 0;
@@ -78,12 +77,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 		//Note: don't know why it made me make it return a boolean, but it fixed the error, so I left it alone.
 
 		//Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
-		if(mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 && mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 && mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
+		if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
+			mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
+			mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
 			getInstance().killDeathSearchTextField.mouseClicked(mouseX, mouseY, mouseButton);
 			getInstance().playerNameTextField.otherComponentClick();
 			return true;
 		}
-
 
 		getInstance().killDeathSearchTextField.otherComponentClick();
 
