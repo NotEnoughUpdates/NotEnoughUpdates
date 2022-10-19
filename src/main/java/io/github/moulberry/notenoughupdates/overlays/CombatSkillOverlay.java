@@ -82,6 +82,7 @@ public class CombatSkillOverlay
 	public void update() {
 		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.combatSkillOverlay) {
 			kill = -1;
+			championXp = -1;
 			overlayStrings = null;
 			return;
 		}

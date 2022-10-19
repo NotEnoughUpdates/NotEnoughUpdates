@@ -848,6 +848,9 @@ public class BasicPage extends GuiProfileViewerPage {
 	}
 
 	private void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+
+		ent.onUpdate();
+
 		GlStateManager.enableColorMaterial();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) posX, (float) posY, 50.0F);

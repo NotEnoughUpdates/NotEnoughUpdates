@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -133,10 +134,11 @@ public class PetInfoOverlay extends TextOverlay {
 		public String petXpType;
 		public String petItem;
 		public String skin;
+		public int candyUsed;
 
 		public String getPetId(boolean withoutBoost) {
-			return petType + ";" + (withoutBoost ? rarity.petId - 1 : rarity.petId);
-
+			boolean shouldDecreaseRarity = withoutBoost && "PET_ITEM_TIER_BOOST".equals(petItem);
+			return petType + ";" + (shouldDecreaseRarity ? rarity.petId - 1 : rarity.petId);
 		}
 
 	}
@@ -466,10 +468,10 @@ public class PetInfoOverlay extends TextOverlay {
 				float remainingMax = currentPet.petLevel.maxXP - currentPet.petLevel.totalXp;
 				if (remaining > 0) {
 					if (xpGain < 1000) {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + "N/A";
 					} else {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
 							EnumChatFormatting.YELLOW + Utils.prettyTime((long) (remainingMax) * 1000 * 60 * 60 / (long) xpGain);
 					}
 				}
@@ -789,11 +791,14 @@ public class PetInfoOverlay extends TextOverlay {
 
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
 		int mythicRarity = currentPet.rarity.petId;
-		if (currentPet.rarity.petId == 5) {
-			mythicRarity = 4;
-		}
 		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
 			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
+
+		if (petItem == null && currentPet.rarity.petId == 5) {
+			petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
+		}
+
 		if (petItem != null) {
 			Vector2f position = getPosition(overlayWidth, overlayHeight);
 			int x = (int) position.x;
@@ -858,18 +863,19 @@ public class PetInfoOverlay extends TextOverlay {
 		"alchemy"
 	);
 
-	public static void onStackClick(ItemStack stack, int windowId, int slotId, int mouseButtonClicked, int mode) {
-		if (mouseButtonClicked != 0 && mouseButtonClicked != 1 && mouseButtonClicked != 2) return;
+	@SubscribeEvent
+	public void onStackClick(SlotClickEvent event) {
+		if (event.clickedButton != 0 && event.clickedButton != 1 && event.clickedButton != 2) return;
 
-		int slotIdMod = (slotId - 10) % 9;
-		if (slotId >= 10 && slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
+		int slotIdMod = (event.slotId - 10) % 9;
+		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
 
-			if (lower.getSizeInventory() >= 54 && windowId == container.windowId) {
+			if (lower.getSizeInventory() >= 54 && event.guiContainer.inventorySlots.windowId == container.windowId) {
 				int page = 0;
 				boolean isPets = false;
 
@@ -891,7 +897,7 @@ public class PetInfoOverlay extends TextOverlay {
 					boolean isRemoving =
 						removingStack != null && removingStack.getItem() == Items.dye && removingStack.getItemDamage() == 10;
 
-					int newSelected = (slotId - 10) - (slotId - 10) / 9 * 2 + page * 28;
+					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
 
 					lastPetSelect = System.currentTimeMillis();
 
@@ -904,9 +910,11 @@ public class PetInfoOverlay extends TextOverlay {
 					} else {
 						setCurrentPet(newSelected);
 
-						Pet pet = getPetFromStack(stack.getTagCompound());
-						if (pet != null) {
-							config.petMap.put(config.selectedPet, pet);
+						if (event.slot.getStack() != null && event.slot.getStack().getTagCompound() != null) {
+							Pet pet = getPetFromStack(event.slot.getStack().getTagCompound());
+							if (pet != null) {
+								config.petMap.put(config.selectedPet, pet);
+							}
 						}
 					}
 				}
@@ -1074,9 +1082,13 @@ public class PetInfoOverlay extends TextOverlay {
 
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-							EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
-								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
+						if (!"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
+							PetInfoOverlay.config.selectedPet = -1;
+							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
+									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+						}
 					}
 				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
 					"switching to profile"))
