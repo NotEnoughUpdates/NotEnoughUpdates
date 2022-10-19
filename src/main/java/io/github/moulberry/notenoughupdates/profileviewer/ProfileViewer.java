@@ -721,7 +721,7 @@ public class ProfileViewer {
 			updatingSoopyNetworth.set(true);
 
 			manager.hypixelApi.postApiAsync(
-				"http://soopy.dev/api/v2/player_networth/"+this.uuid, //TODO: change to https when lets encript certificate is supported
+				"https://soopy.dev/api/v2/player_networth/"+this.uuid, //TODO: change to https when lets encript certificate is supported
 				skyblockProfiles.toString(),
 				"application/json",
 				jsonObject -> {
