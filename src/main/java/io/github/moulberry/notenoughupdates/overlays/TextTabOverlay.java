@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
@@ -36,12 +37,43 @@ public abstract class TextTabOverlay extends TextOverlay {
 	}
 
 	private boolean lastTabState = false;
+	private boolean shouldUpdateOverlay = true;
 
-	public void realTick() {
-		boolean currentTabState = Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode());
-		if (lastTabState != currentTabState) {
-			lastTabState = currentTabState;
+	@Override
+	public void tick() {
+		if (shouldUpdateOverlay) {
 			update();
 		}
+	}
+
+	public void realTick() {
+		shouldUpdateOverlay = shouldUpdate();
+		if (shouldUpdateOverlay) {
+			int keycode = Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode();
+			boolean currentTabState;
+			if (keycode > 0) {
+				currentTabState = Keyboard.isKeyDown(keycode);
+			} else {
+				currentTabState = false;
+			}
+			if (lastTabState != currentTabState) {
+				lastTabState = currentTabState;
+				update();
+			}
+		}
+	}
+
+	private boolean shouldUpdate() {
+		//prevent rendering when tab completing a command
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
+			return false;
+		}
+
+		//prevent rendering when tab completing in ah search overlay
+		if (AuctionSearchOverlay.shouldReplace()) {
+			return false;
+		}
+
+		return true;
 	}
 }

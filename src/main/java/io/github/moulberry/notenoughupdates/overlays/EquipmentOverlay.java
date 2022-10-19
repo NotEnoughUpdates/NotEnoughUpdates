@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.GuiInventoryBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
@@ -105,7 +106,7 @@ public class EquipmentOverlay {
 			case 2:
 				return ARMOR_DISPLAY_DARK;
 			case 3:
-				return isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
+				return NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
 			case 4:
 				return ARMOR_DISPLAY_FSR;
 		}
@@ -134,10 +135,11 @@ public class EquipmentOverlay {
 	public static final int ARMOR_OVERLAY_OVERHAND_WIDTH = 24;
 	public static final int ARMOR_OVERLAY_HEIGHT = 86;
 	public static final int ARMOR_OVERLAY_WIDTH = 31;
+	final static int PET_OVERLAY_HEIGHT = 32;
+	final static int PET_OVERLAY_WIDTH = 31;
 	public static final int PET_OVERLAY_OFFSET_Y = ARMOR_OVERLAY_HEIGHT - 14 /* overlaying pixels */;
 	//</editor-fold>
 
-	public boolean isRenderingPet;
 
 	public boolean shouldRenderPets;
 	public boolean shouldRenderArmorHud;
@@ -188,7 +190,7 @@ public class EquipmentOverlay {
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop();
 
-		ResourceLocation equipmentTexture = getCustomEquipmentTexture(isRenderingPet);
+		ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
 
 		Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
@@ -240,7 +242,10 @@ public class EquipmentOverlay {
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		PetInfoOverlay.Pet currentPet = PetInfoOverlay.getCurrentPet();
 		if (currentPet == null) return null;
-		ItemStack item = manager.createItem(currentPet.getPetId(false));
+
+		ItemStack item = ItemUtils.createPetItemstackFromPetInfo(currentPet);
+		item = ItemUtils.petToolTipXPExtendPetOverlay(item);
+
 		if (item != null) {
 			return item;
 		}
@@ -256,10 +261,10 @@ public class EquipmentOverlay {
 			slot4 = getWardrobeSlot(37);
 		}
 
-		if (screen instanceof GuiChest) {
+		if ((screen instanceof GuiChest || screen instanceof GuiInventory) && NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay){
 			petStack = getRepoPetStack();
 		}
-		if (!(screen instanceof GuiInventory)
+		if ((!(screen instanceof GuiInventory) && !(screen instanceof GuiInvButtonEditor))
 			|| !NotEnoughUpdates.INSTANCE.config.misc.hidePotionEffect
 			|| !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			shouldRenderPets = shouldRenderArmorHud = false;
@@ -299,7 +304,7 @@ public class EquipmentOverlay {
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 
-		Utils.drawTexturedRect(overlayLeft, overlayTop, 31, 32, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 		GlStateManager.bindTexture(0);
 
 		Utils.drawItemStack(petInfo, overlayLeft + 8, overlayTop + 8, true);
@@ -420,6 +425,31 @@ public class EquipmentOverlay {
 			}
 		}
 		return offset + 20;
+	}
+
+	public void renderPreviewArmorHud() {
+		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
+		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
+
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop();
+
+		ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
+
+		Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
+	}
+
+	public void renderPreviewPetInvHud() {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay || !(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
+		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
+
+		ResourceLocation petHudTexture = getCustomPetTexture(shouldRenderArmorHud);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(petHudTexture);
+
+		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 	}
 
 	public ItemStack slot1 = null;

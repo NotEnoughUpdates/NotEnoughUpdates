@@ -47,6 +47,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
@@ -509,7 +510,7 @@ public class CrystalWishingCompassSolver {
 		for (String crystalName : crystals.keySet()) {
 			Integer crystalState = crystals.get(crystalName);
 			if (crystalState != null && crystalState > 0) {
-				foundCrystals.add(Crystal.valueOf(crystalName.toUpperCase()));
+				foundCrystals.add(Crystal.valueOf(crystalName.toUpperCase(Locale.US).replace("İ", "I")));
 			}
 		}
 
@@ -923,7 +924,7 @@ public class CrystalWishingCompassSolver {
 			return;
 		}
 
-		boolean wishingDebugFlagSet = NotEnoughUpdates.INSTANCE.config.hidden.debugFlags.contains(NEUDebugFlag.WISHING);
+		boolean wishingDebugFlagSet = NEUDebugFlag.WISHING.isSet();
 		if (outputAlways || wishingDebugFlagSet) {
 			NEUDebugLogger.logAlways(getDiagnosticMessage());
 		}

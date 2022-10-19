@@ -187,6 +187,7 @@ public class XPInformation {
 					skillInfo.currentXp += updateWithPercentage.get(skill) / 100f * cap;
 					skillInfo.totalXp += skillInfo.currentXp;
 					skillInfo.currentXpMax = cap;
+					break;
 				} else {
 					skillInfo.totalXp += cap;
 				}

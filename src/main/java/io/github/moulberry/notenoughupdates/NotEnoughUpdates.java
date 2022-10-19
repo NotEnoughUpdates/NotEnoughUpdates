@@ -36,8 +36,11 @@ import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.listener.WorldListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
+import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
+import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
-import io.github.moulberry.notenoughupdates.miscfeatures.BazaarSacksProfit;
+import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
@@ -100,6 +103,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -113,13 +118,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Set;
 
-@Mod(modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true)
+@Mod(
+	modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true, useMetadata = true,
+	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
 	public static final String VERSION = "2.1.0-REL";
-	public static final int VERSION_ID = 20100;
+	public static final int VERSION_ID = 20101; //2.1.1 only so update notif works
 	public static final int PRE_VERSION_ID = 0;
 	public static final int HOTFIX_VERSION_ID = 0;
+
+	public static final Logger LOGGER = LogManager.getLogger("NotEnoughUpdates");
 	/**
 	 * Registers the biomes for the crystal hollows here so optifine knows they exists
 	 */
@@ -253,6 +262,14 @@ public class NotEnoughUpdates {
 			if (config.profileViewer.pageLayout.size() == 9) {
 				config.profileViewer.pageLayout.add(9);
 			}
+
+			// Remove after 2.1 ig
+			if ("dangerous".equals(config.apiData.repoBranch) || "rune".equals(config.apiData.repoBranch)) {
+				config.apiData.repoBranch = "master";
+			} else if ("jani270".equals(config.apiData.repoUser)) {
+				config.apiData.repoUser = "NotEnoughUpdates";
+			}
+
 			saveConfig();
 		}
 
@@ -299,7 +316,10 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
-		MinecraftForge.EVENT_BUS.register(BazaarSacksProfit.getInstance());
+		MinecraftForge.EVENT_BUS.register(new AntiCoopAdd());
+		MinecraftForge.EVENT_BUS.register(AbiphoneWarning.getInstance());
+		MinecraftForge.EVENT_BUS.register(new BetterContainers());
+		MinecraftForge.EVENT_BUS.register(AuctionBINWarning.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 

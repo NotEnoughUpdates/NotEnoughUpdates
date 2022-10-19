@@ -753,7 +753,9 @@ public class NEUOverlay extends Gui {
 				if (slot != null) {
 					ItemStack hover = slot.getStack();
 					if (hover != null) {
-						textField.setText("id:" + manager.getInternalNameForItem(hover));
+						if (manager.getInternalNameForItem(hover) != null) {
+							textField.setText("id:" + manager.getInternalNameForItem(hover));
+						}
 						itemPaneOpen = true;
 						updateSearch();
 					}
@@ -1458,7 +1460,7 @@ public class NEUOverlay extends Gui {
 		if (index < getSlotsXSize() * getSlotsYSize()) {
 			int actualIndex = index + getSlotsXSize() * getSlotsYSize() * page;
 			List<JsonObject> searchedItems = getSearchedItems();
-			if (actualIndex < searchedItems.size()) {
+			if (0 <= actualIndex && actualIndex < searchedItems.size()) {
 				return searchedItems.get(actualIndex);
 			} else {
 				return null;

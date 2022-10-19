@@ -50,15 +50,17 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
+import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.RequestFocusListener;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -407,7 +409,7 @@ public class RenderListener {
 				GL11.glTranslatef(0, 0, 10);
 			}
 			if (hoverInv) {
-				renderDungeonChestOverlay(event.gui);
+				renderDungKuudraChestOverlay(event.gui);
 				if (NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay) {
 					AccessoryBagOverlay.renderOverlay();
 				}
@@ -445,11 +447,18 @@ public class RenderListener {
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
+			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
 			GuiCustomEnchant.getInstance().render(event.renderPartialTicks);
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -595,6 +604,7 @@ public class RenderListener {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
+			if (GuiCustomHex.getInstance().shouldOverride(containerName)) return;
 			if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) return;
 		}
 
@@ -616,7 +626,7 @@ public class RenderListener {
 		}
 
 		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock() && !hoverInv) {
-			renderDungeonChestOverlay(event.gui);
+			renderDungKuudraChestOverlay(event.gui);
 			if (NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay) {
 				AccessoryBagOverlay.renderOverlay();
 			}
@@ -725,7 +735,7 @@ public class RenderListener {
 		}
 	}
 
-	private void renderDungeonChestOverlay(GuiScreen gui) {
+	private void renderDungKuudraChestOverlay(GuiScreen gui) {
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc == 3) return;
 		if (gui instanceof GuiChest && NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc != 2) {
 			try {
@@ -762,7 +772,9 @@ public class RenderListener {
 					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
-						String internal = neu.manager.getInternalNameForItem(item);
+						if (ItemUtils.isSoulbound(item)) continue;
+
+						String internal = neu.manager.createItemResolutionQuery().withItemStack(item).resolveInternalName();
 						String displayName = item.getDisplayName();
 						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
 						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
@@ -783,12 +795,16 @@ public class RenderListener {
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(internal);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
+							} else if (bazaarInfo != null) {
+								bazaarPrice = 0;
 							}
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
-							if (bazaarPrice > 0) {
+ 							boolean isOnBz = false;
+							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
+								isOnBz = true;
 							} else {
 								switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
 									case 1:
@@ -826,7 +842,7 @@ public class RenderListener {
 								}
 							}
 
-							if (worth > 0 && totalValue >= 0) {
+							if ((worth >= 0 || isOnBz) && totalValue >= 0) {
 								totalValue += worth;
 								String display = item.getDisplayName();
 
@@ -1048,11 +1064,17 @@ public class RenderListener {
 			}
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().mouseInput(mouseX, mouseY)) {
+			event.setCanceled(true);
+			return;
+		}
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().mouseInput(mouseX, mouseY)) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -1517,11 +1539,18 @@ public class RenderListener {
 				.getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().keyboardInput()) {
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().keyboardInput()) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);

@@ -27,6 +27,16 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
+
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,15 +51,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumChatFormatting;
 
 public class ProfileViewer {
 
@@ -63,311 +64,384 @@ public class ProfileViewer {
 			put("MYTHIC", "5");
 		}
 	};
-	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap = new LinkedHashMap<String, ItemStack>() {
-		{
-			put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
-			put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
-			put("foraging", Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging"));
-			put(
-				"enchanting",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting")
-			);
-			put(
-				"carpentry",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.crafting_table), EnumChatFormatting.DARK_RED + "Carpentry")
-			);
-			put("farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
-			put("combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
-			put("fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
-			put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
-			put("runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
-			put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
-			// put("catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
-			put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
-			put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
-			put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
-			put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
-			put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
-		}
-	};
-	private static final ItemStack CAT_FARMING = Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming");
-	private static final ItemStack CAT_MINING = Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining");
-	private static final ItemStack CAT_COMBAT = Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat");
+	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
+		new LinkedHashMap<String, ItemStack>() {
+			{
+				put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
+				put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
+				put(
+					"foraging",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging")
+				);
+				put(
+					"enchanting",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting")
+				);
+				put(
+					"carpentry",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.crafting_table), EnumChatFormatting.DARK_RED + "Carpentry")
+				);
+				put("farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
+				put("combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
+				put("fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
+				put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
+				put("runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
+				put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
+				// put("catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
+				put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
+				put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
+				put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
+				put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
+				put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
+			}
+		};
+	private static final ItemStack CAT_FARMING = Utils.createItemStack(
+		Items.golden_hoe,
+		EnumChatFormatting.YELLOW + "Farming"
+	);
+	private static final ItemStack CAT_MINING = Utils.createItemStack(
+		Items.stone_pickaxe,
+		EnumChatFormatting.GRAY + "Mining"
+	);
+	private static final ItemStack CAT_COMBAT = Utils.createItemStack(
+		Items.stone_sword,
+		EnumChatFormatting.RED + "Combat"
+	);
 	private static final ItemStack CAT_FORAGING = Utils.createItemStack(
 		Item.getItemFromBlock(Blocks.sapling),
 		EnumChatFormatting.DARK_GREEN + "Foraging"
 	);
-	private static final ItemStack CAT_FISHING = Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing");
-	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap = new LinkedHashMap<ItemStack, List<String>>() {
-		{
-			put(
-				CAT_FARMING,
-				Utils.createList(
-					"WHEAT",
-					"CARROT_ITEM",
-					"POTATO_ITEM",
+	private static final ItemStack CAT_FISHING = Utils.createItemStack(
+		Items.fishing_rod,
+		EnumChatFormatting.AQUA + "Fishing"
+	);
+	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap =
+		new LinkedHashMap<ItemStack, List<String>>() {
+			{
+				put(
+					CAT_FARMING,
+					Utils.createList(
+						"WHEAT",
+						"CARROT_ITEM",
+						"POTATO_ITEM",
+						"PUMPKIN",
+						"MELON",
+						"SEEDS",
+						"MUSHROOM_COLLECTION",
+						"INK_SACK:3",
+						"CACTUS",
+						"SUGAR_CANE",
+						"FEATHER",
+						"LEATHER",
+						"PORK",
+						"RAW_CHICKEN",
+						"MUTTON",
+						"RABBIT",
+						"NETHER_STALK"
+					)
+				);
+				put(
+					CAT_MINING,
+					Utils.createList(
+						"COBBLESTONE",
+						"COAL",
+						"IRON_INGOT",
+						"GOLD_INGOT",
+						"DIAMOND",
+						"INK_SACK:4",
+						"EMERALD",
+						"REDSTONE",
+						"QUARTZ",
+						"OBSIDIAN",
+						"GLOWSTONE_DUST",
+						"GRAVEL",
+						"ICE",
+						"NETHERRACK",
+						"SAND",
+						"ENDER_STONE",
+						null,
+						"MITHRIL_ORE",
+						"HARD_STONE",
+						"GEMSTONE_COLLECTION",
+						"MYCEL",
+						"SAND:1",
+						"SULPHUR_ORE"
+					)
+				);
+				put(
+					CAT_COMBAT,
+					Utils.createList(
+						"ROTTEN_FLESH",
+						"BONE",
+						"STRING",
+						"SPIDER_EYE",
+						"SULPHUR",
+						"ENDER_PEARL",
+						"GHAST_TEAR",
+						"SLIME_BALL",
+						"BLAZE_ROD",
+						"MAGMA_CREAM",
+						null,
+						null,
+						null,
+						null,
+						"CHILI_PEPPER"
+					)
+				);
+				put(CAT_FORAGING, Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
+				put(
+					CAT_FISHING,
+					Utils.createList(
+						"RAW_FISH",
+						"RAW_FISH:1",
+						"RAW_FISH:2",
+						"RAW_FISH:3",
+						"PRISMARINE_SHARD",
+						"PRISMARINE_CRYSTALS",
+						"CLAY_BALL",
+						"WATER_LILY",
+						"INK_SACK",
+						"SPONGE",
+						"MAGMA_FISH"
+					)
+				);
+			}
+		};
+	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap =
+		new LinkedHashMap<ItemStack, List<String>>() {
+			{
+				put(
+					CAT_FARMING,
+					Utils.createList(
+						"WHEAT",
+						"CARROT",
+						"POTATO",
+						"PUMPKIN",
+						"MELON",
+						null,
+						"MUSHROOM",
+						"COCOA",
+						"CACTUS",
+						"SUGAR_CANE",
+						"CHICKEN",
+						"COW",
+						"PIG",
+						null,
+						"SHEEP",
+						"RABBIT",
+						"NETHER_WARTS"
+					)
+				);
+				put(
+					CAT_MINING,
+					Utils.createList(
+						"COBBLESTONE",
+						"COAL",
+						"IRON",
+						"GOLD",
+						"DIAMOND",
+						"LAPIS",
+						"EMERALD",
+						"REDSTONE",
+						"QUARTZ",
+						"OBSIDIAN",
+						"GLOWSTONE",
+						"GRAVEL",
+						"ICE",
+						null,
+						"SAND",
+						"ENDER_STONE",
+						"SNOW",
+						"MITHRIL",
+						"HARD_STONE",
+						null,
+						"MYCELIUM",
+						"RED_SAND",
+						null
+					)
+				);
+				put(
+					CAT_COMBAT,
+					Utils.createList(
+						"ZOMBIE",
+						"SKELETON",
+						"SPIDER",
+						"CAVESPIDER",
+						"CREEPER",
+						"ENDERMAN",
+						"GHAST",
+						"SLIME",
+						"BLAZE",
+						"MAGMA_CUBE",
+						"REVENANT",
+						"TARANTULA",
+						"VOIDLING",
+						"INFERNO"
+					)
+				);
+				put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
+				put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
+			}
+		};
+	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap =
+		new LinkedHashMap<String, ItemStack>() {
+			{
+				/* FARMING COLLECTIONS */
+				put("WHEAT", Utils.createItemStack(Items.wheat, EnumChatFormatting.YELLOW + "Wheat"));
+				put("CARROT_ITEM", Utils.createItemStack(Items.carrot, EnumChatFormatting.YELLOW + "Carrot"));
+				put("POTATO_ITEM", Utils.createItemStack(Items.potato, EnumChatFormatting.YELLOW + "Potato"));
+				put(
 					"PUMPKIN",
-					"MELON",
-					"SEEDS",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.pumpkin), EnumChatFormatting.YELLOW + "Pumpkin")
+				);
+				put("MELON", Utils.createItemStack(Items.melon, EnumChatFormatting.YELLOW + "Melon"));
+				put("SEEDS", Utils.createItemStack(Items.wheat_seeds, EnumChatFormatting.YELLOW + "Seeds"));
+				put(
 					"MUSHROOM_COLLECTION",
-					"INK_SACK:3",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.red_mushroom), EnumChatFormatting.YELLOW + "Mushroom")
+				);
+				put("INK_SACK:3", Utils.createItemStack(Items.dye, EnumChatFormatting.YELLOW + "Cocoa Beans", 3));
+				put(
 					"CACTUS",
-					"SUGAR_CANE",
-					"FEATHER",
-					"LEATHER",
-					"PORK",
-					"RAW_CHICKEN",
-					"MUTTON",
-					"RABBIT",
-					"NETHER_STALK"
-				)
-			);
-			put(
-				CAT_MINING,
-				Utils.createList(
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.cactus), EnumChatFormatting.YELLOW + "Cactus")
+				);
+				put("SUGAR_CANE", Utils.createItemStack(Items.reeds, EnumChatFormatting.YELLOW + "Sugar Cane"));
+				put("FEATHER", Utils.createItemStack(Items.feather, EnumChatFormatting.YELLOW + "Feather"));
+				put("LEATHER", Utils.createItemStack(Items.leather, EnumChatFormatting.YELLOW + "Leather"));
+				put("PORK", Utils.createItemStack(Items.porkchop, EnumChatFormatting.YELLOW + "Raw Porkchop"));
+				put("RAW_CHICKEN", Utils.createItemStack(Items.chicken, EnumChatFormatting.YELLOW + "Raw Chicken"));
+				put("MUTTON", Utils.createItemStack(Items.mutton, EnumChatFormatting.YELLOW + "Mutton"));
+				put("RABBIT", Utils.createItemStack(Items.rabbit, EnumChatFormatting.YELLOW + "Raw Rabbit"));
+				put("NETHER_STALK", Utils.createItemStack(Items.nether_wart, EnumChatFormatting.YELLOW + "Nether Wart"));
+
+				/* MINING COLLECTIONS */
+				put(
 					"COBBLESTONE",
-					"COAL",
-					"IRON_INGOT",
-					"GOLD_INGOT",
-					"DIAMOND",
-					"INK_SACK:4",
-					"EMERALD",
-					"REDSTONE",
-					"QUARTZ",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.cobblestone), EnumChatFormatting.GRAY + "Cobblestone")
+				);
+				put("COAL", Utils.createItemStack(Items.coal, EnumChatFormatting.GRAY + "Coal"));
+				put("IRON_INGOT", Utils.createItemStack(Items.iron_ingot, EnumChatFormatting.GRAY + "Iron Ingot"));
+				put("GOLD_INGOT", Utils.createItemStack(Items.gold_ingot, EnumChatFormatting.GRAY + "Gold Ingot"));
+				put("DIAMOND", Utils.createItemStack(Items.diamond, EnumChatFormatting.GRAY + "Diamond"));
+				put("INK_SACK:4", Utils.createItemStack(Items.dye, EnumChatFormatting.GRAY + "Lapis Lazuli", 4));
+				put("EMERALD", Utils.createItemStack(Items.emerald, EnumChatFormatting.GRAY + "Emerald"));
+				put("REDSTONE", Utils.createItemStack(Items.redstone, EnumChatFormatting.GRAY + "Redstone"));
+				put("QUARTZ", Utils.createItemStack(Items.quartz, EnumChatFormatting.GRAY + "Nether Quartz"));
+				put(
 					"OBSIDIAN",
-					"GLOWSTONE_DUST",
-					"GRAVEL",
-					"ICE",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.obsidian), EnumChatFormatting.GRAY + "Obsidian")
+				);
+				put("GLOWSTONE_DUST", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Glowstone Dust"));
+				put("GRAVEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.gravel), EnumChatFormatting.GRAY + "Gravel"));
+				put("ICE", Utils.createItemStack(Item.getItemFromBlock(Blocks.ice), EnumChatFormatting.GRAY + "Ice"));
+				put(
 					"NETHERRACK",
-					"SAND",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.netherrack), EnumChatFormatting.GRAY + "Netherrack")
+				);
+				put("SAND", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Sand"));
+				put(
 					"ENDER_STONE",
-					null,
-					"MITHRIL_ORE",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.end_stone), EnumChatFormatting.GRAY + "End Stone")
+				);
+				put("MITHRIL_ORE", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.GRAY + "Mithril"));
+				put(
 					"HARD_STONE",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.stone), EnumChatFormatting.GRAY + "Hard Stone")
+				);
+				put(
 					"GEMSTONE_COLLECTION",
+					Utils.createSkull(
+						EnumChatFormatting.GRAY + "Gemstone",
+						"e942eb66-a350-38e5-aafa-0dfc3e17b4ac",
+						"ewogICJ0aW1lc3RhbXAiIDogMTYxODA4Mzg4ODc3MSwKICAicHJvZmlsZUlkIiA6ICJjNTBhZmE4YWJlYjk0ZTQ1OTRiZjFiNDI1YTk4MGYwMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUd29FQmFlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2FhYzE1ZjZmY2YyY2U5NjNlZjRjYTcxZjFhODY4NWFkYjk3ZWI3NjllMWQxMTE5NGNiYmQyZTk2NGE4ODk3OGMiCiAgICB9CiAgfQp9"
+					)
+				);
+				put(
 					"MYCEL",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.mycelium), EnumChatFormatting.GRAY + "Mycelium")
+				);
+				put(
 					"SAND:1",
-					"SULPHUR_ORE"
-				)
-			);
-			put(
-				CAT_COMBAT,
-				Utils.createList(
-					"ROTTEN_FLESH",
-					"BONE",
-					"STRING",
-					"SPIDER_EYE",
-					"SULPHUR",
-					"ENDER_PEARL",
-					"GHAST_TEAR",
-					"SLIME_BALL",
-					"BLAZE_ROD",
-					"MAGMA_CREAM",
-					null,
-					null,
-					null,
-					null,
-					"CHILI_PEPPER"
-				)
-			);
-			put(CAT_FORAGING, Utils.createList("LOG", "LOG:1", "LOG:2", "LOG_2:1", "LOG_2", "LOG:3", null));
-			put(
-				CAT_FISHING,
-				Utils.createList(
-					"RAW_FISH",
-					"RAW_FISH:1",
-					"RAW_FISH:2",
-					"RAW_FISH:3",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Red Sand", 1)
+				);
+				put("SULPHUR_ORE", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Sulphur"));
+
+				/* COMBAT COLLECTIONS */
+				put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.RED + "Rotten Flesh"));
+				put("BONE", Utils.createItemStack(Items.bone, EnumChatFormatting.RED + "Bone"));
+				put("STRING", Utils.createItemStack(Items.string, EnumChatFormatting.RED + "String"));
+				put("SPIDER_EYE", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.RED + "Spider Eye"));
+				put("SULPHUR", Utils.createItemStack(Items.gunpowder, EnumChatFormatting.RED + "Gunpowder"));
+				put("ENDER_PEARL", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.RED + "Ender Pearl"));
+				put("GHAST_TEAR", Utils.createItemStack(Items.ghast_tear, EnumChatFormatting.RED + "Ghast Tear"));
+				put("SLIME_BALL", Utils.createItemStack(Items.slime_ball, EnumChatFormatting.RED + "Slimeball"));
+				put("BLAZE_ROD", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.RED + "Blaze Rod"));
+				put("MAGMA_CREAM", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.RED + "Magma Cream"));
+				put(
+					"CHILI_PEPPER",
+					Utils.createSkull(
+						EnumChatFormatting.RED + "Chili Pepper",
+						"3d47abaa-b40b-3826-b20c-d83a7f053bd9",
+						"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg1OWM4ZGYxMTA5YzA4YTc1NjI3NWYxZDI4ODdjMjc0ODA0OWZlMzM4Nzc3NjlhN2I0MTVkNTZlZGE0NjlkOCJ9fX0"
+					)
+				);
+
+				/* FORAGING COLLECTIONS */
+				put(
+					"LOG",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Oak Wood")
+				);
+				put(
+					"LOG:1",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Spruce Wood", 1)
+				);
+				put(
+					"LOG:2",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Birch Wood", 2)
+				);
+				put(
+					"LOG_2:1",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Dark Oak Wood", 1)
+				);
+				put(
+					"LOG_2",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Acacia Wood")
+				);
+				put(
+					"LOG:3",
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Jungle Wood", 3)
+				);
+
+				/* FISHING COLLECTIONS */
+				put("RAW_FISH", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Raw Fish"));
+				put("RAW_FISH:1", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Raw Salmon", 1));
+				put("RAW_FISH:2", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Clownfish", 2));
+				put("RAW_FISH:3", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Pufferfish", 3));
+				put(
 					"PRISMARINE_SHARD",
+					Utils.createItemStack(Items.prismarine_shard, EnumChatFormatting.AQUA + "Prismarine Shard")
+				);
+				put(
 					"PRISMARINE_CRYSTALS",
-					"CLAY_BALL",
+					Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.AQUA + "Prismarine Crystals")
+				);
+				put("CLAY_BALL", Utils.createItemStack(Items.clay_ball, EnumChatFormatting.AQUA + "Clay"));
+				put(
 					"WATER_LILY",
-					"INK_SACK",
-					"SPONGE",
-					"MAGMA_FISH"
-				)
-			);
-		}
-	};
-	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap = new LinkedHashMap<ItemStack, List<String>>() {
-		{
-			put(
-				CAT_FARMING,
-				Utils.createList(
-					"WHEAT",
-					"CARROT",
-					"POTATO",
-					"PUMPKIN",
-					"MELON",
-					null,
-					"MUSHROOM",
-					"COCOA",
-					"CACTUS",
-					"SUGAR_CANE",
-					"CHICKEN",
-					"COW",
-					"PIG",
-					null,
-					"SHEEP",
-					"RABBIT",
-					"NETHER_WARTS"
-				)
-			);
-			put(
-				CAT_MINING,
-				Utils.createList(
-					"COBBLESTONE",
-					"COAL",
-					"IRON",
-					"GOLD",
-					"DIAMOND",
-					"LAPIS",
-					"EMERALD",
-					"REDSTONE",
-					"QUARTZ",
-					"OBSIDIAN",
-					"GLOWSTONE",
-					"GRAVEL",
-					"ICE",
-					null,
-					"SAND",
-					"ENDER_STONE",
-					"SNOW",
-					"MITHRIL",
-					"HARD_STONE",
-					null,
-					"MYCELIUM",
-					"RED_SAND",
-					null
-				)
-			);
-			put(
-				CAT_COMBAT,
-				Utils.createList(
-					"ZOMBIE",
-					"SKELETON",
-					"SPIDER",
-					"CAVESPIDER",
-					"CREEPER",
-					"ENDERMAN",
-					"GHAST",
-					"SLIME",
-					"BLAZE",
-					"MAGMA_CUBE",
-					"REVENANT",
-					"TARANTULA",
-					"VOIDLING",
-					"INFERNO"
-				)
-			);
-			put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
-			put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
-		}
-	};
-	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap = new LinkedHashMap<String, ItemStack>() {
-		{
-			/* FARMING COLLECTIONS */
-			put("WHEAT", Utils.createItemStack(Items.wheat, EnumChatFormatting.YELLOW + "Wheat"));
-			put("CARROT_ITEM", Utils.createItemStack(Items.carrot, EnumChatFormatting.YELLOW + "Carrot"));
-			put("POTATO_ITEM", Utils.createItemStack(Items.potato, EnumChatFormatting.YELLOW + "Potato"));
-			put("PUMPKIN", Utils.createItemStack(Item.getItemFromBlock(Blocks.pumpkin), EnumChatFormatting.YELLOW + "Pumpkin"));
-			put("MELON", Utils.createItemStack(Items.melon, EnumChatFormatting.YELLOW + "Melon"));
-			put("SEEDS", Utils.createItemStack(Items.wheat_seeds, EnumChatFormatting.YELLOW + "Seeds"));
-			put(
-				"MUSHROOM_COLLECTION",
-				Utils.createItemStack(Item.getItemFromBlock(Blocks.red_mushroom), EnumChatFormatting.YELLOW + "Mushroom")
-			);
-			put("INK_SACK:3", Utils.createItemStack(Items.dye, EnumChatFormatting.YELLOW + "Cocoa Beans", 3));
-			put("CACTUS", Utils.createItemStack(Item.getItemFromBlock(Blocks.cactus), EnumChatFormatting.YELLOW + "Cactus"));
-			put("SUGAR_CANE", Utils.createItemStack(Items.reeds, EnumChatFormatting.YELLOW + "Sugar Cane"));
-			put("FEATHER", Utils.createItemStack(Items.feather, EnumChatFormatting.YELLOW + "Feather"));
-			put("LEATHER", Utils.createItemStack(Items.leather, EnumChatFormatting.YELLOW + "Leather"));
-			put("PORK", Utils.createItemStack(Items.porkchop, EnumChatFormatting.YELLOW + "Porkchop"));
-			put("RAW_CHICKEN", Utils.createItemStack(Items.chicken, EnumChatFormatting.YELLOW + "Chicken"));
-			put("MUTTON", Utils.createItemStack(Items.mutton, EnumChatFormatting.YELLOW + "Mutton"));
-			put("RABBIT", Utils.createItemStack(Items.rabbit, EnumChatFormatting.YELLOW + "Rabbit"));
-			put("NETHER_STALK", Utils.createItemStack(Items.nether_wart, EnumChatFormatting.YELLOW + "Nether Wart"));
-
-			/* MINING COLLECTIONS */
-			put("COBBLESTONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.cobblestone), EnumChatFormatting.GRAY + "Cobblestone"));
-			put("COAL", Utils.createItemStack(Items.coal, EnumChatFormatting.GRAY + "Coal"));
-			put("IRON_INGOT", Utils.createItemStack(Items.iron_ingot, EnumChatFormatting.GRAY + "Iron Ingot"));
-			put("GOLD_INGOT", Utils.createItemStack(Items.gold_ingot, EnumChatFormatting.GRAY + "Gold Ingot"));
-			put("DIAMOND", Utils.createItemStack(Items.diamond, EnumChatFormatting.GRAY + "Diamond"));
-			put("INK_SACK:4", Utils.createItemStack(Items.dye, EnumChatFormatting.GRAY + "Lapis Lazuli", 4));
-			put("EMERALD", Utils.createItemStack(Items.emerald, EnumChatFormatting.GRAY + "Emerald"));
-			put("REDSTONE", Utils.createItemStack(Items.redstone, EnumChatFormatting.GRAY + "Redstone"));
-			put("QUARTZ", Utils.createItemStack(Items.quartz, EnumChatFormatting.GRAY + "Nether Quartz"));
-			put("OBSIDIAN", Utils.createItemStack(Item.getItemFromBlock(Blocks.obsidian), EnumChatFormatting.GRAY + "Obsidian"));
-			put("GLOWSTONE_DUST", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Glowstone"));
-			put("GRAVEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.gravel), EnumChatFormatting.GRAY + "Gravel"));
-			put("ICE", Utils.createItemStack(Item.getItemFromBlock(Blocks.ice), EnumChatFormatting.GRAY + "Ice"));
-			put("NETHERRACK", Utils.createItemStack(Item.getItemFromBlock(Blocks.netherrack), EnumChatFormatting.GRAY + "Netherrack"));
-			put("SAND", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Sand"));
-			put("ENDER_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.end_stone), EnumChatFormatting.GRAY + "End Stone"));
-			put("MITHRIL_ORE", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.GRAY + "Mithril"));
-			put("HARD_STONE", Utils.createItemStack(Item.getItemFromBlock(Blocks.stone), EnumChatFormatting.GRAY + "Hard Stone"));
-			put(
-				"GEMSTONE_COLLECTION",
-				Utils.createSkull(
-					EnumChatFormatting.GRAY + "Gemstone",
-					"e942eb66-a350-38e5-aafa-0dfc3e17b4ac",
-					"ewogICJ0aW1lc3RhbXAiIDogMTYxODA4Mzg4ODc3MSwKICAicHJvZmlsZUlkIiA6ICJjNTBhZmE4YWJlYjk0ZTQ1OTRiZjFiNDI1YTk4MGYwMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUd29FQmFlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2FhYzE1ZjZmY2YyY2U5NjNlZjRjYTcxZjFhODY4NWFkYjk3ZWI3NjllMWQxMTE5NGNiYmQyZTk2NGE4ODk3OGMiCiAgICB9CiAgfQp9"
-				)
-			);
-			put("MYCEL", Utils.createItemStack(Item.getItemFromBlock(Blocks.mycelium), EnumChatFormatting.GRAY + "Mycelium"));
-			put("SAND:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.sand), EnumChatFormatting.GRAY + "Red Sand", 1));
-			put("SULPHUR_ORE", Utils.createItemStack(Items.glowstone_dust, EnumChatFormatting.GRAY + "Sulphur"));
-
-			/* COMBAT COLLECTIONS */
-			put("ROTTEN_FLESH", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.RED + "Rotten Flesh"));
-			put("BONE", Utils.createItemStack(Items.bone, EnumChatFormatting.RED + "Bone"));
-			put("STRING", Utils.createItemStack(Items.string, EnumChatFormatting.RED + "String"));
-			put("SPIDER_EYE", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.RED + "Spider Eye"));
-			put("SULPHUR", Utils.createItemStack(Items.gunpowder, EnumChatFormatting.RED + "Gunpowder"));
-			put("ENDER_PEARL", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.RED + "Ender Pearl"));
-			put("GHAST_TEAR", Utils.createItemStack(Items.ghast_tear, EnumChatFormatting.RED + "Ghast Tear"));
-			put("SLIME_BALL", Utils.createItemStack(Items.slime_ball, EnumChatFormatting.RED + "Slimeball"));
-			put("BLAZE_ROD", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.RED + "Blaze Rod"));
-			put("MAGMA_CREAM", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.RED + "Magma Cream"));
-			put(
-				"CHILI_PEPPER",
-				Utils.createSkull(
-					EnumChatFormatting.RED + "Chili Pepper",
-					"3d47abaa-b40b-3826-b20c-d83a7f053bd9",
-					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg1OWM4ZGYxMTA5YzA4YTc1NjI3NWYxZDI4ODdjMjc0ODA0OWZlMzM4Nzc3NjlhN2I0MTVkNTZlZGE0NjlkOCJ9fX0"
-				)
-			);
-
-			/* FORAGING COLLECTIONS */
-			put("LOG", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Oak"));
-			put("LOG:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Spruce", 1));
-			put("LOG:2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Birch", 2));
-			put("LOG_2:1", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Dark Oak", 1));
-			put("LOG_2", Utils.createItemStack(Item.getItemFromBlock(Blocks.log2), EnumChatFormatting.DARK_GREEN + "Acacia"));
-			put("LOG:3", Utils.createItemStack(Item.getItemFromBlock(Blocks.log), EnumChatFormatting.DARK_GREEN + "Jungle", 3));
-
-			/* FISHING COLLECTIONS */
-			put("RAW_FISH", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Fish"));
-			put("RAW_FISH:1", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Salmon", 1));
-			put("RAW_FISH:2", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Clownfish", 2));
-			put("RAW_FISH:3", Utils.createItemStack(Items.fish, EnumChatFormatting.AQUA + "Pufferfish", 3));
-			put("PRISMARINE_SHARD", Utils.createItemStack(Items.prismarine_shard, EnumChatFormatting.AQUA + "Prismarine Shard"));
-			put("PRISMARINE_CRYSTALS", Utils.createItemStack(Items.prismarine_crystals, EnumChatFormatting.AQUA + "Prismarine Crystals"));
-			put("CLAY_BALL", Utils.createItemStack(Items.clay_ball, EnumChatFormatting.AQUA + "Clay"));
-			put("WATER_LILY", Utils.createItemStack(Item.getItemFromBlock(Blocks.waterlily), EnumChatFormatting.AQUA + "Lilypad"));
-			put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sack"));
-			put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
-			put(
-				"MAGMA_FISH",
-				Utils.createSkull(
-					EnumChatFormatting.AQUA + "Magmafish",
-					"5c53195c-5b98-3476-9731-c32647b22723",
-					"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ"
-				)
-			);
-		}
-	};
+					Utils.createItemStack(Item.getItemFromBlock(Blocks.waterlily), EnumChatFormatting.AQUA + "Lily Pad")
+				);
+				put("INK_SACK", Utils.createItemStack(Items.dye, EnumChatFormatting.AQUA + "Ink Sac"));
+				put("SPONGE", Utils.createItemStack(Item.getItemFromBlock(Blocks.sponge), EnumChatFormatting.AQUA + "Sponge"));
+				put(
+					"MAGMA_FISH",
+					Utils.createSkull(
+						EnumChatFormatting.AQUA + "Magmafish",
+						"5c53195c-5b98-3476-9731-c32647b22723",
+						"ewogICJ0aW1lc3RhbXAiIDogMTY0MjQ4ODA3MDY2NiwKICAicHJvZmlsZUlkIiA6ICIzNDkxZjJiOTdjMDE0MWE2OTM2YjFjMjJhMmEwMGZiNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKZXNzc3N1aGgiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2YjU5NTViMjk1NTIyYzk2ODk0ODE5NjBjMDFhOTkyY2ExYzc3NTRjZjRlZTMxM2M4ZGQwYzM1NmQzMzVmIgogICAgfQogIH0KfQ"
+					)
+				);
+			}
+		};
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
 	private static JsonObject resourceCollection = null;
 	private final NEUManager manager;
@@ -437,49 +511,42 @@ public class ProfileViewer {
 
 		updatingResourceCollection.set(true);
 
-		HashMap<String, String> args = new HashMap<>();
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"resources/skyblock/collections",
-			args,
-			jsonObject -> {
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("resources/skyblock/collections")
+			.requestJson()
+			.thenAccept(jsonObject -> {
 				updatingResourceCollection.set(false);
 				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
 					resourceCollection = jsonObject.get("collections").getAsJsonObject();
 				}
-			},
-			() -> updatingResourceCollection.set(false)
-		);
-
+			});
 		return null;
 	}
 
 	public void getHypixelProfile(String name, Consumer<JsonObject> callback) {
 		String nameF = name.toLowerCase();
-		HashMap<String, String> args = new HashMap<>();
-		args.put("name", "" + nameF);
-		manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"player",
-			args,
-			jsonObject -> {
-				if (
-					jsonObject != null &&
-					jsonObject.has("success") &&
-					jsonObject.get("success").getAsBoolean() &&
-					jsonObject.get("player").isJsonObject()
-				) {
-					nameToUuid.put(nameF, jsonObject.get("player").getAsJsonObject().get("uuid").getAsString());
-					uuidToHypixelProfile.put(
-						jsonObject.get("player").getAsJsonObject().get("uuid").getAsString(),
-						jsonObject.get("player").getAsJsonObject()
-					);
-					if (callback != null) callback.accept(jsonObject);
-				} else {
-					if (callback != null) callback.accept(null);
+		manager.apiUtils
+			.newHypixelApiRequest("player")
+			.queryArgument("name", nameF)
+			.requestJson()
+			.thenAccept(jsonObject -> {
+					if (
+						jsonObject != null &&
+							jsonObject.has("success") &&
+							jsonObject.get("success").getAsBoolean() &&
+							jsonObject.get("player").isJsonObject()
+					) {
+						nameToUuid.put(nameF, jsonObject.get("player").getAsJsonObject().get("uuid").getAsString());
+						uuidToHypixelProfile.put(
+							jsonObject.get("player").getAsJsonObject().get("uuid").getAsString(),
+							jsonObject.get("player").getAsJsonObject()
+						);
+						if (callback != null) callback.accept(jsonObject);
+					} else {
+						if (callback != null) callback.accept(null);
+					}
 				}
-			}
-		);
+			);
 	}
 
 	public void putNameUuid(String name, String uuid) {
@@ -493,19 +560,20 @@ public class ProfileViewer {
 			return;
 		}
 
-		manager.hypixelApi.getApiAsync(
-			"https://api.mojang.com/users/profiles/minecraft/" + nameF,
-			jsonObject -> {
-				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() && ((JsonPrimitive) jsonObject.get("id")).isString()) {
+		manager.apiUtils
+			.request()
+			.url("https://api.mojang.com/users/profiles/minecraft/" + nameF)
+			.requestJson()
+			.thenAccept(jsonObject -> {
+				if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
+					((JsonPrimitive) jsonObject.get("id")).isString()) {
 					String uuid = jsonObject.get("id").getAsString();
 					nameToUuid.put(nameF, uuid);
 					uuidCallback.accept(uuid);
 					return;
 				}
 				uuidCallback.accept(null);
-			},
-			() -> uuidCallback.accept(null)
-		);
+			});
 	}
 
 	public void getProfileByName(String name, Consumer<Profile> callback) {
@@ -608,20 +676,18 @@ public class ProfileViewer {
 
 			HashMap<String, String> args = new HashMap<>();
 			args.put("uuid", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(
-				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-				"status",
-				args,
-				jsonObject -> {
+			manager.apiUtils
+				.newHypixelApiRequest("status")
+				.queryArgument("uuid", "" + uuid)
+				.requestJson()
+				.handle((jsonObject, ex) -> {
 					updatingPlayerStatusState.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
 						playerStatus = jsonObject.get("session").getAsJsonObject();
 					}
-				},
-				() -> updatingPlayerStatusState.set(false)
-			);
-
+					return null;
+				});
 			return null;
 		}
 
@@ -634,13 +700,11 @@ public class ProfileViewer {
 			lastBingoInfoState = currentTime;
 			updatingBingoInfo.set(true);
 
-			HashMap<String, String> args = new HashMap<>();
-			args.put("uuid", "" + uuid);
-			NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-				"skyblock/bingo",
-				args,
-				jsonObject -> {
+			NotEnoughUpdates.INSTANCE.manager.apiUtils
+				.newHypixelApiRequest("skyblock/bingo")
+				.queryArgument("uuid", "" + uuid)
+				.requestJson()
+				.handle(((jsonObject, throwable) -> {
 					updatingBingoInfo.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
@@ -648,9 +712,8 @@ public class ProfileViewer {
 					} else {
 						bingoInformation = null;
 					}
-				},
-				() -> updatingBingoInfo.set(false)
-			);
+					return null;
+				}));
 			return bingoInformation != null ? bingoInformation : null;
 		}
 
@@ -726,7 +789,8 @@ public class ProfileViewer {
 										}
 									}
 								}
-							} catch (IOException ignored) {}
+							} catch (IOException ignored) {
+							}
 
 							int count = 1;
 							if (element.getAsJsonObject().has("count")) {
@@ -791,17 +855,15 @@ public class ProfileViewer {
 			lastPlayerInfoState = currentTime;
 			updatingSkyblockProfilesState.set(true);
 
-			HashMap<String, String> args = new HashMap<>();
-			args.put("uuid", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(
-				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-				"skyblock/profiles",
-				args,
-				jsonObject -> {
+			manager.apiUtils
+				.newHypixelApiRequest("skyblock/profiles")
+				.queryArgument("uuid", "" + uuid)
+				.requestJson()
+				.handle((jsonObject, throwable) -> {
 					updatingSkyblockProfilesState.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-						if (!jsonObject.has("profiles")) return;
+						if (!jsonObject.has("profiles")) return null;
 						skyblockProfiles = jsonObject.get("profiles").getAsJsonArray();
 
 						String lastCuteName = null;
@@ -825,8 +887,12 @@ public class ProfileViewer {
 								}
 
 								String cuteName = profile.get("cute_name").getAsString();
-								if (lastCuteName == null) lastCuteName = cuteName;
 								profileNames.add(cuteName);
+								if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
+									lastCuteName = cuteName;
+									break;
+								}
+								if (lastCuteName == null) lastCuteName = cuteName;
 								if (member.has("last_save")) {
 									long lastSave = member.get("last_save").getAsLong();
 									if (lastSave > lastLastSave) {
@@ -840,10 +906,8 @@ public class ProfileViewer {
 
 						if (runnable != null) runnable.run();
 					}
-				},
-				() -> updatingSkyblockProfilesState.set(false)
-			);
-
+					return null;
+				});
 			return null;
 		}
 
@@ -856,26 +920,22 @@ public class ProfileViewer {
 			lastGuildInfoState = currentTime;
 			updatingGuildInfoState.set(true);
 
-			HashMap<String, String> args = new HashMap<>();
-			args.put("player", "" + uuid);
-			manager.hypixelApi.getHypixelApiAsync(
-				NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-				"guild",
-				args,
-				jsonObject -> {
+			manager.apiUtils
+				.newHypixelApiRequest("guild")
+				.queryArgument("player", "" + uuid)
+				.requestJson()
+				.handle((jsonObject, ex) -> {
 					updatingGuildInfoState.set(false);
 
 					if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-						if (!jsonObject.has("guild")) return;
+						if (!jsonObject.has("guild")) return null;
 
 						guildInformation = jsonObject.get("guild").getAsJsonObject();
 
 						if (runnable != null) runnable.run();
 					}
-				},
-				() -> updatingGuildInfoState.set(false)
-			);
-
+					return null;
+				});
 			return null;
 		}
 
@@ -973,6 +1033,7 @@ public class ProfileViewer {
 
 			if (profileInfo == null) return null;
 			if (profileName == null) profileName = latestProfile;
+			List<JsonObject> coopProfileInfo = getCoopProfileInformation(profileName);
 			if (skyblockInfoCache.containsKey(profileName)) return skyblockInfoCache.get(profileName);
 
 			JsonObject leveling = Constants.LEVELING;
@@ -1002,6 +1063,15 @@ public class ProfileViewer {
 					Utils.getElement(profileInfo, "experience_skill_" + (skillName.equals("social") ? "social2" : skillName)),
 					0
 				);
+				// Get the coop's social skill experience since social is a shared skill
+				if (skillName.equals("social")) {
+					for (JsonObject coopProfile : coopProfileInfo) {
+						skillExperience += Utils.getElementAsFloat(
+							Utils.getElement(coopProfile, "experience_skill_social2"),
+							0
+						);
+					}
+				}
 				totalSkillXP += skillExperience;
 
 				JsonArray levelingArray = Utils.getElement(leveling, "leveling_xp").getAsJsonArray();
@@ -1013,11 +1083,11 @@ public class ProfileViewer {
 
 				int maxLevel =
 					getCap(leveling, skillName) +
-					(
-						skillName.equals("farming")
-							? Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.farming_level_cap"), 0)
-							: 0
-					);
+						(
+							skillName.equals("farming")
+								? Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.farming_level_cap"), 0)
+								: 0
+						);
 				out.put(skillName, getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
 
@@ -1065,7 +1135,10 @@ public class ProfileViewer {
 
 			List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 			for (String slayerName : slayers) {
-				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(profileInfo, "slayer_bosses." + slayerName + ".xp"), 0);
+				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
+					profileInfo,
+					"slayer_bosses." + slayerName + ".xp"
+				), 0);
 				out.put(
 					slayerName,
 					getLevel(Utils.getElement(leveling, "slayer_xp." + slayerName).getAsJsonArray(), slayerExperience, 9, true)
@@ -1135,7 +1208,7 @@ public class ProfileViewer {
 
 			JsonObject inventoryInfo = new JsonObject();
 
-			String[] inv_names = new String[] {
+			String[] inv_names = new String[]{
 				"inv_armor",
 				"fishing_bag",
 				"quiver",
@@ -1149,7 +1222,7 @@ public class ProfileViewer {
 				"candy_inventory_contents",
 				"equippment_contents",
 			};
-			String[] inv_bytes = new String[] {
+			String[] inv_bytes = new String[]{
 				inv_armor_bytes,
 				fishing_bag_bytes,
 				quiver_bytes,
@@ -1244,7 +1317,8 @@ public class ProfileViewer {
 						JsonObject item = manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
 						contents.add(item);
 					}
-				} catch (IOException ignored) {}
+				} catch (IOException ignored) {
+				}
 			}
 
 			JsonObject bundledReturn = new JsonObject();

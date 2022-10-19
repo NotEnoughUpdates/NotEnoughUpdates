@@ -214,7 +214,7 @@ public class ChatListener {
 			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
 		} else if (unformatted.startsWith("You consumed a Booster Cookie!")) {
 			CookieWarning.resetNotification();
-		} else if (unformatted.startsWith("QUICK MATHS! Solve:")) {
+		} else if (unformatted.startsWith("QUICK MATHS! Solve:") && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			if (Math.random() < 0.2) {
 				if (NotEnoughUpdates.INSTANCE.config.misc.calculationMode == 2) {
 					ClientCommandHandler.instance.executeCommand(
@@ -238,7 +238,7 @@ public class ChatListener {
 			}
 			missingRecipe.set(true);
 		}
-		if (unformatted.startsWith("Sending to server") && neu.isOnSkyblock() &&
+		if (unformatted.startsWith("Sending to server") &&
 			NotEnoughUpdates.INSTANCE.config.misc.streamerMode && e.message instanceof ChatComponentText) {
 			String m = e.message.getFormattedText();
 			String m2 = StreamerMode.filterChat(e.message.getFormattedText());

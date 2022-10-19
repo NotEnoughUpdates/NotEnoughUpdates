@@ -29,13 +29,14 @@ import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
+import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
-import io.github.moulberry.notenoughupdates.util.HypixelApi;
+import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -123,9 +124,7 @@ public class NEUManager {
 	public String viewItemAttemptID = null;
 	public long viewItemAttemptTime = 0;
 
-	private final String currentProfile = "";
-	private final String currentProfileBackup = "";
-	public final HypixelApi hypixelApi = new HypixelApi();
+	public final ApiUtil apiUtils = new ApiUtil();
 
 	private final Map<String, ItemStack> itemstackCache = new HashMap<>();
 
@@ -394,29 +393,94 @@ public class NEUManager {
 		return getUsagesFor(internalname).stream().filter(NeuRecipe::isAvailable).collect(Collectors.toList());
 	}
 
+	private static class DebugMatch {
+		int index;
+		String match;
+
+		DebugMatch(int index, String match) {
+				this.index = index;
+				this.match = match;
+		}
+	}
+
+
+	private String searchDebug(String[] searchArray, ArrayList<DebugMatch> debugMatches) {
+		//splitToSearch, debugMatches and query
+		final String ANSI_RED = "\u001B[31m";
+		final String ANSI_RESET = "\u001B[0m";
+		final String ANSI_YELLOW = "\u001B[33m";
+
+		//create debug message
+		StringBuilder debugBuilder = new StringBuilder();
+		for (int i = 0; i < searchArray.length; i++) {
+			final int fi = i;
+			Object[] matches = debugMatches.stream().filter((d) -> d.index == fi).toArray();
+
+			if (matches.length > 0) {
+				debugBuilder.append(ANSI_YELLOW + "[").append(((DebugMatch) matches[0]).match).append("]");
+				debugBuilder.append(ANSI_RED + "[").append(searchArray[i]).append("]").append(ANSI_RESET).append(" ");
+			} else {
+				debugBuilder.append(searchArray[i]).append(" ");
+			}
+		}
+
+		//yellow = query match and red = string match
+		return debugBuilder.toString();
+	}
+
 	/**
 	 * Searches a string for a query. This method is used to mimic the behaviour of the more complex map-based search
 	 * function. This method is used for the chest-item-search feature.
 	 */
 	public boolean searchString(String toSearch, String query) {
-		int lastMatch = -1;
+		final String ANSI_RESET = "\u001B[0m";
+		final String ANSI_YELLOW = "\u001B[33m";
+
+		int lastStringMatch = -1;
+		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
 		toSearch = clean(toSearch).toLowerCase();
 		query = clean(query).toLowerCase();
-		String[] splitToSeach = toSearch.split(" ");
-		out:
-		for (String s : query.split(" ")) {
-			for (int i = 0; i < splitToSeach.length; i++) {
-				if (!(lastMatch == -1 || lastMatch == i - 1)) continue;
-				if (splitToSeach[i].startsWith(s)) {
-					lastMatch = i;
-					continue out;
+		String[] splitToSearch = toSearch.split(" ");
+		String[] queryArray = query.split(" ");
+
+		{
+			String currentSearch = queryArray[0];
+			int queryIndex = 0;
+			boolean matchedLastQueryItem = false;
+
+			for (int k = 0; k < splitToSearch.length; k++) {
+				if (queryIndex - 1 != -1 && (queryArray.length - queryIndex) > (splitToSearch.length - k)) continue;
+				if (splitToSearch[k].startsWith(currentSearch)) {
+					if (((lastStringMatch != -1 ? lastStringMatch : k-1) == k-1)) {
+						debugMatches.add(new DebugMatch(k, currentSearch));
+						lastStringMatch = k;
+						if (queryIndex+1 != queryArray.length) {
+							queryIndex++;
+							currentSearch = queryArray[queryIndex];
+						} else {
+							matchedLastQueryItem = true;
+						}
+					}
+				} else if (queryIndex != 0) {
+					queryIndex = 0;
+					currentSearch = queryArray[queryIndex];
+					lastStringMatch = -1;
 				}
 			}
-			return false;
-		}
 
-		return true;
+			if (matchedLastQueryItem) {
+				if (NEUDebugFlag.SEARCH.isSet()) {
+					NotEnoughUpdates.LOGGER.info("Found match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" + searchDebug(splitToSearch, debugMatches));
+				}
+			} else {
+				if (NEUDebugFlag.SEARCH.isSet() && lastStringMatch != -1) {
+					NotEnoughUpdates.LOGGER.info("Found partial match for \"" + ANSI_YELLOW + query + ANSI_RESET + "\":\n\t" + searchDebug(splitToSearch, debugMatches));
+				}
+			}
+
+			return matchedLastQueryItem;
+		}
 	}
 
 	/**
@@ -1201,7 +1265,7 @@ public class NEUManager {
 		}
 	}
 
-	public HashMap<String, String> getLoreReplacements(String petname, String tier, int level) {
+	public HashMap<String, String> getPetLoreReplacements(String petname, String tier, int level) {
 		JsonObject petnums = null;
 		if (petname != null && tier != null) {
 			petnums = Constants.PETNUMS;
@@ -1314,7 +1378,7 @@ public class NEUManager {
 								float statMax = entry.getValue().getAsFloat();
 								float statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat();
 								float val = statMin * minMix + statMax * maxMix;
-								String statStr = (statMin > 0 ? "+" : "") + (int) Math.floor(val);
+								String statStr = (statMin > 0 ? "+" : "") + removeUnusedDecimal(Math.floor(val * 10) / 10);
 								replacements.put(entry.getKey(), statStr);
 							}
 						}
@@ -1326,7 +1390,7 @@ public class NEUManager {
 		return replacements;
 	}
 
-	public HashMap<String, String> getLoreReplacements(NBTTagCompound tag, int level) {
+	public HashMap<String, String> getPetLoreReplacements(NBTTagCompound tag, int level) {
 		String petname = null;
 		String tier = null;
 		if (tag != null && tag.hasKey("ExtraAttributes")) {
@@ -1360,7 +1424,7 @@ public class NEUManager {
 				}
 			}
 		}
-		return getLoreReplacements(petname, tier, level);
+		return getPetLoreReplacements(petname, tier, level);
 	}
 
 	public NBTTagList processLore(JsonArray lore, HashMap<String, String> replacements) {
@@ -1391,6 +1455,7 @@ public class NEUManager {
 	}
 
 	public ItemStack jsonToStack(JsonObject json, boolean useCache, boolean useReplacements, boolean copyStack) {
+		if (useReplacements) useCache = false;
 		if (json == null) return new ItemStack(Items.painting, 1, 10);
 		String internalname = json.get("internalname").getAsString();
 
@@ -1430,7 +1495,7 @@ public class NEUManager {
 			HashMap<String, String> replacements = new HashMap<>();
 
 			if (useReplacements) {
-				replacements = getLoreReplacements(stack.getTagCompound(), -1);
+				replacements = getPetLoreReplacements(stack.getTagCompound(), -1);
 
 				String displayName = json.get("displayname").getAsString();
 				for (Map.Entry<String, String> entry : replacements.entrySet()) {

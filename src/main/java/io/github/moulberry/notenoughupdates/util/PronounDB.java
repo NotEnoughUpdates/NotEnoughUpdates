@@ -21,49 +21,16 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class PronounDB {
-
-	static SSLContext ctx;
-
-	static {
-		try {
-			KeyStore ks = KeyStore.getInstance("JKS");
-			ks.load(PronounDB.class.getResourceAsStream("/pronoundb.jks"), "pronoundb".toCharArray());
-			ctx = SSLContext.getInstance("TLS");
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			kmf.init(ks, null);
-			tmf.init(ks);
-			ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-		} catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException |
-						 IOException | CertificateException e) {
-			System.out.println("Failed to load keystore. PronounDB requests will probably not work");
-			e.printStackTrace();
-		}
-	}
 
 	private static boolean isDisabled() {
 		JsonObject disabled = Constants.DISABLE;
@@ -73,29 +40,22 @@ public class PronounDB {
 	/**
 	 * Returns an Optional, since JVMs can be *very* funky with KeyStore loading
 	 */
-	public static Optional<JsonObject> performPronouning(String platform, String id) {
-		if (isDisabled()) return Optional.empty();
-		try {
-			URL url = new URL("https://pronoundb.org/api/v1/lookup" +
-				"?platform=" + StringUtils.urlEncode(platform) +
-				"&id=" + StringUtils.urlEncode(id));
-			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-			urlConnection.setSSLSocketFactory(ctx.getSocketFactory());
-			return Optional.of(NotEnoughUpdates.INSTANCE.manager.gson.fromJson(
-				new InputStreamReader(urlConnection.getInputStream()),
-				JsonObject.class
-			));
-		} catch (ClassCastException | IOException | JsonParseException e) {
-			System.out.println("Failed to contact PronounDB: " + e);
-			return Optional.empty();
-		}
+	public static CompletableFuture<Optional<JsonObject>> performPronouning(String platform, String id) {
+		if (isDisabled()) return CompletableFuture.completedFuture(Optional.empty());
+		return NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.request()
+			.url("https://pronoundb.org/api/v1/lookup")
+			.queryArgument("platform", platform)
+			.queryArgument("id", id)
+			.requestJson()
+			.handle((result, ex) -> Optional.ofNullable(result));
 	}
 
 	public enum Pronoun {
 		HE("he", "him", "his"),
 		IT("it", "it", "its"),
 		SHE("she", "her", "hers"),
-		THEY("they", "they", "theirs");
+		THEY("they", "them", "theirs");
 
 		private final String subject;
 		private final String object;
@@ -199,23 +159,20 @@ public class PronounDB {
 		return Optional.empty();
 	}
 
-	public static Optional<PronounChoice> getPronounsFor(String platform, String name) {
-		return performPronouning(platform, name).flatMap(PronounDB::parsePronouns);
+	public static CompletableFuture<Optional<PronounChoice>> getPronounsFor(String platform, String name) {
+		return performPronouning(platform, name).thenApply(it -> it.flatMap(PronounDB::parsePronouns));
 	}
 
-	public static Optional<PronounChoice> getPronounsFor(UUID minecraftPlayer) {
-		return performPronouning("minecraft", minecraftPlayer.toString() /* dashed UUID */)
-			.flatMap(PronounDB::parsePronouns);
+	public static CompletableFuture<Optional<PronounChoice>> getPronounsFor(UUID minecraftPlayer) {
+		return getPronounsFor("minecraft", minecraftPlayer.toString() /* dashed UUID */);
 	}
 
 	public static void test() {
-		try {
-			System.out.println("Pronouning...");
-			PronounChoice pronounsFor = getPronounsFor(UUID.fromString("842204e6-6880-487b-ae5a-0595394f9948")).get();
+		System.out.println("Pronouning...");
+		getPronounsFor(UUID.fromString("842204e6-6880-487b-ae5a-0595394f9948")).thenAccept(it -> {
+			PronounChoice pronounsFor = it.get();
 			pronounsFor.render().forEach(System.out::println);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		});
 	}
 
 }
