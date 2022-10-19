@@ -114,12 +114,16 @@ public class NEUManager {
 		new KeyBinding("Show usages for item", Keyboard.KEY_U, "NotEnoughUpdates");
 	public final KeyBinding keybindViewRecipe =
 		new KeyBinding("Show recipe for item", Keyboard.KEY_R, "NotEnoughUpdates");
+	public final KeyBinding keybindPreviousRecipe =
+		new KeyBinding("Show previous recipe", Keyboard.KEY_LBRACKET, "NotEnoughUpdates");
+	public final KeyBinding keybindNextRecipe =
+		new KeyBinding("Show next recipe", Keyboard.KEY_RBRACKET, "NotEnoughUpdates");
 	public final KeyBinding keybindToggleDisplay = new KeyBinding("Toggle NEU overlay", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindClosePanes = new KeyBinding("Close NEU panes", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindItemSelect = new KeyBinding("Select Item", -98 /*middle*/, "NotEnoughUpdates");
 	public final KeyBinding[] keybinds = new KeyBinding[]{
-		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe,
-		keybindToggleDisplay, keybindClosePanes, keybindItemSelect
+		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe, keybindPreviousRecipe,
+		keybindNextRecipe, keybindToggleDisplay, keybindClosePanes, keybindItemSelect
 	};
 
 	public String viewItemAttemptID = null;

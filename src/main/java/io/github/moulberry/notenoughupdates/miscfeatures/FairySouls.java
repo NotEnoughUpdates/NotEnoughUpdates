@@ -177,7 +177,7 @@ public class FairySouls {
 			double factor = normalize(currentDistSq, 0.0, farSoulDistSq);
 			int rgb = interpolateColors(closeColor, farColor, Math.min(0.40, factor));
 			RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
-			RenderUtils.renderWayPoint(currentSoul, event.partialTicks);
+			if (NotEnoughUpdates.INSTANCE.config.misc.fairySoulWaypointDistance) RenderUtils.renderWayPoint(currentSoul, event.partialTicks);
 		}
 	}
 

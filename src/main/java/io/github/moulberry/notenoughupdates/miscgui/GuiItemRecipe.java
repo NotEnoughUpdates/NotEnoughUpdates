@@ -319,6 +319,12 @@ public class GuiItemRecipe extends GuiScreen {
 				}
 			}
 		}
+
+		if (keyPressed == manager.keybindPreviousRecipe.getKeyCode()) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getPrevious();
+		} else if (keyPressed == manager.keybindNextRecipe.getKeyCode()) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getNext();
+		}
 	}
 
 	public void changeRecipe(int tabIndex, int recipeIndex) {

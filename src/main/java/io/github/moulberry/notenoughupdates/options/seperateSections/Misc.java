@@ -83,6 +83,15 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+		name = "Show Waypoint Distance",
+		desc = "Show the distance to each fairy sould waypoint"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean fairySoulWaypointDistance = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Mark All As Found",
 		desc = "Mark all fairy souls in current location as found"
 	)
