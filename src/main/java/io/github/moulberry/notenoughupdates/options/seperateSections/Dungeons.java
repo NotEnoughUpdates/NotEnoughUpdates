@@ -54,7 +54,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Edit Dungeon Map",
-		desc = "The NEU dungeon map has it's own editor (/neumap).\n" +
+		desc = "The NEU dungeon map has its own editor (/neumap).\n" +
 			"Click the button on the left to open it"
 	)
 	@ConfigEditorButton(

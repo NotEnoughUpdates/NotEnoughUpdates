@@ -31,7 +31,7 @@ public class ApiData {
 	@Expose
 	@ConfigOption(
 		name = "Api Key",
-		desc = "Hypixel api key\nYou can run §a/api new§r to autofill this value.",
+		desc = "Hypixel API key\nYou can run §a/api new§r to autofill this value.",
 		searchTags = "apikey"
 	)
 	@ConfigEditorText
