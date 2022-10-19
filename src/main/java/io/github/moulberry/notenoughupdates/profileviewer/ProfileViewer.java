@@ -1033,6 +1033,7 @@ public class ProfileViewer {
 
 			if (profileInfo == null) return null;
 			if (profileName == null) profileName = latestProfile;
+			List<JsonObject> coopProfileInfo = getCoopProfileInformation(profileName);
 			if (skyblockInfoCache.containsKey(profileName)) return skyblockInfoCache.get(profileName);
 
 			JsonObject leveling = Constants.LEVELING;
@@ -1062,6 +1063,15 @@ public class ProfileViewer {
 					Utils.getElement(profileInfo, "experience_skill_" + (skillName.equals("social") ? "social2" : skillName)),
 					0
 				);
+				// Get the coop's social skill experience since social is a shared skill
+				if (skillName.equals("social")) {
+					for (JsonObject coopProfile : coopProfileInfo) {
+						skillExperience += Utils.getElementAsFloat(
+							Utils.getElement(coopProfile, "experience_skill_social2"),
+							0
+						);
+					}
+				}
 				totalSkillXP += skillExperience;
 
 				JsonArray levelingArray = Utils.getElement(leveling, "leveling_xp").getAsJsonArray();
