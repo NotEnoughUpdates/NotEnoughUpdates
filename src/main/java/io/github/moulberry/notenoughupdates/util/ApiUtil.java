@@ -111,7 +111,7 @@ public class ApiUtil {
 			return this;
 		}
 
-		public Request postData(String contentType, String data){
+		public Request postData(String contentType, String data) {
 			this.postContentType = contentType;
 			this.postData = data;
 			return this;

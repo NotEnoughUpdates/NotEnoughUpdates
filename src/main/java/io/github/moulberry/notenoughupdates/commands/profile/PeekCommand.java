@@ -121,7 +121,7 @@ public class PeekCommand extends ClientCommandBase {
 								profile.getSoopyNetworth(null, () -> countDownLatch.countDown());
 
 								try { //Wait for async network request
-									countDownLatch.await(10,TimeUnit.SECONDS);
+									countDownLatch.await(10, TimeUnit.SECONDS);
 								} catch (InterruptedException e) {}
 
 								//Now it's waited for network request the data should be cached (accessed in nw section)
@@ -215,7 +215,7 @@ public class PeekCommand extends ClientCommandBase {
 								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 									g + "Slayer: " + zombiePrefix + (int) Math.floor(zombie) + g + "-" +
 										spiderPrefix + (int) Math.floor(spider) + g + "-" +
-										wolfPrefix + (int) Math.floor(wolf) + g+ "-" +
+										wolfPrefix + (int) Math.floor(wolf) + g + "-" +
 										endermanPrefix + (int) Math.floor(enderman) + g + "-" +
 										blazePrefix + (int) Math.floor(blaze)));
 							}

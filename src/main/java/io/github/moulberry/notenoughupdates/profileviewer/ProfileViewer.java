@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -721,11 +720,11 @@ public class ProfileViewer {
 			return bingoInformation != null ? bingoInformation : null;
 		}
 
-
 		public class SoopyNetworthData {
 			private HashMap<String, Long> categoryWorth;
 			private Long totalWorth;
 			private String[] keys;
+
 			SoopyNetworthData(JsonObject nwData) {
 				categoryWorth = new HashMap<>();
 
@@ -752,7 +751,7 @@ public class ProfileViewer {
 				keys = categoryWorth.keySet().stream().sorted(Comparator.comparingLong(k->getCategory((String) k)).reversed()).toArray(String[]::new);
 			}
 
-			private SoopyNetworthData setLoading(){
+			private SoopyNetworthData setLoading() {
 				totalWorth = -2l;
 				return this;
 			}
@@ -794,7 +793,7 @@ public class ProfileViewer {
 				.postData("application/json", skyblockProfiles.toString())
 				.requestJson()
 				.handle((jsonObject, throwable) -> {
-					if(throwable != null) throwable.printStackTrace();
+					if (throwable != null) throwable.printStackTrace();
 					if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
 						//Something went wrong
 						//Set profile networths to null to indicate that
@@ -836,7 +835,7 @@ public class ProfileViewer {
 					updatingSoopyNetworth.set(false);
 					callback.run();
 					return null;
-				 });
+				});
 			return null;
 		}
 
