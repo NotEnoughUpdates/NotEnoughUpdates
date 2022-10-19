@@ -43,7 +43,7 @@ public class JoinDungeonCommand extends ClientCommandBase {
 				Utils.addChatMessage(EnumChatFormatting.RED + "Example Usage: /join f7, /join m6 or /join 7");
 			} else {
 				String cataPrefix = "catacombs";
-				if (args[0].startsWith("m")) {
+				if (args[0].toLowerCase().startsWith("m")) {
 					cataPrefix = "master_catacombs";
 				}
 				String cmd = "/joindungeon " + cataPrefix + " " + args[0].charAt(args[0].length() - 1);

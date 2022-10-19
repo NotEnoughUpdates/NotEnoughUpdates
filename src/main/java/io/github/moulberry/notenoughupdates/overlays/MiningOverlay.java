@@ -390,6 +390,12 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			}
 
+			if (ItemCooldowns.firstLoadMillis > 0) {
+				//set cooldown on first skyblock load.
+				ItemCooldowns.pickaxeUseCooldownMillisRemaining = 60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
+				ItemCooldowns.firstLoadMillis = 0;
+			}
+
 			String pickaxeCooldown;
 			if (ItemCooldowns.pickaxeUseCooldownMillisRemaining <= 0) {
 				pickaxeCooldown = DARK_AQUA + "Pickaxe CD: \u00a7aReady";
