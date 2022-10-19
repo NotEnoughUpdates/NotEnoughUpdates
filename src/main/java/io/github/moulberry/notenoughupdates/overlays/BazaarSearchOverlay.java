@@ -91,9 +91,7 @@ public class BazaarSearchOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.enableSearchOverlay) return false;
 
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiEditSign)) {
-			if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.keepPreviousSearch) {
-				searchString = "";
-			}
+			if (!NotEnoughUpdates.INSTANCE.config.bazaarTweaks.keepPreviousSearch) searchString = "";
 			return false;
 		}
 

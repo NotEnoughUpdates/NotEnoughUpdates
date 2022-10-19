@@ -237,4 +237,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean coopWarning = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable text field tweaks",
+		desc = "Allows the use of ctrl + z, ctrl + y and ctrl + Lshift + z in text fields"
+	)
+	@ConfigEditorBoolean
+	public boolean textFieldTweaksEnabled = true;
+
 }

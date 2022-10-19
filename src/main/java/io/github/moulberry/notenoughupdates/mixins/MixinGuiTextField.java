@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
@@ -67,42 +68,52 @@ public abstract class MixinGuiTextField {
 
 	@Inject(method = "setText", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)
 	public void setText_stringStack(String string, CallbackInfo ci) {
-		addToStack(string.length() > this.maxStringLength ? string.substring(0, this.maxStringLength) : string);
+		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
+			addToStack(string.length() > this.maxStringLength ? string.substring(0, this.maxStringLength) : string);
+		}
 	}
 
 	@Inject(method = "writeText", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiTextField;moveCursorBy(I)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
 	public void writeText_stringStack(String string, CallbackInfo ci, String string2, String string3, int i, int j, int l) {
-		addToStack(string2);
+		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
+			addToStack(string2);
+		}
 	}
 
 	@Inject(method = "deleteFromCursor", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Predicate;apply(Ljava/lang/Object;)Z"), locals = LocalCapture.PRINT)
 	public void deleteFromCursor_stringStack(int i, CallbackInfo ci, boolean bl, int j, int k, String string) {
+		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
 			addToStack(string);
+		}
 	}
 
 	@Inject(method = "textboxKeyTyped", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;isKeyComboCtrlA(I)Z"), cancellable = true)
 	public void textboxKeyTyped_stringStack(char c, int i, CallbackInfoReturnable<Boolean> cir) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-			if (currentStringStackIndex == -1 && stringStack.size() > 0) {
-				currentStringStackIndex = stringStack.size() - 1;
-			}
+		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (currentStringStackIndex == -1 && stringStack.size() > 0) {
+					currentStringStackIndex = stringStack.size() - 1;
+				}
 
-			if (Keyboard.isKeyDown(Keyboard.KEY_Y) || (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_Z))) {
-				//go forward in action stack
-				if (currentStringStackIndex != stringStack.size() - 1) {
-					text = stringStack.get(currentStringStackIndex + 1);
-					currentStringStackIndex+=1;
-					setCursorPositionEnd();
+				if (Keyboard.isKeyDown(Keyboard.KEY_Y) || (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(
+					Keyboard.KEY_Z))) {
+					//go forward in action stack
+					if (currentStringStackIndex != stringStack.size() - 1) {
+						text = stringStack.get(currentStringStackIndex + 1);
+						currentStringStackIndex += 1;
+						setCursorPositionEnd();
+					}
+					cir.setReturnValue(true);
+				} else if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+					//go back in action stack
+					if (!stringStack.isEmpty() && currentStringStackIndex > 0 && stringStack.get(currentStringStackIndex - 1) !=
+						null) {
+						text = stringStack.get(currentStringStackIndex - 1);
+						currentStringStackIndex -= 1;
+						setCursorPositionEnd();
+					}
+					cir.setReturnValue(true);
 				}
-				cir.setReturnValue(true);
-			} else if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-				//go back in action stack
-				if (!stringStack.isEmpty() && currentStringStackIndex > 0 && stringStack.get(currentStringStackIndex-1) != null) {
-					text = stringStack.get(currentStringStackIndex-1);
-					currentStringStackIndex-=1;
-					setCursorPositionEnd();
-				}
-				cir.setReturnValue(true);
 			}
 		}
 	}
@@ -110,12 +121,14 @@ public abstract class MixinGuiTextField {
 	@Inject(method = "setMaxStringLength", at = @At(value = "INVOKE", target = "Ljava/lang/String;length()I"))
 	public void setMaxStringLength_stringStack(int i, CallbackInfo ci) {
 		//will remove the possibility of creating a bug in the matrix (untested)
-		for (int j = 0; j < stringStack.size(); j++) {
-			String string = stringStack.get(j);
-			if (string.length() > i ) {
-				stringStack.set(j, string.substring(0, j));
-				if (j < currentStringStackIndex) {
-					currentStringStackIndex -= 1;
+		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
+			for (int j = 0; j < stringStack.size(); j++) {
+				String string = stringStack.get(j);
+				if (string.length() > i) {
+					stringStack.set(j, string.substring(0, j));
+					if (j < currentStringStackIndex) {
+						currentStringStackIndex -= 1;
+					}
 				}
 			}
 		}

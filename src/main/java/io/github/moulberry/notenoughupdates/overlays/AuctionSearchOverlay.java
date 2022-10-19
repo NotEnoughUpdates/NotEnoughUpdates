@@ -102,9 +102,7 @@ public class AuctionSearchOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.enableSearchOverlay) return false;
 
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiEditSign)) {
-			if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) {
-				searchString = "";
-			}
+			if (!NotEnoughUpdates.INSTANCE.config.ahTweaks.keepPreviousSearch) searchString = "";
 			return false;
 		}
 

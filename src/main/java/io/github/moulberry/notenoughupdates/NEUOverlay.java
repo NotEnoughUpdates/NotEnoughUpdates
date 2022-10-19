@@ -1344,7 +1344,6 @@ public class NEUOverlay extends Gui {
 	public void updateSearch() {
 		SunTzu.randomizeQuote();
 
-
 		if (searchedItems == null) searchedItems = new TreeSet<>(getItemComparator());
 
 		searchES.submit(() -> {
