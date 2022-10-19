@@ -40,18 +40,18 @@ public class ViewProfileCommand extends ClientCommandBase {
 	public static final Consumer<String[]> RUNNABLE = (args) -> {
 		if (!OpenGlHelper.isFramebufferEnabled()) {
 			Utils.addChatMessage(EnumChatFormatting.RED +
-				"Some parts of the profile viewer do not work with OF Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.");
+				"Some parts of the profile viewer do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.");
 
 		}
 		if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey.trim().isEmpty()) {
 			Utils.addChatMessage(EnumChatFormatting.RED +
-				"Can't view profile, apikey is not set. Run /api new and put the result in settings.");
+				"Can't view profile, an API key is not set. Run /api new and put the result in settings.");
 		} else if (args.length == 0) {
 			NotEnoughUpdates.profileViewer.getProfileByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
 				if (profile == null) {
 					Utils.addChatMessage(EnumChatFormatting.RED +
-						"Invalid player name/api key. Maybe api is down? Try /api new.");
+						"Invalid player name/API key. Maybe the API is down? Try /api new.");
 				} else {
 					profile.resetCache();
 					NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
@@ -63,7 +63,7 @@ public class ViewProfileCommand extends ClientCommandBase {
 		} else {
 			NotEnoughUpdates.profileViewer.getProfileByName(args[0], profile -> {
 				if (profile == null) {
-					Utils.addChatMessage(EnumChatFormatting.RED + "Invalid player name/api key. Maybe api is down? Try /api new.");
+					Utils.addChatMessage(EnumChatFormatting.RED + "Invalid player name/api key. Maybe the API is down? Try /api new.");
 				} else {
 					profile.resetCache();
 					NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);

@@ -38,7 +38,7 @@ public class CosmeticsCommand extends ClientCommandBase {
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.notifications.doFastRenderNotif) {
 			Utils.addChatMessage(EnumChatFormatting.RED +
-				"NEU cosmetics do not work with OF Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.");
+				"NEU Cosmetics do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.");
 
 		}
 

@@ -194,7 +194,7 @@ public class DevTestCommand extends ClientCommandBase {
 				Utils.addChatMessage("Opening gui: " + NotEnoughUpdates.INSTANCE.openGui);
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
 				e.printStackTrace();
-				Utils.addChatMessage("Failed to open this gui.");
+				Utils.addChatMessage("Failed to open this GUI.");
 			}
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("center")) {

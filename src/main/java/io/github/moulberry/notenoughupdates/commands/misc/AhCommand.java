@@ -37,11 +37,11 @@ public class AhCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			Utils.addChatMessage(EnumChatFormatting.RED + "You must be on Skyblock to use this feature.");
+			Utils.addChatMessage(EnumChatFormatting.RED + "You must be on SkyBlock to use this feature.");
 		} else if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
 			NotEnoughUpdates.INSTANCE.config.apiData.apiKey.trim().isEmpty()) {
 			Utils.addChatMessage(
-				EnumChatFormatting.RED + "Can't open NeuAH, apikey is not set. Run /api new and put the result in settings.");
+				EnumChatFormatting.RED + "Can't open NEU AH: an api key is not set. Run /api new and put the result in settings.");
 		} else {
 			NotEnoughUpdates.INSTANCE.openGui = new CustomAHGui();
 			NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.lastOpen = System.currentTimeMillis();

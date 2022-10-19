@@ -27,7 +27,7 @@ public class TradeMenu {
 	@Expose
 	@ConfigOption(
 		name = "Enable Custom Trade Menu",
-		desc = "When trading with other players in skyblock, display a special GUI designed to prevent scamming"
+		desc = "When trading with other players in SkyBlock, display a special GUI designed to prevent scamming"
 	)
 	@ConfigEditorBoolean
 	public boolean enableCustomTrade = true;

@@ -738,7 +738,7 @@ public class GuiProfileViewer extends GuiScreen {
 					break;
 				case NO_SKYBLOCK:
 					Utils.drawStringCentered(
-						EnumChatFormatting.RED + "No skyblock data found!",
+						EnumChatFormatting.RED + "No SkyBlock data found!",
 						Minecraft.getMinecraft().fontRendererObj,
 						guiLeft + sizeX / 2f,
 						guiTop + 101,
