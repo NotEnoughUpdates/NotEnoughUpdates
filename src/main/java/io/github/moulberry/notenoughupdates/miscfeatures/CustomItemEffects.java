@@ -1276,7 +1276,6 @@ public class CustomItemEffects {
 		tessellator.draw();
 	}
 
-
 	public static void drawFilledBoundingBoxSide(
 		AxisAlignedBB p_181561_0_,
 		EnumFacing facing,

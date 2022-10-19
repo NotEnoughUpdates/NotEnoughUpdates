@@ -38,9 +38,9 @@ public class WitherCloakChanger {
 
 	@SubscribeEvent
 	public void onChatMessage(ClientChatReceivedEvent event) {
-		if(!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
-		if(event.message.getUnformattedText().startsWith("Creeper Veil ")) {
-			if(isCloakActive && !event.message.getUnformattedText().equals("Creeper Veil Activated!")) {
+		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
+		if (event.message.getUnformattedText().startsWith("Creeper Veil ")) {
+			if (isCloakActive && !event.message.getUnformattedText().equals("Creeper Veil Activated!")) {
 				isCloakActive = false;
 				lastDeactivate = System.currentTimeMillis();
 			} else {
@@ -54,38 +54,72 @@ public class WitherCloakChanger {
 		isCloakActive = false;
 	}
 
-	private static final ResourceLocation witherCloakShield = new ResourceLocation("notenoughupdates:wither_cloak_shield.png");
+	private static final ResourceLocation witherCloakShield = new ResourceLocation(
+		"notenoughupdates:wither_cloak_shield.png");
 
 	@SubscribeEvent
 	public void onRenderLast(RenderWorldLastEvent event) {
-		if(!NotEnoughUpdates.INSTANCE.isOnSkyblock() || !isCloakActive || !NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakToggle) return;
+		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock() || !isCloakActive ||
+			!NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakToggle) return;
 		Minecraft mc = Minecraft.getMinecraft();
 
 		//CONSTANTS (Other contribs, mess with these as you wish, but you should know I chose these for a reason)
 		final double shieldWidth = 0.8d; //How wide they are
 		final double shieldHeight = 2.0d; //How tall they are
-		final double accuracy = 4.0d; //Will be accurate to 1/accuracy of a degree (so updates every 0.25 degrees with an accuracy of 4)
+		final double accuracy =
+			4.0d; //Will be accurate to 1/accuracy of a degree (so updates every 0.25 degrees with an accuracy of 4)
 
-		for(int i = 0; i<NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakCount; i++) {
-			double angle = (int) (((System.currentTimeMillis()/30*NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakSpeed*-0.5*accuracy))%(360*accuracy))/accuracy; angle+=(360d/NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakCount)*i; angle%=360;
-			double posX = mc.thePlayer.posX-(shieldWidth/2);
+		for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakCount; i++) {
+			double angle = (int) (
+				((System.currentTimeMillis() / 30 * NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakSpeed *
+					-0.5 * accuracy)) % (360 * accuracy)) / accuracy;
+			angle += (360d / NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakCount) * i;
+			angle %= 360;
+			double posX = mc.thePlayer.posX - (shieldWidth / 2);
 			double posY = mc.thePlayer.posY;
-			double posZ = mc.thePlayer.posZ+NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakDistance;
+			double posZ = mc.thePlayer.posZ + NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakDistance;
 
-			Vec3 topLeft = rotateAboutOrigin(mc.thePlayer.posX, mc.thePlayer.posZ, angle, new Vec3(posX, posY+shieldHeight, posZ));
-			Vec3 topRight = rotateAboutOrigin(mc.thePlayer.posX, mc.thePlayer.posZ, angle, new Vec3(posX+shieldWidth, posY+shieldHeight, posZ));
-			Vec3 bottomRight = rotateAboutOrigin(mc.thePlayer.posX, mc.thePlayer.posZ, angle, new Vec3(posX+shieldWidth, posY, posZ));
+			Vec3 topLeft = rotateAboutOrigin(
+				mc.thePlayer.posX,
+				mc.thePlayer.posZ,
+				angle,
+				new Vec3(posX, posY + shieldHeight, posZ)
+			);
+			Vec3 topRight = rotateAboutOrigin(
+				mc.thePlayer.posX,
+				mc.thePlayer.posZ,
+				angle,
+				new Vec3(posX + shieldWidth, posY + shieldHeight, posZ)
+			);
+			Vec3 bottomRight = rotateAboutOrigin(
+				mc.thePlayer.posX,
+				mc.thePlayer.posZ,
+				angle,
+				new Vec3(posX + shieldWidth, posY, posZ)
+			);
 			Vec3 bottomLeft = rotateAboutOrigin(mc.thePlayer.posX, mc.thePlayer.posZ, angle, new Vec3(posX, posY, posZ));
-			RenderUtils.drawFilledQuadWithTexture(topLeft, topRight, bottomRight, bottomLeft, /*NotEnoughUpdates.INSTANCE.config.misc.customWitherCloakTransparency*/ 1.0f, witherCloakShield);
+			RenderUtils.drawFilledQuadWithTexture(
+				topLeft,
+				topRight,
+				bottomRight,
+				bottomLeft, /*NotEnoughUpdates.INSTANCE.config.misc.customWitherCloakTransparency*/
+				1.0f,
+				witherCloakShield
+			);
 		}
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.tryBlendFuncSeparate(
+			GL11.GL_SRC_ALPHA,
+			GL11.GL_ONE_MINUS_SRC_ALPHA,
+			GL11.GL_ONE,
+			GL11.GL_ONE_MINUS_SRC_ALPHA
+		);
 	}
 
 	private static Vec3 rotateAboutOrigin(double originX, double originZ, double angle, Vec3 point) {
 		double a = angle * Math.PI / 180;
-		double newX = originX + ( Math.cos(a) * (point.xCoord-originX) + Math.sin(a) * (point.zCoord - originZ));
-		double newZ = originZ + ( -Math.sin(a) * (point.xCoord-originX) + Math.cos(a) * (point.zCoord - originZ));
+		double newX = originX + (Math.cos(a) * (point.xCoord - originX) + Math.sin(a) * (point.zCoord - originZ));
+		double newZ = originZ + (-Math.sin(a) * (point.xCoord - originX) + Math.cos(a) * (point.zCoord - originZ));
 		return new Vec3(newX, point.yCoord, newZ);
 	}
 }
