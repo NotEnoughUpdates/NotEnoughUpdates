@@ -77,7 +77,7 @@ public class MiscOverlays {
 			"\u00a73Mithril Powder: \u00a7e3h38m",
 			"\u00a73Gemstone Powder: \u00a7e3h38m",
 			"\u00a73Heavy Pearls: \u00a7e3h38m",
-			"\u00a73Town Board Quests: \u00a7e3h38m",
+			"\u00a73Crimson Isle Quests: \u00a7e3h38m",
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -214,8 +214,8 @@ public class MiscOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Town Board Quest Display",
-		desc = "Change the way the town board quest displays\n" +
+		name = "Crimson Isle Quests Display",
+		desc = "Change the way the crimson isle quests display\n" +
 			"Only when ready, When very Soon, When soon, When kinda soon or always."
 	)
 	@ConfigAccordionId(id = 1)
