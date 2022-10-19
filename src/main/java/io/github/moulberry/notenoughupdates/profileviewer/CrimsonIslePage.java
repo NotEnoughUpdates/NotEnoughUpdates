@@ -42,16 +42,11 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		private static final ResourceLocation CRIMSON_ISLE = new ResourceLocation("notenoughupdates:pv_crimson_isle_page.png");
 
 		public static final ItemStack[] KUUDRA_KEYS = {
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-				NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("KUUDRA_TIER_KEY")),
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-				NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("KUUDRA_HOT_TIER_KEY")),
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-				NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("KUUDRA_BURNING_TIER_KEY")),
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-				NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("KUUDRA_FIERY_TIER_KEY")),
-			NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-				NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("KUUDRA_INFERNAL_TIER_KEY"))
+			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_TIER_KEY"),
+			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_HOT_TIER_KEY"),
+			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_BURNING_TIER_KEY"),
+			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_FIERY_TIER_KEY"),
+			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_INFERNAL_TIER_KEY"),
 		};
 
 		public static final String[] KUUDRA_TIERS = {
