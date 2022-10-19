@@ -1,6 +1,6 @@
 {
   "id": "notenoughupdates",
-  "version": "9999.0",
+  "version": "${version}",
   "schemaVersion": 1,
   "entrypoints": {
     "main": [

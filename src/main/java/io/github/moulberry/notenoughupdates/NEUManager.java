@@ -34,9 +34,9 @@ import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
-import io.github.moulberry.notenoughupdates.util.HypixelApi;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -124,9 +124,7 @@ public class NEUManager {
 	public String viewItemAttemptID = null;
 	public long viewItemAttemptTime = 0;
 
-	private final String currentProfile = "";
-	private final String currentProfileBackup = "";
-	public final HypixelApi hypixelApi = new HypixelApi();
+	public final ApiUtil apiUtils = new ApiUtil();
 
 	private final Map<String, ItemStack> itemstackCache = new HashMap<>();
 

@@ -145,46 +145,53 @@ public class CapeManager {
 	}
 
 	private void updateCapes() {
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync("activecapes.json", (jsonObject) -> {
-			if (jsonObject.get("success").getAsBoolean()) {
-				lastJsonSync = jsonObject;
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newMoulberryRequest("activecapes.json")
+			.requestJson()
+			.thenAccept(jsonObject -> {
+				if (jsonObject.get("success").getAsBoolean()) {
+					lastJsonSync = jsonObject;
 
-				lastCapeSynced = System.currentTimeMillis();
-				capeMap.clear();
-				for (JsonElement active : jsonObject.get("active").getAsJsonArray()) {
-					if (active.isJsonObject()) {
-						JsonObject activeObj = (JsonObject) active;
-						setCape(activeObj.get("_id").getAsString(), activeObj.get("capeType").getAsString(), false);
+					lastCapeSynced = System.currentTimeMillis();
+					capeMap.clear();
+					for (JsonElement active : jsonObject.get("active").getAsJsonArray()) {
+						if (active.isJsonObject()) {
+							JsonObject activeObj = (JsonObject) active;
+							setCape(activeObj.get("_id").getAsString(), activeObj.get("capeType").getAsString(), false);
+						}
 					}
 				}
-			}
-		}, () -> System.out.println("[MBAPI] Update capes errored"));
+			});
 
 		if (Minecraft.getMinecraft().thePlayer != null && permSyncTries > 0) {
 			String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
 			permSyncTries--;
-			NotEnoughUpdates.INSTANCE.manager.hypixelApi.getMyApiAsync("permscapes.json", (jsonObject) -> {
-				if (!jsonObject.get("success").getAsBoolean()) return;
+			NotEnoughUpdates.INSTANCE.manager.apiUtils
+				.newMoulberryRequest("permscapes.json")
+				.requestJson()
+				.thenAccept(jsonObject -> {
+					if (!jsonObject.get("success").getAsBoolean()) return;
 
-				permSyncTries = 0;
-				availableCapes.clear();
-				for (JsonElement permPlayer : jsonObject.get("perms").getAsJsonArray()) {
-					if (!permPlayer.isJsonObject()) continue;
-					String playerUuid = permPlayer.getAsJsonObject().get("_id").getAsString();
-					if (!(playerUuid != null && playerUuid.equals(uuid))) continue;
-					for (JsonElement perm : permPlayer.getAsJsonObject().get("perms").getAsJsonArray()) {
-						if (!perm.isJsonPrimitive()) continue;
-						String cape = perm.getAsString();
-						if (cape.equals("*")) {
-							allAvailable = true;
-						} else {
-							availableCapes.add(cape);
+					permSyncTries = 0;
+					availableCapes.clear();
+					for (JsonElement permPlayer : jsonObject.get("perms").getAsJsonArray()) {
+						if (!permPlayer.isJsonObject()) continue;
+						String playerUuid = permPlayer.getAsJsonObject().get("_id").getAsString();
+						if (!(playerUuid != null && playerUuid.equals(uuid))) continue;
+						for (JsonElement perm : permPlayer.getAsJsonObject().get("perms").getAsJsonArray()) {
+							if (!perm.isJsonPrimitive()) continue;
+							String cape = perm.getAsString();
+							if (cape.equals("*")) {
+								allAvailable = true;
+							} else {
+								availableCapes.add(cape);
+							}
+
 						}
-
+						return;
 					}
-					return;
-				}
-			}, () -> System.out.println("[MBAPI] Update capes errored - perms"));
+
+				});
 		}
 	}
 

@@ -286,7 +286,8 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Enable Combat Overlay",
-		desc = "Show an overlay while Combat with useful information"
+		desc = "Show an overlay while Combat with useful information",
+		searchTags = "champion"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)

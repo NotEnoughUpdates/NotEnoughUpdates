@@ -20,43 +20,43 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class AntiCoopAdd {
 
-	public static boolean onMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {
-		if (!NotEnoughUpdates.INSTANCE.config.misc.coopWarning) return false;
-		if (slotId == -999) return false;
-		if (!Utils.getOpenChestName().contains("Profile")) return false;
+	@SubscribeEvent
+	public void onMouseClick(SlotClickEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.misc.coopWarning) return;
+		if (event.slotId == -999) return;
+		if (!Utils.getOpenChestName().contains("Profile")) return;
 
-		GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-
-		ItemStack stack = chest.inventorySlots.getSlot(slotId).getStack();
-		if (stack == null) return false;
-		if (stack.getItem() == Items.diamond && stack.getDisplayName() != null && stack.getDisplayName().contains("Co-op Request")) {
+		ItemStack stack = event.slot.getStack();
+		if (stack == null) return;
+		if (stack.getItem() == Items.diamond && stack.getDisplayName() != null && stack.getDisplayName().contains(
+			"Co-op Request")) {
 			String ign = Utils.getOpenChestName().split("'s Profile")[0];
 			ChatComponentText storageMessage = new ChatComponentText(
 				EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.YELLOW +
 					"You just clicked on the Co-op add button. If you want to coop add this person, click this chat message");
 			storageMessage.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/coopadd " + ign));
 			storageMessage.setChatStyle(storageMessage.getChatStyle().setChatHoverEvent(
-				new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					new ChatComponentText(EnumChatFormatting.YELLOW + "Click to add " + ign + " to your coop"))));
+				new HoverEvent(
+					HoverEvent.Action.SHOW_TEXT,
+					new ChatComponentText(EnumChatFormatting.YELLOW + "Click to add " + ign + " to your coop")
+				)));
 			ChatComponentText storageChatMessage = new ChatComponentText("");
 			storageChatMessage.appendSibling(storageMessage);
 			Minecraft.getMinecraft().thePlayer.addChatMessage(storageChatMessage);
-			return true;
+			event.setCanceled(true);
 		}
-
-		return false;
 	}
 }
