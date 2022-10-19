@@ -723,7 +723,6 @@ public class ProfileViewer {
 
 
 		public class SoopyNetworthData {
-
 			private HashMap<String, Long> categoryWorth;
 			private Long totalWorth;
 			private String[] keys;
@@ -753,6 +752,11 @@ public class ProfileViewer {
 				keys = categoryWorth.keySet().stream().sorted(Comparator.comparingLong(k->getCategory((String) k)).reversed()).toArray(String[]::new);
 			}
 
+			private SoopyNetworthData setLoading(){
+				totalWorth = -2l;
+				return this;
+			}
+
 			public long getTotal() {
 				return totalWorth;
 			}
@@ -779,21 +783,24 @@ public class ProfileViewer {
 			}
 
 			JsonArray playerInfo = getSkyblockProfiles(() -> {});
-			if (playerInfo == null) return null; //Not sure how to support the callback in these cases
-			if (updatingSoopyNetworth.get()) return null; //It shouldent really matter tho as these should never occur in /peek
+			if (playerInfo == null) return null;                                              //Not sure how to support the callback in these cases
+			if (updatingSoopyNetworth.get()) return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
 			updatingSoopyNetworth.set(true);
 
-			manager.hypixelApi.postApiAsync(
-				"https://soopy.dev/api/v2/player_networth/"+this.uuid,
-				skyblockProfiles.toString(),
-				"application/json",
-				jsonObject -> {
-					if (!jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
+			manager.apiUtils
+				.request()
+				.url("https://soopy.dev/api/v2/player_networth/" + this.uuid)
+				.method("POST")
+				.postData("application/json", skyblockProfiles.toString())
+				.requestJson()
+				.handle((jsonObject, throwable) -> {
+					if(throwable != null) throwable.printStackTrace();
+					if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
 						//Something went wrong
 						//Set profile networths to null to indicate that
 						for (int i = 0; i < skyblockProfiles.size(); i++) {
 							if (!skyblockProfiles.get(i).isJsonObject()) {
-								return;
+								return null;
 							}
 							JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
 
@@ -803,13 +810,13 @@ public class ProfileViewer {
 						}
 						updatingSoopyNetworth.set(false);
 						callback.run();
-						return;
+						return null;
 					}
 
 					//Success, update networth data
 					for (int i = 0; i < skyblockProfiles.size(); i++) {
 						if (!skyblockProfiles.get(i).isJsonObject()) {
-							return;
+							return null;
 						}
 						JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
 
@@ -828,24 +835,8 @@ public class ProfileViewer {
 
 					updatingSoopyNetworth.set(false);
 					callback.run();
-				},
-				() -> {
-					//Something went wrong
-					//Set profile networths to null to indicate that
-					for (int i = 0; i < skyblockProfiles.size(); i++) {
-						if (!skyblockProfiles.get(i).isJsonObject()) {
-							return;
-						}
-						JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
-
-						String cuteName = profile.get("cute_name").getAsString();
-
-						soopyNetworth.put(cuteName, new SoopyNetworthData(null));
-					}
-					updatingSoopyNetworth.set(false);
-					callback.run();
-				}
-			);
+					return null;
+				 });
 			return null;
 		}
 
