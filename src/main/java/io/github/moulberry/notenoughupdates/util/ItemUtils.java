@@ -250,6 +250,7 @@ public class ItemUtils {
 				for (int i = 0; i < newLore.size(); i++) {
 					String cleaned = Utils.cleanColour(newLore.get(i));
 					if (cleaned.equals("Right-click to add this pet to")) {
+						if (heldItem == null) newLore.remove(i + 2);
 						newLore.remove(i + 1);
 						newLore.remove(i);
 						secondLastBlankLine = i - 1;
@@ -277,6 +278,7 @@ public class ItemUtils {
 							petItemLore.add("");
 						}
 						petItemLore.add("§a(" + currentPet.candyUsed + "/10) Pet Candy Used");
+						if (heldItem == null) petItemLore.add("");
 					}
 					newLore.addAll(secondLastBlankLine + 1, petItemLore);
 				}
@@ -369,9 +371,9 @@ public class ItemUtils {
 									if (j < (levelPercent / 5)) {
 										sb.append(EnumChatFormatting.DARK_GREEN);
 									} else {
-										sb.append(EnumChatFormatting.GRAY);
+										sb.append(EnumChatFormatting.WHITE);
 									}
-									sb.append("-");
+									sb.append(EnumChatFormatting.BOLD + "" + EnumChatFormatting.STRIKETHROUGH + " ");
 								}
 								newLore.appendTag(new NBTTagString(sb.toString()));
 								newLore.appendTag(new NBTTagString(

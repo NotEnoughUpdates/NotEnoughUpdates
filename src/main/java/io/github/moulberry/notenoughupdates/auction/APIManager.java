@@ -287,23 +287,26 @@ public class APIManager {
 	}
 
 	public void updateLowestBin() {
-		manager.hypixelApi.getMyApiGZIPAsync("lowestbin.json.gz", (jsonObject) -> {
-			if (lowestBins == null) {
-				lowestBins = new JsonObject();
-			}
-			if (!jsonObject.entrySet().isEmpty()) {
-				lastLowestBinUpdate = System.currentTimeMillis();
-			}
-			for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				lowestBins.add(entry.getKey(), entry.getValue());
-			}
-			if (!didFirstUpdate) {
-				ItemPriceInformation.updateAuctionableItemsList();
-				didFirstUpdate = true;
-			}
-			GuiPriceGraph.addToCache(lowestBins, false);
-		}, () -> {
-		});
+		manager.apiUtils
+			.newMoulberryRequest("lowestbin.json.gz")
+			.gunzip()
+			.requestJson()
+			.thenAccept(jsonObject -> {
+				if (lowestBins == null) {
+					lowestBins = new JsonObject();
+				}
+				if (!jsonObject.entrySet().isEmpty()) {
+					lastLowestBinUpdate = System.currentTimeMillis();
+				}
+				for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+					lowestBins.add(entry.getKey(), entry.getValue());
+				}
+				if (!didFirstUpdate) {
+					ItemPriceInformation.updateAuctionableItemsList();
+					didFirstUpdate = true;
+				}
+				GuiPriceGraph.addToCache(lowestBins, false);
+			});
 	}
 
 	private void ahNotification() {
@@ -460,20 +463,23 @@ public class APIManager {
 			}
 		};
 
-		manager.hypixelApi.getMyApiGZIPAsync("auctionLast.json.gz", process, () ->
-			System.out.println("Error downloading auction from Moulberry's jank API. :("));
+		manager.apiUtils.newMoulberryRequest("auctionLast.json.gz")
+										.gunzip().requestJson().thenAccept(process);
 
-		manager.hypixelApi.getMyApiGZIPAsync("auction.json.gz", jsonObject -> {
-			if (jsonObject.get("success").getAsBoolean()) {
-				long apiUpdate = (long) jsonObject.get("time").getAsFloat();
-				if (lastApiUpdate == apiUpdate) {
-					lastAuctionUpdate -= 30 * 1000;
+		manager.apiUtils
+			.newMoulberryRequest("auction.json.gz")
+			.gunzip().requestJson()
+			.thenAccept(jsonObject -> {
+				if (jsonObject.get("success").getAsBoolean()) {
+					long apiUpdate = (long) jsonObject.get("time").getAsFloat();
+					if (lastApiUpdate == apiUpdate) {
+						lastAuctionUpdate -= 30 * 1000;
+					}
+					lastApiUpdate = apiUpdate;
+
+					process.accept(jsonObject);
 				}
-				lastApiUpdate = apiUpdate;
-
-				process.accept(jsonObject);
-			}
-		}, () -> System.out.println("Error downloading auction from Moulberry's jank API. :("));
+			});
 
 	}
 
@@ -673,8 +679,10 @@ public class APIManager {
 		//System.out.println("Trying to update page: " + page);
 		HashMap<String, String> args = new HashMap<>();
 		args.put("page", "" + page);
-		manager.hypixelApi.getHypixelApiAsync(null, "skyblock/auctions",
-			args, jsonObject -> {
+		manager.apiUtils
+			.newAnonymousHypixelApiRequest("skyblock/auctions")
+			.requestJson()
+			.thenAccept(jsonObject -> {
 				if (jsonObject == null) return;
 
 				if (jsonObject.get("success").getAsBoolean()) {
@@ -701,8 +709,13 @@ public class APIManager {
 				} else {
 					pagesToDownload.addLast(page);
 				}
-			}, () -> pagesToDownload.addLast(page)
-		);
+			})
+			.handle((ignored, ex) -> {
+				if (ex != null) {
+					pagesToDownload.addLast(page);
+				}
+				return null;
+			});
 	}
 
 	private static final Pattern BAZAAR_ENCHANTMENT_PATTERN = Pattern.compile("ENCHANTMENT_(\\D*)_(\\d+)");
@@ -716,11 +729,10 @@ public class APIManager {
 	}
 
 	public void updateBazaar() {
-		manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"skyblock/bazaar",
-			new HashMap<>(),
-			(jsonObject) -> {
+		manager.apiUtils
+			.newHypixelApiRequest("skyblock/bazaar")
+			.requestJson()
+			.thenAccept(jsonObject -> {
 				if (!jsonObject.get("success").getAsBoolean()) return;
 
 				craftCost.clear();
@@ -755,20 +767,23 @@ public class APIManager {
 					}
 				}
 				GuiPriceGraph.addToCache(bazaarJson, true);
-			}
-		);
+			});
 	}
 
 	public void updateAvgPrices() {
-		manager.hypixelApi.getMyApiGZIPAsync("auction_averages/3day.json.gz", (jsonObject) -> {
-			craftCost.clear();
-			auctionPricesJson = jsonObject;
-			lastAuctionAvgUpdate = System.currentTimeMillis();
-		}, () -> {
-		});
-		manager.hypixelApi.getMyApiGZIPAsync("auction_averages_lbin/1day.json.gz", (jsonObject) ->
-			auctionPricesAvgLowestBinJson = jsonObject, () -> {
-		});
+		manager.apiUtils
+			.newMoulberryRequest("auction_averages/3day.json.gz")
+			.gunzip().requestJson().thenAccept((jsonObject) -> {
+						 craftCost.clear();
+						 auctionPricesJson = jsonObject;
+						 lastAuctionAvgUpdate = System.currentTimeMillis();
+					 });
+		manager.apiUtils
+			.newMoulberryRequest("auction_averages_lbin/1day.json.gz")
+			.gunzip().requestJson()
+			.thenAccept((jsonObject) -> {
+				auctionPricesAvgLowestBinJson = jsonObject;
+			});
 	}
 
 	public Set<String> getItemAuctionInfoKeySet() {

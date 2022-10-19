@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -68,29 +70,28 @@ public class AbiphoneWarning extends GuiElement {
 		return shouldPerformCheck() && showWarning;
 	}
 
-	public boolean onMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {
-		if (!shouldPerformCheck()) return false;
-		if (!NotEnoughUpdates.INSTANCE.config.misc.abiphoneWarning) return false;
-		if (slotId == -999) return false;
-		if (clickedButton == 0) return false;
+	@SubscribeEvent
+	public void onMouseClick(SlotClickEvent event) {
+		if (!shouldPerformCheck()) return;
+		if (!NotEnoughUpdates.INSTANCE.config.misc.abiphoneWarning) return;
+		if (event.slotId == -999) return;
+		if (event.clickedButton == 0) return;
 
 		GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
 
-		ItemStack clickedContact = chest.inventorySlots.getSlot(slotId).getStack();
-		if (clickedContact == null) return false;
+		ItemStack clickedContact = chest.inventorySlots.getSlot(event.slotId).getStack();
+		if (clickedContact == null) return;
 
 		List<String> list = ItemUtils.getLore(clickedContact);
-		if (list.isEmpty()) return false;
+		if (list.isEmpty()) return;
 
 		String last = list.get(list.size() - 1);
 		if (last.contains("Right-click to remove contact!")) {
 			showWarning = true;
 			contactName = clickedContact.getDisplayName();
-			contactSlot = slotId;
-			return true;
+			contactSlot = event.slotId;
+			event.setCanceled(true);
 		}
-
-		return false;
 	}
 
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {

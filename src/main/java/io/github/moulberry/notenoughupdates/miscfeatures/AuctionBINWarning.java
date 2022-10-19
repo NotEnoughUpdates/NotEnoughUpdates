@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -33,6 +34,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -79,75 +81,73 @@ public class AuctionBINWarning extends GuiElement {
 		return shouldPerformCheck() && showWarning;
 	}
 
-	public boolean onMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {
-		if (!shouldPerformCheck()) return false;
+	@SubscribeEvent
+	public void onMouseClick(SlotClickEvent event) {
+		if (!shouldPerformCheck()) return;
 
-		if (slotId == 29) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		if (event.slotId != 29) {
+			return;
+		}
 
-			sellingPrice = -1;
+		sellingPrice = -1;
 
-			ItemStack priceStack = chest.inventorySlots.getSlot(31).getStack();
-			if (priceStack != null) {
-				String displayName = priceStack.getDisplayName();
-				Matcher priceMatcher = ITEM_PRICE_REGEX.matcher(displayName);
+		ItemStack priceStack = event.guiContainer.inventorySlots.getSlot(31).getStack();
+		if (priceStack != null) {
+			String displayName = priceStack.getDisplayName();
+			Matcher priceMatcher = ITEM_PRICE_REGEX.matcher(displayName);
 
-				if (priceMatcher.matches()) {
-					try {
-						sellingPrice = Long.parseLong(priceMatcher.group(1).replace(",", ""));
-					} catch (NumberFormatException ignored) {
-					}
+			if (priceMatcher.matches()) {
+				try {
+					sellingPrice = Long.parseLong(priceMatcher.group(1).replace(",", ""));
+				} catch (NumberFormatException ignored) {
 				}
 			}
-
-			ItemStack sellStack = chest.inventorySlots.getSlot(13).getStack();
-			String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(sellStack);
-			sellStackAmount = sellStack.stackSize;
-
-			if (internalname == null) {
-				return false;
-			}
-
-			JsonObject itemInfo = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(internalname);
-			if (itemInfo == null || !itemInfo.has("displayname")) {
-				sellingName = internalname;
-			} else {
-				sellingName = itemInfo.get("displayname").getAsString();
-			}
-
-			sellingTooltip = sellStack.getTooltip(
-				Minecraft.getMinecraft().thePlayer,
-				Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-			);
-
-			lowestPrice = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
-			if (lowestPrice <= 0) {
-				lowestPrice = (int) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalname);
-			}
-
-			float undercutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.warningThreshold / 100;
-			if (undercutFactor < 0) undercutFactor = 0;
-			if (undercutFactor > 1) undercutFactor = 1;
-			float overcutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.overcutWarningThreshold / 100;
-			if (overcutFactor < 0) overcutFactor = 0;
-			if (overcutFactor > 1) overcutFactor = 1;
-
-			if (lowestPrice == -1) {
-				return false;
-			}
-			if (NotEnoughUpdates.INSTANCE.config.ahTweaks.underCutWarning &&
-				(sellingPrice > 0 && lowestPrice > 0 && sellingPrice < sellStackAmount * lowestPrice * undercutFactor)) {
-				showWarning = true;
-				return true;
-			} else if (NotEnoughUpdates.INSTANCE.config.ahTweaks.overCutWarning &&
-				(sellingPrice > 0 && lowestPrice > 0 && sellingPrice > sellStackAmount * lowestPrice * (overcutFactor + 1))) {
-				showWarning = true;
-				return true;
-			} else {
-				return false;
-			}
 		}
-		return false;
+
+		ItemStack sellStack = event.guiContainer.inventorySlots.getSlot(13).getStack();
+		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(sellStack);
+		sellStackAmount = sellStack.stackSize;
+
+		if (internalname == null) {
+			return;
+		}
+
+		JsonObject itemInfo = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(internalname);
+		if (itemInfo == null || !itemInfo.has("displayname")) {
+			sellingName = internalname;
+		} else {
+			sellingName = itemInfo.get("displayname").getAsString();
+		}
+
+		sellingTooltip = sellStack.getTooltip(
+			Minecraft.getMinecraft().thePlayer,
+			Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+		);
+
+		lowestPrice = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLowestBin(internalname);
+		if (lowestPrice <= 0) {
+			lowestPrice = (int) NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAvgBin(internalname);
+		}
+
+		float undercutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.warningThreshold / 100;
+		if (undercutFactor < 0) undercutFactor = 0;
+		if (undercutFactor > 1) undercutFactor = 1;
+		float overcutFactor = 1 - NotEnoughUpdates.INSTANCE.config.ahTweaks.overcutWarningThreshold / 100;
+		if (overcutFactor < 0) overcutFactor = 0;
+		if (overcutFactor > 1) overcutFactor = 1;
+
+		if (lowestPrice == -1) {
+			return;
+		}
+		if (NotEnoughUpdates.INSTANCE.config.ahTweaks.underCutWarning &&
+			(sellingPrice > 0 && lowestPrice > 0 && sellingPrice < sellStackAmount * lowestPrice * undercutFactor)) {
+			showWarning = true;
+			event.setCanceled(true);
+		} else if (NotEnoughUpdates.INSTANCE.config.ahTweaks.overCutWarning &&
+			(sellingPrice > 0 && lowestPrice > 0 && sellingPrice > sellStackAmount * lowestPrice * (overcutFactor + 1))) {
+			showWarning = true;
+			event.setCanceled(true);
+		}
 	}
 
 	public void overrideIsMouseOverSlot(Slot slot, int mouseX, int mouseY, CallbackInfoReturnable<Boolean> cir) {
