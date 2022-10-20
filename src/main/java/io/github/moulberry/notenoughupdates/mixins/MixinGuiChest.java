@@ -60,7 +60,7 @@ public class MixinGuiChest {
 	private static final String TARGET_SBADRAWSTRING = "Lcodes/biscuit/skyblockaddons/asm/hooks/GuiChestHook;" +
 		"drawString(Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)I";
 
-	@Redirect(method = "drawGuiContainerForegroundLayer", at = @At(value = "INVOKE", target = TARGET_SBADRAWSTRING, remap = false))
+	@Redirect(method = "drawGuiContainerForegroundLayer", at = @At(value = "INVOKE", target = TARGET_SBADRAWSTRING, remap = false), expect = 0)
 	public int drawGuiContainerForegroundLayer_SBA_drawString(
 		FontRenderer fontRenderer,
 		String text,

@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class FarmingOverlay extends TextOverlay {
+public class FarmingSkillOverlay extends TextOverlay {
 	private long lastUpdate = -1;
 	private int counterLast = -1;
 	private int counter = -1;
@@ -66,7 +66,7 @@ public class FarmingOverlay extends TextOverlay {
 
 	private String skillType = "Farming";
 
-	public FarmingOverlay(
+	public FarmingSkillOverlay(
 		Position position,
 		Supplier<List<String>> dummyStrings,
 		Supplier<TextOverlayStyle> styleSupplier
@@ -284,7 +284,6 @@ public class FarmingOverlay extends TextOverlay {
 				}
 			}
 		}
-
 		skillInfoLast = skillInfo;
 		skillInfo = XPInformation.getInstance().getSkillInfo(skillType);
 		if (skillInfo != null) {
@@ -294,7 +293,8 @@ public class FarmingOverlay extends TextOverlay {
 				float delta = totalXp - lastTotalXp;
 
 				if (delta > 0 && delta < 1000) {
-					xpGainTimer = 3;
+
+					xpGainTimer = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPauseTimer;
 
 					xpGainQueue.add(0, delta);
 					while (xpGainQueue.size() > 30) {

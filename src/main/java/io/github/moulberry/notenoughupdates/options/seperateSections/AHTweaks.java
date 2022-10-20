@@ -81,7 +81,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Enable Undercut BIN Warning",
-		desc = "Ask for confirmation when BINing an item for below X% of lowestbin"
+		desc = "Ask for confirmation when BINing an item for below X% of lowest bin"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
@@ -90,7 +90,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Enable Overcut BIN Warning",
-		desc = "Ask for confirmation when BINing an item for over X% of lowestbin"
+		desc = "Ask for confirmation when BINing an item for over X% of lowest bin"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
@@ -112,7 +112,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Overcut Warning Threshold",
-		desc = "Threshold for BIN warning\nExample: 50% means warn if sell price is 50% higher than lowest bin"
+		desc = "Threshold for BIN warning\nExample: 50% means warn if sell price is 50% higher than lowest bin\n\u00A7c\u00a7lWARNING: \u00A7r\u00A7c100% will if above lbin always trigger, 0% instead will never trigger"
 	)
 	@ConfigEditorSlider(
 		minValue = 0.0f,
