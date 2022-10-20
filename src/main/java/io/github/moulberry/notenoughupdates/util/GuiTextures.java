@@ -101,10 +101,6 @@ public class GuiTextures {
 		new ResourceLocation("notenoughupdates:descending_overlay.png");
 
 	public static final ResourceLocation BAR = new ResourceLocation("notenoughupdates:core/bar.png");
-	public static final ResourceLocation BAR_ONE = new ResourceLocation("notenoughupdates:core/bar_1.png");
-	public static final ResourceLocation BAR_TWO = new ResourceLocation("notenoughupdates:core/bar_2.png");
-	public static final ResourceLocation BAR_THREE = new ResourceLocation("notenoughupdates:core/bar_3.png");
-	public static final ResourceLocation BAR_ON = new ResourceLocation("notenoughupdates:core/bar_on.png");
 	public static final ResourceLocation OFF = new ResourceLocation("notenoughupdates:core/toggle_off.png");
 	public static final ResourceLocation ONE = new ResourceLocation("notenoughupdates:core/toggle_1.png");
 	public static final ResourceLocation TWO = new ResourceLocation("notenoughupdates:core/toggle_2.png");
