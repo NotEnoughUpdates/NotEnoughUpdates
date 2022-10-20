@@ -54,7 +54,7 @@ public class ChatListener {
 	private static final Pattern SLAYER_XP = Pattern.compile(
 		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
 
-	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,3})\\] .*");
+	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,4})\\] .*");
 	AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
