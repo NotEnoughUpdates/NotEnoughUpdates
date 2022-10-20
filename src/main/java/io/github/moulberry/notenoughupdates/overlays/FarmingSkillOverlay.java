@@ -121,57 +121,34 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 		if (cultivating < 1000) {
 			cultivatingTier = 1;
+			cultivatingTierAmount = "1,000";
 		} else if (cultivating < 5000) {
 			cultivatingTier = 2;
+			cultivatingTierAmount = "5,000";
 		} else if (cultivating < 25000) {
 			cultivatingTier = 3;
+			cultivatingTierAmount = "25,000";
 		} else if (cultivating < 100000) {
 			cultivatingTier = 4;
+			cultivatingTierAmount = "100,000";
 		} else if (cultivating < 300000) {
 			cultivatingTier = 5;
+			cultivatingTierAmount = "300,000";
 		} else if (cultivating < 1500000) {
 			cultivatingTier = 6;
+			cultivatingTierAmount = "1,500,000";
 		} else if (cultivating < 5000000) {
 			cultivatingTier = 7;
+			cultivatingTierAmount = "5,000,000";
 		} else if (cultivating < 20000000) {
 			cultivatingTier = 8;
+			cultivatingTierAmount = "20,000,000";
 		} else if (cultivating < 100000000) {
 			cultivatingTier = 9;
+			cultivatingTierAmount = "100,000,000";
 		} else if (cultivating > 100000000) {
 			cultivatingTier = 10;
-		}
-
-		switch (cultivatingTier) {
-			case 1:
-				cultivatingTierAmount = "1,000";
-				break;
-			case 2:
-				cultivatingTierAmount = "5,000";
-				break;
-			case 3:
-				cultivatingTierAmount = "25,000";
-				break;
-			case 4:
-				cultivatingTierAmount = "100,000";
-				break;
-			case 5:
-				cultivatingTierAmount = "300,000";
-				break;
-			case 6:
-				cultivatingTierAmount = "1,500,000";
-				break;
-			case 7:
-				cultivatingTierAmount = "5,000,000";
-				break;
-			case 8:
-				cultivatingTierAmount = "20,000,000";
-				break;
-			case 9:
-				cultivatingTierAmount = "100,000,000";
-				break;
-			case 10:
-				cultivatingTierAmount = "Maxed";
-				break;
+			cultivatingTierAmount = "Maxed";
 		}
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
