@@ -65,6 +65,7 @@ import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -227,10 +228,16 @@ public class EntityViewer extends GuiScreen {
 		EntityLivingBase stack = entity;
 		while (true) {
 			if (stack instanceof EntityDragon) {
-				scale = 5;
-				bottomOffset = 6F;
+				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+					scale = 35;
+					bottomOffset = 0F;
+				}
+				else {
+					scale = 10;
+					bottomOffset = 2F;
+				}
 			} else if (stack instanceof EntityWither) {
-				scale = 15;
+				scale = 20;
 			} else if (stack instanceof EntityGhast) {
 				scale = 8;
 				bottomOffset = 4F;
