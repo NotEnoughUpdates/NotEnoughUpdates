@@ -530,6 +530,7 @@ public class AuctionSearchOverlay {
 			textField.setText(searchString);
 			textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 			searchString = textField.getText();
+
 			search();
 		}
 	}
