@@ -62,6 +62,7 @@ public class DungeonNpcProfitOverlay {
 		"^§.(?<essenceType>\\w+) Essence §.x(?<essenceAmount>\\d+)$");
 	private static final Pattern enchantedBookPattern = Pattern.compile("^§.Enchanted Book \\((?<enchantName>.*)\\)");
 	private static List<DungeonChest> chestProfits;
+	private static List<Slot> previosSlots;
 
 	/**
 	 * Check the current status for the overlay
@@ -100,6 +101,7 @@ public class DungeonNpcProfitOverlay {
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest)) {
 			chestProfits = null;
+			previosSlots = null;
 			return;
 		}
 
@@ -107,24 +109,27 @@ public class DungeonNpcProfitOverlay {
 		Matcher matcher = chestNamePattern.matcher(lastOpenChestName);
 		if (!matcher.matches()) {
 			chestProfits = null;
+			previosSlots = null;
 			return;
 		}
 		GuiChest guiChest = (GuiChest) event.gui;
+		List<Slot> slots = guiChest.inventorySlots.inventorySlots;
 
-		if (chestProfits == null) {
-			chestProfits = new ArrayList<>();
-			updateDungeonChests(guiChest);
+		if (chestProfits == null || chestProfits.isEmpty() || !slots.equals(previosSlots)) {
+			updateDungeonChests(slots);
 		}
+		previosSlots = guiChest.inventorySlots.inventorySlots;
+
 		render(guiChest);
 	}
 
 	/**
 	 * Update the profit applicable for the chests currently visible
 	 *
-	 * @param guiChest the GuiChest containing the Dungeon Chest previews
+	 * @param inventorySlots list of Slots from the GUI containing the dungeon chest previews
 	 */
-	private void updateDungeonChests(GuiChest guiChest) {
-		List<Slot> inventorySlots = guiChest.inventorySlots.inventorySlots;
+	private void updateDungeonChests(List<Slot> inventorySlots) {
+		chestProfits = new ArrayList<>();
 		//loop through the upper chest
 		for (int i = 0; i < 27; i++) {
 			Slot inventorySlot = inventorySlots.get(i);
