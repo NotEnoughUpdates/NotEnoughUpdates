@@ -139,7 +139,7 @@ public class ItemTooltipRngListener {
 
 	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, String label) {
 		String internalName = neu.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
-		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName);
+		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName, false);
 		if (profit <= 0) return null;
 
 		//ask hypixel nicely to release a 'chest price api' with 4 dimensions for us. the 4 dimensions needed are: item name, floor, normal/mm, s/s+

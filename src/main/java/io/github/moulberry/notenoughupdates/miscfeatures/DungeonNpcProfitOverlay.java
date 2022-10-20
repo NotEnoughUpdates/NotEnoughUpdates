@@ -361,7 +361,7 @@ public class DungeonNpcProfitOverlay {
 		 * @return total price
 		 */
 		public double calculateCost() {
-			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName);
+			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, true);
 			if (price != -1) {
 				return price * amount;
 			}
