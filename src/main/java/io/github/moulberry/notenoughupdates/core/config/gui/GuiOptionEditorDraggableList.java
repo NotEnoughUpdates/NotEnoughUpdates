@@ -72,6 +72,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 		int height = super.getHeight() + 13;
 
 		for (int strIndex : activeText) {
+			if (strIndex >= exampleText.length) {
+				activeText.remove((Integer) strIndex);
+				break;
+			}
 			String str = exampleText[strIndex];
 			height += 10 * str.split("\n").length;
 		}
