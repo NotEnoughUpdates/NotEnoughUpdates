@@ -162,6 +162,7 @@ public class Calculator {
 
 		Deque<Token> op = new ArrayDeque<>();
 		List<Token> out = new ArrayList<>();
+		boolean nextMultiplyShouldBePower = false;
 
 		for (Token currentlyShunting : toShunt) {
 			switch (currentlyShunting.type) {
@@ -169,6 +170,17 @@ public class Calculator {
 					out.add(currentlyShunting);
 					break;
 				case BINOP:
+					Token next = toShunt.get(toShunt.indexOf(currentlyShunting) + 1);
+					if (currentlyShunting.operatorValue.equals("^")) {
+						if (next.numericValue > 999) {
+							throw new CalculatorException(next.numericValue + " is too large, pick a power less than 1000", next.tokenStart, next.tokenLength);
+						}
+					} else if (next != null && currentlyShunting.operatorValue.equals("*") && next.operatorValue != null && next.operatorValue.equals("*")) {
+						nextMultiplyShouldBePower = true;
+						continue;
+					} else if (nextMultiplyShouldBePower && currentlyShunting.operatorValue.equals("*")) {
+						currentlyShunting.operatorValue = "^";
+					}
 					int p = getPrecedence(currentlyShunting);
 					while (!op.isEmpty()) {
 						Token l = op.peek();
@@ -233,6 +245,15 @@ public class Calculator {
 						BigDecimal left = values.pop().setScale(2, RoundingMode.HALF_UP);
 						switch (command.operatorValue.intern()) {
 							case "^":
+								if (right.compareTo(new BigDecimal(1000)) >= 0) {
+									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
+									throw new CalculatorException(right + " is too large, pick a power less than 1000", rightToken.tokenStart, rightToken.tokenLength);
+								}
+
+								if (right.doubleValue() != right.intValue()) {
+									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
+									throw new CalculatorException(right + " has a decimal, pick a power that is non-decimal", rightToken.tokenStart, rightToken.tokenLength);
+								}
 								values.push(left.pow(right.intValue()).setScale(2, RoundingMode.HALF_UP));
 								break;
 							case "x":
