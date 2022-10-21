@@ -293,7 +293,8 @@ public class ChatListener {
 
 		Matcher LvlMatcher = SKYBLOCK_LVL_MESSAGE.matcher(unformatted);
 		if (LvlMatcher.matches()) {
-			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel && NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
+			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
+				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
 				e.setCanceled(true);
 			}
 		}
