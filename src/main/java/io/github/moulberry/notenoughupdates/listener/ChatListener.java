@@ -130,8 +130,7 @@ public class ChatListener {
 			} else {
 				ClickEvent chatClickEvent = chatComponent.getChatStyle().getChatClickEvent();
 				if (chatClickEvent != null) {
-					String value1 = chatClickEvent.getValue();
-					if (value1.startsWith("/socialoptions")) {
+					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
 						startsWith = "/socialoptions";
 					}
 				}
