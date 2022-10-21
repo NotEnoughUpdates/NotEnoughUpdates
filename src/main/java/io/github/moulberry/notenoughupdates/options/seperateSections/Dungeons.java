@@ -274,8 +274,8 @@ public class Dungeons {
 
 	@Expose
 	@ConfigOption(
-		name = "Add Pv Command Click on Party Finder Join",
-		desc = "Opens the players' pv when clicking on the Party Finder join message"
+		name = "Clickable dungeon finder messages",
+		desc = "Click on a dungeon finder message to open their profile in the profile viewer"
 	)
 	@ConfigEditorBoolean
 	public boolean openPvOnPartyJoin = true;
