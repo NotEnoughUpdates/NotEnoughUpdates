@@ -207,7 +207,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 				//MUSHROOM
 			} else if (internalname.equals("FUNGI_CUTTER")) {
 				Coins = useBZPrice ? ((getCoinsBz("ENCHANTED_RED_MUSHROOM", ENCH_SIZE) +
-					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE) / 2)) : 4;
+					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE))/2) : 4;
 
 				//PUMPKIN
 			} else if (internalname.equals("PUMPKIN_DICER")) {
