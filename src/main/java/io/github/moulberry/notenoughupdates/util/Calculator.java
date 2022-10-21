@@ -170,16 +170,22 @@ public class Calculator {
 					out.add(currentlyShunting);
 					break;
 				case BINOP:
-					Token next = toShunt.get(toShunt.indexOf(currentlyShunting) + 1);
-					if (currentlyShunting.operatorValue.equals("^")) {
-						if (next.numericValue > 999) {
-							throw new CalculatorException(next.numericValue + " is too large, pick a power less than 1000", next.tokenStart, next.tokenLength);
+					int nextIx = toShunt.indexOf(currentlyShunting) + 1;
+					Token next = toShunt.size() == nextIx ? null : toShunt.get(nextIx);
+					if (next != null) {
+						if (currentlyShunting.operatorValue.equals("^") && next.numericValue > 999) {
+							throw new CalculatorException(
+								next.numericValue + " is too large, pick a power less than 1000",
+								next.tokenStart,
+								next.tokenLength
+							);
+						} else if (currentlyShunting.operatorValue.equals("*") && next.operatorValue != null &&
+							next.operatorValue.equals("*")) {
+							nextMultiplyShouldBePower = true;
+							continue;
+						} else if (nextMultiplyShouldBePower && currentlyShunting.operatorValue.equals("*")) {
+							currentlyShunting.operatorValue = "^";
 						}
-					} else if (next != null && currentlyShunting.operatorValue.equals("*") && next.operatorValue != null && next.operatorValue.equals("*")) {
-						nextMultiplyShouldBePower = true;
-						continue;
-					} else if (nextMultiplyShouldBePower && currentlyShunting.operatorValue.equals("*")) {
-						currentlyShunting.operatorValue = "^";
 					}
 					int p = getPrecedence(currentlyShunting);
 					while (!op.isEmpty()) {
