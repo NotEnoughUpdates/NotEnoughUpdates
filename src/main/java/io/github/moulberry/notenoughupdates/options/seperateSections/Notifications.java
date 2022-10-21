@@ -86,4 +86,12 @@ public class Notifications {
 		minStep = 25
 	)
 	public int boosterCookieWarningMins = 1440;
+
+	@Expose
+	@ConfigOption(
+		name = "Nested Endermite Spawn Alert",
+		desc = "It will alert the user if a nested endermite gets spawned"
+	)
+	@ConfigEditorBoolean
+	public boolean endermiteAlert = true;
 }

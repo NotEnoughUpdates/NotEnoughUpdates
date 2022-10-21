@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnderNodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
@@ -308,5 +309,10 @@ public class ChatListener {
 			unformatted.equals("You have successfully picked the lock on this chest!")
 			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
 			OverlayManager.powderGrindingOverlay.message(unformatted);
+
+		if (unformatted.equals("ENDER NODE! You found Endermite Nest!") && SBInfo.getInstance().getLocation() != null &&
+		SBInfo.getInstance().getLocation().equals("combat_3")) {
+			EnderNodes.dispalyEndermiteNotif();
+		}
 	}
 }
