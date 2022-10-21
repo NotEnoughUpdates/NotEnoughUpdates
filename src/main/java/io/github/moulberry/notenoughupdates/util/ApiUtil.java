@@ -35,6 +35,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -104,6 +105,8 @@ public class ApiUtil {
 		private String baseUrl = null;
 		private boolean shouldGunzip = false;
 		private String method = "GET";
+		private String postData = null;
+		private String postContentType = null;
 
 		public Request method(String method) {
 			this.method = method;
@@ -127,6 +130,12 @@ public class ApiUtil {
 
 		public Request gunzip() {
 			shouldGunzip = true;
+			return this;
+		}
+
+		public Request postData(String contentType, String data) {
+			this.postContentType = contentType;
+			this.postData = data;
 			return this;
 		}
 
@@ -162,6 +171,18 @@ public class ApiUtil {
 						conn.setConnectTimeout(10000);
 						conn.setReadTimeout(10000);
 						conn.setRequestProperty("User-Agent", USER_AGENT);
+						if (this.postContentType != null) {
+							conn.setRequestProperty("Content-Type", this.postContentType);
+						}
+						if (this.postData != null) {
+							conn.setDoOutput(true);
+							OutputStream os = conn.getOutputStream();
+							try {
+								os.write(this.postData.getBytes("utf-8"));
+							} finally {
+								os.close();
+							}
+						}
 
 						inputStream = conn.getInputStream();
 
