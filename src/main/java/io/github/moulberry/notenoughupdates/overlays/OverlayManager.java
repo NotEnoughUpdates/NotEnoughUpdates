@@ -60,7 +60,8 @@ public class OverlayManager {
 			"\u00a73Commissions: \u00a7e3h38m",
 			"\u00a73Experiments: \u00a7e3h38m",
 			"\u00a73Mithril Powder: \u00a7e3h38m",
-			"\u00a73Gemstone Powder: \u00a7e3h38m"
+			"\u00a73Gemstone Powder: \u00a7e3h38m",
+			"\u00a73Crimson Isle Quests: \u00a7e3h38m"
 		);
 		textOverlays.add(
 			timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {

@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -646,9 +647,11 @@ public class ProfileViewer {
 		private final HashMap<String, PlayerStats.Stats> stats = new HashMap<>();
 		private final HashMap<String, PlayerStats.Stats> passiveStats = new HashMap<>();
 		private final HashMap<String, Long> networth = new HashMap<>();
+		private final HashMap<String, SoopyNetworthData> soopyNetworth = new HashMap<>();
 		private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
+		private final AtomicBoolean updatingSoopyNetworth = new AtomicBoolean(false);
 		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
 		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?\\d+)");
 		private String latestProfile = null;
@@ -715,6 +718,125 @@ public class ProfileViewer {
 					return null;
 				}));
 			return bingoInformation != null ? bingoInformation : null;
+		}
+
+		public class SoopyNetworthData {
+			private HashMap<String, Long> categoryWorth;
+			private Long totalWorth;
+			private String[] keys;
+
+			SoopyNetworthData(JsonObject nwData) {
+				categoryWorth = new HashMap<>();
+
+				if (nwData == null || nwData.isJsonNull()) {
+					totalWorth = -1l;
+					keys = new String[0];
+					return;
+				}
+				if (nwData.get("total").isJsonNull()) {
+					totalWorth = -1l;
+					keys = new String[0];
+					return;
+				}
+
+				totalWorth = nwData.get("total").getAsLong();
+				for (Map.Entry<String, JsonElement> entry : nwData.get("categories").getAsJsonObject().entrySet()) {
+					if (entry.getValue().isJsonNull()) {
+						continue;
+					}
+					categoryWorth.put(entry.getKey(), entry.getValue().getAsLong());
+				}
+
+				//Sort keys based on category value
+				keys = categoryWorth.keySet().stream().sorted(Comparator.comparingLong(k->getCategory((String) k)).reversed()).toArray(String[]::new);
+			}
+
+			private SoopyNetworthData setLoading() {
+				totalWorth = -2l;
+				return this;
+			}
+
+			public long getTotal() {
+				return totalWorth;
+			}
+
+			public long getCategory(String name) {
+				if (categoryWorth.containsKey(name)) return categoryWorth.get(name);
+				return 0;
+			}
+
+			public String[] getCategories() {
+				return keys;
+			}
+		}
+
+		/**
+		 * Returns SoopyNetworthData with total = -1 if error
+		 * Returns null if still loading
+		 */
+		public SoopyNetworthData getSoopyNetworth(String profileName, Runnable callback) {
+			if (profileName == null) profileName = latestProfile;
+			if (soopyNetworth.get(profileName) != null) {
+				callback.run();
+				return soopyNetworth.get(profileName);
+			}
+
+			JsonArray playerInfo = getSkyblockProfiles(() -> {});
+			if (playerInfo == null) return null;                                              //Not sure how to support the callback in these cases
+			if (updatingSoopyNetworth.get()) return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
+			updatingSoopyNetworth.set(true);
+
+			manager.apiUtils
+				.request()
+				.url("https://soopy.dev/api/v2/player_networth/" + this.uuid)
+				.method("POST")
+				.postData("application/json", skyblockProfiles.toString())
+				.requestJson()
+				.handle((jsonObject, throwable) -> {
+					if (throwable != null) throwable.printStackTrace();
+					if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
+						//Something went wrong
+						//Set profile networths to null to indicate that
+						for (int i = 0; i < skyblockProfiles.size(); i++) {
+							if (!skyblockProfiles.get(i).isJsonObject()) {
+								return null;
+							}
+							JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
+
+							String cuteName = profile.get("cute_name").getAsString();
+
+							soopyNetworth.put(cuteName, new SoopyNetworthData(null));
+						}
+						updatingSoopyNetworth.set(false);
+						callback.run();
+						return null;
+					}
+
+					//Success, update networth data
+					for (int i = 0; i < skyblockProfiles.size(); i++) {
+						if (!skyblockProfiles.get(i).isJsonObject()) {
+							return null;
+						}
+						JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
+
+						String cuteName = profile.get("cute_name").getAsString();
+						String profileId = profile.get("profile_id").getAsString();
+
+						SoopyNetworthData networth;
+						if (jsonObject.getAsJsonObject("data").get(profileId).isJsonNull()) {
+							networth = new SoopyNetworthData(null);
+						} else {
+							networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
+						}
+
+						soopyNetworth.put(cuteName, networth);
+					}
+
+					updatingSoopyNetworth.set(false);
+					callback.run();
+					return null;
+				});
+			return null;
 		}
 
 		public long getNetWorth(String profileName) {
