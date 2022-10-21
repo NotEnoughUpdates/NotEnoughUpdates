@@ -98,7 +98,9 @@ public class NEUConfig extends Config {
 		};
 		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(overlayPositions, () -> {
 		}, () -> {
-		}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor)));
+		}, () -> {
+			NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+		}));
 	}
 
 	@Override

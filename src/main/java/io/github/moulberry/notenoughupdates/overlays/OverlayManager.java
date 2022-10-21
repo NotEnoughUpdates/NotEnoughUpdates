@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OverlayManager {
-	public static Class<? extends TextOverlay> dontRenderOverlay = null;
+	public static ArrayList<Class<? extends TextOverlay>> dontRenderOverlay = new ArrayList<>();
 
 	public static MiningOverlay miningOverlay;
 	public static FarmingSkillOverlay farmingOverlay;

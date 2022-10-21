@@ -19,10 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.core.config.gui;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -73,7 +70,7 @@ public class GuiPositionEditor extends GuiScreen {
 			if (overlay.shouldRenderInGuiEditor) {
 				renderCallbac.add(() -> {
 					overlay.renderDummy();
-					OverlayManager.dontRenderOverlay = overlay.getClass();
+					OverlayManager.dontRenderOverlay.add(overlay.getClass());
 				});
 			}
 		}
@@ -90,8 +87,7 @@ public class GuiPositionEditor extends GuiScreen {
 		this.elementWidths = width;
 		this.elementHeights = height;
 		this.positionChangedCallback = positionChangedCallback;
-		this.closedCallback =
-			(() -> NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor));
+		this.closedCallback = closedCallback;
 	}
 
 	@Override
