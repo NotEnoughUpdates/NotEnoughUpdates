@@ -33,8 +33,8 @@ import org.lwjgl.input.Keyboard;
 public class Misc {
 	@Expose
 	@ConfigOption(
-		name = "Only Show on Skyblock",
-		desc = "The item list and some other GUI elements will only show on skyblock"
+		name = "Only Show on SkyBlock",
+		desc = "The item list and some other GUI elements will only show on SkyBlock"
 	)
 	@ConfigEditorBoolean
 	public boolean onlyShowOnSkyblock = true;
@@ -42,7 +42,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Hide Potion Effects",
-		desc = "Hide the potion effects inside your inventory while on skyblock"
+		desc = "Hide the potion effects inside your inventory while on SkyBlock"
 	)
 	@ConfigEditorBoolean
 	public boolean hidePotionEffect = true;
@@ -135,7 +135,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Damage Indicator Style",
-		desc = "Change Skyblock damage indicators to use shortened numbers\n" +
+		desc = "Change SkyBlock damage indicators to use shortened numbers\n" +
 			"\u00A7cSome old animations mods break this feature"
 	)
 	@ConfigEditorBoolean
@@ -154,7 +154,8 @@ public class Misc {
 	@ConfigOption(
 
 		name = "Edit Enchant Colours",
-		desc = "Change the colours of certain skyblock enchants (/neuec)"
+		desc = "Change the colours of certain SkyBlock enchants (/neuec)",
+		searchTags = "color"
 	)
 	@ConfigEditorButton(runnableId = 8, buttonText = "Open")
 	public boolean editEnchantColoursButton = true;
@@ -162,7 +163,8 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Chroma Text Speed",
-		desc = "Change the speed of chroma text for items names (/neucustomize) and enchant colours (/neuec) with the chroma colour code (&z)"
+		desc = "Change the speed of chroma text for items names (/neucustomize) and enchant colours (/neuec) with the chroma colour code (&z)",
+		searchTags = "color"
 	)
 	@ConfigEditorSlider(
 		minValue = 10,
@@ -245,5 +247,25 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean coopWarning = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Filter Skyblock Levels in Chat",
+		desc = "Requires the \"SkyBlock Levels in Chat\" skyblock setting to be on"
+	)
+	@ConfigEditorSlider(
+		minValue = 0,
+		maxValue = 300,
+		minStep = 10
+	)
+	public int filterChatLevel = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable text field tweaks",
+		desc = "Allows the use of ctrl + z, ctrl + y and ctrl + Lshift + z in text fields"
+	)
+	@ConfigEditorBoolean
+	public boolean textFieldTweaksEnabled = true;
 
 }

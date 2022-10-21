@@ -17,26 +17,25 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
+package io.github.moulberry.notenoughupdates.listener;
 
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import java.util.Map;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public abstract class SkillsWeight {
+public class WorldListener {
 
-	public static final long SKILLS_LEVEL_50 = 55172425;
-	public static final long SKILLS_LEVEL_60 = 111672425;
-	protected final Map<String, ProfileViewer.Level> player;
-	protected final WeightStruct weightStruct;
+	private final NotEnoughUpdates neu;
 
-	public SkillsWeight(Map<String, ProfileViewer.Level> player) {
-		this.player = player;
-		this.weightStruct = new WeightStruct();
+	public WorldListener(NotEnoughUpdates neu) {
+		this.neu = neu;
 	}
 
-	public WeightStruct getWeightStruct() {
-		return weightStruct;
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load e) {
+		if (neu.config.mining.powderGrindingTrackerResetMode == 0)
+			OverlayManager.powderGrindingOverlay.reset();
 	}
 
-	public abstract void getSkillsWeight(String skillName);
 }
