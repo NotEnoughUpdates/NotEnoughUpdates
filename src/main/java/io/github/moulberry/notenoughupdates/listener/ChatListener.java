@@ -127,8 +127,14 @@ public class ChatListener {
 			if (chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
 				partyOrGuildChat = true;
-			} else if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
-				startsWith = "/socialoptions";
+			} else {
+				ClickEvent chatClickEvent = chatComponent.getChatStyle().getChatClickEvent();
+				if (chatClickEvent != null) {
+					String value1 = chatClickEvent.getValue();
+					if (value1.startsWith("/socialoptions")) {
+						startsWith = "/socialoptions";
+					}
+				}
 			}
 
 			if (startsWith != null) {
