@@ -258,7 +258,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 			// These strings will be displayed one after the other when the player list is disabled
 			String mithrilPowder = RED + "[NEU] Failed to get data from your tablist";
-			String gemstonePowder = RED + "Please enable player list info in your skyblock settings";
+			String gemstonePowder = RED + "Please enable player list info in your SkyBlock settings";
 
 			int forgeInt = 0;
 			boolean commissions = false;
@@ -395,6 +395,12 @@ public class MiningOverlay extends TextTabOverlay {
 						commissionsStrings.add(DARK_AQUA + entry.getKey() + ": " + col + valS + "%");
 					}
 				}
+			}
+
+			if (ItemCooldowns.firstLoadMillis > 0) {
+				//set cooldown on first skyblock load.
+				ItemCooldowns.pickaxeUseCooldownMillisRemaining = 60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
+				ItemCooldowns.firstLoadMillis = 0;
 			}
 
 			String pickaxeCooldown;

@@ -1078,7 +1078,7 @@ public class TradeWindow {
 							!SlotLocking.getInstance().isSlotLocked(slot)) {
 							Minecraft.getMinecraft().playerController.windowClick(
 								chest.inventorySlots.windowId,
-								slot.slotNumber, 2, 3, Minecraft.getMinecraft().thePlayer
+								slot.slotNumber, 0, 0, Minecraft.getMinecraft().thePlayer
 							);
 						}
 						return;

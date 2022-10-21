@@ -208,6 +208,7 @@ public class Navigation {
 		if (event.phase != TickEvent.Phase.START) return;
 		if (Minecraft.getMinecraft().theWorld == null) return;
 		if (Minecraft.getMinecraft().thePlayer == null) return;
+		if (neu.config.getProfileSpecific() == null) return;
 
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
 			GuiChest currentScreen = (GuiChest) Minecraft.getMinecraft().currentScreen;
