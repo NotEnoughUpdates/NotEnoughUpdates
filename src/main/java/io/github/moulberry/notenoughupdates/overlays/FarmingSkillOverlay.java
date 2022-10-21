@@ -45,9 +45,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private int cultivating = -1;
 	private int cultivatingTier = -1;
 	private String cultivatingTierAmount = "1";
-	private int Farming = -1;
-	private int Alch = -1;
-	private int Foraging = -1;
+	private int Farming = 1;
+	private int Alch = 0;
+	private int Foraging = 0;
 	private double Coins = -1;
 	private float cropsPerSecondLast = 0;
 	private float cropsPerSecond = 0;
@@ -62,6 +62,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private float xpGainHourLast = -1;
 	private float xpGainHour = -1;
 
+	private final int ENCH_SIZE = 160;
+	private final int ENCH_BLOCK_SIZE = 1296;
 	private int xpGainTimer = 0;
 
 	private String skillType = "Farming";
@@ -82,6 +84,14 @@ public class FarmingSkillOverlay extends TextOverlay {
 			interp = last + (now - last) * factor;
 		}
 		return interp;
+	}
+
+	private double getCoinsBz(String enchCropName, int numItemsForEnch) {
+		JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(enchCropName);
+		if (crop != null && crop.has("curr_sell")) {
+			return crop.get("curr_sell").getAsFloat() / numItemsForEnch;
+		}
+		return 0;
 	}
 
 	@Override
@@ -152,115 +162,70 @@ public class FarmingSkillOverlay extends TextOverlay {
 		}
 
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
-		if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS")) {
-			skillType = "Alchemy";
-			Farming = 0;
-			Alch = 1;
-			Foraging = 0;
-		} else if (internalname != null && internalname.startsWith("TREECAPITATOR_AXE") ||
-			(internalname != null && internalname.startsWith("JUNGLE_AXE"))) {
-			skillType = "Foraging";
-			Farming = 0;
-			Alch = 0;
-			Foraging = 1;
-		} else {
-			skillType = "Farming";
-			Farming = 1;
-			Alch = 0;
-			Foraging = 0;
-		}
+		if (internalname != null) {
 
-		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice || internalname != null && (internalname.equals(
-			"TREECAPITATOR_AXE")) || internalname != null && (internalname.equals("JUNGLE_AXE"))) {
-			if ((internalname != null && internalname.equals("COCO_CHOPPER"))) {
-				Coins = 3;
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO") ||
-				(internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT")) ||
-				(internalname != null && internalname.equals("CACTUS_KNIFE")) ||
-				(internalname != null && internalname.startsWith("THEORETICAL_HOE_WHEAT"))) {
-				Coins = 1;
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE")
-				|| (internalname != null && internalname.equals("TREECAPITATOR_AXE"))
-				|| (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS"))
-				|| (internalname != null && internalname.equals("JUNGLE_AXE"))) {
+			//Set default skilltype to Farming and get BZprice config value
+			boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
+			skillType = "Farming";
+
+			//WARTS
+			if (internalname.startsWith("THEORETICAL_HOE_WARTS")) {
+				skillType = "Alchemy";
+				Farming = 0;
+				Alch = 1;
+				Foraging = 0;
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 2;
+
+				//WOOD
+			} else if (internalname.equals("TREECAPITATOR_AXE") || internalname.equalsIgnoreCase("JUNGLE_AXE")) {
+				skillType = "Foraging";
+				Farming = 0;
+				Alch = 0;
+				Foraging = 1;
 				Coins = 2;
-			} else if ((internalname != null && internalname.equals("PUMPKIN_DICER")) ||
-				(internalname != null && internalname.equals("FUNGI_CUTTER"))) {
-				Coins = 4;
-			} else if ((internalname != null && internalname.equals("MELON_DICER"))) {
-				Coins = 0.5;
+
+				//COCOA
+			} else if (internalname.equals("COCO_CHOPPER")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_COCOA", ENCH_SIZE) : 3;
+
+				//CACTUS
+			} else if (internalname.equals("CACTUS_KNIFE")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_CACTUS_GREEN", ENCH_SIZE) : 2;
+
+				//CANE
+			} else if (internalname.startsWith("THEORETICAL_HOE_CANE")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_SUGAR", ENCH_SIZE) : 2;
+
+				//CARROT
+			} else if (internalname.startsWith("THEORETICAL_HOE_CARROT")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_CARROT", ENCH_SIZE) : 1;
+
+				//POTATO
+			} else if (internalname.startsWith("THEORETICAL_HOE_POTATO")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_POTATO", ENCH_SIZE) : 1;
+
+				//MUSHROOM
+			} else if (internalname.equals("FUNGI_CUTTER")) {
+				Coins = useBZPrice ? ((getCoinsBz("ENCHANTED_RED_MUSHROOM", ENCH_SIZE) +
+					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE) / 2)) : 4;
+
+				//PUMPKIN
+			} else if (internalname.equals("PUMPKIN_DICER")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 4;
+
+				//MELON
+			} else if (internalname.equals("MELON_DICER")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 0.5;
+
+				//WHEAT
+			} else if (internalname.startsWith("THEORETICAL_HOE_WHEAT")) {
+				Coins = useBZPrice ? getCoinsBz("ENCHANTED_HAY_BLOCK", ENCH_BLOCK_SIZE) : 1;
+
 			} else {
 				Coins = 0;
 			}
 		}
-		if (NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice) {
-			if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WARTS")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_NETHER_STALK");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_POTATO")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_POTATO");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CARROT")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_CARROT");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_CANE")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_SUGAR");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("PUMPKIN_DICER")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_PUMPKIN");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("FUNGI_CUTTER")) {
-				JsonObject red = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_RED_MUSHROOM");
-				JsonObject brown = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_BROWN_MUSHROOM");
-				if (red != null && brown != null) {
-					if (red.has("curr_sell") && (brown.has("curr_sell"))) {
-						double crop = (red.get("curr_sell").getAsFloat() + red.get("curr_sell").getAsFloat()) / 2;
-						Coins = crop / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("MELON_DICER")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_MELON");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("THEORETICAL_HOE_WHEAT")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_HAY_BLOCK");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 1296;
-					}
-				}
-			} else if (internalname != null && internalname.startsWith("CACTUS_KNIFE")) {
-				JsonObject crop = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("ENCHANTED_CACTUS_GREEN");
-				if (crop != null) {
-					if (crop.has("curr_sell")) {
-						Coins = crop.get("curr_sell").getAsFloat() / 160;
-					}
-				}
-			}
-		}
+
 		skillInfoLast = skillInfo;
 		skillInfo = XPInformation.getInstance().getSkillInfo(skillType);
 		if (skillInfo != null) {
