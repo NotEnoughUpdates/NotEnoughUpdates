@@ -35,6 +35,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
@@ -228,7 +229,6 @@ public class EssenceUpgrades implements NeuRecipe {
 				essenceItemStack.setStackDisplayName(
 					EnumChatFormatting.AQUA.toString() + tierUpgrade.getEssenceRequired() + " " + EnumChatFormatting.DARK_GRAY +
 						tierUpgrade.getEssenceType() + " Essence");
-				essenceItemStack.stackSize = tierUpgrade.getEssenceRequired();
 				RenderLocation renderLocation = slotLocations.get(0);
 				slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY() + 1, essenceItemStack));
 			}
@@ -358,7 +358,7 @@ public class EssenceUpgrades implements NeuRecipe {
 		//-1 to not count the output slot
 		for (int i = 0; i < amount - 1; i++) {
 			RenderLocation renderLocation = slotLocations.get(i);
-			if (renderLocation != null) {
+			if (renderLocation != null && guiItemRecipe != null) {
 				drawSlot(guiItemRecipe.guiLeft + renderLocation.getX(), guiItemRecipe.guiTop + renderLocation.getY());
 			}
 		}
@@ -376,6 +376,38 @@ public class EssenceUpgrades implements NeuRecipe {
 	@Override
 	public void drawExtraBackground(GuiItemRecipe gui, int mouseX, int mouseY) {
 		drawSlots(slots.size());
+	}
+
+	@Override
+	public void handleKeyboardInput() {
+		if (Keyboard.isRepeatEvent()) {
+			return;
+		}
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) && selectedTier > 1) {
+			selectedTier--;
+			slots = buildSlotList();
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) && selectedTier < amountOfTiers) {
+			selectedTier++;
+			slots = buildSlotList();
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_0) || Keyboard.isKeyDown(Keyboard.KEY_NUMPAD0)) {
+			//cycle through tiers when pressing 0
+			if (selectedTier < amountOfTiers) {
+				selectedTier++;
+			} else {
+				selectedTier = 1;
+			}
+		}
+
+		char pressedKey = Keyboard.getEventCharacter();
+		if (Character.isDigit(pressedKey)) {
+			//convert to number from 1-9
+			pressedKey -= 48;
+			if (pressedKey > 0 && pressedKey <= amountOfTiers) {
+				selectedTier = pressedKey;
+				slots = buildSlotList();
+			}
+		}
 	}
 
 	@Override

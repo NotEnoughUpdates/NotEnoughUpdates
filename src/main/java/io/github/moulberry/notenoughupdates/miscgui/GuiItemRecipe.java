@@ -298,6 +298,7 @@ public class GuiItemRecipe extends GuiScreen {
 	@Override
 	public void handleKeyboardInput() throws IOException {
 		super.handleKeyboardInput();
+		getCurrentRecipe().handleKeyboardInput();
 
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
