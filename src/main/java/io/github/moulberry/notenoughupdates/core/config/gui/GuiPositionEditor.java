@@ -67,20 +67,15 @@ public class GuiPositionEditor extends GuiScreen {
 			ogPos.add(pos.get(i).clone());
 			width.add((int) overlay.getDummySize().x);
 			height.add((int) overlay.getDummySize().y);
-			if (overlay.shouldRenderInGuiEditor) {
-				renderCallbac.add(() -> {
+			renderCallbac.add(() -> {
+				if (overlay.shouldRenderInGuiEditor) {
 					overlay.renderDummy();
 					OverlayManager.dontRenderOverlay.add(overlay.getClass());
-				});
-			}
+				}
+			});
 		}
 
-		renderCallbac.add(() -> {
-			}
-		);
-		renderCallbac.add(() -> {
-			}
-		);
+
 		this.positions = pos;
 		this.originalPositions = ogPos;
 		this.renderCallback = renderCallbac;
