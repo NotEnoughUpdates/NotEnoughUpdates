@@ -30,7 +30,8 @@ public class CustomArmour {
 	@ConfigOption(
 		name = "Enable Equipment Hud",
 		desc = "Shows an overlay in your inventory showing your 4 extra armour slots\n" +
-			"\u00A7cRequires Hide Potion Effects to be enabled"
+			"\u00A7cRequires Hide Potion Effects to be enabled",
+		searchTags = "armor"
 	)
 	@ConfigEditorBoolean
 	public boolean enableArmourHud = true;
@@ -46,7 +47,8 @@ public class CustomArmour {
 	@Expose
 	@ConfigOption(
 		name = "GUI Style",
-		desc = "Change the colour of the GUI"
+		desc = "Change the colour of the GUI",
+		searchTags = "color"
 	)
 	@ConfigEditorDropdown(
 		values = {"Minecraft", "Grey", "PacksHQ Dark", "Transparent", "FSR"}

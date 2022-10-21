@@ -145,7 +145,8 @@ public class Misc {
 	@ConfigOption(
 
 		name = "Edit Enchant Colours",
-		desc = "Change the colours of certain SkyBlock enchants (/neuec)"
+		desc = "Change the colours of certain SkyBlock enchants (/neuec)",
+		searchTags = "color"
 	)
 	@ConfigEditorButton(runnableId = 8, buttonText = "Open")
 	public boolean editEnchantColoursButton = true;
@@ -153,7 +154,8 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Chroma Text Speed",
-		desc = "Change the speed of chroma text for items names (/neucustomize) and enchant colours (/neuec) with the chroma colour code (&z)"
+		desc = "Change the speed of chroma text for items names (/neucustomize) and enchant colours (/neuec) with the chroma colour code (&z)",
+		searchTags = "color"
 	)
 	@ConfigEditorSlider(
 		minValue = 10,

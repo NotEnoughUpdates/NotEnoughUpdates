@@ -176,6 +176,7 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -874,6 +875,7 @@ public class GuiProfileViewer extends GuiScreen {
 						currentPage = page;
 						inventoryTextField.otherComponentClick();
 						playerNameTextField.otherComponentClick();
+						killDeathSearchTextField.otherComponentClick();
 						return;
 					}
 				}
@@ -890,6 +892,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseY > guiTop + sizeY + 5 && mouseY < guiTop + sizeY + 25) {
 				playerNameTextField.mouseClicked(mouseX, mouseY, mouseButton);
 				inventoryTextField.otherComponentClick();
+				killDeathSearchTextField.otherComponentClick();
 				return;
 			}
 		}
@@ -961,11 +964,13 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 			playerNameTextField.otherComponentClick();
 			inventoryTextField.otherComponentClick();
+			killDeathSearchTextField.otherComponentClick();
 			return;
 		}
 		profileDropdownSelected = false;
 		playerNameTextField.otherComponentClick();
 		inventoryTextField.otherComponentClick();
+		killDeathSearchTextField.otherComponentClick();
 	}
 
 	@Override

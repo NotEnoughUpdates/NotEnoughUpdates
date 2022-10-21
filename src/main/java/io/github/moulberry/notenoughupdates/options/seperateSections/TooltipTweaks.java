@@ -156,7 +156,8 @@ public class TooltipTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Tooltip Border Colours",
-		desc = "Make the borders of tooltips match the rarity of the item (NEU Tooltips Only)"
+		desc = "Make the borders of tooltips match the rarity of the item (NEU Tooltips Only)",
+		searchTags = "color"
 	)
 	@ConfigEditorBoolean
 	public boolean tooltipBorderColours = true;

@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -301,15 +302,22 @@ public class SBInfo {
 			lastLocRaw = System.currentTimeMillis();
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
-			if (currentTime - lastMayorUpdate > 300 * 1000) {
-				updateMayor();
-				lastMayorUpdate = currentTime;
-			}
+		if (currentTime - lastMayorUpdate > 300 * 1000) {
+			updateMayor();
+			lastMayorUpdate = currentTime;
+		}
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
 				if (name.startsWith(profilePrefix)) {
-					setCurrentProfile(Utils.cleanColour(name.substring(profilePrefix.length())));
+					String newProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					setCurrentProfile(newProfile);
+					if (!Objects.equals(currentProfile, newProfile)) {
+						currentProfile = newProfile;
+						if (NotEnoughUpdates.INSTANCE.config != null)
+							if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+								OverlayManager.powderGrindingOverlay.load();
+					}
 					hasNewTab = true;
 				} else if (name.startsWith(skillsPrefix)) {
 					String levelInfo = name.substring(skillsPrefix.length()).trim();

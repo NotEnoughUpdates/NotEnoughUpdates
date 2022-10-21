@@ -17,20 +17,25 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.core.config.annotations;
+package io.github.moulberry.notenoughupdates.listener;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ConfigOption {
-	String name();
+public class WorldListener {
 
-	String desc();
-	String[] searchTags() default "";
+	private final NotEnoughUpdates neu;
 
-	int subcategoryId() default -1;
+	public WorldListener(NotEnoughUpdates neu) {
+		this.neu = neu;
+	}
+
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load e) {
+		if (neu.config.mining.powderGrindingTrackerResetMode == 0)
+			OverlayManager.powderGrindingOverlay.reset();
+	}
+
 }

@@ -198,6 +198,12 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.openGui =
 					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
 				return;
+			case 25:
+				editOverlay(activeConfigCategory, OverlayManager.powderGrindingOverlay, mining.powderGrindingTrackerPosition);
+				return;
+			case 26:
+				OverlayManager.powderGrindingOverlay.reset();
+				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
@@ -586,6 +592,18 @@ public class NEUConfig extends Config {
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose
 		public int magicalPower = 0;
+
+		@Expose
+		public int chestCount = 0;
+
+		@Expose
+		public int openedChestCount = 0;
+
+		@Expose
+		public int mithrilPowderFound = 0;
+
+		@Expose
+		public int gemstonePowderFound = 0;
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

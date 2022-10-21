@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
-import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
@@ -27,7 +26,6 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class LocationEdit {
-	@Expose
 	@ConfigOption(
 		name = "Edit Dungeon Map",
 		desc = "The NEU dungeon map has it's own editor (/neumap).\n" +
@@ -39,7 +37,6 @@ public class LocationEdit {
 	)
 	public int editDungeonMap = 0;
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Pet Info Position",
 		desc = "Change the position of the pet info overlay"
@@ -50,7 +47,6 @@ public class LocationEdit {
 	)
 	public Position petInfoPosition = new Position(-1, -1);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Todo Position",
 		desc = "Change the position of the Todo overlay"
@@ -61,7 +57,6 @@ public class LocationEdit {
 	)
 	public Position todoPosition = new Position(100, 0);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Bonemerang Overlay Position",
 		desc = "Change the position of the Bonemerang overlay"
@@ -72,7 +67,6 @@ public class LocationEdit {
 	)
 	public Position bonemerangPosition = new Position(-1, -1);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Slayer Overlay Position",
 		desc = "Change the position of the Slayer overlay"
@@ -90,7 +84,6 @@ public class LocationEdit {
 	@ConfigEditorAccordion(id = 1)
 	public boolean inventoryAccordion = false;
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Toolbar Positions",
 		desc = "Change the position of the QuickCommands / Search Bar"
@@ -99,7 +92,6 @@ public class LocationEdit {
 	@ConfigEditorButton(runnableId = 6, buttonText = "Edit")
 	public boolean positionButton = true;
 
-	@Expose
 	@ConfigOption(
 		name = "Open Button Editor",
 		desc = "Open button editor GUI (/neubuttons)"
@@ -115,7 +107,6 @@ public class LocationEdit {
 	@ConfigEditorAccordion(id = 2)
 	public boolean miningoverlayAccordion = false;
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Dwarven Overlay Position",
 		desc = "Change the position of the Dwarven Mines information Overlay (commissions, powder & forge statuses)"
@@ -127,7 +118,6 @@ public class LocationEdit {
 	@ConfigAccordionId(id = 2)
 	public Position overlayPosition = new Position(10, 100);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Crystal Overlay Position",
 		desc = "Change the position of the Crystal Hollows Overlay"
@@ -139,7 +129,6 @@ public class LocationEdit {
 	@ConfigAccordionId(id = 2)
 	public Position crystalHollowOverlayPosition = new Position(200, 0);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Fuel Bar Position",
 		desc = "Change the position of the drill fuel bar"
@@ -158,7 +147,6 @@ public class LocationEdit {
 	@ConfigEditorAccordion(id = 3)
 	public boolean skilloverlayAccordion = false;
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Farming Overlay Position",
 		desc = "Change the position of the Farming overlay"
@@ -170,7 +158,6 @@ public class LocationEdit {
 	@ConfigAccordionId(id = 3)
 	public Position farmingPosition = new Position(10, 200);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Mining Overlay Position",
 		desc = "Change the position of the Mining overlay"
@@ -182,7 +169,6 @@ public class LocationEdit {
 	@ConfigAccordionId(id = 3)
 	public Position miningPosition = new Position(10, 200);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Fishing Overlay Position",
 		desc = "Change the position of the Fishing overlay"
@@ -194,7 +180,6 @@ public class LocationEdit {
 	@ConfigAccordionId(id = 3)
 	public Position fishingPosition = new Position(10, 200);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Combat Overlay Position",
 		desc = "Change the position of the Combat overlay"
@@ -205,4 +190,16 @@ public class LocationEdit {
 	)
 	@ConfigAccordionId(id = 3)
 	public Position combatPosition = new Position(10, 200);
+
+	@Expose
+	@ConfigOption(
+		name = "Edit Tracker Position",
+		desc = "Change the position of the Powder Grinding Tracker Overlay (chests and gained powder)"
+	)
+	@ConfigEditorButton(
+		runnableId = 25,
+		buttonText = "Edit"
+	)
+	@ConfigAccordionId(id = 9)
+	public Position powderGrindingTrackerPosition = new Position(10, 265);
 }
