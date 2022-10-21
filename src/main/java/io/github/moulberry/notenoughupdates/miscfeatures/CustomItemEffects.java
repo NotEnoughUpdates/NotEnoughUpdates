@@ -213,12 +213,14 @@ public class CustomItemEffects {
 	@SubscribeEvent
 	public void onGameTick(TickEvent.ClientTickEvent event) {
 		if (event.phase != TickEvent.Phase.END) return;
+		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+		if (player == null) return;
 
 		if (!usingEtherwarp && wasUsingEtherwarp) {
-			if (Minecraft.getMinecraft().thePlayer.rotationYaw > 0) {
-				Minecraft.getMinecraft().thePlayer.rotationYaw -= 0.000001;
+			if (player.rotationYaw > 0) {
+				player.rotationYaw -= 0.000001;
 			} else {
-				Minecraft.getMinecraft().thePlayer.rotationYaw += 0.000001;
+				player.rotationYaw += 0.000001;
 			}
 		}
 		wasUsingEtherwarp = usingEtherwarp;

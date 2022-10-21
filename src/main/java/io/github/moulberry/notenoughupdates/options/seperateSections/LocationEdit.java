@@ -118,7 +118,7 @@ public class LocationEdit {
 	@Expose
 	@ConfigOption(
 		name = "Edit Dwarven Overlay Position",
-		desc = "Change the position of the Dwarven Mines information Overlay (commisions, powder & forge statuses)"
+		desc = "Change the position of the Dwarven Mines information Overlay (commissions, powder & forge statuses)"
 	)
 	@ConfigEditorButton(
 		runnableId = 1,

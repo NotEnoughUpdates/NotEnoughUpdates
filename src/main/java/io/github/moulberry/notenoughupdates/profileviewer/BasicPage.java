@@ -271,7 +271,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							getInstance().tooltipToDisplay.add(
 								EnumChatFormatting.RED + "is where we get the amount of IRL money you");
 							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "theoretically have on skyblock in net worth.");
+								EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
 						} else {
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
 						}
@@ -802,6 +802,9 @@ public class BasicPage extends GuiProfileViewerPage {
 	}
 
 	private void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+
+		ent.onUpdate();
+
 		GlStateManager.enableColorMaterial();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) posX, (float) posY, 50.0F);

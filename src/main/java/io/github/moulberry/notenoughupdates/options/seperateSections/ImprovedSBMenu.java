@@ -28,7 +28,7 @@ public class ImprovedSBMenu {
 	@Expose
 	@ConfigOption(
 		name = "Enable Improved SB Menus",
-		desc = "Change the way that skyblock menus (eg. /sbmenu) look"
+		desc = "Change the way that SkyBlock menus (eg. /sbmenu) look"
 	)
 	@ConfigEditorBoolean
 	public boolean enableSbMenus = true;
@@ -36,7 +36,7 @@ public class ImprovedSBMenu {
 	@Expose
 	@ConfigOption(
 		name = "Menu Background Style",
-		desc = "Change the style of the background of skyblock menus"
+		desc = "Change the style of the background of SkyBlock menus"
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -49,7 +49,7 @@ public class ImprovedSBMenu {
 	@Expose
 	@ConfigOption(
 		name = "Button Background Style",
-		desc = "Change the style of the foreground elements in skyblock menus"
+		desc = "Change the style of the foreground elements in SkyBlock menus"
 	)
 	@ConfigEditorDropdown(
 		values = {

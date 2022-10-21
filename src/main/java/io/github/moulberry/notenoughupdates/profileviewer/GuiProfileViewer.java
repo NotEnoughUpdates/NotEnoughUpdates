@@ -738,7 +738,7 @@ public class GuiProfileViewer extends GuiScreen {
 					break;
 				case NO_SKYBLOCK:
 					Utils.drawStringCentered(
-						EnumChatFormatting.RED + "No skyblock data found!",
+						EnumChatFormatting.RED + "No SkyBlock data found!",
 						Minecraft.getMinecraft().fontRendererObj,
 						guiLeft + sizeX / 2f,
 						guiTop + 101,
@@ -767,9 +767,13 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (mouseX > x && mouseX < x + 28) {
 					if (mouseY > y && mouseY < y + 32) {
-						tooltipToDisplay = Collections.singletonList(iPage.stack
+						if (!iPage.stack
 							.getTooltip(Minecraft.getMinecraft().thePlayer, false)
-							.get(0));
+							.isEmpty()) {
+							tooltipToDisplay = Collections.singletonList(iPage.stack
+								.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+								.get(0));
+						}
 					}
 				}
 			}
@@ -1258,7 +1262,7 @@ public class GuiProfileViewer extends GuiScreen {
 		LOADING(),
 		INVALID_NAME(),
 		NO_SKYBLOCK(),
-		BASIC(0, Items.paper, "§9Your Skills"),
+		BASIC(0, Items.paper, "§9Skills"),
 		DUNGEON(1, Item.getItemFromBlock(Blocks.deadbush), "§eDungeoneering"),
 		EXTRA(2, Items.book, "§7Profile Stats"),
 		INVENTORIES(3, Item.getItemFromBlock(Blocks.ender_chest), "§bStorage"),

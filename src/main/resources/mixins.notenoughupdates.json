@@ -52,6 +52,7 @@
     "AccessorGuiEditSign",
     "AccessorMinecraft",
     "MixinEntityChargedCreeper",
-    "MixinGuiEditSign"
+    "MixinGuiEditSign",
+    "MixinGuiTextField"
   ]
 }
