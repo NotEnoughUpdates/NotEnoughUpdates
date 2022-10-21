@@ -46,6 +46,9 @@ public class WitherCloakChanger {
 			} else {
 				isCloakActive = true;
 			}
+		} else if (event.message.getUnformattedText().startsWith("Not enough mana! Creeper Veil De-activated!")) {
+			isCloakActive = false;
+			lastDeactivate = System.currentTimeMillis();
 		}
 	}
 
