@@ -232,7 +232,7 @@ public class ChatListener {
 			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
 		} else if (unformatted.startsWith("You consumed a Booster Cookie!")) {
 			CookieWarning.resetNotification();
-		} else if (unformatted.startsWith("QUICK MATHS! Solve:")) {
+		} else if (unformatted.startsWith("QUICK MATHS! Solve:") && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			if (Math.random() < 0.2) {
 				if (NotEnoughUpdates.INSTANCE.config.misc.calculationMode == 2) {
 					ClientCommandHandler.instance.executeCommand(

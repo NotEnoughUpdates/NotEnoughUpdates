@@ -68,7 +68,7 @@ public class PeekCommand extends ClientCommandBase {
 		NotEnoughUpdates.profileViewer.getProfileByName(name, profile -> {
 			if (profile == null) {
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-					EnumChatFormatting.RED + "[PEEK] Unknown player or the api is down."), id);
+					EnumChatFormatting.RED + "[PEEK] Unknown player or the Hypixel API is down."), id);
 			} else {
 				profile.resetCache();
 
@@ -78,12 +78,12 @@ public class PeekCommand extends ClientCommandBase {
 
 				if (peekScheduledFuture != null && !peekScheduledFuture.isDone()) {
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one."));
+						EnumChatFormatting.RED + "[PEEK] New peek command was run, cancelling old one."));
 					peekScheduledFuture.cancel(true);
 				}
 
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
+					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's SkyBlock profile(s)..."), id);
 
 				long startTime = System.currentTimeMillis();
 				peekScheduledFuture = peekCommandExecutorService.schedule(new Runnable() {
@@ -287,7 +287,7 @@ public class PeekCommand extends ClientCommandBase {
 							} else if (overallScore > 2) {
 								overall = EnumChatFormatting.YELLOW + "Ender Non";
 							} else if (overallScore > 1) {
-								overall = EnumChatFormatting.RED + "Played Skyblock";
+								overall = EnumChatFormatting.RED + "Played SkyBlock";
 							}
 
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Overall score: " +
