@@ -589,7 +589,7 @@ public static class EnchantLine {
 									if (!addedEnchants.contains(enchantText)) {
 										int startMatch = matcher.start();
 										int endMatch = matcher.end();
-										String subString = line.substring(startMatch, endMatch);
+										String subString = oLine.substring(startMatch, endMatch);
 										String preEnchantText = subString.split(String.valueOf(enchantText.charAt(0)))[0];
 
 										line = line.replace(preEnchantText + enchantText,
@@ -639,7 +639,7 @@ public static class EnchantLine {
 				if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant && foundEnchants) {
 					//found enchants in the past
 					if (k <= lastEnchantIndex) {
-						if (Objects.equals(lastItemUuid, currentUuid) && (firstEnchantIndex != -1 && enchantList.size() > k - firstEnchantIndex)) {
+						if (Objects.equals(lastItemUuid, currentUuid) && (firstEnchantIndex != -1 && enchantList.size() > k - firstEnchantIndex) && (k - firstEnchantIndex) > 0) {
 							//if it has the line, replaces it with the cached line
 							EnchantLine enchantLine = enchantList.get(k - firstEnchantIndex);
 							if (!enchantLine.isSameAsBefore(line)) {
