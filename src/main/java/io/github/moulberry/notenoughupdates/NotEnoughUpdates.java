@@ -263,10 +263,8 @@ public class NotEnoughUpdates {
 			}
 
 			// Remove after 2.1 ig
-			if ("dangerous".equals(config.apiData.repoBranch) || "rune".equals(config.apiData.repoBranch)) {
+			if ("dangerous".equals(config.apiData.repoBranch)) {
 				config.apiData.repoBranch = "master";
-			} else if ("jani270".equals(config.apiData.repoUser)) {
-				config.apiData.repoUser = "NotEnoughUpdates";
 			}
 
 			saveConfig();

@@ -284,6 +284,8 @@ public class SBInfo {
 
 	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
 	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
+	private static final String completedFactionQuests = "\u00a7r \u00a7r\u00a7a";
+	public ArrayList<String> completedQuests = new ArrayList<>();
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
@@ -319,6 +321,12 @@ public class SBInfo {
 							XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
 						} catch (Exception ignored) {
 						}
+					}
+				} else if (name.startsWith(completedFactionQuests)) {
+					if (completedQuests.isEmpty()) {
+						completedQuests.add(name);
+					} else if (!completedQuests.contains(name)) {
+						completedQuests.add(name);
 					}
 				}
 			}

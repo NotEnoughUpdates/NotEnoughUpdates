@@ -54,7 +54,7 @@ public class CustomizeCommand extends ClientCommandBase {
 		String heldUUID = NotEnoughUpdates.INSTANCE.manager.getUUIDForItem(held);
 
 		if (heldUUID == null) {
-			sender.addChatMessage(new ChatComponentText("\u00a7cHeld item does not have UUID, cannot be customized"));
+			sender.addChatMessage(new ChatComponentText("\u00a7cHeld item does not have a UUID, so it cannot be customized"));
 			return;
 		}
 
