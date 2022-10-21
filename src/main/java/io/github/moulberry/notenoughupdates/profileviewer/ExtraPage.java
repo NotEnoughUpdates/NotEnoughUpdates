@@ -462,9 +462,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 				float killY = guiTop + yStartTop + yOffset * ((index-skipCount) - killScroll);
 				if(!isSearch) skipCount++;
 				if(isSearch && killY+6 < guiTop+yStartTop+65 && killY >= guiTop + yStartTop) {
-//					if (killScroll > ++renderedKills) {
-//						killScroll = renderedKills;
-//					}
 					renderedKills++;
 					Utils.renderAlignedString(
 						EnumChatFormatting.YELLOW + "K: " + killType,
@@ -491,9 +488,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 				float deathY = guiTop + yStartBottom + yOffset * ((index - skipCount) - deathScroll);
 				if (!isSearch) skipCount++;
 				if (isSearch && deathY + 6 < guiTop + yStartBottom + 65 && deathY >= guiTop + yStartBottom) {
-//					if (deathScroll > ++renderedDeaths) {
-//						deathScroll = renderedDeaths;
-//					}
 					renderedDeaths++;
 					Utils.renderAlignedString(
 						EnumChatFormatting.YELLOW + "D: " + deathType,
