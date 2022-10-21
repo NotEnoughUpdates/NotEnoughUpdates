@@ -1262,7 +1262,7 @@ public class GuiProfileViewer extends GuiScreen {
 		LOADING(),
 		INVALID_NAME(),
 		NO_SKYBLOCK(),
-		BASIC(0, Items.paper, "§9Your Skills"),
+		BASIC(0, Items.paper, "§9Skills"),
 		DUNGEON(1, Item.getItemFromBlock(Blocks.deadbush), "§eDungeoneering"),
 		EXTRA(2, Items.book, "§7Profile Stats"),
 		INVENTORIES(3, Item.getItemFromBlock(Blocks.ender_chest), "§bStorage"),

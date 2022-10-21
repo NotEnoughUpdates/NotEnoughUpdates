@@ -180,7 +180,7 @@ public class FishingSkillOverlay
 				float delta = totalXp - lastTotalXp;
 
 				if (delta > 0 && delta < 1000) {
-					xpGainTimer = 3;
+					xpGainTimer = NotEnoughUpdates.INSTANCE.config.skillOverlays.fishingPauseTimer;
 
 					xpGainQueue.add(0, delta);
 					while (xpGainQueue.size() > 30) {
