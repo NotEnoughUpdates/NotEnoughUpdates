@@ -23,7 +23,7 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
 - Fork the NEU repository using the fork button on top right of the page and name the repo NotEnoughUpdates.
 - Clone the forked repository using `git clone https://github.com/<YourUserName>/NotEnoughUpdates`.
 - Make sure to create new branches for features you are working and not commit to the master branch of your repository.
-- After you have comitted all of the necessary changes make a pr on that branch.
+- After you have committed all of the necessary changes make a pull request on that branch.
 - Use the master branch as a way to pull the latest changes from the NEU repo.
 - Import that folder as a Gradle Project in your IDE (IntelliJ should autodetect it as gradle if you select the `NotEnoughUpdates` folder in the Open dialog)
 - Set your project SDK to your 1.8 JDK. This can be done in the modules settings (CTRL+ALT+SHIFT+S) in IntelliJ.
