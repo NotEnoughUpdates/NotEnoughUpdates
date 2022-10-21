@@ -262,6 +262,11 @@ public class NotEnoughUpdates {
 				config.profileViewer.pageLayout.add(9);
 			}
 
+			// Remove after 2.1 ig
+			if ("dangerous".equals(config.apiData.repoBranch)) {
+				config.apiData.repoBranch = "master";
+			}
+
 			saveConfig();
 		}
 
