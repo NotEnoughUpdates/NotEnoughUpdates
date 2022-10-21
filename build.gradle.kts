@@ -39,7 +39,7 @@ apply<NEUBuildFlags>()
 
 group = "io.github.moulberry"
 
-setVersionFromEnvironment("2.1")
+setVersionFromEnvironment("2.1.1")
 
 // Minecraft configuration:
 loom {

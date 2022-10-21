@@ -1035,7 +1035,7 @@ public class NEUOverlay extends Gui {
 			return false;
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_Y) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+		if ((Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			displayInformationPane(new DevInfoPane(this, manager));
 		}
 
