@@ -26,6 +26,14 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
+
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -121,6 +129,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 	};
 	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation("notenoughupdates:pv_trophy_fish_tab.png");
+	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 	private static final String checkX = "§c✖";
 	private static final String check = "§a✔";
 	private final Map<String, Integer> total = new HashMap<>();
@@ -357,6 +366,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.GOLD, EnumChatFormatting.GOLD));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.SILVER, EnumChatFormatting.GRAY));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.BRONZE, EnumChatFormatting.DARK_GRAY));
+		tooltip.add(" ");
+		tooltip.add(EnumChatFormatting.GRAY + "Total: " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishList.get(name).getTotal()));
 		return tooltip;
 	}
 
@@ -371,7 +382,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 
 		if (trophyFishRarityIntegerMap.containsKey(rarity)) {
-			return color + name + ": " + EnumChatFormatting.GOLD + trophyFishRarityIntegerMap.get(rarity);
+			return color + name + ": " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishRarityIntegerMap.get(rarity));
 		} else {
 			return color + name + ": " + checkX;
 		}
