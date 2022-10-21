@@ -43,6 +43,8 @@ public abstract class TextOverlay {
 
 	public boolean shouldUpdateFrequent = false;
 
+	public boolean shouldRenderInGuiEditor = true;
+
 	private static final int PADDING_X = 5;
 	private static final int PADDING_Y = 5;
 

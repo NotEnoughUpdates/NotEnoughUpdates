@@ -33,6 +33,7 @@ public class FuelBarDummy extends TextOverlay {
 		Supplier<TextOverlayStyle> styleSupplier
 	) {
 		super(position, dummyStrings, styleSupplier);
+		super.shouldRenderInGuiEditor = false;
 	}
 
 	@Override

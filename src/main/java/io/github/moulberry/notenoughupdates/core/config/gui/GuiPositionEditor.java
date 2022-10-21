@@ -70,7 +70,7 @@ public class GuiPositionEditor extends GuiScreen {
 			ogPos.add(pos.get(i).clone());
 			width.add((int) overlay.getDummySize().x);
 			height.add((int) overlay.getDummySize().y);
-			if (i < 10) {
+			if (overlay.shouldRenderInGuiEditor) {
 				renderCallbac.add(() -> {
 					overlay.renderDummy();
 					OverlayManager.dontRenderOverlay = overlay.getClass();
