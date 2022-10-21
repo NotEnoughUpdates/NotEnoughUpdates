@@ -26,6 +26,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 
 public class EnderNodes {
+	// TODO Add ender node highliter
+	// TODO Add ender node counter ( maybe money estimation )
 
 	public static void dispalyEndermiteNotif() {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlert && SBInfo.getInstance().getLocation() != null &&
