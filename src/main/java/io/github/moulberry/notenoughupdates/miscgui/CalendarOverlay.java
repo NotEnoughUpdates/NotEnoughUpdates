@@ -75,6 +75,8 @@ public class CalendarOverlay {
 
 	private static boolean enabled = false;
 
+	public static boolean ableToClickCalendar = true;
+
 	public static void setEnabled(boolean enabled) {
 		CalendarOverlay.enabled = enabled;
 	}
@@ -479,8 +481,7 @@ public class CalendarOverlay {
 
 				guiLeft = (width - xSize) / 2;
 				guiTop = 5;
-
-				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize) {
+				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize && ableToClickCalendar) {
 					if (mouseY >= guiTop && mouseY <= guiTop + ySize) {
 						ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neucalendar");
 					}
@@ -1331,7 +1332,7 @@ public class CalendarOverlay {
 			if (mouseY >= guiTop + ySize + 2 && mouseY <= guiTop + ySize + 18) {
 				tooltipToDisplay = new ArrayList<>();
 				tooltipToDisplay.add(EnumChatFormatting.AQUA + "NEU Calendar Help");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "This calendar displays various skyblock events");
+				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "This calendar displays various SkyBlock events");
 				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "'Daily' events are events that happen frequently");
 				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "'Special' events are events that happen infrequently");
 				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
@@ -1343,8 +1344,8 @@ public class CalendarOverlay {
 				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "is about to start and when it does start");
 				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
 				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "In order to show crop types for Jacob's Farming");
-				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "contest, visit the full skyblock calendar and go all");
-				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "the way to the end of the skyblock year");
+				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "contest, visit the full SkyBlock calendar and go all");
+				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "the way to the end of the SkyBlock year");
 				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
 				tooltipToDisplay = null;
 			}

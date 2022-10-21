@@ -53,6 +53,15 @@ public class Itemlist {
 
 	@Expose
 	@ConfigOption(
+		name = "Open when searching",
+		desc = "Open the Itemlist when in container search mode by double clicking the search bar"
+	)
+	@ConfigEditorBoolean
+	public boolean openWhenSearching = true;
+
+
+	@Expose
+	@ConfigOption(
 		name = "Item Style",
 		desc = "Sets the style of the background behind items"
 	)
@@ -110,7 +119,8 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Foreground Colour",
-		desc = "Change the colour of foreground elements in the Itemlist"
+		desc = "Change the colour of foreground elements in the Itemlist",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	public String foregroundColour = "00:255:100:100:100";
@@ -118,7 +128,8 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Favourite Colour",
-		desc = "Change the colour of favourited elements in the Itemlist"
+		desc = "Change the colour of favourited elements in the Itemlist",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	public String favouriteColour = "00:255:200:150:50";
@@ -126,7 +137,8 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Pane Background Colour",
-		desc = "Change the colour of the Itemlist background"
+		desc = "Change the colour of the Itemlist background",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	public String backgroundColour = "15:6:0:0:255";
@@ -134,7 +146,8 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Always show Monsters",
-		desc = "Always show Monster Items in the item list"
+		desc = "Always show Monster Items in the item list",
+		searchTags = "mob"
 	)
 	@ConfigEditorBoolean(
 		runnableId = 21

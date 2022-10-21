@@ -50,14 +50,17 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
+import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.RequestFocusListener;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -406,7 +409,7 @@ public class RenderListener {
 				GL11.glTranslatef(0, 0, 10);
 			}
 			if (hoverInv) {
-				renderDungeonChestOverlay(event.gui);
+				renderDungKuudraChestOverlay(event.gui);
 				if (NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay) {
 					AccessoryBagOverlay.renderOverlay();
 				}
@@ -444,11 +447,18 @@ public class RenderListener {
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName)) {
+			GuiCustomHex.getInstance().render(event.renderPartialTicks, containerName);
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) {
 			GuiCustomEnchant.getInstance().render(event.renderPartialTicks);
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -534,12 +544,12 @@ public class RenderListener {
 								x -= 68 - 200;
 							}
 						}
-						if (NEUOverlay.isRenderingArmorHud()) {
+						if (EquipmentOverlay.isRenderingArmorHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 								x -= 25;
 							}
 						}
-						if (NEUOverlay.isRenderingPetHud()) {
+						if (EquipmentOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
 							}
@@ -594,6 +604,7 @@ public class RenderListener {
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
 
+			if (GuiCustomHex.getInstance().shouldOverride(containerName)) return;
 			if (GuiCustomEnchant.getInstance().shouldOverride(containerName)) return;
 		}
 
@@ -615,7 +626,7 @@ public class RenderListener {
 		}
 
 		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock() && !hoverInv) {
-			renderDungeonChestOverlay(event.gui);
+			renderDungKuudraChestOverlay(event.gui);
 			if (NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay) {
 				AccessoryBagOverlay.renderOverlay();
 			}
@@ -661,12 +672,12 @@ public class RenderListener {
 								x -= 68 - 200;
 							}
 						}
-						if (NEUOverlay.isRenderingArmorHud()) {
+						if (EquipmentOverlay.isRenderingArmorHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 								x -= 25;
 							}
 						}
-						if (NEUOverlay.isRenderingPetHud()) {
+						if (EquipmentOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
 							}
@@ -692,7 +703,7 @@ public class RenderListener {
 								buttonHovered = button;
 							}
 
-							if (currentTime - buttonHoveredMillis > 600) {
+							if (currentTime - buttonHoveredMillis > NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
 								String command = button.command.trim();
 								if (!command.startsWith("/")) {
 									command = "/" + command;
@@ -724,7 +735,7 @@ public class RenderListener {
 		}
 	}
 
-	private void renderDungeonChestOverlay(GuiScreen gui) {
+	private void renderDungKuudraChestOverlay(GuiScreen gui) {
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc == 3) return;
 		if (gui instanceof GuiChest && NotEnoughUpdates.INSTANCE.config.dungeons.profitDisplayLoc != 2) {
 			try {
@@ -761,7 +772,9 @@ public class RenderListener {
 					HashMap<String, Double> itemValues = new HashMap<>();
 					for (int i = 0; i < 5; i++) {
 						ItemStack item = lower.getStackInSlot(11 + i);
-						String internal = neu.manager.getInternalNameForItem(item);
+						if (ItemUtils.isSoulbound(item)) continue;
+
+						String internal = neu.manager.createItemResolutionQuery().withItemStack(item).resolveInternalName();
 						String displayName = item.getDisplayName();
 						Matcher matcher = ESSENCE_PATTERN.matcher(displayName);
 						if (neu.config.dungeons.useEssenceCostFromBazaar && matcher.matches()) {
@@ -782,12 +795,16 @@ public class RenderListener {
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(internal);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
 								bazaarPrice = bazaarInfo.get("curr_sell").getAsFloat();
+							} else if (bazaarInfo != null) {
+								bazaarPrice = 0;
 							}
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
-							if (bazaarPrice > 0) {
+ 							boolean isOnBz = false;
+							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
+								isOnBz = true;
 							} else {
 								switch (NotEnoughUpdates.INSTANCE.config.dungeons.profitType) {
 									case 1:
@@ -825,7 +842,7 @@ public class RenderListener {
 								}
 							}
 
-							if (worth > 0 && totalValue >= 0) {
+							if ((worth >= 0 || isOnBz) && totalValue >= 0) {
 								totalValue += worth;
 								String display = item.getDisplayName();
 
@@ -1047,11 +1064,17 @@ public class RenderListener {
 			}
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().mouseInput(mouseX, mouseY)) {
+			event.setCanceled(true);
+			return;
+		}
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().mouseInput(mouseX, mouseY)) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -1126,12 +1149,12 @@ public class RenderListener {
 								x -= 68 - 200;
 							}
 						}
-						if (NEUOverlay.isRenderingArmorHud()) {
+						if (EquipmentOverlay.isRenderingArmorHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
 								x -= 25;
 							}
 						}
-						if (NEUOverlay.isRenderingPetHud()) {
+						if (EquipmentOverlay.isRenderingPetHud()) {
 							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
 								x -= 25;
 							}
@@ -1216,6 +1239,7 @@ public class RenderListener {
 							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
 								int stars = Utils.getNumberOfStars(stack);
 								if (stars == 0) continue;
+								String starsStr = "" + stars;
 
 								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
 								int costIndex = 10000;
@@ -1228,38 +1252,39 @@ public class RenderListener {
 									if (entry.equals("§7Cost")) {
 										costIndex = j;
 									}
+
 									if (j > costIndex) {
 										entry = entry.trim();
-										int index = entry.lastIndexOf('x');
-										String item, amountString;
-										if (index < 0) {
-											item = entry.trim() + " x1";
-											amountString = "x1";
-										} else {
-											amountString = entry.substring(index);
-											item = entry.substring(0, index).trim();
+
+										int countIndex = entry.lastIndexOf(" §8x");
+
+										String upgradeName = entry;
+										String amount = "1";
+										if (countIndex != -1) {
+											upgradeName = entry.substring(0, countIndex);
+											// +4 to account for " §8x"
+											amount = entry.substring(countIndex + 4);
 										}
-										item = item.substring(0, item.length() - 3);
-										int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
-										if (item.endsWith("Essence")) {
-											int index2 = entry.indexOf("Essence");
-											String type = item.substring(0, index2).trim().substring(2);
-											newEntry.add("type", new JsonPrimitive(type));
-											newEntry.add(String.valueOf(stars), new JsonPrimitive(amount));
+
+										if (upgradeName.endsWith(" Essence")) {
+											// First 2 chars are control code
+											// [EssenceCount, EssenceType, "Essence"]
+											String[] upgradeNameSplit = upgradeName.substring(2).split(" ");
+											newEntry.addProperty("type", upgradeNameSplit[1]);
+											newEntry.addProperty(starsStr, Integer.parseInt(upgradeNameSplit[0].replace(",", "")));
 										} else {
-											String itemString = item + " §8x" + amount;
 											if (!newEntry.has("items")) {
 												newEntry.add("items", new JsonObject());
 											}
-											if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
-												newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
+											if (!newEntry.get("items").getAsJsonObject().has(starsStr)) {
+												newEntry.get("items").getAsJsonObject().add(starsStr, new JsonArray());
 											}
 											newEntry
 												.get("items")
 												.getAsJsonObject()
-												.get(String.valueOf(stars))
+												.get(starsStr)
 												.getAsJsonArray()
-												.add(new JsonPrimitive(itemString));
+												.add(new JsonPrimitive(upgradeName + (upgradeName.contains("Coins") ? "" : (" §8x" + amount))));
 										}
 									}
 								}
@@ -1516,11 +1541,18 @@ public class RenderListener {
 				.getUnformattedText();
 		}
 
+		if (GuiCustomHex.getInstance().shouldOverride(containerName) &&
+			GuiCustomHex.getInstance().keyboardInput()) {
+			event.setCanceled(true);
+			return;
+		}
+
 		if (GuiCustomEnchant.getInstance().shouldOverride(containerName) &&
 			GuiCustomEnchant.getInstance().keyboardInput()) {
 			event.setCanceled(true);
 			return;
 		}
+
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);

@@ -124,7 +124,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
 		String profileId = GuiProfileViewer.getProfileId();
 		JsonObject hypixelInfo = profile.getHypixelProfile();
-		if (hypixelInfo == null) return;
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
 
@@ -196,9 +195,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (F7 > 50) {
 					F7 = 50;
 				}
-				float xpF5 = 2000 * (F5 / 100 + 1);
-				float xpF6 = 4000 * (F6 / 100 + 1);
-				float xpF7 = 20000 * (F7 / 100 + 1);
+				float xpF5 = 2400 * (F5 / 100 + 1);
+				float xpF6 = 4880 * (F6 / 100 + 1);
+				float xpF7 = 28000 * (F7 / 100 + 1);
 				if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 					xpF5 *= 1.1;
 					xpF6 *= 1.1;
@@ -306,6 +305,13 @@ public class DungeonPage extends GuiProfileViewerPage {
 							0
 						)
 					);
+				float M7 =
+					(
+						Utils.getElementAsFloat(
+							Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.tier_completions." + 7),
+							0
+						)
+					);
 				if (M3 > 50) {
 					M3 = 50;
 				}
@@ -318,22 +324,28 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (M6 > 50) {
 					M6 = 50;
 				}
-				float xpM3 = 36500 * (M3 / 100 + 1);
-				float xpM4 = 48500 * (M4 / 100 + 1);
+				if (M7 > 50) {
+					M7 = 50;
+				}
+				float xpM3 = 35000 * (M3 / 100 + 1);
+				float xpM4 = 55000 * (M4 / 100 + 1);
 				float xpM5 = 70000 * (M5 / 100 + 1);
 				float xpM6 = 100000 * (M6 / 100 + 1);
+				float xpM7 = 300000 * (M7 / 100 + 1);
 				//No clue if M3 or M4 xp values are right
 				if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 					xpM3 *= 1.1;
 					xpM4 *= 1.1;
 					xpM5 *= 1.1;
 					xpM6 *= 1.1;
+					xpM7 *= 1.1;
 				}
 
 				long runsM3 = (int) Math.ceil(floorLevelToXP / xpM3);
 				long runsM4 = (int) Math.ceil(floorLevelToXP / xpM4);
 				long runsM5 = (int) Math.ceil(floorLevelToXP / xpM5);
 				long runsM6 = (int) Math.ceil(floorLevelToXP / xpM6);
+				long runsM7 = (int) Math.ceil(floorLevelToXP / xpM7);
 
 				float timeM3 = Utils.getElementAsFloat(
 					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.3"),
@@ -351,6 +363,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.6"),
 					0
 				);
+				float timeM7 = Utils.getElementAsFloat(
+					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.7"),
+					0
+				);
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
@@ -358,6 +374,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 						String.format("# M4 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM4), runsM4),
 						String.format("# M5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM5), runsM5),
 						String.format("# M6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM6), runsM6),
+            String.format("# M7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM7), runsM7),
 						""
 					);
 				boolean hasTime = false;
@@ -379,6 +396,11 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (timeM6 > 1000) {
 					getInstance()
 						.tooltipToDisplay.add(String.format("Expected Time (M6) : %s", Utils.prettyTime(runsM6 * (long) (timeM6 * 1.2))));
+					hasTime = true;
+				}
+				if (timeM7 > 1000) {
+					getInstance()
+						.tooltipToDisplay.add(String.format("Expected Time (M7) : %s", Utils.prettyTime(runsM7 * (long) (timeM7 * 1.2))));
 					hasTime = true;
 				}
 				if (hasTime) {
@@ -420,7 +442,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			//Random stats
 
-			float secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+			float secrets = -1;
+			if (hypixelInfo != null) {
+				secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+			}
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;
 			for (int i = 1; i <= 7; i++) {
@@ -484,14 +509,14 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (Total)  ",
-				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(secrets),
+				EnumChatFormatting.WHITE + (secrets == -1 ? "?" : StringUtils.shortNumberFormat(secrets)),
 				x,
 				miscTopY + 20,
 				sectionWidth
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (/Run)  ",
-				EnumChatFormatting.WHITE.toString() + (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f),
+				EnumChatFormatting.WHITE.toString() + (secrets == -1 ? "?" :  (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f)),
 				x,
 				miscTopY + 30,
 				sectionWidth

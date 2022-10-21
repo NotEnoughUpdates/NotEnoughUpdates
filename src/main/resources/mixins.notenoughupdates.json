@@ -40,7 +40,6 @@
     "MixinRenderGlobal",
     "MixinRenderItem",
     "MixinRenderList",
-    "MixinSkyclientCosmetics",
     "MixinTextureManager",
     "MixinTileEntitySkullRenderer",
     "MixinTileEntitySpecialRenderer",
@@ -52,6 +51,7 @@
     "AccessorGuiContainer",
     "AccessorGuiEditSign",
     "AccessorMinecraft",
-    "MixinGuiEditSign"
+    "MixinGuiEditSign",
+    "MixinGuiTextField"
   ]
 }

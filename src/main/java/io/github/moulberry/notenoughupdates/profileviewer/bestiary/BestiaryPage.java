@@ -71,6 +71,11 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			int yIndex = 0;
 			for (ItemStack stack : BestiaryData.getBestiaryLocations().keySet()) {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+				if (mouseX > guiLeft + 30 + bestiaryXSize * yIndex && mouseX < guiLeft + 30 + bestiaryXSize * yIndex + 20) {
+					if (mouseY > guiTop + 10 && mouseY < guiTop + 10 + 20) {
+						tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					}
+				}
 				if (stack == selectedBestiaryLocation) {
 					Utils.drawTexturedRect(
 						guiLeft + 30 + bestiaryXSize * yIndex,
@@ -109,10 +114,6 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
 
 		GlStateManager.color(1, 1, 1, 1);
-		GlStateManager.disableLighting();
-		RenderHelper.enableGUIStandardItemLighting();
-
-		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
 		Color color = new Color(128, 128, 128, 255);
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Bestiary Level: ",
@@ -121,6 +122,10 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			guiTop + 50,
 			110
 		);
+
+		GlStateManager.disableLighting();
+		RenderHelper.enableGUIStandardItemLighting();
+		List<String> mobs = BestiaryData.getBestiaryLocations().get(selectedBestiaryLocation);
 		if (mobs != null) {
 			for (int i = 0; i < mobs.size(); i++) {
 				String mob = mobs.get(i);
@@ -148,7 +153,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 							20 * (1 - completedness) / 256f,
 							GL11.GL_NEAREST
 						);
-						GlStateManager.color(1, 185 / 255f, 0, 1);
+						//GlStateManager.color(1, 185 / 255f, 0, 1);
 						Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 						Utils.drawTexturedRect(
 							guiLeft + x,
@@ -202,7 +207,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									if (level.maxed) {
 										progressStr = EnumChatFormatting.GOLD + "MAXED!";
 									} else {
-										progressStr =EnumChatFormatting.AQUA +
+										progressStr = EnumChatFormatting.AQUA +
 											StringUtils.shortNumberFormat(Math.round((levelNum % 1) * level.maxXpForLevel)) +
 											"/" +
 											StringUtils.shortNumberFormat(level.maxXpForLevel);

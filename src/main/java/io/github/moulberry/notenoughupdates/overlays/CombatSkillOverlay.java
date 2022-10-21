@@ -82,6 +82,7 @@ public class CombatSkillOverlay
 	public void update() {
 		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.combatSkillOverlay) {
 			kill = -1;
+			championXp = -1;
 			overlayStrings = null;
 			return;
 		}
@@ -91,6 +92,7 @@ public class CombatSkillOverlay
 		championXpLast = championXp;
 		xpGainHourLast = xpGainHour;
 		kill = -1;
+		championXp = -1;
 
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 
@@ -177,7 +179,7 @@ public class CombatSkillOverlay
 				float delta = totalXp - lastTotalXp;
 
 				if (delta > 0 && delta < 1000) {
-					xpGainTimer = 3;
+					xpGainTimer = NotEnoughUpdates.INSTANCE.config.skillOverlays.combatPauseTimer;
 
 					xpGainQueue.add(0, delta);
 					while (xpGainQueue.size() > 30) {
@@ -216,7 +218,7 @@ public class CombatSkillOverlay
 			killQueue.removeLast();
 		}
 
-		if (kill != -1) {
+		if (kill != -1 || championXp != -1) {
 			overlayStrings = new ArrayList<>();
 		} else {
 			overlayStrings = null;
@@ -228,7 +230,7 @@ public class CombatSkillOverlay
 	public void updateFrequent() {
 		super.updateFrequent();
 
-		if ((kill < 0 || championXp < 0) && !NotEnoughUpdates.INSTANCE.config.skillOverlays.alwaysShowCombatOverlay) {
+		if ((kill < 0 && championXp < 0) && !NotEnoughUpdates.INSTANCE.config.skillOverlays.alwaysShowCombatOverlay) {
 			overlayStrings = null;
 		} else {
 			HashMap<Integer, String> lineMap = new HashMap<>();

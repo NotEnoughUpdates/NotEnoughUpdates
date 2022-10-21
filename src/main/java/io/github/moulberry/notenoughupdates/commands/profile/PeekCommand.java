@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -68,22 +69,22 @@ public class PeekCommand extends ClientCommandBase {
 		NotEnoughUpdates.profileViewer.getProfileByName(name, profile -> {
 			if (profile == null) {
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-					EnumChatFormatting.RED + "[PEEK] Unknown player or the api is down."), id);
+					EnumChatFormatting.RED + "[PEEK] Unknown player or the Hypixel API is down."), id);
 			} else {
 				profile.resetCache();
 
-				if (peekCommandExecutorService == null) {
+				if (peekCommandExecutorService == null || peekCommandExecutorService.isTerminated()) {
 					peekCommandExecutorService = Executors.newSingleThreadScheduledExecutor();
 				}
 
 				if (peekScheduledFuture != null && !peekScheduledFuture.isDone()) {
 					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "[PEEK] New peek command run, cancelling old one."));
+						EnumChatFormatting.RED + "[PEEK] New peek command was run, cancelling old one."));
 					peekScheduledFuture.cancel(true);
 				}
 
 				Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock profile(s)..."), id);
+					EnumChatFormatting.YELLOW + "[PEEK] Getting the player's SkyBlock profile(s)..."), id);
 
 				long startTime = System.currentTimeMillis();
 				peekScheduledFuture = peekCommandExecutorService.schedule(new Runnable() {
@@ -105,13 +106,32 @@ public class PeekCommand extends ClientCommandBase {
 							boolean isMe = name.equalsIgnoreCase("moulberry");
 
 							PlayerStats.Stats stats = profile.getStats(null);
-							if (stats == null) return;
+							if (stats == null) {
+								peekScheduledFuture = peekCommandExecutorService.schedule(this, 200, TimeUnit.MILLISECONDS);
+								return;
+							}
 							Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
+
+							if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+								Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
+									EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock networth..."), id);
+
+								CountDownLatch countDownLatch = new CountDownLatch(1);
+
+								profile.getSoopyNetworth(null, () -> countDownLatch.countDown());
+
+								try { //Wait for async network request
+									countDownLatch.await(10, TimeUnit.SECONDS);
+								} catch (InterruptedException e) {}
+
+								//Now it's waited for network request the data should be cached (accessed in nw section)
+							}
 
 							Minecraft.getMinecraft().ingameGUI
 								.getChatGUI()
 								.printChatMessageWithOptionalDeletion(new ChatComponentText(EnumChatFormatting.GREEN + " " +
-									EnumChatFormatting.STRIKETHROUGH + "-=-" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + " " +
+									EnumChatFormatting.STRIKETHROUGH + "-=-" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN +
+									" " +
 									Utils.getElementAsString(profile.getHypixelProfile().get("displayname"), name) + "'s Info " +
 									EnumChatFormatting.STRIKETHROUGH + "-=-"), id);
 
@@ -122,7 +142,7 @@ public class PeekCommand extends ClientCommandBase {
 								float totalSkillLVL = 0;
 								float totalSkillCount = 0;
 
-								List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+								List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy", "carpentry");
 								for (String skillName : skills) {
 									totalSkillLVL += skyblockInfo.get(skillName).level;
 									totalSkillCount++;
@@ -133,6 +153,7 @@ public class PeekCommand extends ClientCommandBase {
 								float spider = skyblockInfo.get("spider").level;
 								float wolf = skyblockInfo.get("wolf").level;
 								float enderman = skyblockInfo.get("enderman").level;
+								float blaze = skyblockInfo.get("blaze").level;
 
 								float avgSkillLVL = totalSkillLVL / totalSkillCount;
 
@@ -143,6 +164,7 @@ public class PeekCommand extends ClientCommandBase {
 									spider = 1;
 									wolf = 2;
 									enderman = 0;
+									blaze = 0;
 								}
 
 								EnumChatFormatting combatPrefix = combat > 20
@@ -161,6 +183,11 @@ public class PeekCommand extends ClientCommandBase {
 									? EnumChatFormatting.GREEN
 									: EnumChatFormatting.YELLOW)
 									: EnumChatFormatting.RED;
+								EnumChatFormatting blazePrefix = blaze > 3
+									? (blaze > 6
+									? EnumChatFormatting.GREEN
+									: EnumChatFormatting.YELLOW)
+									: EnumChatFormatting.RED;
 								EnumChatFormatting avgPrefix = avgSkillLVL > 20
 									? (avgSkillLVL > 35
 									? EnumChatFormatting.GREEN
@@ -171,6 +198,7 @@ public class PeekCommand extends ClientCommandBase {
 								overallScore += spider * spider / 81f;
 								overallScore += wolf * wolf / 81f;
 								overallScore += enderman * enderman / 81f;
+								overallScore += blaze * blaze / 81f;
 								overallScore += avgSkillLVL / 20f;
 
 								int cata = (int) skyblockInfo.get("catacombs").level;
@@ -187,8 +215,9 @@ public class PeekCommand extends ClientCommandBase {
 								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 									g + "Slayer: " + zombiePrefix + (int) Math.floor(zombie) + g + "-" +
 										spiderPrefix + (int) Math.floor(spider) + g + "-" +
-										wolfPrefix + (int) Math.floor(wolf) + "-" +
-										endermanPrefix + (int) Math.floor(enderman)));
+										wolfPrefix + (int) Math.floor(wolf) + g + "-" +
+										endermanPrefix + (int) Math.floor(enderman) + g + "-" +
+										blazePrefix + (int) Math.floor(blaze)));
 							}
 							if (stats == null) {
 								Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
@@ -229,7 +258,18 @@ public class PeekCommand extends ClientCommandBase {
 							float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), -1);
 							float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
 
-							long networth = profile.getNetWorth(null);
+							long networth;
+							if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+								ProfileViewer.Profile.SoopyNetworthData nwData = profile.getSoopyNetworth(null, () -> {});
+								if (nwData == null) {
+									networth = -2l;
+								} else {
+									networth = nwData.getTotal();
+								}
+							} else {
+								networth = profile.getNetWorth(null);
+							}
+
 							float money = Math.max(bankBalance + purseBalance, networth);
 							EnumChatFormatting moneyPrefix = money > 50 * 1000 * 1000 ?
 								(money > 200 * 1000 * 1000
@@ -278,7 +318,7 @@ public class PeekCommand extends ClientCommandBase {
 							} else if (overallScore > 2) {
 								overall = EnumChatFormatting.YELLOW + "Ender Non";
 							} else if (overallScore > 1) {
-								overall = EnumChatFormatting.RED + "Played Skyblock";
+								overall = EnumChatFormatting.RED + "Played SkyBlock";
 							}
 
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(g + "Overall score: " +

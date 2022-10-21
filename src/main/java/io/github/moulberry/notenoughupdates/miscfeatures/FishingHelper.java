@@ -401,7 +401,7 @@ public class FishingHelper {
 			return;
 		}
 
-		if ((particleType == EnumParticleTypes.WATER_WAKE || particleType == EnumParticleTypes.SMOKE_NORMAL) && Math.abs(
+		if ((particleType == EnumParticleTypes.WATER_WAKE || particleType == EnumParticleTypes.SMOKE_NORMAL || particleType == EnumParticleTypes.FLAME) && Math.abs(
 			yOffset - 0.01f) < 0.001f) {
 			double angle1 = calculateAngleFromOffsets(xOffset, -zOffset);
 			double angle2 = calculateAngleFromOffsets(-xOffset, zOffset);

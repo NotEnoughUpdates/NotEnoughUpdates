@@ -27,7 +27,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.text.NumberFormat;
 import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,7 +87,7 @@ public class DamageCommas {
 			if (matcherNoCrit.matches()) {
 				numbers = matcherNoCrit.group(2).replace(",", "");
 				prefix = matcherNoCrit.group(1);
-				suffix = "\u00A7r" + matcherNoCrit.group(3);
+				suffix = "\u00A7r" + (matcherNoCrit.group(3).contains("♞") ? "\u00A7d" + matcherNoCrit.group(3) : matcherNoCrit.group(3));
 			} else {
 				replacementMap.put(entity, null);
 				return name;

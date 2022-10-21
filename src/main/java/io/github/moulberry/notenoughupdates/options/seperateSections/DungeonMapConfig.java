@@ -73,7 +73,7 @@ public class DungeonMapConfig {
 		name = "Show Dungeon Map",
 		desc = "Show/hide the NEU dungeon map"
 	)
-	public boolean dmEnable = false;
+	public boolean dmEnable = true;
 
 	@Expose
 	@ConfigOption(
@@ -127,14 +127,16 @@ public class DungeonMapConfig {
 	@Expose
 	@ConfigOption(
 		name = "Background Colour",
-		desc = "Colour of the map background. Supports opacity & chroma"
+		desc = "Colour of the map background. Supports opacity & chroma",
+		searchTags = "color"
 	)
 	public String dmBackgroundColour = "00:170:75:75:75";
 
 	@Expose
 	@ConfigOption(
 		name = "Border Colour",
-		desc = "Colour of the map border. Supports opacity & chroma. Turn off custom borders to see"
+		desc = "Colour of the map border. Supports opacity & chroma. Turn off custom borders to see",
+		searchTags = "color"
 	)
 	public String dmBorderColour = "00:0:0:0:0";
 

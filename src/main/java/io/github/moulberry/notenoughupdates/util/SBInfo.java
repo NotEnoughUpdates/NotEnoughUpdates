@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -61,8 +62,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -290,6 +289,8 @@ public class SBInfo {
 
 	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
 	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
+	private static final String completedFactionQuests = "\u00a7r \u00a7r\u00a7a";
+	public ArrayList<String> completedQuests = new ArrayList<>();
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
@@ -306,15 +307,21 @@ public class SBInfo {
 			lastLocRaw = System.currentTimeMillis();
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
-			if (currentTime - lastMayorUpdate > 300 * 1000) {
-				updateMayor();
-				lastMayorUpdate = currentTime;
-			}
+		if (currentTime - lastMayorUpdate > 300 * 1000) {
+			updateMayor();
+			lastMayorUpdate = currentTime;
+		}
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
 				if (name.startsWith(profilePrefix)) {
-					currentProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					String newProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					if (!Objects.equals(currentProfile, newProfile)) {
+						currentProfile = newProfile;
+						if (NotEnoughUpdates.INSTANCE.config != null)
+							if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+								OverlayManager.powderGrindingOverlay.load();
+					}
 					hasNewTab = true;
 				} else if (name.startsWith(skillsPrefix)) {
 					String levelInfo = name.substring(skillsPrefix.length()).trim();
@@ -325,6 +332,12 @@ public class SBInfo {
 							XPInformation.getInstance().updateLevel(matcher.group(1).toLowerCase().trim(), level);
 						} catch (Exception ignored) {
 						}
+					}
+				} else if (name.startsWith(completedFactionQuests)) {
+					if (completedQuests.isEmpty()) {
+						completedQuests.add(name);
+					} else if (!completedQuests.contains(name)) {
+						completedQuests.add(name);
 					}
 				}
 			}
@@ -435,11 +448,10 @@ public class SBInfo {
 	}
 
 	public void updateMayor() {
-		NotEnoughUpdates.INSTANCE.manager.hypixelApi.getHypixelApiAsync(
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey,
-			"resources/skyblock/election",
-			new HashMap<>()
-		).thenAcceptAsync(newJson -> mayorJson = newJson);
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("resources/skyblock/election")
+			.requestJson()
+			.thenAccept(newJson -> mayorJson = newJson);
 	}
 
 
