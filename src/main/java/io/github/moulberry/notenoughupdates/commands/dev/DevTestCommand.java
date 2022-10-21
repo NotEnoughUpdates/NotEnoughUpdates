@@ -191,7 +191,7 @@ public class DevTestCommand extends ClientCommandBase {
 					"Opening gui: " + NotEnoughUpdates.INSTANCE.openGui));
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
 				e.printStackTrace();
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to open this gui."));
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to open this GUI."));
 			}
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("center")) {

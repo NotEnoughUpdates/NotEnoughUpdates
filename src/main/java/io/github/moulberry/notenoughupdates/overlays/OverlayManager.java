@@ -31,7 +31,7 @@ public class OverlayManager {
 
 	public static MiningOverlay miningOverlay;
 	public static PowderGrindingOverlay powderGrindingOverlay;
-	public static FarmingOverlay farmingOverlay;
+	public static FarmingSkillOverlay farmingOverlay;
 	public static FishingSkillOverlay fishingSkillOverlay;
 	public static MiningSkillOverlay miningSkillOverlay;
 	public static CombatSkillOverlay combatSkillOverlay;
@@ -124,7 +124,7 @@ public class OverlayManager {
 			"\u00a7bXP/h: \u00a7e238,129",
 			"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52"
 		);
-		farmingOverlay = new FarmingOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPosition, () -> {
+		farmingOverlay = new FarmingSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPosition, () -> {
 			List<String> strings = new ArrayList<>();
 			for (int i : NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingText) {
 				if (i >= 0 && i < farmingDummy.size()) strings.add(farmingDummy.get(i));

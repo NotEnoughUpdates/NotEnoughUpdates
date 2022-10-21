@@ -100,6 +100,19 @@ public class SkillOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int farmingPauseTimer = 3;
+
+	@Expose
+	@ConfigOption(
 		name = "Edit Farming Overlay Position",
 		desc = "Change the position of the Farming overlay"
 	)
@@ -156,6 +169,19 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 1)
 	public List<Integer> miningText = new ArrayList<>(Arrays.asList(0, 8, 1, 2, 3, 4, 5, 7));
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int miningPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(
@@ -217,6 +243,19 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 3)
 	public List<Integer> fishingText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 3)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int fishingPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(
@@ -311,6 +350,19 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 4)
 	public List<Integer> combatText = new ArrayList<>(Arrays.asList(0, 6, 1, 2, 3, 4, 5));
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 4)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int combatPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(
