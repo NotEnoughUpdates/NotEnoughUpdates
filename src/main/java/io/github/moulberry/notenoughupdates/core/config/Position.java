@@ -31,7 +31,6 @@ public class Position {
 	private boolean centerX;
 	@Expose
 	private boolean centerY;
-	@Expose
 	private boolean clicked = false;
 
 	private static final int EDGE_OFFSET = 0;
