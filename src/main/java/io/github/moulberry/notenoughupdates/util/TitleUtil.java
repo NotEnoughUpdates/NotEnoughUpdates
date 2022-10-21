@@ -23,7 +23,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -43,7 +42,6 @@ public class TitleUtil {
 	public void createTitle(String title, int ticks) {
 		this.title = title;
 		this.titleDisplayTicks = ticks;
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Notif3"));
 	}
 	/**
 	 * Adapted from SkyblockAddons under MIT license
