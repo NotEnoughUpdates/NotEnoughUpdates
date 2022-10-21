@@ -1,5 +1,8 @@
 # Contributing
 
+## Quick Note
+Ever since Moulberry has stopped working on NEU, other contributors have been working on new features and fixes for the mod. If you are interested in contributing yourself, make a pull request to [NotEnoughUpdates/NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates) to contribute to the prereleases, which eventually will be merged in bulk to [Moulberry/NotEnoughUpdates](https://github.com/Moulberry/NotEnoughUpdates) for major releases. 
+
 ## Before you contribute
 
 - Please check your feature / bug isn't already fixed in one of our pre-releases, on the [development branch](https://github.com/NotEnoughUpdates/NotEnoughUpdates/tree/master/) or in an open [pull request](https://github.com/NotEnoughUpdates/NotEnoughUpdates/pulls)  
