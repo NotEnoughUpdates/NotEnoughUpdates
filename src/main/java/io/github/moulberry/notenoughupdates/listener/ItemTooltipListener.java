@@ -540,7 +540,7 @@ public static class EnchantLine {
 						} catch (Exception e) {
 							continue;
 						}
-						Matcher matcher = pattern.matcher(line);
+						Matcher matcher = pattern.matcher(oLine);
 						int matchCount = 0;
 						while (matcher.find() && matchCount < 5) {
 							if (Utils.cleanColour(matcher.group("enchantName")).startsWith(" ")) continue;
