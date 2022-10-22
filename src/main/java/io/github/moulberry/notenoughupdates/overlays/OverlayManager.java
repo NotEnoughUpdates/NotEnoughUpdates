@@ -30,6 +30,7 @@ public class OverlayManager {
 	public static ArrayList<Class<? extends TextOverlay>> dontRenderOverlay = new ArrayList<>();
 
 	public static MiningOverlay miningOverlay;
+	public static PowderGrindingOverlay powderGrindingOverlay;
 	public static FarmingSkillOverlay farmingOverlay;
 	public static FishingSkillOverlay fishingSkillOverlay;
 	public static MiningSkillOverlay miningSkillOverlay;
@@ -61,7 +62,8 @@ public class OverlayManager {
 			"\u00a73Commissions: \u00a7e3h38m",
 			"\u00a73Experiments: \u00a7e3h38m",
 			"\u00a73Mithril Powder: \u00a7e3h38m",
-			"\u00a73Gemstone Powder: \u00a7e3h38m"
+			"\u00a73Gemstone Powder: \u00a7e3h38m",
+			"\u00a73Crimson Isle Quests: \u00a7e3h38m"
 		);
 		textOverlays.add(
 			timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {
@@ -97,6 +99,23 @@ public class OverlayManager {
 			}
 			return TextOverlayStyle.BACKGROUND;
 		});
+
+		List<String> powderGrindingDummy = Lists.newArrayList(
+			"\u00a73Chests Found: \u00a7a13",
+			"\u00a73Opened Chests: \u00a7a11",
+			"\u00a73Unopened Chests: \u00a7c2",
+			"\u00a73Mithril Powder Found: \u00a726,243",
+			"\u00a73Average Mithril Powder/Chest: \u00a72568",
+			"\u00a73Gemstone Powder Found: \u00a7d6,243",
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+		);
+		powderGrindingOverlay = new PowderGrindingOverlay(NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			for (int i : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
+				if (i >= 0 && i < powderGrindingDummy.size()) strings.add(powderGrindingDummy.get(i));
+			}
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
 
 		List<String> farmingDummy = Lists.newArrayList(
 			"\u00a7bCounter: \u00a7e37,547,860",
@@ -305,6 +324,7 @@ public class OverlayManager {
 		}, () -> TextOverlayStyle.BACKGROUND);
 
 		textOverlays.add(miningOverlay);
+		textOverlays.add(powderGrindingOverlay);
 		textOverlays.add(farmingOverlay);
 		textOverlays.add(miningSkillOverlay);
 		textOverlays.add(combatSkillOverlay);

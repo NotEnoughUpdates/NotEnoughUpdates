@@ -57,6 +57,7 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -116,7 +117,6 @@ public class Utils {
 		"VERY SPECIAL",
 		"SUPREME",
 		"^^ THAT ONE IS DIVINE ^^"
-//, "DIVINE"
 	};
 	public static String[] rarityArrC = new String[]{
 		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
@@ -128,8 +128,6 @@ public class Utils {
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
 		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		//EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
 	};
 	public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
 		put("COMMON", rarityArrC[0]);
@@ -141,7 +139,6 @@ public class Utils {
 		put("SPECIAL", rarityArrC[6]);
 		put("VERY SPECIAL", rarityArrC[7]);
 		put("DIVINE", rarityArrC[8]);
-		// put("DIVINE", rarityArrC[9]);
 	}};
 	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
 	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
@@ -1227,7 +1224,6 @@ public class Utils {
 		while ((lines++ < maxLines) || maxLines < 0) {
 			if (trimmed.length() == str.length()) {
 				drawStringScaled(trimmed, fr, x, y + yOff, shadow, colour, scale);
-				//fr.drawString(trimmed, x, y + yOff, colour, shadow);
 				break;
 			} else if (trimmed.isEmpty()) {
 				yOff -= 12 * scale;
@@ -1998,5 +1994,21 @@ public class Utils {
 
 	public static String getLastOpenChestName() {
 		return SBInfo.getInstance().lastOpenChestName;
+	}
+
+	public static String getNameFromChatComponent(IChatComponent chatComponent) {
+		String unformattedText = cleanColour(chatComponent.getSiblings().get(0).getUnformattedText());
+		String username = unformattedText.substring(unformattedText.indexOf(">") + 2, unformattedText.indexOf(":"));
+		// If the first character is a square bracket the user has a rank
+		// So we get the username from the space after the closing square bracket (end of their rank)
+		if (username.charAt(0) == '[') {
+			username = username.substring(unformattedText.indexOf(" ") + 2);
+		}
+		// If we still get any square brackets it means the user was talking in guild chat with a guild rank
+		// So we get the username up to the space before the guild rank
+		if (username.contains("[") || username.contains("]")) {
+			username = username.substring(0, unformattedText.indexOf(" "));
+		}
+		return username;
 	}
 }

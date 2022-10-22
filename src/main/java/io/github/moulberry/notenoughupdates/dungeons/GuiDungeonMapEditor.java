@@ -152,15 +152,6 @@ public class GuiDungeonMapEditor extends GuiScreen {
 
 	public GuiDungeonMapEditor() {
 		DungeonMapConfig options = NotEnoughUpdates.INSTANCE.config.dungeonMap;
-		//Map Border Size
-		//buttons.add(new Button(0, 6, 37, "Small", options.dmBorderSize));
-		//buttons.add(new Button(1, 52, 37, "Medium", options.dmBorderSize));
-		//buttons.add(new Button(2, 98, 37, "Large", options.dmBorderSize));
-
-		//Map Rooms Size
-		//buttons.add(new Button(3, 6, 67+19, "Small", options.dmRoomSize));
-		//buttons.add(new Button(4, 52, 67+19, "Medium", options.dmRoomSize));
-		//buttons.add(new Button(5, 98, 67+19, "Large", options.dmRoomSize));
 
 		//Map Border Styles
 		buttons.add(new Button(6, 6, 97 + 30, "None"));
@@ -240,9 +231,6 @@ public class GuiDungeonMapEditor extends GuiScreen {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		//buttons.add(new Button(29, 52, 86+19, "XLarge", options.dmRoomSize));
-		//buttons.add(new Button(30, 52, 56, "XLarge", options.dmBorderSize));
 
 		{
 			double val = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBackgroundBlur;
@@ -466,7 +454,6 @@ public class GuiDungeonMapEditor extends GuiScreen {
 			button.render();
 		}
 
-		//List<String> textLines, final int mouseX, final int mouseY, final int screenWidth, final int screenHeight, final int maxTextWidth, FontRenderer font
 		if (tooltipToDisplay != null) {
 			Utils.drawHoveringText(
 				tooltipToDisplay,
