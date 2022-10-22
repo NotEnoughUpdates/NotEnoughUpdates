@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.NewApiKeyHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,6 +41,7 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.network.play.server.S30PacketWindowItems;
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumParticleTypes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -133,6 +135,15 @@ public class MixinNetHandlerPlayClient {
 		}
 		if (packet instanceof C01PacketChatMessage) {
 			NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet);
+
+			String message = ((C01PacketChatMessage) packet).getMessage().toLowerCase();
+			if (message.matches("/hypixelcommand:.*")) {
+				String m = message.split(":")[1];
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+					"§e[NotEnoughUpdates] §7You just executed §c" + ((C01PacketChatMessage) packet).getMessage() + "§7. Use §e/" + m + "§7 Like a civilised individual"
+				));
+				ci.cancel();
+			}
 		}
 	}
 
