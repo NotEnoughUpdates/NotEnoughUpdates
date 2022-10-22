@@ -310,8 +310,7 @@ public class ChatListener {
 			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
 			OverlayManager.powderGrindingOverlay.message(unformatted);
 
-		if (unformatted.equals("ENDER NODE! You found Endermite Nest!") && SBInfo.getInstance().getLocation() != null &&
-		SBInfo.getInstance().getLocation().equals("combat_3")) {
+		if (unformatted.equals("ENDER NODE! You found Endermite Nest!")) {
 			EnderNodes.dispalyEndermiteNotif();
 		}
 	}

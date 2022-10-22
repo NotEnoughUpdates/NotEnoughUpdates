@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class TitleUtil {
 
@@ -37,11 +36,11 @@ public class TitleUtil {
 	}
 
 	private String title = null;
-	int titleDisplayTicks = 0;
+	private long titleLifetime = 0;
 
 	public void createTitle(String title, int ticks) {
 		this.title = title;
-		this.titleDisplayTicks = ticks;
+		this.titleLifetime = System.currentTimeMillis() + (ticks * 50L);
 	}
 	/**
 	 * Adapted from SkyblockAddons under MIT license
@@ -79,21 +78,13 @@ public class TitleUtil {
 		}
 	}
 
-	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.START) return;
-
-		if (this.titleDisplayTicks > 0) {
-			this.titleDisplayTicks--;
-		} else {
-			this.titleDisplayTicks = 0;
-			this.title = null;
-		}
-	}
-
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onRenderHUD(RenderGameOverlayEvent event) {
 		if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return;
+		if (System.currentTimeMillis() >= titleLifetime) {
+			titleLifetime = 0;
+			title = null;
+		}
 		renderTitles(event.resolution);
 	}
 }
