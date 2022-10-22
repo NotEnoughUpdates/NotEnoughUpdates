@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
-import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
@@ -28,7 +27,6 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption
 
 public class LocationEdit {
 
-	@Expose
 	@ConfigOption(
 		name = "Edit GUI locations",
 		desc = "Change the position of NEU's overlays"
@@ -39,7 +37,6 @@ public class LocationEdit {
 	)
 	public Position positions = new Position(-1, -1);
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Dungeon Map",
 		desc = "The NEU dungeon map has it's own editor (/neumap).\n" +
@@ -58,7 +55,6 @@ public class LocationEdit {
 	@ConfigEditorAccordion(id = 1)
 	public boolean inventoryAccordion = false;
 
-	@Expose
 	@ConfigOption(
 		name = "Edit Toolbar Positions",
 		desc = "Change the position of the QuickCommands / Search Bar"
@@ -67,7 +63,6 @@ public class LocationEdit {
 	@ConfigEditorButton(runnableId = 6, buttonText = "Edit")
 	public boolean positionButton = true;
 
-	@Expose
 	@ConfigOption(
 		name = "Open Button Editor",
 		desc = "Open button editor GUI (/neubuttons)"
