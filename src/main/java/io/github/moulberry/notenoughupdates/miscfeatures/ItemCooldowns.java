@@ -150,9 +150,7 @@ public class ItemCooldowns {
 		} else if (internalname.contains("_DRILL_")) {
 			char lastChar = internalname.charAt(internalname.length() - 1);
 			return lastChar >= '0' && lastChar <= '9';
-		} else if (internalname.equals("DIVAN_DRILL")) {
-			return true;
-		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS");
+		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") || internalname.equals("DIVAN_DRILL");
 	}
 
 	private static void updatePickaxeCooldown() {
