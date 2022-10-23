@@ -80,7 +80,7 @@ public abstract class MixinGuiTextField {
 		}
 	}
 
-	@Inject(method = "deleteFromCursor", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Predicate;apply(Ljava/lang/Object;)Z"), locals = LocalCapture.PRINT)
+	@Inject(method = "deleteFromCursor", at = @At(value = "INVOKE", target = "Lcom/google/common/base/Predicate;apply(Ljava/lang/Object;)Z"), locals = LocalCapture.PRINT, remap = false)
 	public void deleteFromCursor_stringStack(int i, CallbackInfo ci, boolean bl, int j, int k, String string) {
 		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
 			addToStack(string);
