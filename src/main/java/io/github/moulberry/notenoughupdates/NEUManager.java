@@ -1593,6 +1593,7 @@ public class NEUManager {
 					recipes.clear();
 					recipesMap.clear();
 					usagesMap.clear();
+					itemMap.clear();
 
 					File[] itemFiles = new File(repoLocation, "items").listFiles();
 					if (itemFiles != null) {
