@@ -35,6 +35,7 @@ import io.github.moulberry.notenoughupdates.listener.ItemTooltipRngListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
@@ -67,6 +68,7 @@ import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
@@ -263,14 +265,16 @@ public class NotEnoughUpdates {
 			}
 
 			// Remove after 2.1 ig
-			if ("dangerous".equals(config.apiData.repoBranch) || "rune".equals(config.apiData.repoBranch)) {
+			if ("dangerous".equals(config.apiData.repoBranch)) {
 				config.apiData.repoBranch = "master";
-			} else if ("jani270".equals(config.apiData.repoUser)) {
-				config.apiData.repoUser = "NotEnoughUpdates";
 			}
 
 			saveConfig();
 		}
+
+		if (config != null)
+			if (config.mining.powderGrindingTrackerResetMode == 2)
+				OverlayManager.powderGrindingOverlay.load();
 
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
@@ -315,7 +319,9 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(AbiphoneWarning.getInstance());
 		MinecraftForge.EVENT_BUS.register(new BetterContainers());
 		MinecraftForge.EVENT_BUS.register(AuctionBINWarning.getInstance());
+		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
+		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
@@ -351,6 +357,11 @@ public class NotEnoughUpdates {
 	}
 
 	public void saveConfig() {
+		try {
+			OverlayManager.powderGrindingOverlay.save();
+		} catch (Exception ignored) {
+		}
+
 		try {
 			configFile.createNewFile();
 

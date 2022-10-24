@@ -122,9 +122,6 @@ public class DungeonMap {
 	private int startRoomY = -1;
 	private int connectorSize = 5;
 	private int roomSize = 0;
-
-	//private final List<MapDecoration> decorations = new ArrayList<>();
-	//private final List<MapDecoration> lastDecorations = new ArrayList<>();
 	private long lastDecorationsMillis = -1;
 	private long lastLastDecorationsMillis = -1;
 
@@ -1475,9 +1472,7 @@ public class DungeonMap {
 						}
 					}
 
-					//System.out.println("--- PERM START ---");
 					for (Map.Entry<String, Integer> entry : smallestPermutation.entrySet()) {
-						//System.out.println(entry.getKey() + ":" + entry.getValue() + " : Total dist: " + smallestTotalDistance);
 						finalUsedIndexes.add(entry.getValue());
 						playerMarkerMapPositions.put(entry.getKey(), positions.get(entry.getValue()));
 					}

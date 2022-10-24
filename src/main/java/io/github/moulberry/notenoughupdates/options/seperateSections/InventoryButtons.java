@@ -23,6 +23,7 @@ import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class InventoryButtons {
@@ -51,4 +52,16 @@ public class InventoryButtons {
 		values = {"Mouse Down", "Mouse Up"}
 	)
 	public int clickType = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Tooltip Delay",
+		desc = "Change the Tooltip Delay in milliseconds"
+	)
+	@ConfigEditorSlider(
+		minValue = 0,
+		maxValue = 1500,
+		minStep = 50
+	)
+	public int tooltipDelay = 600;
 }

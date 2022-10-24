@@ -20,13 +20,14 @@
 package io.github.moulberry.notenoughupdates.profileviewer.bestiary;
 
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.util.LinkedHashMap;
-import java.util.List;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class BestiaryData {
 

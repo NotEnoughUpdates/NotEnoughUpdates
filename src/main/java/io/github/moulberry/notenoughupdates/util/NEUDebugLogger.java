@@ -34,7 +34,7 @@ public class NEUDebugLogger {
 	public static boolean allFlagsEnabled = false;
 
 	private static void chatLogger(String message) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU DEBUG] " + message));
+		Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU DEBUG] " + message);
 	}
 
 	public static boolean isFlagEnabled(NEUDebugFlag flag) {

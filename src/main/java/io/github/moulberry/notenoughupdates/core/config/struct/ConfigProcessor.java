@@ -69,17 +69,19 @@ public class ConfigProcessor {
 		public GuiOptionEditor editor;
 
 		public int accordionId = -1;
+		public final String[] searchTags;
 
 		private final Field field;
 		private final Object container;
 
-		public ProcessedOption(String name, String desc, int subcategoryId, Field field, Object container) {
+		public ProcessedOption(String name, String desc, int subcategoryId, Field field, Object container, String[] searchTags) {
 			this.name = name;
 			this.desc = desc;
 			this.subcategoryId = subcategoryId;
 
 			this.field = field;
 			this.container = container;
+			this.searchTags = searchTags;
 		}
 
 		public Object get() {
@@ -137,7 +139,8 @@ public class ConfigProcessor {
 							optionAnnotation.desc(),
 							optionAnnotation.subcategoryId(),
 							optionField,
-							categoryObj
+							categoryObj,
+							optionAnnotation.searchTags()
 						);
 						if (optionField.isAnnotationPresent(ConfigAccordionId.class)) {
 							ConfigAccordionId annotation = optionField.getAnnotation(ConfigAccordionId.class);

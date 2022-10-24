@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -60,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -78,6 +80,80 @@ public class ItemTooltipListener {
 	private boolean pressedArrowLast = false;
 	private boolean pressedShiftLast = false;
 	private int sbaloaded = -1;
+
+	//region Enchant optimisation
+	private String lastItemUuid;
+
+	public static class EnchantString {
+		final String preEnchantText;
+		final String enchantName;
+
+		final String mod;
+		final String colourCode;
+		final boolean isChroma;
+
+		public EnchantString(String enchant, String preEnchantText, String modifier, String colourCode) {
+			this.preEnchantText = preEnchantText;
+			this.enchantName = enchant;
+			this.mod = modifier;
+			this.colourCode = colourCode;
+			this.isChroma = colourCode.equals("z");
+		}
+
+		private boolean matches(String line) {
+			return line.matches(".*" + preEnchantText + enchantName + ".*");
+		}
+
+		public String applyMods(String line, int lineIndex) {
+			if (!matches(line)) return null;
+
+			if (!isChroma) {
+				return line.replace(preEnchantText + enchantName,
+					"\u00A7" + colourCode + mod + enchantName
+				);
+			} else {
+				//if you couldn't tell, this is for chroma.
+				int newOffset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(preEnchantText + enchantName);
+				return line.replace(
+				preEnchantText + enchantName,
+					Utils.chromaString(enchantName, newOffset / 12f + lineIndex, preEnchantText.matches(".*\\u00A7d.*"))
+				);
+			}
+		}
+}
+
+public static class EnchantLine {
+	final String originalLine;
+	final ArrayList<EnchantString> enchants;
+
+	public EnchantLine(String line, ArrayList<EnchantString> enchants) {
+		this.enchants = enchants;
+		this.originalLine = line;
+	}
+
+	public boolean isSameAsBefore(String line) {
+		return line.equals(originalLine);
+	}
+
+	public String replaceLine(String line, int index) {
+		if (line.equals(originalLine)) {
+			for (EnchantString enchant: enchants) {
+				String modifiedLine = enchant.applyMods(line, index);
+				 if (modifiedLine != null) {
+					line = modifiedLine;
+				}
+			}
+		}
+
+		return line;
+	}
+}
+
+	private final ArrayList<EnchantLine> enchantList = new ArrayList<>();
+	private int firstEnchantIndex = -1;
+	private int lastEnchantIndex = -1;
+
+	//endregion
 
 	public ItemTooltipListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -175,12 +251,26 @@ public class ItemTooltipListener {
 
 		boolean gotToEnchants = false;
 		boolean passedEnchants = false;
+		boolean foundEnchants = false;
 
 		boolean dungeonProfit = false;
-		int index = 0;
 		List<String> newTooltip = new ArrayList<>();
 
-		for (String line : event.toolTip) {
+		String currentUuid = ItemCustomizeManager.getUuidForItem(event.itemStack);
+
+		boolean resetEnchantCache = false;
+		//reset data if cache is off
+		if (!NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant) {
+			lastItemUuid = null;
+			firstEnchantIndex = -1;
+			lastEnchantIndex = -1;
+			enchantList.clear();
+		}
+
+		for (int k = 0; k < event.toolTip.size(); k++) {
+			String line = event.toolTip.get(k);
+			boolean thisLineHasEnchants = false;
+
 			if (line.endsWith(EnumChatFormatting.DARK_GRAY + "Reforge Stone") &&
 				NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showReforgeStats) {
 				JsonObject reforgeStones = Constants.REFORGESTONES;
@@ -327,7 +417,7 @@ public class ItemTooltipListener {
 			} else if (line.contains("\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune")) {
 				line = line.replace(
 					"\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune",
-					Utils.chromaString("Rainbow Rune", index, false) + EnumChatFormatting.BLUE
+					Utils.chromaString("Rainbow Rune", k, false) + EnumChatFormatting.BLUE
 				);
 			} else if (hasEnchantments) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) &&
@@ -381,144 +471,182 @@ public class ItemTooltipListener {
 				}
 			}
 			if (hasEnchantments || hasAttributes) {
+				Pattern findEnchantPattern = Pattern.compile(".*(?<enchant>[\\w ]+) (?<level>[0-9]+|[IVXLCDM]+)$");
+				Matcher findEnchantMatcher = findEnchantPattern.matcher(line);
+				if (findEnchantMatcher.matches()) {
+					if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant && !foundEnchants) {
+						foundEnchants = true;
+						if ((
+							lastItemUuid == null || currentUuid == null ||
+								(currentUuid != null &&
+									!Objects.equals(lastItemUuid, currentUuid)))) {
+							firstEnchantIndex = k;//k being the line index
+							lastEnchantIndex = k;
+							enchantList.clear();
+						}
+					}
+					thisLineHasEnchants = true;
+				}
+
 				ArrayList<String> addedEnchants = new ArrayList<>();
-				for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
-					List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
-					String enchantName = GuiEnchantColour.getColourOpIndex(colourOps, 0);
-					String comparator = GuiEnchantColour.getColourOpIndex(colourOps, 1);
-					String comparison = GuiEnchantColour.getColourOpIndex(colourOps, 2);
-					String colourCode = GuiEnchantColour.getColourOpIndex(colourOps, 3);
-					String modifier = GuiEnchantColour.getColourOpIndex(colourOps, 4);
+				//if cacheItemEnchant option is disabled it will always be length of 0
+				if (enchantList.size() == 0 || enchantList.size() <= k - firstEnchantIndex) {
+					ArrayList<EnchantString> enchants = new ArrayList<>();
+					final String oLine = line;
 
-					int modifierI = GuiEnchantColour.getIntModifier(modifier);
+					for (String op : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
+						List<String> colourOps = GuiEnchantColour.splitter.splitToList(op);
+						String enchantName = GuiEnchantColour.getColourOpIndex(colourOps, 0);
+						String comparator = GuiEnchantColour.getColourOpIndex(colourOps, 1);
+						String comparison = GuiEnchantColour.getColourOpIndex(colourOps, 2);
+						String colourCode = GuiEnchantColour.getColourOpIndex(colourOps, 3);
+						String modifier = GuiEnchantColour.getColourOpIndex(colourOps, 4);
 
-					assert enchantName != null;
-					if (enchantName.length() == 0) continue;
-					assert comparator != null;
-					if (comparator.length() == 0) continue;
-					assert comparison != null;
-					if (comparison.length() == 0) continue;
-					assert colourCode != null;
-					if (colourCode.length() == 0) continue;
+						int modifierI = GuiEnchantColour.getIntModifier(modifier);
 
-					int comparatorI = ">=<".indexOf(comparator.charAt(0));
+						assert enchantName != null;
+						if (enchantName.length() == 0) continue;
+						assert comparator != null;
+						if (comparator.length() == 0) continue;
+						assert comparison != null;
+						if (comparison.length() == 0) continue;
+						assert colourCode != null;
+						if (colourCode.length() == 0) continue;
 
-					int levelToFind;
-					try {
-						levelToFind = Integer.parseInt(comparison);
-					} catch (Exception e) {
-						continue;
-					}
+						int comparatorI = ">=<".indexOf(comparator.charAt(0));
 
-					if (comparatorI < 0) continue;
-					String regexText = "0123456789abcdefz";
-					if (isSkyblockAddonsLoaded()) {
-						regexText = regexText + "Z";
-					}
+						int levelToFind;
+						try {
+							levelToFind = Integer.parseInt(comparison);
+						} catch (Exception e) {
+							continue;
+						}
 
-					if (regexText.indexOf(colourCode.charAt(0)) < 0) continue;
+						if (comparatorI < 0) continue;
+						String regexText = "0123456789abcdefz";
+						if (isSkyblockAddonsLoaded()) {
+							regexText = regexText + "Z";
+						}
 
-					//item_lore = item_lore.replaceAll("\\u00A79("+lvl4Max+" IV)", EnumChatFormatting.DARK_PURPLE+"$1");
-					//9([a-zA-Z ]+?) ([0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X))(,|$)
-					Pattern pattern;
-					try {
-						pattern = Pattern.compile(
-							"(\\u00A7b|\\u00A79|\\u00A7(b|9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
-								"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
-					} catch (Exception e) {
-						continue;
-					}
-					Matcher matcher = pattern.matcher(line);
-					int matchCount = 0;
-					while (matcher.find() && matchCount < 5) {
-						if (Utils.cleanColour(matcher.group("enchantName")).startsWith(" ")) continue;
+						if (regexText.indexOf(colourCode.charAt(0)) < 0) continue;
 
-						matchCount++;
-						int level = -1;
-						String levelStr = matcher.group("level");
-						if (levelStr == null || levelStr.isEmpty()) continue;
-						level = Utils.parseIntOrRomanNumeral(levelStr);
-						boolean matches = false;
-						if (level > 0) {
-							switch (comparator) {
-								case ">":
-									matches = level > levelToFind;
-									break;
-								case "=":
-									matches = level == levelToFind;
-									break;
-								case "<":
-									matches = level < levelToFind;
-									break;
+						//item_lore = item_lore.replaceAll("\\u00A79("+lvl4Max+" IV)", EnumChatFormatting.DARK_PURPLE+"$1");
+						//9([a-zA-Z ]+?) ([0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X))(,|$)
+						Pattern pattern;
+						try {
+							pattern = Pattern.compile(
+								"(\\u00A7b|\\u00A79|\\u00A7(b|9|l)\\u00A7d\\u00A7l)(?<enchantName>" + enchantName + ") " +
+									"(?<level>[0-9]+|(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX))((\\u00A79)?,|( \\u00A78(?:,?[0-9]+)*)?$)");
+						} catch (Exception e) {
+							continue;
+						}
+						Matcher matcher = pattern.matcher(oLine);
+						int matchCount = 0;
+						while (matcher.find() && matchCount < 5) {
+							if (Utils.cleanColour(matcher.group("enchantName")).startsWith(" ")) continue;
+
+							matchCount++;
+							int level = -1;
+							String levelStr = matcher.group("level");
+							if (levelStr == null || levelStr.isEmpty()) continue;
+							level = Utils.parseIntOrRomanNumeral(levelStr);
+							boolean matches = false;
+							if (level > 0) {
+								switch (comparator) {
+									case ">":
+										matches = level > levelToFind;
+										break;
+									case "=":
+										matches = level == levelToFind;
+										break;
+									case "<":
+										matches = level < levelToFind;
+										break;
+								}
+							}
+							if (matches) {
+								String enchantText = matcher.group("enchantName");
+								StringBuilder extraModifiersBuilder = new StringBuilder();
+
+								if ((modifierI & GuiEnchantColour.BOLD_MODIFIER) != 0) {
+									extraModifiersBuilder.append(EnumChatFormatting.BOLD);
+								}
+								if ((modifierI & GuiEnchantColour.ITALIC_MODIFIER) != 0) {
+									extraModifiersBuilder.append(EnumChatFormatting.ITALIC);
+								}
+								if ((modifierI & GuiEnchantColour.UNDERLINE_MODIFIER) != 0) {
+									extraModifiersBuilder.append(EnumChatFormatting.UNDERLINE);
+								}
+								if ((modifierI & GuiEnchantColour.OBFUSCATED_MODIFIER) != 0) {
+									extraModifiersBuilder.append(EnumChatFormatting.OBFUSCATED);
+								}
+								if ((modifierI & GuiEnchantColour.STRIKETHROUGH_MODIFIER) != 0) {
+									extraModifiersBuilder.append(EnumChatFormatting.STRIKETHROUGH);
+								}
+
+								String extraMods = extraModifiersBuilder.toString();
+								if (!colourCode.equals("z")) {
+									if (!addedEnchants.contains(enchantText)) {
+										int startMatch = matcher.start();
+										int endMatch = matcher.end();
+										String subString = oLine.substring(startMatch, endMatch);
+										String preEnchantText = subString.split(String.valueOf(enchantText.charAt(0)))[0];
+
+										line = line.replace(preEnchantText + enchantText,
+											"\u00A7" + colourCode + extraMods + enchantText
+										);
+
+										enchants.add(new EnchantString(
+											enchantText,
+											preEnchantText,
+											extraMods,
+											colourCode
+											));
+									}
+								} else {
+									//Chroma
+									int startMatch = matcher.start();
+									int endMatch = matcher.end();
+									String subString = line.substring(startMatch, endMatch);
+									int newOffset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(subString);
+
+									//split the substring with the first letter found in enchant text allowing to only get the color codes.
+									String preEnchantText = subString.split(String.valueOf(enchantText.charAt(0)))[0];
+
+									line = line.replace(
+										preEnchantText + enchantText,
+										Utils.chromaString(enchantText, newOffset / 12f + k, preEnchantText.matches(".*\\u00A7d.*"))
+									);
+									enchants.add(new EnchantString(
+										enchantText,
+										preEnchantText,
+										extraMods,
+										colourCode
+									));
+								}
+								addedEnchants.add(enchantText);
 							}
 						}
-						if (matches) {
-							String enchantText = matcher.group("enchantName");
-							StringBuilder extraModifiersBuilder = new StringBuilder();
+					}
+					if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant) {
+						if (lastItemUuid == null || !Objects.equals(lastItemUuid, currentUuid)) {
+							EnchantLine enchantLine = new EnchantLine(oLine, enchants);
+							enchantList.add(enchantLine);
+						}
+					}
+				}
 
-							if ((modifierI & GuiEnchantColour.BOLD_MODIFIER) != 0) {
-								extraModifiersBuilder.append(EnumChatFormatting.BOLD);
-							}
-							if ((modifierI & GuiEnchantColour.ITALIC_MODIFIER) != 0) {
-								extraModifiersBuilder.append(EnumChatFormatting.ITALIC);
-							}
-							if ((modifierI & GuiEnchantColour.UNDERLINE_MODIFIER) != 0) {
-								extraModifiersBuilder.append(EnumChatFormatting.UNDERLINE);
-							}
-							if ((modifierI & GuiEnchantColour.OBFUSCATED_MODIFIER) != 0) {
-								extraModifiersBuilder.append(EnumChatFormatting.OBFUSCATED);
-							}
-							if ((modifierI & GuiEnchantColour.STRIKETHROUGH_MODIFIER) != 0) {
-								extraModifiersBuilder.append(EnumChatFormatting.STRIKETHROUGH);
+				if (NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant && foundEnchants) {
+					//found enchants in the past
+					if (k <= lastEnchantIndex) {
+						if (Objects.equals(lastItemUuid, currentUuid) && (firstEnchantIndex != -1 && enchantList.size() > k - firstEnchantIndex) && (k - firstEnchantIndex) > 0) {
+							//if it has the line, replaces it with the cached line
+							EnchantLine enchantLine = enchantList.get(k - firstEnchantIndex);
+							if (!enchantLine.isSameAsBefore(line)) {
+								resetEnchantCache = true;
 							}
 
-							String extraMods = extraModifiersBuilder.toString();
-
-							if (!colourCode.equals("z")) {
-								if (!addedEnchants.contains(enchantText)) {
-									line = line.replace("\u00A79" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
-									line = line.replace("\u00A7b" + enchantText, "\u00A7" + colourCode + extraMods + enchantText);
-									line = line.replace(
-										"\u00A79\u00A7d\u00A7l" + enchantText,
-										"\u00A7" + colourCode + extraMods + enchantText
-									);
-									line = line.replace(
-										"\u00A7b\u00A7d\u00A7l" + enchantText,
-										"\u00A7" + colourCode + extraMods + enchantText
-									);
-									line = line.replace(
-										"\u00A7l\u00A7d\u00A7l" + enchantText,
-										"\u00A7" + colourCode + extraMods + enchantText
-									);
-								}
-							} else {
-								int offset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line.replaceAll(
-									"\\u00A79" + enchantText + ".*",
-									""
-								));
-								line = line.replace(
-									"\u00A79" + enchantText,
-									Utils.chromaString(enchantText, offset / 12f + index, false)
-								);
-
-								offset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line.replaceAll(
-									"\\u00A79\\u00A7d\\u00A7l" + enchantText + ".*",
-									""
-								));
-								line = line.replace(
-									"\u00A79\u00A7d\u00A7l" + enchantText,
-									Utils.chromaString(enchantText, offset / 12f + index, true)
-								);
-								offset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line.replaceAll(
-									"\\u00A7l\\u00A7d\\u00A7l" + enchantText + ".*",
-									""
-								));
-								line = line.replace(
-									"\u00A7l\u00A7d\u00A7l" + enchantText,
-									Utils.chromaString(enchantText, offset / 12f + index, true)
-								);
-							}
-							addedEnchants.add(enchantText);
+							line = enchantLine.replaceLine(line, k);
 						}
 					}
 				}
@@ -543,7 +671,7 @@ public class ItemTooltipListener {
 				Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 				if (line.contains(EnumChatFormatting.GREEN + "Open Reward Chest")) {
 					dungeonProfit = true;
-				} else if (index == 7 && dungeonProfit) {
+				} else if (k == 7 && dungeonProfit) {
 					GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
 					ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 					IInventory lower = cc.getLowerChestInventory();
@@ -688,10 +816,8 @@ public class ItemTooltipListener {
 					}
 				}
 			}
-
-			index++;
+			if (thisLineHasEnchants) lastEnchantIndex+=1;
 		}
-
 
 		pressedShiftLast = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		pressedArrowLast = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT);
@@ -706,6 +832,18 @@ public class ItemTooltipListener {
 		if (event.itemStack.getTagCompound() != null && event.itemStack.getTagCompound().getBoolean("NEUHIDEPETTOOLTIP") &&
 			NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetTooltip) {
 			event.toolTip.clear();
+		}
+
+
+		if (foundEnchants && currentUuid != null && lastItemUuid != currentUuid) {
+				lastItemUuid = currentUuid;//cache is set;
+		}
+
+		if (resetEnchantCache) {
+			lastItemUuid = null;
+			enchantList.clear();
+			firstEnchantIndex = -1;
+			lastEnchantIndex = -1;
 		}
 	}
 
@@ -842,7 +980,6 @@ public class ItemTooltipListener {
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
 			}
-
 
 			event.toolTip.add(
 				EnumChatFormatting.AQUA + "Internal Name: " + EnumChatFormatting.GRAY + internal + EnumChatFormatting.GOLD +

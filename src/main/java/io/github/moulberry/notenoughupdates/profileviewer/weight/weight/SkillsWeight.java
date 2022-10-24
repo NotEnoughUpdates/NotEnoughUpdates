@@ -20,12 +20,13 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+
 import java.util.Map;
 
 public abstract class SkillsWeight {
 
-	protected static final long SKILLS_LEVEL_50 = 55172425;
-	protected static final long SKILLS_LEVEL_60 = 111672425;
+	public static final long SKILLS_LEVEL_50 = 55172425;
+	public static final long SKILLS_LEVEL_60 = 111672425;
 	protected final Map<String, ProfileViewer.Level> player;
 	protected final WeightStruct weightStruct;
 
