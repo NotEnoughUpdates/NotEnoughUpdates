@@ -135,15 +135,6 @@ public class MixinNetHandlerPlayClient {
 		}
 		if (packet instanceof C01PacketChatMessage) {
 			NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet);
-
-			String message = ((C01PacketChatMessage) packet).getMessage().toLowerCase();
-			if (message.matches("/hypixelcommand:.*")) {
-				String m = message.split(":")[1];
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-					"§e[NotEnoughUpdates] §7You just executed §c" + ((C01PacketChatMessage) packet).getMessage() + "§7. Use §e/" + m + "§7 Like a civilised individual"
-				));
-				ci.cancel();
-			}
 		}
 	}
 

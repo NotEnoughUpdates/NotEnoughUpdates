@@ -489,6 +489,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean hasOpenedWaypointMenu = false;
 
+		@Expose
+		public boolean blockhypixelcommandPrefixedCommands = true;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
