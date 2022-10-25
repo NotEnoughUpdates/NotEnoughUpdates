@@ -110,7 +110,7 @@ public class BestiaryData {
 					"family_ghast",
 					"family_mage_outlaw",
 					"family_magma_cube",
-					"family_magma_cube_boss",
+					"family_magma_boss",
 					"family_matcho",
 					"family_charging_mushroom_cow",
 					"family_pigman",
@@ -506,7 +506,7 @@ public class BestiaryData {
 				)
 			);
 			put(
-				"family_magma_cube_boss",
+				"family_magma_boss",
 				Utils.createSkull(
 					EnumChatFormatting.AQUA + "§a§6§lMagma Cube Boss",
 					"35f02923-7bec-3869-9ef5-b42a4794cac8",
