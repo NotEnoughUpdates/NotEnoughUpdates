@@ -508,7 +508,7 @@ public class BestiaryData {
 			put(
 				"family_magma_boss",
 				Utils.createSkull(
-					EnumChatFormatting.AQUA + "§a§6§lMagma Cube Boss",
+					EnumChatFormatting.AQUA + "§a§4§lMagma Boss",
 					"35f02923-7bec-3869-9ef5-b42a4794cac8",
 					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5NTdkNTAyM2M5MzdjNGM0MWFhMjQxMmQ0MzQxMGJkYTIzY2Y3OWE5ZjZhYjM2Yjc2ZmVmMmQ3YzQyOSJ9fX0="
 				)
@@ -1011,7 +1011,7 @@ public class BestiaryData {
 			put("family_ghast", "MOB");
 			put("family_mage_outlaw", "BOSS");
 			put("family_magma_cube", "MOB");
-			put("family_magma_cube_boss", "BOSS");
+			put("family_magma_boss", "BOSS");
 			put("family_matcho", "MOB");
 			put("family_charging_mushroom_cow", "MOB");
 			put("family_pigman", "MOB");
