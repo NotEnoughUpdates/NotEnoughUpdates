@@ -58,7 +58,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private int killScroll = 0;
 	private int mouseDWheel = 0;
 
-
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
 		getInstance().killDeathSearchTextField.setSize(80, 12);
@@ -109,7 +108,8 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float xStart,
 		float yStartTop,
 		float xOffset,
-		float yOffset) {
+		float yOffset
+	) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 		yStartTop = yStartTop + 78;
@@ -448,7 +448,10 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 
-		getInstance().killDeathSearchTextField.render((int) (guiLeft + xStart + xOffset * 3), (int) (guiTop + yStartBottom + 77));
+		getInstance().killDeathSearchTextField.render(
+			(int) (guiLeft + xStart + xOffset * 3),
+			(int) (guiTop + yStartBottom + 77)
+		);
 
 		float killDeathX = guiLeft + xStart + xOffset * 3;
 
@@ -458,10 +461,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 		for (int killCount : topKills.descendingKeySet()) {
 			Set<String> kills = topKills.get(killCount);
 			for (String killType : kills) {
-				boolean isSearch = getInstance().killDeathSearchTextField.getText().isEmpty() || killType.toLowerCase(Locale.ROOT).contains(getInstance().killDeathSearchTextField.getText().toLowerCase(Locale.ROOT));
-				float killY = guiTop + yStartTop + yOffset * ((index-skipCount) - killScroll);
-				if(!isSearch) skipCount++;
-				if(isSearch && killY+6 < guiTop+yStartTop+65 && killY >= guiTop + yStartTop) {
+				boolean isSearch =
+					getInstance().killDeathSearchTextField.getText().isEmpty() || killType.toLowerCase(Locale.ROOT).contains(
+						getInstance().killDeathSearchTextField.getText().toLowerCase(Locale.ROOT));
+				float killY = guiTop + yStartTop + yOffset * ((index - skipCount) - killScroll);
+				if (!isSearch) skipCount++;
+				if (isSearch && killY + 6 < guiTop + yStartTop + 65 && killY >= guiTop + yStartTop) {
 					renderedKills++;
 					Utils.renderAlignedString(
 						EnumChatFormatting.YELLOW + "K: " + killType,
