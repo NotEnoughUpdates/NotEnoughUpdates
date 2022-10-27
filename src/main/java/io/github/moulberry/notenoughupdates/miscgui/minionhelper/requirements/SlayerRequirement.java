@@ -17,10 +17,30 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui.tutorials;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.requirements;
 
-public class NeuConfigTutorial extends TutorialBase {
-	static {
-		title = "NEU Config Tutorial";
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+
+public class SlayerRequirement extends MinionRequirement {
+
+	private final String slayer;
+	private final int level;
+
+	public SlayerRequirement(String slayer, int level) {
+		this.slayer = slayer;
+		this.level = level;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public String getSlayer() {
+		return slayer;
+	}
+
+	@Override
+	public String printDescription(String color) {
+		return "Slayer: " + color +StringUtils.firstUpperLetter(slayer)+ " level " + level;
 	}
 }

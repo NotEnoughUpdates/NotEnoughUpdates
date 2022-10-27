@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.common.collect.ImmutableList;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
@@ -40,9 +41,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,13 +50,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GuiItemRecipe extends GuiScreen {
-	public static final ResourceLocation resourcePacksTexture = new ResourceLocation("textures/gui/resource_packs.png");
 	public static final ResourceLocation tabsTexture = new ResourceLocation("notenoughupdates", "textures/gui/tab.png");
 
 	public static final int SLOT_SIZE = 16;
 	public static final int SLOT_SPACING = SLOT_SIZE + 2;
-	public static final int BUTTON_WIDTH = 7;
-	public static final int BUTTON_HEIGHT = 11;
 	public static final int TITLE_X = 28;
 	public static final int TITLE_Y = 6;
 	public static final int HOTBAR_SLOT_X = 8;
@@ -147,7 +143,8 @@ public class GuiItemRecipe extends GuiScreen {
 			Utils.drawItemStack(slot.getItemStack(), slot.getX(this), slot.getY(this), true);
 		}
 
-		drawArrows(currentRecipe, mouseX, mouseY);
+		int[] topLeft = currentRecipe.getPageFlipPositionLeftTopCorner();
+		ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentIndex, getCurrentRecipeList().size());
 
 		Utils.drawStringScaledMaxWidth(
 			currentRecipe.getTitle(),
@@ -222,61 +219,6 @@ public class GuiItemRecipe extends GuiScreen {
 		}
 	}
 
-	public static final int BUTTON_POSITION_RIGHT_OFFSET_X = 37;
-	public static final int PAGE_STRING_OFFSET_X = 22;
-	public static final int PAGE_STRING_OFFSET_Y = 6;
-
-	private void drawArrows(
-		NeuRecipe currentRecipe,
-		int mouseX,
-		int mouseY
-	) {
-		int recipeCount = getCurrentRecipeList().size();
-		if (recipeCount < 2) return;
-		int[] topLeft = currentRecipe.getPageFlipPositionLeftTopCorner();
-		int buttonPositionLeftX = topLeft[0];
-		int buttonPositionRightX = buttonPositionLeftX + BUTTON_POSITION_RIGHT_OFFSET_X;
-		int pageStringX = buttonPositionLeftX + PAGE_STRING_OFFSET_X;
-		int buttonPositionY = topLeft[1];
-		int pageStringY = buttonPositionY + PAGE_STRING_OFFSET_Y;
-
-		boolean leftSelected = isWithinRect(
-			mouseX - guiLeft,
-			mouseY - guiTop,
-			buttonPositionLeftX,
-			buttonPositionY,
-			BUTTON_WIDTH,
-			BUTTON_HEIGHT
-		);
-		boolean rightSelected = isWithinRect(
-			mouseX - guiLeft,
-			mouseY - guiTop,
-			buttonPositionRightX,
-			buttonPositionY,
-			BUTTON_WIDTH,
-			BUTTON_HEIGHT
-		);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(resourcePacksTexture);
-
-		if (currentIndex != 0)
-			Utils.drawTexturedRect(guiLeft + buttonPositionLeftX, guiTop + buttonPositionY, BUTTON_WIDTH, BUTTON_HEIGHT,
-				34 / 256f, 48 / 256f,
-				leftSelected ? 37 / 256f : 5 / 256f, leftSelected ? 59 / 256f : 27 / 256f
-			);
-		if (currentIndex != recipeCount - 1)
-			Utils.drawTexturedRect(guiLeft + buttonPositionRightX, guiTop + buttonPositionY, BUTTON_WIDTH, BUTTON_HEIGHT,
-				10 / 256f, 24 / 256f,
-				rightSelected ? 37 / 256f : 5 / 256f, rightSelected ? 59 / 256f : 27 / 256f
-			);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-
-		String selectedPage = (currentIndex + 1) + "/" + recipeCount;
-
-		Utils.drawStringCenteredScaledMaxWidth(selectedPage, fontRendererObj,
-			guiLeft + pageStringX, guiTop + pageStringY, false, 24, Color.BLACK.getRGB()
-		);
-	}
-
 	public List<RecipeSlot> getPlayerInventory() {
 		List<RecipeSlot> slots = new ArrayList<>();
 		ItemStack[] inventory = Minecraft.getMinecraft().thePlayer.inventory.mainInventory;
@@ -335,7 +277,7 @@ public class GuiItemRecipe extends GuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton p_actionPerformed_1_) throws IOException {
+	protected void actionPerformed(GuiButton p_actionPerformed_1_) {
 		getCurrentRecipe().actionPerformed(p_actionPerformed_1_);
 	}
 
@@ -396,6 +338,15 @@ public class GuiItemRecipe extends GuiScreen {
 				return;
 			}
 		}
+		ArrowPagesUtils.onPageSwitchMouse(
+			guiLeft,
+			guiTop,
+			topLeft,
+			currentIndex,
+			getCurrentRecipeList().size(),
+			pageChange ->
+				changeRecipe(currentTab, pageChange)
+		);
 
 		for (RecipeSlot slot : getAllRenderedSlots()) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
@@ -411,5 +362,10 @@ public class GuiItemRecipe extends GuiScreen {
 		}
 
 		currentRecipe.mouseClicked(this, mouseX, mouseY, mouseButton);
+	}
+
+	public void arrowKeyboardInput() {
+		ArrowPagesUtils.onPageSwitchKey(currentIndex, getCurrentRecipeList().size(), pageChange ->
+			changeRecipe(currentTab, pageChange));
 	}
 }

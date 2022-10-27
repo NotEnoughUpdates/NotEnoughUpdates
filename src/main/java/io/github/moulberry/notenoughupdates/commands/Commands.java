@@ -95,7 +95,6 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neubuttons", GuiInvButtonEditor::new));
 		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuec", GuiEnchantColour::new));
 		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuoverlay", NEUOverlayPlacements::new));
-		//ClientCommandHandler.instance.registerCommand(new ScreenCommand("neututorial", NeuTutorial::new));
 		ClientCommandHandler.instance.registerCommand(new AhCommand());
 		ClientCommandHandler.instance.registerCommand(new CalculatorCommand());
 		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
