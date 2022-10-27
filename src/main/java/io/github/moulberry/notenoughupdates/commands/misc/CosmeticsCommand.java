@@ -22,11 +22,10 @@ package io.github.moulberry.notenoughupdates.commands.misc;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics;
-import net.minecraft.client.Minecraft;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 public class CosmeticsCommand extends ClientCommandBase {
@@ -38,8 +37,8 @@ public class CosmeticsCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if (!OpenGlHelper.isFramebufferEnabled() && NotEnoughUpdates.INSTANCE.config.notifications.doFastRenderNotif) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"NEU Cosmetics do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it."));
+			Utils.addChatMessage(EnumChatFormatting.RED +
+				"NEU Cosmetics do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.");
 
 		}
 

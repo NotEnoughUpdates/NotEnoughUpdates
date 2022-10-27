@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
+
 import java.util.Map;
 
 public class LilyWeight extends Weight {

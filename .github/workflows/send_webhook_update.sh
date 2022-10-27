@@ -104,4 +104,4 @@ fi
 echo "Message sent to discord."
 echo "$discord_output" | jq .
 id_string=$(echo "$discord_output" | jq .id)
-echo "::set-output name=MESSAGE_ID::${id_string//\"/}"
+echo "MESSAGE_ID=${id_string//\"/}" >> $GITHUB_OUTPUT

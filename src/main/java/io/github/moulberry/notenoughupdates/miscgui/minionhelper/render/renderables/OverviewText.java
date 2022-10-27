@@ -17,10 +17,26 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscgui.tutorials;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables;
 
-public class NeuConfigTutorial extends TutorialBase {
-	static {
-		title = "NEU Config Tutorial";
+import java.util.List;
+
+public class OverviewText extends OverviewLine {
+
+	private final Runnable clickRunnable;
+	private final List<String> lines;
+
+	public OverviewText(List<String> line, Runnable clickRunnable) {
+		this.lines = line;
+		this.clickRunnable = clickRunnable;
+	}
+
+	public List<String> getLines() {
+		return lines;
+	}
+
+	@Override
+	public void onClick() {
+		clickRunnable.run();
 	}
 }
