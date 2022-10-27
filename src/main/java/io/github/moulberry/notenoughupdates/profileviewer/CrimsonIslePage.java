@@ -340,6 +340,8 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			int barbarianReputation = data.has("barbarians_reputation") ? data.get("barbarians_reputation").getAsInt() : 0;
 
 			LinkedHashMap<Integer, String> factionThresholds = new LinkedHashMap<Integer, String>() {{
+				put(-3000, "Hostile");
+				put(-1000, "Unfriendly");
 				put(0, "Neutral");
 				put(1000, "Friendly");
 				put(3000, "Trusted");
