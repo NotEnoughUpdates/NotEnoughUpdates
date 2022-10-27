@@ -57,6 +57,7 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -77,6 +78,7 @@ import java.math.BigInteger;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -116,7 +118,6 @@ public class Utils {
 		"VERY SPECIAL",
 		"SUPREME",
 		"^^ THAT ONE IS DIVINE ^^"
-//, "DIVINE"
 	};
 	public static String[] rarityArrC = new String[]{
 		EnumChatFormatting.WHITE + EnumChatFormatting.BOLD.toString() + "COMMON",
@@ -128,8 +129,6 @@ public class Utils {
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "SPECIAL",
 		EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "VERY SPECIAL",
 		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		EnumChatFormatting.AQUA + EnumChatFormatting.BOLD.toString() + "DIVINE",
-		//EnumChatFormatting.AQUA+EnumChatFormatting.BOLD.toString()+"DIVINE",
 	};
 	public static final HashMap<String, String> rarityArrMap = new HashMap<String, String>() {{
 		put("COMMON", rarityArrC[0]);
@@ -141,11 +140,11 @@ public class Utils {
 		put("SPECIAL", rarityArrC[6]);
 		put("VERY SPECIAL", rarityArrC[7]);
 		put("DIVINE", rarityArrC[8]);
-		// put("DIVINE", rarityArrC[9]);
 	}};
 	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
 	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
 	private static long startTime = 0;
+	private static DecimalFormat simpleDoubleFormat = new DecimalFormat("0.0");
 
 	public static <T> ArrayList<T> createList(T... values) {
 		ArrayList<T> list = new ArrayList<>();
@@ -328,6 +327,11 @@ public class Utils {
 	}
 
 	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 3 && n > 0) {
+			return simpleDoubleFormat.format(n);
+		}
+
+		if (n < 1000 && iteration == 0) return "" + (int) n;
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
 		return (d < 1000 ?
@@ -1227,7 +1231,6 @@ public class Utils {
 		while ((lines++ < maxLines) || maxLines < 0) {
 			if (trimmed.length() == str.length()) {
 				drawStringScaled(trimmed, fr, x, y + yOff, shadow, colour, scale);
-				//fr.drawString(trimmed, x, y + yOff, colour, shadow);
 				break;
 			} else if (trimmed.isEmpty()) {
 				yOff -= 12 * scale;
@@ -1945,13 +1948,13 @@ public class Utils {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-					EnumChatFormatting.RED +
-						"Data used for many NEU features is not up to date, this should normally not be the case.",
-					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
-						EnumChatFormatting.RED + " and restart your game" +
-						" to see if that fixes the issue.",
-					EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
-						"discord.gg/moulberry" +
+				EnumChatFormatting.RED +
+					"Data used for many NEU features is not up to date, this should normally not be the case.",
+				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+					EnumChatFormatting.RED + " and restart your game" +
+					" to see if that fixes the issue.",
+				EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
+					"discord.gg/moulberry" +
 						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 				),
@@ -1998,5 +2001,30 @@ public class Utils {
 
 	public static String getLastOpenChestName() {
 		return SBInfo.getInstance().lastOpenChestName;
+	}
+
+	public static String getNameFromChatComponent(IChatComponent chatComponent) {
+		String unformattedText = cleanColour(chatComponent.getSiblings().get(0).getUnformattedText());
+		String username = unformattedText.substring(unformattedText.indexOf(">") + 2, unformattedText.indexOf(":"));
+		// If the first character is a square bracket the user has a rank
+		// So we get the username from the space after the closing square bracket (end of their rank)
+		if (username.charAt(0) == '[') {
+			username = username.substring(unformattedText.indexOf(" ") + 2);
+		}
+		// If we still get any square brackets it means the user was talking in guild chat with a guild rank
+		// So we get the username up to the space before the guild rank
+		if (username.contains("[") || username.contains("]")) {
+			username = username.substring(0, unformattedText.indexOf(" "));
+		}
+		return username;
+	}
+
+	public static void addChatMessage(String message) {
+		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+		if (thePlayer != null) {
+			thePlayer.addChatMessage(new ChatComponentText(message));
+		} else {
+			System.out.println(message);
+		}
 	}
 }

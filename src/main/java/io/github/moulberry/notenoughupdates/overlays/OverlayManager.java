@@ -30,7 +30,8 @@ public class OverlayManager {
 	public static Class<? extends TextOverlay> dontRenderOverlay = null;
 
 	public static MiningOverlay miningOverlay;
-	public static FarmingOverlay farmingOverlay;
+	public static PowderGrindingOverlay powderGrindingOverlay;
+	public static FarmingSkillOverlay farmingOverlay;
 	public static FishingSkillOverlay fishingSkillOverlay;
 	public static MiningSkillOverlay miningSkillOverlay;
 	public static CombatSkillOverlay combatSkillOverlay;
@@ -60,7 +61,8 @@ public class OverlayManager {
 			"\u00a73Commissions: \u00a7e3h38m",
 			"\u00a73Experiments: \u00a7e3h38m",
 			"\u00a73Mithril Powder: \u00a7e3h38m",
-			"\u00a73Gemstone Powder: \u00a7e3h38m"
+			"\u00a73Gemstone Powder: \u00a7e3h38m",
+			"\u00a73Crimson Isle Quests: \u00a7e3h38m"
 		);
 		textOverlays.add(
 			timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {
@@ -97,6 +99,23 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 
+		List<String> powderGrindingDummy = Lists.newArrayList(
+			"\u00a73Chests Found: \u00a7a13",
+			"\u00a73Opened Chests: \u00a7a11",
+			"\u00a73Unopened Chests: \u00a7c2",
+			"\u00a73Mithril Powder Found: \u00a726,243",
+			"\u00a73Average Mithril Powder/Chest: \u00a72568",
+			"\u00a73Gemstone Powder Found: \u00a7d6,243",
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+		);
+		powderGrindingOverlay = new PowderGrindingOverlay(NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			for (int i : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
+				if (i >= 0 && i < powderGrindingDummy.size()) strings.add(powderGrindingDummy.get(i));
+			}
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
+
 		List<String> farmingDummy = Lists.newArrayList(
 			"\u00a7bCounter: \u00a7e37,547,860",
 			"\u00a7bCrops/m: \u00a7e38.29",
@@ -106,7 +125,7 @@ public class OverlayManager {
 			"\u00a7bXP/h: \u00a7e238,129",
 			"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52"
 		);
-		farmingOverlay = new FarmingOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPosition, () -> {
+		farmingOverlay = new FarmingSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPosition, () -> {
 			List<String> strings = new ArrayList<>();
 			for (int i : NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingText) {
 				if (i >= 0 && i < farmingDummy.size()) strings.add(farmingDummy.get(i));
@@ -295,6 +314,7 @@ public class OverlayManager {
 		});
 
 		textOverlays.add(miningOverlay);
+		textOverlays.add(powderGrindingOverlay);
 		textOverlays.add(farmingOverlay);
 		textOverlays.add(miningSkillOverlay);
 		textOverlays.add(combatSkillOverlay);

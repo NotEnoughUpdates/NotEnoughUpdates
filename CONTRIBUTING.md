@@ -1,11 +1,14 @@
 # Contributing
 
+## Quick Note
+Ever since Moulberry has stopped working on NEU, other contributors have been working on new features and fixes for the mod. If you are interested in contributing yourself, make a pull request to [NotEnoughUpdates/NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates) to contribute to the prereleases, which eventually will be merged in bulk to [Moulberry/NotEnoughUpdates](https://github.com/Moulberry/NotEnoughUpdates) for major releases. 
+
 ## Before you contribute
 
-- Please check your feature / bug isn't already fixed in one of our pre-releases or on [the development branch](https://github.com/NotEnoughUpdates/NotEnoughUpdates/tree/master/).
+- Please check your feature / bug isn't already fixed in one of our pre-releases, on the [development branch](https://github.com/NotEnoughUpdates/NotEnoughUpdates/tree/master/) or in an open [pull request](https://github.com/NotEnoughUpdates/NotEnoughUpdates/pulls)  
 - Consider joining our [Discord](https://discord.gg/moulberry) to check in on newest developments by other people, or to get help with problems you encounter.
-- Please check that your feature idea complies with the [Hypixel Rules](https://hypixel.net/rules)
-- Check that your feature idea isn't already done in other mods. (E.g. Dungeon Solver)
+- Please check that your feature idea complies with the [Hypixel Rules](https://hypixel.net/rules). (See these Hypixel forum posts for extra information: [Mods in SkyBlock](https://hypixel.net/threads/regarding-the-recent-announcement-with-mods-in-skyblock.4045481/), [QoL Modifications](https://hypixel.net/threads/update-to-disallowed-modifications-qol-modifications.4043482/), [Modifications Sending Invalid Clicks](https://hypixel.net/threads/update-regarding-modifications-sending-invalid-clicks.5130489/)) 
+- Make sure that your feature idea is not already implemented in another non-paid mod. (E.g. Dungeon Solver)
 
 ## Setting up a development environment
 
@@ -17,7 +20,11 @@
 
 ### Software configuration
 
-- Clone the NEU repository using `git clone https://github.com/NotEnoughUpdates/NotEnoughUpdates`.
+- Fork the NEU repository using the fork button on top right of the page and name the repo NotEnoughUpdates.
+- Clone the forked repository using `git clone https://github.com/<YourUserName>/NotEnoughUpdates`.
+- Make sure to create new branches for features you are working on and not commit to the master branch of your repository.
+- After you have committed all of the necessary changes make a pull request on that branch.
+- Use the master branch as a way to pull the latest changes from the NEU repo.
 - Import that folder as a Gradle Project in your IDE (IntelliJ should autodetect it as gradle if you select the `NotEnoughUpdates` folder in the Open dialog)
 - Set your project SDK to your 1.8 JDK. This can be done in the modules settings (CTRL+ALT+SHIFT+S) in IntelliJ.
 - Set your gradle JVM to your 1.17 JDK. This can be done by searching for `gradle jvm` in the CTRL+SHIFT+A dialog in IntelliJ.

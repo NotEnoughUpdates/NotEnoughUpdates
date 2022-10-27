@@ -54,7 +54,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Edit Dungeon Map",
-		desc = "The NEU dungeon map has it's own editor (/neumap).\n" +
+		desc = "The NEU dungeon map has its own editor (/neumap).\n" +
 			"Click the button on the left to open it"
 	)
 	@ConfigEditorButton(
@@ -183,7 +183,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Enable Block Overlay",
-		desc = "Change the colour of certain blocks / entities while inside dungeons, but keeps the normal texture outside of dungeons"
+		desc = "Change the colour of certain blocks / entities while inside dungeons, but keeps the normal texture outside of dungeons",
+		searchTags = "color"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -203,7 +204,8 @@ public class Dungeons {
 		name = "Slow Update",
 		desc = "Updates the colour every second instead of every tick.\n" +
 			"\u00A7cWARNING: This will cause all texture animations (eg. flowing water) to update slowly.\n" +
-			"This should only be used on low-end machines"
+			"This should only be used on low-end machines",
+		searchTags = "color"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -212,7 +214,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Cracked Bricks",
-		desc = "Change the colour of: Cracked Bricks"
+		desc = "Change the colour of: Cracked Bricks",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -221,7 +224,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Dispensers",
-		desc = "Change the colour of: Dispensers"
+		desc = "Change the colour of: Dispensers",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -230,7 +234,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Levers",
-		desc = "Change the colour of: Levers"
+		desc = "Change the colour of: Levers",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -239,7 +244,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Tripwire String",
-		desc = "Change the colour of: Tripwire String"
+		desc = "Change the colour of: Tripwire String",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -248,7 +254,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Normal Chests",
-		desc = "Change the colour of: Normal Chests"
+		desc = "Change the colour of: Normal Chests",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -257,7 +264,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Trapped Chests",
-		desc = "Change the colour of: Trapped Chests"
+		desc = "Change the colour of: Trapped Chests",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -266,7 +274,8 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Bats",
-		desc = "Change the colour of: Bats"
+		desc = "Change the colour of: Bats",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)

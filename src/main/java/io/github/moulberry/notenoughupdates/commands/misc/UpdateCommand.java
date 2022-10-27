@@ -25,8 +25,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -49,10 +47,6 @@ public class UpdateCommand extends ClientCommandBase {
 			"" +
 				"§e[NEU] §b/neuupdate help - View help.\n" +
 				"§e[NEU] §b/neuupdate check - Check for updates.\n" +
-				"§e[NEU] §b/neuupdate url <url> - Load an update from an direct download URL.\n" +
-				"       §cONLY DO THIS WITH TRUSTED URLS OR IT MIGHT RESULT IN A RAT!\n" +
-				"§e[NEU] §b/neuupdate fromartifact <url> - Load an update from an artifact.\n" +
-				"       §cIf you don't know what this is, don't use it.\n" +
 				""
 		));
 
@@ -68,25 +62,11 @@ public class UpdateCommand extends ClientCommandBase {
 			case "check":
 				neu.autoUpdater.displayUpdateMessageIfOutOfDate();
 				break;
-			case "url":
-				if (args.length != 2) {
-					sender.addChatMessage(new ChatComponentText("§e[NEU] §cPlease provide an URL"));
-				}
-				URL url;
-				try {
-					url = new URL(args[1]);
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-					sender.addChatMessage(new ChatComponentText("§e[NEU] §cInvalid URL"));
-					return;
-				}
-				neu.autoUpdater.updateFromURL(url);
-				break;
 			case "scheduledownload":
 				neu.autoUpdater.scheduleDownload();
 				break;
 			case "updatemodes":
-				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for autoupdates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
+				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
 				break;
 			default:
 				displayHelp(sender);

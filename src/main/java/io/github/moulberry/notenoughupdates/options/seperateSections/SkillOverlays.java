@@ -92,11 +92,24 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Use BZ Price For Coins/m",
-		desc = "Uses the bazzar price instead of NPC price for coins/m"
+		desc = "Uses the bazaar price instead of NPC price for coins/m"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean useBZPrice = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int farmingPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(
@@ -159,6 +172,19 @@ public class SkillOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int miningPauseTimer = 3;
+
+	@Expose
+	@ConfigOption(
 		name = "Edit Mining Overlay Position",
 		desc = "Change the position of the Mining overlay"
 	)
@@ -217,6 +243,19 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 3)
 	public List<Integer> fishingText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 3)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int fishingPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(
@@ -286,7 +325,8 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Enable Combat Overlay",
-		desc = "Show an overlay while Combat with useful information"
+		desc = "Show an overlay while Combat with useful information",
+		searchTags = "champion"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)
@@ -311,6 +351,19 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 4)
 	public List<Integer> combatText = new ArrayList<>(Arrays.asList(0, 6, 1, 2, 3, 4, 5));
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 4)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int combatPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(

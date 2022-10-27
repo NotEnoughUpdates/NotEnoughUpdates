@@ -124,7 +124,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
 		String profileId = GuiProfileViewer.getProfileId();
 		JsonObject hypixelInfo = profile.getHypixelProfile();
-		if (hypixelInfo == null) return;
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
 
@@ -445,7 +444,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			//Random stats
 
-			float secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+			float secrets = -1;
+			if (hypixelInfo != null) {
+				secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+			}
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;
 			for (int i = 1; i <= 7; i++) {
@@ -509,14 +511,14 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (Total)  ",
-				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(secrets),
+				EnumChatFormatting.WHITE + (secrets == -1 ? "?" : StringUtils.shortNumberFormat(secrets)),
 				x,
 				miscTopY + 20,
 				sectionWidth
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (/Run)  ",
-				EnumChatFormatting.WHITE.toString() + (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f),
+				EnumChatFormatting.WHITE.toString() + (secrets == -1 ? "?" :  (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f)),
 				x,
 				miscTopY + 30,
 				sectionWidth
