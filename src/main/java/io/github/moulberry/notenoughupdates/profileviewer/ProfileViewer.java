@@ -749,7 +749,11 @@ public class ProfileViewer {
 				}
 
 				//Sort keys based on category value
-				keys = categoryWorth.keySet().stream().sorted(Comparator.comparingLong(k->getCategory((String) k)).reversed()).toArray(String[]::new);
+				keys = categoryWorth
+					.keySet()
+					.stream()
+					.sorted(Comparator.comparingLong(k -> getCategory((String) k)).reversed())
+					.toArray(String[]::new);
 			}
 
 			private SoopyNetworthData setLoading() {
@@ -775,17 +779,17 @@ public class ProfileViewer {
 		 * -1 = default, -2 = loading, -3 = error
 		 * >= 0 = actual position
 		 */
-		public long getSoopyNetworthLeaderboardPosition(){
+		public long getSoopyNetworthLeaderboardPosition() {
 			return soopyNetworthLeaderboardPosition;
 		}
 
-		public boolean isProfileMaxSoopyNetworth(String profileName){
+		public boolean isProfileMaxSoopyNetworth(String profileName) {
 			String highestProfileName = "";
 			long largestProfileNetworth = 0;
 
-			for(String pName : soopyNetworth.keySet()){
+			for (String pName : soopyNetworth.keySet()) {
 				long pNet = soopyNetworth.get(pName).totalWorth;
-				if(pNet < largestProfileNetworth) continue;
+				if (pNet < largestProfileNetworth) continue;
 
 				highestProfileName = pName;
 				largestProfileNetworth = pNet;
@@ -806,8 +810,10 @@ public class ProfileViewer {
 			}
 
 			JsonArray playerInfo = getSkyblockProfiles(() -> {});
-			if (playerInfo == null) return null;                                              //Not sure how to support the callback in these cases
-			if (updatingSoopyNetworth.get()) return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
+			if (playerInfo == null)
+				return null;                                              //Not sure how to support the callback in these cases
+			if (updatingSoopyNetworth.get())
+				return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
 			updatingSoopyNetworth.set(true);
 
 			soopyNetworthLeaderboardPosition = -2; //loading
@@ -826,7 +832,8 @@ public class ProfileViewer {
 						soopyNetworthLeaderboardPosition = -3; //error
 						return null;
 					}
-					soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get("position").getAsLong();
+					soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+						"position").getAsLong();
 					return null;
 				});
 
