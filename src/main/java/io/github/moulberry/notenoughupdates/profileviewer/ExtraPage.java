@@ -50,7 +50,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 
 public class ExtraPage extends GuiProfileViewerPage {
-
+// Hehe
 	private static final ResourceLocation pv_extra = new ResourceLocation("notenoughupdates:pv_extra.png");
 	private TreeMap<Integer, Set<String>> topKills = null;
 	private TreeMap<Integer, Set<String>> topDeaths = null;
