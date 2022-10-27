@@ -286,9 +286,6 @@ public class GuiItemRecipe extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		NeuRecipe currentRecipe = getCurrentRecipe();
 		int[] topLeft = currentRecipe.getPageFlipPositionLeftTopCorner();
-		int buttonPositionLeftX = topLeft[0];
-		int buttonPositionRightX = buttonPositionLeftX + BUTTON_POSITION_RIGHT_OFFSET_X;
-		int buttonPositionY = topLeft[1];
 
 		if (mouseButton == 3) {
 			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getPrevious();
@@ -296,48 +293,6 @@ public class GuiItemRecipe extends GuiScreen {
 			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getNext();
 		}
 
-		if (isWithinRect(
-			mouseX - guiLeft,
-			mouseY - guiTop,
-			buttonPositionLeftX,
-			buttonPositionY,
-			BUTTON_WIDTH,
-			BUTTON_HEIGHT
-		) &&
-			currentIndex > 0) {
-			changeRecipe(currentTab, currentIndex - 1);
-			Utils.playPressSound();
-			return;
-		}
-
-		if (isWithinRect(
-			mouseX - guiLeft,
-			mouseY - guiTop,
-			buttonPositionRightX,
-			buttonPositionY,
-			BUTTON_WIDTH,
-			BUTTON_HEIGHT
-		) &&
-			currentIndex < getCurrentRecipeList().size()) {
-			changeRecipe(currentTab, currentIndex + 1);
-			Utils.playPressSound();
-			return;
-		}
-
-		for (int i = 0; i < tabs.size(); i++) {
-			if (isWithinRect(
-				mouseX - guiLeft,
-				mouseY - guiTop,
-				TAB_POS_X,
-				TAB_POS_Y + TAB_OFFSET_Y * i,
-				TAB_SIZE_X,
-				TAB_SIZE_Y
-			)) {
-				changeRecipe(i, currentIndex);
-				Utils.playPressSound();
-				return;
-			}
-		}
 		ArrowPagesUtils.onPageSwitchMouse(
 			guiLeft,
 			guiTop,
