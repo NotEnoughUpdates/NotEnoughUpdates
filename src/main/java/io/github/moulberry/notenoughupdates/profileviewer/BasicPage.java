@@ -302,6 +302,15 @@ public class BasicPage extends GuiProfileViewerPage {
 							);
 						getInstance().tooltipToDisplay.add("");
 
+						if(NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
+							&& profile.isProfileMaxSoopyNetworth(profileId)){
+
+							String lbPosStr = EnumChatFormatting.DARK_GREEN + "#"+ EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(profile.getSoopyNetworthLeaderboardPosition());
+							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the networth leaderboard!");
+							getInstance().tooltipToDisplay.add("");
+						}
+
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 							getInstance().tooltipToDisplay.addAll(nwCategoryHover);
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "This is calculated using the current");
