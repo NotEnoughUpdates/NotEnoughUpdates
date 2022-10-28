@@ -23,14 +23,19 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.IntSupplier;
 
 public interface LRUCache<K, V> extends Function<K, V> {
 
 	static <K, V> LRUCache<K, V> memoize(Function<K, V> mapper, int maxCacheSize) {
-		Map<K, V> cache = new LinkedHashMap<K, V>(maxCacheSize + 1, 0.75F, true) {
+		return memoize(mapper, () -> maxCacheSize);
+	}
+
+	static <K, V> LRUCache<K, V> memoize(Function<K, V> mapper, IntSupplier maxCacheSize) {
+		Map<K, V> cache = new LinkedHashMap<K, V>(10, 0.75F, true) {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-				return this.size() > maxCacheSize;
+				return this.size() > maxCacheSize.getAsInt();
 			}
 		};
 		Map<K, V> synchronizedCache = Collections.synchronizedMap(cache);
@@ -41,11 +46,18 @@ public interface LRUCache<K, V> extends Function<K, V> {
 			}
 
 			@Override
+			public int size() {
+				return synchronizedCache.size();
+			}
+
+			@Override
 			public V apply(K k) {
 				return synchronizedCache.computeIfAbsent(k, mapper);
 			}
 		};
 	}
+
+	int size();
 
 	void clearCache();
 }

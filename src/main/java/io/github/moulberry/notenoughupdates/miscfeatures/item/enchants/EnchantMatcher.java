@@ -44,7 +44,10 @@ public class EnchantMatcher {
 		"0123456789abcdefz" + (Loader.isModLoaded("skyblockaddons") ? "Z" : ""));
 
 	public static LRUCache<String, Optional<EnchantMatcher>> fromSaveFormatMemoized =
-		LRUCache.memoize(EnchantMatcher::fromSaveFormat, 200);
+		LRUCache.memoize(
+			EnchantMatcher::fromSaveFormat,
+			() -> NotEnoughUpdates.INSTANCE.config.hidden.enchantColours.size() + 1
+		);
 
 	Pattern patternWithLevels;
 	int compareWith;

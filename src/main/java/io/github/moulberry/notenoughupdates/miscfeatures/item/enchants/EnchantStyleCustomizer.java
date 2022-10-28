@@ -78,11 +78,12 @@ public class EnchantStyleCustomizer {
 		var enchantments = extraAttributes.getCompoundTag("enchantments");
 		var attributes = extraAttributes.getCompoundTag("attributes");
 		enchantments.merge(attributes);
-		if (!lastEnchant.equals(NotEnoughUpdates.INSTANCE.config.hidden.enchantColours)) {
+		if (enchantments.getKeySet().isEmpty()) return;
+		if (!lastEnchant.equals(NotEnoughUpdates.INSTANCE.config.hidden.enchantColours)
+			|| !NotEnoughUpdates.INSTANCE.config.misc.cacheItemEnchant) {
 			cacheInvalidate();
 			lastEnchant = new ArrayList<>(NotEnoughUpdates.INSTANCE.config.hidden.enchantColours);
 		}
-		if (enchantments.getKeySet().isEmpty()) return;
 		var lineIndex = 0;
 		for (var iterator = event.toolTip.listIterator(); iterator.hasNext(); ) {
 			var nextLine = iterator.next();

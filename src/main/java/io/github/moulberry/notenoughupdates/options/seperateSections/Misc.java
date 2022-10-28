@@ -177,7 +177,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Cache Tooltip Enchants",
-		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: It doesn't work on items without a uuid"
+		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: Does work without a UUID"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
