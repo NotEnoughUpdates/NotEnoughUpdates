@@ -41,7 +41,7 @@ public class TitleUtil {
 
 	public void createTitle(String title, int ticks, int color) {
 		this.title = title;
-		this.titleLifetime = System.currentTimeMillis() + (ticks * 50L);
+		this.titleLifetime = System.nanoTime() + (ticks * 50000000L);
 		this.color = color;
 	}
 	/**
@@ -83,7 +83,7 @@ public class TitleUtil {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onRenderHUD(RenderGameOverlayEvent event) {
 		if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return;
-		if (System.currentTimeMillis() >= titleLifetime) {
+		if (System.nanoTime() >= titleLifetime) {
 			titleLifetime = 0;
 			title = null;
 		}

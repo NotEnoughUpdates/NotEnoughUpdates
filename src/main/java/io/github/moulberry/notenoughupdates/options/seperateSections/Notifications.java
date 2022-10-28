@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
@@ -90,17 +92,40 @@ public class Notifications {
 
 	@Expose
 	@ConfigOption(
-		name = "Nested Endermite Spawn Alert",
+		name = "Ender Nodes",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 1)
+	public boolean enderNodeAccordion = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Nested Endermite Alert",
 		desc = "It will alert the user if a nested endermite gets spawned"
 	)
 	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
 	public boolean endermiteAlert = true;
 
 	@Expose
 	@ConfigOption(
-		name = "Nested Entermite Alert Color",
+		name = "Nested Endermite Alert Color",
 		desc = "The color the alert will be shown"
 	)
 	@ConfigEditorColour
+	@ConfigAccordionId(id = 1)
 	public String endermiteAlertColor = "0:255:194:0:174";
+
+	@Expose
+	@ConfigOption(
+		name = "Nested Endermite Alert Display Time",
+		desc = "How long the display would stay for in ticks"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 200,
+		minStep = 20
+	)
+	@ConfigAccordionId(id = 1)
+	public int endermiteAlertTicks = 20;
 }

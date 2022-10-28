@@ -33,7 +33,9 @@ public class EnderNodes {
 	public static void dispalyEndermiteNotif() {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlert && SBInfo.getInstance().getLocation() != null &&
 			SBInfo.getInstance().getLocation().equals("combat_3")) {
-			TitleUtil.getInstance().createTitle("Nested Endermite", 20, SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlertColor));
+			TitleUtil.getInstance().createTitle("Nested Endermite",
+				NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlertTicks,
+				SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlertColor));
 			Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 1);
 		}
 	}
