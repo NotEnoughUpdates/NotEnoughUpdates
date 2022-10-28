@@ -36,7 +36,7 @@ public class WitherCloakChanger {
 	public static boolean isCloakActive = false;
 	public static long lastDeactivate = System.currentTimeMillis();
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onChatMessage(ClientChatReceivedEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
 		if (event.message.getUnformattedText().startsWith("Creeper Veil ")) {
