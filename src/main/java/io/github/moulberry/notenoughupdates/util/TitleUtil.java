@@ -37,10 +37,12 @@ public class TitleUtil {
 
 	private String title = null;
 	private long titleLifetime = 0;
+	private int color = 0xFF0000;
 
-	public void createTitle(String title, int ticks) {
+	public void createTitle(String title, int ticks, int color) {
 		this.title = title;
 		this.titleLifetime = System.currentTimeMillis() + (ticks * 50L);
+		this.color = color;
 	}
 	/**
 	 * Adapted from SkyblockAddons under MIT license
@@ -70,7 +72,7 @@ public class TitleUtil {
 				this.title,
 				((float)-mc.fontRendererObj.getStringWidth(this.title) / 2),
 				-20.0f,
-				0xFF0000,
+				color,
 				true
 			);
 			GlStateManager.popMatrix();

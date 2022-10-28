@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.TitleUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
@@ -32,7 +33,7 @@ public class EnderNodes {
 	public static void dispalyEndermiteNotif() {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlert && SBInfo.getInstance().getLocation() != null &&
 			SBInfo.getInstance().getLocation().equals("combat_3")) {
-			TitleUtil.getInstance().createTitle("Nested Endermite", 20);
+			TitleUtil.getInstance().createTitle("Nested Endermite", 20, SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlertColor));
 			Minecraft.getMinecraft().thePlayer.playSound("random.orb", 1, 1);
 		}
 	}

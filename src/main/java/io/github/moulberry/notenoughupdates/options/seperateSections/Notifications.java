@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
@@ -94,4 +95,12 @@ public class Notifications {
 	)
 	@ConfigEditorBoolean
 	public boolean endermiteAlert = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Nested Entermite Alert Color",
+		desc = "The color the alert will be shown"
+	)
+	@ConfigEditorColour
+	public String endermiteAlertColor = "0:255:194:0:174";
 }
