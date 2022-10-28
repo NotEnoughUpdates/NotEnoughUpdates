@@ -17,11 +17,11 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.miscfeatures.item;
+package io.github.moulberry.notenoughupdates.miscfeatures.item.enchants;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.item.enchants.EnchantMatcher;
 import io.github.moulberry.notenoughupdates.util.LRUCache;
+import io.github.moulberry.notenoughupdates.util.LateBindingChroma;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -29,42 +29,41 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
 
 public class EnchantStyleCustomizer {
 
 	public static EnchantStyleCustomizer INSTANCE = new EnchantStyleCustomizer();
 
-	LRUCache<String, String> enchantLineCache = LRUCache.memoize(this::replaceEnchantLine, 1000);
+	LRUCache<String, LateBindingChroma> enchantLineCache = LRUCache.memoize(this::replaceEnchantLine, 1000);
 	List<String> lastEnchant = new ArrayList<>();
 
-	public String replaceEnchantLine(String originalLine) {
-		String line = originalLine;
+	public LateBindingChroma replaceEnchantLine(String originalLine) {
+		var line = originalLine;
 		for (String enchantMatcherStr : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
-			Optional<EnchantMatcher> enchantMatcherP = EnchantMatcher.fromSaveFormatMemoized.apply(enchantMatcherStr);
+			var enchantMatcherP = EnchantMatcher.fromSaveFormatMemoized.apply(enchantMatcherStr);
 			if (!enchantMatcherP.isPresent()) continue;
-			EnchantMatcher enchantMatcher = enchantMatcherP.get();
-			Matcher matcher = enchantMatcher.getPatternWithLevels().matcher(line);
-			int matchIterations = 0;
+			var enchantMatcher = enchantMatcherP.get();
+			var matcher = enchantMatcher.getPatternWithLevels().matcher(line);
+			var matchIterations = 0;
 			while (matcher.find() && matchIterations++ < 5) {
-				String enchantName = matcher.group(EnchantMatcher.GROUP_ENCHANT_NAME);
-				String levelText = matcher.group(EnchantMatcher.GROUP_LEVEL);
+				var enchantName = matcher.group(EnchantMatcher.GROUP_ENCHANT_NAME);
+				var levelText = matcher.group(EnchantMatcher.GROUP_LEVEL);
 				if (enchantName == null || levelText == null
 					|| levelText.isEmpty() || enchantName.isEmpty()) continue;
 				if (Utils.cleanColour(enchantName).startsWith(" ")) continue;
 
-				int level = Utils.parseIntOrRomanNumeral(levelText);
+				var level = Utils.parseIntOrRomanNumeral(levelText);
 				if (!enchantMatcher.doesLevelMatch(level)) continue;
 
-				int startMatch = matcher.start();
-				int endLevel = matcher.end(EnchantMatcher.GROUP_LEVEL);
+				var startMatch = matcher.start();
+				var endLevel = matcher.end(EnchantMatcher.GROUP_LEVEL);
+
 				line = line.substring(0, startMatch)
 					+ enchantMatcher.getFormatting() + enchantName + " " + levelText
 					+ (endLevel >= line.length() ? "" : line.substring(endLevel));
 			}
 		}
-		return line;
+		return LateBindingChroma.of(line);
 	}
 
 	public void cacheInvalidate() {
@@ -84,9 +83,10 @@ public class EnchantStyleCustomizer {
 			lastEnchant = new ArrayList<>(NotEnoughUpdates.INSTANCE.config.hidden.enchantColours);
 		}
 		if (enchantments.getKeySet().isEmpty()) return;
+		var lineIndex = 0;
 		for (var iterator = event.toolTip.listIterator(); iterator.hasNext(); ) {
 			var nextLine = iterator.next();
-			var replacedLine = enchantLineCache.apply(nextLine);
+			var replacedLine = enchantLineCache.apply(nextLine).render(lineIndex++);
 			if (!nextLine.equals(replacedLine)) {
 				iterator.set(replacedLine);
 			}
