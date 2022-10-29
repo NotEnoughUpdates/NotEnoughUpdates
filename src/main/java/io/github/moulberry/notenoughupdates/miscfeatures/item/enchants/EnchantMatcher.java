@@ -92,7 +92,7 @@ public class EnchantMatcher {
 			return Optional.empty();
 		}
 
-		String formatting =  "§" + colourCode;
+		String formatting = "§" + colourCode;
 
 		if ((intModifier & GuiEnchantColour.BOLD_MODIFIER) != 0) {
 			formatting += EnumChatFormatting.BOLD;
