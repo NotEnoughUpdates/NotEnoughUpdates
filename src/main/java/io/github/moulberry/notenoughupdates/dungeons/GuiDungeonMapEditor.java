@@ -744,7 +744,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				ScaledResolution realRes = new ScaledResolution(Minecraft.getMinecraft());
 				mouseX = Mouse.getEventX() * realRes.getScaledWidth() / this.mc.displayWidth;
 				mouseY = realRes.getScaledHeight() - Mouse.getEventY() * realRes.getScaledHeight() / this.mc.displayHeight - 1;
-				activeColourEditor = new GuiElementColour(mouseX, mouseY, options.dmBackgroundColour,
+				activeColourEditor = new GuiElementColour(mouseX, mouseY, () -> options.dmBackgroundColour,
 					(col) -> options.dmBackgroundColour = col, () -> activeColourEditor = null
 				);
 			}
@@ -753,7 +753,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				ScaledResolution realRes = new ScaledResolution(Minecraft.getMinecraft());
 				mouseX = Mouse.getEventX() * realRes.getScaledWidth() / this.mc.displayWidth;
 				mouseY = realRes.getScaledHeight() - Mouse.getEventY() * realRes.getScaledHeight() / this.mc.displayHeight - 1;
-				activeColourEditor = new GuiElementColour(mouseX, mouseY, options.dmBorderColour,
+				activeColourEditor = new GuiElementColour(mouseX, mouseY, () -> options.dmBorderColour,
 					(col) -> options.dmBorderColour = col, () -> activeColourEditor = null
 				);
 			}

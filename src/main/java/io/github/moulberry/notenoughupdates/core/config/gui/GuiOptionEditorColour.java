@@ -30,13 +30,14 @@ import org.lwjgl.input.Mouse;
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_white;
 
 public class GuiOptionEditorColour extends GuiOptionEditor {
-	private String chromaColour;
 	private GuiElementColour colourElement = null;
 
 	public GuiOptionEditorColour(ConfigProcessor.ProcessedOption option) {
 		super(option);
+	}
 
-		this.chromaColour = (String) option.get();
+	public String getChromaString() {
+		return (String) option.get();
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
 		super.render(x, y, width);
 		int height = getHeight();
 
-		int argb = ChromaColour.specialToChromaRGB(chromaColour);
+		int argb = ChromaColour.specialToChromaRGB(getChromaString());
 		int r = (argb >> 16) & 0xFF;
 		int g = (argb >> 8) & 0xFF;
 		int b = argb & 0xFF;
@@ -72,10 +73,8 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
 		if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0 &&
 			mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
 			mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-			colourElement = new GuiElementColour(mouseX, mouseY, (String) option.get(), (val) -> {
-				option.set(val);
-				chromaColour = val;
-			}, () -> colourElement = null);
+			colourElement = new GuiElementColour(mouseX, mouseY, () -> (String) option.get(),
+				option::set, () -> colourElement = null);
 		}
 
 		return false;

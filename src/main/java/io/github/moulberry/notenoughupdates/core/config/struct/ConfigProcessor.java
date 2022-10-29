@@ -152,7 +152,7 @@ public class ConfigProcessor {
 						if (optionType.isAssignableFrom(int.class) &&
 							optionField.isAnnotationPresent(ConfigEditorKeybind.class)) {
 							ConfigEditorKeybind configEditorAnnotation = optionField.getAnnotation(ConfigEditorKeybind.class);
-							editor = new GuiOptionEditorKeybind(option, (int) option.get(), configEditorAnnotation.defaultKey());
+							editor = new GuiOptionEditorKeybind(option, configEditorAnnotation.defaultKey());
 						}
 						if (optionField.isAnnotationPresent(ConfigEditorButton.class)) {
 							ConfigEditorButton configEditorAnnotation = optionField.getAnnotation(ConfigEditorButton.class);

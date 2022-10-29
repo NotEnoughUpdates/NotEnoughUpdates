@@ -92,7 +92,7 @@ public class GuiItemCustomize extends GuiScreen {
 			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
 
 		enchantGlintCustomColourAnimation.setValue(enchantGlint ? 17 : 0);
-		this.enchantGlintButton = new GuiElementBoolean(0, 0, enchantGlint, (bool) -> {
+		this.enchantGlintButton = new GuiElementBoolean(0, 0, () -> enchantGlint, (bool) -> {
 			enchantGlint = bool;
 			updateData();
 		});
@@ -443,7 +443,7 @@ public class GuiItemCustomize extends GuiScreen {
 				editor = new GuiElementColour(
 					mouseX,
 					mouseY,
-					customGlintColour == null ? ItemCustomizeManager.DEFAULT_GLINT_COLOR : customGlintColour,
+					() -> customGlintColour == null ? ItemCustomizeManager.DEFAULT_GLINT_COLOR : customGlintColour,
 					(colour) -> {
 						customGlintColour = colour;
 						updateData();
@@ -464,7 +464,7 @@ public class GuiItemCustomize extends GuiScreen {
 				updateData();
 			} else {
 				editor = new GuiElementColour(mouseX, mouseY,
-					customLeatherColour == null ? getChromaStrFromLeatherColour() : customLeatherColour,
+					() -> customLeatherColour == null ? getChromaStrFromLeatherColour() : customLeatherColour,
 					(colour) -> {
 						customLeatherColour = colour;
 						updateData();
@@ -472,19 +472,6 @@ public class GuiItemCustomize extends GuiScreen {
 				);
 			}
 		}
-
-        /*if(mouseX >= xCenter-90 && mouseX <= xCenter+90 &&
-                mouseY >= belowEnchGlint+65 && mouseY <= belowEnchGlint+80) {
-            if(true) {
-                String userName = Minecraft.getMinecraft().thePlayer.getName();
-                String serverId = "1872398172739";
-                try {
-                    Desktop.getDesktop().browse(new URL("https://moulberry.codes/purchaseitemtag?uniqueId="+serverId+"&username="+userName).toURI());
-                } catch(Exception ignored) {}
-            } else {
-
-            }
-        }*/
 
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}

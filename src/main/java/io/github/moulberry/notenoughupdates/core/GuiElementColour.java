@@ -35,6 +35,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class GuiElementColour extends GuiElement {
 	public static final ResourceLocation colour_selector_dot = new ResourceLocation(
@@ -68,20 +69,20 @@ public class GuiElementColour extends GuiElement {
 
 	private final Consumer<String> colourChangedCallback;
 	private final Runnable closeCallback;
-	private String colour;
+	private Supplier<String> colour;
 
 	private final boolean opacitySlider;
 	private final boolean valueSlider;
 
 	public GuiElementColour(
-		int x, int y, String initialColour, Consumer<String> colourChangedCallback,
+		int x, int y, Supplier<String> colour, Consumer<String> colourChangedCallback,
 		Runnable closeCallback
 	) {
-		this(x, y, initialColour, colourChangedCallback, closeCallback, true, true);
+		this(x, y, colour, colourChangedCallback, closeCallback, true, true);
 	}
 
 	public GuiElementColour(
-		int x, int y, String initialColour, Consumer<String> colourChangedCallback,
+		int x, int y, Supplier<String> colour, Consumer<String> colourChangedCallback,
 		Runnable closeCallback, boolean opacitySlider, boolean valueSlider
 	) {
 		final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -89,12 +90,12 @@ public class GuiElementColour extends GuiElement {
 		this.y = Math.max(10, Math.min(scaledResolution.getScaledHeight() - ySize - 10, y));
 		this.x = Math.max(10, Math.min(scaledResolution.getScaledWidth() - xSize - 10, x));
 
-		this.colour = initialColour;
+		this.colour = colour;
 		this.colourChangedCallback = colourChangedCallback;
 		this.closeCallback = closeCallback;
 
-		int colour = ChromaColour.specialToSimpleRGB(initialColour);
-		Color c = new Color(colour);
+		int icolour = ChromaColour.specialToSimpleRGB(colour.get());
+		Color c = new Color(icolour);
 		float[] hsv = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
 		updateAngleAndRadius(hsv);
 
@@ -113,7 +114,7 @@ public class GuiElementColour extends GuiElement {
 	public void render() {
 		RenderUtils.drawFloatingRectDark(x, y, xSize, ySize);
 
-		int currentColour = ChromaColour.specialToSimpleRGB(colour);
+		int currentColour = ChromaColour.specialToSimpleRGB(colour.get());
 		Color c = new Color(currentColour, true);
 		float[] hsv = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
 
@@ -200,8 +201,8 @@ public class GuiElementColour extends GuiElement {
 			RenderUtils.drawTexturedRect(x + 5 + 64 + 5 + valueOffset, y + 5, 10, 64, GL11.GL_NEAREST);
 		}
 
-		int chromaSpeed = ChromaColour.getSpeed(colour);
-		int currentColourChroma = ChromaColour.specialToChromaRGB(colour);
+		int chromaSpeed = ChromaColour.getSpeed(colour.get());
+		int currentColourChroma = ChromaColour.specialToChromaRGB(colour.get());
 		Color cChroma = new Color(currentColourChroma, true);
 		float[] hsvChroma = Color.RGBtoHSB(cChroma.getRed(), cChroma.getGreen(), cChroma.getBlue(), null);
 
@@ -343,7 +344,7 @@ public class GuiElementColour extends GuiElement {
 					}
 				}
 
-				int chromaSpeed = ChromaColour.getSpeed(colour);
+				int chromaSpeed = ChromaColour.getSpeed(colour.get());
 				int xChroma = mouseX - (x + 5 + 64 + valueOffset + opacityOffset + 5);
 				if (xChroma > 0 && xChroma < 10) {
 					if (chromaSpeed > 0) {
@@ -351,10 +352,9 @@ public class GuiElementColour extends GuiElement {
 							clickedComponent = 3;
 						}
 					} else if (mouseY > this.y + 5 + 27 && mouseY < this.y + 5 + 37) {
-						int currentColour = ChromaColour.specialToSimpleRGB(colour);
+						int currentColour = ChromaColour.specialToSimpleRGB(colour.get());
 						Color c = new Color(currentColour, true);
-						colour = ChromaColour.special(200, c.getAlpha(), currentColour);
-						colourChangedCallback.accept(colour);
+						colourChangedCallback.accept(ChromaColour.special(200, c.getAlpha(), currentColour));
 					}
 				}
 			} else {
@@ -364,7 +364,7 @@ public class GuiElementColour extends GuiElement {
 			}
 		}
 		if (Mouse.isButtonDown(0) && clickedComponent >= 0) {
-			int currentColour = ChromaColour.specialToSimpleRGB(colour);
+			int currentColour = ChromaColour.specialToSimpleRGB(colour.get());
 			Color c = new Color(currentColour, true);
 			float[] hsv = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
 
@@ -381,8 +381,7 @@ public class GuiElementColour extends GuiElement {
 				this.wheelAngle = angle;
 				this.wheelRadius = (float) Math.pow(Math.min(1, radius), 1.5f);
 				int rgb = Color.getHSBColor(angle / 360f, wheelRadius, hsv[2]).getRGB();
-				colour = ChromaColour.special(ChromaColour.getSpeed(colour), c.getAlpha(), rgb);
-				colourChangedCallback.accept(colour);
+				colourChangedCallback.accept(ChromaColour.special(ChromaColour.getSpeed(colour.get()), c.getAlpha(), rgb));
 				return true;
 			}
 
@@ -392,22 +391,19 @@ public class GuiElementColour extends GuiElement {
 
 			if (clickedComponent == 1) {
 				int rgb = Color.getHSBColor(wheelAngle / 360, wheelRadius, 1 - y / 64f).getRGB();
-				colour = ChromaColour.special(ChromaColour.getSpeed(colour), c.getAlpha(), rgb);
-				colourChangedCallback.accept(colour);
+				colourChangedCallback.accept(ChromaColour.special(ChromaColour.getSpeed(colour.get()), c.getAlpha(), rgb));
 				return true;
 			}
 
 			if (clickedComponent == 2) {
-				colour = ChromaColour.special(ChromaColour.getSpeed(colour),
+				colourChangedCallback.accept(ChromaColour.special(ChromaColour.getSpeed(colour.get()),
 					255 - Math.round(y / 64f * 255), currentColour
-				);
-				colourChangedCallback.accept(colour);
+				));
 				return true;
 			}
 
 			if (clickedComponent == 3) {
-				colour = ChromaColour.special(255 - Math.round(y / 64f * 255), c.getAlpha(), currentColour);
-				colourChangedCallback.accept(colour);
+				colourChangedCallback.accept(ChromaColour.special(255 - Math.round(y / 64f * 255), c.getAlpha(), currentColour));
 			}
 			return true;
 		}
@@ -431,9 +427,8 @@ public class GuiElementColour extends GuiElement {
 					String text = hexField.getText().toLowerCase();
 
 					int rgb = Integer.parseInt(text, 16);
-					int alpha = (ChromaColour.specialToSimpleRGB(colour) >> 24) & 0xFF;
-					colour = ChromaColour.special(ChromaColour.getSpeed(colour), alpha, rgb);
-					colourChangedCallback.accept(colour);
+					int alpha = (ChromaColour.specialToSimpleRGB(colour.get()) >> 24) & 0xFF;
+					colourChangedCallback.accept(ChromaColour.special(ChromaColour.getSpeed(colour.get()), alpha, rgb));
 
 					Color c = new Color(rgb);
 					float[] hsv = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);

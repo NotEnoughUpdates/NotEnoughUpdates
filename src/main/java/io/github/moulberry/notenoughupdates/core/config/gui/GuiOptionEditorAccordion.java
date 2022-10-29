@@ -32,11 +32,9 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorAccordion extends GuiOptionEditor {
 	private final int accordionId;
-	private boolean accordionToggled;
 
 	public GuiOptionEditorAccordion(ConfigProcessor.ProcessedOption option, int accordionId) {
 		super(option);
-		this.accordionToggled = (boolean) option.get();
 		this.accordionId = accordionId;
 	}
 
@@ -50,7 +48,7 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
 	}
 
 	public boolean getToggled() {
-		return accordionToggled;
+		return (boolean) option.get();
 	}
 
 	@Override
@@ -65,7 +63,7 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
 		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 		GlStateManager.color(1, 1, 1, 1);
 		worldrenderer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
-		if (accordionToggled) {
+		if (getToggled()) {
 			worldrenderer.pos((double) x + 6, (double) y + 6, 0.0D).endVertex();
 			worldrenderer.pos((double) x + 9.75f, (double) y + 13.5f, 0.0D).endVertex();
 			worldrenderer.pos((double) x + 13.5f, (double) y + 6, 0.0D).endVertex();
@@ -87,7 +85,7 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
 	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
 		if (Mouse.getEventButtonState() && mouseX > x && mouseX < x + width &&
 			mouseY > y && mouseY < y + getHeight()) {
-			accordionToggled = !accordionToggled;
+			option.set(!getToggled());
 			return true;
 		}
 
