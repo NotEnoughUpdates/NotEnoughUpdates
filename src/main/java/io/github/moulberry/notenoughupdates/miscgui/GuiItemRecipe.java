@@ -43,6 +43,7 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,7 @@ public class GuiItemRecipe extends GuiScreen {
 			if (!tabs.contains(recipe.getType()))
 				tabs.add(recipe.getType());
 		}
+		tabs.sort(Comparator.naturalOrder());
 		changeRecipe(0, 0);
 	}
 
