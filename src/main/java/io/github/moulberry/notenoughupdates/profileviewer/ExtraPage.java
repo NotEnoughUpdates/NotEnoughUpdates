@@ -131,17 +131,16 @@ public class ExtraPage extends GuiProfileViewerPage {
 				return;
 			}
 			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();
-			if (profileInfo.has(essenceName.toLowerCase())) {
-				int essenceNumber = profileInfo.get(essenceName.toLowerCase()).getAsInt();
+			int essenceNumber =
+				(profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0);
 
-				Utils.renderAlignedString(
-					EnumChatFormatting.GOLD + displayName,
-					EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(essenceNumber, 0),
-					guiLeft + xStart + xOffset,
-					guiTop + yStartTop + yOffset * i,
-					76
-				);
-			}
+			Utils.renderAlignedString(
+				EnumChatFormatting.GOLD + displayName,
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(essenceNumber, 0),
+				guiLeft + xStart + xOffset,
+				guiTop + yStartTop + yOffset * i,
+				76
+			);
 		}
 	}
 
