@@ -41,7 +41,11 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		private static final ResourceLocation CRIMSON_ISLE = new ResourceLocation("notenoughupdates:pv_crimson_isle_page.png");
 
-		public static final ItemStack[] KUUDRA_KEYS = {
+	private static final DateFormat dateFormat = new SimpleDateFormat("EEE d MMM yyyy");
+	private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	private static final String[] dojoGrades = {"F", "D", "C", "B", "A", "S"};
+
+	private static final ItemStack[] KUUDRA_KEYS = {
 			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_TIER_KEY"),
 			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_HOT_TIER_KEY"),
 			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_BURNING_TIER_KEY"),
@@ -56,6 +60,41 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			"Fiery",
 			"Infernal"
 		};
+
+	private static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
+		put("mob_kb", EnumChatFormatting.GOLD + "Test of Force");
+		put("wall_jump", EnumChatFormatting.LIGHT_PURPLE + "Test of Stamina");
+		put("archer", EnumChatFormatting.YELLOW + "Test of Mastery");
+		put("sword_swap", EnumChatFormatting.RED + "Test of Discipline");
+		put("snake", EnumChatFormatting.GREEN + "Test of Swiftness");
+		put("lock_head", EnumChatFormatting.BLUE + "Test of Control");
+		put("fireball", EnumChatFormatting.GOLD + "Test of Tenacity");
+	}};
+
+	private static final LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<Integer, String>() {{
+		put(0, EnumChatFormatting.GRAY + "None");
+		put(1000, EnumChatFormatting.YELLOW + "Yellow");
+		put(2000, EnumChatFormatting.GREEN + "Green");
+		put(4000, EnumChatFormatting.BLUE + "Blue");
+		put(6000, EnumChatFormatting.GOLD + "Brown");
+		put(7000, EnumChatFormatting.DARK_GRAY + "Black");
+	}};
+
+	private static final HashMap<String, String> factions = new HashMap<String, String>() {{
+		put("mages", EnumChatFormatting.DARK_PURPLE + "Mages");
+		put("barbarians", EnumChatFormatting.RED + "Barbarians");
+		put("N/A", EnumChatFormatting.GRAY + "N/A");
+	}};
+
+	private static final LinkedHashMap<Integer, String> factionThresholds = new LinkedHashMap<Integer, String>() {{
+		put(-3000, "Hostile");
+		put(-1000, "Unfriendly");
+		put(0, "Neutral");
+		put(1000, "Friendly");
+		put(3000, "Trusted");
+		put(6000, "Honored");
+		put(12000, "Hero");
+	}};
 
 		public CrimsonIslePage(GuiProfileViewer instance) {
 				super(instance);
@@ -96,7 +135,6 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 			// Faction reputation
 			drawFactionReputation(netherIslandPlayerData, guiLeft, guiTop);
-
 		}
 
 		public void drawKuudraStats(JsonObject data, int guiLeft, int guiTop) {
@@ -163,18 +201,6 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 				0
 			);
 
-			LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
-				put("mob_kb", EnumChatFormatting.GOLD + "Test of Force");
-				put("wall_jump", EnumChatFormatting.LIGHT_PURPLE + "Test of Stamina");
-				put("archer", EnumChatFormatting.YELLOW + "Test of Mastery");
-				put("sword_swap", EnumChatFormatting.RED + "Test of Discipline");
-				put("snake", EnumChatFormatting.GREEN + "Test of Swiftness");
-				put("lock_head", EnumChatFormatting.BLUE + "Test of Control");
-				put("fireball", EnumChatFormatting.GOLD + "Test of Tenacity");
-			}};
-
-			String[] dojoGrades = {"F", "D", "C", "B", "A", "S"};
-
 			JsonObject dojoStats = data.getAsJsonObject("dojo");
 			int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
 			int pointsTotal = 0;
@@ -198,15 +224,6 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 					130
 				);
 			}
-
-			LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<Integer, String>() {{
-				put(0, EnumChatFormatting.GRAY + "None");
-				put(1000, EnumChatFormatting.YELLOW + "Yellow");
-				put(2000, EnumChatFormatting.GREEN + "Green");
-				put(4000, EnumChatFormatting.BLUE + "Blue");
-				put(6000, EnumChatFormatting.GOLD + "Brown");
-				put(7000, EnumChatFormatting.DARK_GRAY + "Black");
-			}};
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.GRAY + "Points: ",
@@ -278,8 +295,6 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(lastMatriarchAttempt.get("last_attempt").getAsLong());
-				DateFormat dateFormat = new SimpleDateFormat("EEE d MMM yyyy");
-				DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 				String date = dateFormat.format(calendar.getTime());
 				String time = timeFormat.format(calendar.getTime());
 
@@ -320,12 +335,6 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 				0
 			);
 
-			HashMap<String, String> factions = new HashMap<String, String>() {{
-				put("mages", EnumChatFormatting.DARK_PURPLE + "Mages");
-				put("barbarians", EnumChatFormatting.RED + "Barbarians");
-				put("N/A", EnumChatFormatting.GRAY + "N/A");
-			}};
-
 			String selectedFaction = data.has("selected_faction") ? data.get("selected_faction").getAsString() : "N/A";
 
 			Utils.renderAlignedString(
@@ -338,16 +347,6 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 			int mageReputation = data.has("mages_reputation") ? data.get("mages_reputation").getAsInt() : 0;
 			int barbarianReputation = data.has("barbarians_reputation") ? data.get("barbarians_reputation").getAsInt() : 0;
-
-			LinkedHashMap<Integer, String> factionThresholds = new LinkedHashMap<Integer, String>() {{
-				put(-3000, "Hostile");
-				put(-1000, "Unfriendly");
-				put(0, "Neutral");
-				put(1000, "Friendly");
-				put(3000, "Trusted");
-				put(6000, "Honored");
-				put(12000, "Hero");
-			}};
 
 			if (selectedFaction.equals("mages")) {
 				drawMageReputation(guiLeft, guiTop, mageReputation, factionThresholds);
