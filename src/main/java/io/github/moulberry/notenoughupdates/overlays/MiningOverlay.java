@@ -587,8 +587,8 @@ public class MiningOverlay extends TextTabOverlay {
 	private static final Ordering<NetworkPlayerInfo> playerOrdering = Ordering.from(new PlayerComparator());
 
 	@SideOnly(Side.CLIENT)
-	static class PlayerComparator implements Comparator<NetworkPlayerInfo> {
-		private PlayerComparator() {}
+	public static class PlayerComparator implements Comparator<NetworkPlayerInfo> {
+		public PlayerComparator() {}
 
 		public int compare(NetworkPlayerInfo o1, NetworkPlayerInfo o2) {
 			ScorePlayerTeam team1 = o1.getPlayerTeam();

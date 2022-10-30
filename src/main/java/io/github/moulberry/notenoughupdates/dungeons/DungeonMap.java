@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.overlays.spiritleap.SpiritLeapOverlay;
 import io.github.moulberry.notenoughupdates.util.NEUResourceManager;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -1514,9 +1515,11 @@ public class DungeonMap {
 		colourMap = null;
 	}
 
+
 	@SubscribeEvent
 	public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
+		if(SpiritLeapOverlay.shouldRender())return;
 		if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
 			if (!NotEnoughUpdates.INSTANCE.config.dungeonMap.dmEnable) return;
 

@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.core.config.Config;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.Category;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.core.config.gui.SpiritLeapMapGuiEditor;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
@@ -65,6 +66,8 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.TooltipTwea
 import io.github.moulberry.notenoughupdates.options.seperateSections.TradeMenu;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import io.github.moulberry.notenoughupdates.overlays.spiritleap.SpiritLeapButton;
+import io.github.moulberry.notenoughupdates.overlays.spiritleap.SpiritLeapOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -77,6 +80,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class NEUConfig extends Config {
 	public void editOverlay() {
@@ -179,9 +183,50 @@ public class NEUConfig extends Config {
 			case 26:
 				OverlayManager.powderGrindingOverlay.reset();
 				return;
+			case 27:
+				openSpiritLeapOverlay();
+				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
 		}
+	}
+
+
+	private void openSpiritLeapOverlay() {
+		List<SpiritLeapOverlay.SpiritLeapMapDummy> positions = new ArrayList<>();
+		positions.add(new SpiritLeapOverlay.SpiritLeapMapDummy(new SpiritLeapButton("P1", Minecraft.getMinecraft().thePlayer.getName()
+		),
+			NotEnoughUpdates.INSTANCE.config.dungeons.playerOne
+		));
+
+		positions.add(new SpiritLeapOverlay.SpiritLeapMapDummy(new SpiritLeapButton(
+			"P2", Minecraft.getMinecraft().thePlayer.getName()
+		),
+			NotEnoughUpdates.INSTANCE.config.dungeons.playerTwo
+		));
+
+		positions.add(new SpiritLeapOverlay.SpiritLeapMapDummy(new SpiritLeapButton(
+			"P3", Minecraft.getMinecraft().thePlayer.getName()
+		),
+			NotEnoughUpdates.INSTANCE.config.dungeons.playerThree
+		));
+
+		positions.add(new SpiritLeapOverlay.SpiritLeapMapDummy(new SpiritLeapButton(
+			"P4", Minecraft.getMinecraft().thePlayer.getName()
+		),
+			NotEnoughUpdates.INSTANCE.config.dungeons.playerFour
+		));
+
+		positions.add(new SpiritLeapOverlay.SpiritLeapMapDummy(new SpiritLeapButton(
+			"P5", Minecraft.getMinecraft().thePlayer.getName()
+		),
+			NotEnoughUpdates.INSTANCE.config.dungeons.playerFive
+		));
+
+		Minecraft.getMinecraft().displayGuiScreen(new SpiritLeapMapGuiEditor(positions, () -> {
+		}, () -> {
+			NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+		}));
 	}
 
 	@Expose

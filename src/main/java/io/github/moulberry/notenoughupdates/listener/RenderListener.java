@@ -58,6 +58,7 @@ import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
+import io.github.moulberry.notenoughupdates.overlays.spiritleap.SpiritLeapOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
@@ -1042,6 +1043,12 @@ public class RenderListener {
 			return;
 		}
 
+		if (SpiritLeapOverlay.shouldRender() && Mouse.getEventButtonState()) {
+			SpiritLeapOverlay.mouseEvent();
+			event.setCanceled(true);
+			return;
+		}
+
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 		if (guiScreen instanceof GuiChest) {
@@ -1534,7 +1541,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 
