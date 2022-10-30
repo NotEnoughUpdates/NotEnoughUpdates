@@ -72,6 +72,7 @@ public class Constants {
 	public static JsonObject TROPHYFISH;
 	public static JsonObject WEIGHT;
 	public static JsonObject RNGSCORE;
+	public static JsonObject ABIPHONE;
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
@@ -94,6 +95,7 @@ public class Constants {
 			TROPHYFISH = Utils.getConstant("trophyfish", gson);
 			WEIGHT = Utils.getConstant("weight", gson);
 			RNGSCORE = Utils.getConstant("rngscore", gson);
+			ABIPHONE = Utils.getConstant("abiphone", gson);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
