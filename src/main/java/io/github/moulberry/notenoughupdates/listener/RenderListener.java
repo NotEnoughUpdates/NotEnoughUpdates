@@ -40,6 +40,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
@@ -136,6 +137,8 @@ public class RenderListener {
 	public static long lastGuiClosed = 0;
 	public static boolean inventoryLoaded = false;
 	private final NotEnoughUpdates neu;
+	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 	ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 	JsonObject essenceJson = new JsonObject();
 	private boolean hoverInv = false;
@@ -150,9 +153,6 @@ public class RenderListener {
 	private boolean typing;
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
-	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
-
-	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -458,7 +458,6 @@ public class RenderListener {
 			return;
 		}
 
-
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 		boolean customAhActive =
@@ -559,7 +558,7 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
-						if (inDungeonPage) {
+						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -694,7 +693,7 @@ public class RenderListener {
 							}
 						}
 
-						if (inDungeonPage) {
+						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -812,7 +811,7 @@ public class RenderListener {
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
- 							boolean isOnBz = false;
+							boolean isOnBz = false;
 							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
 								isOnBz = true;
@@ -1086,7 +1085,6 @@ public class RenderListener {
 			return;
 		}
 
-
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 		boolean customAhActive =
@@ -1176,7 +1174,7 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
-						if (inDungeonPage) {
+						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -1563,7 +1561,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);

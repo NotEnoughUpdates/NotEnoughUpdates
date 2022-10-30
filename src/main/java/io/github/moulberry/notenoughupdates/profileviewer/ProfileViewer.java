@@ -654,6 +654,7 @@ public class ProfileViewer {
 		private final AtomicBoolean updatingSoopyNetworth = new AtomicBoolean(false);
 		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
 		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?\\d+)");
+		private long soopyNetworthLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 		private String latestProfile = null;
 		private JsonArray skyblockProfiles = null;
 		private JsonObject guildInformation = null;
@@ -748,7 +749,11 @@ public class ProfileViewer {
 				}
 
 				//Sort keys based on category value
-				keys = categoryWorth.keySet().stream().sorted(Comparator.comparingLong(k->getCategory((String) k)).reversed()).toArray(String[]::new);
+				keys = categoryWorth
+					.keySet()
+					.stream()
+					.sorted(Comparator.comparingLong(k -> getCategory((String) k)).reversed())
+					.toArray(String[]::new);
 			}
 
 			private SoopyNetworthData setLoading() {
@@ -771,6 +776,32 @@ public class ProfileViewer {
 		}
 
 		/**
+		 * -1 = default, -2 = loading, -3 = error
+		 * >= 0 = actual position
+		 */
+		public long getSoopyNetworthLeaderboardPosition() {
+			if ("d0e05de76067454dbeaec6d19d886191".equals(uuid)) return 1;
+			return soopyNetworthLeaderboardPosition;
+		}
+
+		public boolean isProfileMaxSoopyNetworth(String profileName) {
+			String highestProfileName = "";
+			long largestProfileNetworth = 0;
+
+			for (String pName : soopyNetworth.keySet()) {
+				if (soopyNetworth.get(pName) == null) continue;
+
+				long pNet = soopyNetworth.get(pName).totalWorth;
+				if (pNet < largestProfileNetworth) continue;
+
+				highestProfileName = pName;
+				largestProfileNetworth = pNet;
+			}
+
+			return highestProfileName.equals(profileName);
+		}
+
+		/**
 		 * Returns SoopyNetworthData with total = -1 if error
 		 * Returns null if still loading
 		 */
@@ -782,9 +813,32 @@ public class ProfileViewer {
 			}
 
 			JsonArray playerInfo = getSkyblockProfiles(() -> {});
-			if (playerInfo == null) return null;                                              //Not sure how to support the callback in these cases
-			if (updatingSoopyNetworth.get()) return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
+			if (playerInfo == null)
+				return null;                                              //Not sure how to support the callback in these cases
+			if (updatingSoopyNetworth.get())
+				return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
 			updatingSoopyNetworth.set(true);
+
+			soopyNetworthLeaderboardPosition = -2; //loading
+			manager.apiUtils
+				.request()
+				.url("https://soopy.dev/api/v2/leaderboard/networth/user/" + this.uuid)
+				.requestJson()
+				.handle((jsonObject, throwable) -> {
+					if (throwable != null) throwable.printStackTrace();
+					if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
+						|| !jsonObject.has("data")
+						|| !jsonObject.get("data").getAsJsonObject().has("data")
+						|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+						//Something went wrong
+						//Set profile lb position to -3 to indicate that
+						soopyNetworthLeaderboardPosition = -3; //error
+						return null;
+					}
+					soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+						"position").getAsLong();
+					return null;
+				});
 
 			manager.apiUtils
 				.request()

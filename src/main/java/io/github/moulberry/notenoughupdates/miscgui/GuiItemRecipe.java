@@ -21,8 +21,10 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.ImmutableList;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -259,6 +261,12 @@ public class GuiItemRecipe extends GuiScreen {
 				}
 			}
 		}
+
+		if (keyPressed == manager.keybindPreviousRecipe.getKeyCode()) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getPrevious();
+		} else if (keyPressed == manager.keybindNextRecipe.getKeyCode()) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getNext();
+		}
 	}
 
 	public void changeRecipe(int tabIndex, int recipeIndex) {
@@ -278,6 +286,13 @@ public class GuiItemRecipe extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 		NeuRecipe currentRecipe = getCurrentRecipe();
 		int[] topLeft = currentRecipe.getPageFlipPositionLeftTopCorner();
+
+		if (mouseButton == 3) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getPrevious();
+		} else if (mouseButton == 4) {
+			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getNext();
+		}
+
 		if (ArrowPagesUtils.onPageSwitchMouse(
 			guiLeft,
 			guiTop,
