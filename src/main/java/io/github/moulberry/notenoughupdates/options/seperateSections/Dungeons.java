@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
+import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
@@ -304,4 +305,52 @@ public class Dungeons {
 	@ConfigAccordionId(id = 4)
 	public boolean croesusHighlightHighestProfit = true;
 
+	@ConfigOption(
+		name = "Spirit Leap Map",
+		desc = ""
+	)
+
+	@ConfigEditorAccordion(id = 3)
+	public boolean spiritLeapMap = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Spirit Leap Map",
+		desc = "sfhgt"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean enableSpiritLeapMap = true;
+
+
+	@ConfigOption(
+		name = "Edit Spirit Leap Positions",
+		desc = "Change the position of the buttons in the spirit leap map"
+	)
+
+	@Expose
+	public Position playerOne = new Position(10, 420);
+
+	@Expose
+	public Position playerTwo = new Position(190, 165);
+
+	@Expose
+	public Position playerThree = new Position(220, 254);
+
+	@Expose
+	public Position playerFour = new Position(340, 200);
+
+	@Expose
+	public Position playerFive = new Position(200, 400);
+
+	@ConfigOption(
+		name = "Edit Spirit Leap Map locations",
+		desc = "Change the position of the Spirit Leap Maps"
+	)
+	@ConfigEditorButton(
+		runnableId = 27,
+		buttonText = "Edit"
+	)
+	@ConfigAccordionId(id = 3)
+	public Position positions = new Position(-1, -1);
 }

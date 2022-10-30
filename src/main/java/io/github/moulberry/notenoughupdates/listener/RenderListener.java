@@ -51,8 +51,8 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
@@ -61,6 +61,7 @@ import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
+import io.github.moulberry.notenoughupdates.overlays.spiritleap.SpiritLeapOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
@@ -1052,6 +1053,12 @@ public class RenderListener {
 			return;
 		}
 
+		if (SpiritLeapOverlay.shouldRender() && Mouse.getEventButtonState()) {
+			SpiritLeapOverlay.mouseEvent();
+			event.setCanceled(true);
+			return;
+		}
+
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 		if (guiScreen instanceof GuiChest) {
@@ -1578,7 +1585,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
 
