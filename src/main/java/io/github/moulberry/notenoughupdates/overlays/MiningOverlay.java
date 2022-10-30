@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
@@ -31,11 +33,13 @@ import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.WorldSettings;
 import net.minecraftforge.fml.relauncher.Side;
@@ -44,6 +48,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -574,6 +579,27 @@ public class MiningOverlay extends TextTabOverlay {
 			} else {
 				return returnText + EnumChatFormatting.DARK_GREEN + "Done";
 			}
+		}
+	}
+
+	private static final Ordering<NetworkPlayerInfo> playerOrdering = Ordering.from(new PlayerComparator());
+
+	@SideOnly(Side.CLIENT)
+	public static class PlayerComparator implements Comparator<NetworkPlayerInfo> {
+		public PlayerComparator() {}
+
+		public int compare(NetworkPlayerInfo o1, NetworkPlayerInfo o2) {
+			ScorePlayerTeam team1 = o1.getPlayerTeam();
+			ScorePlayerTeam team2 = o2.getPlayerTeam();
+			return ComparisonChain.start().compareTrueFirst(
+															o1.getGameType() != WorldSettings.GameType.SPECTATOR,
+															o2.getGameType() != WorldSettings.GameType.SPECTATOR
+														)
+														.compare(
+															team1 != null ? team1.getRegisteredName() : "",
+															team2 != null ? team2.getRegisteredName() : ""
+														)
+														.compare(o1.getGameProfile().getName(), o2.getGameProfile().getName()).result();
 		}
 	}
 
