@@ -124,7 +124,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
 		String profileId = GuiProfileViewer.getProfileId();
 		JsonObject hypixelInfo = profile.getHypixelProfile();
-		if (hypixelInfo == null) return;
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 		if (profileInfo == null) return;
 
@@ -224,6 +223,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
+						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY + String.format("%,d", floorLevelToXP),
 						String.format("# F5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF5), runsF5),
 						String.format("# F6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF6), runsF6),
 						String.format("# F7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF7), runsF7),
@@ -371,6 +371,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
+						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY + String.format("%,d", floorLevelToXP),
 						String.format("# M3 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM3), runsM3),
 						String.format("# M4 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM4), runsM4),
 						String.format("# M5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM5), runsM5),
@@ -443,7 +444,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			//Random stats
 
-			float secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+			float secrets = -1;
+			if (hypixelInfo != null) {
+				secrets = Utils.getElementAsFloat(Utils.getElement(hypixelInfo, "achievements.skyblock_treasure_hunter"), 0);
+			}
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;
 			for (int i = 1; i <= 7; i++) {
@@ -507,14 +511,14 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (Total)  ",
-				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(secrets),
+				EnumChatFormatting.WHITE + (secrets == -1 ? "?" : StringUtils.shortNumberFormat(secrets)),
 				x,
 				miscTopY + 20,
 				sectionWidth
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (/Run)  ",
-				EnumChatFormatting.WHITE.toString() + (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f),
+				EnumChatFormatting.WHITE.toString() + (secrets == -1 ? "?" :  (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f)),
 				x,
 				miscTopY + 30,
 				sectionWidth
@@ -666,6 +670,8 @@ public class DungeonPage extends GuiProfileViewerPage {
 				activeClass = activeClassElement.getAsString();
 			}
 
+			ProfileViewer.Level classAverage = new ProfileViewer.Level();
+
 			for (int i = 0; i < dungSkillsName.length; i++) {
 				String skillName = dungSkillsName[i];
 
@@ -681,7 +687,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 						50,
 						false
 					);
+
+					if (levelObj.level == 50) {
+						levelObj.level = 50 + (cataXp - 569809640) / 200000000;
+					}
+
 					levelObjClasses.put(skillName, levelObj);
+				}
+
+				classAverage.level = (float) (levelObjClasses.values().stream().mapToDouble(l -> l.level).sum() / 5);
+				if (classAverage.level >= 50) {
+					classAverage.maxed = true;
 				}
 
 				String colour = EnumChatFormatting.WHITE.toString();
@@ -692,8 +708,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 				ProfileViewer.Level levelObj = levelObjClasses.get(skillName);
 
 				getInstance()
-					.renderXpBar(colour + skillName, dungSkillsStack[i], x, y + 20 + 29 * i, sectionWidth, levelObj, mouseX, mouseY);
+					.renderXpBar(colour + skillName, dungSkillsStack[i], x, y + 20 + 24 * i, sectionWidth, levelObj, mouseX, mouseY);
 			}
+
+			getInstance().renderXpBar(
+				EnumChatFormatting.WHITE + "Class Average",
+				new ItemStack(Items.nether_star),
+				x,
+				y + 20 + 24 * 5,
+				sectionWidth,
+				classAverage,
+				mouseX, mouseY);
 		}
 
 		drawSideButtons();
@@ -705,7 +730,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		if (mouseX >= guiLeft + 50 && mouseX <= guiLeft + 70 && mouseY >= guiTop + 54 && mouseY <= guiTop + 64) {
+		if (mouseX >= guiLeft + 45 && mouseX <= guiLeft + 65 && mouseY >= guiTop + 54 && mouseY <= guiTop + 64) {
 			dungeonLevelTextField.mouseClicked(mouseX, mouseY, mouseButton);
 		} else {
 			dungeonLevelTextField.otherComponentClick();
@@ -827,7 +852,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (level < Math.floor(levelObjCata.level)) {
 					continue;
 				}
-				remaining += levelingArray.get(level).getAsFloat();
+					remaining += levelingArray.get(level).getAsFloat();
 			}
 
 			if (remaining < 0) {

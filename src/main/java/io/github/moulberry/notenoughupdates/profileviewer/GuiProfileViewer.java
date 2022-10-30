@@ -29,6 +29,8 @@ import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
@@ -58,6 +60,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +79,8 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	public static final ResourceLocation pv_ironman = new ResourceLocation("notenoughupdates:pv_ironman.png");
 	public static final ResourceLocation pv_bingo = new ResourceLocation("notenoughupdates:pv_bingo.png");
+
+	public final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 	public static final ResourceLocation pv_stranded = new ResourceLocation("notenoughupdates:pv_stranded.png");
 	public static final ResourceLocation pv_unknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
 	public static final ResourceLocation resource_packs =
@@ -171,6 +176,7 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -869,6 +875,7 @@ public class GuiProfileViewer extends GuiScreen {
 						currentPage = page;
 						inventoryTextField.otherComponentClick();
 						playerNameTextField.otherComponentClick();
+						killDeathSearchTextField.otherComponentClick();
 						return;
 					}
 				}
@@ -885,6 +892,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseY > guiTop + sizeY + 5 && mouseY < guiTop + sizeY + 25) {
 				playerNameTextField.mouseClicked(mouseX, mouseY, mouseButton);
 				inventoryTextField.otherComponentClick();
+				killDeathSearchTextField.otherComponentClick();
 				return;
 			}
 		}
@@ -956,11 +964,13 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 			playerNameTextField.otherComponentClick();
 			inventoryTextField.otherComponentClick();
+			killDeathSearchTextField.otherComponentClick();
 			return;
 		}
 		profileDropdownSelected = false;
 		playerNameTextField.otherComponentClick();
 		inventoryTextField.otherComponentClick();
+		killDeathSearchTextField.otherComponentClick();
 	}
 
 	@Override
@@ -1024,18 +1034,32 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseY > y - 4 && mouseY < y + 13) {
 				String levelStr;
 				String totalXpStr = null;
-				if (skillName.contains("Catacombs")) totalXpStr =
-					EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						numberFormat.format(levelObj.totalXp);
+				if (skillName.contains("Catacombs")) {
+					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
+							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
+				}
+        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
-					levelStr = EnumChatFormatting.GOLD + "MAXED!";
+					levelStr = levelObj.maxLevel != 7 ?
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
 				} else {
-					int maxXp = (int) levelObj.maxXpForLevel;
-					levelStr =
-						EnumChatFormatting.DARK_PURPLE +
-							StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
-							"/" +
-							StringUtils.shortNumberFormat(maxXp);
+					if (skillName.contains("Class Average")) {
+						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
+						totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
+					} else {
+						int maxXp = (int) levelObj.maxXpForLevel;
+						levelStr =
+							EnumChatFormatting.DARK_PURPLE +
+								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+								"/" +
+								StringUtils.shortNumberFormat(maxXp) +
+								// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
+								// a conditional here to add the overflow level rather than above
+								((skillName.contains("Catacombs") && levelObj.level >= 50) ?
+									EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
+					}
 				}
 				if (totalXpStr != null) {
 					tooltipToDisplay = Utils.createList(levelStr, totalXpStr);
@@ -1235,6 +1259,25 @@ public class GuiProfileViewer extends GuiScreen {
 			GL11.glPopMatrix();
 
 			Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(false);
+		}
+	}
+
+	public float getPercentage(String skillName, ProfileViewer.Level level) {
+		if (level.maxed) {
+			return 100;
+		}
+		if (skillName.contains("catacombs")) {
+			return (level.totalXp / DungeonsWeight.CATACOMBS_LEVEL_50_XP) * 100;
+		} else if (ExtraPage.slayers.containsKey(skillName)) {
+			return (level.totalXp / 1000000) * 100;
+		} else if (skillName.equalsIgnoreCase("social")) {
+			return (level.totalXp / 272800) * 100;
+		} else {
+			if (level.maxLevel == 60) {
+				return (level.totalXp / SkillsWeight.SKILLS_LEVEL_60) * 100;
+			} else {
+				return (level.totalXp / SkillsWeight.SKILLS_LEVEL_50) * 100;
+			}
 		}
 	}
 

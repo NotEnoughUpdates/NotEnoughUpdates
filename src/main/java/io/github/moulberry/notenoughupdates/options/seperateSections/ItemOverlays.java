@@ -39,7 +39,8 @@ import java.util.List;
 public class ItemOverlays {
 	@ConfigOption(
 		name = "Treecapitator Overlay",
-		desc = ""
+		desc = "",
+		searchTags = "jungle"
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean treecapAccordion = false;
@@ -65,7 +66,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the overlay"
+		desc = "Change the colour of the overlay",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 0)
@@ -108,7 +110,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the ghost block outline"
+		desc = "Change the colour of the ghost block outline",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -133,7 +136,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the ghost block outline"
+		desc = "Change the colour of the ghost block outline",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 6)
@@ -245,7 +249,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Highlight Colour",
-		desc = "Change the colour of the etherwarp target block outline"
+		desc = "Change the colour of the etherwarp target block outline",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 3)

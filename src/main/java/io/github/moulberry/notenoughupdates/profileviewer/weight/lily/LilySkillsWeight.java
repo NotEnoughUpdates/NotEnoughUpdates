@@ -19,15 +19,16 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.weight.lily;
 
-import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
-
 import com.google.gson.JsonArray;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
+
 import java.util.Map;
+
+import static io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight.SKILL_NAMES;
 
 public class LilySkillsWeight extends SkillsWeight {
 

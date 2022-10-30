@@ -160,7 +160,7 @@ public class TrophyRewardOverlay {
 		texts.add("Trophy Fish Exchange");
 		texts.add("Magma Fish: §e" + total);
 
-		for (Map.Entry<String, Integer> entry : sortByValue(totalExchange).entrySet()) {
+		for (Map.Entry<String, Integer> entry : sortByValueReverse(totalExchange).entrySet()) {
 			String name = entry.getKey();
 			int amount = totalAmount.get(name);
 			String[] split = name.split(" ");
@@ -204,6 +204,19 @@ public class TrophyRewardOverlay {
 
 	//TODO move into utils class maybe?
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+		List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+		list.sort(Map.Entry.comparingByValue());
+
+		Map<K, V> result = new LinkedHashMap<>();
+		for (Map.Entry<K, V> entry : list) {
+			result.put(entry.getKey(), entry.getValue());
+		}
+
+		return result;
+	}
+
+	//TODO move into utils class maybe?
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValueReverse(Map<K, V> map) {
 		List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
 		list.sort(Map.Entry.comparingByValue());
 		Collections.reverse(list);

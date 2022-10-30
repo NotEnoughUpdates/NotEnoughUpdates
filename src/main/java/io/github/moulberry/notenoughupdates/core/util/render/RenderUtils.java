@@ -381,11 +381,15 @@ public class RenderUtils {
 	}
 
 	public static void renderWayPoint(List<String> str, Vec3i loc, float partialTicks) {
-		renderWayPoint(str, new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks);
+		renderWayPoint(str, new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks, false);
 	}
 
 	public static void renderWayPoint(String str, Vector3f loc, float partialTicks) {
-		renderWayPoint(Arrays.asList(str), loc, partialTicks);
+		renderWayPoint(Arrays.asList(str), loc, partialTicks, false);
+	}
+
+	public static void renderWayPoint(Vec3i loc, float partialTicks) {
+		renderWayPoint(Arrays.asList(""), new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks, true);
 	}
 
 	public static void drawFilledQuadWithTexture(Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4, float alpha, ResourceLocation texture) {
@@ -413,7 +417,7 @@ public class RenderUtils {
 		GlStateManager.popMatrix();
 	}
 
-	public static void renderWayPoint(List<String> lines, Vector3f loc, float partialTicks) {
+	public static void renderWayPoint(List<String> lines, Vector3f loc, float partialTicks, boolean onlyShowDistance) {
 		GlStateManager.alphaFunc(516, 0.1F);
 
 		GlStateManager.pushMatrix();
@@ -437,7 +441,7 @@ public class RenderUtils {
 		GlStateManager.translate(x, y, z);
 		GlStateManager.translate(0, viewer.getEyeHeight(), 0);
 
-		lines = new ArrayList<>(lines);
+		lines = onlyShowDistance ? new ArrayList<>() : new ArrayList<>(lines);
 		lines.add(EnumChatFormatting.YELLOW.toString() + Math.round(dist) + "m");
 		renderNametag(lines);
 

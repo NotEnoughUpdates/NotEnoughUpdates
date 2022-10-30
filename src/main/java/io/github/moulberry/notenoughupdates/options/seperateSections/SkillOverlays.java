@@ -92,7 +92,7 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Use BZ Price For Coins/m",
-		desc = "Uses the bazzar price instead of NPC price for coins/m"
+		desc = "Uses the bazaar price instead of NPC price for coins/m"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
@@ -325,7 +325,8 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Enable Combat Overlay",
-		desc = "Show an overlay while Combat with useful information"
+		desc = "Show an overlay while Combat with useful information",
+		searchTags = "champion"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)

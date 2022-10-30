@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnderNodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
@@ -33,6 +34,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -53,6 +55,8 @@ public class ChatListener {
 	private final NotEnoughUpdates neu;
 	private static final Pattern SLAYER_XP = Pattern.compile(
 		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
+
+	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,4})\\] .*");
 	AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
@@ -108,29 +112,67 @@ public class ChatListener {
 
 	private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
-		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null &&
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 &&
+			((chatComponent.getChatStyle() != null &&
 			chatComponent.getChatStyle().getChatClickEvent() != null &&
-			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND &&
+			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
+				// Party and guild chat components are different from global chats, so need to check for them here
+			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
+				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
+				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND)) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
-				String username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+
+			String startsWith = null;
+			boolean partyOrGuildChat = false;
+
+			if (chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
+				startsWith = "/viewprofile";
+				partyOrGuildChat = true;
+			} else {
+				ClickEvent chatClickEvent = chatComponent.getChatStyle().getChatClickEvent();
+				if (chatClickEvent != null) {
+					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
+						startsWith = "/socialoptions";
+					}
+				}
+			}
+
+			if (startsWith != null) {
+				String username = partyOrGuildChat ?
+					Utils.getNameFromChatComponent(chatComponent) :
+					chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
-					chatComponent.setChatStyle(Utils.createClickStyle(
+
+					ChatStyle pvClickStyle = Utils.createClickStyle(
 						ClickEvent.Action.RUN_COMMAND,
 						"/pv " + username,
 						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
 							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
 							EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
 							EnumChatFormatting.YELLOW + " profile viewer."
-					));
+					);
+
+					if (partyOrGuildChat) {
+						chatComponent.getSiblings().get(0).setChatStyle(pvClickStyle);
+					} else {
+						chatComponent.setChatStyle(pvClickStyle);
+					}
 					return chatComponent;
 				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
-					chatComponent.setChatStyle(Utils.createClickStyle(
+
+					ChatStyle ahClickStyle = Utils.createClickStyle(
 						ClickEvent.Action.RUN_COMMAND,
 						"/ah " + username,
 						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
 							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
-					));
+					);
+
+					if (partyOrGuildChat) {
+						chatComponent.getSiblings().get(0).setChatStyle(ahClickStyle);
+					} else {
+						chatComponent.setChatStyle(ahClickStyle);
+					}
 					return chatComponent;
 				}
 			} // wanted to add this for guild but guild uses uuid :sad:
@@ -160,11 +202,11 @@ public class ChatListener {
 		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
 		Matcher matcher = SLAYER_XP.matcher(unformatted);
 		if (unformatted.startsWith("You are playing on profile: ")) {
-			neu.manager.setCurrentProfile(unformatted
+			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("You are playing on profile: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your profile was changed to: ")) {//Your profile was changed to:
-			neu.manager.setCurrentProfile(unformatted
+			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your new API key is ")) {
@@ -173,8 +215,7 @@ public class ChatListener {
 					0,
 					36
 				);
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
+			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured");
 			NotEnoughUpdates.INSTANCE.saveConfig();
 		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
 			SBInfo.getInstance().hasNewTab = false;
@@ -201,7 +242,6 @@ public class ChatListener {
 		} else if (unformatted.startsWith("   RNG Meter")) {
 			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {
-			//matcher.group(1);
 			SlayerOverlay.slayerLVL = matcher.group(2);
 			if (!SlayerOverlay.slayerLVL.equals("9")) {
 				SlayerOverlay.slayerXp = matcher.group(3);
@@ -254,5 +294,22 @@ public class ChatListener {
 			unformatted.startsWith("  ") || unformatted.startsWith("✦") || unformatted.equals(
 			"  You've earned a Crystal Loot Bundle!"))
 			OverlayManager.crystalHollowOverlay.message(unformatted);
+
+		Matcher LvlMatcher = SKYBLOCK_LVL_MESSAGE.matcher(unformatted);
+		if (LvlMatcher.matches()) {
+			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
+				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
+				e.setCanceled(true);
+			}
+		}
+
+		if (unformatted.equals("You uncovered a treasure chest!") ||
+			unformatted.equals("You have successfully picked the lock on this chest!")
+			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
+			OverlayManager.powderGrindingOverlay.message(unformatted);
+
+		if (unformatted.equals("ENDER NODE! You found Endermite Nest!")) {
+			EnderNodes.dispalyEndermiteNotif();
+		}
 	}
 }

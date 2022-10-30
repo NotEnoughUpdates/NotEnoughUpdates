@@ -20,11 +20,12 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+
 import java.util.Map;
 
 public abstract class DungeonsWeight {
 
-	protected static final long CATACOMBS_LEVEL_50_XP = 569809640;
+	public static final long CATACOMBS_LEVEL_50_XP = 569809640;
 
 	protected final Map<String, ProfileViewer.Level> player;
 	protected final WeightStruct weightStruct;

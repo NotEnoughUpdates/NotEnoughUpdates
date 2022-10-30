@@ -40,6 +40,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
@@ -50,6 +51,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -83,7 +85,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
@@ -136,6 +137,8 @@ public class RenderListener {
 	public static long lastGuiClosed = 0;
 	public static boolean inventoryLoaded = false;
 	private final NotEnoughUpdates neu;
+	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
+	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 	ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 	JsonObject essenceJson = new JsonObject();
 	private boolean hoverInv = false;
@@ -150,9 +153,6 @@ public class RenderListener {
 	private boolean typing;
 	private HashMap<String, String> cachedDefinitions;
 	private boolean inDungeonPage = false;
-	private final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
-
-	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 
 	public RenderListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -327,8 +327,7 @@ public class RenderListener {
 										JsonObject json = neu.manager.getItemInformation().get(resInternalname);
 										json.addProperty("crafttext", "Requires: " + col);
 
-										Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-											"Added: " + resInternalname));
+										Utils.addChatMessage("Added: " + resInternalname);
 										neu.manager.writeJsonDefaultDir(json, resInternalname + ".json");
 										neu.manager.loadItem(resInternalname);
 									}
@@ -459,7 +458,6 @@ public class RenderListener {
 			return;
 		}
 
-
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 		boolean customAhActive =
@@ -538,6 +536,12 @@ public class RenderListener {
 								x += diffX;
 							}
 						}
+						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+							int diffX = 172;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+								x += diffX;
+							}
+						}
 						if (AuctionProfit.inAuctionPage()) {
 							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 56) {
@@ -554,7 +558,7 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
-						if (inDungeonPage) {
+						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -666,6 +670,12 @@ public class RenderListener {
 								x += diffX;
 							}
 						}
+						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+							int diffX = 172;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+								x += diffX;
+							}
+						}
 						if (AuctionProfit.inAuctionPage()) {
 							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 56) {
@@ -683,7 +693,7 @@ public class RenderListener {
 							}
 						}
 
-						if (inDungeonPage) {
+						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -703,7 +713,7 @@ public class RenderListener {
 								buttonHovered = button;
 							}
 
-							if (currentTime - buttonHoveredMillis > 600) {
+							if (currentTime - buttonHoveredMillis > NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
 								String command = button.command.trim();
 								if (!command.startsWith("/")) {
 									command = "/" + command;
@@ -801,7 +811,7 @@ public class RenderListener {
 							if (bazaarPrice < 5000000 && internal.equals("RECOMBOBULATOR_3000")) bazaarPrice = 5000000;
 
 							double worth = -1;
- 							boolean isOnBz = false;
+							boolean isOnBz = false;
 							if (bazaarPrice >= 0) {
 								worth = bazaarPrice;
 								isOnBz = true;
@@ -1075,7 +1085,6 @@ public class RenderListener {
 			return;
 		}
 
-
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 		boolean customAhActive =
@@ -1143,6 +1152,12 @@ public class RenderListener {
 								x += diffX;
 							}
 						}
+						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
+							int diffX = 172;
+							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
+								x += diffX;
+							}
+						}
 						if (AuctionProfit.inAuctionPage()) {
 							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 56) {
@@ -1159,7 +1174,7 @@ public class RenderListener {
 								x -= 25;
 							}
 						}
-						if (inDungeonPage) {
+						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
 							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
 								y < guiTop + 100) {
 								x += 185;
@@ -1239,6 +1254,7 @@ public class RenderListener {
 							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
 								int stars = Utils.getNumberOfStars(stack);
 								if (stars == 0) continue;
+								String starsStr = "" + stars;
 
 								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
 								int costIndex = 10000;
@@ -1251,38 +1267,39 @@ public class RenderListener {
 									if (entry.equals("§7Cost")) {
 										costIndex = j;
 									}
+
 									if (j > costIndex) {
 										entry = entry.trim();
-										int index = entry.lastIndexOf('x');
-										String item, amountString;
-										if (index < 0) {
-											item = entry.trim() + " x1";
-											amountString = "x1";
-										} else {
-											amountString = entry.substring(index);
-											item = entry.substring(0, index).trim();
+
+										int countIndex = entry.lastIndexOf(" §8x");
+
+										String upgradeName = entry;
+										String amount = "1";
+										if (countIndex != -1) {
+											upgradeName = entry.substring(0, countIndex);
+											// +4 to account for " §8x"
+											amount = entry.substring(countIndex + 4);
 										}
-										item = item.substring(0, item.length() - 3);
-										int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
-										if (item.endsWith("Essence")) {
-											int index2 = entry.indexOf("Essence");
-											String type = item.substring(0, index2).trim().substring(2);
-											newEntry.add("type", new JsonPrimitive(type));
-											newEntry.add(String.valueOf(stars), new JsonPrimitive(amount));
+
+										if (upgradeName.endsWith(" Essence")) {
+											// First 2 chars are control code
+											// [EssenceCount, EssenceType, "Essence"]
+											String[] upgradeNameSplit = upgradeName.substring(2).split(" ");
+											newEntry.addProperty("type", upgradeNameSplit[1]);
+											newEntry.addProperty(starsStr, Integer.parseInt(upgradeNameSplit[0].replace(",", "")));
 										} else {
-											String itemString = item + " §8x" + amount;
 											if (!newEntry.has("items")) {
 												newEntry.add("items", new JsonObject());
 											}
-											if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
-												newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
+											if (!newEntry.get("items").getAsJsonObject().has(starsStr)) {
+												newEntry.get("items").getAsJsonObject().add(starsStr, new JsonArray());
 											}
 											newEntry
 												.get("items")
 												.getAsJsonObject()
-												.get(String.valueOf(stars))
+												.get(starsStr)
 												.getAsJsonArray()
-												.add(new JsonPrimitive(itemString));
+												.add(new JsonPrimitive(upgradeName + (upgradeName.contains("Coins") ? "" : (" §8x" + amount))));
 										}
 									}
 								}
@@ -1304,17 +1321,15 @@ public class RenderListener {
 							))
 						) {
 							writer.write(gson.toJson(jsonObject));
-							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + id));
+							Utils.addChatMessage(EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + id);
 						}
 					} catch (IOException ignored) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-							EnumChatFormatting.RED + "Error while writing file."));
+						Utils.addChatMessage(EnumChatFormatting.RED + "Error while writing file.");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details."));
+					Utils.addChatMessage(
+						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details.");
 				}
 			}
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_RETURN) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
@@ -1409,8 +1424,7 @@ public class RenderListener {
 								} else if (cachedDefinitions.containsKey(item)) {
 									costArray.add(new JsonPrimitive(cachedDefinitions.get(item) + ":" + amountString));
 								} else {
-									mc.thePlayer.addChatMessage(new ChatComponentText(
-										"Change the item ID of " + item + " to the correct one and press Enter."));
+									Utils.addChatMessage("Change the item ID of " + item + " to the correct one and press Enter.");
 									NEUOverlay.getTextField().setText(item);
 									event.setCanceled(true);
 									typing = true;
@@ -1439,17 +1453,16 @@ public class RenderListener {
 							))
 						) {
 							writer.write(gson.toJson(newNPC));
-							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayName));
+							Utils.addChatMessage(
+								EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayName);
 						}
 					} catch (IOException ignored) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-							EnumChatFormatting.RED + "Error while writing file."));
+						Utils.addChatMessage(EnumChatFormatting.RED + "Error while writing file.");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					mc.thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details"));
+					Utils.addChatMessage(
+						EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details");
 				}
 			}
 		} else if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
@@ -1469,9 +1482,9 @@ public class RenderListener {
 				if (stack.getDisplayName().isEmpty() || stack.getDisplayName().equals(" ")) continue;
 				String internalName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
 				if (internalName == null) {
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+					Utils.addChatMessage(
 						EnumChatFormatting.RED + "ERROR: Could not get internal name for: " + EnumChatFormatting.AQUA +
-							stack.getDisplayName()));
+							stack.getDisplayName());
 					continue;
 				}
 				JsonObject itemObject = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(stack);
@@ -1491,13 +1504,11 @@ public class RenderListener {
 				itemObject.add("lore", newLore);
 
 				if (!NEUItemEditor.saveOnly(internalName, itemObject)) {
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED + "ERROR: Failed to save item: " + EnumChatFormatting.AQUA +
-							stack.getDisplayName()));
+					Utils.addChatMessage(
+						EnumChatFormatting.RED + "ERROR: Failed to save item: " + EnumChatFormatting.AQUA + stack.getDisplayName());
 				}
 			}
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.AQUA + "Parsed page: " + lower.getDisplayName().getUnformattedText()));
+			Utils.addChatMessage(EnumChatFormatting.AQUA + "Parsed page: " + lower.getDisplayName().getUnformattedText());
 			event.setCanceled(true);
 			return;
 		}
@@ -1550,7 +1561,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
@@ -1701,7 +1711,7 @@ public class RenderListener {
 					json.addProperty("clickcommand", "viewrecipe");
 					json.addProperty("modver", NotEnoughUpdates.VERSION);
 					try {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Added: " + resInternalname));
+						Utils.addChatMessage("Added: " + resInternalname);
 						neu.manager.writeJsonDefaultDir(json, resInternalname + ".json");
 						neu.manager.loadItem(resInternalname);
 					} catch (IOException ignored) {
@@ -1714,5 +1724,25 @@ public class RenderListener {
 	@SubscribeEvent
 	public void onRenderLast(RenderWorldLastEvent event) {
 		CrystalMetalDetectorSolver.render(event.partialTicks);
+	}
+
+	/**
+	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
+	 * @param event
+	 */
+	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?
+	@SubscribeEvent
+	public void onMouseClick(GuiScreenEvent.KeyboardInputEvent.Post event) {
+
+		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock()) return;
+
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft == null || minecraft.thePlayer == null) return;
+
+		GuiScreen screen = minecraft.currentScreen;
+		if (screen instanceof GuiItemRecipe) {
+			GuiItemRecipe itemRecipe = (GuiItemRecipe) screen;
+			itemRecipe.arrowKeyboardInput();
+		}
 	}
 }

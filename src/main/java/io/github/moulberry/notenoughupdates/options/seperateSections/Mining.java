@@ -156,7 +156,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Edit Dwarven Overlay Position",
-		desc = "Change the position of the Dwarven Mines information Overlay (commisions, powder & forge statuses)"
+		desc = "Change the position of the Dwarven Mines information Overlay (commissions, powder & forge statuses)"
 	)
 	@ConfigEditorButton(
 		runnableId = 1,
@@ -388,7 +388,8 @@ public class Mining {
 
 	@ConfigOption(
 		name = "Colours",
-		desc = ""
+		desc = "",
+		searchTags = "color"
 	)
 	@ConfigEditorAccordion(id = 6)
 	@ConfigAccordionId(id = 4)
@@ -426,7 +427,8 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Done Color",
-		desc = "Change the colour when the part is given to the NPC."
+		desc = "Change the colour when the part is given to the NPC.",
+		searchTags = "color"
 
 	)
 	@ConfigEditorDropdown(
@@ -712,6 +714,79 @@ public class Mining {
 		values = {"NEU", "Skytils"}
 	)
 	public int wishingCompassWaypointNames = 0;
+
+	@ConfigOption(
+		name = "Powder Grinding Tracker",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 9)
+	public boolean powderGrindingTrackerAccordion = false;
+
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Tracker",
+		desc = "Show an Overlay with useful information related to Power Grinding"
+	)
+	@ConfigAccordionId(id = 9)
+	@ConfigEditorBoolean
+	public boolean powderGrindingTrackerEnabled = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Tracker Text",
+		desc = "\u00a7eDrag text to change the appearance of the Overlay\n" +
+			"\u00a7rGo to the Crystal Hollows to show this Overlay with useful information"
+	)
+	@ConfigEditorDraggableList(
+		exampleText = {
+			"\u00a73Chests Found: \u00a7a13",
+			"\u00a73Opened Chests: \u00a7a11",
+			"\u00a73Unopened Chests: \u00a7c2",
+			"\u00a73Mithril Powder Found: \u00a726,243",
+			"\u00a73Average Mithril Powder/Chest: \u00a72568",
+			"\u00a73Gemstone Powder Found: \u00a7d6,243",
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+		}
+	)
+	@ConfigAccordionId(id = 9)
+	public List<Integer> powderGrindingTrackerText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+
+	@Expose
+	@ConfigOption(
+		name = "Edit Tracker Position",
+		desc = "Change the position of the Powder Grinding Tracker Overlay (chests and gained powder)"
+	)
+	@ConfigEditorButton(
+		runnableId = 25,
+		buttonText = "Edit"
+	)
+	@ConfigAccordionId(id = 9)
+	public Position powderGrindingTrackerPosition = new Position(10, 265);
+
+	@Expose
+	@ConfigOption(
+		name = "Tracker Reset Mode",
+		desc = "When the Powder Grinding Tracker should be reset"
+	)
+	@ConfigEditorDropdown(
+		values = {"On World Change", "On Restart", "Never"},
+		initialIndex = 2
+	)
+	@ConfigAccordionId(id = 9)
+	public int powderGrindingTrackerResetMode = 2;
+
+	@Expose
+	@ConfigOption(
+		name = "Reset Tracker",
+		desc = "Reset all stats for Powder Grinding Tracker"
+	)
+	@ConfigEditorButton(
+		runnableId = 26,
+		buttonText = "Reset"
+	)
+	@ConfigAccordionId(id = 9)
+	public int resetPowderGrindingTracker = 0;
 
 	@Expose
 	@ConfigOption(

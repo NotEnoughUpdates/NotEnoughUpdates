@@ -17,19 +17,25 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.misc;
+package io.github.moulberry.notenoughupdates.listener;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class ButtonsCommand extends ClientCommandBase {
-	protected ButtonsCommand(String name) {
-		super(name);
+public class WorldListener {
+
+	private final NotEnoughUpdates neu;
+
+	public WorldListener(NotEnoughUpdates neu) {
+		this.neu = neu;
 	}
 
-	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load e) {
+		if (neu.config.mining.powderGrindingTrackerResetMode == 0)
+			OverlayManager.powderGrindingOverlay.reset();
 	}
+
 }

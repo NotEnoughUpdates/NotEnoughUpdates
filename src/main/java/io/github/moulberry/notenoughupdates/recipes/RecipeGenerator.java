@@ -33,7 +33,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -91,32 +90,30 @@ public class RecipeGenerator {
 		if (uiTitle.equals("Confirm Process") && saveRecipe) {
 			ForgeRecipe recipe = parseSingleForgeRecipe(menu);
 			if (recipe == null) {
-				p.addChatMessage(new ChatComponentText(
-					"" + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + "Could not parse recipe for this UI"));
+				Utils.addChatMessage(
+					"" + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + "Could not parse recipe for this UI");
 			} else {
-				p.addChatMessage(new ChatComponentText(
-					"" + EnumChatFormatting.GREEN + EnumChatFormatting.BOLD + "Parsed recipe:"));
-				p.addChatMessage(new ChatComponentText("" + EnumChatFormatting.AQUA + " Inputs:"));
+				Utils.addChatMessage("" + EnumChatFormatting.GREEN + EnumChatFormatting.BOLD + "Parsed recipe:");
+				Utils.addChatMessage("" + EnumChatFormatting.AQUA + " Inputs:");
 				for (Ingredient i : recipe.getInputs())
-					p.addChatMessage(new ChatComponentText(
-						"  - " + EnumChatFormatting.AQUA + i.getInternalItemId() + " x " + i.getCount()));
-				p.addChatMessage(new ChatComponentText("" + EnumChatFormatting.AQUA + " Output: " + EnumChatFormatting.GOLD +
-					recipe.getOutput().getInternalItemId() + " x " + recipe.getOutput().getCount()));
-				p.addChatMessage(new ChatComponentText(
+					Utils.addChatMessage("  - " + EnumChatFormatting.AQUA + i.getInternalItemId() + " x " + i.getCount());
+				Utils.addChatMessage("" + EnumChatFormatting.AQUA + " Output: " + EnumChatFormatting.GOLD +
+					recipe.getOutput().getInternalItemId() + " x " + recipe.getOutput().getCount());
+				Utils.addChatMessage(
 					"" + EnumChatFormatting.AQUA + " Time: " + EnumChatFormatting.GRAY + recipe.getTimeInSeconds() +
-						" seconds (no QF) ."));
+						" seconds (no QF) .");
 				boolean saved = false;
 				try {
 					saved = saveRecipes(recipe.getOutput().getInternalItemId(), Collections.singletonList(recipe));
-				} catch (IOException e) {
+				} catch (IOException ignored) {
 				}
 				if (!saved)
-					p.addChatMessage(new ChatComponentText("" +
-						EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
-						EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + " ERROR " +
-						EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
-						EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD +
-						" Failed to save recipe. Does the item already exist?"));
+					Utils.addChatMessage(
+						"" + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
+							EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + " ERROR " +
+							EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
+							EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD +
+							" Failed to save recipe. Does the item already exist?");
 			}
 		}
 		if (saveRecipe) attemptToSaveBestiary(menu);
@@ -171,8 +168,7 @@ public class RecipeGenerator {
 			for (String loreLine : mobLore) {
 				Matcher loreMatcher = LORE_PATTERN.matcher(loreLine);
 				if (!loreMatcher.matches()) {
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						"[WARNING] Unknown lore line: " + loreLine));
+					Utils.addChatMessage("[WARNING] Unknown lore line: " + loreLine);
 					continue;
 				}
 				if (loreMatcher.group("coins") != null)
@@ -186,8 +182,7 @@ public class RecipeGenerator {
 					List<JsonObject> possibleItems = neu.manager.getItemInformation().values().stream().filter(it -> it.get(
 						"displayname").getAsString().equals(dropName)).collect(Collectors.toList());
 					if (possibleItems.size() != 1) {
-						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-							"[WARNING] Could not parse drop, ambiguous or missing item information: " + loreLine));
+						Utils.addChatMessage("[WARNING] Could not parse drop, ambiguous or missing item information: " + loreLine);
 						continue;
 					}
 					Ingredient item = new Ingredient(neu.manager, possibleItems.get(0).get("internalname").getAsString());
@@ -197,9 +192,7 @@ public class RecipeGenerator {
 					drops.add(new MobLootRecipe.MobDrop(item, chance, new ArrayList<>()));
 				}
 				if (loreMatcher.group("missing") != null) {
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						"[WARNING] You are missing Bestiary levels for drop: " + loreLine));
-
+					Utils.addChatMessage("[WARNING] You are missing Bestiary levels for drop: " + loreLine);
 				}
 			}
 			recipes.add(new MobLootRecipe(
@@ -218,15 +211,15 @@ public class RecipeGenerator {
 		boolean saved = false;
 		try {
 			saved = saveRecipes(internalMobName, recipes);
-		} catch (IOException e) {
+		} catch (IOException ignored) {
 		}
 		if (!saved)
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("" +
-				EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
-				EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + " ERROR " +
-				EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
-				EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD +
-				" Failed to save recipe. Does the item already exist?")); // TODO: MERGE CODE OVER
+			Utils.addChatMessage(
+				"" + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
+					EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + " ERROR " +
+					EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + EnumChatFormatting.OBFUSCATED + "#" +
+					EnumChatFormatting.RESET + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD +
+					" Failed to save recipe. Does the item already exist?"); // TODO: MERGE CODE OVER
 	}
 
 	private int parseIntIgnoringCommas(String text) {
@@ -307,7 +300,7 @@ public class RecipeGenerator {
 		);
 	}
 
-	private static Map<Character, Integer> durationSuffixLengthMap = new HashMap<Character, Integer>() {{
+	private static final Map<Character, Integer> durationSuffixLengthMap = new HashMap<Character, Integer>() {{
 		put('d', 60 * 60 * 24);
 		put('h', 60 * 60);
 		put('m', 60);

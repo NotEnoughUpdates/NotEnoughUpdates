@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -135,7 +136,7 @@ public class HotmInformation {
 	public synchronized void onLobbyJoin(WorldEvent.Load event) {
 		if (shouldReloadSoon) {
 			shouldReloadSoon = false;
-			requestUpdate(false);
+			neu.manager.apiUtils.updateProfileData();
 		}
 	}
 
@@ -154,17 +155,7 @@ public class HotmInformation {
 	@SubscribeEvent
 	public synchronized void onChat(ClientChatReceivedEvent event) {
 		if (event.message.getUnformattedText().equals("Welcome to Hypixel SkyBlock!"))
-			requestUpdate(false);
-	}
-
-	public synchronized void requestUpdate(boolean force) {
-		if (updateTask.isDone() || force) {
-			updateTask = neu.manager.apiUtils
-				.newHypixelApiRequest("skyblock/profiles")
-				.queryArgument("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))
-				.requestJson()
-				.thenAccept(this::updateInformation);
-		}
+			 neu.manager.apiUtils.updateProfileData();
 	}
 
 	/*
@@ -176,10 +167,13 @@ public class HotmInformation {
 		if (level > 20) return -1;
 		return QUICK_FORGE_MULTIPLIERS[level - 1];
 	}
+	@SubscribeEvent
+	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
+		JsonObject data = event.getData();
+		if (data == null) return;
 
-	public void updateInformation(JsonObject entireApiResponse) {
-		if (!entireApiResponse.has("success") || !entireApiResponse.get("success").getAsBoolean()) return;
-		JsonArray profiles = entireApiResponse.getAsJsonArray("profiles");
+		if (!data.has("success") || !data.get("success").getAsBoolean()) return;
+		JsonArray profiles = data.getAsJsonArray("profiles");
 		for (JsonElement element : profiles) {
 			JsonObject profile = element.getAsJsonObject();
 			String profileName = profile.get("cute_name").getAsString();
