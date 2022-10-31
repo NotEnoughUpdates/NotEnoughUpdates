@@ -262,7 +262,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Enable Coop Warning",
-		desc = "Asks for confirmation when clicking the coop diamond in profile menu"
+		desc = "Asks for confirmation when clicking the coop diamond in profile menu and prevents 'wrong' /coopadd commands"
 	)
 	@ConfigEditorBoolean
 	public boolean coopWarning = true;
