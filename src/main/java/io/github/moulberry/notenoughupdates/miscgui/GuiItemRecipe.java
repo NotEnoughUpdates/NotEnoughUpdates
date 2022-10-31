@@ -45,6 +45,7 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,7 @@ public class GuiItemRecipe extends GuiScreen {
 			if (!tabs.contains(recipe.getType()))
 				tabs.add(recipe.getType());
 		}
+		tabs.sort(Comparator.naturalOrder());
 		changeRecipe(0, 0);
 	}
 
@@ -293,7 +295,7 @@ public class GuiItemRecipe extends GuiScreen {
 			NotEnoughUpdates.INSTANCE.openGui = RecipeHistory.getNext();
 		}
 
-		ArrowPagesUtils.onPageSwitchMouse(
+		if (ArrowPagesUtils.onPageSwitchMouse(
 			guiLeft,
 			guiTop,
 			topLeft,
@@ -301,7 +303,22 @@ public class GuiItemRecipe extends GuiScreen {
 			getCurrentRecipeList().size(),
 			pageChange ->
 				changeRecipe(currentTab, pageChange)
-		);
+		)) return;
+
+		for (int i = 0; i < tabs.size(); i++) {
+			if (isWithinRect(
+				mouseX - guiLeft,
+				mouseY - guiTop,
+				TAB_POS_X,
+				TAB_POS_Y + TAB_OFFSET_Y * i,
+				TAB_SIZE_X,
+				TAB_SIZE_Y
+			)) {
+				changeRecipe(i, currentIndex);
+				Utils.playPressSound();
+				return;
+			}
+		}
 
 		for (RecipeSlot slot : getAllRenderedSlots()) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
