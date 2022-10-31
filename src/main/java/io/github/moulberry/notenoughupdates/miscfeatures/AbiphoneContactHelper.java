@@ -55,7 +55,7 @@ public class AbiphoneContactHelper {
 		List<String> list = event.toolTip;
 		if (list == null) return;
 		if (list.isEmpty()) return;
-		String rawNpcName = list.get(0);
+		String rawNpcName = event.itemStack.getDisplayName();
 		String npcName = StringUtils.cleanColour(rawNpcName);
 
 		JsonObject data = getJsonData(npcName);
