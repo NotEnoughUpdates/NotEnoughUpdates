@@ -65,8 +65,13 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class DungeonMap {
 	private static final ResourceLocation GREEN_CHECK = new ResourceLocation(
@@ -498,7 +503,7 @@ public class DungeonMap {
 			mapSizeX = borderSizeOption == 0 ? 90 : borderSizeOption == 1 ? 120 : borderSizeOption == 2 ? 160 : 240;
 		}
 		mapSizeY = mapSizeX;
-		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize;
+		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize + (isFloorOne ? getRenderRoomSize() : 0); //TODO: Fix E + fix interp for f1
 		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize;
 		int mapCenterX = mapSizeX / 2;
 		int mapCenterY = mapSizeY / 2;
