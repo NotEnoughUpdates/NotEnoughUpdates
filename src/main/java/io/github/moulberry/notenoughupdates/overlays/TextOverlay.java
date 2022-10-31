@@ -129,6 +129,10 @@ public abstract class TextOverlay {
 		return new Vector2f(x, y);
 	}
 
+	public Position getPosition() {
+		return position;
+	}
+
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
 	}
 

@@ -80,23 +80,10 @@ import java.util.Map;
 
 public class NEUConfig extends Config {
 	public void editOverlay() {
-		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>() {
-			{
-				put(OverlayManager.farmingOverlay, skillOverlays.farmingPosition);
-				put(OverlayManager.miningOverlay, mining.overlayPosition);
-				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
-				put(OverlayManager.combatSkillOverlay, skillOverlays.combatPosition);
-				put(OverlayManager.bonemerangOverlay, itemOverlays.bonemerangPosition);
-				put(OverlayManager.crystalHollowOverlay, mining.crystalHollowOverlayPosition);
-				put(OverlayManager.miningSkillOverlay, skillOverlays.miningPosition);
-				put(OverlayManager.petInfoOverlay, petOverlay.petInfoPosition);
-				put(OverlayManager.timersOverlay, miscOverlays.todoPosition);
-				put(OverlayManager.slayerOverlay, slayerOverlay.slayerPosition);
-				put(OverlayManager.fishingSkillOverlay, skillOverlays.fishingPosition);
-				put(OverlayManager.fuelBar, mining.drillFuelBarPosition);
-				put(OverlayManager.powderGrindingOverlay, mining.powderGrindingTrackerPosition);
-			}
-		};
+		final LinkedHashMap<TextOverlay, Position> overlayPositions = new LinkedHashMap<TextOverlay, Position>();
+		for (TextOverlay overlay : OverlayManager.textOverlays) {
+			overlayPositions.put(overlay, overlay.getPosition());
+		}
 		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(overlayPositions, () -> {
 		}, () -> {
 		}, () -> {
