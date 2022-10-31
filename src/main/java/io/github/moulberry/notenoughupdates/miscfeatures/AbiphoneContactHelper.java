@@ -27,18 +27,14 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AbiphoneContactHelper {
 
@@ -48,7 +44,6 @@ public class AbiphoneContactHelper {
 		return INSTANCE;
 	}
 
-	private final Pattern patternUsualLocation = Pattern.compile("(§5§o)?§7Usual location: §b(.*)");
 	private String selectedWaypointName = "";
 	private long lastClick = 0L;
 
@@ -118,8 +113,7 @@ public class AbiphoneContactHelper {
 		int y = data.get("y").getAsInt();
 		int z = data.get("z").getAsInt();
 
-		String islandName = fetchIslandName(stack);
-		String rawIslandName = readRawIslandNameFromRepo(islandName);
+		String rawIslandName = data.get("island").getAsString();
 		if (rawIslandName == null) return;
 
 		if (lastClick + 500 > System.currentTimeMillis()) return;
@@ -137,39 +131,6 @@ public class AbiphoneContactHelper {
 			selectedWaypointName = npcName;
 		}
 		Utils.playPressSound();
-	}
-
-	@Nullable
-	private String fetchIslandName(ItemStack stack) {
-		String islandName = null;
-		for (String line : ItemUtils.getLore(stack)) {
-			Matcher matcher = patternUsualLocation.matcher(line);
-			if (matcher.matches()) {
-				islandName = matcher.group(2);
-				break;
-			}
-		}
-		return islandName;
-	}
-
-	@Nullable
-	private static String readRawIslandNameFromRepo(String islandName) {
-		String rawIslandName = null;
-		if (islandName != null) {
-			JsonObject misc = Constants.MISC;
-			if (misc != null) {
-				if (misc.has("area_names")) {
-					JsonObject areaNames = misc.get("area_names").getAsJsonObject();
-					for (Map.Entry<String, JsonElement> entry : areaNames.entrySet()) {
-						if (entry.getValue().getAsString().equals(islandName)) {
-							rawIslandName = entry.getKey();
-						}
-
-					}
-				}
-			}
-		}
-		return rawIslandName;
 	}
 
 	private static void trackWaypoint(String rawNpcName, int x, int y, int z, String rawIslandName) {
