@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.core.config.Config;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.Category;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
+import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
@@ -105,7 +106,9 @@ public class NEUConfig extends Config {
 			case -1:
 				return;
 			case 0:
-				ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neumap");
+				NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(() -> {
+					NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+				});
 				return;
 			case 1:
 			case 4:

@@ -32,14 +32,10 @@ import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
 
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class MapCommand extends ClientCommandBase {
@@ -51,35 +47,8 @@ public class MapCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 
-		if (NotEnoughUpdates.INSTANCE.colourMap == null) {
-			try (
-				BufferedReader reader = new BufferedReader(new InputStreamReader(Minecraft
-					.getMinecraft()
-					.getResourceManager()
-					.getResource(
-						new ResourceLocation("notenoughupdates:maps/F1Full.json"))
-					.getInputStream(), StandardCharsets.UTF_8))
-			) {
-				JsonObject json = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, JsonObject.class);
-
-				NotEnoughUpdates.INSTANCE.colourMap = new Color[128][128];
-				for (int x = 0; x < 128; x++) {
-					for (int y = 0; y < 128; y++) {
-						NotEnoughUpdates.INSTANCE.colourMap[x][y] = new Color(0, 0, 0, 0);
-					}
-				}
-				for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-					int x = Integer.parseInt(entry.getKey().split(":")[0]);
-					int y = Integer.parseInt(entry.getKey().split(":")[1]);
-
-					NotEnoughUpdates.INSTANCE.colourMap[x][y] = new Color(entry.getValue().getAsInt(), true);
-				}
-			} catch (Exception ignored) {
-			}
-		}
-
 		if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor();
+			NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(null);
 			return;
 		}
 
@@ -89,7 +58,7 @@ public class MapCommand extends ClientCommandBase {
 		}
 
 		if (args.length != 2) {
-			NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor();
+			NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(null);
 			return;
 		}
 
@@ -157,6 +126,6 @@ public class MapCommand extends ClientCommandBase {
 			return;
 		}
 
-		NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor();
+		NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(null);
 	}
 }

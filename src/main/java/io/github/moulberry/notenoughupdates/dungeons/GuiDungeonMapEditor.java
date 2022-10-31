@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.dungeons;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiElementColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
@@ -46,8 +48,11 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,6 +84,8 @@ public class GuiDungeonMapEditor extends GuiScreen {
 	private GuiElementColour activeColourEditor = null;
 
 	private Field clickedSlider;
+
+	private Runnable closedCallback;
 
 	class Button {
 		private final int id;
@@ -150,8 +157,34 @@ public class GuiDungeonMapEditor extends GuiScreen {
 
 	}
 
-	public GuiDungeonMapEditor() {
-		DungeonMapConfig options = NotEnoughUpdates.INSTANCE.config.dungeonMap;
+	public GuiDungeonMapEditor(Runnable closedCallback) {
+
+		if (NotEnoughUpdates.INSTANCE.colourMap == null) {
+			try (
+				BufferedReader reader = new BufferedReader(new InputStreamReader(Minecraft
+					.getMinecraft()
+					.getResourceManager()
+					.getResource(
+						new ResourceLocation("notenoughupdates:maps/F1Full.json"))
+					.getInputStream(), StandardCharsets.UTF_8))
+			) {
+				JsonObject json = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(reader, JsonObject.class);
+
+				NotEnoughUpdates.INSTANCE.colourMap = new Color[128][128];
+				for (int x = 0; x < 128; x++) {
+					for (int y = 0; y < 128; y++) {
+						NotEnoughUpdates.INSTANCE.colourMap[x][y] = new Color(0, 0, 0, 0);
+					}
+				}
+				for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+					int x = Integer.parseInt(entry.getKey().split(":")[0]);
+					int y = Integer.parseInt(entry.getKey().split(":")[1]);
+
+					NotEnoughUpdates.INSTANCE.colourMap[x][y] = new Color(entry.getValue().getAsInt(), true);
+				}
+			} catch (Exception ignored) {
+			}
+		}
 
 		//Map Border Styles
 		buttons.add(new Button(6, 6, 97 + 30, "None"));
@@ -244,6 +277,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 			}
 			blurField.setText(strVal);
 		}
+		this.closedCallback = closedCallback;
 	}
 
 	@Override
@@ -589,6 +623,8 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				HashSet<String> players = new HashSet<>();
 				players.add(Minecraft.getMinecraft().thePlayer.getName());
 				GlStateManager.color(1, 1, 1, 1);
+				Runnable runnable = this.closedCallback;
+				this.closedCallback = null;
 				Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditorButForTheDungeonMap(
 					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition,
 					size, size, () -> {
@@ -604,7 +640,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 						0
 					);
 					Utils.pushGuiScale(-1);
-				}, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor()
+				}, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(runnable)
 				).withScale(2));
 				return;
 			}
@@ -854,5 +890,12 @@ public class GuiDungeonMapEditor extends GuiScreen {
 		GlStateManager.color(1f, 1f, 1f, 1f);
 		Utils.drawTexturedRect(x, y, blurWidth, blurHeight, uMin, uMax, vMin, vMax);
 		blurOutputVert.unbindFramebufferTexture();
+	}
+
+	@Override
+	public void onGuiClosed() {
+		if (this.closedCallback != null) {
+			this.closedCallback.run();
+		}
 	}
 }
