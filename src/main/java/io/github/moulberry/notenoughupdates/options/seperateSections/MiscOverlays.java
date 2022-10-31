@@ -226,7 +226,8 @@ public class MiscOverlays {
 
 	@ConfigOption(
 		name = "Colours",
-		desc = ""
+		desc = "",
+		searchTags = "color"
 	)
 
 	@ConfigEditorAccordion(id = 2)

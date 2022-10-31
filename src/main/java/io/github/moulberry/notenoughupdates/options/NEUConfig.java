@@ -50,6 +50,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.ItemOverlay
 import io.github.moulberry.notenoughupdates.options.seperateSections.Itemlist;
 import io.github.moulberry.notenoughupdates.options.seperateSections.LocationEdit;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
+import io.github.moulberry.notenoughupdates.options.seperateSections.MinionHelper;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
 import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
@@ -196,6 +197,12 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.config.apiData.repoBranch = "dangerous";
 				NotEnoughUpdates.INSTANCE.openGui =
 					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
+				return;
+			case 25:
+				editOverlay(activeConfigCategory, OverlayManager.powderGrindingOverlay, mining.powderGrindingTrackerPosition);
+				return;
+			case 26:
+				OverlayManager.powderGrindingOverlay.reset();
 				return;
 			default:
 				System.err.printf("Unknown runnableId = %d in category %s%n", runnableId, activeConfigCategory);
@@ -400,6 +407,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Minion Helper",
+		desc = "Minion Helper"
+	)
+	public MinionHelper minionHelper = new MinionHelper();
+
+	@Expose
+	@Category(
 		name = "Apis",
 		desc = "Api Data"
 	)
@@ -578,6 +592,18 @@ public class NEUConfig extends Config {
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose
 		public int magicalPower = 0;
+
+		@Expose
+		public int chestCount = 0;
+
+		@Expose
+		public int openedChestCount = 0;
+
+		@Expose
+		public int mithrilPowderFound = 0;
+
+		@Expose
+		public int gemstonePowderFound = 0;
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

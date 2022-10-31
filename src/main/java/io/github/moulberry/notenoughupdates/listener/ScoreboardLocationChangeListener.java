@@ -31,10 +31,10 @@ public class ScoreboardLocationChangeListener {
 				try {
 					Thread.sleep(3000);
 					TimersOverlay.afterPearls = TimersOverlay.heavyPearlCount();
-					//Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW+"You exited the beast with ["+EnumChatFormatting.AQUA+(TimersOverlay.afterPearls-TimersOverlay.beforePearls)+EnumChatFormatting.YELLOW+"/"+EnumChatFormatting.AQUA+TimersOverlay.availablePearls+EnumChatFormatting.YELLOW+"] Heavy Pearls!"));
+					//Utils.sendMessageToPlayer(EnumChatFormatting.YELLOW+"You exited the beast with ["+EnumChatFormatting.AQUA+(TimersOverlay.afterPearls-TimersOverlay.beforePearls)+EnumChatFormatting.YELLOW+"/"+EnumChatFormatting.AQUA+TimersOverlay.availablePearls+EnumChatFormatting.YELLOW+"] Heavy Pearls!");
 					if (TimersOverlay.afterPearls - TimersOverlay.beforePearls == TimersOverlay.availablePearls) {
 						NotEnoughUpdates.INSTANCE.config.getProfileSpecific().dailyHeavyPearlCompleted = System.currentTimeMillis();
-						//Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN+"Daily "+EnumChatFormatting.DARK_AQUA+"Heavy Pearls"+EnumChatFormatting.GREEN+" Complete!"));
+						//Utils.sendMessageToPlayer(EnumChatFormatting.GREEN+"Daily "+EnumChatFormatting.DARK_AQUA+"Heavy Pearls"+EnumChatFormatting.GREEN+" Complete!");
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();

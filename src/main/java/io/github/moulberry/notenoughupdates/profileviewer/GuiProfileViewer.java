@@ -176,6 +176,7 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -874,6 +875,7 @@ public class GuiProfileViewer extends GuiScreen {
 						currentPage = page;
 						inventoryTextField.otherComponentClick();
 						playerNameTextField.otherComponentClick();
+						killDeathSearchTextField.otherComponentClick();
 						return;
 					}
 				}
@@ -890,6 +892,7 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseY > guiTop + sizeY + 5 && mouseY < guiTop + sizeY + 25) {
 				playerNameTextField.mouseClicked(mouseX, mouseY, mouseButton);
 				inventoryTextField.otherComponentClick();
+				killDeathSearchTextField.otherComponentClick();
 				return;
 			}
 		}
@@ -961,11 +964,13 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 			playerNameTextField.otherComponentClick();
 			inventoryTextField.otherComponentClick();
+			killDeathSearchTextField.otherComponentClick();
 			return;
 		}
 		profileDropdownSelected = false;
 		playerNameTextField.otherComponentClick();
 		inventoryTextField.otherComponentClick();
+		killDeathSearchTextField.otherComponentClick();
 	}
 
 	@Override
@@ -1034,15 +1039,27 @@ public class GuiProfileViewer extends GuiScreen {
 							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
 						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
+        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
-					levelStr = EnumChatFormatting.GOLD + "MAXED!";
+					levelStr = levelObj.maxLevel != 7 ?
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
 				} else {
-					int maxXp = (int) levelObj.maxXpForLevel;
-					levelStr =
-						EnumChatFormatting.DARK_PURPLE +
-							StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
-							"/" +
-							StringUtils.shortNumberFormat(maxXp);
+					if (skillName.contains("Class Average")) {
+						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
+						totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
+					} else {
+						int maxXp = (int) levelObj.maxXpForLevel;
+						levelStr =
+							EnumChatFormatting.DARK_PURPLE +
+								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+								"/" +
+								StringUtils.shortNumberFormat(maxXp) +
+								// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
+								// a conditional here to add the overflow level rather than above
+								((skillName.contains("Catacombs") && levelObj.level >= 50) ?
+									EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
+					}
 				}
 				if (totalXpStr != null) {
 					tooltipToDisplay = Utils.createList(levelStr, totalXpStr);

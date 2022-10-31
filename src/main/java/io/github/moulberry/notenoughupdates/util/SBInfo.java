@@ -24,6 +24,8 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -37,7 +39,6 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -157,8 +158,7 @@ public class SBInfo {
 
 	public boolean checkForSkyblockLocation() {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() || getLocation() == null) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"[NEU] This command is not available outside SkyBlock"));
+			Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] This command is not available outside SkyBlock");
 			return false;
 		}
 
@@ -302,15 +302,22 @@ public class SBInfo {
 			lastLocRaw = System.currentTimeMillis();
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/locraw");
 		}
-			if (currentTime - lastMayorUpdate > 300 * 1000) {
-				updateMayor();
-				lastMayorUpdate = currentTime;
-			}
+		if (currentTime - lastMayorUpdate > 300 * 1000) {
+			updateMayor();
+			lastMayorUpdate = currentTime;
+		}
 		try {
 			for (NetworkPlayerInfo info : Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap()) {
 				String name = Minecraft.getMinecraft().ingameGUI.getTabList().getPlayerName(info);
 				if (name.startsWith(profilePrefix)) {
-					currentProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					String newProfile = Utils.cleanColour(name.substring(profilePrefix.length()));
+					setCurrentProfile(newProfile);
+					if (!Objects.equals(currentProfile, newProfile)) {
+						currentProfile = newProfile;
+						if (NotEnoughUpdates.INSTANCE.config != null)
+							if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+								OverlayManager.powderGrindingOverlay.load();
+					}
 					hasNewTab = true;
 				} else if (name.startsWith(skillsPrefix)) {
 					String levelInfo = name.substring(skillsPrefix.length()).trim();
@@ -446,5 +453,12 @@ public class SBInfo {
 
 	public JsonObject getMayorJson() {
 		return mayorJson;
+	}
+
+	public void setCurrentProfile(String newProfile) {
+		if (!newProfile.equals(currentProfile)) {
+			currentProfile = newProfile;
+			MinionHelperManager.getInstance().onProfileSwitch();
+		}
 	}
 }

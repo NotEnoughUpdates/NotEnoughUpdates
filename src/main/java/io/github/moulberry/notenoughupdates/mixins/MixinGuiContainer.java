@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
+import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
@@ -72,6 +73,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	@Inject(method = "drawSlot", at = @At("RETURN"))
 	public void drawSlotRet(Slot slotIn, CallbackInfo ci) {
 		SlotLocking.getInstance().drawSlot(slotIn);
+		DungeonNpcProfitOverlay.onDrawSlot(slotIn);
 	}
 
 	@Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)

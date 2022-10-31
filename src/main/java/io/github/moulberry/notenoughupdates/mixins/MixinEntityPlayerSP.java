@@ -21,10 +21,10 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,8 +42,7 @@ public class MixinEntityPlayerSP {
 		int slot = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
 		if (SlotLocking.getInstance().isSlotIndexLocked(slot) || SlotLocking.getInstance().isSwapedSlotLocked()) {
 			ci.cancel();
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"NotEnoughUpdates has prevented you from dropping that locked item!"));
+			Utils.addChatMessage(EnumChatFormatting.RED + "NotEnoughUpdates has prevented you from dropping that locked item!");
 		}
 	}
 }
