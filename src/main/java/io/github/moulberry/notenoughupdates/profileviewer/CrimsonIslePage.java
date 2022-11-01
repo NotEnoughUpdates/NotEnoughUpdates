@@ -39,27 +39,28 @@ import java.util.Map;
 
 public class CrimsonIslePage extends GuiProfileViewerPage {
 
-		private static final ResourceLocation CRIMSON_ISLE = new ResourceLocation("notenoughupdates:pv_crimson_isle_page.png");
+	private static final ResourceLocation CRIMSON_ISLE =
+		new ResourceLocation("notenoughupdates:pv_crimson_isle_page.png");
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("EEE d MMM yyyy");
 	private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	private static final String[] dojoGrades = {"F", "D", "C", "B", "A", "S"};
 
 	private static final ItemStack[] KUUDRA_KEYS = {
-			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_TIER_KEY"),
-			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_HOT_TIER_KEY"),
-			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_BURNING_TIER_KEY"),
-			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_FIERY_TIER_KEY"),
-			NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_INFERNAL_TIER_KEY"),
-		};
+		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_TIER_KEY"),
+		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_HOT_TIER_KEY"),
+		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_BURNING_TIER_KEY"),
+		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_FIERY_TIER_KEY"),
+		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_INFERNAL_TIER_KEY"),
+	};
 
-		public static final String[] KUUDRA_TIERS = {
-			"Basic",
-			"Hot",
-			"Burning",
-			"Fiery",
-			"Infernal"
-		};
+	public static final String[] KUUDRA_TIERS = {
+		"Basic",
+		"Hot",
+		"Burning",
+		"Fiery",
+		"Infernal"
+	};
 
 	private static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
 		put("mob_kb", EnumChatFormatting.GOLD + "Test of Force");
@@ -96,315 +97,307 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		put(12000, "Hero");
 	}};
 
-		public CrimsonIslePage(GuiProfileViewer instance) {
-				super(instance);
-		}
+	public CrimsonIslePage(GuiProfileViewer instance) {
+		super(instance);
+	}
 
-		@Override
-		public void drawPage(int mouseX, int mouseY, float partialTicks) {
-			int guiLeft = GuiProfileViewer.getGuiLeft();
-			int guiTop = GuiProfileViewer.getGuiTop();
+	@Override
+	public void drawPage(int mouseX, int mouseY, float partialTicks) {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
 
-			JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
 
-			if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
-				Utils.drawStringCentered(
-					EnumChatFormatting.RED + "No data found for the Crimson Isles",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 431 / 2f,
-					guiTop + 101,
-					true,
-					0
-				);
-				return;
-			}
-
-			Minecraft.getMinecraft().getTextureManager().bindTexture(CRIMSON_ISLE);
-			Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
-
-			JsonObject netherIslandPlayerData = profileInfo.getAsJsonObject("nether_island_player_data");
-
-			// Dojo stats
-			drawDojoStats(netherIslandPlayerData, guiLeft, guiTop);
-
-			// Kuudra stats
-			drawKuudraStats(netherIslandPlayerData, guiLeft, guiTop);
-
-			// Last matriarch attempt
-			drawLastMatriarchAttempt(netherIslandPlayerData, guiLeft, guiTop);
-
-			// Faction reputation
-			drawFactionReputation(netherIslandPlayerData, guiLeft, guiTop);
-		}
-
-		public void drawKuudraStats(JsonObject data, int guiLeft, int guiTop) {
+		if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
 			Utils.drawStringCentered(
-				EnumChatFormatting.RED + "Kuudra Stats",
+				EnumChatFormatting.RED + "No data found for the Crimson Isles",
 				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + (431 * 0.18f),
-				guiTop + 14,
+				guiLeft + 431 / 2f,
+				guiTop + 101,
 				true,
 				0
 			);
+			return;
+		}
 
-			JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
+		Minecraft.getMinecraft().getTextureManager().bindTexture(CRIMSON_ISLE);
+		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
 
-			String[] kuudraTiers = {"none", "hot", "burning", "fiery", "infernal"};
+		JsonObject netherIslandPlayerData = profileInfo.getAsJsonObject("nether_island_player_data");
 
-			RenderHelper.enableGUIStandardItemLighting();
+		// Dojo stats
+		drawDojoStats(netherIslandPlayerData, guiLeft, guiTop);
 
-			for (int i = 0; i < 5; i++) {
+		// Kuudra stats
+		drawKuudraStats(netherIslandPlayerData, guiLeft, guiTop);
 
-				// Checking the player has completions for each tier
-				// and get the number of completions if they do
-				int completions = kuudraCompletedTiers.has(kuudraTiers[i]) ? kuudraCompletedTiers.get(kuudraTiers[i]).getAsInt() : 0;
+		// Last matriarch attempt
+		drawLastMatriarchAttempt(netherIslandPlayerData, guiLeft, guiTop);
 
-				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
-					KUUDRA_KEYS[i],
-					guiLeft + 8,
-					guiTop + 25 + (i * 12)
-				);
+		// Faction reputation
+		drawFactionReputation(netherIslandPlayerData, guiLeft, guiTop);
+	}
 
-				Utils.renderAlignedString(
-					EnumChatFormatting.RED + KUUDRA_TIERS[i] + ": ",
-					EnumChatFormatting.WHITE + String.valueOf(completions),
-					guiLeft + 23,
-					guiTop + 30 + (i * 12),
-					110
-				);
-			}
+	public void drawKuudraStats(JsonObject data, int guiLeft, int guiTop) {
+		Utils.drawStringCentered(
+			EnumChatFormatting.RED + "Kuudra Stats",
+			Minecraft.getMinecraft().fontRendererObj,
+			guiLeft + (431 * 0.18f),
+			guiTop + 14,
+			true,
+			0
+		);
+
+		JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
+
+		// This is different to the one initialised at the start of the class as these refer to the names of the tiers in the API
+		String[] kuudraTiers = {"none", "hot", "burning", "fiery", "infernal"};
+
+		RenderHelper.enableGUIStandardItemLighting();
+
+		for (int i = 0; i < 5; i++) {
+			// Checking the player has completions for each tier
+			// and get the number of completions if they do
+			int completions =
+				kuudraCompletedTiers.has(kuudraTiers[i]) ? kuudraCompletedTiers.get(kuudraTiers[i]).getAsInt() : 0;
+
+			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
+				KUUDRA_KEYS[i],
+				guiLeft + 8,
+				guiTop + 25 + (i * 12)
+			);
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "Total: ",
-				EnumChatFormatting.WHITE + String.valueOf(getTotalKuudraRuns(kuudraCompletedTiers)),
+				EnumChatFormatting.RED + KUUDRA_TIERS[i] + ": ",
+				EnumChatFormatting.WHITE + String.valueOf(completions),
 				guiLeft + 23,
-				guiTop + 40 + (5 * 12),
+				guiTop + 30 + (i * 12),
 				110
 			);
 		}
 
-		public int getTotalKuudraRuns(JsonObject completedRuns) {
-			int totalRuns = 0;
-			for (Map.Entry<String, JsonElement> runs : completedRuns.entrySet()) {
-				totalRuns += runs.getValue().getAsInt();
-			}
-			return totalRuns;
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + "Total: ",
+			EnumChatFormatting.WHITE + String.valueOf(getTotalKuudraRuns(kuudraCompletedTiers)),
+			guiLeft + 23,
+			guiTop + 40 + (5 * 12),
+			110
+		);
+	}
+
+	public int getTotalKuudraRuns(JsonObject completedRuns) {
+		int totalRuns = 0;
+		for (Map.Entry<String, JsonElement> runs : completedRuns.entrySet()) {
+			totalRuns += runs.getValue().getAsInt();
 		}
+		return totalRuns;
+	}
 
-		public void drawDojoStats(JsonObject data, int guiLeft, int guiTop) {
-			Utils.drawStringCentered(
-				EnumChatFormatting.YELLOW + "Dojo Stats",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + (431 * 0.49f),
-				guiTop + 14,
-				true,
-				0
-			);
+	public void drawDojoStats(JsonObject data, int guiLeft, int guiTop) {
+		Utils.drawStringCentered(
+			EnumChatFormatting.YELLOW + "Dojo Stats",
+			Minecraft.getMinecraft().fontRendererObj,
+			guiLeft + (431 * 0.49f),
+			guiTop + 14,
+			true,
+			0
+		);
 
-			JsonObject dojoStats = data.getAsJsonObject("dojo");
-			int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
-			int pointsTotal = 0;
+		JsonObject dojoStats = data.getAsJsonObject("dojo");
+		int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
+		int pointsTotal = 0;
 
-			for (int i = 0; i < apiDojoTestNames.size(); i++) {
-				for (Map.Entry<String, JsonElement> dojoData : dojoStats.entrySet()) {
-					if (dojoData.getKey().equals("dojo_points_" + apiDojoTestNames.keySet().toArray()[i])) {
-						dojoScores[i] = dojoData.getValue().getAsInt();
-						pointsTotal += dojoData.getValue().getAsInt();
-					}
+		for (int i = 0; i < apiDojoTestNames.size(); i++) {
+			for (Map.Entry<String, JsonElement> dojoData : dojoStats.entrySet()) {
+				if (dojoData.getKey().equals("dojo_points_" + apiDojoTestNames.keySet().toArray()[i])) {
+					dojoScores[i] = dojoData.getValue().getAsInt();
+					pointsTotal += dojoData.getValue().getAsInt();
 				}
 			}
+		}
 
-			for (int i = 0; i < apiDojoTestNames.size(); i++) {
-				Utils.renderAlignedString(
-					apiDojoTestNames.get(apiDojoTestNames.keySet().toArray()[i]) + ": ",
-					EnumChatFormatting.WHITE + String.valueOf(dojoScores[i]) + " (" +
-						dojoGrades[(dojoScores[i] / 200) >= 6 ? 5 : (dojoScores[i] / 200)] + ")",
-					guiLeft + (431 * 0.49f) - 65,
-					guiTop + 30 + (i * 12),
-					130
-				);
-			}
-
+		for (int i = 0; i < apiDojoTestNames.size(); i++) {
 			Utils.renderAlignedString(
-				EnumChatFormatting.GRAY + "Points: ",
-				EnumChatFormatting.GOLD + String.valueOf(pointsTotal),
+				apiDojoTestNames.get(apiDojoTestNames.keySet().toArray()[i]) + ": ",
+				EnumChatFormatting.WHITE + String.valueOf(dojoScores[i]) + " (" +
+					dojoGrades[(dojoScores[i] / 200) >= 6 ? 5 : (dojoScores[i] / 200)] + ")",
 				guiLeft + (431 * 0.49f) - 65,
-				guiTop + 40 + (apiDojoTestNames.size() * 12),
-				130
-			);
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.GRAY + "Rank: ",
-				getRank(pointsTotal, dojoPointsToRank),
-				guiLeft + (431 * 0.49f) - 65,
-				guiTop + 52 + (apiDojoTestNames.size() * 12),
-				130
-			);
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.GRAY + "Points to next: ",
-				getPointsToNextRank(pointsTotal, dojoPointsToRank) == 0 ? EnumChatFormatting.GOLD + "MAXED!" : String.valueOf(getPointsToNextRank(pointsTotal, dojoPointsToRank)),
-				guiLeft + (431 * 0.49f) - 65,
-				guiTop + 64 + (apiDojoTestNames.size() * 12),
+				guiTop + 30 + (i * 12),
 				130
 			);
 		}
 
-		public String getRank(int points, LinkedHashMap<Integer, String> ranks) {
-			int lastRank = 0;
-			for (Map.Entry<Integer, String> rank : ranks.entrySet()) {
-				if (points < rank.getKey()) {
-					return ranks.get(lastRank);
-				}
-				lastRank = rank.getKey();
+		Utils.renderAlignedString(
+			EnumChatFormatting.GRAY + "Points: ",
+			EnumChatFormatting.GOLD + String.valueOf(pointsTotal),
+			guiLeft + (431 * 0.49f) - 65,
+			guiTop + 40 + (apiDojoTestNames.size() * 12),
+			130
+		);
+
+		Utils.renderAlignedString(
+			EnumChatFormatting.GRAY + "Rank: ",
+			getRank(pointsTotal),
+			guiLeft + (431 * 0.49f) - 65,
+			guiTop + 52 + (apiDojoTestNames.size() * 12),
+			130
+		);
+
+		Utils.renderAlignedString(
+			EnumChatFormatting.GRAY + "Points to next: ",
+			getPointsToNextRank(pointsTotal) == 0
+				? EnumChatFormatting.GOLD + "MAXED!"
+				: String.valueOf(getPointsToNextRank(pointsTotal)),
+			guiLeft + (431 * 0.49f) - 65,
+			guiTop + 64 + (apiDojoTestNames.size() * 12),
+			130
+		);
+	}
+
+	public String getRank(int points) {
+		int lastRank = 0;
+		for (Map.Entry<Integer, String> rank : dojoPointsToRank.entrySet()) {
+			if (points < rank.getKey()) {
+				return dojoPointsToRank.get(lastRank);
 			}
-			return ranks.get(ranks.keySet().toArray()[ranks.size() - 1]);
+			lastRank = rank.getKey();
 		}
+		return dojoPointsToRank.get(dojoPointsToRank.keySet().toArray()[dojoPointsToRank.size() - 1]);
+	}
 
-		public int getPointsToNextRank(int pointsTotal, LinkedHashMap<Integer, String> dojoPointsToRank) {
-			int pointsToNextRank = 0;
-			for (Map.Entry<Integer, String> dojoRank : dojoPointsToRank.entrySet()) {
-				if (dojoRank.getKey() > pointsTotal) {
-					pointsToNextRank = dojoRank.getKey();
-					break;
-				}
+	public int getPointsToNextRank(int pointsTotal) {
+		int pointsToNextRank = 0;
+		for (Map.Entry<Integer, String> dojoRank : dojoPointsToRank.entrySet()) {
+			if (dojoRank.getKey() > pointsTotal) {
+				pointsToNextRank = dojoRank.getKey();
+				break;
 			}
-			return pointsToNextRank == 0 ? 0 : pointsToNextRank - pointsTotal;
 		}
+		return pointsToNextRank == 0 ? 0 : pointsToNextRank - pointsTotal;
+	}
 
-		public void drawLastMatriarchAttempt(JsonObject data, int guiLeft, int guiTop) {
-			Utils.drawStringCentered(
-				EnumChatFormatting.GOLD + "Last Matriarch Attempt",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + (431 * 0.82f),
-				guiTop + 104,
-				true,
-				0
-			);
+	public void drawLastMatriarchAttempt(JsonObject data, int guiLeft, int guiTop) {
+		Utils.drawStringCentered(
+			EnumChatFormatting.GOLD + "Last Matriarch Attempt",
+			Minecraft.getMinecraft().fontRendererObj,
+			guiLeft + (431 * 0.82f),
+			guiTop + 104,
+			true,
+			0
+		);
 
-			JsonObject lastMatriarchAttempt = data.getAsJsonObject("matriarch");
+		JsonObject lastMatriarchAttempt = data.getAsJsonObject("matriarch");
 
-			if (!lastMatriarchAttempt.entrySet().isEmpty()) {
-				Utils.renderAlignedString(
-					EnumChatFormatting.GOLD + "Heavy Pearls Acquired: ",
-					EnumChatFormatting.WHITE + lastMatriarchAttempt.get("pearls_collected").getAsString(),
-					guiLeft + 290,
-					guiTop + 119,
-					130
-				);
-
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTimeInMillis(lastMatriarchAttempt.get("last_attempt").getAsLong());
-				String date = dateFormat.format(calendar.getTime());
-				String time = timeFormat.format(calendar.getTime());
-
-				Utils.renderAlignedString(
-					EnumChatFormatting.GOLD + "Last Attempt: ",
-					EnumChatFormatting.WHITE + date,
-					guiLeft + 290,
-					guiTop + 131,
-					130
-				);
-
-				Utils.renderAlignedString(
-					EnumChatFormatting.GOLD + " ",
-					EnumChatFormatting.WHITE + time,
-					guiLeft + 290,
-					guiTop + 143,
-					130
-				);
-				return;
-			}
-
+		if (!lastMatriarchAttempt.entrySet().isEmpty()) {
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "No attempts found!",
-				" ",
+				EnumChatFormatting.GOLD + "Heavy Pearls Acquired: ",
+				EnumChatFormatting.WHITE + lastMatriarchAttempt.get("pearls_collected").getAsString(),
 				guiLeft + 290,
 				guiTop + 119,
 				130
 			);
-		}
 
-		public void drawFactionReputation(JsonObject data, int guiLeft, int guiTop) {
-			Utils.drawStringCentered(
-				EnumChatFormatting.DARK_PURPLE + "Faction Reputation",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + (431 * 0.82f),
-				guiTop + 14,
-				true,
-				0
-			);
-
-			String selectedFaction = data.has("selected_faction") ? data.get("selected_faction").getAsString() : "N/A";
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(lastMatriarchAttempt.get("last_attempt").getAsLong());
+			String date = dateFormat.format(calendar.getTime());
+			String time = timeFormat.format(calendar.getTime());
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.GREEN + "Faction: ",
-				factions.get(selectedFaction),
+				EnumChatFormatting.GOLD + "Last Attempt: ",
+				EnumChatFormatting.WHITE + date,
 				guiLeft + 290,
-				guiTop + 30,
+				guiTop + 131,
 				130
 			);
 
-			int mageReputation = data.has("mages_reputation") ? data.get("mages_reputation").getAsInt() : 0;
-			int barbarianReputation = data.has("barbarians_reputation") ? data.get("barbarians_reputation").getAsInt() : 0;
+			Utils.renderAlignedString(
+				EnumChatFormatting.GOLD + " ",
+				EnumChatFormatting.WHITE + time,
+				guiLeft + 290,
+				guiTop + 143,
+				130
+			);
+			return;
+		}
 
-			if (selectedFaction.equals("mages")) {
-				drawMageReputation(guiLeft, guiTop, mageReputation, factionThresholds);
-				drawBarbarianReputation(guiLeft, guiTop + 24, barbarianReputation, factionThresholds);
-			} else {
-				drawBarbarianReputation(guiLeft, guiTop, barbarianReputation, factionThresholds);
-				drawMageReputation(guiLeft, guiTop + 24, mageReputation, factionThresholds);
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + "No attempts found!",
+			" ",
+			guiLeft + 290,
+			guiTop + 119,
+			130
+		);
+	}
+
+	public void drawFactionReputation(JsonObject data, int guiLeft, int guiTop) {
+		Utils.drawStringCentered(
+			EnumChatFormatting.DARK_PURPLE + "Faction Reputation",
+			Minecraft.getMinecraft().fontRendererObj,
+			guiLeft + (431 * 0.82f),
+			guiTop + 14,
+			true,
+			0
+		);
+
+		String selectedFaction = data.has("selected_faction") ? data.get("selected_faction").getAsString() : "N/A";
+
+		Utils.renderAlignedString(
+			EnumChatFormatting.GREEN + "Faction: ",
+			factions.get(selectedFaction),
+			guiLeft + 290,
+			guiTop + 30,
+			130
+		);
+
+		int mageReputation = data.has("mages_reputation") ? data.get("mages_reputation").getAsInt() : 0;
+		int barbarianReputation = data.has("barbarians_reputation") ? data.get("barbarians_reputation").getAsInt() : 0;
+
+		// Mage reputation
+		int mageReputationThreshold = 0;
+		for (Map.Entry<Integer, String> factionThreshold : factionThresholds.entrySet()) {
+			if (mageReputation >= factionThreshold.getKey()) {
+				mageReputationThreshold = factionThreshold.getKey();
 			}
 		}
 
-		public void drawMageReputation(int guiLeft, int guiTop, int mageReputation, LinkedHashMap<Integer, String> factionThresholds) {
-			int mageReputationThreshold = 0;
-			for (Map.Entry<Integer, String> factionThreshold : factionThresholds.entrySet()) {
-				if (mageReputation >= factionThreshold.getKey()) {
-					mageReputationThreshold = factionThreshold.getKey();
-				}
+		Utils.renderAlignedString(
+			EnumChatFormatting.DARK_PURPLE + "Mage Reputation: ",
+			EnumChatFormatting.WHITE + String.valueOf(mageReputation),
+			guiLeft + 290,
+			guiTop + 42 + (selectedFaction.equals("mages") ? 0 : 24),
+			130
+		);
+
+		Utils.renderAlignedString(
+			EnumChatFormatting.DARK_PURPLE + "Title: ",
+			EnumChatFormatting.WHITE + factionThresholds.get(mageReputationThreshold),
+			guiLeft + 290,
+			guiTop + 54 + (selectedFaction.equals("mages") ? 0 : 24),
+			130
+		);
+
+		// Barbarian reputation
+		int barbarianReputationThreshold = 0;
+		for (Map.Entry<Integer, String> factionThreshold : factionThresholds.entrySet()) {
+			if (barbarianReputation >= factionThreshold.getKey()) {
+				barbarianReputationThreshold = factionThreshold.getKey();
 			}
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.DARK_PURPLE + "Mage Reputation: ",
-				EnumChatFormatting.WHITE + String.valueOf(mageReputation),
-				guiLeft + 290,
-				guiTop + 42,
-				130
-			);
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.DARK_PURPLE + "Title: ",
-				EnumChatFormatting.WHITE + factionThresholds.get(mageReputationThreshold),
-				guiLeft + 290,
-				guiTop + 54,
-				130
-			);
 		}
 
-		public void drawBarbarianReputation(int guiLeft, int guiTop, int barbarianReputation, LinkedHashMap<Integer, String> factionThresholds) {
-			int barbarianReputationThreshold = 0;
-			for (Map.Entry<Integer, String> factionThreshold : factionThresholds.entrySet()) {
-				if (barbarianReputation >= factionThreshold.getKey()) {
-					barbarianReputationThreshold = factionThreshold.getKey();
-				}
-			}
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + "Barbarian Reputation: ",
+			EnumChatFormatting.WHITE + String.valueOf(barbarianReputation),
+			guiLeft + 290,
+			guiTop + 42 + (selectedFaction.equals("barbarians") ? 0 : 24),
+			130
+		);
 
-			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "Barbarian Reputation: ",
-				EnumChatFormatting.WHITE + String.valueOf(barbarianReputation),
-				guiLeft + 290,
-				guiTop + 42,
-				130
-			);
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "Title: ",
-				EnumChatFormatting.WHITE + factionThresholds.get(barbarianReputationThreshold),
-				guiLeft + 290,
-				guiTop + 54,
-				130
-			);
-		}
-
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + "Title: ",
+			EnumChatFormatting.WHITE + factionThresholds.get(barbarianReputationThreshold),
+			guiLeft + 290,
+			guiTop + 54 + (selectedFaction.equals("barbarians") ? 0 : 24),
+			130
+		);
+	}
 }
