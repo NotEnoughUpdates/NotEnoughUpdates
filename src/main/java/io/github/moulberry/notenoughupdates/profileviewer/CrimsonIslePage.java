@@ -364,7 +364,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			EnumChatFormatting.DARK_PURPLE + "Mage Reputation: ",
 			EnumChatFormatting.WHITE + String.valueOf(mageReputation),
 			guiLeft + 290,
-			guiTop + 42 + (selectedFaction.equals("mages") ? 0 : 24),
+			guiTop + 42 + (selectedFaction.equals("mages") || selectedFaction.equals("N/A") ? 0 : 24),
 			130
 		);
 
@@ -372,7 +372,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			EnumChatFormatting.DARK_PURPLE + "Title: ",
 			EnumChatFormatting.WHITE + factionThresholds.get(mageReputationThreshold),
 			guiLeft + 290,
-			guiTop + 54 + (selectedFaction.equals("mages") ? 0 : 24),
+			guiTop + 54 + (selectedFaction.equals("mages") || selectedFaction.equals("N/A") ? 0 : 24),
 			130
 		);
 
