@@ -117,7 +117,7 @@ public class Calculator {
 				token.tokenLength = 1;
 				token.type = TokenType.LPAREN;
 				token.operatorValue = "(";
-			} else if ('.' == c) {
+			} else if ('.' == c || ',' == c) {
 				token.tokenLength = 1;
 				token.type = TokenType.NUMBER;
 				readDigitsInto(token, source, true);
@@ -129,7 +129,7 @@ public class Calculator {
 				readDigitsInto(token, source, false);
 				if (i + token.tokenLength < source.length()) {
 					char p = source.charAt(i + token.tokenLength);
-					if ('.' == p) {
+					if ('.' == p || ',' == p) {
 						token.tokenLength++;
 						readDigitsInto(token, source, true);
 					}
