@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
@@ -113,12 +114,16 @@ public class NEUManager {
 		new KeyBinding("Show usages for item", Keyboard.KEY_U, "NotEnoughUpdates");
 	public final KeyBinding keybindViewRecipe =
 		new KeyBinding("Show recipe for item", Keyboard.KEY_R, "NotEnoughUpdates");
+	public final KeyBinding keybindPreviousRecipe =
+		new KeyBinding("Show previous recipe", Keyboard.KEY_LBRACKET, "NotEnoughUpdates");
+	public final KeyBinding keybindNextRecipe =
+		new KeyBinding("Show next recipe", Keyboard.KEY_RBRACKET, "NotEnoughUpdates");
 	public final KeyBinding keybindToggleDisplay = new KeyBinding("Toggle NEU overlay", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindClosePanes = new KeyBinding("Close NEU panes", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindItemSelect = new KeyBinding("Select Item", -98 /*middle*/, "NotEnoughUpdates");
 	public final KeyBinding[] keybinds = new KeyBinding[]{
-		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe,
-		keybindToggleDisplay, keybindClosePanes, keybindItemSelect
+		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe, keybindPreviousRecipe,
+		keybindNextRecipe, keybindToggleDisplay, keybindClosePanes, keybindItemSelect
 	};
 
 	public String viewItemAttemptID = null;
@@ -131,6 +136,8 @@ public class NEUManager {
 	private final Set<NeuRecipe> recipes = new HashSet<>();
 	private final HashMap<String, Set<NeuRecipe>> recipesMap = new HashMap<>();
 	private final HashMap<String, Set<NeuRecipe>> usagesMap = new HashMap<>();
+
+	private final Map<String, String> displayNameCache = new HashMap<>();
 
 	public String latestRepoCommit = null;
 
@@ -155,10 +162,6 @@ public class NEUManager {
 
 		this.repoLocation = new File(configLocation, "repo");
 		repoLocation.mkdir();
-	}
-
-	public void setCurrentProfile(String currentProfile) {
-		SBInfo.getInstance().currentProfile = currentProfile;
 	}
 
 	public String getCurrentProfile() {
@@ -886,7 +889,6 @@ public class NEUManager {
 			case "viewpotion":
 				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
 		}
-		displayGuiItemRecipe(internalName);
 	}
 
 	public void showRecipe(String internalName) {
@@ -990,6 +992,7 @@ public class NEUManager {
 		List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
 		if (usages.isEmpty()) return false;
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(usages, this));
+		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
 	}
 
@@ -998,6 +1001,7 @@ public class NEUManager {
 		List<NeuRecipe> recipes = getAvailableRecipesFor(internalName);
 		if (recipes.isEmpty()) return false;
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(recipes, this));
+		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
 	}
 
@@ -1593,6 +1597,7 @@ public class NEUManager {
 					recipes.clear();
 					recipesMap.clear();
 					usagesMap.clear();
+					itemMap.clear();
 
 					File[] itemFiles = new File(repoLocation, "items").listFiles();
 					if (itemFiles != null) {
@@ -1606,6 +1611,7 @@ public class NEUManager {
 				new RepositoryReloadEvent(repoLocation, !hasBeenLoadedBefore).post();
 				hasBeenLoadedBefore = true;
 				comp.complete(null);
+				displayNameCache.clear();
 			} catch (Exception e) {
 				comp.completeExceptionally(e);
 			}
@@ -1621,5 +1627,31 @@ public class NEUManager {
 
 	public boolean isValidInternalName(String internalName) {
 		return itemMap.containsKey(internalName);
+	}
+
+	public String getDisplayName(String internalName) {
+		if (displayNameCache.containsKey(internalName)) {
+			return displayNameCache.get(internalName);
+		}
+
+		String displayName = null;
+		TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
+		if (itemInformation.containsKey(internalName)) {
+			JsonObject jsonObject = itemInformation.get(internalName);
+			if (jsonObject.has("displayname")) {
+				displayName = jsonObject.get("displayname").getAsString();
+			}
+		}
+
+		if (displayName == null) {
+			displayName = internalName;
+			Utils.showOutdatedRepoNotification();
+			if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+				Utils.addChatMessage("§c[NEU] Found no display name in repo for '" + internalName + "'!");
+			}
+		}
+
+		displayNameCache.put(internalName, displayName);
+		return displayName;
 	}
 }

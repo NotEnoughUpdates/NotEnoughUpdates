@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
+
 import java.util.Map;
 
 public class SenitherWeight extends Weight {

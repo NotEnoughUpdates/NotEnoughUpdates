@@ -234,35 +234,35 @@ public class CrystalWishingCompassSolver {
 				case SUCCESS:
 					return;
 				case STILL_PROCESSING_PRIOR_USE:
-					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-						"[NEU] Wait a little longer before using the wishing compass again."));
+					Utils.addChatMessage(
+						EnumChatFormatting.YELLOW + "[NEU] Wait a little longer before using the wishing compass again.");
 					event.setCanceled(true);
 					break;
 				case LOCATION_TOO_CLOSE:
-					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-						"[NEU] Move a little further before using the wishing compass again."));
+					Utils.addChatMessage(
+						EnumChatFormatting.YELLOW + "[NEU] Move a little further before using the wishing compass again.");
 					event.setCanceled(true);
 					break;
 				case POSSIBLE_TARGETS_CHANGED:
-					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-						"[NEU] Possible wishing compass targets have changed. Solver has been reset."));
+					Utils.addChatMessage(
+						EnumChatFormatting.YELLOW + "[NEU] Possible wishing compass targets have changed. Solver has been reset.");
 					event.setCanceled(true);
 					break;
 				case NO_PARTICLES_FOR_PREVIOUS_COMPASS:
-					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-						"[NEU] No particles detected for prior compass use. Need another position to solve."));
+					Utils.addChatMessage(EnumChatFormatting.YELLOW +
+						"[NEU] No particles detected for prior compass use. Need another position to solve.");
 					break;
 				case PLAYER_IN_NUCLEUS:
-					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-						"[NEU] Wishing compass must be used outside the nucleus for accurate results."));
+					Utils.addChatMessage(
+						EnumChatFormatting.YELLOW + "[NEU] Wishing compass must be used outside the nucleus for accurate results.");
 					event.setCanceled(true);
 					break;
 				default:
 					throw new IllegalStateException("Unexpected wishing compass solver state: \n" + getDiagnosticMessage());
 			}
 		} catch (Exception e) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"[NEU] Error processing wishing compass action - see log for details"));
+			Utils.addChatMessage(EnumChatFormatting.RED +
+				"[NEU] Error processing wishing compass action - see log for details");
 			e.printStackTrace();
 			event.setCanceled(true);
 			solverState = SolverState.FAILED_EXCEPTION;
@@ -375,39 +375,36 @@ public class CrystalWishingCompassSolver {
 						showSolution();
 						break;
 					case FAILED_EXCEPTION:
-						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-							"[NEU] Unable to determine wishing compass target."));
+						Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Unable to determine wishing compass target.");
 						logDiagnosticData(false);
 						break;
 					case FAILED_TIMEOUT_NO_REPEATING:
-						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-							"[NEU] Timed out waiting for repeat set of compass particles."));
+						Utils.addChatMessage(
+							EnumChatFormatting.RED + "[NEU] Timed out waiting for repeat set of compass particles.");
 						logDiagnosticData(false);
 						break;
 					case FAILED_TIMEOUT_NO_PARTICLES:
-						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-							"[NEU] Timed out waiting for compass particles."));
+						Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Timed out waiting for compass particles.");
 						logDiagnosticData(false);
 						break;
 					case FAILED_INTERSECTION_CALCULATION:
-						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-							"[NEU] Unable to determine intersection of wishing compasses."));
+						Utils.addChatMessage(
+							EnumChatFormatting.RED + "[NEU] Unable to determine intersection of wishing compasses.");
 						logDiagnosticData(false);
 						break;
 					case FAILED_INVALID_SOLUTION:
-						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-							"[NEU] Failed to find solution."));
+						Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] Failed to find solution.");
 						logDiagnosticData(false);
 						break;
 					case NEED_SECOND_COMPASS:
-						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW +
-							"[NEU] Need another position to determine wishing compass target."));
+						Utils.addChatMessage(
+							EnumChatFormatting.YELLOW + "[NEU] Need another position to determine wishing compass target.");
 						break;
 				}
 			}
 		} catch (Exception e) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"[NEU] Exception while calculating wishing compass solution - see log for details"));
+			Utils.addChatMessage(
+				EnumChatFormatting.RED + "[NEU] Exception while calculating wishing compass solution - see log for details");
 			e.printStackTrace();
 		}
 	}
@@ -781,15 +778,14 @@ public class CrystalWishingCompassSolver {
 		if (solution == null) return;
 
 		if (NUCLEUS_BB.isVecInside(solution)) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] " +
-				EnumChatFormatting.AQUA + "Wishing compass target is the Crystal Nucleus"));
+			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.AQUA + "Wishing compass target is the Crystal Nucleus");
 			return;
 		}
 
 		String destinationMessage = getWishingCompassDestinationsMessage();
 
 		if (!isSkytilsPresent) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(destinationMessage));
+			Utils.addChatMessage(destinationMessage);
 			return;
 		}
 
@@ -799,13 +795,13 @@ public class CrystalWishingCompassSolver {
 		String skytilsCommand = String.format("/sthw add %s %s", getSolutionCoordsText(), targetNameForSkytils);
 		if (NotEnoughUpdates.INSTANCE.config.mining.wishingCompassAutocreateKnownWaypoints &&
 			solutionPossibleTargets.size() == 1) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(destinationMessage));
+			Utils.addChatMessage(destinationMessage);
 			int commandResult = ClientCommandHandler.instance.executeCommand(mc.thePlayer, skytilsCommand);
 			if (commandResult == 1) {
 				return;
 			}
-			mc.thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.RED + "[NEU] Failed to automatically run /sthw"));
+			Utils.addChatMessage(
+				EnumChatFormatting.RED + "[NEU] Failed to automatically run /sthw");
 		}
 
 		destinationMessage += EnumChatFormatting.YELLOW + " [Add Skytils Waypoint]";
@@ -920,8 +916,8 @@ public class CrystalWishingCompassSolver {
 		}
 
 		if (!NotEnoughUpdates.INSTANCE.config.mining.wishingCompassSolver) {
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED +
-				"[NEU] Wishing Compass Solver is not enabled."));
+			Utils.addChatMessage(EnumChatFormatting.RED +
+				"[NEU] Wishing Compass Solver is not enabled.");
 			return;
 		}
 

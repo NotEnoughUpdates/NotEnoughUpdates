@@ -280,7 +280,7 @@ public class APIManager {
 		if (lowestBins != null && lowestBins.has(internalName)) {
 			JsonElement e = lowestBins.get(internalName);
 			if (e.isJsonPrimitive() && e.getAsJsonPrimitive().isNumber()) {
-				return e.getAsBigDecimal().longValue();
+				return e.getAsLong();
 			}
 		}
 		return -1;
@@ -822,10 +822,11 @@ public class APIManager {
 		return keys;
 	}
 
-	public double getBazaarOrBin(String internalName) {
+	public double getBazaarOrBin(String internalName, boolean useSellingPrice) {
+		String curr = (useSellingPrice ? "curr_sell" : "curr_buy");
 		JsonObject bazaarInfo = manager.auctionManager.getBazaarInfo(internalName);
-		if (bazaarInfo != null && bazaarInfo.get("curr_buy") != null) {
-			return bazaarInfo.get("curr_buy").getAsFloat();
+		if (bazaarInfo != null && bazaarInfo.get(curr) != null) {
+			return bazaarInfo.get(curr).getAsFloat();
 		} else {
 			return manager.auctionManager.getLowestBin(internalName);
 		}

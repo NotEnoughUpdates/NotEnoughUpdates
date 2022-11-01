@@ -17,19 +17,26 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.misc;
+package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables;
 
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
+import java.util.List;
 
-public class ButtonsCommand extends ClientCommandBase {
-	protected ButtonsCommand(String name) {
-		super(name);
+public class OverviewText extends OverviewLine {
+
+	private final Runnable clickRunnable;
+	private final List<String> lines;
+
+	public OverviewText(List<String> line, Runnable clickRunnable) {
+		this.lines = line;
+		this.clickRunnable = clickRunnable;
+	}
+
+	public List<String> getLines() {
+		return lines;
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-
+	public void onClick() {
+		clickRunnable.run();
 	}
 }

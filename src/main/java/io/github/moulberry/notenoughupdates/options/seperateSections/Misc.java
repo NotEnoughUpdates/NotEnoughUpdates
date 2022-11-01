@@ -83,6 +83,15 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+		name = "Show Waypoint Distance",
+		desc = "Show the distance to each fairy soul waypoint"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean fairySoulWaypointDistance = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Mark All As Found",
 		desc = "Mark all fairy souls in current location as found"
 	)
@@ -141,14 +150,23 @@ public class Misc {
 	@ConfigEditorButton(runnableId = 13, buttonText = "Open")
 	public boolean openPV = true;
 
+	@ConfigOption(
+		name = "Custom Enchant Colours",
+		desc = ""
+	)
+	@ConfigEditorAccordion(
+		id = 1
+	)
+	public boolean neuEnchantsAccordion = true;
+
 	@Expose
 	@ConfigOption(
-
 		name = "Edit Enchant Colours",
 		desc = "Change the colours of certain SkyBlock enchants (/neuec)",
 		searchTags = "color"
 	)
 	@ConfigEditorButton(runnableId = 8, buttonText = "Open")
+	@ConfigAccordionId(id = 1)
 	public boolean editEnchantColoursButton = true;
 
 	@Expose
@@ -162,7 +180,17 @@ public class Misc {
 		maxValue = 500,
 		minStep = 10
 	)
+	@ConfigAccordionId(id = 1)
 	public int chromaSpeed = 100;
+
+	@Expose
+	@ConfigOption(
+		name = "Cache Tooltip Enchants",
+		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: It doesn't work on items without a uuid"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean cacheItemEnchant = true;
 
 	@Expose
 	@ConfigOption(

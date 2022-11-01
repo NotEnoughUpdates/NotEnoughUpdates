@@ -284,7 +284,8 @@ public class BasicPage extends GuiProfileViewerPage {
 								.get("avg_buy")
 								.getAsDouble()
 					);
-				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(((networthInCookies * 325) / 675) * 4.99));
+				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(
+					((networthInCookies * 325) / 675) * 4.99));
 				if (
 					mouseX > guiLeft + 8 &&
 						mouseX < guiLeft + 8 + fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth))
@@ -301,6 +302,17 @@ public class BasicPage extends GuiProfileViewerPage {
 									networthIRLMoney
 							);
 						getInstance().tooltipToDisplay.add("");
+
+						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
+							&& profile.isProfileMaxSoopyNetworth(profileId)) {
+
+							String lbPosStr =
+								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+									profile.getSoopyNetworthLeaderboardPosition());
+							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the networth leaderboard!");
+							getInstance().tooltipToDisplay.add("");
+						}
 
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 							getInstance().tooltipToDisplay.addAll(nwCategoryHover);
