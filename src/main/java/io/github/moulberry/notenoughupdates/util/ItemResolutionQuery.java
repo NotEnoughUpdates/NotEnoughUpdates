@@ -116,6 +116,9 @@ public class ItemResolutionQuery {
 				case "PARTY_HAT_CRAB_ANIMATED":
 					resolvedName = resolveCrabHatName();
 					break;
+				case "ABICASE":
+					resolvedName = resolvePhoneCase();
+					break;
 			}
 		}
 
@@ -233,6 +236,11 @@ public class ItemResolutionQuery {
 		int crabHatYear = getExtraAttributes().getInteger("party_hat_year");
 		String color = getExtraAttributes().getString("party_hat_color");
 		return "PARTY_HAT_CRAB_" + color.toUpperCase(Locale.ROOT) + (crabHatYear == 2022 ? "_ANIMATED" : "");
+	}
+
+	private String resolvePhoneCase() {
+		String model = getExtraAttributes().getString("model");
+		return "ABICASE_" + model.toUpperCase(Locale.ROOT);
 	}
 
 	private String resolveEnchantedBookNameFromNBT() {
