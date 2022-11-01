@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
@@ -96,6 +97,15 @@ public class AbiphoneFavourites {
 			list.add("§eShift-Click to add to the favourites!");
 			list.set(0, "§7" + StringUtils.cleanColour(list.get(0)));
 		}
+
+		if (!isAbiphoneShowOnlyFavourites()) {
+			if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.manager.keybindFavourite.getKeyCode())) {
+				if (System.currentTimeMillis() > lastClick + 500) {
+					toggleFavouriteContact(rawName, name);
+					lastClick = System.currentTimeMillis();
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
@@ -142,15 +152,19 @@ public class AbiphoneFavourites {
 		//toggle favourite contact
 		if (clickType == 1) {
 			if (!isAbiphoneShowOnlyFavourites()) {
-				if (getFavouriteContacts().contains(name)) {
-					getFavouriteContacts().remove(name);
-					Utils.addChatMessage("§e[NEU] Removed §r" + rawName + " §efrom your favourite contacts!");
-				} else {
-					getFavouriteContacts().add(name);
-					Utils.addChatMessage("§e[NEU] Added §r" + rawName + " §eto your favourite contacts!");
-				}
+				toggleFavouriteContact(rawName, name);
+				event.setCanceled(true);
 			}
-			event.setCanceled(true);
+		}
+	}
+
+	private void toggleFavouriteContact(String rawName, String name) {
+		if (getFavouriteContacts().contains(name)) {
+			getFavouriteContacts().remove(name);
+			Utils.addChatMessage("§e[NEU] Removed §r" + rawName + " §efrom your favourite contacts!");
+		} else {
+			getFavouriteContacts().add(name);
+			Utils.addChatMessage("§e[NEU] Added §r" + rawName + " §eto your favourite contacts!");
 		}
 	}
 
