@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.gui.GuiScreen;
@@ -106,9 +107,12 @@ public class AbiphoneFavourites {
 
 		if (isBorder(stack)) {
 			if (System.currentTimeMillis() > lastClick + 200) {
-				NotEnoughUpdates.INSTANCE.config.getProfileSpecific().abiphoneShowOnlyFavourites =
-					!isAbiphoneShowOnlyFavourites();
-				lastClick = System.currentTimeMillis();
+				NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+				if (profileSpecific != null) {
+					profileSpecific.abiphoneShowOnlyFavourites =
+						!isAbiphoneShowOnlyFavourites();
+					lastClick = System.currentTimeMillis();
+				}
 			}
 			event.setCanceled(true);
 			return;
@@ -219,10 +223,18 @@ public class AbiphoneFavourites {
 	}
 
 	private List<String> getFavouriteContacts() {
-		return NotEnoughUpdates.INSTANCE.config.getProfileSpecific().abiphoneFavouriteContacts;
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific != null) {
+			return profileSpecific.abiphoneFavouriteContacts;
+		}
+		throw new RuntimeException("This is not your biggest problem right now.");
 	}
 
 	private static boolean isAbiphoneShowOnlyFavourites() {
-		return NotEnoughUpdates.INSTANCE.config.getProfileSpecific().abiphoneShowOnlyFavourites;
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific != null) {
+			return profileSpecific.abiphoneShowOnlyFavourites;
+		}
+		throw new RuntimeException("This is not your biggest problem right now.");
 	}
 }
