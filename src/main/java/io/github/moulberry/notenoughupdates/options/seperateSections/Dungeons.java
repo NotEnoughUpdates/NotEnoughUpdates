@@ -41,18 +41,6 @@ public class Dungeons {
 
 	@Expose
 	@ConfigOption(
-		name = "\u00A7cWarning",
-		desc = "If you are on Entrance, Floor 1 or Master 1 the map wont work properly"
-	)
-	@ConfigEditorFSR(
-		runnableId = 12,
-		buttonText = ""
-	)
-	@ConfigAccordionId(id = 0)
-	public boolean dungeonF1Warning = false;
-
-	@Expose
-	@ConfigOption(
 		name = "Edit Dungeon Map",
 		desc = "The NEU dungeon map has its own editor (/neumap).\n" +
 			"Click the button on the left to open it"
