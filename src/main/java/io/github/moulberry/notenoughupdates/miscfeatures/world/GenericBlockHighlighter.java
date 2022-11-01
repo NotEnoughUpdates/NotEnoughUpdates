@@ -21,7 +21,10 @@ package io.github.moulberry.notenoughupdates.miscfeatures.world;
 
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -53,7 +56,24 @@ public abstract class GenericBlockHighlighter {
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent ev) {
 		if (ev.phase != TickEvent.Phase.END) return;
-		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it));
+		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) || !canPlayerSeeBlock(it.getX(), it.getY(), it.getZ()));
+	}
+
+	protected boolean canPlayerSeeBlock(double xCoord, double yCoord, double zCoord) {
+		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+		if (p == null) return false;
+		World w = p.worldObj;
+		MovingObjectPosition hitResult = w.rayTraceBlocks(
+			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
+			new Vec3(xCoord, yCoord, zCoord),
+			false,
+			true,
+			true
+		);
+		BlockPos bp = new BlockPos(xCoord, yCoord, zCoord);
+		return hitResult == null
+			|| hitResult.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+			|| bp.equals(hitResult.getBlockPos());
 	}
 
 	@SubscribeEvent
@@ -62,7 +82,7 @@ public abstract class GenericBlockHighlighter {
 	}
 
 	public void registerInterest(BlockPos pos) {
-		if (isValidHighlightSpot(pos)) {
+		if (isValidHighlightSpot(pos) && canPlayerSeeBlock(pos.getX(), pos.getY(), pos.getZ())) {
 			highlightedBlocks.add(pos);
 		}
 	}

@@ -25,12 +25,9 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -48,26 +45,12 @@ public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 				isDecimalPartApproximately(event.getXCoord(), 0.5)
 					&& isDecimalPartApproximately(event.getYCoord(), 0.1)
 					&& isDecimalPartApproximately(event.getZCoord(), 0.5)
-					&& canPlayerSee(event.getXCoord(), event.getYCoord(), event.getZCoord())
 			) {
 				registerInterest(blockPos);
 			}
 		}
 	}
 
-	private boolean canPlayerSee(double xCoord, double yCoord, double zCoord) {
-		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-		if (p == null) return false;
-		World w = p.worldObj;
-		MovingObjectPosition hitResult = w.rayTraceBlocks(
-			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
-			new Vec3(xCoord, yCoord, zCoord),
-			false,
-			true,
-			true
-		);
-		return hitResult == null || hitResult.typeOfHit == null;
-	}
 
 	@Override
 	protected boolean isEnabled() {
