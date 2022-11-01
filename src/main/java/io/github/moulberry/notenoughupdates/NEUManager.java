@@ -889,6 +889,7 @@ public class NEUManager {
 			case "viewpotion":
 				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
 		}
+		displayGuiItemRecipe(internalName);
 	}
 
 	public void showRecipe(String internalName) {
