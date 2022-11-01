@@ -42,6 +42,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,7 +126,8 @@ public class ChatListener {
 			String startsWith = null;
 			boolean partyOrGuildChat = false;
 
-			if (chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
+			List<IChatComponent> siblings = chatComponent.getSiblings();
+			if (!siblings.isEmpty() && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
 				partyOrGuildChat = true;
 			} else {
