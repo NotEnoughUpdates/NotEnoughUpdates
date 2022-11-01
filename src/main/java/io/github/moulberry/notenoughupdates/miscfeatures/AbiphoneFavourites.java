@@ -39,12 +39,11 @@ import java.util.List;
 public class AbiphoneFavourites {
 
 	private static final AbiphoneFavourites INSTANCE = new AbiphoneFavourites();
+	private long lastClick = 0L;
 
 	public static AbiphoneFavourites getInstance() {
 		return INSTANCE;
 	}
-
-	private long lastClick = 0L;
 
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event) {
@@ -105,10 +104,6 @@ public class AbiphoneFavourites {
 		ItemStack stack = event.slot.getStack();
 		if (stack == null || stack.getDisplayName() == null) return;
 
-		int clickedButton = event.clickedButton;
-
-		int clickType = event.clickType;
-
 		if (isBorder(stack)) {
 			if (System.currentTimeMillis() > lastClick + 200) {
 				NotEnoughUpdates.INSTANCE.config.getProfileSpecific().abiphoneShowOnlyFavourites =
@@ -121,6 +116,7 @@ public class AbiphoneFavourites {
 
 		if (!isContact(stack)) return;
 
+		int clickedButton = event.clickedButton;
 		//prevents removing the contact
 		if (clickedButton == 1) {
 			event.setCanceled(true);
@@ -129,6 +125,7 @@ public class AbiphoneFavourites {
 
 		String rawName = stack.getDisplayName();
 		String name = StringUtils.cleanColour(rawName);
+		int clickType = event.clickType;
 
 		//prevents calling non favourite contacts
 		if (clickedButton == 0 && (clickType == 0 || clickType == 6)) {
@@ -197,7 +194,6 @@ public class AbiphoneFavourites {
 				}
 			}
 		}
-
 	}
 
 	private static boolean isWrongInventory() {
@@ -229,5 +225,4 @@ public class AbiphoneFavourites {
 	private static boolean isAbiphoneShowOnlyFavourites() {
 		return NotEnoughUpdates.INSTANCE.config.getProfileSpecific().abiphoneShowOnlyFavourites;
 	}
-
 }
