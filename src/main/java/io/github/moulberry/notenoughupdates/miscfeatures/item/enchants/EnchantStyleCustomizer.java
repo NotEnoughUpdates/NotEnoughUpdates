@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 public class EnchantStyleCustomizer {
 
@@ -43,9 +44,10 @@ public class EnchantStyleCustomizer {
 			var enchantMatcherP = EnchantMatcher.fromSaveFormatMemoized.apply(enchantMatcherStr);
 			if (!enchantMatcherP.isPresent()) continue;
 			var enchantMatcher = enchantMatcherP.get();
-			var matcher = enchantMatcher.getPatternWithLevels().matcher(line);
+			Matcher matcher;
 			var matchIterations = 0;
-			while (matcher.find() && matchIterations++ < 5) {
+			var last = 0;
+			while ((matcher = enchantMatcher.getPatternWithLevels().matcher(line)).find(last) && matchIterations++ < 5) {
 				var enchantName = matcher.group(EnchantMatcher.GROUP_ENCHANT_NAME);
 				var levelText = matcher.group(EnchantMatcher.GROUP_LEVEL);
 				if (enchantName == null || levelText == null
@@ -58,9 +60,10 @@ public class EnchantStyleCustomizer {
 				var startMatch = matcher.start();
 				var endLevel = matcher.end(EnchantMatcher.GROUP_LEVEL);
 
-				line = line.substring(0, startMatch)
-					+ enchantMatcher.getFormatting() + enchantName + " " + levelText
-					+ (endLevel >= line.length() ? "" : line.substring(endLevel));
+				var parsed = line.substring(0, startMatch)
+					+ enchantMatcher.getFormatting() + enchantName + " " + levelText;
+				line = parsed + (endLevel >= line.length() ? "" : line.substring(endLevel));
+				last = parsed.length();
 			}
 		}
 		return LateBindingChroma.of(line);
