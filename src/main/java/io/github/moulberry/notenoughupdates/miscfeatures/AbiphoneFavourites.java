@@ -88,6 +88,16 @@ public class AbiphoneFavourites {
 			}
 		}
 
+		//F3 + H support
+		List<String> replaceList = new ArrayList<>();
+		if (list.size() > 2) {
+			String secondLastLine = list.get(list.size() - 2);
+			if (secondLastLine.contains("minecraft:")) {
+				replaceList.add(list.remove(list.size() - 2));
+				replaceList.add(list.remove(list.size() - 1));
+			}
+		}
+
 		//removes "to remove contact" line
 		list.remove(list.size() - 1);
 
@@ -109,6 +119,8 @@ public class AbiphoneFavourites {
 				}
 			}
 		}
+
+		list.addAll(replaceList);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
