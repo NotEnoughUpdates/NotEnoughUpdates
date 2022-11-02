@@ -57,6 +57,7 @@ public class AbiphoneFavourites {
 		Items.diamond,
 		"§6Show only favourite contacts",
 		"§7Non favourite contacts are hidden.",
+		"§7Only favourite contacts can be called.",
 		" ",
 		"§eClick to show all contacts!"
 	);
@@ -64,6 +65,7 @@ public class AbiphoneFavourites {
 		Items.emerald,
 		"§aShow all contacts",
 		"§7Favourite contacts are marked §6orange§7.",
+		"§7All contacts can be called.",
 		" ",
 		"§eClick to show only favourite contacts!"
 	);
@@ -107,7 +109,6 @@ public class AbiphoneFavourites {
 				list.add("§eShift-Click to remove from the favourites!");
 			}
 		} else {
-			list.remove(list.size() - 1);
 			list.add("§eShift-Click to add to the favourites!");
 		}
 
@@ -158,7 +159,7 @@ public class AbiphoneFavourites {
 
 		//prevents calling non favourite contacts
 		if (clickedButton == 0 && (clickType == 0 || clickType == 6)) {
-			if (!getFavouriteContacts().contains(name)) {
+			if (!getFavouriteContacts().contains(name) && isAbiphoneShowOnlyFavourites()) {
 				event.setCanceled(true);
 				return;
 			}
