@@ -657,7 +657,7 @@ public class PlayerStats {
 	 * @return the amount of Magical Power or -1
 	 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getInventoryInfo(String)
 	 */
-	public static int getMagicalPower(JsonObject inventoryInfo) {
+	public static int getMagicalPower(JsonObject inventoryInfo, JsonObject profileInfo) {
 		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") || !inventoryInfo.get("talisman_bag").isJsonArray()) {
 			return -1;
 		}
@@ -703,6 +703,16 @@ public class PlayerStats {
 					case 5:
 						powderAmount += 22;
 						break;
+				}
+			}
+			if (entry.getKey().equals("ABICASE")) {
+				if (profileInfo.has("nether_island_player_data") &&
+					profileInfo.get("nether_island_player_data").getAsJsonObject().has("abiphone") && profileInfo.get(
+					"nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
+					int contact =
+						profileInfo.get("nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().get(
+							"active_contacts").getAsJsonArray().size();
+					powderAmount += Math.floor(contact / 2);
 				}
 			}
 			switch (entry.getValue()) {

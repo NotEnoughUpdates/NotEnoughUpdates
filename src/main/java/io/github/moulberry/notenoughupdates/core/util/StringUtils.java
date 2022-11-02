@@ -102,4 +102,33 @@ public class StringUtils {
 		int start = string.lastIndexOf(toReplace);
 		return string.substring(0, start) + replacement + string.substring(start + toReplace.length());
 	}
+
+	public static String removeLastWord(String string, String splitString) {
+		try {
+			String[] split = string.split(splitString);
+			String rawTier = split[split.length - 1];
+			return string.substring(0, string.length() - rawTier.length() - 1);
+		} catch (StringIndexOutOfBoundsException e) {
+			throw new RuntimeException("removeLastWord: '" + string + "'", e);
+		}
+	}
+
+	public static String firstUpperLetter(String text) {
+		if (text.isEmpty()) return text;
+		String firstLetter = ("" + text.charAt(0)).toUpperCase();
+		return firstLetter + text.substring(1);
+	}
+
+	public static boolean isNumeric(String string) {
+		if (string == null || string.isEmpty()) {
+			return false;
+		}
+
+		for (char c : string.toCharArray()) {
+			if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

@@ -118,7 +118,7 @@ public class Dungeons {
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
-	public boolean shouldWarningDerpy  = true;
+	public boolean shouldWarningDerpy = true;
 
 	@ConfigOption(
 		name = "Dungeon Win Overlay",
@@ -156,6 +156,7 @@ public class Dungeons {
 
 	@ConfigEditorAccordion(id = 2)
 	public boolean dungeonBlocksAccordion = false;
+
 	@ConfigOption(
 		name = "\u00A7cWarning",
 		desc = "You need Fast Render and Antialiasing off for these settings to work\n" +
@@ -268,5 +269,39 @@ public class Dungeons {
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
 	public String dungBatColour = "0:255:12:255:0";
+
+	@ConfigOption(
+		name = "Croesus Overlay",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 4)
+	public boolean croesusAccordion = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Croesus Overlay",
+		desc = "Shows a profit overlay next to your inventory when viewing chest previews at the Croesus NPC"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean croesusProfitOverlay = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Sort by profit",
+		desc = "Lists the chest by profit (descending)"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean croesusSortByProfit = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Highlight highest profit",
+		desc = "Highlight the chest which has the most profit"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean croesusHighlightHighestProfit = true;
 
 }

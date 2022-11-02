@@ -1,0 +1,32 @@
+name: Remove merge label
+
+on:
+  - pull_request_target
+
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-mergability:
+    env:
+      GH_TOKEN:
+        ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: |
+          echo This is the merginator 2000 speaking, i am now checking your mergability
+          if git merge-tree "$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})" ${{ github.event.pull_request.head.sha }} "${{ github.event.pull_request.base.sha }}" | grep "^<<<<<<<\|changed in both" >/dev/null; then
+            echo "This PR is deemed: dirty :("
+            echo "{\"labels\":[\"$MERGE_LABEL\"]}"|gh api -X POST --input - "$ISSUE_PATH" || true
+          else
+            echo This PR is deemed: clean!
+            gh api -X DELETE $ISSUE_PATH/$MERGE_LABEL || true
+          fi
+        env:
+          MERGE_LABEL: needs-merge
+          ISSUE_PATH: /repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels

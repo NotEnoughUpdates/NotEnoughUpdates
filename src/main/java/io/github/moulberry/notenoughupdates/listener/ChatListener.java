@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnderNodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
@@ -41,6 +42,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -124,7 +126,8 @@ public class ChatListener {
 			String startsWith = null;
 			boolean partyOrGuildChat = false;
 
-			if (chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
+			List<IChatComponent> siblings = chatComponent.getSiblings();
+			if (!siblings.isEmpty() && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
 				partyOrGuildChat = true;
 			} else {
@@ -201,11 +204,11 @@ public class ChatListener {
 		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
 		Matcher matcher = SLAYER_XP.matcher(unformatted);
 		if (unformatted.startsWith("You are playing on profile: ")) {
-			neu.manager.setCurrentProfile(unformatted
+			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("You are playing on profile: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your profile was changed to: ")) {//Your profile was changed to:
-			neu.manager.setCurrentProfile(unformatted
+			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
 		} else if (unformatted.startsWith("Your new API key is ")) {
@@ -214,8 +217,7 @@ public class ChatListener {
 					0,
 					36
 				);
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
+			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured");
 			NotEnoughUpdates.INSTANCE.saveConfig();
 		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
 			SBInfo.getInstance().hasNewTab = false;
@@ -307,5 +309,9 @@ public class ChatListener {
 			unformatted.equals("You have successfully picked the lock on this chest!")
 			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
 			OverlayManager.powderGrindingOverlay.message(unformatted);
+
+		if (unformatted.equals("ENDER NODE! You found Endermite Nest!")) {
+			EnderNodes.dispalyEndermiteNotif();
+		}
 	}
 }

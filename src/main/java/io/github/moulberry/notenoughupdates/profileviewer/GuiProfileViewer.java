@@ -218,6 +218,7 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.BINGO, new BingoPage(this));
 		pages.put(ProfileViewerPage.TROPHY_FISH, new TrophyFishPage(this));
 		pages.put(ProfileViewerPage.BESTIARY, new BestiaryPage(this));
+		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
 	}
 
 	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
@@ -1039,15 +1040,27 @@ public class GuiProfileViewer extends GuiScreen {
 							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
 						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
+        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
-					levelStr = EnumChatFormatting.GOLD + "MAXED!";
+					levelStr = levelObj.maxLevel != 7 ?
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
 				} else {
-					int maxXp = (int) levelObj.maxXpForLevel;
-					levelStr =
-						EnumChatFormatting.DARK_PURPLE +
-							StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
-							"/" +
-							StringUtils.shortNumberFormat(maxXp);
+					if (skillName.contains("Class Average")) {
+						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
+						totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
+					} else {
+						int maxXp = (int) levelObj.maxXpForLevel;
+						levelStr =
+							EnumChatFormatting.DARK_PURPLE +
+								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+								"/" +
+								StringUtils.shortNumberFormat(maxXp) +
+								// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
+								// a conditional here to add the overflow level rather than above
+								((skillName.contains("Catacombs") && levelObj.level >= 50) ?
+									EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
+					}
 				}
 				if (totalXpStr != null) {
 					tooltipToDisplay = Utils.createList(levelStr, totalXpStr);
@@ -1302,7 +1315,8 @@ public class GuiProfileViewer extends GuiScreen {
 		MINING(6, Items.iron_pickaxe, "§5Heart of the Mountain"),
 		BINGO(7, Items.filled_map, "§zBingo"),
 		TROPHY_FISH(8, Items.fishing_rod, "§3Trophy Fish"),
-		BESTIARY(9, Items.iron_sword, "§cBestiary");
+		BESTIARY(9, Items.iron_sword, "§cBestiary"),
+		CRIMSON_ISLE(10, Item.getItemFromBlock(Blocks.netherrack), "§4Crimson Isle");
 
 		public final ItemStack stack;
 		public final int id;

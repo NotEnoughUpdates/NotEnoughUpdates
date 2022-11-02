@@ -103,6 +103,22 @@ public class ItemUtils {
 		is.setTagCompound(tagCompound);
 	}
 
+	public static void setLore(ItemStack is, List<String> newLore) {
+		NBTTagCompound tagCompound = is.getTagCompound();
+		if (tagCompound == null) {
+			tagCompound = new NBTTagCompound();
+		}
+
+		NBTTagCompound display = tagCompound.getCompoundTag("display");
+		NBTTagList lore = new NBTTagList();
+		for (String s : newLore) {
+			lore.appendTag(new NBTTagString(s));
+		}
+		display.setTag("Lore", lore);
+		tagCompound.setTag("display", display);
+		is.setTagCompound(tagCompound);
+	}
+
 	public static List<String> getLore(ItemStack is) {
 		return getLore(is.getTagCompound());
 	}

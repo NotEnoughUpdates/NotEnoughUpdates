@@ -22,9 +22,8 @@ package io.github.moulberry.notenoughupdates.commands.help;
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
-import net.minecraft.client.Minecraft;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 
 import java.util.ArrayList;
 
@@ -66,7 +65,7 @@ public class HelpCommand extends ClientCommandBase {
 			"\u00a76/neupackdev \u00a7r\u00a77- pack creator command - getnpc, getmob(s), getarmorstand(s), getall. Optional radius argument for all."
 		);
 		for (String neuHelpMessage : neuHelpMessages) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(neuHelpMessage));
+			Utils.addChatMessage(neuHelpMessage);
 		}
 		if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			ArrayList<String> neuDevHelpMessages = Lists.newArrayList(
@@ -76,7 +75,7 @@ public class HelpCommand extends ClientCommandBase {
 			);
 
 			for (String neuDevHelpMessage : neuDevHelpMessages) {
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(neuDevHelpMessage));
+				Utils.addChatMessage(neuDevHelpMessage);
 			}
 		}
 		String[] helpInfo = {
@@ -89,8 +88,7 @@ public class HelpCommand extends ClientCommandBase {
 		};
 
 		for (String message : helpInfo) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message));
+			Utils.addChatMessage(message);
 		}
-
 	}
 }

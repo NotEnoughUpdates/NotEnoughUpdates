@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
+import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -48,7 +50,9 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,6 +63,7 @@ public class ApiUtil {
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 	private static final String USER_AGENT = "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
 	private static SSLContext ctx;
+	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
 
 	static {
 		try {
@@ -75,6 +80,23 @@ public class ApiUtil {
 			System.out.println("Failed to load NEU keystore. A lot of API requests won't work");
 			e.printStackTrace();
 		}
+	}
+
+	public void updateProfileData() {
+		updateProfileData(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
+	}
+
+	public void updateProfileData(String playerUuid) {
+		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
+
+		updateTasks.put(playerUuid, newHypixelApiRequest("skyblock/profiles")
+			.queryArgument("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))
+			.requestJson()
+			.handle((jsonObject, throwable) -> {
+				new ProfileDataLoadedEvent(jsonObject).post();
+				return null;
+			}));
+
 	}
 
 	public static class Request {

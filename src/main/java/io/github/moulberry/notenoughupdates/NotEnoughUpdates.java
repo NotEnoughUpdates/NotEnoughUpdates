@@ -45,6 +45,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
+import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.DwarvenMinesWaypoints;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
@@ -60,6 +61,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PowerStoneStatsDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
+import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
@@ -68,6 +70,7 @@ import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
@@ -77,6 +80,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.TitleUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -262,6 +266,9 @@ public class NotEnoughUpdates {
 			if (config.profileViewer.pageLayout.size() == 9) {
 				config.profileViewer.pageLayout.add(9);
 			}
+			if (config.profileViewer.pageLayout.size() == 10) {
+				config.profileViewer.pageLayout.add(10);
+			}
 
 			// Remove after 2.1 ig
 			if ("dangerous".equals(config.apiData.repoBranch)) {
@@ -287,6 +294,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new Constants());
 		MinecraftForge.EVENT_BUS.register(new DungeonMap());
 		MinecraftForge.EVENT_BUS.register(new SunTzu());
+		MinecraftForge.EVENT_BUS.register(new WitherCloakChanger());
 		MinecraftForge.EVENT_BUS.register(new MiningStuff());
 		MinecraftForge.EVENT_BUS.register(FairySouls.getInstance());
 		MinecraftForge.EVENT_BUS.register(new CrystalOverlay());
@@ -294,6 +302,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
 		MinecraftForge.EVENT_BUS.register(new FuelBar());
 		MinecraftForge.EVENT_BUS.register(new AuctionProfit());
+		MinecraftForge.EVENT_BUS.register(new DungeonNpcProfitOverlay());
 		MinecraftForge.EVENT_BUS.register(XPInformation.getInstance());
 		MinecraftForge.EVENT_BUS.register(OverlayManager.petInfoOverlay);
 		MinecraftForge.EVENT_BUS.register(OverlayManager.timersOverlay);
@@ -314,12 +323,14 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
-		MinecraftForge.EVENT_BUS.register(new AntiCoopAdd());
+		MinecraftForge.EVENT_BUS.register(AntiCoopAdd.getInstance());
 		MinecraftForge.EVENT_BUS.register(AbiphoneWarning.getInstance());
 		MinecraftForge.EVENT_BUS.register(new BetterContainers());
 		MinecraftForge.EVENT_BUS.register(AuctionBINWarning.getInstance());
+		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
+		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
