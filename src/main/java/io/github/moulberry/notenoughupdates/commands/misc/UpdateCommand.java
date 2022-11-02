@@ -25,8 +25,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -68,7 +66,7 @@ public class UpdateCommand extends ClientCommandBase {
 				neu.autoUpdater.scheduleDownload();
 				break;
 			case "updatemodes":
-				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for autoupdates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
+				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
 				break;
 			default:
 				displayHelp(sender);

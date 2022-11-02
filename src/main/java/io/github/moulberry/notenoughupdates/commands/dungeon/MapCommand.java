@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
@@ -128,8 +129,7 @@ public class MapCommand extends ClientCommandBase {
 					e.printStackTrace();
 				}
 
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
-					"Saved to file."));
+				Utils.addChatMessage(EnumChatFormatting.GREEN + "Saved to file.");
 			}
 
 			return;

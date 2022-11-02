@@ -38,7 +38,6 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3i;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -93,7 +92,7 @@ public class Navigation {
 		}
 	}
 
-	private NotEnoughUpdates neu;
+	private final NotEnoughUpdates neu;
 
 	public Navigation(NotEnoughUpdates notEnoughUpdates) {
 		neu = notEnoughUpdates;
@@ -379,8 +378,7 @@ public class Navigation {
 	private void showError(String message, boolean log) {
 		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		if (player != null)
-			player.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED +
-				"[NEU-Waypoint] " + message));
+			Utils.addChatMessage(EnumChatFormatting.DARK_RED + "[NEU-Waypoint] " + message);
 		if (log)
 			new RuntimeException("[NEU-Waypoint] " + message).printStackTrace();
 	}

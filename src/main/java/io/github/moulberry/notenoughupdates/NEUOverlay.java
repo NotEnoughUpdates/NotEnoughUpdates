@@ -1035,7 +1035,7 @@ public class NEUOverlay extends Gui {
 			return false;
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_Y) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+		if ((Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			displayInformationPane(new DevInfoPane(this, manager));
 		}
 
@@ -1219,8 +1219,8 @@ public class NEUOverlay extends Gui {
 				String internal1 = o1.get("internalname").getAsString();
 				String internal2 = o2.get("internalname").getAsString();
 
-				double cost1 = manager.auctionManager.getBazaarOrBin(internal1);
-				double cost2 = manager.auctionManager.getBazaarOrBin(internal2);
+				double cost1 = manager.auctionManager.getBazaarOrBin(internal1, false);
+				double cost2 = manager.auctionManager.getBazaarOrBin(internal2, false);
 
 				if (cost1 < cost2) return mult;
 				if (cost1 > cost2) return -mult;

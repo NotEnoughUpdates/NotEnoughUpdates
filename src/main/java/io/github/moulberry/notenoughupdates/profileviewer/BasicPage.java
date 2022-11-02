@@ -49,6 +49,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -65,6 +66,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.DECIMAL_FORMAT;
 import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class BasicPage extends GuiProfileViewerPage {
@@ -73,6 +75,13 @@ public class BasicPage extends GuiProfileViewerPage {
 	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
 	public EntityOtherPlayerMP entityPlayer = null;
 	private ResourceLocation playerLocationSkin = null;
+	private final GuiProfileViewer guiProfileViewer;
+
+	private final String[] medalNames = {
+		"§cBronze",
+		"§fSilver",
+		"§6Gold"
+	};
 	private ResourceLocation playerLocationCape = null;
 	private String skinType = null;
 	private boolean loadingProfile = false;
@@ -81,6 +90,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 	public BasicPage(GuiProfileViewer instance) {
 		super(instance);
+		this.guiProfileViewer = instance;
 	}
 
 	@Override
@@ -153,6 +163,8 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_basic);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
+		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		if (profileInfo == null) return;
 
 		if (entityPlayer != null && profile.getHypixelProfile() != null) {
 			String playerName = null;
@@ -200,8 +212,11 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						playerName = EnumChatFormatting.GRAY + name;
 						if (rankName != null) {
+							String icon = getIcon(getGameModeType(profileInfo));
 							playerName =
-								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name;
+								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name +
+									(icon.equals("") ? "" : " " + icon);
+							;
 						}
 					}
 				}
@@ -225,7 +240,31 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		long networth = profile.getNetWorth(profileId);
+		long networth;
+		ArrayList<String> nwCategoryHover = new ArrayList<>();
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+			ProfileViewer.Profile.SoopyNetworthData nwData = profile.getSoopyNetworth(profileId, () -> {});
+			if (nwData == null) {
+				networth = -2l;
+			} else {
+				networth = nwData.getTotal();
+
+				for (String category : nwData.getCategories()) {
+					if (nwData.getCategory(category) == 0) continue;
+
+					nwCategoryHover.add(EnumChatFormatting.GREEN +
+						WordUtils.capitalizeFully(category.replace("_", " ")) +
+						": " +
+						EnumChatFormatting.GOLD +
+						GuiProfileViewer.numberFormat.format(nwData.getCategory(category)));
+				}
+
+				nwCategoryHover.add("");
+			}
+		} else {
+			networth = profile.getNetWorth(profileId);
+		}
+
 		if (networth > 0) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
@@ -245,7 +284,8 @@ public class BasicPage extends GuiProfileViewerPage {
 								.get("avg_buy")
 								.getAsDouble()
 					);
-				String networthIRLMoney = Long.toString(Math.round(((networthInCookies * 325) / 675) * 4.99));
+				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(
+					((networthInCookies * 325) / 675) * 4.99));
 				if (
 					mouseX > guiLeft + 8 &&
 						mouseX < guiLeft + 8 + fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth))
@@ -262,7 +302,20 @@ public class BasicPage extends GuiProfileViewerPage {
 									networthIRLMoney
 							);
 						getInstance().tooltipToDisplay.add("");
+
+						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
+							&& profile.isProfileMaxSoopyNetworth(profileId)) {
+
+							String lbPosStr =
+								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+									profile.getSoopyNetworthLeaderboardPosition());
+							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the networth leaderboard!");
+							getInstance().tooltipToDisplay.add("");
+						}
+
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+							getInstance().tooltipToDisplay.addAll(nwCategoryHover);
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "This is calculated using the current");
 							getInstance().tooltipToDisplay.add(
 								EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
@@ -271,7 +324,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							getInstance().tooltipToDisplay.add(
 								EnumChatFormatting.RED + "is where we get the amount of IRL money you");
 							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "theoretically have on skyblock in net worth.");
+								EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
 						} else {
 							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
 						}
@@ -282,7 +335,26 @@ public class BasicPage extends GuiProfileViewerPage {
 					}
 				}
 			} catch (Exception ignored) {
+				ignored.printStackTrace();
 			}
+		} else {
+			//Networth is under 0
+			//If = -1 -> an error occured
+			//If = -2 -> still loading networth
+
+			String stateStr = EnumChatFormatting.RED + "An error occured";
+			if (networth == -2) {
+				stateStr = EnumChatFormatting.YELLOW + "Loading...";
+			}
+
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
+				fr,
+				guiLeft + 63,
+				guiTop + 38,
+				true,
+				0
+			);
 		}
 
 		if (status != null) {
@@ -357,9 +429,6 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 			entityPlayer.getDataWatcher().updateObject(10, b);
 		}
-
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
-		if (profileInfo == null) return;
 
 		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
 		JsonObject inventoryInfo = profile.getInventoryInfo(profileId);
@@ -590,42 +659,85 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				String skillName = entry.getValue().getDisplayName();
 
-				float level = skyblockInfo.get(entry.getKey()).level;
-				int levelFloored = (int) Math.floor(level);
+				ProfileViewer.Level level = skyblockInfo.get(entry.getKey());
+				int levelFloored = (int) Math.floor(level.level);
 
 				int x = guiLeft + 237 + 86 * xPosition;
 				int y = guiTop + 24 + 21 * yPosition;
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 
-				if (skyblockInfo.get(entry.getKey()).maxed) {
+				if (level.maxed) {
 					getInstance().renderGoldBar(x, y + 6, 80);
 				} else {
-					getInstance().renderBar(x, y + 6, 80, level % 1);
+					getInstance().renderBar(x, y + 6, 80, level.level % 1);
 				}
 
 				if (mouseX > x && mouseX < x + 80) {
 					if (mouseY > y - 4 && mouseY < y + 13) {
 						getInstance().tooltipToDisplay = new ArrayList<>();
-						getInstance().tooltipToDisplay.add(skillName);
-						if (skyblockInfo.get(entry.getKey()).maxed) {
-							getInstance().tooltipToDisplay.add(
+						List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
+						tooltipToDisplay.add(skillName);
+						if (level.maxed) {
+							tooltipToDisplay.add(
 								EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
 						} else {
-							int maxXp = (int) skyblockInfo.get(entry.getKey()).maxXpForLevel;
+							int maxXp = (int) level.maxXpForLevel;
 							getInstance()
 								.tooltipToDisplay.add(
 									EnumChatFormatting.GRAY +
 										"Progress: " +
 										EnumChatFormatting.DARK_PURPLE +
-										StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+										StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
 										"/" +
-										StringUtils.shortNumberFormat(maxXp)
-								);
+										StringUtils.shortNumberFormat(maxXp));
 						}
-						String totalXpS = GuiProfileViewer.numberFormat.format((int) skyblockInfo.get(entry.getKey()).totalXp);
-						getInstance()
-							.tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS);
+						String totalXpS = GuiProfileViewer.numberFormat.format((int) level.totalXp);
+						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
+							EnumChatFormatting.DARK_GRAY + " (" +
+							DECIMAL_FORMAT.format(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							"% to " + level.maxLevel + ")");
+						if (entry.getKey().equals("farming")) {
+							// double drops + pelts
+							int doubleDrops = Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.double_drops"), 0);
+							int peltCount = Utils.getElementAsInt(Utils.getElement(profileInfo, "trapper_quest.pelt_count"), 0);
+
+							if (doubleDrops == 15) {
+								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
+							} else tooltipToDisplay.add("§7Double Drops: §5" + (doubleDrops * 2) + "%");
+
+							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
+
+							// medals
+							JsonObject medals_inv = Utils.getElement(profileInfo, "jacob2.medals_inv").getAsJsonObject();
+							tooltipToDisplay.add(" ");
+							for (String medalName : medalNames) {
+								String textWithoutFormattingCodes =
+									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
+								if (medals_inv.has(textWithoutFormattingCodes)) {
+									int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
+										EnumChatFormatting.WHITE + medalAmount);
+								} else {
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
+										EnumChatFormatting.WHITE + "0");
+								}
+							}
+						}
+
+						String slayerNameLower = entry.getKey().toLowerCase();
+						if (ExtraPage.slayers.containsKey(slayerNameLower)) {
+							int maxLevel = ExtraPage.slayers.get(slayerNameLower);
+							for (int i = 0; i < 5; i++) {
+								if (i >= maxLevel) break;
+								float tier = Utils.getElementAsFloat(
+									Utils.getElement(profileInfo, "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
+									0
+								);
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
+									EnumChatFormatting.RED + (int) tier);
+							}
+						}
 					}
 				}
 
@@ -649,6 +761,19 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
+	}
+
+	private String getIcon(String gameModeType) {
+		switch (gameModeType) {
+			case "island":
+				return "§a☀";
+			case "bingo":
+				return "§7Ⓑ";
+			case "ironman":
+				return "§7♲";
+			default:
+				return "";
+		}
 	}
 
 	@Override
@@ -802,6 +927,9 @@ public class BasicPage extends GuiProfileViewerPage {
 	}
 
 	private void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+
+		ent.onUpdate();
+
 		GlStateManager.enableColorMaterial();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) posX, (float) posY, 50.0F);
@@ -837,5 +965,12 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
 		GlStateManager.disableTexture2D();
 		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+	}
+
+	public String getGameModeType(JsonObject profileInfo) {
+		if (profileInfo != null && profileInfo.has("game_mode")) {
+			return profileInfo.get("game_mode").getAsString();
+		}
+		return "";
 	}
 }

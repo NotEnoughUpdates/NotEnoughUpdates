@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.commands.dev;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.command.CommandException;
@@ -290,11 +291,10 @@ public class PackDevCommand extends ClientCommandBase {
 			}
 
 			if ((single && closest == null) || (!single && result.length() == 0)) {
-				mc.thePlayer.addChatMessage(new ChatComponentText(
-					EnumChatFormatting.RED + "No " + typeFriendlyName + "s found within " + dist + " blocks."));
+				Utils.addChatMessage(EnumChatFormatting.RED + "No " + typeFriendlyName + "s found within " + dist + " blocks.");
 			} else {
-				mc.thePlayer.addChatMessage(new ChatComponentText(
-					EnumChatFormatting.GREEN + "Copied " + typeFriendlyName + " data to clipboard"));
+				Utils.addChatMessage(
+					EnumChatFormatting.GREEN + "Copied " + typeFriendlyName + " data to clipboard");
 				return single ? livingBaseDataBuilder(closest, clazz) : result;
 			}
 

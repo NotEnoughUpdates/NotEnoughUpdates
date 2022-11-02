@@ -41,18 +41,9 @@ public class FeaturesCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
+		Utils.addChatMessage("");
 		if (Constants.MISC == null || !Constants.MISC.has("featureslist")) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				"" + EnumChatFormatting.DARK_RED + EnumChatFormatting.BOLD + "WARNING: " + EnumChatFormatting.RESET +
-					EnumChatFormatting.RED + "Could not load URL from repo."));
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				"" + EnumChatFormatting.RED + "Please run " + EnumChatFormatting.BOLD + "/neuresetrepo" +
-					EnumChatFormatting.RESET + EnumChatFormatting.RED + " and " + EnumChatFormatting.BOLD + "restart your game" +
-					EnumChatFormatting.RESET + EnumChatFormatting.RED + " in order to fix. " + EnumChatFormatting.DARK_RED +
-					EnumChatFormatting.BOLD + "If that doesn't fix it" + EnumChatFormatting.RESET + EnumChatFormatting.RED +
-					", please join discord.gg/moulberry and post in #neu-support"));
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
+			Utils.showOutdatedRepoNotification();
 			return;
 		}
 		String url = Constants.MISC.get("featureslist").getAsString();
@@ -60,9 +51,8 @@ public class FeaturesCommand extends ClientCommandBase {
 		Desktop desk = Desktop.getDesktop();
 		try {
 			desk.browse(new URI(url));
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
-					EnumChatFormatting.GOLD + "> Opening Feature List in browser."));
+			Utils.addChatMessage(				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
+				EnumChatFormatting.GOLD + "> Opening Feature List in browser.");
 		} catch (URISyntaxException | IOException ignored) {
 
 			ChatComponentText clickTextFeatures = new ChatComponentText(
@@ -72,6 +62,6 @@ public class FeaturesCommand extends ClientCommandBase {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(clickTextFeatures);
 
 		}
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(""));
+		Utils.addChatMessage("");
 	}
 }

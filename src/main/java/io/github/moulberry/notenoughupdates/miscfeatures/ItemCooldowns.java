@@ -40,6 +40,10 @@ public class ItemCooldowns {
 	private static final Map<ItemStack, Float> durabilityOverrideMap = new HashMap<>();
 	public static long pickaxeUseCooldownMillisRemaining = -1;
 	private static long treecapitatorCooldownMillisRemaining = -1;
+
+	public static boolean firstLoad = true;
+	public static long firstLoadMillis = 0;
+
 	private static long lastMillis = 0;
 
 	public static long pickaxeCooldown = -1;
@@ -57,6 +61,11 @@ public class ItemCooldowns {
 			}
 
 			long currentTime = System.currentTimeMillis();
+			if (firstLoad) {
+				firstLoadMillis = currentTime;
+				firstLoad = false;
+			}
+
 
 			Long key;
 			while ((key = blocksClicked.floorKey(currentTime - 1500)) != null) {
@@ -78,7 +87,7 @@ public class ItemCooldowns {
 	}
 
 	@SubscribeEvent
-	public void onWorldUnload(WorldEvent.Load event) {
+	public void onWorldLoad(WorldEvent.Load event) {
 		blocksClicked.clear();
 		if (pickaxeCooldown > 0) pickaxeUseCooldownMillisRemaining = 60 * 1000;
 		pickaxeCooldown = -1;
@@ -141,9 +150,7 @@ public class ItemCooldowns {
 		} else if (internalname.contains("_DRILL_")) {
 			char lastChar = internalname.charAt(internalname.length() - 1);
 			return lastChar >= '0' && lastChar <= '9';
-		} else if (internalname.equals("DIVAN_DRILL")) {
-			return true;
-		} else return internalname.equals("GEMSTONE_GAUNTLET");
+		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") || internalname.equals("DIVAN_DRILL");
 	}
 
 	private static void updatePickaxeCooldown() {

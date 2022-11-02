@@ -38,6 +38,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -121,6 +122,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 	};
 	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation("notenoughupdates:pv_trophy_fish_tab.png");
+	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 	private static final String checkX = "§c✖";
 	private static final String check = "§a✔";
 	private final Map<String, Integer> total = new HashMap<>();
@@ -357,6 +359,11 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.GOLD, EnumChatFormatting.GOLD));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.SILVER, EnumChatFormatting.GRAY));
 		tooltip.add(display(trophyFishRarityIntegerMap, TrophyFish.TrophyFishRarity.BRONZE, EnumChatFormatting.DARK_GRAY));
+		if (trophyFishList.get(name) != null) {
+			tooltip.add(" ");
+			tooltip.add(EnumChatFormatting.GRAY + "Total: " + EnumChatFormatting.GOLD +
+				NUMBER_FORMAT.format(trophyFishList.get(name).getTotal()));
+		}
 		return tooltip;
 	}
 
@@ -371,7 +378,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 
 		if (trophyFishRarityIntegerMap.containsKey(rarity)) {
-			return color + name + ": " + EnumChatFormatting.GOLD + trophyFishRarityIntegerMap.get(rarity);
+			return color + name + ": " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishRarityIntegerMap.get(rarity));
 		} else {
 			return color + name + ": " + checkX;
 		}

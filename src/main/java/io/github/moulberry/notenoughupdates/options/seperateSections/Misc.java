@@ -33,8 +33,8 @@ import org.lwjgl.input.Keyboard;
 public class Misc {
 	@Expose
 	@ConfigOption(
-		name = "Only Show on Skyblock",
-		desc = "The item list and some other GUI elements will only show on skyblock"
+		name = "Only Show on SkyBlock",
+		desc = "The item list and some other GUI elements will only show on SkyBlock"
 	)
 	@ConfigEditorBoolean
 	public boolean onlyShowOnSkyblock = true;
@@ -42,7 +42,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Hide Potion Effects",
-		desc = "Hide the potion effects inside your inventory while on skyblock"
+		desc = "Hide the potion effects inside your inventory while on SkyBlock"
 	)
 	@ConfigEditorBoolean
 	public boolean hidePotionEffect = true;
@@ -80,6 +80,15 @@ public class Misc {
 	)
 	@ConfigAccordionId(id = 0)
 	public boolean fariySoul = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Show Waypoint Distance",
+		desc = "Show the distance to each fairy soul waypoint"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean fairySoulWaypointDistance = false;
 
 	@Expose
 	@ConfigOption(
@@ -126,7 +135,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Damage Indicator Style",
-		desc = "Change Skyblock damage indicators to use shortened numbers\n" +
+		desc = "Change SkyBlock damage indicators to use shortened numbers\n" +
 			"\u00A7cSome old animations mods break this feature"
 	)
 	@ConfigEditorBoolean
@@ -141,26 +150,47 @@ public class Misc {
 	@ConfigEditorButton(runnableId = 13, buttonText = "Open")
 	public boolean openPV = true;
 
+	@ConfigOption(
+		name = "Custom Enchant Colours",
+		desc = ""
+	)
+	@ConfigEditorAccordion(
+		id = 1
+	)
+	public boolean neuEnchantsAccordion = true;
+
 	@Expose
 	@ConfigOption(
-
 		name = "Edit Enchant Colours",
-		desc = "Change the colours of certain skyblock enchants (/neuec)"
+		desc = "Change the colours of certain SkyBlock enchants (/neuec)",
+		searchTags = "color"
 	)
 	@ConfigEditorButton(runnableId = 8, buttonText = "Open")
+	@ConfigAccordionId(id = 1)
 	public boolean editEnchantColoursButton = true;
 
 	@Expose
 	@ConfigOption(
 		name = "Chroma Text Speed",
-		desc = "Change the speed of chroma text for items names (/neucustomize) and enchant colours (/neuec) with the chroma colour code (&z)"
+		desc = "Change the speed of chroma text for items names (/neucustomize) and enchant colours (/neuec) with the chroma colour code (&z)",
+		searchTags = "color"
 	)
 	@ConfigEditorSlider(
 		minValue = 10,
 		maxValue = 500,
 		minStep = 10
 	)
+	@ConfigAccordionId(id = 1)
 	public int chromaSpeed = 100;
+
+	@Expose
+	@ConfigOption(
+		name = "Cache Tooltip Enchants",
+		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: It doesn't work on items without a uuid"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean cacheItemEnchant = true;
 
 	@Expose
 	@ConfigOption(
@@ -232,9 +262,29 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Enable Coop Warning",
-		desc = "Asks for confirmation when clicking the coop diamond in profile menu"
+		desc = "Asks for confirmation when clicking the coop diamond in profile menu and prevents 'wrong' /coopadd commands"
 	)
 	@ConfigEditorBoolean
 	public boolean coopWarning = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Filter Skyblock Levels in Chat",
+		desc = "Requires the \"SkyBlock Levels in Chat\" skyblock setting to be on"
+	)
+	@ConfigEditorSlider(
+		minValue = 0,
+		maxValue = 300,
+		minStep = 10
+	)
+	public int filterChatLevel = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable text field tweaks",
+		desc = "Allows the use of ctrl + z, ctrl + y and ctrl + Lshift + z in text fields"
+	)
+	@ConfigEditorBoolean
+	public boolean textFieldTweaksEnabled = true;
 
 }

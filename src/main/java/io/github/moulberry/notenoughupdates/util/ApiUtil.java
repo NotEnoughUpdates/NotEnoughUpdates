@@ -22,6 +22,8 @@ package io.github.moulberry.notenoughupdates.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
+import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -33,6 +35,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -47,7 +50,9 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,6 +63,7 @@ public class ApiUtil {
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 	private static final String USER_AGENT = "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
 	private static SSLContext ctx;
+	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
 
 	static {
 		try {
@@ -76,12 +82,31 @@ public class ApiUtil {
 		}
 	}
 
+	public void updateProfileData() {
+		updateProfileData(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
+	}
+
+	public void updateProfileData(String playerUuid) {
+		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
+
+		updateTasks.put(playerUuid, newHypixelApiRequest("skyblock/profiles")
+			.queryArgument("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))
+			.requestJson()
+			.handle((jsonObject, throwable) -> {
+				new ProfileDataLoadedEvent(jsonObject).post();
+				return null;
+			}));
+
+	}
+
 	public static class Request {
 
 		private final List<NameValuePair> queryArguments = new ArrayList<>();
 		private String baseUrl = null;
 		private boolean shouldGunzip = false;
 		private String method = "GET";
+		private String postData = null;
+		private String postContentType = null;
 
 		public Request method(String method) {
 			this.method = method;
@@ -105,6 +130,12 @@ public class ApiUtil {
 
 		public Request gunzip() {
 			shouldGunzip = true;
+			return this;
+		}
+
+		public Request postData(String contentType, String data) {
+			this.postContentType = contentType;
+			this.postData = data;
 			return this;
 		}
 
@@ -140,6 +171,18 @@ public class ApiUtil {
 						conn.setConnectTimeout(10000);
 						conn.setReadTimeout(10000);
 						conn.setRequestProperty("User-Agent", USER_AGENT);
+						if (this.postContentType != null) {
+							conn.setRequestProperty("Content-Type", this.postContentType);
+						}
+						if (this.postData != null) {
+							conn.setDoOutput(true);
+							OutputStream os = conn.getOutputStream();
+							try {
+								os.write(this.postData.getBytes("utf-8"));
+							} finally {
+								os.close();
+							}
+						}
 
 						inputStream = conn.getInputStream();
 

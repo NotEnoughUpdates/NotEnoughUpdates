@@ -48,8 +48,8 @@ public class Calculator {
 		int tokenLength;
 	}
 
-	static String binops = "+-*/x";
-	static String postops = "mkbts";
+	static String binops = "+-*/^x";
+	static String postops = "mkbts%";
 	static String digits = "0123456789";
 
 	static void readDigitsInto(Token token, String source, boolean decimals) {
@@ -101,6 +101,10 @@ public class Calculator {
 				token.tokenLength = 1;
 				token.type = TokenType.BINOP;
 				token.operatorValue = c + "";
+				if (c == '*' && i + 1 < source.length() && source.charAt(i + 1) == '*') {
+					token.tokenLength++;
+					token.operatorValue = "^";
+				}
 			} else if (postops.indexOf(c) != -1) {
 				token.tokenLength = 1;
 				token.type = TokenType.POSTOP;
@@ -113,7 +117,7 @@ public class Calculator {
 				token.tokenLength = 1;
 				token.type = TokenType.LPAREN;
 				token.operatorValue = "(";
-			} else if ('.' == c) {
+			} else if ('.' == c || ',' == c) {
 				token.tokenLength = 1;
 				token.type = TokenType.NUMBER;
 				readDigitsInto(token, source, true);
@@ -125,7 +129,7 @@ public class Calculator {
 				readDigitsInto(token, source, false);
 				if (i + token.tokenLength < source.length()) {
 					char p = source.charAt(i + token.tokenLength);
-					if ('.' == p) {
+					if ('.' == p || ',' == p) {
 						token.tokenLength++;
 						readDigitsInto(token, source, true);
 					}
@@ -150,6 +154,8 @@ public class Calculator {
 			case "/":
 			case "x":
 				return 1;
+			case "^":
+				return 2;
 		}
 		throw new CalculatorException("Unknown operator " + token.operatorValue, token.tokenStart, token.tokenLength);
 	}
@@ -230,6 +236,18 @@ public class Calculator {
 						BigDecimal right = values.pop().setScale(2, RoundingMode.HALF_UP);
 						BigDecimal left = values.pop().setScale(2, RoundingMode.HALF_UP);
 						switch (command.operatorValue.intern()) {
+							case "^":
+								if (right.compareTo(new BigDecimal(1000)) >= 0) {
+									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
+									throw new CalculatorException(right + " is too large, pick a power less than 1000", rightToken.tokenStart, rightToken.tokenLength);
+								}
+
+								if (right.doubleValue() != right.intValue()) {
+									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
+									throw new CalculatorException(right + " has a decimal, pick a power that is non-decimal", rightToken.tokenStart, rightToken.tokenLength);
+								}
+								values.push(left.pow(right.intValue()).setScale(2, RoundingMode.HALF_UP));
+								break;
 							case "x":
 							case "*":
 								values.push(left.multiply(right).setScale(2, RoundingMode.HALF_UP));
@@ -279,6 +297,9 @@ public class Calculator {
 								break;
 							case "t":
 								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(2, RoundingMode.HALF_UP));
+								break;
+							case "%":
+								values.push(p.setScale(3, RoundingMode.HALF_UP).divide(new BigDecimal(100), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP));
 								break;
 							default:
 								throw new CalculatorException(

@@ -30,7 +30,8 @@ public enum RecipeType {
 	FORGE("forge", "Forging", ForgeRecipe::parseForgeRecipe, new ItemStack(Blocks.anvil)),
 	TRADE("trade", "Trading", VillagerTradeRecipe::parseStaticRecipe, new ItemStack(Items.emerald)),
 	MOB_LOOT("drops", "Mob Loot", MobLootRecipe::parseRecipe, new ItemStack(Items.diamond_sword)),
-	NPC_SHOP("npc_shop", "NPC Item Shop", ItemShopRecipe::parseItemRecipe, new ItemStack(Items.wheat_seeds));
+	NPC_SHOP("npc_shop", "NPC Item Shop", ItemShopRecipe::parseItemRecipe, new ItemStack(Items.wheat_seeds)),
+	ESSENCE_UPGRADES("", "Essence Upgrades", null, new ItemStack(Items.nether_star));
 
 	private final String id;
 	private final String label;

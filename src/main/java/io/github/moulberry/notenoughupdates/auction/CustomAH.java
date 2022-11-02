@@ -190,8 +190,6 @@ public class CustomAH extends Gui {
 	private static final int SORT_MODE_LOW = 1;
 	private static final int SORT_MODE_SOON = 2;
 
-	//    private static final String[] rarities = {"COMMON", "UNCOMMON", "RARE", "EPIC",
-//            "LEGENDARY", "MYTHIC", "SPECIAL", "VERY SPECIAL", "SUPREME", "DIVINE"};
 	private static final String[] rarityColours = {
 		"" + EnumChatFormatting.WHITE,
 		"" + EnumChatFormatting.GREEN, "" + EnumChatFormatting.BLUE, "" + EnumChatFormatting.DARK_PURPLE,
@@ -264,10 +262,8 @@ public class CustomAH extends Gui {
 		if (searchField == null || priceField == null) init();
 		if (System.currentTimeMillis() - lastOpen < 1000) Mouse.setGrabbed(false);
 
-		//sortMode = SORT_MODE_HIGH;
 		rarityFilter = -1;
 		filterMyAuctions = false;
-		//binFilter = BIN_FILTER_ALL;
 		enchFilter = ENCH_FILTER_ALL;
 		dungeonFilter = DUNGEON_FILTER_ALL;
 
@@ -995,14 +991,6 @@ public class CustomAH extends Gui {
 		searchField.drawTextBox();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        /*if(auctionIds.size() == 0 && searchField.getText().length() == 0) {
-            drawRect(guiLeft+8, guiTop+17, guiLeft+170, guiTop+107+18*splits,
-                    new Color(100, 100, 100, 100).getRGB());
-
-            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-            int strWidth = fr.getStringWidth("Loading items...");
-            fr.drawString("Loading items...", guiLeft+(8+170-strWidth)/2, guiTop+(17+107+18*splits)/2, Color.BLACK.getRGB());
-        }*/
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(creativeInventoryTabs);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1409,9 +1397,7 @@ public class CustomAH extends Gui {
 		for (String internalname : itemMatches) {
 			for (String aucid : manager.auctionManager.getAuctionsForInternalname(internalname)) {
 				APIManager.Auction auc = manager.auctionManager.getAuctionItems().get(aucid);
-				if (doesAucMatch(auc)) {
-					//matches.add(aucid);
-				} else {
+				if (!doesAucMatch(auc)) {
 					dontMatch.add(aucid);
 				}
 			}
