@@ -23,19 +23,25 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AbiphoneFavourites {
@@ -47,6 +53,21 @@ public class AbiphoneFavourites {
 		return INSTANCE;
 	}
 
+	private final ItemStack ITEM_STACK_FAVOURITE_ONLY = Utils.createItemStack(
+		Items.diamond,
+		"§6Show only favourite contacts",
+		"§7Non favourite contacts are hidden.",
+		" ",
+		"§eClick to show all contacts!"
+	);
+	private final ItemStack ITEM_STACK_ALL = Utils.createItemStack(
+		Items.emerald,
+		"§aShow all contacts",
+		"§7Favourite contacts are marked §6orange§7.",
+		" ",
+		"§eClick to show only favourite contacts!"
+	);
+
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event) {
 		if (isWrongInventory()) return;
@@ -56,23 +77,6 @@ public class AbiphoneFavourites {
 		if (list.isEmpty()) return;
 
 		ItemStack stack = event.itemStack;
-
-		if (isBorder(stack)) {
-			list.clear();
-			if (!isAbiphoneShowOnlyFavourites()) {
-				list.add("§aShow all contacts");
-				list.add("§7Favourite contacts are marked §6orange§7.");
-				list.add(" ");
-				list.add("§eClick to show only favourite contacts!");
-			} else {
-				list.add("§6Show only favourite contacts");
-				list.add("§7Non favourite contacts are hidden.");
-				list.add(" ");
-				list.add("§eClick to show all contacts!");
-			}
-			return;
-		}
-
 		if (!isContact(stack)) return;
 		String rawName = stack.getDisplayName();
 		String name = StringUtils.cleanColour(rawName);
@@ -115,7 +119,7 @@ public class AbiphoneFavourites {
 		ItemStack stack = event.slot.getStack();
 		if (stack == null || stack.getDisplayName() == null) return;
 
-		if (isBorder(stack)) {
+		if ((stack == ITEM_STACK_FAVOURITE_ONLY || stack == ITEM_STACK_ALL)) {
 			if (System.currentTimeMillis() > lastClick + 200) {
 				NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 				if (profileSpecific != null) {
@@ -158,6 +162,19 @@ public class AbiphoneFavourites {
 		}
 	}
 
+	@SubscribeEvent
+	public void replaceItem(ReplaceItemEvent event) {
+		IChatComponent chatComponent = event.getInventory().getDisplayName();
+		if (chatComponent == null || isWrongInventory()) return;
+		ItemStack original = event.getOriginal();
+		if (original == null) return;
+		if (original.getItem() != Item.getItemFromBlock(Blocks.stained_glass_pane)) return;
+
+		if (event.getSlotNumber() > 2 && event.getSlotNumber() < 6) {
+			event.replaceWith(isAbiphoneShowOnlyFavourites() ? ITEM_STACK_FAVOURITE_ONLY : ITEM_STACK_ALL);
+		}
+	}
+
 	private void toggleFavouriteContact(String rawName, String name) {
 		if (getFavouriteContacts().contains(name)) {
 			getFavouriteContacts().remove(name);
@@ -191,16 +208,6 @@ public class AbiphoneFavourites {
 			ItemStack stack = slot.getStack();
 			if (stack == null) continue;
 
-			if (isBorder(stack)) {
-				if (slot.slotNumber > 2 && slot.slotNumber < 6) {
-					if (!isAbiphoneShowOnlyFavourites()) {
-						RenderUtils.highlightSlot(slot, Color.GREEN);
-					} else {
-						RenderUtils.highlightSlot(slot, Color.ORANGE);
-					}
-				}
-			}
-
 			if (!isContact(stack)) continue;
 
 			String rawName = stack.getDisplayName();
@@ -215,15 +222,9 @@ public class AbiphoneFavourites {
 	}
 
 	private static boolean isWrongInventory() {
-		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return true;
-		if (!NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites) return true;
-		if (!Utils.getOpenChestName().startsWith("Abiphone ")) return true;
-
-		return false;
-	}
-
-	private static boolean isBorder(ItemStack stack) {
-		return stack.getUnlocalizedName().startsWith("tile.thinStainedGlass.");
+		return !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
+			|| !NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites
+			|| !Utils.getOpenChestName().startsWith("Abiphone ");
 	}
 
 	private static boolean isContact(ItemStack stack) {
