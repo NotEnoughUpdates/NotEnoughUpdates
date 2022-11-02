@@ -37,11 +37,14 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -387,6 +390,31 @@ public class RenderUtils {
 
 	public static void renderWayPoint(Vec3i loc, float partialTicks) {
 		renderWayPoint(Arrays.asList(""), new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks, true);
+	}
+
+	public static void drawFilledQuadWithTexture(Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4, float alpha, ResourceLocation texture) {
+		GlStateManager.pushMatrix();
+		Entity v = Minecraft.getMinecraft().getRenderViewEntity();
+		double vX = v.lastTickPosX + (v.posX - v.lastTickPosX);
+		double vY = v.lastTickPosY + (v.posY - v.lastTickPosY);
+		double vZ = v.lastTickPosZ + (v.posZ - v.lastTickPosZ);
+
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableBlend();
+		GlStateManager.disableCull();
+		GlStateManager.color(1.0f, 1.0f, 1.0f, alpha);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.pos(p1.xCoord-vX, p1.yCoord-vY, p1.zCoord-vZ).tex(0, 0).endVertex(); //Top Left
+		worldrenderer.pos(p2.xCoord-vX, p2.yCoord-vY, p2.zCoord-vZ).tex(1, 0).endVertex(); //Top Right
+		worldrenderer.pos(p3.xCoord-vX, p3.yCoord-vY, p3.zCoord-vZ).tex(1, 1).endVertex(); //Bottom Right
+		worldrenderer.pos(p4.xCoord-vX, p4.yCoord-vY, p4.zCoord-vZ).tex(0, 1).endVertex(); //Bottom Left
+		tessellator.draw();
+		GlStateManager.enableCull();
+		GlStateManager.popMatrix();
 	}
 
 	public static void renderWayPoint(List<String> lines, Vector3f loc, float partialTicks, boolean onlyShowDistance) {
