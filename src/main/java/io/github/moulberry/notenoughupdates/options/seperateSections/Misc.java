@@ -290,7 +290,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Abiphone Favourites",
-		desc = "Allows abiphone contacts to be set as favourites, toggle weather to show only favourites or all contacts and disables the option to remove contacts at all"
+		desc = "Allows to set abiphone contacts as favourites, toggle between displaying all contacts or favourites only and deactivates the option to remove contacts at all."
 	)
 	@ConfigEditorBoolean
 	public boolean abiphoneFavourites = true;
