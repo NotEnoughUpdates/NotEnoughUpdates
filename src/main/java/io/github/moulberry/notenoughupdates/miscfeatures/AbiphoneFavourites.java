@@ -90,18 +90,32 @@ public class AbiphoneFavourites {
 			}
 		}
 
-		//F3 + H support
+
 		List<String> replaceList = new ArrayList<>();
-		if (list.size() > 2) {
-			String secondLastLine = list.get(list.size() - 2);
-			if (secondLastLine.contains("minecraft:")) {
-				replaceList.add(list.remove(list.size() - 2));
-				replaceList.add(list.remove(list.size() - 1));
+		List<Integer> indexes = new ArrayList<>();
+		int replaceLeftClickIndex = -1;
+		for (String s : list) {
+			if (s.contains("Click to call")) replaceLeftClickIndex = list.indexOf(s);
+			if (s.contains("§cRight-click to remove contact!")) indexes.add(list.indexOf(s));
+			if (!getFavouriteContacts().contains(name) && isAbiphoneShowOnlyFavourites() && (s.contains("§eLeft-click to call!") || s.contains("Click to call"))) {
+				indexes.add(list.indexOf(s));
+			}
+			if (s.contains("minecraft:") || s.contains("NBT:")) {
+				replaceList.add(s);
+				indexes.add(list.indexOf(s));
 			}
 		}
 
-		//removes "to remove contact" line
-		list.remove(list.size() - 1);
+		if (replaceLeftClickIndex != -1) {
+			list.set(replaceLeftClickIndex, "§eLeft-click to call!");
+		}
+
+		int index = 0;
+		for (int i : indexes) {
+			list.remove(i-index);
+			index++;
+		}
+
 
 		if (getFavouriteContacts().contains(name)) {
 			if (!isAbiphoneShowOnlyFavourites()) {
@@ -241,7 +255,7 @@ public class AbiphoneFavourites {
 
 	private boolean isContact(ItemStack stack) {
 		for (String line : ItemUtils.getLore(stack)) {
-			if (line.equals("§eLeft-click to call!")) {
+			if (line.equals("§eLeft-click to call!") || line.equals("§eClick to call!")) {
 				return true;
 			}
 		}
