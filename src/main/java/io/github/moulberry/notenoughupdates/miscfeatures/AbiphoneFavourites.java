@@ -90,32 +90,7 @@ public class AbiphoneFavourites {
 			}
 		}
 
-
-		List<String> replaceList = new ArrayList<>();
-		List<Integer> indexes = new ArrayList<>();
-		int replaceLeftClickIndex = -1;
-		for (String s : list) {
-			if (s.contains("Click to call")) replaceLeftClickIndex = list.indexOf(s);
-			if (s.contains("§cRight-click to remove contact!")) indexes.add(list.indexOf(s));
-			if (!getFavouriteContacts().contains(name) && isAbiphoneShowOnlyFavourites() && (s.contains("§eLeft-click to call!") || s.contains("Click to call"))) {
-				indexes.add(list.indexOf(s));
-			}
-			if (s.contains("minecraft:") || s.contains("NBT:")) {
-				replaceList.add(s);
-				indexes.add(list.indexOf(s));
-			}
-		}
-
-		if (replaceLeftClickIndex != -1) {
-			list.set(replaceLeftClickIndex, "§eLeft-click to call!");
-		}
-
-		int index = 0;
-		for (int i : indexes) {
-			list.remove(i-index);
-			index++;
-		}
-
+		list.removeIf(s -> s.contains("§eRight-click to remove contact!"));
 
 		if (getFavouriteContacts().contains(name)) {
 			if (!isAbiphoneShowOnlyFavourites()) {
@@ -134,8 +109,6 @@ public class AbiphoneFavourites {
 				}
 			}
 		}
-
-		list.addAll(replaceList);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
