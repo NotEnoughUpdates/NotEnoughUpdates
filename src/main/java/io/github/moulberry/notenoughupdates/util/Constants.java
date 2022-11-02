@@ -29,10 +29,14 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
+import io.github.moulberry.notenoughupdates.recipes.EssenceUpgrades;
+import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
@@ -94,10 +98,23 @@ public class Constants {
 			TROPHYFISH = Utils.getConstant("trophyfish", gson);
 			WEIGHT = Utils.getConstant("weight", gson);
 			RNGSCORE = Utils.getConstant("rngscore", gson);
+
+			parseEssenceCosts();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
 			lock.unlock();
+		}
+	}
+
+	public void parseEssenceCosts() {
+		for (Map.Entry<String, JsonElement> entry : ESSENCECOSTS.entrySet()) {
+			NeuRecipe parsed = EssenceUpgrades.parseFromEssenceCostEntry(entry);
+			if (parsed != null) {
+				NotEnoughUpdates.INSTANCE.manager.registerNeuRecipe(parsed);
+			} else {
+				System.out.println("NULL for: " + entry);
+			}
 		}
 	}
 }

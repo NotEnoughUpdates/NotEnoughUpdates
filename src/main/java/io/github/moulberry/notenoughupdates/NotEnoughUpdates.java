@@ -319,7 +319,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new SignCalculator());
 		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
 		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
-		MinecraftForge.EVENT_BUS.register(new AntiCoopAdd());
+		MinecraftForge.EVENT_BUS.register(AntiCoopAdd.getInstance());
 		MinecraftForge.EVENT_BUS.register(AbiphoneWarning.getInstance());
 		MinecraftForge.EVENT_BUS.register(new BetterContainers());
 		MinecraftForge.EVENT_BUS.register(AuctionBINWarning.getInstance());

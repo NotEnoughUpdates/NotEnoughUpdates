@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
@@ -128,6 +129,9 @@ public class MixinNetHandlerPlayClient {
 		}
 		if (packet instanceof C01PacketChatMessage) {
 			NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet);
+			if (AntiCoopAdd.getInstance().onPacketChatMessage((C01PacketChatMessage) packet)) {
+				ci.cancel();
+			}
 		}
 	}
 
