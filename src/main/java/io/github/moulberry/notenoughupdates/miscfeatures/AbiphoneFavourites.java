@@ -221,13 +221,13 @@ public class AbiphoneFavourites {
 		}
 	}
 
-	private static boolean isWrongInventory() {
+	private boolean isWrongInventory() {
 		return !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
 			|| !NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites
 			|| !Utils.getOpenChestName().startsWith("Abiphone ");
 	}
 
-	private static boolean isContact(ItemStack stack) {
+	private boolean isContact(ItemStack stack) {
 		for (String line : ItemUtils.getLore(stack)) {
 			if (line.equals("§eLeft-click to call!")) {
 				return true;
@@ -242,14 +242,14 @@ public class AbiphoneFavourites {
 		if (profileSpecific != null) {
 			return profileSpecific.abiphoneFavouriteContacts;
 		}
-		throw new RuntimeException("This is not your biggest problem right now.");
+		return new ArrayList<>();
 	}
 
-	private static boolean isAbiphoneShowOnlyFavourites() {
+	private boolean isAbiphoneShowOnlyFavourites() {
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific != null) {
 			return profileSpecific.abiphoneShowOnlyFavourites;
 		}
-		throw new RuntimeException("This is not your biggest problem right now.");
+		return false;
 	}
 }
