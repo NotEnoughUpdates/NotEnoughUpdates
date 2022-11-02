@@ -118,4 +118,17 @@ public class StringUtils {
 		String firstLetter = ("" + text.charAt(0)).toUpperCase();
 		return firstLetter + text.substring(1);
 	}
+
+	public static boolean isNumeric(String string) {
+		if (string == null || string.isEmpty()) {
+			return false;
+		}
+
+		for (char c : string.toCharArray()) {
+			if (!Character.isDigit(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
