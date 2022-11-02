@@ -99,7 +99,6 @@ public class AbiphoneFavourites {
 		} else {
 			list.remove(list.size() - 1);
 			list.add("§eShift-Click to add to the favourites!");
-			list.set(0, "§7" + StringUtils.cleanColour(list.get(0)));
 		}
 
 		if (!isAbiphoneShowOnlyFavourites()) {
