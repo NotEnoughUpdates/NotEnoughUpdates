@@ -1254,11 +1254,13 @@ public class RenderListener {
 							if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
 								int stars = Utils.getNumberOfStars(stack);
 								if (stars == 0) continue;
-								String starsStr = "" + stars;
 
 								NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
 								int costIndex = 10000;
-								id = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
+								id = NotEnoughUpdates.INSTANCE.manager
+									.createItemResolutionQuery()
+									.withItemStack(stack)
+									.resolveInternalName();
 								if (jsonObject.has(id)) {
 									jsonObject.remove(id);
 								}
@@ -1267,39 +1269,72 @@ public class RenderListener {
 									if (entry.equals("§7Cost")) {
 										costIndex = j;
 									}
-
 									if (j > costIndex) {
 										entry = entry.trim();
-
-										int countIndex = entry.lastIndexOf(" §8x");
-
-										String upgradeName = entry;
-										String amount = "1";
-										if (countIndex != -1) {
-											upgradeName = entry.substring(0, countIndex);
-											// +4 to account for " §8x"
-											amount = entry.substring(countIndex + 4);
-										}
-
-										if (upgradeName.endsWith(" Essence")) {
-											// First 2 chars are control code
-											// [EssenceCount, EssenceType, "Essence"]
-											String[] upgradeNameSplit = upgradeName.substring(2).split(" ");
-											newEntry.addProperty("type", upgradeNameSplit[1]);
-											newEntry.addProperty(starsStr, Integer.parseInt(upgradeNameSplit[0].replace(",", "")));
+										int index = entry.lastIndexOf('x');
+										String item, amountString;
+										if (index < 0) {
+											item = entry.trim() + " x1";
+											amountString = "x1";
 										} else {
+											amountString = entry.substring(index);
+											item = entry.substring(0, index).trim();
+										}
+										item = item.substring(0, item.length() - 3);
+										int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
+										if (item.endsWith("Essence")) {
+											int index2 = entry.indexOf("Essence");
+											String typeAndAmount = item.substring(0, index2).trim().substring(2);
+											int whitespaceIndex = typeAndAmount.indexOf(' ');
+											int essenceAmount = Integer.parseInt(typeAndAmount
+												.substring(0, whitespaceIndex)
+												.replace(",", ""));
+											newEntry.add("type", new JsonPrimitive(typeAndAmount.substring(whitespaceIndex + 1)));
+											if (stars == -1) {
+												newEntry.add("dungeonize", new JsonPrimitive(essenceAmount));
+											} else {
+												newEntry.add(String.valueOf(stars), new JsonPrimitive(essenceAmount));
+											}
+										} else if (item.endsWith("Coins")) {
+											int index2 = entry.indexOf("Coins");
+											String coinsAmount = item.substring(0, index2).trim().substring(2);
 											if (!newEntry.has("items")) {
 												newEntry.add("items", new JsonObject());
 											}
-											if (!newEntry.get("items").getAsJsonObject().has(starsStr)) {
-												newEntry.get("items").getAsJsonObject().add(starsStr, new JsonArray());
+											if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
+												newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
 											}
 											newEntry
 												.get("items")
 												.getAsJsonObject()
-												.get(starsStr)
+												.get(String.valueOf(stars))
 												.getAsJsonArray()
-												.add(new JsonPrimitive(upgradeName + (upgradeName.contains("Coins") ? "" : (" §8x" + amount))));
+												.add(new JsonPrimitive("SKYBLOCK_COIN:" + coinsAmount.replace(",", "")));
+										} else {
+											String itemString = "_";
+											for (Map.Entry<String, JsonObject> itemEntry : NotEnoughUpdates.INSTANCE.manager
+												.getItemInformation()
+												.entrySet()) {
+
+												if (itemEntry.getValue().has("displayname")) {
+													String name = itemEntry.getValue().get("displayname").getAsString();
+													if (name.equals(item)) {
+														itemString = itemEntry.getKey() + ":" + amount;
+													}
+												}
+											}
+											if (!newEntry.has("items")) {
+												newEntry.add("items", new JsonObject());
+											}
+											if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
+												newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
+											}
+											newEntry
+												.get("items")
+												.getAsJsonObject()
+												.get(String.valueOf(stars))
+												.getAsJsonArray()
+												.add(new JsonPrimitive(itemString));
 										}
 									}
 								}
