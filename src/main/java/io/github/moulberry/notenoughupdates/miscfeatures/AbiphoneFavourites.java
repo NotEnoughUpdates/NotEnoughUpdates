@@ -58,6 +58,7 @@ public class AbiphoneFavourites {
 		"§6Show only favourite contacts",
 		"§7Non favourite contacts are hidden.",
 		"§7Only favourite contacts can be called.",
+		"§8This is a NEU feature and not made by hypixel.",
 		" ",
 		"§eClick to show all contacts!"
 	);
@@ -66,6 +67,7 @@ public class AbiphoneFavourites {
 		"§aShow all contacts",
 		"§7Favourite contacts are marked §6orange§7.",
 		"§7All contacts can be called.",
+		"§8This is a NEU feature and not made by hypixel.",
 		" ",
 		"§eClick to show only favourite contacts!"
 	);
