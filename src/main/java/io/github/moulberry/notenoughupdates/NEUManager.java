@@ -888,8 +888,11 @@ public class NEUManager {
 				break;
 			case "viewpotion":
 				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+				break;
+			default:
+				displayGuiItemRecipe(internalName);
 		}
-		displayGuiItemRecipe(internalName);
+
 	}
 
 	public void showRecipe(String internalName) {
