@@ -78,14 +78,6 @@ public class SlayerOverlay {
 	public List<Integer> slayerText = new ArrayList<>(Arrays.asList(0, 1, 4, 5, 3, 6));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Slayer Overlay Position",
-		desc = "Change the position of the Slayer overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 18,
-		buttonText = "Edit"
-	)
 	public Position slayerPosition = new Position(10, 200);
 
 	@Expose

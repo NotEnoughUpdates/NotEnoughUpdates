@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -92,8 +93,12 @@ public class FuelBar {
 
 	@SubscribeEvent
 	public void onRenderScreen(RenderGameOverlayEvent.Post event) {
-		if (fuelAmount < 0) return;
-		if (!NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar) return;
+		if (!GuiPositionEditor.renderDrill) {
+			if (fuelAmount < 0) return;
+			if (!NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar) return;
+		} else {
+			fuelAmount = .3f;
+		}
 		if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 

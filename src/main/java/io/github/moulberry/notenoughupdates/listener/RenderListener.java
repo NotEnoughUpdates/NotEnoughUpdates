@@ -184,17 +184,21 @@ public class RenderListener {
 			DungeonWin.render(event.partialTicks);
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, 0, -200);
+			label:
 			for (TextOverlay overlay : OverlayManager.textOverlays) {
-				if (OverlayManager.dontRenderOverlay != null &&
-					OverlayManager.dontRenderOverlay.isAssignableFrom(overlay.getClass())) {
-					continue;
+				for (Class<? extends TextOverlay> dontRender : OverlayManager.dontRenderOverlay) {
+					if (dontRender != null &&
+						dontRender.isAssignableFrom(overlay.getClass())) {
+						continue label;
+					}
 				}
+
 				GlStateManager.translate(0, 0, -1);
 				GlStateManager.enableDepth();
 				overlay.render();
 			}
 			GlStateManager.popMatrix();
-			OverlayManager.dontRenderOverlay = null;
+			OverlayManager.dontRenderOverlay = new ArrayList<>();
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_X)) {
 			NotificationHandler.notificationDisplayMillis = 0;
