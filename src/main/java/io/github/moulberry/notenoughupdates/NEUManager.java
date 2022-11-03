@@ -1585,7 +1585,7 @@ public class NEUManager {
 					"§cRepository not fully reloaded.",
 					"§cThere was an error reloading your repository.",
 					"§cThis might be caused by an outdated version of neu",
-					"§c(or by not using the dangerous repository if you are using a prerelease of neu).",
+					"§c(or by not using the prerelease repository if you are using a prerelease of neu).",
 					"§aYour repository will still work, but is in a suboptimal state.",
 					"§eJoin §bdiscord.gg/moulberry §efor help."
 				);

@@ -276,6 +276,11 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "master";
 			}
 
+			// Remove before 2.1.1 release
+			if ("master".equals(config.apiData.repoBranch)) {
+				config.apiData.repoBranch = "prerelease";
+			}
+
 			saveConfig();
 		}
 
