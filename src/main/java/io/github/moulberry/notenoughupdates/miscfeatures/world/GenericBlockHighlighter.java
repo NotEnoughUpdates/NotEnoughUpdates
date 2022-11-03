@@ -56,19 +56,16 @@ public abstract class GenericBlockHighlighter {
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent ev) {
 		if (ev.phase != TickEvent.Phase.END) return;
-		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) || !canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
+		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) ||
+			!canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
 	}
 
 	protected boolean canPlayerSeeBlock(double xCoord, double yCoord, double zCoord) {
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		if (p == null) return false;
-		World w = p.worldObj;
 		Vec3 playerPosition = new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ);
-		MovingObjectPosition hitResult = rayTraceBlocks(w, playerPosition, xCoord, yCoord, zCoord);
-		BlockPos bp = new BlockPos(xCoord, yCoord, zCoord);
-		return hitResult == null
-			|| hitResult.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-			|| bp.equals(hitResult.getBlockPos());
+		MovingObjectPosition hitResult = rayTraceBlocks(p.worldObj, playerPosition, xCoord, yCoord, zCoord);
+		return canSee(hitResult, new BlockPos(xCoord, yCoord, zCoord));
 	}
 
 	protected boolean canPlayerSeeNearBlocks(double x, double y, double z) {
@@ -80,29 +77,21 @@ public abstract class GenericBlockHighlighter {
 		MovingObjectPosition hitResult2 = rayTraceBlocks(world, playerPosition, x + 1, y, z);
 		MovingObjectPosition hitResult3 = rayTraceBlocks(world, playerPosition, x, y + 1, z);
 		MovingObjectPosition hitResult4 = rayTraceBlocks(world, playerPosition, x, y, z + 1);
-		BlockPos bp = new BlockPos(x, y, z);
-		return hitResult1 == null
-			|| hitResult2 == null
-			|| hitResult3 == null
-			|| hitResult4 == null
-			|| hitResult1.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-			|| bp.equals(hitResult1.getBlockPos())
-			|| hitResult2.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-			|| bp.equals(hitResult2.getBlockPos())
-			|| hitResult3.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-			|| bp.equals(hitResult3.getBlockPos())
-			|| hitResult4.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-			|| bp.equals(hitResult4.getBlockPos());
+		BlockPos blockPos = new BlockPos(x, y, z);
+		return canSee(hitResult1, blockPos)
+			|| canSee(hitResult2, blockPos)
+			|| canSee(hitResult3, blockPos)
+			|| canSee(hitResult4, blockPos);
 	}
 
-	private static MovingObjectPosition rayTraceBlocks(World w, Vec3 playerPosition, double x, double y, double z) {
-		return w.rayTraceBlocks(
-			playerPosition,
-			new Vec3(x, y, z),
-			false,
-			true,
-			true
-		);
+	private static boolean canSee(MovingObjectPosition hitResult, BlockPos bp) {
+		return hitResult == null
+			|| hitResult.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+			|| bp.equals(hitResult.getBlockPos());
+	}
+
+	private static MovingObjectPosition rayTraceBlocks(World world, Vec3 playerPosition, double x, double y, double z) {
+		return world.rayTraceBlocks(playerPosition, new Vec3(x, y, z), false, true, true);
 	}
 
 	@SubscribeEvent
