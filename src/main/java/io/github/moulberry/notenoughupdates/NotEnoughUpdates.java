@@ -273,7 +273,7 @@ public class NotEnoughUpdates {
 
 			// Remove after 2.1 ig
 			if ("dangerous".equals(config.apiData.repoBranch)) {
-				config.apiData.repoBranch = "master";
+				config.apiData.repoBranch = "prerelease";
 			}
 
 			// Remove before 2.1.1 release
