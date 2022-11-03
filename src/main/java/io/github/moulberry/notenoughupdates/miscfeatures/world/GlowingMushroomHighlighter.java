@@ -40,13 +40,12 @@ public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 		if (!isEnabled()) return;
 		if (event.getParticleTypes() == EnumParticleTypes.SPELL_MOB) {
 			BlockPos blockPos = new BlockPos(event.getXCoord(), event.getYCoord(), event.getZCoord());
-			if (highlightedBlocks.contains(blockPos)) return;
 			if (
 				isDecimalPartApproximately(event.getXCoord(), 0.5)
 					&& isDecimalPartApproximately(event.getYCoord(), 0.1)
 					&& isDecimalPartApproximately(event.getZCoord(), 0.5)
 			) {
-				registerInterest(blockPos);
+				tryRegisterInterest(blockPos);
 			}
 		}
 	}

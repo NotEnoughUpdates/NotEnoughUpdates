@@ -104,4 +104,17 @@ public abstract class GenericBlockHighlighter {
 			highlightedBlocks.add(pos);
 		}
 	}
+
+	public boolean tryRegisterInterest(double x, double y, double z) {
+		BlockPos blockPos = new BlockPos(x, y, z);
+		if (highlightedBlocks.contains(blockPos)) return true;
+		registerInterest(blockPos);
+		return false;
+	}
+
+	public boolean tryRegisterInterest(BlockPos blockPos) {
+		if (highlightedBlocks.contains(blockPos)) return true;
+		registerInterest(blockPos);
+		return false;
+	}
 }

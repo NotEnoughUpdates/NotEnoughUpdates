@@ -68,13 +68,6 @@ public class EnderNodeHighlighter extends GenericBlockHighlighter {
 		}
 	}
 
-	private boolean tryRegisterInterest(double x, double y, double z) {
-		BlockPos blockPos = new BlockPos(x, y, z);
-		if (highlightedBlocks.contains(blockPos)) return true;
-		registerInterest(blockPos);
-		return false;
-	}
-
 	@Override
 	protected boolean isEnabled() {
 		return "combat_3".equals(SBInfo.getInstance().getLocation())
