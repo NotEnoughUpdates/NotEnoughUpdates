@@ -63,52 +63,24 @@ public abstract class GenericBlockHighlighter {
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		if (p == null) return false;
 		World w = p.worldObj;
-		MovingObjectPosition hitResult = w.rayTraceBlocks(
-			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
-			new Vec3(xCoord, yCoord, zCoord),
-			false,
-			true,
-			true
-		);
+		Vec3 playerPosition = new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ);
+		MovingObjectPosition hitResult = rayTraceBlocks(w, playerPosition, xCoord, yCoord, zCoord);
 		BlockPos bp = new BlockPos(xCoord, yCoord, zCoord);
 		return hitResult == null
 			|| hitResult.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
 			|| bp.equals(hitResult.getBlockPos());
 	}
 
-	protected boolean canPlayerSeeNearBlocks(double xCoord, double yCoord, double zCoord) {
+	protected boolean canPlayerSeeNearBlocks(double x, double y, double z) {
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		if (p == null) return false;
-		World w = p.worldObj;
-		MovingObjectPosition hitResult1 = w.rayTraceBlocks(
-			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
-			new Vec3(xCoord, yCoord, zCoord),
-			false,
-			true,
-			true
-		);
-		MovingObjectPosition hitResult2 = w.rayTraceBlocks(
-			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
-			new Vec3(xCoord + 1, yCoord, zCoord),
-			false,
-			true,
-			true
-		);
-		MovingObjectPosition hitResult3 = w.rayTraceBlocks(
-			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
-			new Vec3(xCoord, yCoord + 1, zCoord),
-			false,
-			true,
-			true
-		);
-		MovingObjectPosition hitResult4 = w.rayTraceBlocks(
-			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
-			new Vec3(xCoord, yCoord, zCoord + 1),
-			false,
-			true,
-			true
-		);
-		BlockPos bp = new BlockPos(xCoord, yCoord, zCoord);
+		World world = p.worldObj;
+		Vec3 playerPosition = new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ);
+		MovingObjectPosition hitResult1 = rayTraceBlocks(world, playerPosition, x, y, z);
+		MovingObjectPosition hitResult2 = rayTraceBlocks(world, playerPosition, x + 1, y, z);
+		MovingObjectPosition hitResult3 = rayTraceBlocks(world, playerPosition, x, y + 1, z);
+		MovingObjectPosition hitResult4 = rayTraceBlocks(world, playerPosition, x, y, z + 1);
+		BlockPos bp = new BlockPos(x, y, z);
 		return hitResult1 == null
 			|| hitResult2 == null
 			|| hitResult3 == null
@@ -121,6 +93,16 @@ public abstract class GenericBlockHighlighter {
 			|| bp.equals(hitResult3.getBlockPos())
 			|| hitResult4.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
 			|| bp.equals(hitResult4.getBlockPos());
+	}
+
+	private static MovingObjectPosition rayTraceBlocks(World w, Vec3 playerPosition, double x, double y, double z) {
+		return w.rayTraceBlocks(
+			playerPosition,
+			new Vec3(x, y, z),
+			false,
+			true,
+			true
+		);
 	}
 
 	@SubscribeEvent
