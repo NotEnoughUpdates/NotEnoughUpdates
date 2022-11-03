@@ -2009,12 +2009,12 @@ public class Utils {
 		// If the first character is a square bracket the user has a rank
 		// So we get the username from the space after the closing square bracket (end of their rank)
 		if (username.charAt(0) == '[') {
-			username = username.substring(unformattedText.indexOf(" ") + 2);
+			username = username.substring(username.indexOf(" ") + 1);
 		}
 		// If we still get any square brackets it means the user was talking in guild chat with a guild rank
 		// So we get the username up to the space before the guild rank
 		if (username.contains("[") || username.contains("]")) {
-			username = username.substring(0, unformattedText.indexOf(" "));
+			username = username.substring(0, username.indexOf(" "));
 		}
 		return username;
 	}
