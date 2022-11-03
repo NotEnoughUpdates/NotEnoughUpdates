@@ -35,69 +35,47 @@ import static io.github.moulberry.notenoughupdates.util.MathUtil.basicallyEqual;
 
 public class EnderNodeHighlighter extends GenericBlockHighlighter {
 
-
 	@SubscribeEvent
 	public void onParticleSpawn(SpawnParticleEvent event) {
 		if (!isEnabled()) return;
 		if (event.getParticleTypes() == EnumParticleTypes.PORTAL) {
-			if (
-				Math.abs(event.getYCoord() % 1) == 0.25
-					&& basicallyEqual((event.getXCoord() - 0.5) % 1, 0, 0.2)
-					&& basicallyEqual((event.getZCoord() - 0.5) % 1, 0, 0.2)
-			) {
-				BlockPos blockPos = new BlockPos(event.getXCoord(), event.getYCoord() - 1, event.getZCoord());
-				if (highlightedBlocks.contains(blockPos)) return;
-				registerInterest(blockPos);
+			double x = event.getXCoord();
+			double y = event.getYCoord();
+			double z = event.getZCoord();
+
+			boolean xZero = basicallyEqual((x - 0.5) % 1, 0, 0.2);
+			boolean yZero = basicallyEqual((y - 0.5) % 1, 0, 0.2);
+			boolean zZero = basicallyEqual((z - 0.5) % 1, 0, 0.2);
+
+			if (Math.abs(y % 1) == 0.25 && xZero && zZero) {
+				if (tryRegisterInterest(x, y - 1, z)) return;
 			}
-			if (
-				Math.abs(event.getYCoord() % 1) == 0.75
-					&& basicallyEqual((event.getXCoord() - 0.5) % 1, 0, 0.2)
-					&& basicallyEqual((event.getZCoord() - 0.5) % 1, 0, 0.2)
-			) {
-				BlockPos blockPos = new BlockPos(event.getXCoord(), event.getYCoord() + 1, event.getZCoord());
-				if (highlightedBlocks.contains(blockPos)) return;
-				registerInterest(blockPos);
+			if (Math.abs(y % 1) == 0.75 && xZero && zZero) {
+				if (tryRegisterInterest(x, y + 1, z)) return;
 			}
-			if (
-				Math.abs(event.getXCoord() % 1) == 0.25
-					&& basicallyEqual((event.getYCoord() - 0.5) % 1, 0, 0.2)
-					&& basicallyEqual((event.getZCoord() - 0.5) % 1, 0, 0.2)
-			) {
-				BlockPos blockPos = new BlockPos(event.getXCoord() + 1, event.getYCoord(), event.getZCoord());
-				if (highlightedBlocks.contains(blockPos)) return;
-				registerInterest(blockPos);
+			if (Math.abs(x % 1) == 0.25 && yZero && zZero) {
+				if (tryRegisterInterest(x + 1, y, z)) return;
 			}
-			if (
-				Math.abs(event.getXCoord() % 1) == 0.75
-					&& basicallyEqual((event.getYCoord() - 0.5) % 1, 0, 0.2)
-					&& basicallyEqual((event.getZCoord() - 0.5) % 1, 0, 0.2)
-			) {
-				BlockPos blockPos = new BlockPos(event.getXCoord() - 1, event.getYCoord(), event.getZCoord());
-				if (highlightedBlocks.contains(blockPos)) return;
-				registerInterest(blockPos);
+			if (Math.abs(x % 1) == 0.75 && yZero && zZero) {
+				if (tryRegisterInterest(x - 1, y, z)) return;
 			}
-			if (
-				Math.abs(event.getZCoord() % 1) == 0.25
-					&& basicallyEqual((event.getYCoord() - 0.5) % 1, 0, 0.2)
-					&& basicallyEqual((event.getXCoord() - 0.5) % 1, 0, 0.2)
-			) {
-				BlockPos blockPos = new BlockPos(event.getXCoord(), event.getYCoord(), event.getZCoord() + 1);
-				if (highlightedBlocks.contains(blockPos)) return;
-				registerInterest(blockPos);
+			if (Math.abs(z % 1) == 0.25 && yZero && xZero) {
+				if (tryRegisterInterest(x, y, z + 1)) return;
 			}
-			if (
-				Math.abs(event.getZCoord() % 1) == 0.75
-					&& basicallyEqual((event.getYCoord() - 0.5) % 1, 0, 0.2)
-					&& basicallyEqual((event.getXCoord() - 0.5) % 1, 0, 0.2)
-			) {
-				BlockPos blockPos = new BlockPos(event.getXCoord(), event.getYCoord(), event.getZCoord() - 1);
-				if (highlightedBlocks.contains(blockPos)) return;
-				registerInterest(blockPos);
+			if (Math.abs(z % 1) == 0.75 && yZero && xZero) {
+				tryRegisterInterest(x, y, z - 1);
 			}
 		}
 	}
 
-		@Override
+	private boolean tryRegisterInterest(double x, double y, double z) {
+		BlockPos blockPos = new BlockPos(x, y, z);
+		if (highlightedBlocks.contains(blockPos)) return true;
+		registerInterest(blockPos);
+		return false;
+	}
+
+	@Override
 	protected boolean isEnabled() {
 		return "combat_3".equals(SBInfo.getInstance().getLocation())
 			&& NotEnoughUpdates.INSTANCE.config.world.highlightEnderNodes;
