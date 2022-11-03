@@ -99,22 +99,15 @@ public abstract class GenericBlockHighlighter {
 		highlightedBlocks.clear();
 	}
 
-	public void registerInterest(BlockPos pos) {
-		if (isValidHighlightSpot(pos) && canPlayerSeeNearBlocks(pos.getX(), pos.getY(), pos.getZ())) {
-			highlightedBlocks.add(pos);
-		}
-	}
-
 	public boolean tryRegisterInterest(double x, double y, double z) {
 		BlockPos blockPos = new BlockPos(x, y, z);
-		if (highlightedBlocks.contains(blockPos)) return true;
-		registerInterest(blockPos);
-		return false;
-	}
-
-	public boolean tryRegisterInterest(BlockPos blockPos) {
-		if (highlightedBlocks.contains(blockPos)) return true;
-		registerInterest(blockPos);
-		return false;
+		boolean contains = highlightedBlocks.contains(blockPos);
+		if (!contains) {
+			boolean canSee = canPlayerSeeNearBlocks(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			if (isValidHighlightSpot(blockPos) && canSee) {
+				highlightedBlocks.add(blockPos);
+			}
+		}
+		return contains;
 	}
 }
