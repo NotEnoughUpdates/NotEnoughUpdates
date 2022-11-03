@@ -92,23 +92,23 @@ public class AbiphoneFavourites {
 			}
 		}
 
-		list.removeIf(s -> s.contains("§eRight-click to remove contact!"));
-
-		if (getFavouriteContacts().contains(name)) {
-			if (!isAbiphoneShowOnlyFavourites()) {
-				list.set(0, rawName + " §f- §6Favourite");
-				list.add("§eShift-Click to remove from the favourites!");
-			}
-		} else {
-			list.add("§eShift-Click to add to the favourites!");
+		if (isAbiphoneShowOnlyFavourites()) {
+			list.removeIf(s -> s.contains("§eRight-click to remove contact!"));
+			return;
 		}
 
-		if (!isAbiphoneShowOnlyFavourites()) {
-			if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.manager.keybindFavourite.getKeyCode())) {
-				if (System.currentTimeMillis() > lastClick + 500) {
-					toggleFavouriteContact(rawName, name);
-					lastClick = System.currentTimeMillis();
-				}
+		int index = list.indexOf("§5§o") + 1;
+		if (getFavouriteContacts().contains(name)) {
+			list.set(0, rawName + " §f- §6Favourite");
+			list.add(index, "§eShift-click to remove from the favourites!");
+		} else {
+			list.add(index, "§eShift-click to add to the favourites!");
+		}
+
+		if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.manager.keybindFavourite.getKeyCode())) {
+			if (System.currentTimeMillis() > lastClick + 500) {
+				toggleFavouriteContact(rawName, name);
+				lastClick = System.currentTimeMillis();
 			}
 		}
 	}
@@ -136,21 +136,21 @@ public class AbiphoneFavourites {
 		if (!isContact(stack)) return;
 
 		int clickedButton = event.clickedButton;
-		//prevents removing the contact
-		if (clickedButton == 1) {
-			event.setCanceled(true);
-			return;
-		}
+		int clickType = event.clickType;
 
+		//prevents removing the contact
+		if (isAbiphoneShowOnlyFavourites()) {
+			if (clickedButton == 1 || (clickedButton == 2 && clickType == 3)) {
+				event.setCanceled(true);
+			}
+		}
 		String rawName = stack.getDisplayName();
 		String name = StringUtils.cleanColour(rawName);
-		int clickType = event.clickType;
 
 		//prevents calling non favourite contacts
 		if (clickedButton == 0 && (clickType == 0 || clickType == 6)) {
 			if (!getFavouriteContacts().contains(name) && isAbiphoneShowOnlyFavourites()) {
 				event.setCanceled(true);
-				return;
 			}
 		}
 
