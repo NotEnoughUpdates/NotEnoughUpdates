@@ -65,6 +65,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.dev.AntiF3H;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
@@ -331,6 +332,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
+		MinecraftForge.EVENT_BUS.register(new AntiF3H());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

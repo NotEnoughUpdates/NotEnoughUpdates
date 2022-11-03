@@ -213,5 +213,9 @@ public class DevTestCommand extends ClientCommandBase {
 			MiscUtils.copyToClipboard(builder.toString());
 			Utils.addChatMessage("§e[NEU] Copied tablist to clipboard!");
 		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("f3h")) {
+			Utils.addChatMessage(EnumChatFormatting.YELLOW + "Enjoy no more \"minecraft:\" on your tooltips!");
+			NotEnoughUpdates.INSTANCE.config.hidden.antiF3h = !NotEnoughUpdates.INSTANCE.config.hidden.antiF3h;
+		}
 	}
 }

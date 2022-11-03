@@ -455,6 +455,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean hasOpenedWaypointMenu = false;
 
+		@Expose
+		public boolean antiF3h = false;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
