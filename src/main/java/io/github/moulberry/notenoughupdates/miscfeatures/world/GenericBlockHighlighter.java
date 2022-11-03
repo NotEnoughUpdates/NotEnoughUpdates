@@ -56,7 +56,7 @@ public abstract class GenericBlockHighlighter {
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent ev) {
 		if (ev.phase != TickEvent.Phase.END) return;
-		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) || !canPlayerSeeBlock(it.getX(), it.getY(), it.getZ()));
+		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) || !canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
 	}
 
 	protected boolean canPlayerSeeBlock(double xCoord, double yCoord, double zCoord) {
@@ -76,13 +76,60 @@ public abstract class GenericBlockHighlighter {
 			|| bp.equals(hitResult.getBlockPos());
 	}
 
+	protected boolean canPlayerSeeNearBlocks(double xCoord, double yCoord, double zCoord) {
+		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+		if (p == null) return false;
+		World w = p.worldObj;
+		MovingObjectPosition hitResult1 = w.rayTraceBlocks(
+			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
+			new Vec3(xCoord, yCoord, zCoord),
+			false,
+			true,
+			true
+		);
+		MovingObjectPosition hitResult2 = w.rayTraceBlocks(
+			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
+			new Vec3(xCoord + 1, yCoord, zCoord),
+			false,
+			true,
+			true
+		);
+		MovingObjectPosition hitResult3 = w.rayTraceBlocks(
+			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
+			new Vec3(xCoord, yCoord + 1, zCoord),
+			false,
+			true,
+			true
+		);
+		MovingObjectPosition hitResult4 = w.rayTraceBlocks(
+			new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ),
+			new Vec3(xCoord, yCoord, zCoord + 1),
+			false,
+			true,
+			true
+		);
+		BlockPos bp = new BlockPos(xCoord, yCoord, zCoord);
+		return hitResult1 == null
+			|| hitResult2 == null
+			|| hitResult3 == null
+			|| hitResult4 == null
+			|| hitResult1.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+			|| bp.equals(hitResult1.getBlockPos())
+			|| hitResult2.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+			|| bp.equals(hitResult2.getBlockPos())
+			|| hitResult3.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+			|| bp.equals(hitResult3.getBlockPos())
+			|| hitResult4.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+			|| bp.equals(hitResult4.getBlockPos());
+	}
+
 	@SubscribeEvent
 	public void onWorldChange(WorldEvent.Load event) {
 		highlightedBlocks.clear();
 	}
 
 	public void registerInterest(BlockPos pos) {
-		if (isValidHighlightSpot(pos) && canPlayerSeeBlock(pos.getX(), pos.getY(), pos.getZ())) {
+		if (isValidHighlightSpot(pos) && canPlayerSeeNearBlocks(pos.getX(), pos.getY(), pos.getZ())) {
 			highlightedBlocks.add(pos);
 		}
 	}
