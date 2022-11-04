@@ -71,6 +71,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Matrix4f;
@@ -1035,8 +1036,15 @@ public class NEUOverlay extends Gui {
 			return false;
 		}
 
-		if ((Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			displayInformationPane(new DevInfoPane(this, manager));
+		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && (Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(
+			Keyboard.KEY_LCONTROL)) && !searchBarHasFocus) {
+			DevInfoPane devInfoPane = new DevInfoPane(this, manager);
+			if (devInfoPane.getText().isEmpty()) {
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+					EnumChatFormatting.AQUA + "[NEU] No missing items!"));
+			} else {
+				displayInformationPane(devInfoPane);
+			}
 		}
 
 		if (Keyboard.getEventKeyState()) {

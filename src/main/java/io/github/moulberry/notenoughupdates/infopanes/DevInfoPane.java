@@ -55,19 +55,17 @@ public class DevInfoPane extends TextInfoPane {
 		text = getText();
 	}
 
-	private String getText() {
-		String text = "";
+	public String getText() {
+		StringBuilder text = new StringBuilder(0);
 
 		for (String internalname : manager.auctionManager.getItemAuctionInfoKeySet()) {
 			if (internalname.matches("^.*-[0-9]{1,3}$")) continue;
-			if (!manager.getItemInformation().containsKey(internalname)) {
+			if (!manager.isValidInternalName(internalname)) {
 				if (internalname.equals("RUNE") || internalname.contains("PARTY_HAT_CRAB")) continue;
-				text += internalname + "\n";
+				text.append(internalname).append("\n");
 			}
 		}
-
-
-		return text;
+		return text.toString();
 	}
 
 	//#region add vanilla items
