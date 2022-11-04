@@ -1043,6 +1043,12 @@ public class NEUOverlay extends Gui {
 			if (!NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
 				searchBarHasFocus = false;
 			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F) &&
+				NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
+				searchBarHasFocus = !searchBarHasFocus;
+			}
+
 			if (searchBarHasFocus) {
 				if (keyPressed == 1) {
 					searchBarHasFocus = false;
