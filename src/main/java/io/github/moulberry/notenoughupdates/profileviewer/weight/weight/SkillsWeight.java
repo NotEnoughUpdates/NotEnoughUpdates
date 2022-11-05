@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.profileviewer.weight.weight;
 
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+
 import java.util.Map;
 
 public abstract class SkillsWeight {

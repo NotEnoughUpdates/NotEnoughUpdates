@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.state.IBlockState;
@@ -380,24 +381,24 @@ public class FishingHelper {
 		return 1 / (d + (1 / (ZERO_PITCH - MAX_PITCH))) * (1 - d / MAX_DISTANCE) + MAX_PITCH;
 	}
 
-	public boolean onSpawnParticle(
-		EnumParticleTypes particleType,
-		double x,
-		double y,
-		double z,
-		double xOffset,
-		double yOffset,
-		double zOffset
-	) {
+	@SubscribeEvent
+	public void onSpawnParticle(SpawnParticleEvent event) {
+		EnumParticleTypes particleType = event.getParticleTypes();
+		double x = event.getXCoord();
+		double y = event.getYCoord();
+		double z = event.getZCoord();
+		double xOffset = event.getXOffset();
+		double yOffset = event.getYOffset();
+		double zOffset = event.getZOffset();
 
 		if (!NotEnoughUpdates.INSTANCE.config.fishing.hideOtherPlayerAll &&
 			!NotEnoughUpdates.INSTANCE.config.fishing.enableCustomParticles &&
 			!NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning &&
 			!NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
-			return false;
+			return;
 		}
 		if (hookEntities.isEmpty()) {
-			return false;
+			return;
 		}
 
 		if ((particleType == EnumParticleTypes.WATER_WAKE || particleType == EnumParticleTypes.SMOKE_NORMAL || particleType == EnumParticleTypes.FLAME) && Math.abs(
@@ -610,22 +611,24 @@ public class FishingHelper {
 					particleTypeI = NotEnoughUpdates.INSTANCE.config.fishing.yourParticleType;
 					particleCustomColour = NotEnoughUpdates.INSTANCE.config.fishing.yourParticleColour;
 				} else if (NotEnoughUpdates.INSTANCE.config.fishing.hideOtherPlayerAll) {
-					return true;
+					event.cancel();
+					return;
 				} else {
 					particleTypeI = NotEnoughUpdates.INSTANCE.config.fishing.otherParticleType;
 					particleCustomColour = NotEnoughUpdates.INSTANCE.config.fishing.otherParticleColour;
 				}
 
 				if (!NotEnoughUpdates.INSTANCE.config.fishing.enableCustomParticles) {
-					return false;
+					return;
 				}
 
 				int argb = SpecialColour.specialToChromaRGB(particleCustomColour);
 
 				if (particleTypeI == 0) {
-					return false;
+					return;
 				} else if (particleTypeI == 1) {
-					return true;
+					event.cancel();
+					return;
 				}
 
 				if (Minecraft.getMinecraft() != null && Minecraft.getMinecraft().getRenderViewEntity() != null &&
@@ -633,11 +636,13 @@ public class FishingHelper {
 					int i = Minecraft.getMinecraft().gameSettings.particleSetting;
 
 					if (i == 1 && Minecraft.getMinecraft().theWorld.rand.nextInt(3) == 0) {
-						return true;
+						event.cancel();
+						return;
 					}
 
 					if (i >= 2) {
-						return true;
+						event.cancel();
+						return;
 					}
 
 					double xDist = Minecraft.getMinecraft().getRenderViewEntity().posX - x;
@@ -678,7 +683,8 @@ public class FishingHelper {
 						}
 
 						if (customColour && (((argb >> 24) & 0xFF) < 10)) {
-							return true;
+							event.cancel();
+							return;
 						}
 
 						EntityFX fx = Minecraft.getMinecraft().effectRenderer.spawnEffectParticle(
@@ -706,10 +712,9 @@ public class FishingHelper {
 					}
 				}
 
-				return true;
+				event.cancel();
+				return;
 			}
 		}
-
-		return false;
 	}
 }

@@ -37,11 +37,14 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -305,7 +308,21 @@ public class RenderUtils {
 		}
 	}
 
-	private static void renderBoundingBox(double x, double y, double z, int rgb, float alphaMult, float partialTicks) {
+	public static void renderBoundingBox(
+		BlockPos worldPos,
+		int rgb,
+		float partialTicks
+	) {
+		Vector3f interpolatedPlayerPosition = getInterpolatedPlayerPosition(partialTicks);
+		renderBoundingBoxInViewSpace(
+			worldPos.getX() - interpolatedPlayerPosition.x,
+			worldPos.getY() - interpolatedPlayerPosition.y,
+			worldPos.getZ() - interpolatedPlayerPosition.z,
+			rgb
+		);
+	}
+
+	private static void renderBoundingBoxInViewSpace(double x, double y, double z, int rgb) {
 		AxisAlignedBB bb = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
 
 		GlStateManager.disableDepth();
@@ -343,33 +360,42 @@ public class RenderUtils {
 		RenderUtils.renderBeaconBeam(x, y, z, rgb, 1.0f, partialTicks, distSq > 10 * 10);
 	}
 
-	public static void renderBeaconBeamOrBoundingBox(BlockPos block, int rgb, float alphaMult, float partialTicks) {
-		double viewerX;
-		double viewerY;
-		double viewerZ;
+	public static Vector3f getInterpolatedPlayerPosition(float partialTicks) {
 
 		Vector3f aoteInterpPos = CustomItemEffects.INSTANCE.getCurrentPosition();
 		if (aoteInterpPos != null) {
-			viewerX = aoteInterpPos.x;
-			viewerY = aoteInterpPos.y;
-			viewerZ = aoteInterpPos.z;
+			return new Vector3f(aoteInterpPos);
 		} else {
 			Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
-			viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * partialTicks;
-			viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * partialTicks;
-			viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * partialTicks;
+			Vector3f lastPos = new Vector3f(
+				(float) viewer.lastTickPosX,
+				(float) viewer.lastTickPosY,
+				(float) viewer.lastTickPosZ
+			);
+			Vector3f currentPos = new Vector3f(
+				(float) viewer.posX,
+				(float) viewer.posY,
+				(float) viewer.posZ
+			);
+			Vector3f movement = Vector3f.sub(currentPos, lastPos, currentPos);
+			movement.scale(partialTicks);
+			return Vector3f.add(lastPos, movement, lastPos);
 		}
+	}
 
-		double x = block.getX() - viewerX;
-		double y = block.getY() - viewerY;
-		double z = block.getZ() - viewerZ;
+	public static void renderBeaconBeamOrBoundingBox(BlockPos block, int rgb, float alphaMult, float partialTicks) {
+
+		Vector3f interpolatedPlayerPosition = getInterpolatedPlayerPosition(partialTicks);
+		double x = block.getX() - interpolatedPlayerPosition.x;
+		double y = block.getY() - interpolatedPlayerPosition.y;
+		double z = block.getZ() - interpolatedPlayerPosition.z;
 
 		double distSq = x * x + y * y + z * z;
 
 		if (distSq > 10 * 10) {
 			RenderUtils.renderBeaconBeam(x, y, z, rgb, 1.0f, partialTicks, true);
 		} else {
-			RenderUtils.renderBoundingBox(x, y, z, rgb, 1.0f, partialTicks);
+			RenderUtils.renderBoundingBoxInViewSpace(x, y, z, rgb);
 		}
 	}
 
@@ -378,14 +404,43 @@ public class RenderUtils {
 	}
 
 	public static void renderWayPoint(List<String> str, Vec3i loc, float partialTicks) {
-		renderWayPoint(str, new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks);
+		renderWayPoint(str, new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks, false);
 	}
 
 	public static void renderWayPoint(String str, Vector3f loc, float partialTicks) {
-		renderWayPoint(Arrays.asList(str), loc, partialTicks);
+		renderWayPoint(Arrays.asList(str), loc, partialTicks, false);
 	}
 
-	public static void renderWayPoint(List<String> lines, Vector3f loc, float partialTicks) {
+	public static void renderWayPoint(Vec3i loc, float partialTicks) {
+		renderWayPoint(Arrays.asList(""), new Vector3f(loc.getX(), loc.getY(), loc.getZ()), partialTicks, true);
+	}
+
+	public static void drawFilledQuadWithTexture(Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4, float alpha, ResourceLocation texture) {
+		GlStateManager.pushMatrix();
+		Entity v = Minecraft.getMinecraft().getRenderViewEntity();
+		double vX = v.lastTickPosX + (v.posX - v.lastTickPosX);
+		double vY = v.lastTickPosY + (v.posY - v.lastTickPosY);
+		double vZ = v.lastTickPosZ + (v.posZ - v.lastTickPosZ);
+
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableBlend();
+		GlStateManager.disableCull();
+		GlStateManager.color(1.0f, 1.0f, 1.0f, alpha);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.pos(p1.xCoord-vX, p1.yCoord-vY, p1.zCoord-vZ).tex(0, 0).endVertex(); //Top Left
+		worldrenderer.pos(p2.xCoord-vX, p2.yCoord-vY, p2.zCoord-vZ).tex(1, 0).endVertex(); //Top Right
+		worldrenderer.pos(p3.xCoord-vX, p3.yCoord-vY, p3.zCoord-vZ).tex(1, 1).endVertex(); //Bottom Right
+		worldrenderer.pos(p4.xCoord-vX, p4.yCoord-vY, p4.zCoord-vZ).tex(0, 1).endVertex(); //Bottom Left
+		tessellator.draw();
+		GlStateManager.enableCull();
+		GlStateManager.popMatrix();
+	}
+
+	public static void renderWayPoint(List<String> lines, Vector3f loc, float partialTicks, boolean onlyShowDistance) {
 		GlStateManager.alphaFunc(516, 0.1F);
 
 		GlStateManager.pushMatrix();
@@ -409,7 +464,7 @@ public class RenderUtils {
 		GlStateManager.translate(x, y, z);
 		GlStateManager.translate(0, viewer.getEyeHeight(), 0);
 
-		lines = new ArrayList<>(lines);
+		lines = onlyShowDistance ? new ArrayList<>() : new ArrayList<>(lines);
 		lines.add(EnumChatFormatting.YELLOW.toString() + Math.round(dist) + "m");
 		renderNametag(lines);
 

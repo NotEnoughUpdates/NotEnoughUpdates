@@ -127,6 +127,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
 		String profileId = GuiProfileViewer.getProfileId();
 		JsonObject inventoryInfo = profile.getInventoryInfo(profileId);
+		JsonObject profileInformation = profile.getProfileInformation(profileId);
 		if (inventoryInfo == null) return;
 
 		int invNameIndex = 0;
@@ -153,7 +154,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					if (Objects.equals(entry.getKey(), "talisman_bag")) {
 						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
-						int magicalPower = PlayerStats.getMagicalPower(inventoryInfo);
+						int magicalPower = PlayerStats.getMagicalPower(inventoryInfo, profileInformation);
 						getInstance()
 							.tooltipToDisplay.add(
 								magicalPower == -1

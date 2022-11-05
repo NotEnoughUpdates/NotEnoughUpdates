@@ -66,8 +66,13 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class DungeonMap {
 	private static final ResourceLocation GREEN_CHECK = new ResourceLocation(
@@ -499,8 +504,8 @@ public class DungeonMap {
 			mapSizeX = borderSizeOption == 0 ? 90 : borderSizeOption == 1 ? 120 : borderSizeOption == 2 ? 160 : 240;
 		}
 		mapSizeY = mapSizeX;
-		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize;
-		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize;
+		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize + (isFloorOne ? getRenderRoomSize() : 0);
+		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize + (isEntrance ? getRenderRoomSize() : 0);
 		int mapCenterX = mapSizeX / 2;
 		int mapCenterY = mapSizeY / 2;
 		int scaleFactor = 8;
@@ -670,12 +675,12 @@ public class DungeonMap {
 					float angle = pos.rotation;
 
 					boolean doInterp = NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPlayerInterp;
-					if (!isFloorOne && playerEntityMapPositions.containsKey(name)) {
+					if (playerEntityMapPositions.containsKey(name)) {
 						MapPosition entityPos = playerEntityMapPositions.get(name);
 						angle = entityPos.rotation;
 
-						float deltaX = entityPos.getRenderX() - pos.getRenderX();
-						float deltaY = entityPos.getRenderY() - pos.getRenderY();
+						float deltaX = entityPos.getRenderX() - pos.getRenderX() + (isFloorOne ? getRenderRoomSize() : 0);
+						float deltaY = entityPos.getRenderY() - pos.getRenderY() + (isEntrance ? getRenderRoomSize() : 0);
 
 						x += deltaX;
 						y += deltaY;
@@ -1120,6 +1125,7 @@ public class DungeonMap {
 	}
 
 	private boolean isFloorOne = false;
+	private boolean isEntrance = false;
 	private boolean failMap = false;
 	private long lastClearCache = 0;
 
@@ -1161,6 +1167,9 @@ public class DungeonMap {
 
 				if (line.contains("(F1)") || line.contains("(E)") || line.contains("(M1)")) {
 					isFloorOne = true;
+					if (line.contains("(E)")) {
+						isEntrance = true;
+					}
 					break;
 				}
 			}
