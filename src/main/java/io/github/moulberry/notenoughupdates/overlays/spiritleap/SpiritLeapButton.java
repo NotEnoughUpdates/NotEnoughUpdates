@@ -92,11 +92,12 @@ public class SpiritLeapButton {
 			);
 		}
 		if (location == null) return;
+		// fix head loc too when fixing all other stuffs
 		Minecraft.getMinecraft().getTextureManager().bindTexture(location);
 		drawScaledCustomSizeModalRect(x + 5, y + 4, 8.0F, 8, 8, 8, 32, 32, 64.0F, 64.0F);
 	}
 
-	// thank you i love you fellow sba contributor
+	// thank you i love you fellow sba contributo
 
 	/**
 	 * Adapted from SkyblockAddons under MIT license
