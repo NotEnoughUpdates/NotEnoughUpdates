@@ -269,7 +269,7 @@ public class ItemCustomizeManager {
 		return CUSTOM_GLINT_TEXTURE;
 	}
 
-	private static String getUuidForItem(ItemStack stack) {
+	public static String getUuidForItem(ItemStack stack) {
 		if (!stack.hasTagCompound()) return null;
 
 		int nbtHash = stack.getTagCompound().hashCode();

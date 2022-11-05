@@ -21,8 +21,6 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 
 import io.github.moulberry.notenoughupdates.util.TexLoc;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import java.io.IOException;
-import java.util.HashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -35,6 +33,9 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class Panorama {
 

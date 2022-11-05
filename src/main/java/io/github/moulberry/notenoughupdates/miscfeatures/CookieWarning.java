@@ -23,8 +23,8 @@ import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiPlayerTabOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 public class CookieWarning {
@@ -94,9 +94,8 @@ public class CookieWarning {
 					}
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
-					Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-						EnumChatFormatting.RED +
-							"NEU ran into an issue when retrieving the Booster Cookie Timer. Check the logs for details."));
+					Utils.addChatMessage(EnumChatFormatting.RED +
+						"NEU ran into an issue when retrieving the Booster Cookie Timer. Check the logs for details.");
 					hasNotified = true;
 				}
 				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
