@@ -101,6 +101,10 @@ public class Calculator {
 				token.tokenLength = 1;
 				token.type = TokenType.BINOP;
 				token.operatorValue = c + "";
+				if (c == '*' && i + 1 < source.length() && source.charAt(i + 1) == '*') {
+					token.tokenLength++;
+					token.operatorValue = "^";
+				}
 			} else if (postops.indexOf(c) != -1) {
 				token.tokenLength = 1;
 				token.type = TokenType.POSTOP;
@@ -113,7 +117,7 @@ public class Calculator {
 				token.tokenLength = 1;
 				token.type = TokenType.LPAREN;
 				token.operatorValue = "(";
-			} else if ('.' == c) {
+			} else if ('.' == c || ',' == c) {
 				token.tokenLength = 1;
 				token.type = TokenType.NUMBER;
 				readDigitsInto(token, source, true);
@@ -125,7 +129,7 @@ public class Calculator {
 				readDigitsInto(token, source, false);
 				if (i + token.tokenLength < source.length()) {
 					char p = source.charAt(i + token.tokenLength);
-					if ('.' == p) {
+					if ('.' == p || ',' == p) {
 						token.tokenLength++;
 						readDigitsInto(token, source, true);
 					}
@@ -162,7 +166,6 @@ public class Calculator {
 
 		Deque<Token> op = new ArrayDeque<>();
 		List<Token> out = new ArrayList<>();
-		boolean nextMultiplyShouldBePower = false;
 
 		for (Token currentlyShunting : toShunt) {
 			switch (currentlyShunting.type) {
@@ -170,17 +173,6 @@ public class Calculator {
 					out.add(currentlyShunting);
 					break;
 				case BINOP:
-					Token next = toShunt.get(toShunt.indexOf(currentlyShunting) + 1);
-					if (currentlyShunting.operatorValue.equals("^")) {
-						if (next.numericValue > 999) {
-							throw new CalculatorException(next.numericValue + " is too large, pick a power less than 1000", next.tokenStart, next.tokenLength);
-						}
-					} else if (next != null && currentlyShunting.operatorValue.equals("*") && next.operatorValue != null && next.operatorValue.equals("*")) {
-						nextMultiplyShouldBePower = true;
-						continue;
-					} else if (nextMultiplyShouldBePower && currentlyShunting.operatorValue.equals("*")) {
-						currentlyShunting.operatorValue = "^";
-					}
 					int p = getPrecedence(currentlyShunting);
 					while (!op.isEmpty()) {
 						Token l = op.peek();

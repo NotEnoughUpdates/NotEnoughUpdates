@@ -77,10 +77,11 @@ public class MiscOverlays {
 			"\u00a73Mithril Powder: \u00a7e3h38m",
 			"\u00a73Gemstone Powder: \u00a7e3h38m",
 			"\u00a73Heavy Pearls: \u00a7e3h38m",
+			"\u00a73Crimson Isle Quests: \u00a7e3h38m",
 		}
 	)
 	@ConfigAccordionId(id = 0)
-	public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+	public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
 	@ConfigOption(
 		name = "Show Only If Soon",
@@ -211,9 +212,22 @@ public class MiscOverlays {
 
 	public int dailyHeavyPearlDisplay = 0;
 
+	@Expose
+	@ConfigOption(
+		name = "Crimson Isle Quests Display",
+		desc = "Change the way the crimson isle quests display\n" +
+			"Only when ready, When very Soon, When soon, When kinda soon or always."
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorDropdown(
+		values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
+	)
+	public int questBoardDisplay = 0;
+
 	@ConfigOption(
 		name = "Colours",
-		desc = ""
+		desc = "",
+		searchTags = "color"
 	)
 
 	@ConfigEditorAccordion(id = 2)
@@ -396,15 +410,6 @@ public class MiscOverlays {
 	public int defaultColour = 15;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Todo Overlay Position",
-		desc = "Change the position of the Todo overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 5,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 0)
 	public Position todoPosition = new Position(100, 0);
 
 	@Expose

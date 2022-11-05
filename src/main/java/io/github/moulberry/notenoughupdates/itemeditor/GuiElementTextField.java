@@ -557,8 +557,6 @@ public class GuiElementTextField extends GuiElement {
 					continue;
 				}
 
-				//String c2 = bold ? EnumChatFormatting.BOLD.toString() : "" + c;
-
 				int len = Minecraft.getMinecraft().fontRendererObj.getStringWidth(String.valueOf(c));
 				if (bold) len++;
 				if (i >= leftIndex && i < rightIndex) {

@@ -29,11 +29,11 @@ import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -177,6 +177,7 @@ public class FairySouls {
 			double factor = normalize(currentDistSq, 0.0, farSoulDistSq);
 			int rgb = interpolateColors(closeColor, farColor, Math.min(0.40, factor));
 			RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
+			if (NotEnoughUpdates.INSTANCE.config.misc.fairySoulWaypointDistance) RenderUtils.renderWayPoint(currentSoul, event.partialTicks);
 		}
 	}
 
@@ -370,7 +371,7 @@ public class FairySouls {
 	}
 
 	private static void print(String s) {
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(s));
+		Utils.addChatMessage(s);
 	}
 
 	private static void printHelp() {

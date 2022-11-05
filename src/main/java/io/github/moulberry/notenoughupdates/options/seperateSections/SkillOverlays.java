@@ -92,7 +92,7 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Use BZ Price For Coins/m",
-		desc = "Uses the bazzar price instead of NPC price for coins/m"
+		desc = "Uses the bazaar price instead of NPC price for coins/m"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
@@ -112,15 +112,6 @@ public class SkillOverlays {
 	public int farmingPauseTimer = 3;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Farming Overlay Position",
-		desc = "Change the position of the Farming overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 3,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 0)
 	public Position farmingPosition = new Position(10, 200);
 
 	@Expose
@@ -184,15 +175,6 @@ public class SkillOverlays {
 	public int miningPauseTimer = 3;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Mining Overlay Position",
-		desc = "Change the position of the Mining overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 11,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 1)
 	public Position miningPosition = new Position(10, 200);
 
 	@Expose
@@ -258,15 +240,6 @@ public class SkillOverlays {
 	public int fishingPauseTimer = 3;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Fishing Overlay Position",
-		desc = "Change the position of the Fishing overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 14,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 3)
 	public Position fishingPosition = new Position(10, 200);
 
 	@Expose
@@ -325,7 +298,8 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Enable Combat Overlay",
-		desc = "Show an overlay while Combat with useful information"
+		desc = "Show an overlay while Combat with useful information",
+		searchTags = "champion"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)
@@ -365,15 +339,6 @@ public class SkillOverlays {
 	public int combatPauseTimer = 3;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Combat Overlay Position",
-		desc = "Change the position of the Combat overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 19,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 4)
 	public Position combatPosition = new Position(10, 200);
 
 	@Expose

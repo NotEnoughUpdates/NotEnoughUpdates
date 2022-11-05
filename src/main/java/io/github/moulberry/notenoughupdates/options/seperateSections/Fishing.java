@@ -144,7 +144,8 @@ public class Fishing {
 		name = "Particle Type",
 		desc = "Change the type of the particle that is spawned\n" +
 			"Particle types with (RGB) support custom colours\n" +
-			"Set to 'NONE' to disable particles"
+			"Set to 'NONE' to disable particles",
+		searchTags = "color"
 	)
 	@ConfigEditorDropdown(
 		values = {"Default", "None", "Spark (RGB)", "Swirl (RGB)", "Dust (RGB)", "Flame", "Crit", "Magic Crit"}
@@ -156,7 +157,8 @@ public class Fishing {
 	@ConfigOption(
 		name = "Custom Colour",
 		desc = "Set a custom colour for the particle\n" +
-			"Only works for particle types with (RGB)"
+			"Only works for particle types with (RGB)",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -175,7 +177,8 @@ public class Fishing {
 		name = "Particle Type",
 		desc = "Change the type of the particle that is spawned\n" +
 			"Particle types with (RGB) support custom colours\n" +
-			"Set to 'NONE' to disable particles"
+			"Set to 'NONE' to disable particles",
+		searchTags = "color"
 	)
 	@ConfigEditorDropdown(
 		values = {"Default", "None", "Spark (RGB)", "Swirl (RGB)", "Dust (RGB)", "Flame", "Crit", "Magic Crit"}
@@ -187,7 +190,8 @@ public class Fishing {
 	@ConfigOption(
 		name = "Custom Colour",
 		desc = "Set a custom colour for the particle\n" +
-			"Only works for particle types with (RGB)"
+			"Only works for particle types with (RGB)",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -195,7 +199,8 @@ public class Fishing {
 
 	@ConfigOption(
 		name = "Rod Line Colours",
-		desc = ""
+		desc = "",
+		searchTags = "color"
 	)
 	@ConfigEditorAccordion(id = 4)
 	public boolean rodAccordion = false;
@@ -248,8 +253,9 @@ public class Fishing {
 
 	@Expose
 	@ConfigOption(
-		name = "Fishing timer color",
-		desc = "Color of the fishing timer"
+		name = "Fishing timer colour",
+		desc = "Colour of the fishing timer",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 6)
@@ -257,8 +263,9 @@ public class Fishing {
 
 	@Expose
 	@ConfigOption(
-		name = "Fishing timer color (30s)",
-		desc = "Color of the fishing timer after 30 seconds or more have passed"
+		name = "Fishing timer colour (30s)",
+		desc = "Colour of the fishing timer after 30 seconds or more have passed",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 6)

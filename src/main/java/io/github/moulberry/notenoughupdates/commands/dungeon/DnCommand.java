@@ -20,10 +20,10 @@
 package io.github.moulberry.notenoughupdates.commands.dungeon;
 
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 public class DnCommand extends ClientCommandBase {
@@ -35,7 +35,6 @@ public class DnCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		Minecraft.getMinecraft().thePlayer.sendChatMessage("/warp dungeon_hub");
-		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-			EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao"));
+		Utils.addChatMessage(EnumChatFormatting.AQUA + "Warping to:" + EnumChatFormatting.YELLOW + " Deez Nuts lmao");
 	}
 }

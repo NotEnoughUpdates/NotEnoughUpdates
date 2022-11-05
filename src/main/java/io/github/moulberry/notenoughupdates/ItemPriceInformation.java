@@ -49,7 +49,7 @@ import java.util.Set;
 
 public class ItemPriceInformation {
 	private static File file;
-	private static HashSet<String> auctionableItems = null;
+	private static HashSet<String> auctionableItems;
 	private static Gson gson;
 	private static final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
 
@@ -325,7 +325,32 @@ public class ItemPriceInformation {
 									if (shouldShow) {
 										tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Required Items:");
 										for (JsonElement item : itemsObject.get(nextStarLevelString).getAsJsonArray()) {
-											tooltip.add("  - " + item.getAsString());
+											if (item.getAsString().contains("§")) {
+												//TODO show outdated repo notification when 2.1.1 releases
+												tooltip.add("  - " + item.getAsString());
+												continue;
+											}
+											String itemString = item.getAsString();
+											int colon = itemString.indexOf(':');
+											if (colon != -1) {
+												String amount = itemString.substring(colon + 1);
+												String requiredItem = itemString.substring(0, colon);
+												if (requiredItem.equals("SKYBLOCK_COIN")) {
+													tooltip.add("  - " + EnumChatFormatting.GOLD + amount + " Coins");
+												}
+
+												if (NotEnoughUpdates.INSTANCE.manager.isValidInternalName(requiredItem)) {
+													JsonObject itemObject = NotEnoughUpdates.INSTANCE.manager.
+														createItemResolutionQuery().
+														withKnownInternalName(requiredItem).
+														resolveToItemListJson();
+
+													if (itemObject != null && itemObject.has("displayname")) {
+														String displayName = itemObject.get("displayname").getAsString();
+														tooltip.add("  - " + displayName + EnumChatFormatting.DARK_GRAY + " x" + amount);
+													}
+												}
+											}
 										}
 									} else {
 										tooltip.add(EnumChatFormatting.DARK_GRAY + "[CTRL to show required items]");

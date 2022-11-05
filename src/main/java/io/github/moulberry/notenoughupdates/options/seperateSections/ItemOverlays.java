@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
@@ -38,7 +39,8 @@ import java.util.List;
 public class ItemOverlays {
 	@ConfigOption(
 		name = "Treecapitator Overlay",
-		desc = ""
+		desc = "",
+		searchTags = "jungle"
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean treecapAccordion = false;
@@ -64,7 +66,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the overlay"
+		desc = "Change the colour of the overlay",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 0)
@@ -107,7 +110,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the ghost block outline"
+		desc = "Change the colour of the ghost block outline",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -132,7 +136,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the ghost block outline"
+		desc = "Change the colour of the ghost block outline",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 6)
@@ -202,7 +207,7 @@ public class ItemOverlays {
 		name = "Etherwarp",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 7)
+	@ConfigEditorAccordion(id = 3)
 	public boolean etherwarpAccordion = false;
 
 	@Expose
@@ -211,7 +216,7 @@ public class ItemOverlays {
 		desc = "Zoom in on targeted blocks with etherwarp, making it easier to adjust at a distance"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 3)
 	public boolean etherwarpZoom = true;
 
 	@Expose
@@ -220,7 +225,7 @@ public class ItemOverlays {
 		desc = "Display an overlay which tells you if the etherwarp will fail."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 3)
 	public boolean enableEtherwarpHelperOverlay = true;
 
 	@Expose
@@ -229,7 +234,7 @@ public class ItemOverlays {
 		desc = "Display an overlay that tells you what block you will TP to."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 3)
 	public boolean enableEtherwarpBlockOverlay = true;
 
 	@Expose
@@ -238,23 +243,24 @@ public class ItemOverlays {
 		desc = "Don't display the etherwarp block overlay when you can't TP to the block"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 3)
 	public boolean disableOverlayWhenFailed = false;
 
 	@Expose
 	@ConfigOption(
 		name = "Highlight Colour",
-		desc = "Change the colour of the etherwarp target block outline"
+		desc = "Change the colour of the etherwarp target block outline",
+		searchTags = "color"
 	)
 	@ConfigEditorColour
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 3)
 	public String etherwarpHighlightColour = "00:70:156:8:96";
 
 	@ConfigOption(
 		name = "Bonemerang Overlay",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 3)
+	@ConfigEditorAccordion(id = 4)
 	public boolean bonemerangAccordion = false;
 
 	@Expose
@@ -263,7 +269,7 @@ public class ItemOverlays {
 		desc = "Shows info about the bonemerang while holding it."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean enableBonemerangOverlay = true;
 
 	@Expose
@@ -272,19 +278,10 @@ public class ItemOverlays {
 		desc = "Highlight entities that will be hit by your bonemerang"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean highlightTargeted = true;
 
 	@Expose
-	@ConfigOption(
-		name = "Bonemerang Overlay Position",
-		desc = "Change the position of the Bonemerang overlay."
-	)
-	@ConfigEditorButton(
-		runnableId = 9,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 3)
 	public Position bonemerangPosition = new Position(-1, -1);
 
 	@Expose
@@ -299,7 +296,7 @@ public class ItemOverlays {
 			"\u00a77Targets: \u00a76\u00a7l10"
 		}
 	)
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public List<Integer> bonemerangOverlayText = new ArrayList<>(Arrays.asList(0, 1));
 
 	@Expose
@@ -310,7 +307,7 @@ public class ItemOverlays {
 	@ConfigEditorDropdown(
 		values = {"Background", "No Shadow", "Shadow Only", "Full Shadow"}
 	)
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public int bonemerangOverlayStyle = 0;
 	@Expose
 	@ConfigOption(
@@ -319,7 +316,7 @@ public class ItemOverlays {
 			"Might cause some lag."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean bonemerangFastUpdate = false;
 
 	@ConfigOption(
@@ -380,6 +377,89 @@ public class ItemOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 6)
 	public boolean enableDirtWandOverlay = true;
+
+	@ConfigOption(
+		name="Custom Wither Cloak",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 7)
+	public boolean customWitherCloakAccordion = false;
+
+	@Expose
+	@ConfigAccordionId(id = 7)
+	@ConfigOption(
+		name = "Enable Custom Wither Cloak",
+		desc = "Replaces Hypixel Wither Cloak with custom shields due to the Hypixel Wither Cloak being difficult to see through"
+	)
+	@ConfigEditorBoolean
+	public boolean customWitherCloakToggle = true;
+
+	@Expose
+	@ConfigAccordionId(id = 7)
+	@ConfigOption(
+		name = "Shield Count",
+		desc = "The amount of shields circling the player\n0 = No shields"
+	)
+	@ConfigEditorSlider(
+		minValue = 0,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int customWitherCloakCount = 6;
+
+	@Expose
+	@ConfigAccordionId(id = 7)
+	@ConfigOption(
+		name = "Shield Speed",
+		desc = "How fast they circle the player\n0 = Not moving\nNegative = Spinning opposite direction"
+	)
+	@ConfigEditorSlider(
+		minValue = -20f,
+		maxValue = 20f,
+		minStep = 1.0f
+	)
+	public double customWitherCloakSpeed = 2d;
+
+	/*@Expose
+	@ConfigAccordionId(id = 7)
+	@ConfigOption(
+		name = "Shield Transparency",
+		desc = "Changes how visible each shield is\n0 = Invisible"
+	)
+	@ConfigEditorSlider(
+		minValue = 0f,
+		maxValue = 1,
+		minStep = 0.1f
+	)
+	public float customWitherCloakTransparency = 1.0f;
+
+	Couldn't get this to work and couldn't for the life of me figure out why - Cobble8
+	*/
+
+	@Expose
+	@ConfigAccordionId(id = 7)
+	@ConfigOption(
+		name = "Shield Distance From Player",
+		desc = "How far (in blocks) each shield is from the player\n" +
+			"0 = Inside the player"
+	)
+	@ConfigEditorSlider(
+		minValue = 0f,
+		maxValue = 3.0f,
+		minStep = 0.1f
+	)
+	public float customWitherCloakDistance = 1.2f;
+
+	@Expose
+	@ConfigAccordionId(id = 7)
+	@ConfigOption(
+		name = "\u00A7aInspiration:",
+		desc = "\u00A76u/Sori0612 \u00A77on \u00A7cReddit\n\n\u00A78https://tinyurl.com/creeperveil"
+	)
+	@ConfigEditorFSR(
+		runnableId = 12
+	)
+	public boolean customWitherCloakCredit = false;
 
 	@Expose
 	@ConfigOption(

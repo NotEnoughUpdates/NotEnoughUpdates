@@ -41,14 +41,6 @@ public class PetOverlay {
 	public boolean enablePetInfo = false;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Pet Info Position",
-		desc = "Change the position of the pet info overlay"
-	)
-	@ConfigEditorButton(
-		runnableId = 4,
-		buttonText = "Edit"
-	)
 	public Position petInfoPosition = new Position(-1, -1);
 
 	@Expose
@@ -108,7 +100,8 @@ public class PetOverlay {
 	@Expose
 	@ConfigOption(
 		name = "GUI Style",
-		desc = "Change the colour of the GUI"
+		desc = "Change the colour of the GUI",
+		searchTags = "color"
 	)
 	@ConfigEditorDropdown(
 		values = {"Minecraft", "Grey", "PacksHQ Dark", "Transparent", "FSR"}

@@ -27,9 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OverlayManager {
-	public static Class<? extends TextOverlay> dontRenderOverlay = null;
+	public static ArrayList<Class<? extends TextOverlay>> dontRenderOverlay = new ArrayList<>();
 
 	public static MiningOverlay miningOverlay;
+	public static PowderGrindingOverlay powderGrindingOverlay;
 	public static FarmingSkillOverlay farmingOverlay;
 	public static FishingSkillOverlay fishingSkillOverlay;
 	public static MiningSkillOverlay miningSkillOverlay;
@@ -39,6 +40,7 @@ public class OverlayManager {
 	public static BonemerangOverlay bonemerangOverlay;
 	public static CrystalHollowOverlay crystalHollowOverlay;
 	public static SlayerOverlay slayerOverlay;
+	public static FuelBarDummy fuelBar;
 	public static final List<TextOverlay> textOverlays = new ArrayList<>();
 
 	static {
@@ -60,7 +62,8 @@ public class OverlayManager {
 			"\u00a73Commissions: \u00a7e3h38m",
 			"\u00a73Experiments: \u00a7e3h38m",
 			"\u00a73Mithril Powder: \u00a7e3h38m",
-			"\u00a73Gemstone Powder: \u00a7e3h38m"
+			"\u00a73Gemstone Powder: \u00a7e3h38m",
+			"\u00a73Crimson Isle Quests: \u00a7e3h38m"
 		);
 		textOverlays.add(
 			timersOverlay = new TimersOverlay(NotEnoughUpdates.INSTANCE.config.miscOverlays.todoPosition, () -> {
@@ -96,6 +99,23 @@ public class OverlayManager {
 			}
 			return TextOverlayStyle.BACKGROUND;
 		});
+
+		List<String> powderGrindingDummy = Lists.newArrayList(
+			"\u00a73Chests Found: \u00a7a13",
+			"\u00a73Opened Chests: \u00a7a11",
+			"\u00a73Unopened Chests: \u00a7c2",
+			"\u00a73Mithril Powder Found: \u00a726,243",
+			"\u00a73Average Mithril Powder/Chest: \u00a72568",
+			"\u00a73Gemstone Powder Found: \u00a7d6,243",
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+		);
+		powderGrindingOverlay = new PowderGrindingOverlay(NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			for (int i : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
+				if (i >= 0 && i < powderGrindingDummy.size()) strings.add(powderGrindingDummy.get(i));
+			}
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
 
 		List<String> farmingDummy = Lists.newArrayList(
 			"\u00a7bCounter: \u00a7e37,547,860",
@@ -235,13 +255,13 @@ public class OverlayManager {
 			"\u00a73Electron Transmitter: \u00a7aDone\n" +
 				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
 				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Hearth: \u00a7cMissing\n" +
+				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
 				"\u00a73Control Switch: \u00a7cMissing\n" +
 				"\u00a73FTX 3070: \u00a7cMissing",
 			"\u00a73Electron Transmitter: \u00a7a3\n" +
 				"\u00a73Robotron Reflector: \u00a7e2\n" +
 				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Hearth: \u00a7c0\n" +
+				"\u00a73Synthetic Heart: \u00a7c0\n" +
 				"\u00a73Control Switch: \u00a7c0\n" +
 				"\u00a73FTX 3070: \u00a7c0",
 			"\u00a73Automaton parts: \u00a7a5/6",
@@ -294,7 +314,17 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 
+		List<String> fuelDummy = Lists.newArrayList(
+			"\u00a73This is a fuel bar"
+		);
+		fuelBar = new FuelBarDummy(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			strings.add(fuelDummy.get(0));
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
+
 		textOverlays.add(miningOverlay);
+		textOverlays.add(powderGrindingOverlay);
 		textOverlays.add(farmingOverlay);
 		textOverlays.add(miningSkillOverlay);
 		textOverlays.add(combatSkillOverlay);
@@ -303,6 +333,7 @@ public class OverlayManager {
 		textOverlays.add(bonemerangOverlay);
 		textOverlays.add(crystalHollowOverlay);
 		textOverlays.add(slayerOverlay);
+		textOverlays.add(fuelBar);
 	}
 
 }

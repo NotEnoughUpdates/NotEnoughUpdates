@@ -108,15 +108,6 @@ public class Mining {
 	public int drillFuelBarWidth = 200;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Fuel Bar Position",
-		desc = "Change the position of the drill fuel bar"
-	)
-	@ConfigEditorButton(
-		runnableId = 2,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 1)
 	public Position drillFuelBarPosition = new Position(0, -100, true, false);
 
 	@ConfigOption(
@@ -154,15 +145,6 @@ public class Mining {
 	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Dwarven Overlay Position",
-		desc = "Change the position of the Dwarven Mines information Overlay (commisions, powder & forge statuses)"
-	)
-	@ConfigEditorButton(
-		runnableId = 1,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 2)
 	public Position overlayPosition = new Position(10, 100);
 
 	@Expose
@@ -261,15 +243,6 @@ public class Mining {
 	public boolean crystalHollowOverlay = true;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Crystal Overlay Position",
-		desc = "Change the position of the Crystal Hollows Overlay."
-	)
-	@ConfigEditorButton(
-		runnableId = 10,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 4)
 	public Position crystalHollowOverlayPosition = new Position(200, 0);
 
 	@Expose
@@ -290,13 +263,13 @@ public class Mining {
 			"\u00a73Electron Transmitter: \u00a7aDone\n" +
 				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
 				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Hearth: \u00a7cMissing\n" +
+				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
 				"\u00a73Control Switch: \u00a7cMissing\n" +
 				"\u00a73FTX 3070: \u00a7cMissing",
 			"\u00a73Electron Transmitter: \u00a7a3\n" +
 				"\u00a73Robotron Reflector: \u00a7e2\n" +
 				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Hearth: \u00a7c0\n" +
+				"\u00a73Synthetic Heart: \u00a7c0\n" +
 				"\u00a73Control Switch: \u00a7c0\n" +
 				"\u00a73FTX 3070: \u00a7c0",
 			"\u00a73Automaton parts: \u00a7a5/6",
@@ -388,7 +361,8 @@ public class Mining {
 
 	@ConfigOption(
 		name = "Colours",
-		desc = ""
+		desc = "",
+		searchTags = "color"
 	)
 	@ConfigEditorAccordion(id = 6)
 	@ConfigAccordionId(id = 4)
@@ -426,7 +400,8 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Done Color",
-		desc = "Change the colour when the part is given to the NPC."
+		desc = "Change the colour when the part is given to the NPC.",
+		searchTags = "color"
 
 	)
 	@ConfigEditorDropdown(
@@ -712,6 +687,70 @@ public class Mining {
 		values = {"NEU", "Skytils"}
 	)
 	public int wishingCompassWaypointNames = 0;
+
+	@ConfigOption(
+		name = "Powder Grinding Tracker",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 9)
+	public boolean powderGrindingTrackerAccordion = false;
+
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Tracker",
+		desc = "Show an Overlay with useful information related to Power Grinding"
+	)
+	@ConfigAccordionId(id = 9)
+	@ConfigEditorBoolean
+	public boolean powderGrindingTrackerEnabled = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Tracker Text",
+		desc = "\u00a7eDrag text to change the appearance of the Overlay\n" +
+			"\u00a7rGo to the Crystal Hollows to show this Overlay with useful information"
+	)
+	@ConfigEditorDraggableList(
+		exampleText = {
+			"\u00a73Chests Found: \u00a7a13",
+			"\u00a73Opened Chests: \u00a7a11",
+			"\u00a73Unopened Chests: \u00a7c2",
+			"\u00a73Mithril Powder Found: \u00a726,243",
+			"\u00a73Average Mithril Powder/Chest: \u00a72568",
+			"\u00a73Gemstone Powder Found: \u00a7d6,243",
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+		}
+	)
+	@ConfigAccordionId(id = 9)
+	public List<Integer> powderGrindingTrackerText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+
+	@Expose
+	public Position powderGrindingTrackerPosition = new Position(10, 265);
+
+	@Expose
+	@ConfigOption(
+		name = "Tracker Reset Mode",
+		desc = "When the Powder Grinding Tracker should be reset"
+	)
+	@ConfigEditorDropdown(
+		values = {"On World Change", "On Restart", "Never"},
+		initialIndex = 2
+	)
+	@ConfigAccordionId(id = 9)
+	public int powderGrindingTrackerResetMode = 2;
+
+	@Expose
+	@ConfigOption(
+		name = "Reset Tracker",
+		desc = "Reset all stats for Powder Grinding Tracker"
+	)
+	@ConfigEditorButton(
+		runnableId = 26,
+		buttonText = "Reset"
+	)
+	@ConfigAccordionId(id = 9)
+	public int resetPowderGrindingTracker = 0;
 
 	@Expose
 	@ConfigOption(
