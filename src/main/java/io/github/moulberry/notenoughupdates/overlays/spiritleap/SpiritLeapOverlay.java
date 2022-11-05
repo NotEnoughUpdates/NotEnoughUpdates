@@ -90,7 +90,14 @@ public class SpiritLeapOverlay {
 
 		leapButtons.forEach((name, button) -> {
 			Position position = button.position;
-			button.button.render(position.getRawX(), position.getRawY(), button.location, false);
+			int elementHeight = 55;
+			int elementWidth = 123;
+			int x = position.getAbsX(scaledResolution, elementWidth);
+			int y = position.getAbsY(scaledResolution, elementHeight);
+
+			if (position.isCenterX()) x -= elementWidth / 2;
+			if (position.isCenterY()) y -= elementHeight / 2;
+			button.button.render(x, y, button.location, false);
 
 		});
 

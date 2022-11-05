@@ -62,7 +62,6 @@ public class SpiritLeapMapGuiEditor extends GuiScreen { // nea is gonna LOVE thi
 			width.add(position.button.getWidth());
 			height.add(position.button.getHeight());
 			renderCallbac.add(() -> {
-				SpiritLeapOverlay.renderDummy(position);
 			});
 		}
 
