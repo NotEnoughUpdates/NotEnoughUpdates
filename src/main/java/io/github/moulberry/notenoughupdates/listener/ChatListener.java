@@ -32,7 +32,6 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
@@ -43,7 +42,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,8 +55,6 @@ public class ChatListener {
 	private final NotEnoughUpdates neu;
 	private static final Pattern SLAYER_XP = Pattern.compile(
 		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
-
-	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,4})\\] .*");
 	AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
@@ -76,6 +72,8 @@ public class ChatListener {
 
 		return Utils.trimIgnoreColour(text.replaceAll(EnumChatFormatting.DARK_GREEN + "\\S+ Drill Fuel", ""));
 	}
+
+	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,4})\\] .*");
 
 	private IChatComponent processChatComponent(IChatComponent chatComponent) {
 		IChatComponent newComponent;
@@ -113,114 +111,72 @@ public class ChatListener {
 	}
 
 	Pattern partyFinderPattern = Pattern.compile("Dungeon Finder > (.+) joined the dungeon group! .+");
+	Pattern partyPattern = Pattern.compile("§9Party §8> .+ (.+)§f: .+");
+	Pattern guildPattern = Pattern.compile("§2Guild > .+ (.+) +§f: .+");
 
-	private void insertPvCommandInMessage(IChatComponent chatComponent) {
-		if (chatComponent.getChatStyle() == null) {
-			return;
-		}
-		String message = chatComponent.getUnformattedText();
-		String username = "";
-		Matcher matcher = partyFinderPattern.matcher(message);
-		boolean partyFinderMessage = false;
-		if (NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin &&
-			matcher.matches() &&
-			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			username = matcher.group(1);
-			partyFinderMessage = true;
-		}
-		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 && chatComponent.getChatStyle() != null &&
-		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 &&
-			((chatComponent.getChatStyle() != null &&
-			chatComponent.getChatStyle().getChatClickEvent() != null &&
-			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
-				// Party and guild chat components are different from global chats, so need to check for them here
-			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND)) &&
-			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			if (chatComponent.getChatStyle().getChatClickEvent().getValue().startsWith("/socialoptions")) {
-				username = chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
-			}
-		}
+	Pattern chatMessage = Pattern.compile("((?:§.)+\\[.+\\] )?(.+)§f: .+");
 
-		if (username.isEmpty()) return;
+	public IChatComponent replaceWithSocials(IChatComponent chatComponent) {
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 < 0) return chatComponent;
+		Matcher matcher = chatMessage.matcher(chatComponent.getUnformattedText());
+		if (matcher.matches()) {
+			chatComponent.setChatStyle(createChatStyle(matcher.group(2)));
+		}
+		return chatComponent;
+	}
 
-		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1 ||
-			(NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin && partyFinderMessage)) {
-			chatComponent.getChatStyle().setChatHoverEvent(new HoverEvent(
-				HoverEvent.Action.SHOW_TEXT,
-				new ChatComponentText(
+	private ChatStyle createChatStyle(String username) {
+		switch (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1) {
+			case 1:
+				return Utils.createClickStyle(
+					ClickEvent.Action.RUN_COMMAND,
+					"/pv " + username,
 					"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
 						username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
 						EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
-						EnumChatFormatting.YELLOW + " profile viewer.")
-			));
-			chatComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pv " + username));
-		} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
-			chatComponent.getChatStyle().setChatHoverEvent(new HoverEvent(
-				HoverEvent.Action.SHOW_TEXT,
-				new ChatComponentText(
+						EnumChatFormatting.YELLOW + " profile viewer."
+				);
+			case 2:
+				return Utils.createClickStyle(
+					ClickEvent.Action.RUN_COMMAND,
+					"/ah " + username,
 					"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-						username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page")
-			));
-			chatComponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ah " + username));
-
-			String startsWith = null;
-			boolean partyOrGuildChat = false;
-
-			List<IChatComponent> siblings = chatComponent.getSiblings();
-			if (!siblings.isEmpty() && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
-				startsWith = "/viewprofile";
-				partyOrGuildChat = true;
-			} else {
-				ClickEvent chatClickEvent = chatComponent.getChatStyle().getChatClickEvent();
-				if (chatClickEvent != null) {
-					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
-						startsWith = "/socialoptions";
-					}
-				}
-			}
-
-			if (startsWith != null) {
-				String username = partyOrGuildChat ?
-					Utils.getNameFromChatComponent(chatComponent) :
-					chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
-
-				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
-
-					ChatStyle pvClickStyle = Utils.createClickStyle(
-						ClickEvent.Action.RUN_COMMAND,
-						"/pv " + username,
-						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
-							EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
-							EnumChatFormatting.YELLOW + " profile viewer."
-					);
-
-					if (partyOrGuildChat) {
-						chatComponent.getSiblings().get(0).setChatStyle(pvClickStyle);
-					} else {
-						chatComponent.setChatStyle(pvClickStyle);
-					}
-					return chatComponent;
-				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
-
-					ChatStyle ahClickStyle = Utils.createClickStyle(
-						ClickEvent.Action.RUN_COMMAND,
-						"/ah " + username,
-						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
-					);
-
-					if (partyOrGuildChat) {
-						chatComponent.getSiblings().get(0).setChatStyle(ahClickStyle);
-					} else {
-						chatComponent.setChatStyle(ahClickStyle);
-					}
-					return chatComponent;
-				}
-			} // wanted to add this for guild but guild uses uuid :sad:
+						username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
+				);
+			default:
+				return null;
 		}
+	}
+
+	private IChatComponent replaceWithGuildOrParty(IChatComponent chatComponent) {
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return chatComponent;
+		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 < 0) return chatComponent;
+		Matcher partyMatcher = partyPattern.matcher(chatComponent.getFormattedText());
+		Matcher guildMatcher = guildPattern.matcher(chatComponent.getFormattedText());
+		if (partyMatcher.matches()) {
+			System.out.println("srwtg");
+			chatComponent.setChatStyle(createChatStyle(partyMatcher.group(1)));
+		} else if (guildMatcher.matches()) {
+			chatComponent.setChatStyle(createChatStyle(guildMatcher.group(1)));
+		}
+		return chatComponent;
+	}
+
+	private IChatComponent replaceWithPfMessage(IChatComponent chatComponent) {
+		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return chatComponent;
+		if (!NotEnoughUpdates.INSTANCE.config.dungeons.openPvOnPartyJoin) return chatComponent;
+		Matcher partyFinder = partyFinderPattern.matcher(chatComponent.getFormattedText());
+		if (partyFinder.matches()) {
+			chatComponent.setChatStyle(createChatStyle(partyFinder.group(1)));
+		}
+		return chatComponent;
+	}
+
+	private IChatComponent replace(IChatComponent component) {
+		component = replaceWithGuildOrParty(component);
+		component = replaceWithPfMessage(component);
+		component = replaceWithSocials(component);
+		return component;
 	}
 
 	/**
@@ -236,7 +192,7 @@ public class ChatListener {
 			e.message = processChatComponent(e.message);
 			return;
 		} else if (e.type == 0) {
-			insertPvCommandInMessage(e.message);
+			e.message = replace(e.message);
 		}
 
 		DungeonWin.onChatMessage(e);
@@ -258,7 +214,8 @@ public class ChatListener {
 					0,
 					36
 				);
-			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured");
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+				EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured"));
 			NotEnoughUpdates.INSTANCE.saveConfig();
 		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
 			SBInfo.getInstance().hasNewTab = false;
@@ -285,6 +242,7 @@ public class ChatListener {
 		} else if (unformatted.startsWith("   RNG Meter")) {
 			RNGMeter = unformatted.substring("   RNG Meter - ".length());
 		} else if (matcher.matches()) {
+			//matcher.group(1);
 			SlayerOverlay.slayerLVL = matcher.group(2);
 			if (!SlayerOverlay.slayerLVL.equals("9")) {
 				SlayerOverlay.slayerXp = matcher.group(3);
