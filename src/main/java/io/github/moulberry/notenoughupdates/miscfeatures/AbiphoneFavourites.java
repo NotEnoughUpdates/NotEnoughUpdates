@@ -135,22 +135,22 @@ public class AbiphoneFavourites {
 
 		if (!isContact(stack)) return;
 
-		int clickedButton = event.clickedButton;
 		int clickType = event.clickType;
+		int clickedButton = event.clickedButton;
 
-		//prevents removing the contact
-		if (isAbiphoneShowOnlyFavourites()) {
-			if (clickedButton == 1 || (clickedButton == 2 && clickType == 3)) {
-				event.setCanceled(true);
+		//allows removing the contact
+		if (clickType == 0 && clickedButton == 1) {
+			if (!isAbiphoneShowOnlyFavourites()) {
+				return;
 			}
 		}
 		String rawName = stack.getDisplayName();
 		String name = StringUtils.cleanColour(rawName);
 
-		//prevents calling non favourite contacts
-		if (clickedButton == 0 && (clickType == 0 || clickType == 6)) {
-			if (!getFavouriteContacts().contains(name) && isAbiphoneShowOnlyFavourites()) {
-				event.setCanceled(true);
+		//allows calling
+		if (clickType == 0 && clickedButton == 0) {
+			if (!isAbiphoneShowOnlyFavourites() || getFavouriteContacts().contains(name)) {
+				return;
 			}
 		}
 
@@ -158,9 +158,10 @@ public class AbiphoneFavourites {
 		if (clickType == 1) {
 			if (!isAbiphoneShowOnlyFavourites()) {
 				toggleFavouriteContact(rawName, name);
-				event.setCanceled(true);
 			}
 		}
+
+		event.setCanceled(true);
 	}
 
 	@SubscribeEvent
