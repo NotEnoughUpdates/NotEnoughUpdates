@@ -27,6 +27,9 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -46,17 +49,26 @@ import java.util.stream.Collectors;
 
 public class PowderGrindingOverlay extends TextTabOverlay {
 
-	private final static JsonParser PARSER = new JsonParser();
+	NumberFormat FORMAT = NumberFormat.getIntegerInstance();
 
-
+	private boolean isMining = false;
 	public int chestCount = 0;
 	public int openedChestCount = 0;
+	public int blocksMined = 0;
+	public int lastBlocksMined = 0;
+	public int lastCompact = -1;
+	public float lastBlocksMinedAverage = 0;
 	public int mithrilPowderFound = 0;
 	public float lastMithrilPowderFound = 0;
 	public float lastMithrilPowderAverage = 0;
 	public int gemstonePowderFound = 0;
 	public float lastGemstonePowderFound = 0;
 	public float lastGemstonePowderAverage = 0;
+	public int elapsed = 0;
+	public String elapsedString = "";
+	public int inactiveFor = 0;
+	public float lastMithrilPowderRate = 0;
+	public float lastGemstonePowderRate = 0;
 	private long lastUpdate = -1;
 
 	public PowderGrindingOverlay(
@@ -80,7 +92,43 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	@Override
 	public void update() {
 		if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerEnabled) {
+			if (Minecraft.getMinecraft().thePlayer == null) return;
 			lastUpdate = System.currentTimeMillis();
+
+			ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItem();
+			if (stack != null && stack.hasTagCompound()) {
+				NBTTagCompound tag = stack.getTagCompound();
+				if (tag.hasKey("ExtraAttributes", 10)) {
+					NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
+					if (ea.hasKey("compact_blocks", 99)) {
+						int compact = ea.getInteger("compact_blocks");
+						if (compact != lastCompact && lastCompact != -1) {
+							blocksMined += compact - lastCompact;
+							inactiveFor = 0;
+							isMining = true;
+							elapsed++;
+						} else if (isMining) {
+							inactiveFor++;
+							elapsed++;
+							if (inactiveFor >= NotEnoughUpdates.INSTANCE.config.mining.powderGrindingPauseTimer) isMining = false;
+						}
+						int displaySeconds = elapsed % 60;
+						int displayMinutes = (int) (Math.floor(elapsed / 60f) % 60);
+						int displayHours = (int) Math.floor(elapsed / 3600f);
+						elapsedString = (displayHours < 10 ? "0" + displayHours : displayHours) + ":" +
+							(displayMinutes < 10 ? "0" + displayMinutes : displayMinutes) + ":" +
+							(displaySeconds < 10 ? "0" + displaySeconds : displaySeconds);
+						if (!isMining) elapsedString += " \u00a7c(PAUSED)";
+						lastCompact = compact;
+					}
+				}
+			}
+
+			lastBlocksMined = blocksMined;
+			lastBlocksMinedAverage = this.chestCount > 0 ?
+				1f * this.blocksMined / this.chestCount :
+				this.blocksMined;
+
 			lastMithrilPowderFound = this.mithrilPowderFound;
 			lastMithrilPowderAverage = this.openedChestCount > 0 ?
 				1f * this.mithrilPowderFound / this.openedChestCount :
@@ -89,6 +137,9 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 			lastGemstonePowderAverage = this.openedChestCount > 0 ?
 				1f * this.gemstonePowderFound / this.openedChestCount :
 				0;
+
+			lastMithrilPowderRate = this.mithrilPowderFound / (Math.max(1, isMining ? elapsed - 1 : elapsed) / 3600f);
+			lastGemstonePowderRate = this.gemstonePowderFound / (Math.max(1, isMining ? elapsed - 1 : elapsed) / 3600f);
 		} else overlayStrings = null;
 	}
 
@@ -103,36 +154,59 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 
 			overlayStrings = new ArrayList<>();
 			for (int index : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
-				NumberFormat format = NumberFormat.getIntegerInstance();
 				switch (index) {
 					case 0:
-						overlayStrings.add("\u00a73Chests Found: \u00a7a" + format.format(this.chestCount));
+						overlayStrings.add("\u00a73Chests Found: \u00a7a" + FORMAT.format(this.chestCount));
 						break;
 					case 1:
-						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + format.format(this.openedChestCount));
+						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + FORMAT.format(this.openedChestCount));
 						break;
 					case 2:
-						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
+						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + FORMAT.format(this.chestCount - this.openedChestCount));
 						break;
 					case 3:
 						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" +
-							format.format(interp(this.mithrilPowderFound, lastMithrilPowderFound)));
+							FORMAT.format(interp(this.mithrilPowderFound, lastMithrilPowderFound)));
 						break;
 					case 4:
-						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + format.format(interp(
+						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + FORMAT.format(interp(
 							(this.openedChestCount > 0 ?
 								1f * this.mithrilPowderFound / this.openedChestCount :
 								0), lastMithrilPowderAverage)));
 						break;
 					case 5:
 						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" +
-							format.format(interp(this.gemstonePowderFound, lastGemstonePowderFound)));
+							FORMAT.format(interp(this.gemstonePowderFound, lastGemstonePowderFound)));
 						break;
 					case 6:
-						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + format.format(interp(
+						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + FORMAT.format(interp(
 							(this.openedChestCount > 0 ?
 								1f * this.gemstonePowderFound / this.openedChestCount :
 								0), lastGemstonePowderAverage)));
+						break;
+					case 7:
+						overlayStrings.add("\u00a73Time Elapsed: \u00a7a" + elapsedString);
+						break;
+					case 8:
+						overlayStrings.add("\u00a73Blocks Mined: \u00a77" + FORMAT.format(interp(lastBlocksMined, blocksMined)));
+						break;
+					case 9:
+						overlayStrings.add("\u00a73Average Blocks Mined/Chest: \u00a77" + FORMAT.format(interp(
+							(this.chestCount > 0 ?
+								1f * this.blocksMined / this.chestCount :
+								this.blocksMined), lastBlocksMinedAverage)));
+						break;
+					case 10:
+						overlayStrings.add("\u00a73Mithril Powder / Hour: \u00a72" + FORMAT.format(interp(
+							this.mithrilPowderFound / (Math.max(1, elapsed) / 3600f),
+							lastMithrilPowderRate
+						)) + (!isMining ? " \u00a7c(PAUSED)" : ""));
+						break;
+					case 11:
+						overlayStrings.add("\u00a73Gemstone Powder / Hour: \u00a7d" + FORMAT.format(interp(
+							this.gemstonePowderFound / (Math.max(1, elapsed) / 3600f),
+							lastGemstonePowderRate
+						)) + (!isMining ? " \u00a7c(PAUSED)" : ""));
 						break;
 				}
 			}

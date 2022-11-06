@@ -719,14 +719,32 @@ public class Mining {
 			"\u00a73Mithril Powder Found: \u00a726,243",
 			"\u00a73Average Mithril Powder/Chest: \u00a72568",
 			"\u00a73Gemstone Powder Found: \u00a7d6,243",
-			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
+			"\u00a73Average Gemstone Powder/Chest: \u00a7d568",
+			"\u00a73Time Elapsed: \u00a7a00:14:29 \u00a7c(PAUSED)",
+			"\u00a73Blocks Mined: \u00a77457",
+			"\u00a73Average Blocks Mined/Chest: \u00a7735",
+			"\u00a73Mithril Powder / Hour: \u00a7225,863",
+			"\u00a73Gemstone Powder / Hour: \u00a7d25,863"
 		}
 	)
 	@ConfigAccordionId(id = 9)
-	public List<Integer> powderGrindingTrackerText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+	public List<Integer> powderGrindingTrackerText = new ArrayList<>(Arrays.asList(0, 1, 2, 8, 9, 3, 4, 5, 6, 10, 11));
 
 	@Expose
 	public Position powderGrindingTrackerPosition = new Position(10, 265);
+
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing"
+	)
+	@ConfigAccordionId(id = 9)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int powderGrindingPauseTimer = 3;
 
 	@Expose
 	@ConfigOption(
