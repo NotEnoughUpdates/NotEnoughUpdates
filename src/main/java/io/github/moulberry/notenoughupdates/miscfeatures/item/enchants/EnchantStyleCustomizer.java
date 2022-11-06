@@ -28,7 +28,9 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 public class EnchantStyleCustomizer {
@@ -40,6 +42,7 @@ public class EnchantStyleCustomizer {
 
 	public LateBindingChroma replaceEnchantLine(String originalLine) {
 		var line = originalLine;
+		Set<String> alreadyReplacedEnchants = new HashSet<>();
 		for (String enchantMatcherStr : NotEnoughUpdates.INSTANCE.config.hidden.enchantColours) {
 			var enchantMatcherP = EnchantMatcher.fromSaveFormatMemoized.apply(enchantMatcherStr);
 			if (!enchantMatcherP.isPresent()) continue;
@@ -52,7 +55,10 @@ public class EnchantStyleCustomizer {
 				var levelText = matcher.group(EnchantMatcher.GROUP_LEVEL);
 				if (enchantName == null || levelText == null
 					|| levelText.isEmpty() || enchantName.isEmpty()) continue;
-				if (Utils.cleanColour(enchantName).startsWith(" ")) continue;
+				String cleanEnchantName = Utils.cleanColour(enchantName);
+				if (cleanEnchantName.startsWith(" ")) continue;
+				if (alreadyReplacedEnchants.contains(cleanEnchantName)) continue;
+				alreadyReplacedEnchants.add(cleanEnchantName);
 
 				var level = Utils.parseIntOrRomanNumeral(levelText);
 				if (!enchantMatcher.doesLevelMatch(level)) continue;
