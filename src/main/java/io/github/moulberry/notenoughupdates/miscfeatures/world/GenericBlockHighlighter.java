@@ -75,13 +75,23 @@ public abstract class GenericBlockHighlighter {
 		Vec3 playerPosition = new Vec3(p.posX, p.posY + p.eyeHeight, p.posZ);
 		MovingObjectPosition hitResult1 = rayTraceBlocks(world, playerPosition, x, y, z);
 		MovingObjectPosition hitResult2 = rayTraceBlocks(world, playerPosition, x + 1, y, z);
-		MovingObjectPosition hitResult3 = rayTraceBlocks(world, playerPosition, x, y + 1, z);
-		MovingObjectPosition hitResult4 = rayTraceBlocks(world, playerPosition, x, y, z + 1);
+		MovingObjectPosition hitResult3 = rayTraceBlocks(world, playerPosition, x + 1, y + 1, z);
+		MovingObjectPosition hitResult4 = rayTraceBlocks(world, playerPosition, x + 1, y + 1, z + 1);
+
+		MovingObjectPosition hitResult5 = rayTraceBlocks(world, playerPosition, x, y + 1, z + 1);
+		MovingObjectPosition hitResult6 = rayTraceBlocks(world, playerPosition, x, y + 1, z);
+		MovingObjectPosition hitResult7 = rayTraceBlocks(world, playerPosition, x + 1, y, z + 1);
+		MovingObjectPosition hitResult8 = rayTraceBlocks(world, playerPosition, x, y + 1, z);
 		BlockPos blockPos = new BlockPos(x, y, z);
 		return canSee(hitResult1, blockPos)
-			|| canSee(hitResult2, blockPos)
-			|| canSee(hitResult3, blockPos)
-			|| canSee(hitResult4, blockPos);
+			|| canSee(hitResult2, blockPos.add(1, 0, 1))
+			|| canSee(hitResult3, blockPos.add(1, 1, 0))
+			|| canSee(hitResult4, blockPos.add(1, 1, 1))
+
+			|| canSee(hitResult5, blockPos.add(0, 1, 1))
+			|| canSee(hitResult6, blockPos.add(0, 1, 0))
+			|| canSee(hitResult7, blockPos.add(1, 0, 1))
+			|| canSee(hitResult8, blockPos.add(0, 1, 0));
 	}
 
 	private static boolean canSee(MovingObjectPosition hitResult, BlockPos bp) {
