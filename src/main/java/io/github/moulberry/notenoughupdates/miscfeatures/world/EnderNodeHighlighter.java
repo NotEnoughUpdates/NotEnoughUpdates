@@ -35,6 +35,14 @@ import static io.github.moulberry.notenoughupdates.util.MathUtil.basicallyEqual;
 
 public class EnderNodeHighlighter extends GenericBlockHighlighter {
 
+	private static final EnderNodeHighlighter INSTANCE = new EnderNodeHighlighter();
+
+	public static EnderNodeHighlighter getInstance()
+	{
+		return INSTANCE;
+	}
+
+
 	@SubscribeEvent
 	public void onParticleSpawn(SpawnParticleEvent event) {
 		if (!isEnabled()) return;

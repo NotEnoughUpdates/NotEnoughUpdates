@@ -339,7 +339,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new GlowingMushroomHighlighter());
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
-		MinecraftForge.EVENT_BUS.register(new EnderNodeHighlighter());
+		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
