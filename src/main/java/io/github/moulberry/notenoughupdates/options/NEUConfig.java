@@ -161,13 +161,6 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.openGui =
 					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
 				return;
-			case 24:
-				NotEnoughUpdates.INSTANCE.config.apiData.repoUser = "NotEnoughUpdates";
-				NotEnoughUpdates.INSTANCE.config.apiData.repoName = "NotEnoughUpdates-REPO";
-				NotEnoughUpdates.INSTANCE.config.apiData.repoBranch = "dangerous";
-				NotEnoughUpdates.INSTANCE.openGui =
-					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
-				return;
 			case 26:
 				OverlayManager.powderGrindingOverlay.reset();
 				return;
