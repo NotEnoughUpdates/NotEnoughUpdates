@@ -741,10 +741,10 @@ public class Mining {
 	@ConfigAccordionId(id = 9)
 	@ConfigEditorSlider(
 		minValue = 1,
-		maxValue = 20,
+		maxValue = 30,
 		minStep = 1
 	)
-	public int powderGrindingPauseTimer = 3;
+	public int powderGrindingPauseTimer = 10;
 
 	@Expose
 	@ConfigOption(
