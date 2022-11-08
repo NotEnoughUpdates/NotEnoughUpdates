@@ -313,21 +313,27 @@ public class TimersOverlay extends TextTabOverlay {
 						String godpotRemainingTimeType = activeEffectsMatcher.group(2);
 						switch (godpotRemainingTimeType) {
 							case "Years":
+							case "Year":
 								godPotDuration += godpotRemainingTime * 365 * 24 * 60 * 60 * 1000;
 								break;
 							case "Months":
+							case "Month":
 								godPotDuration += godpotRemainingTime * 30 * 24 * 60 * 60 * 1000;
 								break;
 							case "Days":
+							case "Day":
 								godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
 								break;
 							case "Hours":
+							case "Hour":
 								godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
 								break;
 							case "Minutes":
+							case "Minute":
 								godPotDuration += godpotRemainingTime * 60 * 1000;
 								break;
 							case "Seconds":
+							case "Second":
 								godPotDuration += godpotRemainingTime * 1000;
 								break;
 						}
