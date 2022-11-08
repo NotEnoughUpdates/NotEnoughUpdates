@@ -315,6 +315,6 @@ public class ChatListener {
 			EnderNodeHighlighter.getInstance().highlightedBlocks.clear();
 
 		if (unformatted.equals("ENDER NODE! You found Endermite Nest!"))
-			EnderNodes.dispalyEndermiteNotif();
+			EnderNodes.displayEndermiteNotif();
 	}
 }
