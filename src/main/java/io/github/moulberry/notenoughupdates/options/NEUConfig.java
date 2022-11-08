@@ -571,6 +571,12 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public int gemstonePowderFound = 0;
+
+		@Expose
+		public List<String> abiphoneFavouriteContacts = new ArrayList<>();
+
+		@Expose
+		public boolean abiphoneShowOnlyFavourites = false;
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

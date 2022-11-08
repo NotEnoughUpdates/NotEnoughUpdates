@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
 import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.listener.WorldListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
@@ -340,6 +341,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
 		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());
+		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
