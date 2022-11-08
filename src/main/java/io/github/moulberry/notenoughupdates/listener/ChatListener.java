@@ -127,7 +127,7 @@ public class ChatListener {
 			boolean partyOrGuildChat = false;
 
 			List<IChatComponent> siblings = chatComponent.getSiblings();
-			if (!siblings.isEmpty() && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
+			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
 				partyOrGuildChat = true;
 			} else {
