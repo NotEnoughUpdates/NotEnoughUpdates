@@ -349,21 +349,27 @@ public class TimersOverlay extends TextTabOverlay {
 							long val = Integer.parseInt(number);
 							switch (unit) {
 								case "Years":
+								case "Year":
 									hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
 									break;
 								case "Months":
+								case "Month":
 									hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
 									break;
 								case "Days":
+								case "Day":
 									hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
 									break;
 								case "Hours":
+								case "Hour":
 									hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
 									break;
 								case "Minutes":
+								case "Minute":
 									hidden.cookieBuffRemaining += val * 60 * 1000;
 									break;
 								case "Seconds":
+								case "Second":
 									hidden.cookieBuffRemaining += val * 1000;
 									break;
 							}
