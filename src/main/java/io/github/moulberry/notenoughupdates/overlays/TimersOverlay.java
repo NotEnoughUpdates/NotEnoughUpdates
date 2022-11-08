@@ -336,50 +336,40 @@ public class TimersOverlay extends TextTabOverlay {
 				} else if (line.contains("\u00a7d\u00a7lCookie Buff")) {
 					foundCookieBuffText = true;
 				} else if (foundCookieBuffText) {
-					String cleanNoSpace = line.replaceAll("(\u00a7.| )", "");
-
+					String clean = line.replaceAll("(\u00a7.)", "");
+					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
-					StringBuilder number = new StringBuilder();
-					for (int i = 0; i < cleanNoSpace.length(); i++) {
-						char c = cleanNoSpace.charAt(i);
 
-						if (c >= '0' && c <= '9') {
-							number.append(c);
-						} else {
-							if (number.length() == 0) {
-								hidden.cookieBuffRemaining = 0;
-								break;
-							}
-							if ("ydhms".contains("" + c)) {
-								try {
-									long val = Integer.parseInt(number.toString());
-									switch (c) {
-										case 'y':
-											hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
-											break;
-										case 'd':
-											hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
-											break;
-										case 'h':
-											hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
-											break;
-										case 'm':
-											hidden.cookieBuffRemaining += val * 60 * 1000;
-											break;
-										case 's':
-											hidden.cookieBuffRemaining += val * 1000;
-											break;
-									}
-								} catch (NumberFormatException e) {
-									hidden.cookieBuffRemaining = 0;
+					for (int i = 0; i < cleanSplit.length; i++) {
+						if (i % 2 == 1) continue;
+
+						String number = cleanSplit[i];
+						String unit = cleanSplit[i + 1];
+						try {
+							long val = Integer.parseInt(number);
+							switch (unit) {
+								case "Years":
+									hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
 									break;
-								}
-
-								number = new StringBuilder();
-							} else {
-								hidden.cookieBuffRemaining = 0;
-								break;
+								case "Months":
+									hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
+									break;
+								case "Days":
+									hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
+									break;
+								case "Hours":
+									hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
+									break;
+								case "Minutes":
+									hidden.cookieBuffRemaining += val * 60 * 1000;
+									break;
+								case "Seconds":
+									hidden.cookieBuffRemaining += val * 1000;
+									break;
 							}
+						} catch (NumberFormatException e) {
+							hidden.cookieBuffRemaining = 0;
+							break;
 						}
 					}
 
