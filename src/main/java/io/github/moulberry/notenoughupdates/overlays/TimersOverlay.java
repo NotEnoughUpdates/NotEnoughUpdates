@@ -53,7 +53,7 @@ import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([0-9]*?:?[0-9]*?:?[0-9]*)\u00a7r");
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d(2[0-3]|[0-1]?[0-9]) (Seconds|Minutes|Hours|Days|Years)\u00a7r");
 
 	public TimersOverlay(
 		Position position,
@@ -307,26 +307,29 @@ public class TimersOverlay extends TextTabOverlay {
 				Matcher activeEffectsMatcher = PATTERN_ACTIVE_EFFECTS.matcher(line);
 				if (activeEffectsMatcher.matches()) {
 					foundGodPotText = true;
-					String[] godpotRemaingTimeUnformatted = activeEffectsMatcher.group(1).split(":");
 					long godPotDuration = 0;
 					try {
-						int i = 0;
-						if (godpotRemaingTimeUnformatted.length == 4) {
-							godPotDuration =
-								godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 24 * 60 * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 3) {
-							godPotDuration =
-								godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 60 * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 2) {
-							godPotDuration = godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 1) {
-							godPotDuration = godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 1000;
+						long godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(1));
+						String godpotRemainingTimeType = activeEffectsMatcher.group(2);
+						switch (godpotRemainingTimeType) {
+							case "Years":
+								godPotDuration += godpotRemainingTime * 365 * 24 * 60 * 60 * 1000;
+								break;
+							case "Months":
+								godPotDuration += godpotRemainingTime * 30 * 24 * 60 * 60 * 1000;
+								break;
+							case "Days":
+								godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
+								break;
+							case "Hours":
+								godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
+								break;
+							case "Minutes":
+								godPotDuration += godpotRemainingTime * 60 * 1000;
+								break;
+							case "Seconds":
+								godPotDuration += godpotRemainingTime * 1000;
+								break;
 						}
 					} catch (Exception ignored) {
 					}
