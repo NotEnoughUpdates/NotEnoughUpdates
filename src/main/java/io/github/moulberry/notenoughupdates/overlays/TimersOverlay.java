@@ -53,7 +53,7 @@ import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d(2[0-3]|[0-1]?[0-9]) (Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|Months|Month|Years|Year)\u00a7r");
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d(2[0-3]|[0-1]?[0-9]) (Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days)\u00a7r");
 
 	public TimersOverlay(
 		Position position,
@@ -312,14 +312,6 @@ public class TimersOverlay extends TextTabOverlay {
 						long godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(1));
 						String godpotRemainingTimeType = activeEffectsMatcher.group(2);
 						switch (godpotRemainingTimeType) {
-							case "Years":
-							case "Year":
-								godPotDuration += godpotRemainingTime * 365 * 24 * 60 * 60 * 1000;
-								break;
-							case "Months":
-							case "Month":
-								godPotDuration += godpotRemainingTime * 30 * 24 * 60 * 60 * 1000;
-								break;
 							case "Days":
 							case "Day":
 								godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
