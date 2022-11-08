@@ -26,9 +26,6 @@ import io.github.moulberry.notenoughupdates.util.TitleUtil;
 import net.minecraft.client.Minecraft;
 
 public class EnderNodes {
-	// TODO Add ender node highliter
-	// TODO Add ender node counter ( maybe money estimation )
-
 	public static void displayEndermiteNotif() {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.endermiteAlert && SBInfo.getInstance().getLocation() != null &&
 			SBInfo.getInstance().getLocation().equals("combat_3")) {
