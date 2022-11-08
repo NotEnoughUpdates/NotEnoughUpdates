@@ -74,22 +74,31 @@ public class CookieWarning {
 				return;
 			}
 			if (timeLine != null) {
-				String[] digits = timeLine.split(" ");
+				String[] digits = timeLine.replaceAll("(\u00a7.)", "").split(" ");
 				int minutes = 0;
 				try {
-					for (String digit : digits) {
-						if (digit.endsWith("y")) {
-							digit = digit.substring(0, digit.length() - 1);
-							minutes += Integer.parseInt(digit) * 525600;
-						} else if (digit.endsWith("d")) {
-							digit = digit.substring(0, digit.length() - 1);
-							minutes += Integer.parseInt(digit) * 1440;
-						} else if (digit.endsWith("h")) {
-							digit = digit.substring(0, digit.length() - 1);
-							minutes += Integer.parseInt(digit) * 60;
-						} else if (digit.endsWith("m")) {
-							digit = digit.substring(0, digit.length() - 1);
-							minutes += Integer.parseInt(digit);
+					for (int i = 0; i < digits.length; i++) {
+						if (i % 2 == 1) continue;
+
+						String number = digits[i];
+						String unit = digits[i + 1];
+						long val = Integer.parseInt(number);
+						switch (unit) {
+							case "Years":
+								minutes += val * 525600;
+								break;
+							case "Months":
+								minutes += val * 43200;
+								break;
+							case "Days":
+								minutes += val * 1440;
+								break;
+							case "Hours":
+								minutes += val * 60;
+								break;
+							case "Minutes":
+								minutes += val;
+								break;
 						} // ignore seconds
 					}
 				} catch (NumberFormatException e) {
