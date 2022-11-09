@@ -30,6 +30,7 @@ plugins {
 		id("com.github.johnrengelman.shadow") version "7.1.2"
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
+		kotlin("jvm") version "1.7.20"
 }
 
 
@@ -94,6 +95,9 @@ dependencies {
 		minecraft("com.mojang:minecraft:1.8.9")
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+
+		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.7.21"))
+		implementation(kotlin("stdlib"))
 
 		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
