@@ -17,18 +17,31 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.events;
+package io.github.moulberry.notenoughupdates.overlays;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.config.Position;
+import org.lwjgl.util.vector.Vector2f;
 
-public class NEUEvent extends Event {
-	public boolean post() {
-		MinecraftForge.EVENT_BUS.post(this);
-		return isCancelable() && isCanceled();
+import java.util.List;
+import java.util.function.Supplier;
+
+public class FuelBarDummy extends TextOverlay {
+	public FuelBarDummy(
+		Position position,
+		Supplier<List<String>> dummyStrings,
+		Supplier<TextOverlayStyle> styleSupplier
+	) {
+		super(position, dummyStrings, styleSupplier);
+		super.shouldRenderInGuiEditor = false;
 	}
 
-	public void cancel() {
-		setCanceled(true);
+	@Override
+	public void update() {
+
+	}
+	@Override
+	public Vector2f getDummySize() {
+		return new Vector2f(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12);
 	}
 }

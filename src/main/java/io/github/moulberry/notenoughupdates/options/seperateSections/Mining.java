@@ -108,15 +108,6 @@ public class Mining {
 	public int drillFuelBarWidth = 200;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Fuel Bar Position",
-		desc = "Change the position of the drill fuel bar"
-	)
-	@ConfigEditorButton(
-		runnableId = 2,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 1)
 	public Position drillFuelBarPosition = new Position(0, -100, true, false);
 
 	@ConfigOption(
@@ -154,15 +145,6 @@ public class Mining {
 	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Dwarven Overlay Position",
-		desc = "Change the position of the Dwarven Mines information Overlay (commissions, powder & forge statuses)"
-	)
-	@ConfigEditorButton(
-		runnableId = 1,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 2)
 	public Position overlayPosition = new Position(10, 100);
 
 	@Expose
@@ -261,15 +243,6 @@ public class Mining {
 	public boolean crystalHollowOverlay = true;
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Crystal Overlay Position",
-		desc = "Change the position of the Crystal Hollows Overlay."
-	)
-	@ConfigEditorButton(
-		runnableId = 10,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 4)
 	public Position crystalHollowOverlayPosition = new Position(200, 0);
 
 	@Expose
@@ -290,13 +263,13 @@ public class Mining {
 			"\u00a73Electron Transmitter: \u00a7aDone\n" +
 				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
 				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Hearth: \u00a7cMissing\n" +
+				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
 				"\u00a73Control Switch: \u00a7cMissing\n" +
 				"\u00a73FTX 3070: \u00a7cMissing",
 			"\u00a73Electron Transmitter: \u00a7a3\n" +
 				"\u00a73Robotron Reflector: \u00a7e2\n" +
 				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Hearth: \u00a7c0\n" +
+				"\u00a73Synthetic Heart: \u00a7c0\n" +
 				"\u00a73Control Switch: \u00a7c0\n" +
 				"\u00a73FTX 3070: \u00a7c0",
 			"\u00a73Automaton parts: \u00a7a5/6",
@@ -753,15 +726,6 @@ public class Mining {
 	public List<Integer> powderGrindingTrackerText = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
 
 	@Expose
-	@ConfigOption(
-		name = "Edit Tracker Position",
-		desc = "Change the position of the Powder Grinding Tracker Overlay (chests and gained powder)"
-	)
-	@ConfigEditorButton(
-		runnableId = 25,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 9)
 	public Position powderGrindingTrackerPosition = new Position(10, 265);
 
 	@Expose

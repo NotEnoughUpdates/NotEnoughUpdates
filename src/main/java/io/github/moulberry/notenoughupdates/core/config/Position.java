@@ -31,6 +31,7 @@ public class Position {
 	private boolean centerX;
 	@Expose
 	private boolean centerY;
+	private boolean clicked = false;
 
 	private static final int EDGE_OFFSET = 0;
 
@@ -70,6 +71,13 @@ public class Position {
 
 	public int getRawY() {
 		return y;
+	}
+
+	public void setClicked(boolean state) {
+		this.clicked = state;
+	}
+	public boolean getClicked() {
+		return clicked;
 	}
 
 	public int getAbsX(ScaledResolution scaledResolution, int objWidth) {

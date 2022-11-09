@@ -282,15 +282,6 @@ public class ItemOverlays {
 	public boolean highlightTargeted = true;
 
 	@Expose
-	@ConfigOption(
-		name = "Bonemerang Overlay Position",
-		desc = "Change the position of the Bonemerang overlay."
-	)
-	@ConfigEditorButton(
-		runnableId = 9,
-		buttonText = "Edit"
-	)
-	@ConfigAccordionId(id = 4)
 	public Position bonemerangPosition = new Position(-1, -1);
 
 	@Expose

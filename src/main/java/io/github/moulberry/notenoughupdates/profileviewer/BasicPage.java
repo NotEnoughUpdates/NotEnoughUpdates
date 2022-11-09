@@ -275,7 +275,8 @@ public class BasicPage extends GuiProfileViewerPage {
 				true,
 				0
 			);
-			try {
+			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE") != null &&
+				NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy")) {
 				double networthInCookies =
 					(
 						networth /
@@ -334,8 +335,6 @@ public class BasicPage extends GuiProfileViewerPage {
 						}
 					}
 				}
-			} catch (Exception ignored) {
-				ignored.printStackTrace();
 			}
 		} else {
 			//Networth is under 0

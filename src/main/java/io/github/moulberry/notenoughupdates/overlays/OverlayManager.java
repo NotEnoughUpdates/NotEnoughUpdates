@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OverlayManager {
-	public static Class<? extends TextOverlay> dontRenderOverlay = null;
+	public static ArrayList<Class<? extends TextOverlay>> dontRenderOverlay = new ArrayList<>();
 
 	public static MiningOverlay miningOverlay;
 	public static PowderGrindingOverlay powderGrindingOverlay;
@@ -40,6 +40,7 @@ public class OverlayManager {
 	public static BonemerangOverlay bonemerangOverlay;
 	public static CrystalHollowOverlay crystalHollowOverlay;
 	public static SlayerOverlay slayerOverlay;
+	public static FuelBarDummy fuelBar;
 	public static final List<TextOverlay> textOverlays = new ArrayList<>();
 
 	static {
@@ -254,13 +255,13 @@ public class OverlayManager {
 			"\u00a73Electron Transmitter: \u00a7aDone\n" +
 				"\u00a73Robotron Reflector: \u00a7eIn Storage\n" +
 				"\u00a73Superlite Motor: \u00a7eIn Inventory\n" +
-				"\u00a73Synthetic Hearth: \u00a7cMissing\n" +
+				"\u00a73Synthetic Heart: \u00a7cMissing\n" +
 				"\u00a73Control Switch: \u00a7cMissing\n" +
 				"\u00a73FTX 3070: \u00a7cMissing",
 			"\u00a73Electron Transmitter: \u00a7a3\n" +
 				"\u00a73Robotron Reflector: \u00a7e2\n" +
 				"\u00a73Superlite Motor: \u00a7e1\n" +
-				"\u00a73Synthetic Hearth: \u00a7c0\n" +
+				"\u00a73Synthetic Heart: \u00a7c0\n" +
 				"\u00a73Control Switch: \u00a7c0\n" +
 				"\u00a73FTX 3070: \u00a7c0",
 			"\u00a73Automaton parts: \u00a7a5/6",
@@ -313,6 +314,15 @@ public class OverlayManager {
 			return TextOverlayStyle.BACKGROUND;
 		});
 
+		List<String> fuelDummy = Lists.newArrayList(
+			"\u00a73This is a fuel bar"
+		);
+		fuelBar = new FuelBarDummy(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition, () -> {
+			List<String> strings = new ArrayList<>();
+			strings.add(fuelDummy.get(0));
+			return strings;
+		}, () -> TextOverlayStyle.BACKGROUND);
+
 		textOverlays.add(miningOverlay);
 		textOverlays.add(powderGrindingOverlay);
 		textOverlays.add(farmingOverlay);
@@ -323,6 +333,7 @@ public class OverlayManager {
 		textOverlays.add(bonemerangOverlay);
 		textOverlays.add(crystalHollowOverlay);
 		textOverlays.add(slayerOverlay);
+		textOverlays.add(fuelBar);
 	}
 
 }

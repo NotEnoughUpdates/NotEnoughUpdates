@@ -17,18 +17,10 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.events;
+package io.github.moulberry.notenoughupdates.util;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.Event;
-
-public class NEUEvent extends Event {
-	public boolean post() {
-		MinecraftForge.EVENT_BUS.post(this);
-		return isCancelable() && isCanceled();
-	}
-
-	public void cancel() {
-		setCanceled(true);
+public class MathUtil {
+	public static boolean isDecimalPartApproximately(double fullValue, double expectedDecimalPart) {
+		return Math.abs(Math.abs(fullValue % 1) - expectedDecimalPart) < 0.01;
 	}
 }

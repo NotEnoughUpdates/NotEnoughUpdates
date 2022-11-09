@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
@@ -150,6 +151,10 @@ public abstract class MixinGuiContainer extends GuiScreen {
 				slot.xDisplayPosition,
 				slot.yDisplayPosition
 			)) {
+				ci.cancel();
+				return;
+			}
+			if (AbiphoneFavourites.getInstance().onRenderStack(stack)) {
 				ci.cancel();
 				return;
 			}
@@ -320,5 +325,10 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			);
 			ci.cancel();
 		}
+	}
+
+	@Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", ordinal = 1))
+	private void drawBackground(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+		AbiphoneFavourites.getInstance().onDrawBackground(this);
 	}
 }

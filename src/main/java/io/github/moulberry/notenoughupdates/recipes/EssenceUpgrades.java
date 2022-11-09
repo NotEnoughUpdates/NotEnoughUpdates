@@ -91,8 +91,8 @@ public class EssenceUpgrades implements NeuRecipe {
 	private final Map<Integer, TierUpgrade> tierUpgradeMap;
 	private final int amountOfTiers;
 	private int selectedTier;
-	private static final int outputX = 123;
-	private static final int outputY = 65;
+	private static final int outputX = 124;
+	private static final int outputY = 66;
 	private List<RecipeSlot> slots;
 	private GuiItemRecipe guiItemRecipe;
 
