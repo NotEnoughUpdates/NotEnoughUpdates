@@ -23,6 +23,7 @@
     "MixinGuiIngame",
     "MixinGuiInventory",
     "MixinGuiScreen",
+    "MixinInventoryBasic",
     "MixinInventoryEffectRenderer",
     "MixinInventoryPlayer",
     "MixinItemCameraTransforms",

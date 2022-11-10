@@ -287,4 +287,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean textFieldTweaksEnabled = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Abiphone Favourites",
+		desc = "Allows to set abiphone contacts as favourites, toggle between displaying all contacts or favourites only and deactivates the option to remove contacts at all."
+	)
+	@ConfigEditorBoolean
+	public boolean abiphoneFavourites = true;
+
 }

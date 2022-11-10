@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
@@ -516,5 +517,25 @@ public class RenderUtils {
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.popMatrix();
+	}
+
+	public static void highlightSlot(Slot slot, Color color) {
+		boolean lightingState = GL11.glIsEnabled(GL11.GL_LIGHTING);
+
+		GlStateManager.disableLighting();
+		GlStateManager.color(1f, 1f, 1f, 1f);
+
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(0f, 0f, 110 + Minecraft.getMinecraft().getRenderItem().zLevel);
+		Gui.drawRect(
+			slot.xDisplayPosition,
+			slot.yDisplayPosition,
+			slot.xDisplayPosition + 16,
+			slot.yDisplayPosition + 16,
+			color.getRGB()
+		);
+		GlStateManager.popMatrix();
+
+		if (lightingState) GlStateManager.enableLighting();
 	}
 }
