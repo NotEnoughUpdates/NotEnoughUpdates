@@ -560,6 +560,13 @@ public class NEUConfig extends Config {
 		@Expose
 		public int magicalPower = 0;
 
+
+		@Expose
+		public int powderGrindingElapsed = 0;
+
+		@Expose
+		public int blocksMined = 0;
+
 		@Expose
 		public int chestCount = 0;
 
@@ -571,6 +578,7 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public int gemstonePowderFound = 0;
+
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

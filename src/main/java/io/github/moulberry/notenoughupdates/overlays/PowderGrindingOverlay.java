@@ -223,6 +223,8 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	public void load() {
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return;
+		this.elapsed = profileSpecific.powderGrindingElapsed;
+		this.blocksMined = profileSpecific.blocksMined;
 		this.chestCount = profileSpecific.chestCount;
 		this.openedChestCount = profileSpecific.openedChestCount;
 		this.mithrilPowderFound = profileSpecific.mithrilPowderFound;
@@ -232,6 +234,8 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	public void save() {
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return;
+		profileSpecific.powderGrindingElapsed = this.elapsed;
+		profileSpecific.blocksMined = this.blocksMined;
 		profileSpecific.chestCount = this.chestCount;
 		profileSpecific.openedChestCount = this.openedChestCount;
 		profileSpecific.mithrilPowderFound = this.mithrilPowderFound;
@@ -239,10 +243,14 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	}
 
 	public void reset() {
+		this.isMining = false;
+		this.elapsed = 0;
+		this.blocksMined = 0;
 		this.chestCount = 0;
 		this.openedChestCount = 0;
 		this.mithrilPowderFound = 0;
 		this.gemstonePowderFound = 0;
+		this.lastCompact = -1;
 	}
 
 }
