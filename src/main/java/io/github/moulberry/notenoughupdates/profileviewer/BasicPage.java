@@ -888,7 +888,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
 								profile.getSoopyWeightLeaderboardPosition());
 						getInstance().tooltipToDisplay.add("");
-						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the weight leaderboard!");
+						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the soopy weight leaderboard!");
 						getInstance().tooltipToDisplay.add("");
 					}
 				}
