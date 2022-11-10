@@ -809,6 +809,9 @@ public class BasicPage extends GuiProfileViewerPage {
 			return;
 		}
 
+		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
+		String profileId = GuiProfileViewer.getProfileId();
+
 		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
 			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
 			Utils.showOutdatedRepoNotification();
@@ -822,55 +825,89 @@ public class BasicPage extends GuiProfileViewerPage {
 		SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
 		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, profileInfo);
 
-		Utils.drawStringCentered(
-			EnumChatFormatting.GREEN +
-				"Senither Weight: " +
-				EnumChatFormatting.GOLD +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
-			fr,
-			guiLeft + 63,
-			guiTop + 18,
-			true,
-			0
-		);
+		long weight = -2L;
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+			weight = profile.getSoopyWeightLeaderboardPosition();
+		}
 
-		int textWidth = fr.getStringWidth(
-			"Senither Weight: " +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
-		);
-		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
-			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
-				getInstance().tooltipToDisplay = new ArrayList<>();
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Skills: " +
-							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
-								.getSkillsWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Slayer: " +
-							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
-								.getSlayerWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Dungeons: " +
-							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(
-								roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
-							)
-					);
+		if (weight > 0) {
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN +
+					"Senither Weight: " +
+					EnumChatFormatting.GOLD +
+					GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
+				fr,
+				guiLeft + 63,
+				guiTop + 18,
+				true,
+				0
+			);
+
+			int textWidth = fr.getStringWidth(
+				"Senither Weight: " +
+					GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
+			);
+			if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
+				if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
+					getInstance().tooltipToDisplay = new ArrayList<>();
+					getInstance()
+						.tooltipToDisplay.add(
+							EnumChatFormatting.GREEN +
+								"Skills: " +
+								EnumChatFormatting.GOLD +
+								GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+									.getSkillsWeight()
+									.getWeightStruct()
+									.getRaw()))
+						);
+					getInstance()
+						.tooltipToDisplay.add(
+							EnumChatFormatting.GREEN +
+								"Slayer: " +
+								EnumChatFormatting.GOLD +
+								GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+									.getSlayerWeight()
+									.getWeightStruct()
+									.getRaw()))
+						);
+					getInstance()
+						.tooltipToDisplay.add(
+							EnumChatFormatting.GREEN +
+								"Dungeons: " +
+								EnumChatFormatting.GOLD +
+								GuiProfileViewer.numberFormat.format(
+									roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
+								)
+						);
+
+					if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+						&& profile.getSoopyWeightLeaderboardPosition() >= 0
+						&& profile.isProfileMaxSoopyNetworth(profileId)) {
+
+						String lbPosStr =
+							EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+								profile.getSoopyWeightLeaderboardPosition());
+						getInstance().tooltipToDisplay.add("");
+						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the weight leaderboard!");
+						getInstance().tooltipToDisplay.add("");
+					}
+				}
 			}
+		} else {
+			String stateStr = EnumChatFormatting.RED + "An error occured";
+			if (weight == -2) {
+				stateStr = EnumChatFormatting.YELLOW + "Loading...";
+			}
+
+			Utils.drawStringCentered(
+				EnumChatFormatting.GREEN +
+					"Senither Weight: " + stateStr,
+				fr,
+				guiLeft + 63,
+				guiTop + 18,
+				true,
+				0
+			);
 		}
 
 		Utils.drawStringCentered(

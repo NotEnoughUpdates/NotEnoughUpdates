@@ -655,6 +655,7 @@ public class ProfileViewer {
 		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
 		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?\\d+)");
 		private long soopyNetworthLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
+		private long soopyWeightLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 		private String latestProfile = null;
 		private JsonArray skyblockProfiles = null;
 		private JsonObject guildInformation = null;
@@ -784,7 +785,29 @@ public class ProfileViewer {
 			return soopyNetworthLeaderboardPosition;
 		}
 
+		public long getSoopyWeightLeaderboardPosition() {
+			if ("d0e05de76067454dbeaec6d19d886191".equals(uuid)) return 1;
+			return soopyWeightLeaderboardPosition;
+		}
+
 		public boolean isProfileMaxSoopyNetworth(String profileName) {
+			String highestProfileName = "";
+			long largestProfileNetworth = 0;
+
+			for (String pName : soopyNetworth.keySet()) {
+				if (soopyNetworth.get(pName) == null) continue;
+
+				long pNet = soopyNetworth.get(pName).totalWorth;
+				if (pNet < largestProfileNetworth) continue;
+
+				highestProfileName = pName;
+				largestProfileNetworth = pNet;
+			}
+
+			return highestProfileName.equals(profileName);
+		}
+
+		public boolean isProfileMaxSoopyNetworth(String profileName, int t) {
 			String highestProfileName = "";
 			long largestProfileNetworth = 0;
 
@@ -836,6 +859,27 @@ public class ProfileViewer {
 						return null;
 					}
 					soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+						"position").getAsLong();
+					return null;
+				});
+
+			soopyWeightLeaderboardPosition = -2; //loading
+			manager.apiUtils
+				.request()
+				.url("https://soopy.dev/api/v2/leaderboard/weight/user/" + this.uuid)
+				.requestJson()
+				.handle((jsonObject, throwable) -> {
+					if (throwable != null) throwable.printStackTrace();
+					if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
+						|| !jsonObject.has("data")
+						|| !jsonObject.get("data").getAsJsonObject().has("data")
+						|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+						//Something went wrong
+						//Set profile lb position to -3 to indicate that
+						soopyWeightLeaderboardPosition = -3; //error
+						return null;
+					}
+					soopyWeightLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
 						"position").getAsLong();
 					return null;
 				});
