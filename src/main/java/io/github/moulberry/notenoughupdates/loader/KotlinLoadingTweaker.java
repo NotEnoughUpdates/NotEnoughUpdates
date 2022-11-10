@@ -88,8 +88,11 @@ public class KotlinLoadingTweaker implements ITweaker {
 
 	public boolean areWeBundlingAKotlinVersionHigherThan(int[] x) {
 		for (int i = 0; ; i++) {
-			if (i >= x.length) return false;
-			if (i >= BUNDLED_KOTLIN_VERSION.length) return true;
+			boolean doWeHaveMoreVersionIdsLeft = i <= BUNDLED_KOTLIN_VERSION.length;
+			boolean doTheyHaveMoreVersionIdsLeft = i <= x.length;
+			if (doWeHaveMoreVersionIdsLeft && !doTheyHaveMoreVersionIdsLeft) return false;
+			if (doTheyHaveMoreVersionIdsLeft && !doWeHaveMoreVersionIdsLeft) return true;
+			if (!doTheyHaveMoreVersionIdsLeft) return true;
 			if (x[i] > BUNDLED_KOTLIN_VERSION[i]) return false;
 		}
 	}
