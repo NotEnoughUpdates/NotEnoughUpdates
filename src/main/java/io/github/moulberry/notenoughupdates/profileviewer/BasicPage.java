@@ -306,7 +306,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
 							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
-							&& profile.isProfileMaxSoopyNetworth(profileId)) {
+							&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
 
 							String lbPosStr =
 								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
@@ -882,7 +882,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 					if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
 						&& profile.getSoopyWeightLeaderboardPosition() >= 0
-						&& profile.isProfileMaxSoopyNetworth(profileId)) {
+						&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
 
 						String lbPosStr =
 							EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(

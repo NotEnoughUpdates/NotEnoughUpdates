@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
@@ -35,6 +36,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import org.luaj.vm2.ast.Str;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -790,18 +792,22 @@ public class ProfileViewer {
 			return soopyWeightLeaderboardPosition;
 		}
 
-		public boolean isProfileMaxSoopyNetworth(String profileName) {
+		public boolean isProfileMaxSoopyWeight(ProfileViewer.Profile profile, String profileName) {
 			String highestProfileName = "";
-			long largestProfileNetworth = 0;
+			double largestProfileWeight = 0;
 
-			for (String pName : soopyNetworth.keySet()) {
-				if (soopyNetworth.get(pName) == null) continue;
+			for (int yIndex = 0; yIndex < profileNames.size(); yIndex++) {
+				String otherProfileId = profileNames.get(yIndex);
+				Utils.addChatMessage(otherProfileId);
+				Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(otherProfileId);
+				if (skyblockInfo == null) continue;
+				SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
+				double weightValue = senitherWeight.getTotalWeight().getRaw();
 
-				long pNet = soopyNetworth.get(pName).totalWorth;
-				if (pNet < largestProfileNetworth) continue;
-
-				highestProfileName = pName;
-				largestProfileNetworth = pNet;
+				if (weightValue > largestProfileWeight) {
+					largestProfileWeight = weightValue;
+					highestProfileName = otherProfileId;
+				}
 			}
 
 			return highestProfileName.equals(profileName);
