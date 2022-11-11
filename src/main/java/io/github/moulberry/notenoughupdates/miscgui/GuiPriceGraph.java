@@ -71,7 +71,7 @@ public class GuiPriceGraph extends GuiScreen {
 	private double highestValue;
 	private long firstTime;
 	private long lastTime;
-	private Double lowestValue = null;
+	private double lowestValue;
 	private String itemName;
 	private final String itemId;
 	private int guiLeft;
@@ -149,7 +149,7 @@ public class GuiPriceGraph extends GuiScreen {
 				guiLeft + 166, guiTop + 116, false, 0xffffff00
 			);
 		else if (
-			itemData == null || itemData.get() == null || itemData.get().size() <= 1 || lowestValue == null)
+			itemData == null || itemData.get() == null || itemData.get().size() <= 1)
 			Utils.drawStringCentered("No data found.", Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 166, guiTop + 116, false, 0xffff0000
 			);
@@ -251,7 +251,7 @@ public class GuiPriceGraph extends GuiScreen {
 			}
 			if (lowestDist != null && !customSelecting) {
 				double price = itemData.isBz() ? itemData.bz.get(lowestDistTime).b : itemData.ah.get(lowestDistTime);
-				Float price2 = itemData.isBz() ? itemData.bz.get(lowestDistTime).s : null;
+				Double price2 = itemData.isBz() ? itemData.bz.get(lowestDistTime).s : null;
 				int xPos = (int) map(lowestDistTime, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
 				int yPos = (int) map(price, highestValue + 10d, lowestValue - 10d, guiTop + 35, guiTop + 198);
 				int yPos2 = price2 != null
@@ -396,23 +396,15 @@ public class GuiPriceGraph extends GuiScreen {
 				this.itemData = trimData(itemData);
 				firstTime = this.itemData.get().firstKey();
 				lastTime = this.itemData.get().lastKey();
-				highestValue = 0;
-				lowestValue = null;
+				highestValue = this.itemData.isBz() ? this.itemData.bz.get(firstTime).b : this.itemData.ah.get(firstTime);
+				lowestValue = this.itemData.isBz() ? this.itemData.bz.get(firstTime).b : this.itemData.ah.get(firstTime);
 				for (long key : this.itemData.get().keySet()) {
 					double value1 = this.itemData.isBz() ? this.itemData.bz.get(key).b : this.itemData.ah.get(key);
-					Float value2 = this.itemData.isBz() ? this.itemData.bz.get(key).s : null;
-					if (value1 > highestValue) {
-						highestValue = value1;
-					}
-					if (value2 != null && value2 > highestValue) {
-						highestValue = value2;
-					}
-					if (lowestValue == null || value1 < lowestValue) {
-						lowestValue = value1;
-					}
-					if (value2 != null && value2 < lowestValue) {
-						lowestValue = Double.valueOf(value2);
-					}
+					Double value2 = this.itemData.isBz() ? this.itemData.bz.get(key).s : null;
+					if (value1 > highestValue) highestValue = value1;
+					if (value2 != null && value2 > highestValue) highestValue = value2;
+					if (value1 < lowestValue) lowestValue = value1;
+					if (value2 != null && value2 < lowestValue) lowestValue = value2;
 				}
 			}
 			loaded = true;
@@ -616,10 +608,10 @@ class ItemData {
 }
 
 class BzData {
-	float b;
-	float s;
+	double b;
+	double s;
 
-	public BzData(float b, float s) {
+	public BzData(double b, double s) {
 		this.b = b;
 		this.s = s;
 	}

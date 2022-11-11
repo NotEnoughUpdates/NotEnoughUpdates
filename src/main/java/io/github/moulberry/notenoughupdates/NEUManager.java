@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.recipes.CraftingOverlay;
 import io.github.moulberry.notenoughupdates.recipes.CraftingRecipe;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
+import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
@@ -113,12 +114,16 @@ public class NEUManager {
 		new KeyBinding("Show usages for item", Keyboard.KEY_U, "NotEnoughUpdates");
 	public final KeyBinding keybindViewRecipe =
 		new KeyBinding("Show recipe for item", Keyboard.KEY_R, "NotEnoughUpdates");
+	public final KeyBinding keybindPreviousRecipe =
+		new KeyBinding("Show previous recipe", Keyboard.KEY_LBRACKET, "NotEnoughUpdates");
+	public final KeyBinding keybindNextRecipe =
+		new KeyBinding("Show next recipe", Keyboard.KEY_RBRACKET, "NotEnoughUpdates");
 	public final KeyBinding keybindToggleDisplay = new KeyBinding("Toggle NEU overlay", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindClosePanes = new KeyBinding("Close NEU panes", 0, "NotEnoughUpdates");
 	public final KeyBinding keybindItemSelect = new KeyBinding("Select Item", -98 /*middle*/, "NotEnoughUpdates");
 	public final KeyBinding[] keybinds = new KeyBinding[]{
-		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe,
-		keybindToggleDisplay, keybindClosePanes, keybindItemSelect
+		keybindGive, keybindFavourite, keybindViewUsages, keybindViewRecipe, keybindPreviousRecipe,
+		keybindNextRecipe, keybindToggleDisplay, keybindClosePanes, keybindItemSelect
 	};
 
 	public String viewItemAttemptID = null;
@@ -883,8 +888,11 @@ public class NEUManager {
 				break;
 			case "viewpotion":
 				neu.sendChatMessage("/viewpotion " + internalName.split(";")[0].toLowerCase(Locale.ROOT));
+				break;
+			default:
+				displayGuiItemRecipe(internalName);
 		}
-		displayGuiItemRecipe(internalName);
+
 	}
 
 	public void showRecipe(String internalName) {
@@ -988,6 +996,7 @@ public class NEUManager {
 		List<NeuRecipe> usages = getAvailableUsagesFor(internalName);
 		if (usages.isEmpty()) return false;
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(usages, this));
+		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
 	}
 
@@ -996,6 +1005,7 @@ public class NEUManager {
 		List<NeuRecipe> recipes = getAvailableRecipesFor(internalName);
 		if (recipes.isEmpty()) return false;
 		NotEnoughUpdates.INSTANCE.openGui = (new GuiItemRecipe(recipes, this));
+		RecipeHistory.add(NotEnoughUpdates.INSTANCE.openGui);
 		return true;
 	}
 
@@ -1575,7 +1585,7 @@ public class NEUManager {
 					"§cRepository not fully reloaded.",
 					"§cThere was an error reloading your repository.",
 					"§cThis might be caused by an outdated version of neu",
-					"§c(or by not using the dangerous repository if you are using a prerelease of neu).",
+					"§c(or by not using the prerelease repository if you are using a prerelease of neu).",
 					"§aYour repository will still work, but is in a suboptimal state.",
 					"§eJoin §bdiscord.gg/moulberry §efor help."
 				);
@@ -1591,6 +1601,7 @@ public class NEUManager {
 					recipes.clear();
 					recipesMap.clear();
 					usagesMap.clear();
+					itemMap.clear();
 
 					File[] itemFiles = new File(repoLocation, "items").listFiles();
 					if (itemFiles != null) {

@@ -23,10 +23,12 @@ import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
+import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
@@ -72,6 +74,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	@Inject(method = "drawSlot", at = @At("RETURN"))
 	public void drawSlotRet(Slot slotIn, CallbackInfo ci) {
 		SlotLocking.getInstance().drawSlot(slotIn);
+		DungeonNpcProfitOverlay.onDrawSlot(slotIn);
 	}
 
 	@Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
@@ -148,6 +151,10 @@ public abstract class MixinGuiContainer extends GuiScreen {
 				slot.xDisplayPosition,
 				slot.yDisplayPosition
 			)) {
+				ci.cancel();
+				return;
+			}
+			if (AbiphoneFavourites.getInstance().onRenderStack(stack)) {
 				ci.cancel();
 				return;
 			}
@@ -318,5 +325,10 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			);
 			ci.cancel();
 		}
+	}
+
+	@Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", ordinal = 1))
+	private void drawBackground(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+		AbiphoneFavourites.getInstance().onDrawBackground(this);
 	}
 }

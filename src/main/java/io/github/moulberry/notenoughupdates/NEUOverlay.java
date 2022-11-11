@@ -1035,14 +1035,30 @@ public class NEUOverlay extends Gui {
 			return false;
 		}
 
-		if ((Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			displayInformationPane(new DevInfoPane(this, manager));
+		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && (Keyboard.isKeyDown(Keyboard.KEY_Y) && !Keyboard.isKeyDown(
+			Keyboard.KEY_LCONTROL)) && !searchBarHasFocus) {
+			DevInfoPane devInfoPane = new DevInfoPane(this, manager);
+			if (devInfoPane.getText().isEmpty()) {
+				Utils.addChatMessage(EnumChatFormatting.AQUA + "[NEU] No missing items!");
+			} else {
+				displayInformationPane(devInfoPane);
+			}
 		}
 
 		if (Keyboard.getEventKeyState()) {
 			if (!NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
 				searchBarHasFocus = false;
 			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F) &&
+				NotEnoughUpdates.INSTANCE.config.toolbar.searchBar && NotEnoughUpdates.INSTANCE.config.toolbar.ctrlF) {
+				searchBarHasFocus = !searchBarHasFocus;
+				if (searchBarHasFocus) {
+					itemPaneOpen = true;
+				}
+				return true;
+			}
+
 			if (searchBarHasFocus) {
 				if (keyPressed == 1) {
 					searchBarHasFocus = false;
@@ -1219,8 +1235,8 @@ public class NEUOverlay extends Gui {
 				String internal1 = o1.get("internalname").getAsString();
 				String internal2 = o2.get("internalname").getAsString();
 
-				double cost1 = manager.auctionManager.getBazaarOrBin(internal1);
-				double cost2 = manager.auctionManager.getBazaarOrBin(internal2);
+				double cost1 = manager.auctionManager.getBazaarOrBin(internal1, false);
+				double cost2 = manager.auctionManager.getBazaarOrBin(internal2, false);
 
 				if (cost1 < cost2) return mult;
 				if (cost1 > cost2) return -mult;

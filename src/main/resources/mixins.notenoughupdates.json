@@ -23,6 +23,7 @@
     "MixinGuiIngame",
     "MixinGuiInventory",
     "MixinGuiScreen",
+    "MixinInventoryBasic",
     "MixinInventoryEffectRenderer",
     "MixinInventoryPlayer",
     "MixinItemCameraTransforms",
@@ -51,6 +52,7 @@
     "AccessorGuiContainer",
     "AccessorGuiEditSign",
     "AccessorMinecraft",
+    "MixinEntityChargedCreeper",
     "MixinGuiEditSign",
     "MixinGuiTextField"
   ]

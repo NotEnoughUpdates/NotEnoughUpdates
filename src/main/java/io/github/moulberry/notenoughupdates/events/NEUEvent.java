@@ -27,4 +27,8 @@ public class NEUEvent extends Event {
 		MinecraftForge.EVENT_BUS.post(this);
 		return isCancelable() && isCanceled();
 	}
+
+	public void cancel() {
+		setCanceled(true);
+	}
 }

@@ -43,6 +43,8 @@ public abstract class TextOverlay {
 
 	public boolean shouldUpdateFrequent = false;
 
+	public boolean shouldRenderInGuiEditor = true;
+
 	private static final int PADDING_X = 5;
 	private static final int PADDING_Y = 5;
 
@@ -125,6 +127,10 @@ public abstract class TextOverlay {
 		int y = position.getAbsY(scaledResolution, overlayHeight);
 
 		return new Vector2f(x, y);
+	}
+
+	public Position getPosition() {
+		return position;
 	}
 
 	protected void renderLine(String line, Vector2f position, boolean dummy) {

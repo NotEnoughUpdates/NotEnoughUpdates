@@ -538,6 +538,8 @@ public class GuiEnchantColour extends GuiScreen {
 
 			if (base64.length() <= sharePrefix.length()) return false;
 
+			base64 = base64.trim();
+
 			try {
 				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
 			} catch (IllegalArgumentException e) {
@@ -655,6 +657,8 @@ public class GuiEnchantColour extends GuiScreen {
 				}
 
 				if (base64.length() <= sharePrefix.length()) return;
+
+				base64 = base64.trim();
 
 				String jsonString;
 				try {

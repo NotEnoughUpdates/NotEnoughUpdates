@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
@@ -688,6 +687,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 
 			if (base64.length() <= sharePrefix.length()) return false;
 
+			base64 = base64.trim();
+
 			try {
 				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
 			} catch (IllegalArgumentException e) {
@@ -816,6 +817,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 				}
 
 				if (base64.length() <= sharePrefix.length()) return;
+
+				base64 = base64.trim();
 
 				String jsonString;
 				try {

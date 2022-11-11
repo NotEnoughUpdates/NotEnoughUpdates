@@ -96,7 +96,7 @@ public class Notifications {
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 1)
-	public boolean enderNodeAccordion = false;
+	public boolean enderNodeAccordion = true;
 
 	@Expose
 	@ConfigOption(

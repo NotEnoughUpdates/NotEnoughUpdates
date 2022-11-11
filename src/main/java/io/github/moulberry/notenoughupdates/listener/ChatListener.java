@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnderNodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TimersOverlay;
@@ -42,6 +43,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,7 +127,8 @@ public class ChatListener {
 			String startsWith = null;
 			boolean partyOrGuildChat = false;
 
-			if (chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
+			List<IChatComponent> siblings = chatComponent.getSiblings();
+			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
 				partyOrGuildChat = true;
 			} else {
@@ -308,8 +311,10 @@ public class ChatListener {
 			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
 			OverlayManager.powderGrindingOverlay.message(unformatted);
 
-		if (unformatted.equals("ENDER NODE! You found Endermite Nest!")) {
-			EnderNodes.dispalyEndermiteNotif();
-		}
+		if (unformatted.startsWith("ENDER NODE!"))
+			EnderNodeHighlighter.getInstance().highlightedBlocks.clear();
+
+		if (unformatted.equals("ENDER NODE! You found Endermite Nest!"))
+			EnderNodes.displayEndermiteNotif();
 	}
 }
