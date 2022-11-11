@@ -372,10 +372,12 @@ public class TimersOverlay extends TextTabOverlay {
 									break;
 								case "Minutes":
 								case "Minute":
+								case "m":
 									hidden.cookieBuffRemaining += val * 60 * 1000;
 									break;
 								case "Seconds":
 								case "Second":
+								case "s":
 									hidden.cookieBuffRemaining += val * 1000;
 									break;
 							}
