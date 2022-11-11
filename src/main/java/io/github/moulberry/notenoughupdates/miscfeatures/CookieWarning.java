@@ -85,18 +85,24 @@ public class CookieWarning {
 						long val = Integer.parseInt(number);
 						switch (unit) {
 							case "Years":
+							case "Year":
 								minutes += val * 525600;
 								break;
 							case "Months":
+							case "Month":
 								minutes += val * 43200;
 								break;
 							case "Days":
+							case "Day":
 								minutes += val * 1440;
 								break;
 							case "Hours":
+							case "Hour":
 								minutes += val * 60;
 								break;
 							case "Minutes":
+							case "Minute":
+							case "m":
 								minutes += val;
 								break;
 						} // ignore seconds
