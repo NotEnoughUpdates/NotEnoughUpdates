@@ -889,7 +889,6 @@ public class BasicPage extends GuiProfileViewerPage {
 								profile.getSoopyWeightLeaderboardPosition());
 						getInstance().tooltipToDisplay.add("");
 						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the soopy's weight leaderboard!");
-						getInstance().tooltipToDisplay.add("");
 					}
 				}
 			}
