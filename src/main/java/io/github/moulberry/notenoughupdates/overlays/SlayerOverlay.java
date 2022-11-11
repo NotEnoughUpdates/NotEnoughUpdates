@@ -66,11 +66,15 @@ public class SlayerOverlay extends TextOverlay {
 	}
 
 	private boolean shouldUpdate() {
-		if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.onlyShowWhenRelevant || SBInfo.getInstance().stranded)
+		if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.onlyShowWhenRelevant || SBInfo.getInstance().stranded) {
 			return true;
-		//Ignore if on stranded
+		}
+
 		String scoreboardLocation = SBInfo.getInstance().location;
 		String locrawLocation = SBInfo.getInstance().getLocation();
+		if ("None".equals(scoreboardLocation)) {
+			scoreboardLocation = SBInfo.getInstance().getLastScoreboardLocation();
+		}
 		//In case something is broken still show the overlay
 		if (locrawLocation == null || scoreboardLocation == null) return true;
 		switch (SBInfo.getInstance().slayer) {
