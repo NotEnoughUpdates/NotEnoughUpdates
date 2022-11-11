@@ -798,7 +798,6 @@ public class ProfileViewer {
 
 			for (int yIndex = 0; yIndex < profileNames.size(); yIndex++) {
 				String otherProfileId = profileNames.get(yIndex);
-				Utils.addChatMessage(otherProfileId);
 				Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(otherProfileId);
 				if (skyblockInfo == null) continue;
 				SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
