@@ -168,6 +168,7 @@ val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
 
 tasks.shadowJar {
 		archiveClassifier.set("dep-dev")
+		archiveBaseName.set("NotEnoughUpdates")
 		configurations = listOf(shadowImplementation, shadowApi)
 		exclude("**/module-info.class", "LICENSE.txt")
 		dependencies {
