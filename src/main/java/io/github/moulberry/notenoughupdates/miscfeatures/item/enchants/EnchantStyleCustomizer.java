@@ -57,11 +57,12 @@ public class EnchantStyleCustomizer {
 					|| levelText.isEmpty() || enchantName.isEmpty()) continue;
 				String cleanEnchantName = Utils.cleanColour(enchantName);
 				if (cleanEnchantName.startsWith(" ")) continue;
-				if (alreadyReplacedEnchants.contains(cleanEnchantName)) continue;
-				alreadyReplacedEnchants.add(cleanEnchantName);
 
 				var level = Utils.parseIntOrRomanNumeral(levelText);
 				if (!enchantMatcher.doesLevelMatch(level)) continue;
+
+				if (alreadyReplacedEnchants.contains(cleanEnchantName)) continue;
+				alreadyReplacedEnchants.add(cleanEnchantName);
 
 				var startMatch = matcher.start();
 				var endLevel = matcher.end(EnchantMatcher.GROUP_LEVEL);
