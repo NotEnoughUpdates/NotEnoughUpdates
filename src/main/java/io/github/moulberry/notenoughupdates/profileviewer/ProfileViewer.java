@@ -807,23 +807,6 @@ public class ProfileViewer {
 			return highestProfileName.equals(profileName);
 		}
 
-		public boolean isProfileMaxSoopyNetworth(String profileName, int t) {
-			String highestProfileName = "";
-			long largestProfileNetworth = 0;
-
-			for (String pName : soopyNetworth.keySet()) {
-				if (soopyNetworth.get(pName) == null) continue;
-
-				long pNet = soopyNetworth.get(pName).totalWorth;
-				if (pNet < largestProfileNetworth) continue;
-
-				highestProfileName = pName;
-				largestProfileNetworth = pNet;
-			}
-
-			return highestProfileName.equals(profileName);
-		}
-
 		/**
 		 * Returns SoopyNetworthData with total = -1 if error
 		 * Returns null if still loading
