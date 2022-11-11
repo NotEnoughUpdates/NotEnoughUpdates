@@ -53,7 +53,7 @@ import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([0-9]*?:?[0-9]*?:?[0-9]*)\u00a7r");
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|m|s) ?([1-5][0-9]|[0-9])?(s)?\u00a7r");
 
 	public TimersOverlay(
 		Position position,
@@ -307,27 +307,33 @@ public class TimersOverlay extends TextTabOverlay {
 				Matcher activeEffectsMatcher = PATTERN_ACTIVE_EFFECTS.matcher(line);
 				if (activeEffectsMatcher.matches()) {
 					foundGodPotText = true;
-					String[] godpotRemaingTimeUnformatted = activeEffectsMatcher.group(1).split(":");
 					long godPotDuration = 0;
 					try {
-						int i = 0;
-						if (godpotRemaingTimeUnformatted.length == 4) {
-							godPotDuration =
-								godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 24 * 60 * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 3) {
-							godPotDuration =
-								godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 60 * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 2) {
-							godPotDuration = godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 1) {
-							godPotDuration = godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 1000;
-						}
+						long godpotRemainingTime;
+							for (int i = 1; i < activeEffectsMatcher.groupCount(); i += 2) {
+								godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
+								String godpotRemainingTimeType = activeEffectsMatcher.group(i+1);
+								switch (godpotRemainingTimeType) {
+									case "Days":
+									case "Day":
+										godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
+										break;
+									case "Hours":
+									case "Hour":
+										godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
+										break;
+									case "Minutes":
+									case "Minute":
+									case "m":
+										godPotDuration += godpotRemainingTime * 60 * 1000;
+										break;
+									case "Seconds":
+									case "Second":
+									case "s":
+										godPotDuration += godpotRemainingTime * 1000;
+										break;
+								}
+							}
 					} catch (Exception ignored) {
 					}
 
@@ -366,10 +372,12 @@ public class TimersOverlay extends TextTabOverlay {
 									break;
 								case "Minutes":
 								case "Minute":
+								case "m":
 									hidden.cookieBuffRemaining += val * 60 * 1000;
 									break;
 								case "Seconds":
 								case "Second":
+								case "s":
 									hidden.cookieBuffRemaining += val * 1000;
 									break;
 							}
