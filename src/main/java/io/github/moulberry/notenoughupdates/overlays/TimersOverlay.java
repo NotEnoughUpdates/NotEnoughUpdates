@@ -231,6 +231,8 @@ public class TimersOverlay extends TextTabOverlay {
 		super.renderLine(line, position, dummy);
 	}
 
+	boolean hasErrorMessage = false;
+
 	@Override
 	public void update() {
 
@@ -334,7 +336,13 @@ public class TimersOverlay extends TextTabOverlay {
 										break;
 								}
 							}
-					} catch (Exception ignored) {
+					} catch (Exception e) {
+						e.printStackTrace();
+						if (!hasErrorMessage) {
+							Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your god pot timer");
+							hasErrorMessage = true;
+						}
+						break;
 					}
 
 					hidden.godPotionDuration = godPotDuration;
@@ -382,7 +390,12 @@ public class TimersOverlay extends TextTabOverlay {
 									break;
 							}
 						} catch (NumberFormatException e) {
+							e.printStackTrace();
 							hidden.cookieBuffRemaining = 0;
+							if (!hasErrorMessage) {
+								Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
+								hasErrorMessage = true;
+							}
 							break;
 						}
 					}
