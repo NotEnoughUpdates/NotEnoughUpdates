@@ -31,29 +31,55 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import static io.github.moulberry.notenoughupdates.util.MathUtil.isDecimalPartApproximately;
+import static io.github.moulberry.notenoughupdates.util.MathUtil.basicallyEqual;
 
-public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
+public class EnderNodeHighlighter extends GenericBlockHighlighter {
+
+	private static final EnderNodeHighlighter INSTANCE = new EnderNodeHighlighter();
+
+	public static EnderNodeHighlighter getInstance()
+	{
+		return INSTANCE;
+	}
+
 
 	@SubscribeEvent
 	public void onParticleSpawn(SpawnParticleEvent event) {
 		if (!isEnabled()) return;
-		if (event.getParticleTypes() == EnumParticleTypes.SPELL_MOB) {
-			if (
-				isDecimalPartApproximately(event.getXCoord(), 0.5)
-					&& isDecimalPartApproximately(event.getYCoord(), 0.1)
-					&& isDecimalPartApproximately(event.getZCoord(), 0.5)
-			) {
-				tryRegisterInterest(event.getXCoord(), event.getYCoord(), event.getZCoord());
+		if (event.getParticleTypes() == EnumParticleTypes.PORTAL) {
+			double x = event.getXCoord();
+			double y = event.getYCoord();
+			double z = event.getZCoord();
+
+			boolean xZero = basicallyEqual((x - 0.5) % 1, 0, 0.2);
+			boolean yZero = basicallyEqual((y - 0.5) % 1, 0, 0.2);
+			boolean zZero = basicallyEqual((z - 0.5) % 1, 0, 0.2);
+
+			if (Math.abs(y % 1) == 0.25 && xZero && zZero) {
+				if (tryRegisterInterest(x, y - 1, z)) return;
+			}
+			if (Math.abs(y % 1) == 0.75 && xZero && zZero) {
+				if (tryRegisterInterest(x, y + 1, z)) return;
+			}
+			if (Math.abs(x % 1) == 0.25 && yZero && zZero) {
+				if (tryRegisterInterest(x + 1, y, z)) return;
+			}
+			if (Math.abs(x % 1) == 0.75 && yZero && zZero) {
+				if (tryRegisterInterest(x - 1, y, z)) return;
+			}
+			if (Math.abs(z % 1) == 0.25 && yZero && xZero) {
+				if (tryRegisterInterest(x, y, z + 1)) return;
+			}
+			if (Math.abs(z % 1) == 0.75 && yZero && xZero) {
+				tryRegisterInterest(x, y, z - 1);
 			}
 		}
 	}
 
-
 	@Override
 	protected boolean isEnabled() {
-		return "farming_1".equals(SBInfo.getInstance().getLocation())
-			&& NotEnoughUpdates.INSTANCE.config.world.highlightGlowingMushrooms;
+		return "combat_3".equals(SBInfo.getInstance().getLocation())
+			&& NotEnoughUpdates.INSTANCE.config.world.highlightEnderNodes;
 	}
 
 	@Override
@@ -61,12 +87,11 @@ public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 		World w = Minecraft.getMinecraft().theWorld;
 		if (w == null) return false;
 		Block b = w.getBlockState(key).getBlock();
-		return b == Blocks.brown_mushroom || b == Blocks.red_mushroom;
+		return b == Blocks.end_stone || b == Blocks.obsidian;
 	}
 
 	@Override
 	protected int getColor(BlockPos blockPos) {
-		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.glowingMushroomColor);
+		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.enderNodeColor);
 	}
-
 }
