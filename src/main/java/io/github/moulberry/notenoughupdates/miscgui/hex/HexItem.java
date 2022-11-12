@@ -148,6 +148,39 @@ public class HexItem {
 			case "COLOSSAL_EXPERIENCE_BOTTLE":
 				this.itemType = ItemType.COLOSSAL_EXPERIENCE_BOTTLE;
 				break;
+			case "FEROCITY_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_FEROCITY;
+				break;
+			case "SEA_CREATURE_CHANCE_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_SCC;
+				break;
+			case "ATTACK_SPEED_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_ATTACK_SPEED;
+				break;
+			case "SPEED_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_SPEED;
+				break;
+			case "INTELLIGENCE_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_INTELLIGENCE;
+				break;
+			case "CRITICAL_DAMAGE_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_CRIT_DAMAGE;
+				break;
+			case "STRENGTH_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_STRENGTH;
+				break;
+			case "DEFENSE_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_DEFENSE;
+				break;
+			case "HEALTH_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_HEALTH;
+				break;
+			case "MAGIC_FIND_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_MAGIC_FIND;
+				break;
+			case "CRITICAL_CHANCE_ENRICHMENT":
+				this.itemType = ItemType.ENRICHMENT_CRIT_CHANCE;
+				break;
 		}
 		if (this.itemType == ItemType.UNKNOWN) {
 			for (String string : displayLore) {
@@ -260,5 +293,14 @@ public class HexItem {
 			itemType == ItemType.SAPPHIRE_GEMSTONE || itemType == ItemType.JASPER_GEMSTONE ||
 			itemType == ItemType.JADE_GEMSTONE || itemType == ItemType.AMBER_GEMSTONE ||
 			itemType == ItemType.OPAL_GEMSTONE || itemType == ItemType.TOPAZ_GEMSTONE;
+	}
+
+	public boolean isEnrichment() {
+		return itemType == ItemType.ENRICHMENT_DEFENSE || itemType == ItemType.ENRICHMENT_SCC ||
+			itemType == ItemType.ENRICHMENT_HEALTH || itemType == ItemType.ENRICHMENT_STRENGTH ||
+			itemType == ItemType.ENRICHMENT_SPEED || itemType == ItemType.ENRICHMENT_CRIT_DAMAGE ||
+			itemType == ItemType.ENRICHMENT_CRIT_CHANCE || itemType == ItemType.ENRICHMENT_ATTACK_SPEED ||
+			itemType == ItemType.ENRICHMENT_INTELLIGENCE || itemType == ItemType.ENRICHMENT_MAGIC_FIND ||
+			itemType == ItemType.ENRICHMENT_FEROCITY;
 	}
 }
