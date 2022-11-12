@@ -312,31 +312,31 @@ public class TimersOverlay extends TextTabOverlay {
 					long godPotDuration = 0;
 					try {
 						long godpotRemainingTime;
-							for (int i = 1; i < activeEffectsMatcher.groupCount(); i += 2) {
-								godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
-								String godpotRemainingTimeType = activeEffectsMatcher.group(i+1);
-								switch (godpotRemainingTimeType) {
-									case "Days":
-									case "Day":
-										godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
-										break;
-									case "Hours":
-									case "Hour":
-									case "h":
-										godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
-										break;
-									case "Minutes":
-									case "Minute":
-									case "m":
-										godPotDuration += godpotRemainingTime * 60 * 1000;
-										break;
-									case "Seconds":
-									case "Second":
-									case "s":
-										godPotDuration += godpotRemainingTime * 1000;
-										break;
-								}
+						for (int i = 1; i < activeEffectsMatcher.groupCount(); i += 2) {
+							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
+							String godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
+							switch (godpotRemainingTimeType) {
+								case "Days":
+								case "Day":
+									godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
+									break;
+								case "Hours":
+								case "Hour":
+								case "h":
+									godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
+									break;
+								case "Minutes":
+								case "Minute":
+								case "m":
+									godPotDuration += godpotRemainingTime * 60 * 1000;
+									break;
+								case "Seconds":
+								case "Second":
+								case "s":
+									godPotDuration += godpotRemainingTime * 1000;
+									break;
 							}
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 						if (!hasErrorMessage) {
