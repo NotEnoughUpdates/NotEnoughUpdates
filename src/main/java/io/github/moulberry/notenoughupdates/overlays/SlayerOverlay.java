@@ -218,7 +218,7 @@ public class SlayerOverlay extends TextOverlay {
 
 		untilNextSlayerLevel = xpToLevelUp - slayerIntXP;
 		if (xpPerBoss != 0 && untilNextSlayerLevel != 0 && xpToLevelUp != 0) {
-			bossesUntilNextLevel = (xpToLevelUp - untilNextSlayerLevel) / xpPerBoss;
+			bossesUntilNextLevel = (int) Math.ceil((xpToLevelUp - untilNextSlayerLevel) / xpPerBoss);
 		} else {
 			bossesUntilNextLevel = 0;
 		}
