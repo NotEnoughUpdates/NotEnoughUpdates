@@ -47,6 +47,7 @@ public class SlayerOverlay extends TextOverlay {
 
 	private static String slayerEXP = "0";
 	private static int slayerIntXP;
+	private static int differenceFromLastXP = 0;
 	private static int untilNextSlayerLevel;
 	private static int xpToLevelUp;
 	private static boolean useSmallXpNext = true;
@@ -118,9 +119,10 @@ public class SlayerOverlay extends TextOverlay {
 			isSlayerNine = true;
 		} else if (!slayerXp.equals("0")) {
 			slayerEXP = slayerXp.replace(",", "");
-			int difference = slayerIntXP-Integer.parseInt(slayerEXP);
-			if(difference != 0){
-				switch(difference){
+
+			differenceFromLastXP = slayerIntXP-Integer.parseInt(slayerEXP);
+			if(differenceFromLastXP != 0){
+				switch(differenceFromLastXP){
 					case 1875:
 					case 625:
 					case 125:
@@ -132,6 +134,7 @@ public class SlayerOverlay extends TextOverlay {
 						slayerXPBuffActive = false;
 				}
 			}
+
 			slayerIntXP = Integer.parseInt(slayerEXP);
 			isSlayerNine = false;
 		} else {
@@ -208,9 +211,11 @@ public class SlayerOverlay extends TextOverlay {
 		} else {
 			xpPerBoss = 0;
 		}
+
 		if(slayerXPBuffActive){
 			xpPerBoss *= 1.25;
 		}
+		
 		untilNextSlayerLevel = xpToLevelUp - slayerIntXP;
 		if (xpPerBoss != 0 && untilNextSlayerLevel != 0 && xpToLevelUp != 0) {
 			bossesUntilNextLevel = (xpToLevelUp - untilNextSlayerLevel) / xpPerBoss;
