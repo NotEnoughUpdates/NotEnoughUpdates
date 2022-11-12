@@ -73,6 +73,15 @@ public class Toolbar {
 
 	@Expose
 	@ConfigOption(
+		name = "CTRL+F keybind",
+		desc = "Change the focus of the search bar when pressing CTRL + F"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean ctrlF = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Search Bar Width",
 		desc = "Change the width of the search bar"
 	)
