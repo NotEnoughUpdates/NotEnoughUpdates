@@ -125,6 +125,22 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 			return COMMON;
 		}
+
+		public PetInfoOverlay.Rarity nextRarity() {
+			switch (this) {
+				case COMMON:
+					return PetInfoOverlay.Rarity.UNCOMMON;
+				case UNCOMMON:
+					return PetInfoOverlay.Rarity.RARE;
+				case RARE:
+					return PetInfoOverlay.Rarity.EPIC;
+				case EPIC:
+					return PetInfoOverlay.Rarity.LEGENDARY;
+				case LEGENDARY:
+					return PetInfoOverlay.Rarity.MYTHIC;
+			}
+			return null;
+		}
 	}
 
 	private static final HashMap<Integer, Integer> removeMap = new HashMap<>();

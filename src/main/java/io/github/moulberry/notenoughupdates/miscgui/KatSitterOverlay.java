@@ -66,7 +66,7 @@ public class KatSitterOverlay {
 		double xp = petInfo.get("exp").getAsDouble();
 		PetInfoOverlay.Rarity rarity = PetInfoOverlay.Rarity.valueOf(petInfo.get("tier").getAsString());
 		Slot katSlot = container.getSlot(22);
-		PetInfoOverlay.Rarity upgradedRarity = nextRarity(rarity);
+		PetInfoOverlay.Rarity upgradedRarity = rarity.nextRarity();
 		boolean nextRarityPresent = katSlot.getStack() != null && katSlot.getStack().getItem() != Item.getItemFromBlock(
 			Blocks.barrier) && upgradedRarity != null;
 		renderPetInformation(
@@ -108,20 +108,6 @@ public class KatSitterOverlay {
 			);
 	}
 
-	public PetInfoOverlay.Rarity nextRarity(PetInfoOverlay.Rarity currentRarity) {
-		switch (currentRarity) {
-			case COMMON:
-				return PetInfoOverlay.Rarity.UNCOMMON;
-			case UNCOMMON:
-				return PetInfoOverlay.Rarity.RARE;
-			case RARE:
-				return PetInfoOverlay.Rarity.EPIC;
-			case EPIC:
-				return PetInfoOverlay.Rarity.LEGENDARY;
-			case LEGENDARY:
-				return PetInfoOverlay.Rarity.MYTHIC;
-		}
-		return null;
-	}
+
 
 }

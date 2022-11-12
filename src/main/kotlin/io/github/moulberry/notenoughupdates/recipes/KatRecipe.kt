@@ -62,12 +62,15 @@ data class KatRecipe(
 
     fun getInputPetForCurrentLevel(): Pet {
         return PetInfoOverlay.getPetFromStack(inputPet.itemStack.tagCompound).also {
-            it.petLevel = PetLeveling.getPetLevelingForPet(it.petType, it.rarity).getPetLevel(0.0)
+            it.petLevel = PetLeveling.getPetLevelingForPet(it.petType, it.rarity).getPetLevel(1_000_000.0)
         }
     }
 
     fun getOutputPetForCurrentLevel(): Pet {
-        return getInputPetForCurrentLevel()
+        return getInputPetForCurrentLevel().also {
+            it.rarity = it.rarity.nextRarity()
+            it.petLevel = PetLeveling.getPetLevelingForPet(it.petType, it.rarity.nextRarity()).getPetLevel(it.petLevel.expTotal.toDouble())
+        }
     }
 
     val radius get() = 50 / 2
@@ -102,10 +105,11 @@ data class KatRecipe(
             lastTimestamp = TimeSource.Monotonic.markNow()
         }
         wasShiftDown = isShiftDown
-        return basicIngredients.mapIndexed { index, ingredient ->
-            val (x, y) = positionOnCircle(index, basicIngredients.size)
-            RecipeSlot(x - 18 / 2, y - 18 / 2, ingredient.itemStack)
-        } + listOf(RecipeSlot(circleCenter.first - 9, circleCenter.second - 9, outputPet.itemStack))
+        val advancedIngredients = items.map { it.itemStack } + listOf(ItemUtils.createPetItemstackFromPetInfo(getInputPetForCurrentLevel()), Ingredient.coinIngredient(manager, coins.toInt() /*TODO*/).itemStack)
+        return advancedIngredients.mapIndexed { index, itemStack ->
+            val (x, y) = positionOnCircle(index, advancedIngredients.size)
+            RecipeSlot(x - 18 / 2, y - 18 / 2, itemStack)
+        } + listOf(RecipeSlot(circleCenter.first - 9, circleCenter.second - 9, ItemUtils.createPetItemstackFromPetInfo(getOutputPetForCurrentLevel())))
     }
 
     override fun getType(): RecipeType = RecipeType.KAT_UPGRADE
