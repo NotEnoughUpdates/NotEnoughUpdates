@@ -120,9 +120,9 @@ public class SlayerOverlay extends TextOverlay {
 		} else if (!slayerXp.equals("0")) {
 			slayerEXP = slayerXp.replace(",", "");
 
-			differenceFromLastXP = slayerIntXP-Integer.parseInt(slayerEXP);
-			if(differenceFromLastXP != 0){
-				switch(differenceFromLastXP){
+			differenceFromLastXP = slayerIntXP - Integer.parseInt(slayerEXP);
+			if (differenceFromLastXP != 0) {
+				switch (differenceFromLastXP) {
 					case 1875:
 					case 625:
 					case 125:
@@ -212,10 +212,10 @@ public class SlayerOverlay extends TextOverlay {
 			xpPerBoss = 0;
 		}
 
-		if(slayerXPBuffActive){
+		if (slayerXPBuffActive) {
 			xpPerBoss *= 1.25;
 		}
-		
+
 		untilNextSlayerLevel = xpToLevelUp - slayerIntXP;
 		if (xpPerBoss != 0 && untilNextSlayerLevel != 0 && xpToLevelUp != 0) {
 			bossesUntilNextLevel = (xpToLevelUp - untilNextSlayerLevel) / xpPerBoss;
