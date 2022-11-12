@@ -312,7 +312,6 @@ public class BasicPage extends GuiProfileViewerPage {
 								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
 									profile.getSoopyNetworthLeaderboardPosition());
 							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
-							getInstance().tooltipToDisplay.add("");
 						}
 
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -889,7 +888,6 @@ public class BasicPage extends GuiProfileViewerPage {
 								profile.getSoopyWeightLeaderboardPosition());
 						getInstance().tooltipToDisplay.add("");
 						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's weight leaderboard!");
-						getInstance().tooltipToDisplay.add("");
 					}
 				}
 			}
