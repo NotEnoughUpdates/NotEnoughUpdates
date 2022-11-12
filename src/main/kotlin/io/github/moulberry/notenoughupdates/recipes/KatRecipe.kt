@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay.Pet
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.util.ItemUtils
+import io.github.moulberry.notenoughupdates.util.PetLeveling
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.toJsonArray
 import net.minecraft.client.Minecraft
@@ -61,14 +62,12 @@ data class KatRecipe(
 
     fun getInputPetForCurrentLevel(): Pet {
         return PetInfoOverlay.getPetFromStack(inputPet.itemStack.tagCompound).also {
-            it.petLevel = GuiProfileViewer.getPetLevel(it.petType, it.rarity.name, 0F)
+            it.petLevel = PetLeveling.getPetLevelingForPet(it.petType, it.rarity).getPetLevel(0.0)
         }
     }
 
     fun getOutputPetForCurrentLevel(): Pet {
-        return getInputPetForCurrentLevel().also {
-            it.petLevel = GuiProfileViewer.getPetLevel(it.petType, it.rarity.name, it.petLevel.totalXp)
-        }
+        return getInputPetForCurrentLevel()
     }
 
     val radius get() = 50 / 2

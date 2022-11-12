@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -853,7 +854,7 @@ public static class EnchantLine {
 		if (event.toolTip.size() < 7) return;
 		if (event.itemStack.getTagCompound().hasKey("NEUHIDEPETTOOLTIP")) return;
 		if (Utils.cleanColour(event.toolTip.get(1)).matches(petToolTipRegex)) {
-			GuiProfileViewer.PetLevel petLevel;
+			PetLeveling.PetLevel petLevel;
 
 			int xpLine = -1;
 			for (int i = event.toolTip.size() - 1; i >= 0; i--) {
@@ -881,9 +882,9 @@ public static class EnchantLine {
 
 			event.toolTip.add(
 				xpLine + 1,
-				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petLevel.levelXp) +
+				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petLevel.getExpInCurrentLevel()) +
 					EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
-					myFormatter.format(petLevel.currentLevelRequirement)
+					myFormatter.format(petLevel.getExpRequiredForNextLevel())
 			);
 
 		}

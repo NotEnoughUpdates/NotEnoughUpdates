@@ -328,7 +328,7 @@ internal class PetLevelingTest {
             "KUUDRA": "COMBAT"
           }
         }
-    """.trimIndent()
+    """
 
     val testJson = Gson().fromJson(testJsonString, JsonObject::class.java)
 
@@ -343,7 +343,7 @@ internal class PetLevelingTest {
         val level = leveling.getPetLevel(22_500_000.0)
         Assertions.assertEquals(98, level.currentLevel)
         Assertions.assertEquals(1746700, level.expRequiredForNextLevel)
-        Assertions.assertEquals(780170.0, level.expInCurrentLevel, 0.5)
+        Assertions.assertEquals(780170.0F, level.expInCurrentLevel, 0.5F)
     }
 
     @Test
@@ -352,7 +352,7 @@ internal class PetLevelingTest {
         val level = leveling.getPetLevel(197806.0385900295)
         Assertions.assertEquals(58, level.currentLevel)
         Assertions.assertEquals(19500, level.expRequiredForNextLevel)
-        Assertions.assertEquals(5321.0, level.expInCurrentLevel, 0.5)
+        Assertions.assertEquals(5321.0F, level.expInCurrentLevel, 0.5F)
     }
 
     @Test
@@ -361,7 +361,7 @@ internal class PetLevelingTest {
         val level = leveling.getPetLevel(95179565.04472463)
         Assertions.assertEquals(139, level.currentLevel)
         Assertions.assertEquals(1886700, level.expRequiredForNextLevel)
-        Assertions.assertEquals(12828.0, level.expInCurrentLevel, 0.5)
+        Assertions.assertEquals(12828.0F, level.expInCurrentLevel, 0.5F)
     }
 
     @Test
@@ -370,7 +370,7 @@ internal class PetLevelingTest {
         val level = leveling.getPetLevel(2864013.5452096704)
         Assertions.assertEquals(74, level.currentLevel)
         Assertions.assertEquals(206700, level.expRequiredForNextLevel)
-        Assertions.assertEquals(114713.0, level.expInCurrentLevel, 0.5)
+        Assertions.assertEquals(114713.0F, level.expInCurrentLevel, 0.5F)
     }
 
     @Test
@@ -379,14 +379,14 @@ internal class PetLevelingTest {
         val level = leveling.getPetLevel(1_206_848.0)
         Assertions.assertEquals(59, level.currentLevel)
         Assertions.assertEquals(97200, level.expRequiredForNextLevel)
-        Assertions.assertEquals(1318.0, level.expInCurrentLevel, 0.5)
+        Assertions.assertEquals(1318.0F, level.expInCurrentLevel, 0.5F)
     }
     @Test
     fun testLevel109GoldenDragon() {
         val leveling = PetLeveling.getPetLevelingForPet0("GOLDEN_DRAGON", PetInfoOverlay.Rarity.LEGENDARY)
         val level = leveling.getPetLevel(3.947913361545298E7)
         Assertions.assertEquals(109, level.currentLevel)
-        Assertions.assertEquals(913448.0, level.expInCurrentLevel, 0.5)
+        Assertions.assertEquals(913448.0F, level.expInCurrentLevel, 0.5F)
     }
 
     @Test
@@ -396,8 +396,8 @@ internal class PetLevelingTest {
         val level = leveling.getPetLevel(petExpForLevel.toDouble())
         Assertions.assertEquals(97053440, petExpForLevel)
         Assertions.assertEquals(140, level.currentLevel)
-        Assertions.assertEquals(0.0, level.expInCurrentLevel, 1.0)
-        Assertions.assertEquals(0.0, level.percentageToNextLevel, 1.0)
+        Assertions.assertEquals(0.0F, level.expInCurrentLevel, 1.0F)
+        Assertions.assertEquals(0.0F, level.percentageToNextLevel, 1.0F)
     }
 
 }

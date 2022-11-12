@@ -196,11 +196,13 @@ public class ItemUtils {
 		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
 			heldItem);
 		String petId = currentPet.getPetId(false);
-		float exp = currentPet.petLevel.totalXp;
+		float exp = currentPet.petLevel.getExpTotal();
 
-		GuiProfileViewer.PetLevel levelObj = GuiProfileViewer.getPetLevel(petname, tier, exp);
+		PetLeveling.PetLevel levelObj = PetLeveling
+			.getPetLevelingForPet(petname, PetInfoOverlay.Rarity.valueOf(tier))
+			.getPetLevel(exp);
 
-		float level = levelObj.level;
+		int level = levelObj.getCurrentLevel();
 
 		ItemStack petItemstack = NotEnoughUpdates.INSTANCE.manager
 			.createItemResolutionQuery()
@@ -348,7 +350,7 @@ public class ItemUtils {
 				if (Utils.cleanColour(lore.getStringTagAt(0)).matches(ItemTooltipListener.petToolTipRegex) &&
 					lore.tagCount() > 7) {
 
-					GuiProfileViewer.PetLevel petLevel;
+					PetLeveling.PetLevel petLevel;
 
 					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
 						stack.getTagCompound()
@@ -373,13 +375,13 @@ public class ItemUtils {
 					for (int i = 0; i < lore.tagCount(); i++) {
 						if (i == lore.tagCount() - 2) {
 							newLore.appendTag(new NBTTagString(""));
-							if (petLevel.level >= maxLvl) {
+							if (petLevel.getCurrentLevel() >= maxLvl) {
 								newLore.appendTag(new NBTTagString(
 									EnumChatFormatting.AQUA + "" + EnumChatFormatting.BOLD + "MAX LEVEL"));
 							} else {
-								double levelPercent = (Math.round(petLevel.levelPercentage * 1000) / 10.0);
+								double levelPercent = (Math.round(petLevel.getPercentageToNextLevel() * 1000) / 10.0);
 								newLore.appendTag(new NBTTagString(
-									EnumChatFormatting.GRAY + "Progress to Level " + (int) (petLevel.level + 1) + ": " +
+									EnumChatFormatting.GRAY + "Progress to Level " + (petLevel.getCurrentLevel() + 1) + ": " +
 										EnumChatFormatting.YELLOW + levelPercent + "%"));
 								StringBuilder sb = new StringBuilder();
 
@@ -394,9 +396,9 @@ public class ItemUtils {
 								newLore.appendTag(new NBTTagString(sb.toString()));
 								newLore.appendTag(new NBTTagString(
 									EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW +
-										decimalFormatter.format(petLevel.levelXp) +
+										decimalFormatter.format(petLevel.getExpInCurrentLevel()) +
 										EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
-										decimalFormatter.format(petLevel.currentLevelRequirement)
+										decimalFormatter.format(petLevel.getExpRequiredForNextLevel())
 								));
 							}
 						}

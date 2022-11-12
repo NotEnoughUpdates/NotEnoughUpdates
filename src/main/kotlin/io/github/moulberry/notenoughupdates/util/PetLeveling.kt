@@ -38,7 +38,7 @@ object PetLeveling {
                 individualLevelCost[currentOneIndexedLevel - 1]
             }
             val expInCurrentLevel =
-                if (currentOneIndexedLevel > cumulativeLevelCost.size)
+                if (currentOneIndexedLevel >= cumulativeLevelCost.size)
                     currentExp.toFloat() - cumulativeLevelCost.last()
                 else
                     (expForNextLevel - (cumulativeLevelCost[currentOneIndexedLevel] - currentExp.toFloat())).coerceAtLeast(0F)
@@ -47,8 +47,8 @@ object PetLeveling {
                 maxLevel = cumulativeLevelCost.size,
                 expRequiredForNextLevel = expForNextLevel,
                 expRequiredForMaxLevel = cumulativeLevelCost.last(),
-                expInCurrentLevel = expInCurrentLevel.toDouble(),
-                expTotal = currentExp
+                expInCurrentLevel = expInCurrentLevel,
+                expTotal = currentExp.toFloat()
             )
         }
 
@@ -64,10 +64,10 @@ object PetLeveling {
         val maxLevel: Int,
         val expRequiredForNextLevel: Long,
         val expRequiredForMaxLevel: Long,
-        val expInCurrentLevel: Double,
-        val expTotal: Double,
+        val expInCurrentLevel: Float,
+        var expTotal: Float,
     ) {
-        val percentageToNextLevel: Double = expInCurrentLevel / expRequiredForNextLevel
+        val percentageToNextLevel: Float = expInCurrentLevel / expRequiredForNextLevel
     }
 
     private data class Key(val petIdWithoutRarity: String, val rarity: Rarity)
@@ -91,7 +91,7 @@ object PetLeveling {
         }
     }
 
-    fun getPetLevelingForPet0(petIdWithoutRarity: String, rarity: Rarity): ExpLadder {
+    internal fun getPetLevelingForPet0(petIdWithoutRarity: String, rarity: Rarity): ExpLadder {
         val petConstants = this.petConstants ?: Constants.PETS
         var levels = petConstants["pet_levels"].asJsonArray.map { it.asLong }.toMutableList()
         val customLeveling = petConstants["custom_pet_leveling"].asJsonObject[petIdWithoutRarity]

@@ -104,7 +104,7 @@ public class ItemCooldowns {
 				pet.petType.equalsIgnoreCase("monkey") &&
 				pet.rarity.equals(PetInfoOverlay.Rarity.LEGENDARY)
 			) {
-				return 2000 - (int) (2000 * (0.005 * (int) pet.petLevel.level));
+				return 2000 - (int) (2000 * (0.005 * pet.petLevel.getCurrentLevel()));
 			}
 		}
 		return 2000;

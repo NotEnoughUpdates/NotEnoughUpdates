@@ -231,68 +231,6 @@ public class GuiProfileViewer extends GuiScreen {
 		return xpTotal;
 	}
 
-	public static PetLevel getPetLevel(
-		String petType,
-		String rarity,
-		float exp
-	) {
-		int offset = PetInfoOverlay.Rarity.valueOf(rarity).petOffset;
-		int maxLevel = 100;
-
-		JsonArray levels = new JsonArray();
-		levels.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
-		JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
-		if (customLevelingJson != null) {
-			switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
-				case 1:
-					levels.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
-					break;
-				case 2:
-					levels = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
-					break;
-			}
-			maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
-		}
-
-		float maxXP = getMaxLevelXp(levels, offset, maxLevel);
-		boolean isMaxed = exp >= maxXP;
-
-		int level = 1;
-		float currentLevelRequirement = 0;
-		float xpThisLevel = 0;
-		float pct = 0;
-
-		if (isMaxed) {
-			level = maxLevel;
-			currentLevelRequirement = levels.get(offset + level - 2).getAsFloat();
-			xpThisLevel = currentLevelRequirement;
-			pct = 1;
-		} else {
-			long totalExp = 0;
-			for (int i = offset; i < levels.size(); i++) {
-				currentLevelRequirement = levels.get(i).getAsLong();
-				totalExp += currentLevelRequirement;
-				if (totalExp >= exp) {
-					xpThisLevel = currentLevelRequirement - (totalExp - exp);
-					level = Math.min(i - offset + 1, maxLevel);
-					break;
-				}
-			}
-			pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
-			level += pct;
-		}
-
-		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
-		levelObj.level = level;
-		levelObj.maxLevel = maxLevel;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = maxXP;
-		levelObj.levelPercentage = pct;
-		levelObj.levelXp = xpThisLevel;
-		levelObj.totalXp = exp;
-		return levelObj;
-	}
-
 	@Deprecated
 	public static String shortNumberFormat(double n, int iteration) {
 		return StringUtils.shortNumberFormat(n, iteration
@@ -1351,16 +1289,5 @@ public class GuiProfileViewer extends GuiScreen {
 		public Optional<ItemStack> getItem() {
 			return Optional.ofNullable(stack);
 		}
-	}
-
-	public static class PetLevel {
-
-		public float level;
-		public float maxLevel;
-		public float currentLevelRequirement;
-		public float maxXP;
-		public float levelPercentage;
-		public float levelXp;
-		public float totalXp;
 	}
 }
