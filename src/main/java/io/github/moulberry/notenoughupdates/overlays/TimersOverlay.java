@@ -313,6 +313,9 @@ public class TimersOverlay extends TextTabOverlay {
 					try {
 						long godpotRemainingTime;
 						for (int i = 1; i < activeEffectsMatcher.groupCount(); i += 2) {
+							if (activeEffectsMatcher.group(i) == null) {
+								continue;
+							}
 							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
 							String godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
 							switch (godpotRemainingTimeType) {
