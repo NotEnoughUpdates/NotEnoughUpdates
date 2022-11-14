@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.util;
 
 import java.time.Instant;
 
+// cryptic helped me a "little" with the calculation
 public class StarCultCalculator {
 
 	public static final String[] SEASONS = new String[]{
