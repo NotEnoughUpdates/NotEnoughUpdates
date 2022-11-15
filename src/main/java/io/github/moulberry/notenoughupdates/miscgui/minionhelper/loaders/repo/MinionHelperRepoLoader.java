@@ -169,7 +169,8 @@ public class MinionHelperRepoLoader {
 
 	private void createMinions() {
 		JsonObject misc = Constants.MISC;
-		if (!misc.has("minions") || !misc.has("minionXp")) {
+		if (misc == null || !misc.has("minions") || !misc.has("minionXp")) {
+			
 			errorWhileLoading = true;
 			return;
 		}
