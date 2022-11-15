@@ -168,12 +168,18 @@ public class MinionHelperRepoLoader {
 	}
 
 	private void createMinions() {
-		for (Map.Entry<String, JsonElement> entry : Constants.MISC.get("minions").getAsJsonObject().entrySet()) {
+		JsonObject misc = Constants.MISC;
+		if (!misc.has("minions") || !misc.has("minionXp")) {
+			errorWhileLoading = true;
+			return;
+		}
+		for (Map.Entry<String, JsonElement> entry : misc.get("minions").getAsJsonObject().entrySet()) {
 			String internalName = entry.getKey();
 			int maxTier = entry.getValue().getAsInt();
 			for (int i = 0; i < maxTier; i++) {
 				int tier = i + 1;
-				manager.createMinion(internalName + "_" + tier, tier);
+				manager.createMinion(internalName + "_" + tier, tier, misc.get("minionXp")
+																																	.getAsJsonObject().get(tier + "").getAsInt());
 			}
 		}
 	}

@@ -204,8 +204,8 @@ public class DungeonNpcProfitOverlay {
 			Utils.renderAlignedString(
 				chestProfit.name,
 				(chestProfit.profit > 0
-					? EnumChatFormatting.GREEN.toString()
-					: EnumChatFormatting.RED) + Utils.shortNumberFormat(chestProfit.profit, 0),
+					? EnumChatFormatting.GREEN + Utils.shortNumberFormat(chestProfit.profit, 0)
+					: EnumChatFormatting.RED + "-" + Utils.shortNumberFormat(-chestProfit.profit, 0)),
 				x,
 				y,
 				160
@@ -273,8 +273,12 @@ public class DungeonNpcProfitOverlay {
 			lore.add(
 				EnumChatFormatting.AQUA + "Cost to open: " + EnumChatFormatting.RED + Utils.shortNumberFormat(costToOpen, 0));
 			lore.add(
-				EnumChatFormatting.AQUA + "Total profit: " + (profit > 0 ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) +
-					Utils.shortNumberFormat(profit, 0));
+				EnumChatFormatting.AQUA + "Total profit: " +
+					(profit > 0 ? EnumChatFormatting.GREEN + Utils.shortNumberFormat(profit, 0)
+						: EnumChatFormatting.RED + "-" + Utils.shortNumberFormat(
+							-profit,
+							0
+						)));
 		}
 	}
 
