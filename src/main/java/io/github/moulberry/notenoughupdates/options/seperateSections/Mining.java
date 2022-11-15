@@ -143,7 +143,7 @@ public class Mining {
 		}
 	)
 	@ConfigAccordionId(id = 2)
-	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4,5));
+	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
 
 	@Expose
 	public Position overlayPosition = new Position(10, 100);
