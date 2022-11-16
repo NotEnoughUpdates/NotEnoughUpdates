@@ -78,6 +78,7 @@ public class SBInfo {
 	public IChatComponent header;
 
 	public String location = "";
+	public String lastLocation = "";
 	public String date = "";
 	public String time = "";
 	public String objective = "";
@@ -279,11 +280,26 @@ public class SBInfo {
 	}
 
 	public void setLocation(String location) {
-		location = location == null ? location :location.intern();
-		if (!Objects.equals(this.mode, location)) {
-			MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, this.mode));
+		location = location == null ? location : location.intern();
+		if (!Objects.equals(mode, location)) {
+			MinecraftForge.EVENT_BUS.post(new LocationChangeEvent(location, mode));
 		}
-		this.mode = location;
+		mode = location;
+	}
+
+	/**
+	 * @return the current location as displayed on the scoreboard
+	 */
+	public String getScoreboardLocation() {
+		return location;
+	}
+
+	/**
+	 * @return the previous location as displayed on the scoreboard
+	 * @see #getScoreboardLocation()
+	 */
+	public String getLastScoreboardLocation() {
+		return lastLocation;
 	}
 
 	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
@@ -426,8 +442,9 @@ public class SBInfo {
 						String l = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
 						if (!l.equals(location)) {
 							new ScoreboardLocationChangeListener(location, l);
+							lastLocation = location;
+							location = l;
 						}
-						location = l;
 						break;
 					}
 				}
