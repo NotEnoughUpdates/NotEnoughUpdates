@@ -169,8 +169,7 @@ public class MinionHelperRepoLoader {
 
 	private void createMinions() {
 		JsonObject misc = Constants.MISC;
-		if (misc == null || !misc.has("minions") || !misc.has("minionXp")) {
-			
+		if (misc == null || !misc.has("minions")) {
 			errorWhileLoading = true;
 			return;
 		}
@@ -179,8 +178,13 @@ public class MinionHelperRepoLoader {
 			int maxTier = entry.getValue().getAsInt();
 			for (int i = 0; i < maxTier; i++) {
 				int tier = i + 1;
-				manager.createMinion(internalName + "_" + tier, tier, misc.get("minionXp")
-																																	.getAsJsonObject().get(tier + "").getAsInt());
+				int minionXp;
+				if (misc.has("minionXp")) {
+					minionXp = misc.get("minionXp").getAsJsonObject().get(tier + "").getAsInt();
+				} else {
+					minionXp = 0;
+				}
+				manager.createMinion(internalName + "_" + tier, tier, minionXp);
 			}
 		}
 	}
