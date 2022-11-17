@@ -80,7 +80,10 @@ public class MinionHelperRepoLoader {
 	void load() {
 		errorWhileLoading = false;
 
-		createMinions();
+		if (!createMinions()) {
+			errorWhileLoading = true;
+			return;
+		}
 
 		loadNpcData();
 		minionLoader.loadMinionData();
@@ -167,11 +170,10 @@ public class MinionHelperRepoLoader {
 		}
 	}
 
-	private void createMinions() {
+	private boolean createMinions() {
 		JsonObject misc = Constants.MISC;
 		if (misc == null || !misc.has("minions")) {
-			errorWhileLoading = true;
-			return;
+			return false;
 		}
 		for (Map.Entry<String, JsonElement> entry : misc.get("minions").getAsJsonObject().entrySet()) {
 			String internalName = entry.getKey();
@@ -187,6 +189,7 @@ public class MinionHelperRepoLoader {
 				manager.createMinion(internalName + "_" + tier, tier, minionXp);
 			}
 		}
+		return true;
 	}
 
 	private void testForMissingData() {

@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MinionHelperOverlay {
@@ -321,8 +322,19 @@ public class MinionHelperOverlay {
 		format = format.replace(" coins", "");
 		String text =
 			color + "Next slot: §3" + neededForNextSlot + " minions §8- " + format;
-		renderMap.put(text, new OverviewText(Arrays.asList(EnumChatFormatting.DARK_AQUA.toString() + xpGain + " Skyblock XP §efor next slot",
-			"§8DISCLAIMER: This only works if", "§8you follow the helper."), () -> {}));
+		List<String> lore;
+		if (xpGain == 0) {
+			if (index == 0) {
+				lore = Arrays.asList("§aAll minions bought!", "§cNo more SkyBlock XP to gain!");
+			} else {
+				lore = Collections.singletonList("§cCould not load SkyBlock XP for next slot!");
+			}
+		} else {
+			lore = Arrays.asList(EnumChatFormatting.DARK_AQUA.toString() + xpGain + " Skyblock XP §efor next slot",
+				"§8DISCLAIMER: This only works if", "§8you follow the helper."
+			);
+		}
+		renderMap.put(text, new OverviewText(lore, () -> {}));
 	}
 
 	private void addTitle(Map<Minion, Double> prices, LinkedHashMap<String, OverviewLine> renderMap) {
