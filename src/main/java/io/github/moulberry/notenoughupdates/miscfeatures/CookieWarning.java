@@ -98,6 +98,7 @@ public class CookieWarning {
 								break;
 							case "Hours":
 							case "Hour":
+							case "h":
 								minutes += val * 60;
 								break;
 							case "Minutes":
