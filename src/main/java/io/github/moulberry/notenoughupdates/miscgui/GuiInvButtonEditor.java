@@ -167,6 +167,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 		put("crystal nucleus", "skull:34d42f9c461cee1997b67bf3610c6411bf852b9e5db607bbf626527cfb42912c");
 		put("void sepulture", "skull:eb07594e2df273921a77c101d0bfdfa1115abed5b9b2029eb496ceba9bdbb4b3");
 		put("crimson isle", "skull:c3687e25c632bce8aa61e0d64c24e694c3eea629ea944f4cf30dcfb4fbce071");
+		put("trapper den", "skull:6102f82148461ced1f7b62e326eb2db3a94a33cba81d4281452af4d8aeca4991");
+		put("arachne sanctuary", "skull:35e248da2e108f09813a6b848a0fcef111300978180eda41d3d1a7a8e4dba3c3");
 	}};
 
 	private static LinkedHashMap<String, List<NEUConfig.InventoryButton>> presets = null;
