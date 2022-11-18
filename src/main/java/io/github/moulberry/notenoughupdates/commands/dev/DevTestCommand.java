@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.commands.dev;
 
 import io.github.moulberry.notenoughupdates.BuildFlags;
-import io.github.moulberry.notenoughupdates.DidYouKnowYouHaveRights;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
@@ -97,7 +96,6 @@ public class DevTestCommand extends ClientCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-		DidYouKnowYouHaveRights.stuff(sender);
 		if (!DEV_TESTERS.contains(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())
 			&& !(boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
 			if (devFailIndex >= DEV_FAIL_STRINGS.length) {
