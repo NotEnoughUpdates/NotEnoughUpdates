@@ -226,6 +226,7 @@ public class AbiphoneFavourites {
 	private boolean isWrongInventory() {
 		return !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
 			|| !NotEnoughUpdates.INSTANCE.config.misc.abiphoneFavourites
+			|| Utils.getOpenChestName().equals("Abiphone Shop")
 			|| !Utils.getOpenChestName().startsWith("Abiphone ");
 	}
 
