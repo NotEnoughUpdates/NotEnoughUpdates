@@ -427,8 +427,8 @@ public class MiningOverlay extends TextTabOverlay {
 						break;
 					case 5:
 						overlayStrings.add(
-							DARK_AQUA + "Star Cult In: " + GREEN +
-								Utils.prettyTime(StarCultCalculator.getNextStarCult() - System.currentTimeMillis()));
+							DARK_AQUA + "Star Cult: " + GREEN +
+								StarCultCalculator.getNextStarCult());
 						break;
 				}
 			}
@@ -455,12 +455,12 @@ public class MiningOverlay extends TextTabOverlay {
 					if (NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayEnabledLocations == 1 &&
 						!SBInfo.getInstance().isInDungeon) {
 						overlayStrings.add(
-							DARK_AQUA + "Star Cult In: " + GREEN +
-								Utils.prettyTime(StarCultCalculator.getNextStarCult() - System.currentTimeMillis()));
+							DARK_AQUA + "Star Cult: " + GREEN +
+								StarCultCalculator.getNextStarCult());
 					} else if (NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayEnabledLocations == 2) {
 						overlayStrings.add(
-							DARK_AQUA + "Star Cult In: " + GREEN +
-								Utils.prettyTime(StarCultCalculator.getNextStarCult() - System.currentTimeMillis()));
+							DARK_AQUA + "Star Cult: " + GREEN +
+								StarCultCalculator.getNextStarCult());
 					}
 				}
 			}
@@ -709,7 +709,7 @@ public class MiningOverlay extends TextTabOverlay {
 					.get("DIAMOND_PICKAXE"))
 			);
 			put(
-				"Star Cult In",
+				"Star Cult",
 				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("FALLEN_STAR_HAT"))

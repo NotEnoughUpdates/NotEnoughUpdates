@@ -139,7 +139,7 @@ public class Mining {
 			"\u00a73Gemstone Powder: \u00a7d6,243",
 			"\u00a73Forge 1) \u00a79Diamonite\u00a77: \u00a7aReady!",
 			"\u00a73Pickaxe CD: \u00a7a78s",
-			"\u00a73Star Cult In: \u00a7a78s"
+			"\u00a73Star Cult: \u00a7a78s"
 		}
 	)
 	@ConfigAccordionId(id = 2)

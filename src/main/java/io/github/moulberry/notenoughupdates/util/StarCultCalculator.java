@@ -51,13 +51,17 @@ public class StarCultCalculator {
 		return (int) (currentYear + 1);
 	}
 
-	public static long getNextStarCult() {
+	private static boolean active = false;
+	private static long activeTill = 0;
+
+	public static String getNextStarCult() {
 		Instant instantNow = Instant.now();
 		long nowEpoch = instantNow.toEpochMilli();
 		long currentOffset = (nowEpoch - YEAR_0) % YEAR_MS;
 
 		int currentMonth = (int) Math.floorDiv(currentOffset, MONTH_MS);
 		int currentDay = (int) Math.floorDiv((currentOffset - (long) currentMonth * MONTH_MS) % MONTH_MS, DAY_MS) + 1;
+
 		int out = 7;
 		if (currentDay > 21) {
 			out = 28;
@@ -66,9 +70,8 @@ public class StarCultCalculator {
 		} else if (currentDay > 7) {
 			out = 14;
 		}
-		out--;
 		Instant cultStart = Instant.ofEpochMilli(
-			YEAR_0 + (getSkyblockYear() - 1) * YEAR_MS + currentMonth * MONTH_MS + out * DAY_MS);
+			YEAR_0 + (getSkyblockYear() - 1) * YEAR_MS + currentMonth * MONTH_MS + (out - 1) * DAY_MS);
 		if (cultStart.isBefore(instantNow)) {
 			int curYearCult = getSkyblockYear() - 1;
 			if (out == 28) {
@@ -82,10 +85,27 @@ public class StarCultCalculator {
 			} else {
 				out += 7;
 			}
+			out--;
 			cultStart = Instant.ofEpochMilli(YEAR_0 + (curYearCult) * YEAR_MS + currentMonth * MONTH_MS + out * DAY_MS);
 		}
 
-		return cultStart.toEpochMilli();
+		long l = System.currentTimeMillis();
+		System.out.println(cultStart.toEpochMilli() - l);
+		if (cultStart.toEpochMilli() - l <= 1000) {
+			active = true;
+			activeTill = l + 300000;
+		}
+
+		if (l > activeTill) {
+			active = false;
+			activeTill = 0;
+		}
+
+		if (active && activeTill != 0) {
+			return "Active!";
+		}
+
+		return Utils.prettyTime(cultStart.toEpochMilli() - l);
 	}
 }
 
