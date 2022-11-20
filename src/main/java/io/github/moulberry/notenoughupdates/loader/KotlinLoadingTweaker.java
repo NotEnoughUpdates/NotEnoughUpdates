@@ -61,6 +61,9 @@ import java.util.stream.Stream;
  *  		And, even if you are sure, do you really want to block us from updating our Kotlin, after we so graciously allowed
  *  		you to stop us from breaking your mod.
  *  	</li>
+ *  	<li>
+ *  	 	Additionally, setting the jvm property {@code neu.relinquishkotlin} to 1, will prevent NEU from loading Kotlin.
+ *  	</li>
  * </ul>
  *
  * <p>
@@ -88,8 +91,8 @@ public class KotlinLoadingTweaker implements ITweaker {
 
 	public boolean areWeBundlingAKotlinVersionHigherThan(int[] x) {
 		for (int i = 0; ; i++) {
-			boolean doWeHaveMoreVersionIdsLeft = i <= BUNDLED_KOTLIN_VERSION.length;
-			boolean doTheyHaveMoreVersionIdsLeft = i <= x.length;
+			boolean doWeHaveMoreVersionIdsLeft = i < BUNDLED_KOTLIN_VERSION.length;
+			boolean doTheyHaveMoreVersionIdsLeft = i < x.length;
 			if (doWeHaveMoreVersionIdsLeft && !doTheyHaveMoreVersionIdsLeft) return false;
 			if (doTheyHaveMoreVersionIdsLeft && !doWeHaveMoreVersionIdsLeft) return true;
 			if (!doTheyHaveMoreVersionIdsLeft) return true;
@@ -101,6 +104,10 @@ public class KotlinLoadingTweaker implements ITweaker {
 	public void injectIntoClassLoader(LaunchClassLoader classLoader) {
 		FileSystem fs = null;
 		try {
+			if ("1".equals(System.getProperty("neu.relinquishkotlin"))) {
+				System.out.println("NEU is forced to relinquish Kotlin by user configuration.");
+				return;
+			}
 			if (Launch.blackboard.get("fml.deobfuscatedEnvironment") == Boolean.TRUE) {
 				System.out.println("Skipping NEU Kotlin loading in development environment.");
 				return;
@@ -117,7 +124,7 @@ public class KotlinLoadingTweaker implements ITweaker {
 				if (!areWeBundlingAKotlinVersionHigherThan(requiredVersion)) {
 					System.err.println(
 						"NEU is relinquishing loading Kotlin because a higher version is requested. This may lead to errors if the advertised Kotlin version is not found. (" +
-							Arrays.toString(requiredVersion) + ")");
+							Arrays.toString(requiredVersion) + " required, " + Arrays.toString(BUNDLED_KOTLIN_VERSION) + " available)");
 					return;
 				}
 			}
@@ -133,6 +140,7 @@ public class KotlinLoadingTweaker implements ITweaker {
 			} else {
 				p = Paths.get(uri);
 			}
+			System.out.println("Loading NEU Kotlin from " + p.toAbsolutePath());
 			Path tempDirectory = Files.createTempDirectory("notenoughupdates-extracted-kotlin");
 			System.out.println("Using temporary directory " + tempDirectory + " to store extracted kotlin.");
 			tempDirectory.toFile().deleteOnExit();
