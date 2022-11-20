@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -228,7 +229,7 @@ public class EssenceUpgrades implements NeuRecipe {
 			if (essenceItemStack != null) {
 				essenceItemStack = essenceItemStack.copy();
 				essenceItemStack.setStackDisplayName(
-					EnumChatFormatting.AQUA + Utils.formatNumberWithDots(tierUpgrade.getEssenceRequired()) + " " + EnumChatFormatting.DARK_GRAY +
+					EnumChatFormatting.AQUA + NumberFormat.getInstance().format(tierUpgrade.getEssenceRequired()) + " " + EnumChatFormatting.DARK_GRAY +
 						tierUpgrade.getEssenceType() + " Essence");
 
 				essenceItemStack.getTagCompound().setInteger(
