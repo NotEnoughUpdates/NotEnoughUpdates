@@ -218,6 +218,22 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Abiphone NPC Requirements",
+		desc = "Show what the NPC needs in order to add him as contact in the abiphone"
+	)
+	@ConfigEditorBoolean
+	public boolean abiphoneContactRequirements = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Abiphone NPC Location",
+		desc = "Click on an NPC to set an marker at the location"
+	)
+	@ConfigEditorBoolean
+	public boolean abiphoneContactMarker = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Essence Price In Shop",
 		desc = "Show the essence price in the essence shop in the dungeon hub"
 	)

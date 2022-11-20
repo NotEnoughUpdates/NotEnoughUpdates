@@ -957,7 +957,7 @@ public static class EnchantLine {
 			if (Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if (!copied) {
 					copied = true;
-					StringSelection selection = new StringSelection(sb.toString());
+					StringSelection selection = new StringSelection(sb.toString().replace("§r§7", ""));
 					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
 				}
 			} else {
