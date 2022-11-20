@@ -90,7 +90,6 @@ public class StarCultCalculator {
 		}
 
 		long l = System.currentTimeMillis();
-		System.out.println(cultStart.toEpochMilli() - l);
 		if (cultStart.toEpochMilli() - l <= 1000) {
 			active = true;
 			activeTill = l + 300000;
