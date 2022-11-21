@@ -95,4 +95,6 @@ public interface NeuRecipe {
 	}
 
 	default void actionPerformed(GuiButton button) {}
+
+	default void genericMouseInput(int mouseX, int mouseY) {}
 }

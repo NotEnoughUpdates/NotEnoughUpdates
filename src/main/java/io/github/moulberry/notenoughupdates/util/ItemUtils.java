@@ -189,6 +189,16 @@ public class ItemUtils {
 	}
 
 	public static ItemStack createPetItemstackFromPetInfo(PetInfoOverlay.Pet currentPet) {
+		if (currentPet == null) {
+			ItemStack stack = ItemUtils.createQuestionMarkSkull(EnumChatFormatting.RED + "Unknown Pet");
+			appendLore(stack, Arrays.asList(
+				"§cNull Pet",
+				"",
+				"§cIf you expected it to be there please send a message in",
+				"§c§l#neu-support §r§con §ldiscord.gg/moulberry"
+			));
+			return stack;
+		}
 		String petname = currentPet.petType;
 		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
 		String heldItem = currentPet.petItem;

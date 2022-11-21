@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,37 +21,43 @@ package io.github.moulberry.notenoughupdates.recipes
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import io.github.moulberry.notenoughupdates.NEUManager
+import io.github.moulberry.notenoughupdates.core.util.GuiElementSlider
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay.Pet
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.PetLeveling
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.toJsonArray
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.input.Keyboard
+import java.time.Duration
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
-import kotlin.time.TimeSource
 
-@OptIn(ExperimentalTime::class)
 data class KatRecipe(
     val manager: NEUManager,
     val inputPet: Ingredient,
     val outputPet: Ingredient,
     val items: List<Ingredient>,
     val coins: Long,
+    val time: Duration,
 ) : NeuRecipe {
+    var inputLevel = 1
+    val radius get() = 50 / 2
+    val circleCenter get() = 33 + 110 / 2 to 19 + 110 / 2
+    val textPosition get() = circleCenter.first to circleCenter.second + 90 / 2
+    val sliderPos get() = 40 to 15
+    val levelTextPos
+        get() = sliderPos.first - 4 - Minecraft.getMinecraft().fontRendererObj.getStringWidth("100") to
+                sliderPos.second + 16 / 2 - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2
 
-
-    var inputLevel = 25
-
+    val levelSlider = GuiElementSlider(0, 0, 100, 1F, 100F, 1F, inputLevel.toFloat()) { inputLevel = it.toInt() }
+    val coinsAdjustedForLevel: Int
+        get() = (coins.toInt() * (1 - 0.003F * (getOutputPetForCurrentLevel()?.petLevel?.currentLevel ?: 0))).toInt()
     private val basicIngredients = items.toSet() + setOf(inputPet, Ingredient.coinIngredient(manager, coins.toInt()))
     override fun getIngredients(): Set<Ingredient> = basicIngredients
 
@@ -59,57 +65,68 @@ data class KatRecipe(
         return setOf(outputPet)
     }
 
-
-    fun getInputPetForCurrentLevel(): Pet {
-        return PetInfoOverlay.getPetFromStack(inputPet.itemStack.tagCompound).also {
-            it.petLevel = PetLeveling.getPetLevelingForPet(it.petType, it.rarity).getPetLevel(1_000_000.0)
+    fun getInputPetForCurrentLevel(): Pet? {
+        return PetInfoOverlay.getPetFromStack(inputPet.itemStack.tagCompound)?.also {
+            val petLeveling = PetLeveling.getPetLevelingForPet(it.petType, it.rarity)
+            it.petLevel = petLeveling.getPetLevel(petLeveling.getPetExpForLevel(inputLevel).toDouble())
         }
     }
 
-    fun getOutputPetForCurrentLevel(): Pet {
-        return getInputPetForCurrentLevel().also {
-            it.rarity = it.rarity.nextRarity()
-            it.petLevel = PetLeveling.getPetLevelingForPet(it.petType, it.rarity.nextRarity()).getPetLevel(it.petLevel.expTotal.toDouble())
+    fun getOutputPetForCurrentLevel(): Pet? {
+        return PetInfoOverlay.getPetFromStack(outputPet.itemStack.tagCompound)?.also {
+            val petLeveling = PetLeveling.getPetLevelingForPet(it.petType, it.rarity)
+            it.petLevel = petLeveling.getPetLevel(getInputPetForCurrentLevel()?.petLevel?.expTotal?.toDouble() ?: 0.0)
         }
     }
 
-    val radius get() = 50 / 2
-    val circleCenter = 33 + 110 / 2 to 19 + 110 / 2
-    val textPosition get() = circleCenter.first to circleCenter.second + 90 / 2
-    var rotation = 0.0
-    var wasShiftDown = false
-    var lastTimestamp = TimeSource.Monotonic.markNow()
-
-    fun positionOnCircle(i: Int, max: Int): Pair<Int, Int> {
-        val radians = PI * 2 * i / max - rotation * PI / 2
+    private fun positionOnCircle(i: Int, max: Int): Pair<Int, Int> {
+        val radians = PI * 2 * i / max
         val offsetX = cos(radians) * radius
         val offsetY = sin(radians) * radius
         return (circleCenter.first + offsetX).roundToInt() to (circleCenter.second + offsetY).roundToInt()
     }
 
     override fun drawExtraInfo(gui: GuiItemRecipe, mouseX: Int, mouseY: Int) {
+        levelSlider.x = gui.guiLeft + sliderPos.first
+        levelSlider.y = gui.guiTop + sliderPos.second
+        levelSlider.render()
+        Minecraft.getMinecraft().fontRendererObj.drawString(
+            "$inputLevel",
+            gui.guiLeft + levelTextPos.first,
+            gui.guiTop + levelTextPos.second,
+            0xFF0000
+        )
         Utils.drawStringCentered(
-            "This will take 5 years lmao",
+            Utils.prettyTime(time),
             Minecraft.getMinecraft().fontRendererObj,
             gui.guiLeft + textPosition.first.toFloat(), gui.guiTop + textPosition.second.toFloat(),
             false, 0xff00ff
         )
+        GlStateManager.color(1F, 1F, 1F, 1F)
+    }
+
+    override fun genericMouseInput(mouseX: Int, mouseY: Int) {
+        levelSlider.mouseInput(mouseX, mouseY)
     }
 
     override fun getSlots(): List<RecipeSlot> {
-        val isShiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
-        if (!isShiftDown) {
-            if (!wasShiftDown) {
-                rotation += lastTimestamp.elapsedNow().toDouble(DurationUnit.SECONDS)
-            }
-            lastTimestamp = TimeSource.Monotonic.markNow()
-        }
-        wasShiftDown = isShiftDown
-        val advancedIngredients = items.map { it.itemStack } + listOf(ItemUtils.createPetItemstackFromPetInfo(getInputPetForCurrentLevel()), Ingredient.coinIngredient(manager, coins.toInt() /*TODO*/).itemStack)
+        val advancedIngredients = items.map { it.itemStack } + listOf(
+            ItemUtils.createPetItemstackFromPetInfo(getInputPetForCurrentLevel()),
+            Ingredient.coinIngredient(
+                manager,
+                coinsAdjustedForLevel
+            ).itemStack
+        )
         return advancedIngredients.mapIndexed { index, itemStack ->
             val (x, y) = positionOnCircle(index, advancedIngredients.size)
             RecipeSlot(x - 18 / 2, y - 18 / 2, itemStack)
-        } + listOf(RecipeSlot(circleCenter.first - 9, circleCenter.second - 9, ItemUtils.createPetItemstackFromPetInfo(getOutputPetForCurrentLevel())))
+        } + listOf(
+            RecipeSlot(
+                circleCenter.first - 9,
+                circleCenter.second - 9,
+                ItemUtils.createPetItemstackFromPetInfo(getOutputPetForCurrentLevel())
+            )
+        )
     }
 
     override fun getType(): RecipeType = RecipeType.KAT_UPGRADE
@@ -121,6 +138,7 @@ data class KatRecipe(
             addProperty("coins", coins)
             addProperty("input", inputPet.serialize())
             addProperty("output", outputPet.serialize())
+            addProperty("time", time.seconds)
             add("items", items.map { JsonPrimitive(it.serialize()) }.toJsonArray())
         }
     }
@@ -133,7 +151,8 @@ data class KatRecipe(
                 Ingredient(manager, recipe["input"].asString),
                 Ingredient(manager, recipe["output"].asString),
                 recipe["items"]?.asJsonArray?.map { Ingredient(manager, it.asString) } ?: emptyList(),
-                recipe["coins"].asLong
+                recipe["coins"].asLong,
+                Duration.ofSeconds(recipe["time"].asLong)
             )
         }
     }
