@@ -135,6 +135,7 @@ data class KatRecipe(
 
     override fun serialize(): JsonObject {
         return JsonObject().apply {
+            addProperty("type", type.id)
             addProperty("coins", coins)
             addProperty("input", inputPet.serialize())
             addProperty("output", outputPet.serialize())
