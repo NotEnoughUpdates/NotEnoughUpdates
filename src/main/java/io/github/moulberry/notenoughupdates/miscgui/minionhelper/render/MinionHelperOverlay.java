@@ -41,6 +41,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -48,9 +49,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MinionHelperOverlay {
@@ -306,16 +309,32 @@ public class MinionHelperOverlay {
 		}
 
 		double priceNeeded = 0;
+		int xpGain = 0;
 		int index = 0;
-		for (Double price : TrophyRewardOverlay.sortByValue(prices).values()) {
+		for (Minion minion : TrophyRewardOverlay.sortByValue(prices).keySet()) {
+			Double price = prices.get(minion);
 			priceNeeded += price;
+			xpGain += minion.getXpGain();
 			index++;
 			if (index == neededForNextSlot) break;
 		}
 		String format = manager.getPriceCalculation().formatCoins(priceNeeded);
 		format = format.replace(" coins", "");
-		String text = color + "Next slot: §3" + neededForNextSlot + " minions §8- " + format;
-		renderMap.put(text, new OverviewText(Collections.emptyList(), () -> {}));
+		String text =
+			color + "Next slot: §3" + neededForNextSlot + " minions §8- " + format;
+		List<String> lore;
+		if (xpGain == 0) {
+			if (index == 0) {
+				lore = Arrays.asList("§aAll minions bought!", "§cNo more SkyBlock XP to gain!");
+			} else {
+				lore = Collections.singletonList("§cCould not load SkyBlock XP for next slot!");
+			}
+		} else {
+			lore = Arrays.asList(EnumChatFormatting.DARK_AQUA.toString() + xpGain + " Skyblock XP §efor next slot",
+				"§8DISCLAIMER: This only works if", "§8you follow the helper."
+			);
+		}
+		renderMap.put(text, new OverviewText(lore, () -> {}));
 	}
 
 	private void addTitle(Map<Minion, Double> prices, LinkedHashMap<String, OverviewLine> renderMap) {

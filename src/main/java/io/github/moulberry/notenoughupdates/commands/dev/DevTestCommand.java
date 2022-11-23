@@ -166,8 +166,7 @@ public class DevTestCommand extends ClientCommandBase {
 		}
 
 		if (args.length == 2 && args[0].equalsIgnoreCase("pt")) {
-			EnumParticleTypes t = EnumParticleTypes.valueOf(args[1]);
-			FishingHelper.type = t;
+			FishingHelper.type = EnumParticleTypes.valueOf(args[1]);
 			return;
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("dev")) {

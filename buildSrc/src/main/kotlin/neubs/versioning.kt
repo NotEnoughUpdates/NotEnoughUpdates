@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -44,7 +44,7 @@ fun Project.setVersionFromEnvironment(baseVersion: String) {
         standardOutput = gitDiffStdout
         isIgnoreExitValue = true
     }
-    if (gitDiffStdout.toByteArray().isNotEmpty()) {
+    if (gitDiffResult.exitValue == 0 && gitDiffStdout.toByteArray().isNotEmpty()) {
         buildExtra.add("dirty")
     }
 

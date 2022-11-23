@@ -34,7 +34,7 @@ public class EnvironmentScan {
 
 		static boolean shouldCheckOnce = true;
 
-		static void checkEnvironmentOnce() {
+		public static void checkEnvironmentOnce() {
 				if (shouldCheckOnce) checkEnvironment();
 		}
 

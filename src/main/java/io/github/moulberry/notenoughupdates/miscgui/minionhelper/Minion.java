@@ -38,11 +38,15 @@ public class Minion extends OverviewLine {
 	private final List<MinionRequirement> requirements = new ArrayList<>();
 
 	private boolean crafted = false;
+
+	private final int xpGain;
+
 	private boolean meetRequirements = false;
 
-	public Minion(String internalName, int tier) {
+	public Minion(String internalName, int tier, int xpGain) {
 		this.internalName = internalName;
 		this.tier = tier;
+		this.xpGain = xpGain;
 	}
 
 	public MinionSource getMinionSource() {
@@ -95,6 +99,10 @@ public class Minion extends OverviewLine {
 
 	public void setMeetRequirements(boolean meetRequirements) {
 		this.meetRequirements = meetRequirements;
+	}
+
+	public int getXpGain() {
+		return xpGain;
 	}
 
 	@Override
