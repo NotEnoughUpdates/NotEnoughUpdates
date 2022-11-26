@@ -717,7 +717,6 @@ public class Mining {
 	@ConfigEditorAccordion(id = 9)
 	public boolean powderGrindingTrackerAccordion = false;
 
-
 	@Expose
 	@ConfigOption(
 		name = "Enable Tracker",
@@ -749,6 +748,17 @@ public class Mining {
 
 	@Expose
 	public Position powderGrindingTrackerPosition = new Position(10, 265);
+
+	@Expose
+	@ConfigOption(
+		name = "Overlay Style",
+		desc = "Change the style of the Powder Grinding Tracker information Overlay"
+	)
+	@ConfigEditorDropdown(
+		values = {"Background", "No Shadow", "Shadow", "Full Shadow"}
+	)
+	@ConfigAccordionId(id = 9)
+	public int powderGrindingTrackerOverlayStyle = 1;
 
 	@Expose
 	@ConfigOption(
