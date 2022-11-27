@@ -52,6 +52,7 @@ public class ItemPriceInformation {
 	private static HashSet<String> auctionableItems;
 	private static Gson gson;
 	private static final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
+	public static String STACKSIZE_OVERRIDE = "NEU_STACKSIZE_OVERRIDE";
 
 	public static boolean addToTooltip(List<String> tooltip, String internalname, ItemStack stack) {
 		return addToTooltip(tooltip, internalname, stack, true);
@@ -131,6 +132,9 @@ public class ItemPriceInformation {
 
 			int stackMultiplier = 1;
 			int shiftStackMultiplier = useStackSize && stack.stackSize > 1 ? stack.stackSize : 64;
+			if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(STACKSIZE_OVERRIDE)) {
+				shiftStackMultiplier = stack.getTagCompound().getInteger(STACKSIZE_OVERRIDE);
+			}
 			if (shiftPressed) {
 				stackMultiplier = shiftStackMultiplier;
 			}

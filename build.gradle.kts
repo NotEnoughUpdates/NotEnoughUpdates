@@ -30,6 +30,7 @@ plugins {
 		id("com.github.johnrengelman.shadow") version "7.1.2"
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
+		id("io.freefair.lombok") version "6.5.1"
 		kotlin("jvm") version "1.7.20"
 }
 
@@ -75,6 +76,11 @@ repositories {
 		maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 		maven("https://jitpack.io")
 }
+
+lombok {
+		version.set("1.18.24")
+}
+
 
 val shadowImplementation by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)

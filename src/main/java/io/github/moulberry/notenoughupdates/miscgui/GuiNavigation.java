@@ -87,6 +87,10 @@ public class GuiNavigation extends GuiScreen {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
 				String name = searchResults.get(i);
 				JsonObject json = NotEnoughUpdates.INSTANCE.navigation.getWaypoints().get(name);
+
+				//to prevent an NPE when trying to render a waypoint from AbiphoneContactExtraInformation
+				if (json == null) continue;
+
 				boolean selected = name.equals(NotEnoughUpdates.INSTANCE.navigation.getInternalname());
 				int baseX = guiLeft + LIST_START_X;
 				int baseY = guiTop + LIST_START_Y + LIST_OFFSET_Y * i;

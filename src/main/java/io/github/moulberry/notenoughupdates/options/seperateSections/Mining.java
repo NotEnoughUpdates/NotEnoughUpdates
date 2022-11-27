@@ -138,11 +138,12 @@ public class Mining {
 			"\u00a73Mithril Powder: \u00a726,243",
 			"\u00a73Gemstone Powder: \u00a7d6,243",
 			"\u00a73Forge 1) \u00a79Diamonite\u00a77: \u00a7aReady!",
-			"\u00a73Pickaxe CD: \u00a7a78s"
+			"\u00a73Pickaxe CD: \u00a7a78s",
+			"\u00a73Star Cult: \u00a7a78s"
 		}
 	)
 	@ConfigAccordionId(id = 2)
-	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
+	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
 
 	@Expose
 	public Position overlayPosition = new Position(10, 100);
@@ -198,6 +199,27 @@ public class Mining {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
 	public boolean forgeDisplayOnlyShowTab = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Star Cult Location",
+		desc = "Change when the Star Cult timer gets shown"
+	)
+	@ConfigEditorDropdown(
+		values = {"Dwarven Mines+Crystal Hollows", "Everywhere except dungeons", "Everywhere"}
+	)
+	@ConfigAccordionId(id = 2)
+	public int starCultDisplayEnabledLocations = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Star Cult Tab",
+		desc = "Only show the star cult timer when tab list is open\n" +
+			"\u00A7cThis only works outside of Dwarven Caves!"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean starCultDisplayOnlyShowTab = false;
 
 	@ConfigOption(
 		name = "Metal Detector Solver",

@@ -302,7 +302,12 @@ public class Utils {
 	}
 
 	public static String chromaString(String str, float offset, boolean bold) {
+		return chromaString(str, offset, bold ? "§l" : "");
+	}
+
+	public static String chromaString(String str, float offset, String extraFormatting) {
 		str = cleanColour(str);
+		boolean bold = extraFormatting.contains("§l");
 
 		long currentTimeMillis = System.currentTimeMillis();
 		if (startTime == 0) startTime = currentTimeMillis;
@@ -321,7 +326,7 @@ public class Utils {
 
 			if (index < 0) index += rainbow.length;
 			rainbowText.append(rainbow[index]);
-			if (bold) rainbowText.append(EnumChatFormatting.BOLD);
+			rainbowText.append(extraFormatting);
 			rainbowText.append(c);
 		}
 		return rainbowText.toString();

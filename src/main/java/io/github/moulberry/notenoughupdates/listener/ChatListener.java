@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnderNodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TimersOverlay;
@@ -310,8 +311,10 @@ public class ChatListener {
 			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
 			OverlayManager.powderGrindingOverlay.message(unformatted);
 
-		if (unformatted.equals("ENDER NODE! You found Endermite Nest!")) {
-			EnderNodes.dispalyEndermiteNotif();
-		}
+		if (unformatted.startsWith("ENDER NODE!"))
+			EnderNodeHighlighter.getInstance().highlightedBlocks.clear();
+
+		if (unformatted.equals("ENDER NODE! You found Endermite Nest!"))
+			EnderNodes.displayEndermiteNotif();
 	}
 }

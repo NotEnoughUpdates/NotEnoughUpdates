@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -422,9 +423,12 @@ public class MiningOverlay extends TextTabOverlay {
 						}
 						break;
 					case 4:
-						//overlayStrings.addAll(forgeStringsEmpty); break;
-					case 5:
 						overlayStrings.add(pickaxeCooldown);
+						break;
+					case 5:
+						overlayStrings.add(
+							DARK_AQUA + "Star Cult: " + GREEN +
+								StarCultCalculator.getNextStarCult());
 						break;
 				}
 			}
@@ -433,13 +437,36 @@ public class MiningOverlay extends TextTabOverlay {
 				return;
 			}
 			boolean forgeDisplay = false;
+			boolean starCultDisplay = false;
 			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.size(); i++) {
 				if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.get(i) == 3) {
 					forgeDisplay = true;
 				}
+				if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.get(i) == 5) {
+					starCultDisplay = true;
+				}
 			}
+
+			if (starCultDisplay) {
+				if(overlayStrings == null) overlayStrings = new ArrayList<>();
+
+				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
+					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+					if (NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayEnabledLocations == 1 &&
+						!SBInfo.getInstance().isInDungeon) {
+						overlayStrings.add(
+							DARK_AQUA + "Star Cult: " + GREEN +
+								StarCultCalculator.getNextStarCult());
+					} else if (NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayEnabledLocations == 2) {
+						overlayStrings.add(
+							DARK_AQUA + "Star Cult: " + GREEN +
+								StarCultCalculator.getNextStarCult());
+					}
+				}
+			}
+
 			if (forgeDisplay) {
-				overlayStrings = new ArrayList<>();
+				if(overlayStrings == null) 	overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
 					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
@@ -680,6 +707,12 @@ public class MiningOverlay extends TextTabOverlay {
 				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("DIAMOND_PICKAXE"))
+			);
+			put(
+				"Star Cult",
+				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+					.getItemInformation()
+					.get("FALLEN_STAR_HAT"))
 			);
 			put(
 				"Thyst Slayer",

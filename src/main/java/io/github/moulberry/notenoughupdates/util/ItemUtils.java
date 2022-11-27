@@ -429,4 +429,13 @@ public class ItemUtils {
 											line.equals("§8§l* Soulbound §8§l*"));
 	}
 
+	public static String fixDraconicId(String id) {
+		if (id.equals("ASPECT_OF_THE_DRAGONS")) return "ASPECT_OF_THE_DRAGON";
+		if (id.equals("ENDER_HELMET")) return "END_HELMET";
+		if (id.equals("ENDER_CHESTPLATE")) return "END_CHESTPLATE";
+		if (id.equals("ENDER_LEGGINGS")) return "END_LEGGINGS";
+		if (id.equals("ENDER_BOOTS")) return "END_BOOTS";
+		return id;
+	}
+
 }
