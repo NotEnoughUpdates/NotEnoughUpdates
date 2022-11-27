@@ -81,7 +81,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Enable Powder Ghast Waypoints",
-		desc = "Shows a waypoint of the location of the Powder Ghast"
+		desc = "Shows a waypoint at the location of the Powder Ghast"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
@@ -90,7 +90,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Enable Fallen Star Waypoints",
-		desc = "Shows a waypoint of the location of the Fallen Star"
+		desc = "Shows a waypoint at the location of the Fallen Star"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
