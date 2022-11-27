@@ -114,13 +114,13 @@ public class DwarvenMinesWaypoints {
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
 		Matcher matcherGhast = ghastRegex.matcher(event.message.getFormattedText());
-		if (matcherGhast.find()) {
+		if (matcherGhast.find() && NotEnoughUpdates.INSTANCE.config.mining.powderGhastWaypoint) {
 			dynamicLocation = Utils.cleanColour(matcherGhast.group(1).trim());
 			dynamicName = EnumChatFormatting.GOLD + "Powder Ghast";
 			dynamicMillis = System.currentTimeMillis();
 		} else {
 			Matcher matcherStar = fallenStarRegex.matcher(event.message.getFormattedText());
-			if (matcherStar.find()) {
+			if (matcherStar.find() && NotEnoughUpdates.INSTANCE.config.mining.fallenStarWaypoint) {
 				dynamicLocation = Utils.cleanColour(matcherStar.group(1).trim());
 				dynamicName = EnumChatFormatting.DARK_PURPLE + "Fallen Star";
 				dynamicMillis = System.currentTimeMillis();

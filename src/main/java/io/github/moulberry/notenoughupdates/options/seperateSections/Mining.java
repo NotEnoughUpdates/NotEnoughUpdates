@@ -78,6 +78,24 @@ public class Mining {
 	@ConfigAccordionId(id = 0)
 	public int emissaryWaypoints = 1;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable Powder Ghast Waypoints",
+		desc = "Shows a waypoint of the location of the Powder Ghast"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean powderGhastWaypoint = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Fallen Star Waypoints",
+		desc = "Shows a waypoint of the location of the Fallen Star"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean fallenStarWaypoint = true;
+
 	@ConfigOption(
 		name = "Drill Fuel Bar",
 		desc = ""
