@@ -112,16 +112,18 @@ public class ExtraPage extends GuiProfileViewerPage {
 	) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		yStartTop = yStartTop + 78;
+		yStartTop += 77;
 		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
 		JsonObject parents = Constants.PARENTS;
-		JsonArray essenceArray = parents.get("ESSENCE_WITHER").getAsJsonArray();
+		JsonArray essenceArray = new JsonArray();
+		essenceArray.addAll(parents.get("ESSENCE_WITHER").getAsJsonArray());
+		//add wither essence since it's not part of the parents array
+		essenceArray.add(new JsonPrimitive("ESSENCE_WITHER"));
 
 		for (int i = 0; i < essenceArray.size(); i++) {
-
 			JsonElement jsonElement = essenceArray.get(i);
 			String essenceName = jsonElement.getAsString();
 
@@ -132,13 +134,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();
 			int essenceNumber =
-				(profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0);
+				profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0;
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.GOLD + displayName,
 				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(essenceNumber, 0),
 				guiLeft + xStart + xOffset,
-				guiTop + yStartTop + yOffset * i,
+				guiTop + yStartTop + (yOffset - 1) * i,
 				76
 			);
 		}
