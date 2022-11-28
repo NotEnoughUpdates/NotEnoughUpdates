@@ -758,7 +758,7 @@ public class Mining {
 		values = {"Background", "No Shadow", "Shadow", "Full Shadow"}
 	)
 	@ConfigAccordionId(id = 9)
-	public int powderGrindingTrackerOverlayStyle = 1;
+	public int powderGrindingTrackerOverlayStyle = 0;
 
 	@Expose
 	@ConfigOption(
