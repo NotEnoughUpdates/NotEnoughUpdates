@@ -342,7 +342,6 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new GlowingMushroomHighlighter());
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
-		MinecraftForge.EVENT_BUS.register(KatRecipe.Companion);
 		MinecraftForge.EVENT_BUS.register(EnchantStyleCustomizer.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
 		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());

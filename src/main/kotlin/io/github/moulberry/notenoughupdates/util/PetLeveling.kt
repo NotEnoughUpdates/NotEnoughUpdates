@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
