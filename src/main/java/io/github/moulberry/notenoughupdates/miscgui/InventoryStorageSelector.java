@@ -79,33 +79,8 @@ public class InventoryStorageSelector {
 			!NotEnoughUpdates.INSTANCE.config.storageGUI.showInvBackpack) {
 			return;
 		}
-		if (Minecraft.getMinecraft().currentScreen != null) {
-			return;
-		}
 
-		if (NotEnoughUpdates.INSTANCE.config.storageGUI.arrowKeyBackpacks) {
-			if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.arrowLeftKey)) {
-				NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex--;
-
-				int max = StorageManager.getInstance().storageConfig.displayToStorageIdMap.size() - 1;
-				if (NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex > max)
-					NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex = max;
-				if (NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex < 0)
-					NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex = 0;
-			} else if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.arrowRightKey)) {
-				NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex++;
-
-				int max = StorageManager.getInstance().storageConfig.displayToStorageIdMap.size() - 1;
-				if (NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex > max)
-					NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex = max;
-				if (NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex < 0)
-					NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex = 0;
-			} else if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.arrowDownKey)) {
-				sendToPage(NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex);
-			}
-		}
-
-		if (isSlotSelected()) {
+		if (Minecraft.getMinecraft().currentScreen == null && isSlotSelected()) {
 			int useKeycode = Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode() + 100;
 			int attackKeycode = Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode() + 100;
 
@@ -147,11 +122,13 @@ public class InventoryStorageSelector {
 			return;
 		}
 
+		if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.backpackHotkey)) {
+			Minecraft.getMinecraft().thePlayer.inventory.currentItem = 0;
+			isOverridingSlot = true;
+		}
+
 		if (NotEnoughUpdates.INSTANCE.config.storageGUI.arrowKeyBackpacks) {
-			if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.backpackHotkey)) {
-				Minecraft.getMinecraft().thePlayer.inventory.currentItem = 0;
-				isOverridingSlot = true;
-			} else if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.arrowLeftKey)) {
+			if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.storageGUI.arrowLeftKey)) {
 				NotEnoughUpdates.INSTANCE.config.storageGUI.selectedIndex--;
 
 				int max = StorageManager.getInstance().storageConfig.displayToStorageIdMap.size() - 1;
