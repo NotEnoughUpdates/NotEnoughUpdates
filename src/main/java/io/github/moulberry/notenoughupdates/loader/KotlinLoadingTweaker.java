@@ -159,14 +159,14 @@ public class KotlinLoadingTweaker implements ITweaker {
 			}
 			classLoader.loadClass("kotlin.KotlinVersion");
 			System.out.println("Could successfully load a Kotlin class.");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			System.err.println("Failed to load Kotlin into NEU. This is most likely a bad thing.");
 			e.printStackTrace();
 		} finally {
 			if (fs != null) {
 				try {
 					fs.close();
-				} catch (IOException e) {
+				} catch (Throwable e) {
 					e.printStackTrace();
 				}
 			}
