@@ -59,7 +59,6 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
-import io.github.moulberry.notenoughupdates.util.RequestFocusListener;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -93,7 +92,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -1392,23 +1390,6 @@ public class RenderListener {
 				if (lower.getStackInSlot(23) != null && lower.getStackInSlot(23).getDisplayName().endsWith("Crafting Table")) {
 					ItemStack res = lower.getStackInSlot(25);
 					String resInternalname = neu.manager.getInternalNameForItem(res);
-					JTextField tf = new JTextField();
-					tf.setText(resInternalname);
-					tf.addAncestorListener(new RequestFocusListener());
-					JOptionPane.showOptionDialog(
-						null,
-						tf,
-						"Enter Name:",
-						JOptionPane.NO_OPTION,
-						JOptionPane.PLAIN_MESSAGE,
-						null,
-						new String[]{"Enter"},
-						"Enter"
-					);
-					resInternalname = tf.getText();
-					if (resInternalname.trim().length() == 0) {
-						return;
-					}
 
 					JsonObject recipe = new JsonObject();
 
