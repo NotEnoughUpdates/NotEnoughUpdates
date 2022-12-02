@@ -33,7 +33,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class WitherCloakChanger {
 	public static boolean isCloakActive = false;
@@ -41,7 +40,7 @@ public class WitherCloakChanger {
 	 * When was the last charged Creeper that is a member of the group rendered?
 	 * Used to determine if the cloak was deactivated by Hypixel without sending a message
 	 *
-	 * @see io.github.moulberry.notenoughupdates.mixins.MixinEntityChargedCreeper#cancelChargedCreeperLayer(EntityCreeper, float, float, float, float, float, float, float, CallbackInfo)
+	 * @see io.github.moulberry.notenoughupdates.mixins.MixinEntityChargedCreeper#cancelChargedCreeperLayer(EntityCreeper, float, float, float, float, float, float, float, org.spongepowered.asm.mixin.injection.callback.CallbackInfo)
 	 */
 	public static long lastCreeperRender = 0;
 	public static long lastDeactivate = System.currentTimeMillis();
