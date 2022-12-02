@@ -31,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LayerCreeperCharge.class)
 public abstract class MixinEntityChargedCreeper {
-
 	@Inject(method = "doRenderLayer(Lnet/minecraft/entity/monster/EntityCreeper;FFFFFFF)V", at = @At("HEAD"), cancellable = true)
 	public void cancelChargedCreeperLayer(EntityCreeper creeper, float f, float g, float partialTicks, float h, float i, float j, float scale, CallbackInfo ci) {
 		//Wither Cloak Creepers: Is toggled on, Are invisible, 20 max health, usually less than 7.5M from the player, only existent when active, and only in sb obviously
@@ -41,6 +40,7 @@ public abstract class MixinEntityChargedCreeper {
 				(WitherCloakChanger.isCloakActive || System.currentTimeMillis() - WitherCloakChanger.lastDeactivate < 300) &&
 				NotEnoughUpdates.INSTANCE.isOnSkyblock();
 		if (isWitherCloak) {
+			WitherCloakChanger.lastCreeperRender = System.currentTimeMillis();
 			if (ci.isCancellable()) {
 				ci.cancel();
 			}
