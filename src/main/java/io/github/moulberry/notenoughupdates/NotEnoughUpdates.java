@@ -70,6 +70,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Dwarve
 import io.github.moulberry.notenoughupdates.miscfeatures.item.enchants.EnchantStyleCustomizer;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.FrozenTreasuresHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.GlowingMushroomHighlighter;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
@@ -344,6 +345,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(EnchantStyleCustomizer.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
 		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());
+		MinecraftForge.EVENT_BUS.register(FrozenTreasuresHighlighter.getInstance());
 		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
 		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
 
