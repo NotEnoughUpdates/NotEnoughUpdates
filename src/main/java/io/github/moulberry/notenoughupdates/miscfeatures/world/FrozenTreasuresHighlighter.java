@@ -65,7 +65,8 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 	public void onTick(TickEvent.ClientTickEvent event) {
 		if (event.phase != TickEvent.Phase.END||!isEnabled()) return;
 		List<Entity> entities = Minecraft.getMinecraft().theWorld.getLoadedEntityList();
-		highlightedTreasures.removeIf(it -> !(it instanceof EntityArmorStand) || ((EntityArmorStand) it).getCurrentArmor(3)==null);
+		highlightedTreasures.removeIf(it -> !(it instanceof EntityArmorStand)
+			|| ((EntityArmorStand) it).getCurrentArmor(3)==null || isValidHighlightSpot(it.getPosition().add(0,1,0)));
 		for (Entity e : entities) {
 			if ((e instanceof EntityArmorStand) && ((EntityArmorStand) e).getCurrentArmor(3)!=null) highlightedTreasures.add(e);
 		}
