@@ -55,12 +55,7 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 		Block b = w.getBlockState(key).getBlock();
 		return b == Blocks.ice;
 	}
-
-	protected static boolean canSee(MovingObjectPosition hitResult, BlockPos bp) {
-		return hitResult == null
-			|| hitResult.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
-			|| bp.equals(hitResult.getBlockPos());
-	}
+	
 	@SubscribeEvent
 	public void onWorldRenderLast(RenderWorldLastEvent event) {
 		if (!isEnabled()) return;
@@ -76,16 +71,12 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 			}
 		}
 	}
+
 	@Override
 	protected int getColor(BlockPos blockPos) {
 		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.frozenTreasuresColor);
 	}
-	@Override
-	public boolean tryRegisterInterest(double x, double y, double z) {
-		BlockPos blockPos = new BlockPos(x, y, z);
-		boolean canSee = canPlayerSeeNearBlocks(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-		return isValidHighlightSpot(blockPos) && canSee;
-	}
+
 	public boolean tryRegisterInterest(BlockPos blockPos) {
 		boolean canSee = canPlayerSeeNearBlocks(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		return isValidHighlightSpot(blockPos) && canSee;
