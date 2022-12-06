@@ -75,6 +75,7 @@ repositories {
 		maven("https://repo.spongepowered.org/maven/")
 		maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 		maven("https://jitpack.io")
+		maven("https://repo.polyfrost.cc/releases")
 }
 
 lombok {
@@ -100,6 +101,18 @@ val devEnv by configurations.creating {
 val kotlinDependencies by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
+if (project.property("neu.buildflags.oneconfig") == "true") {
+		sourceSets.main {
+				java {
+						srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
+				}
+		}
+		dependencies {
+				modCompileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.1.0-alpha+") // Should not be included in jar
+				shadowImplementation("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+		}
+}
+
 
 dependencies {
 		implementation("org.projectlombok:lombok:1.18.22")

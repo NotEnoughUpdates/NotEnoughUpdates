@@ -77,6 +77,7 @@ import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
+import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.FuelBar;
@@ -291,6 +292,8 @@ public class NotEnoughUpdates {
 		if (config != null)
 			if (config.mining.powderGrindingTrackerResetMode == 2)
 				OverlayManager.powderGrindingOverlay.load();
+
+		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config, this::saveConfig));
 
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
