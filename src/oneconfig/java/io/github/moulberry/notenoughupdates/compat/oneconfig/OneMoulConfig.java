@@ -128,7 +128,7 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 			}
 			ConfigEditorSlider configEditorSlider = optionField.getAnnotation(ConfigEditorSlider.class);
 			if (configEditorSlider != null) {
-				category.options.add(new ConfigSlider(
+				category.options.add(new WrappedConfigSlider(
 					optionField,
 					categoryInstance,
 					annotation.name(),

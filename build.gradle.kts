@@ -87,8 +87,12 @@ val shadowImplementation by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
 
+val shadowOnly by configurations.creating {
+
+}
+
 val shadowApi by configurations.creating {
-		configurations.implementation.get().extendsFrom(this)
+		configurations.api.get().extendsFrom(this)
 }
 
 val devEnv by configurations.creating {
@@ -101,18 +105,14 @@ val devEnv by configurations.creating {
 val kotlinDependencies by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
-if (project.property("neu.buildflags.oneconfig") == "true") {
-		sourceSets.main {
-				java {
-						srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
-				}
+
+val oneconfigQuarantineSourceSet = sourceSets.create("oneconfig") {
+		java {
+				srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
 		}
-		dependencies {
-				modCompileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.1.0-alpha+") // Should not be included in jar
-				shadowImplementation("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+		kotlin {
 		}
 }
-
 
 dependencies {
 		implementation("org.projectlombok:lombok:1.18.22")
@@ -120,6 +120,16 @@ dependencies {
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
+
+		if (project.property("neu.buildflags.oneconfig") == "true") {
+				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+		}
+
+		"oneconfigImplementation"(sourceSets.main.get().output)
+		"oneconfigImplementation"(sourceSets.main.get().compileClasspath)
+		"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
+		"runtimeOnly"(oneconfigQuarantineSourceSet.output)
 
 		// Please keep this version in sync with KotlinLoadingTweaker
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.7.21"))
@@ -152,6 +162,10 @@ tasks.withType(JavaCompile::class) {
 
 tasks.named<Test>("test") {
 		useJUnitPlatform()
+}
+
+tasks.named("jar", Jar::class) {
+		from(oneconfigQuarantineSourceSet.output)
 }
 
 tasks.withType(Jar::class) {
@@ -187,7 +201,7 @@ val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
 
 tasks.shadowJar {
 		archiveClassifier.set("dep-dev")
-		configurations = listOf(shadowImplementation, shadowApi)
+		configurations = listOf(shadowImplementation, shadowApi, shadowOnly)
 		exclude("**/module-info.class", "LICENSE.txt")
 		dependencies {
 				exclude {
@@ -195,6 +209,7 @@ tasks.shadowJar {
 										listOf("logback-classic", "commons-logging", "commons-codec", "logback-core")
 				}
 		}
+		from(oneconfigQuarantineSourceSet.output)
 		from(kotlinDependencyCollectionJar)
 		dependsOn(kotlinDependencyCollectionJar)
 		fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
