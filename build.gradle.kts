@@ -121,7 +121,7 @@ dependencies {
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
 
-		if (project.property("neu.buildflags.oneconfig") == "true") {
+		if (project.findProperty("neu.buildflags.oneconfig") == "true") {
 				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
 				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
 		}
