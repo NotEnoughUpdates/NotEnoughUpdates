@@ -256,7 +256,7 @@ public class MinionHelperOverlayHover {
 			if (internalName.equals("SKYBLOCK_NORTH_STAR")) {
 				// North Stars are not in the API
 
-				lines.add(" §8- §a" + amount + "§7x §d" + "North Stars");
+				lines.add(" §8- §a" + amount + "§7x §d" + "North Star");
 				continue;
 			}
 
