@@ -73,6 +73,7 @@ import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
+import org.luaj.vm2.ast.Str;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -408,7 +409,10 @@ public class NEUConfig extends Config {
 		public HashMap<String, NEUConfig.HiddenLocationSpecific> locationSpecific = new HashMap<>();
 		@Expose
 		public List<NEUConfig.InventoryButton> inventoryButtons = createDefaultInventoryButtons();
-
+		@Expose
+		public HashMap<String, String> presets = new HashMap<>();
+		@Expose
+		public int index = 0;
 		@Expose
 		public EnumSet<NEUDebugFlag> debugFlags = EnumSet.noneOf(NEUDebugFlag.class);
 		@Expose

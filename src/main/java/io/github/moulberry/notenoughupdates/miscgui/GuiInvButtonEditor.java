@@ -61,6 +61,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -177,6 +178,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		super();
 		reloadExtraIcons();
 		reloadPresets();
+		addPresetsToList();
 	}
 
 	private static void reloadExtraIcons() {
@@ -201,6 +203,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 
 	private static void reloadPresets() {
 		presets = new LinkedHashMap<>();
+		NotEnoughUpdates.INSTANCE.config.hidden.presets = new HashMap<>();
+		NotEnoughUpdates.INSTANCE.config.hidden.index = 0;
 
 		try (
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -226,6 +230,59 @@ public class GuiInvButtonEditor extends GuiScreen {
 				}
 			}
 		} catch (Exception ignored) {
+		}
+	}
+
+	private static void addPresetsToList() {
+
+		Set<String> keySets = NotEnoughUpdates.INSTANCE.config.hidden.presets.keySet();
+		for (String key : keySets)
+		{
+			String base64 = NotEnoughUpdates.INSTANCE.config.hidden.presets.get(key);
+
+			if (base64.length() <= sharePrefix.length()) return;
+
+			base64 = base64.trim();
+
+			String jsonString;
+			try {
+				jsonString = new String(Base64.getDecoder().decode(base64));
+				if (!jsonString.startsWith(sharePrefix)) return;
+				jsonString = jsonString.substring(sharePrefix.length());
+			} catch (IllegalArgumentException e) {
+				return;
+
+			}
+			JsonArray presetArray;
+			try {
+				presetArray = new JsonParser().parse(jsonString).getAsJsonArray();
+			} catch (IllegalStateException | JsonParseException e) {
+				return;
+			}
+
+			List<NEUConfig.InventoryButton> buttons = new ArrayList<>();
+			System.out.println(presetArray.size());
+			try {
+				for (int i = 0; i < presetArray.size(); i++) {
+
+					JsonElement shittyO = presetArray.get(i);
+					JsonElement lessShittyO = new JsonParser().parse(shittyO.getAsString());
+					if (lessShittyO.isJsonObject()) {
+						JsonObject o = lessShittyO.getAsJsonObject();
+						NEUConfig.InventoryButton button = NotEnoughUpdates.INSTANCE.manager.gson.fromJson(
+							o,
+							NEUConfig.InventoryButton.class
+						);
+						buttons.add(button);
+					}
+
+				}
+
+				presets.put(key, buttons);
+				continue;
+			} catch (JsonParseException | ClassCastException | IllegalStateException e) {
+				continue;
+			}
 		}
 	}
 
@@ -409,6 +466,17 @@ public class GuiInvButtonEditor extends GuiScreen {
 			68 / 78f,
 			GL11.GL_NEAREST
 		);
+		Utils.drawTexturedRect(
+			guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
+			guiTop + 2 + 46,
+			88,
+			20,
+			64 / 217f,
+			152 / 217f,
+			48 / 78f,
+			68 / 78f,
+			GL11.GL_NEAREST
+		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Load preset",
 			fontRendererObj,
@@ -441,6 +509,24 @@ public class GuiInvButtonEditor extends GuiScreen {
 			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16 + 24,
+			false,
+			86,
+			4210752
+		);
+		Utils.drawStringCenteredScaledMaxWidth(
+			"Save preset",
+			fontRendererObj,
+			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
+			guiTop + 8 + 47,
+			false,
+			86,
+			4210752
+		);
+		Utils.drawStringCenteredScaledMaxWidth(
+			"to Presets list",
+			fontRendererObj,
+			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
+			guiTop + 17 + 47,
 			false,
 			86,
 			4210752
@@ -877,8 +963,30 @@ public class GuiInvButtonEditor extends GuiScreen {
 					jsonArray).getBytes(StandardCharsets.UTF_8));
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
 				return;
+			} else if (mouseY > guiTop + 51 && mouseY < guiTop + 61) {
+				System.out.println("Wultah");
+				List<NEUConfig.InventoryButton> result = NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons;
+				JsonArray jsonArray = new JsonArray();
+
+				for (NEUConfig.InventoryButton inventoryButton : result) {
+					jsonArray.add(new JsonPrimitive(NotEnoughUpdates.INSTANCE.manager.gson.toJson(
+						inventoryButton,
+						NEUConfig.InventoryButton.class
+					)));
+				}
+				String base64String = Base64.getEncoder().encodeToString((sharePrefix +
+					jsonArray).getBytes(StandardCharsets.UTF_8));
+				NotEnoughUpdates.INSTANCE.config.hidden.presets.put("Test " + NotEnoughUpdates.INSTANCE.config.hidden.index, base64String);
+				NotEnoughUpdates.INSTANCE.config.hidden.index++;
+				addPresetsToList();
+				System.out.println("I Did it omg");
+				return;
 			}
 		}
+
+		/*System.out.println("X: " + mouseX);
+		System.out.println("Y: " + mouseY);
+		System.out.println("GUI TOP: " + guiTop);*/
 
 		if (editingButton == null) {
 			int index = 0;
