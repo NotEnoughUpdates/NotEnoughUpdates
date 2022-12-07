@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
@@ -73,6 +74,21 @@ public class MiningOverlay extends TextTabOverlay {
 
 	private static final Pattern NUMBER_PATTERN = Pattern.compile("(?<number>\\d*,?\\d+)(?: |$)");
 	public static Map<String, Float> commissionProgress = new LinkedHashMap<>();
+
+	@Override
+	protected boolean shouldUpdate() {
+		//prevent rendering when tab completing a command
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat && (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab||NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayOnlyShowTab)) {
+			return false;
+		}
+
+		//prevent rendering when tab completing in ah search overlay
+		if (AuctionSearchOverlay.shouldReplace()) {
+			return false;
+		}
+
+		return true;
+	}
 
 	@Override
 	public void updateFrequent() {

@@ -63,7 +63,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 		}
 	}
 
-	private boolean shouldUpdate() {
+	protected boolean shouldUpdate() {
 		//prevent rendering when tab completing a command
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
 			return false;
