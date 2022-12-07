@@ -76,21 +76,6 @@ public class MiningOverlay extends TextTabOverlay {
 	public static Map<String, Float> commissionProgress = new LinkedHashMap<>();
 
 	@Override
-	protected boolean shouldUpdate() {
-		//prevent rendering when tab completing a command
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat && (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab||NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayOnlyShowTab)) {
-			return false;
-		}
-
-		//prevent rendering when tab completing in ah search overlay
-		if (AuctionSearchOverlay.shouldReplace()) {
-			return false;
-		}
-
-		return true;
-	}
-
-	@Override
 	public void updateFrequent() {
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
@@ -466,8 +451,8 @@ public class MiningOverlay extends TextTabOverlay {
 			if (starCultDisplay) {
 				if(overlayStrings == null) overlayStrings = new ArrayList<>();
 
-				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
-					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+				if (!NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayOnlyShowTab ||
+					lastTabState) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayEnabledLocations == 1 &&
 						!SBInfo.getInstance().isInDungeon) {
 						overlayStrings.add(
@@ -485,7 +470,7 @@ public class MiningOverlay extends TextTabOverlay {
 				if(overlayStrings == null) 	overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
-					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+					lastTabState) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 1 &&
 						!SBInfo.getInstance().isInDungeon) {
 						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));

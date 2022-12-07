@@ -242,7 +242,7 @@ public class TimersOverlay extends TextTabOverlay {
 		if (hidden == null) return;
 
 		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab &&
-			!Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+			!lastTabState) {
 			overlayStrings = null;
 			return;
 		}
