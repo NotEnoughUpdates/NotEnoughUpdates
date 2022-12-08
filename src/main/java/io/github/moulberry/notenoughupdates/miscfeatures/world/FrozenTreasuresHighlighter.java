@@ -31,6 +31,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
 import java.util.List;
 
 public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
@@ -38,7 +39,6 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 	private static final FrozenTreasuresHighlighter INSTANCE = new FrozenTreasuresHighlighter();
 
 	public static FrozenTreasuresHighlighter getInstance() {return INSTANCE;}
-
 
 	@Override
 	protected boolean isEnabled() {
@@ -56,11 +56,13 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 
 	@SubscribeEvent
 	public void onTickNew(TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.END||!isEnabled()) return;
+		if (event.phase != TickEvent.Phase.END || !isEnabled()) return;
 
 		List<Entity> entities = Minecraft.getMinecraft().theWorld.getLoadedEntityList();
 		for (Entity e : entities) {
-			if ((e instanceof EntityArmorStand) && ((EntityArmorStand) e).getCurrentArmor(3)!=null) highlightedBlocks.add(e.getPosition().add(0,1,0));
+			if ((e instanceof EntityArmorStand) && ((EntityArmorStand) e).getCurrentArmor(3) != null) highlightedBlocks.add(e
+				.getPosition()
+				.add(0, 1, 0));
 		}
 	}
 
