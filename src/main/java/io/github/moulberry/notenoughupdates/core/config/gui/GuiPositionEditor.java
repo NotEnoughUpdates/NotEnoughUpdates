@@ -48,11 +48,8 @@ public class GuiPositionEditor extends GuiScreen {
 	private int grabbedY = 0;
 	private int clickedPos = -1;
 	private int oldGuiScale = -1;
-	private int currentGuiScale = -1;
-
 	public static boolean renderDrill = false;
 
-	private int guiScaleOverride = -1;
 
 	public GuiPositionEditor(
 		LinkedHashMap<TextOverlay, Position> overlayPositions,
@@ -113,11 +110,6 @@ public class GuiPositionEditor extends GuiScreen {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		GlStateManager.pushMatrix();
 		ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
-		/*if (guiScaleOverride >= 0) {
-			scaledResolution = Utils.pushGuiScale(guiScaleOverride);
-		} else {
-			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		}*/
 
 		this.width = scaledResolution.getScaledWidth();
 		this.height = scaledResolution.getScaledHeight();
@@ -143,8 +135,6 @@ public class GuiPositionEditor extends GuiScreen {
 			if (position.isCenterY()) y -= elementHeight / 2;
 			Gui.drawRect(x, y, x + elementWidth, y + elementHeight, 0x80404040);
 
-			//Utils.pushGuiScale(-1);
-
 			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			Utils.drawStringCentered("Position Editor", Minecraft.getMinecraft().fontRendererObj,
 				scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff
@@ -162,11 +152,6 @@ public class GuiPositionEditor extends GuiScreen {
 
 		if (mouseButton == 0) {
 			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
-			/*if (guiScaleOverride >= 0) {
-				scaledResolution = Utils.pushGuiScale(guiScaleOverride);
-			} else {
-				scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-			}*/
 			mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 			mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 			for (int i = positions.size() - 1; i >= 0; i--) {
@@ -188,7 +173,6 @@ public class GuiPositionEditor extends GuiScreen {
 					}
 				}
 
-				//Utils.pushGuiScale(-1);
 			}
 		}
 	}
