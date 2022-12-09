@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class LocationEdit {
@@ -36,6 +37,15 @@ public class LocationEdit {
 		buttonText = "Edit"
 	)
 	public Position positions = new Position(-1, -1);
+
+	@ConfigOption(
+		name = "Edit Gui Scale",
+		desc = "Change the size of NEU's overlays"
+	)
+	@ConfigEditorDropdown(
+		values = {"Default", "Small", "Normal", "Large", "Auto"}
+	)
+	public int guiScale = 0;
 
 	@ConfigOption(
 		name = "Edit Dungeon Map",

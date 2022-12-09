@@ -661,7 +661,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ROCK;0");
 		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight);
+			Vector2f position = getPosition(overlayWidth, overlayHeight, false);
 			int x = (int) position.x;
 			int y = (int) position.y;
 
@@ -700,7 +700,7 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight);
+			Vector2f position = getPosition(overlayWidth, overlayHeight, false);
 			int x = (int) position.x;
 			int y = (int) position.y;
 
@@ -718,7 +718,7 @@ public class PetInfoOverlay extends TextOverlay {
 			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
 				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
 			if (petItem2 != null) {
-				Vector2f position = getPosition(overlayWidth, overlayHeight);
+				Vector2f position = getPosition(overlayWidth, overlayHeight, false);
 				int x = (int) position.x;
 				int y = (int) position.y + NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.size() * 10 + 10;
 
