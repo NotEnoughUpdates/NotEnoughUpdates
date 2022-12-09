@@ -57,8 +57,9 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 	@SubscribeEvent
 	public void onTickNew(TickEvent.ClientTickEvent event) {
 		if (event.phase != TickEvent.Phase.END || !isEnabled()) return;
-
-		List<Entity> entities = Minecraft.getMinecraft().theWorld.getLoadedEntityList();
+		World w = Minecraft.getMinecraft().theWorld;
+		if (w == null) return;
+		List<Entity> entities = w.getLoadedEntityList();
 		for (Entity e : entities) {
 			if ((e instanceof EntityArmorStand) && ((EntityArmorStand) e).getCurrentArmor(3) != null) highlightedBlocks.add(e
 				.getPosition()
