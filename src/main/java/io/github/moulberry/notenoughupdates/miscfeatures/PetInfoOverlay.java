@@ -700,16 +700,18 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight, false);
+			Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 			int x = (int) position.x;
 			int y = (int) position.y;
 
 			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
 			GlStateManager.enableDepth();
 			GlStateManager.pushMatrix();
+			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 			GlStateManager.translate(x - 2, y - 2, 0);
 			GlStateManager.scale(2, 2, 1);
 			Utils.drawItemStack(stack, 0, 0);
+			Utils.pushGuiScale(0);
 			GlStateManager.popMatrix();
 		}
 

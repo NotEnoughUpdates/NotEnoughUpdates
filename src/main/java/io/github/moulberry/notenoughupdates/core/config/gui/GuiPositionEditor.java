@@ -189,7 +189,7 @@ public class GuiPositionEditor extends GuiScreen {
 					}
 				}
 
-				Utils.pushGuiScale(-1);
+				//Utils.pushGuiScale(-1);
 			}
 		}
 	}
