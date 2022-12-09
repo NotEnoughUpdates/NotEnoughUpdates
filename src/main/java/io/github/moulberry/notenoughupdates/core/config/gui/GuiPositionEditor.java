@@ -94,7 +94,6 @@ public class GuiPositionEditor extends GuiScreen {
 			} else {
 				this.oldGuiScale = 4;
 			}
-			System.out.println(this.oldGuiScale);
 			if (newGuiScale == 4) Minecraft.getMinecraft().gameSettings.guiScale = 0;
 			else Minecraft.getMinecraft().gameSettings.guiScale = NotEnoughUpdates.INSTANCE.config.locationedit.guiScale;
 		}
