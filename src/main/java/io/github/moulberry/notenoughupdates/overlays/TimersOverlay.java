@@ -357,6 +357,7 @@ public class TimersOverlay extends TextTabOverlay {
 					String clean = line.replaceAll("(\u00a7.)", "");
 					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
+					if (line.contains("Not")) break;
 
 					for (int i = 0; i + 1 < cleanSplit.length; i++) {
 						if (i % 2 == 1) continue;
