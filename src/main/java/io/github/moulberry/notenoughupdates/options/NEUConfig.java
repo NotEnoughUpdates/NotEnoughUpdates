@@ -456,6 +456,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean hasOpenedWaypointMenu = false;
 
+		@Expose
+		public String externalEditor = null;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
