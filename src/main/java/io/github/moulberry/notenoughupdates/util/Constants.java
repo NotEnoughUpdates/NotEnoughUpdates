@@ -77,6 +77,7 @@ public class Constants {
 	public static JsonObject WEIGHT;
 	public static JsonObject RNGSCORE;
 	public static JsonObject ABIPHONE;
+	public static JsonObject ESSENCESHOPS;
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
@@ -100,6 +101,7 @@ public class Constants {
 			WEIGHT = Utils.getConstant("weight", gson);
 			RNGSCORE = Utils.getConstant("rngscore", gson);
 			ABIPHONE = Utils.getConstant("abiphone", gson);
+			ESSENCESHOPS = Utils.getConstant("essenceshops", gson);
 
 			parseEssenceCosts();
 		} catch (Exception ex) {
