@@ -113,8 +113,10 @@ public class PeekCommand extends ClientCommandBase {
 							Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
 
 							if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-								Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(
-									EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock networth..."), id);
+								Minecraft.getMinecraft().ingameGUI
+									.getChatGUI()
+									.printChatMessageWithOptionalDeletion(new ChatComponentText(
+										EnumChatFormatting.YELLOW + "[PEEK] Getting the player's Skyblock networth..."), id);
 
 								CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -122,7 +124,8 @@ public class PeekCommand extends ClientCommandBase {
 
 								try { //Wait for async network request
 									countDownLatch.await(10, TimeUnit.SECONDS);
-								} catch (InterruptedException e) {}
+								} catch (InterruptedException e) {
+								}
 
 								//Now it's waited for network request the data should be cached (accessed in nw section)
 							}
@@ -141,7 +144,17 @@ public class PeekCommand extends ClientCommandBase {
 								float totalSkillLVL = 0;
 								float totalSkillCount = 0;
 
-								List<String> skills = Arrays.asList("taming", "mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy", "carpentry");
+								List<String> skills = Arrays.asList(
+									"taming",
+									"mining",
+									"foraging",
+									"enchanting",
+									"farming",
+									"combat",
+									"fishing",
+									"alchemy",
+									"carpentry"
+								);
 								for (String skillName : skills) {
 									totalSkillLVL += skyblockInfo.get(skillName).level;
 									totalSkillCount++;
@@ -208,13 +221,13 @@ public class PeekCommand extends ClientCommandBase {
 								overallScore += cata * cata / 2000f;
 
 								Utils.addChatMessage(g + "Combat: " + combatPrefix + (int) Math.floor(combat) +
-										(cata > 0 ? g + " - Cata: " + cataPrefix + cata : "") +
-										g + " - AVG: " + avgPrefix + (int) Math.floor(avgSkillLVL));
+									(cata > 0 ? g + " - Cata: " + cataPrefix + cata : "") +
+									g + " - AVG: " + avgPrefix + (int) Math.floor(avgSkillLVL));
 								Utils.addChatMessage(g + "Slayer: " + zombiePrefix + (int) Math.floor(zombie) + g + "-" +
-										spiderPrefix + (int) Math.floor(spider) + g + "-" +
-										wolfPrefix + (int) Math.floor(wolf) + g + "-" +
-										endermanPrefix + (int) Math.floor(enderman) + g + "-" +
-										blazePrefix + (int) Math.floor(blaze));
+									spiderPrefix + (int) Math.floor(spider) + g + "-" +
+									wolfPrefix + (int) Math.floor(wolf) + g + "-" +
+									endermanPrefix + (int) Math.floor(enderman) + g + "-" +
+									blazePrefix + (int) Math.floor(blaze));
 							}
 							if (stats == null) {
 								Utils.addChatMessage(EnumChatFormatting.YELLOW + "Skills, collection and/or inventory apis disabled!");
@@ -245,7 +258,7 @@ public class PeekCommand extends ClientCommandBase {
 									: EnumChatFormatting.YELLOW)
 									: EnumChatFormatting.RED;
 
-								Utils.addChatMessage(									g + "Stats  : " + healthPrefix + health + EnumChatFormatting.RED + "\u2764 " +
+								Utils.addChatMessage(g + "Stats  : " + healthPrefix + health + EnumChatFormatting.RED + "\u2764 " +
 									defencePrefix + defence + EnumChatFormatting.GREEN + "\u2748 " +
 									strengthPrefix + strength + EnumChatFormatting.RED + "\u2741 " +
 									intelligencePrefix + intelligence + EnumChatFormatting.AQUA + "\u270e ");
@@ -270,10 +283,11 @@ public class PeekCommand extends ClientCommandBase {
 								(money > 200 * 1000 * 1000
 									? EnumChatFormatting.GREEN
 									: EnumChatFormatting.YELLOW) : EnumChatFormatting.RED;
-							Utils.addChatMessage(								g + "Purse: " + moneyPrefix + Utils.shortNumberFormat(purseBalance, 0) + g + " - Bank: " +
-								(bankBalance == -1 ? EnumChatFormatting.YELLOW + "N/A" : moneyPrefix +
-									(isMe ? "4.8b" : Utils.shortNumberFormat(bankBalance, 0))) +
-								(networth > 0 ? g + " - Net: " + moneyPrefix + Utils.shortNumberFormat(networth, 0) : ""));
+							Utils.addChatMessage(
+								g + "Purse: " + moneyPrefix + Utils.shortNumberFormat(purseBalance, 0) + g + " - Bank: " +
+									(bankBalance == -1 ? EnumChatFormatting.YELLOW + "N/A" : moneyPrefix +
+										(isMe ? "4.8b" : Utils.shortNumberFormat(bankBalance, 0))) +
+									(networth > 0 ? g + " - Net: " + moneyPrefix + Utils.shortNumberFormat(networth, 0) : ""));
 
 							overallScore += Math.min(2, money / (100f * 1000 * 1000));
 
@@ -314,7 +328,8 @@ public class PeekCommand extends ClientCommandBase {
 								overall = EnumChatFormatting.RED + "Played SkyBlock";
 							}
 
-							Utils.addChatMessage(g + "Overall score: " + overall + g + " (" + Math.round(overallScore * 10) / 10f + ")");
+							Utils.addChatMessage(
+								g + "Overall score: " + overall + g + " (" + Math.round(overallScore * 10) / 10f + ")");
 
 							peekCommandExecutorService.shutdownNow();
 						} else {

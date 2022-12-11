@@ -37,7 +37,7 @@ public class SenitherDungeonsWeight extends DungeonsWeight {
 		ProfileViewer.Level currentClass = player.get(className);
 		double base =
 			Math.pow(currentClass.level, 4.5) *
-			Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.classes." + className), 0);
+				Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.classes." + className), 0);
 
 		if (currentClass.totalXp <= CATACOMBS_LEVEL_50_XP) {
 			weightStruct.add(new WeightStruct(base));
@@ -53,7 +53,10 @@ public class SenitherDungeonsWeight extends DungeonsWeight {
 	public void getDungeonWeight() {
 		ProfileViewer.Level catacombs = player.get("catacombs");
 		double base =
-			Math.pow(catacombs.level, 4.5) * Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "senither.dungeons.catacombs"), 0);
+			Math.pow(catacombs.level, 4.5) * Utils.getElementAsFloat(Utils.getElement(
+				Constants.WEIGHT,
+				"senither.dungeons.catacombs"
+			), 0);
 
 		if (catacombs.totalXp <= CATACOMBS_LEVEL_50_XP) {
 			weightStruct.add(new WeightStruct(base));

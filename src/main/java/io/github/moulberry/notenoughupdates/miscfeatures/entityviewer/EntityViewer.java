@@ -231,8 +231,7 @@ public class EntityViewer extends GuiScreen {
 				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 					scale = 35;
 					bottomOffset = 0F;
-				}
-				else {
+				} else {
 					scale = 10;
 					bottomOffset = 2F;
 				}
@@ -261,11 +260,18 @@ public class EntityViewer extends GuiScreen {
 	}
 
 	// Need this to flip the ender dragon and make it follow mouse correctly
-	public static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+	public static void drawEntityOnScreen(
+		int posX,
+		int posY,
+		int scale,
+		float mouseX,
+		float mouseY,
+		EntityLivingBase ent
+	) {
 		GlStateManager.enableColorMaterial();
 		GlStateManager.pushMatrix();
-		GlStateManager.translate((float)posX, (float)posY, 50.0F);
-		GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+		GlStateManager.translate((float) posX, (float) posY, 50.0F);
+		GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
 		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
 		float f = ent.renderYawOffset;
 		float g = ent.rotationYaw;
@@ -275,10 +281,12 @@ public class EntityViewer extends GuiScreen {
 		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
 		RenderHelper.enableStandardItemLighting();
 		GlStateManager.rotate((ent instanceof EntityDragon) ? 45.0F : -135.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate((ent instanceof EntityDragon) ? ((float)Math.atan(mouseY / 40.0F)) * 20.0F : -((float)Math.atan(mouseY / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
-		ent.renderYawOffset = (float)Math.atan(mouseX / 40.0F) * 20.0F;
-		ent.rotationYaw = (float)Math.atan(mouseX / 40.0F) * 40.0F;
-		ent.rotationPitch = -((float)Math.atan(mouseY / 40.0F)) * 20.0F;
+		GlStateManager.rotate((ent instanceof EntityDragon)
+			? ((float) Math.atan(mouseY / 40.0F)) * 20.0F
+			: -((float) Math.atan(mouseY / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
+		ent.renderYawOffset = (float) Math.atan(mouseX / 40.0F) * 20.0F;
+		ent.rotationYaw = (float) Math.atan(mouseX / 40.0F) * 40.0F;
+		ent.rotationPitch = -((float) Math.atan(mouseY / 40.0F)) * 20.0F;
 		ent.rotationYawHead = ent.rotationYaw;
 		ent.prevRotationYawHead = ent.rotationYaw;
 		GlStateManager.translate(0.0F, 0.0F, 0.0F);

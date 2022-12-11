@@ -51,8 +51,9 @@ public class FeaturesCommand extends ClientCommandBase {
 		Desktop desk = Desktop.getDesktop();
 		try {
 			desk.browse(new URI(url));
-			Utils.addChatMessage(				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
-				EnumChatFormatting.GOLD + "> Opening Feature List in browser.");
+			Utils.addChatMessage(
+				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
+					EnumChatFormatting.GOLD + "> Opening Feature List in browser.");
 		} catch (URISyntaxException | IOException ignored) {
 
 			ChatComponentText clickTextFeatures = new ChatComponentText(

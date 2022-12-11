@@ -42,7 +42,7 @@ public class DiagCommand extends ClientCommandBase {
 		"/neudiag wishing        Wishing Compass Solver diagnostics\n" +
 		"/neudiag debug\n" +
 		"  <no sub-command>           Show all enabled flags\n" +
-		"  <list>                     Show all flags\n"+
+		"  <list>                     Show all flags\n" +
 		"  <enable | disable> <flag>  Enable/disable flag\n";
 
 	private void showUsage(ICommandSender sender) {

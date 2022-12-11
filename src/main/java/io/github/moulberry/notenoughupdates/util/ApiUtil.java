@@ -76,7 +76,7 @@ public class ApiUtil {
 			tmf.init(letsEncryptStore);
 			ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 		} catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException |
-						 IOException | CertificateException e) {
+			IOException | CertificateException e) {
 			System.out.println("Failed to load NEU keystore. A lot of API requests won't work");
 			e.printStackTrace();
 		}
@@ -147,8 +147,8 @@ public class ApiUtil {
 					.build()
 					.toURL());
 			} catch (URISyntaxException |
-							 MalformedURLException |
-							 NullPointerException e) { // Using CompletableFuture as an exception monad, isn't that exiting?
+				MalformedURLException |
+				NullPointerException e) { // Using CompletableFuture as an exception monad, isn't that exiting?
 				fut.completeExceptionally(e);
 			}
 			return fut;

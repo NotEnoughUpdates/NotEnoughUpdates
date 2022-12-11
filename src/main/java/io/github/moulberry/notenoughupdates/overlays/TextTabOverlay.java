@@ -61,7 +61,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 			}
 		} else lastTabState = false; // disallow showing overlays that use tab while having chat open
 		if (shouldUpdateOverlay) {
-				update();
+			update();
 		}
 	}
 

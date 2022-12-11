@@ -35,8 +35,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
-import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
@@ -162,7 +162,6 @@ public class NEUEventListener {
 			}
 		}
 
-
 		if (longUpdate) {
 
 			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiItemRecipe)) {
@@ -248,7 +247,8 @@ public class NEUEventListener {
 						} else {
 							String url = Constants.MISC.get("featureslist").getAsString();
 							Utils.addChatMessage("");
-							Utils.addChatMessage(EnumChatFormatting.BLUE + "It seems this is your first time using NotEnoughUpdates.");
+							Utils.addChatMessage(
+								EnumChatFormatting.BLUE + "It seems this is your first time using NotEnoughUpdates.");
 							ChatComponentText clickTextFeatures = new ChatComponentText(EnumChatFormatting.YELLOW +
 								"Click this message if you would like to view a list of NotEnoughUpdate's Features.");
 							clickTextFeatures.setChatStyle(Utils.createClickStyle(ClickEvent.Action.OPEN_URL, url));

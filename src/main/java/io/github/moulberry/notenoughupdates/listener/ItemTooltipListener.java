@@ -30,7 +30,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -582,7 +581,8 @@ public class ItemTooltipListener {
 
 			event.toolTip.add(
 				xpLine + 1,
-				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW + myFormatter.format(petLevel.getExpInCurrentLevel()) +
+				EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW +
+					myFormatter.format(petLevel.getExpInCurrentLevel()) +
 					EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
 					myFormatter.format(petLevel.getExpRequiredForNextLevel())
 			);

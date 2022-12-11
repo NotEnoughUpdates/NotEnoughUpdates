@@ -36,7 +36,6 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
-import org.luaj.vm2.ast.Str;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -1730,7 +1729,8 @@ public class ProfileViewer {
 			return uuid;
 		}
 
-		public @Nullable JsonObject getHypixelProfile() {
+		public @Nullable
+		JsonObject getHypixelProfile() {
 			return uuidToHypixelProfile.getOrDefault(uuid, null);
 		}
 	}

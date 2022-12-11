@@ -471,7 +471,6 @@ public class SBInfo {
 			.thenAccept(newJson -> mayorJson = newJson);
 	}
 
-
 	public JsonObject getMayorJson() {
 		return mayorJson;
 	}

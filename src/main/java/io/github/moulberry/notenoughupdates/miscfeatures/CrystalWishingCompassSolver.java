@@ -778,7 +778,8 @@ public class CrystalWishingCompassSolver {
 		if (solution == null) return;
 
 		if (NUCLEUS_BB.isVecInside(solution)) {
-			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.AQUA + "Wishing compass target is the Crystal Nucleus");
+			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] " + EnumChatFormatting.AQUA +
+				"Wishing compass target is the Crystal Nucleus");
 			return;
 		}
 

@@ -36,8 +36,10 @@ import java.util.Set;
 
 public class CraftingRecipe implements NeuRecipe {
 
-	public static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates",
-		"textures/gui/crafting_table_tall.png");
+	public static final ResourceLocation BACKGROUND = new ResourceLocation(
+		"notenoughupdates",
+		"textures/gui/crafting_table_tall.png"
+	);
 
 	private static final int EXTRA_STRING_X = 132;
 	private static final int EXTRA_STRING_Y = 50;

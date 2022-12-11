@@ -146,7 +146,8 @@ public class GuiCustomEnchant extends Gui {
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
-								int cost = (maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
+								int cost =
+									(maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
 								this.xpCost = costs.get(cost - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
 								this.xpCost = costs.get(level - 1).getAsInt();

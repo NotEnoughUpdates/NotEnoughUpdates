@@ -239,12 +239,20 @@ public class Calculator {
 							case "^":
 								if (right.compareTo(new BigDecimal(1000)) >= 0) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
-									throw new CalculatorException(right + " is too large, pick a power less than 1000", rightToken.tokenStart, rightToken.tokenLength);
+									throw new CalculatorException(
+										right + " is too large, pick a power less than 1000",
+										rightToken.tokenStart,
+										rightToken.tokenLength
+									);
 								}
 
 								if (right.doubleValue() != right.intValue()) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
-									throw new CalculatorException(right + " has a decimal, pick a power that is non-decimal", rightToken.tokenStart, rightToken.tokenLength);
+									throw new CalculatorException(
+										right + " has a decimal, pick a power that is non-decimal",
+										rightToken.tokenStart,
+										rightToken.tokenLength
+									);
 								}
 								values.push(left.pow(right.intValue()).setScale(2, RoundingMode.HALF_UP));
 								break;
@@ -299,7 +307,10 @@ public class Calculator {
 								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(2, RoundingMode.HALF_UP));
 								break;
 							case "%":
-								values.push(p.setScale(3, RoundingMode.HALF_UP).divide(new BigDecimal(100), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP));
+								values.push(p
+									.setScale(3, RoundingMode.HALF_UP)
+									.divide(new BigDecimal(100), RoundingMode.HALF_UP)
+									.setScale(2, RoundingMode.HALF_UP));
 								break;
 							default:
 								throw new CalculatorException(

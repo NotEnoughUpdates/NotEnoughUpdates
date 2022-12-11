@@ -991,7 +991,6 @@ public class CustomAH extends Gui {
 		searchField.drawTextBox();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-
 		Minecraft.getMinecraft().getTextureManager().bindTexture(creativeInventoryTabs);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedModalRect(guiLeft + 175, guiTop + 18 + (int) ((95 + ySplitSize * 2) * scrollAmount),

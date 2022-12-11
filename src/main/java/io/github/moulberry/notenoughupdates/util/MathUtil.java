@@ -23,9 +23,11 @@ public class MathUtil {
 	public static boolean isDecimalPartApproximately(double fullValue, double expectedDecimalPart) {
 		return Math.abs(Math.abs(fullValue % 1) - expectedDecimalPart) < 0.01;
 	}
+
 	public static boolean basicallyEqual(double num1, double num2, double dist) {
 		return Math.abs(num1 - num2) < dist;
 	}
+
 	public static boolean basicallyEqual(double num1, double num2) {
 		return Math.abs(num1 - num2) < 0.01;
 	}
