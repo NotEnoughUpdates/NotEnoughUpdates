@@ -234,7 +234,8 @@ public class AuctionBINWarning extends GuiElement {
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			"\u00a76" + sellingPriceStr + "\u00a7r coins?" +
-				(lowestPrice > 0 ? "(\u00a7" + (isALoss ? "c-" : "a+") + (buyPercentage >= 100 ? buyPercentage - 100 : buyPercentage) + "%\u00a7r)" : ""),
+				(lowestPrice > 0 ? "(\u00a7" + (isALoss ? "c-" : "a+") +
+					(buyPercentage >= 100 ? buyPercentage - 100 : buyPercentage) + "%\u00a7r)" : ""),
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2,
 			height / 2 - 45 + 59,

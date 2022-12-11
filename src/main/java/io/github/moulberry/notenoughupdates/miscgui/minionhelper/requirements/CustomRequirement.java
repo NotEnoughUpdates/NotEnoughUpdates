@@ -26,6 +26,7 @@ public class CustomRequirement extends MinionRequirement {
 	public CustomRequirement(String text) {
 		this.text = text;
 	}
+
 	@Override
 	public String printDescription(String color) {
 		return text;

@@ -24,11 +24,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
-import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
@@ -68,7 +66,7 @@ public class PlayerStats {
 	public static final String MINING_FORTUNE = "mining_fortune";
 	public static final String MINING_SPEED = "mining_speed";
 
-	public static final String[] defaultStatNames = new String[] {
+	public static final String[] defaultStatNames = new String[]{
 		"health",
 		"defence",
 		"strength",
@@ -85,7 +83,7 @@ public class PlayerStats {
 		"mining_fortune",
 		"mining_speed",
 	};
-	public static final String[] defaultStatNamesPretty = new String[] {
+	public static final String[] defaultStatNamesPretty = new String[]{
 		EnumChatFormatting.RED + "\u2764 Health",
 		EnumChatFormatting.GREEN + "\u2748 Defence",
 		EnumChatFormatting.RED + "\u2741 Strength",
@@ -208,7 +206,10 @@ public class PlayerStats {
 	}
 
 	private static float harpBonus(JsonObject profile) {
-		String talk_to_melody = Utils.getElementAsString(Utils.getElement(profile, "objectives.talk_to_melody.status"), "INCOMPLETE");
+		String talk_to_melody = Utils.getElementAsString(
+			Utils.getElement(profile, "objectives.talk_to_melody.status"),
+			"INCOMPLETE"
+		);
 		if (talk_to_melody.equalsIgnoreCase("COMPLETE")) {
 			return 26;
 		} else {
@@ -218,14 +219,20 @@ public class PlayerStats {
 
 	private static float hotmFortune(JsonObject profile, Map<String, ProfileViewer.Level> skyblockInfo) {
 		int miningLevelFortune = (int) (4 * (float) Math.floor(skyblockInfo.get("mining").level));
-		int miningFortuneStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) * 5);
-		int miningFortune2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"), 0)) * 5);
+		int miningFortuneStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_fortune"), 0)) *
+			5);
+		int miningFortune2Stat = ((Utils.getElementAsInt(
+			Utils.getElement(profile, "mining_core.nodes.mining_fortune_2"),
+			0
+		)) * 5);
 		return miningFortuneStat + miningFortune2Stat + miningLevelFortune;
 	}
 
 	private static float hotmSpeed(JsonObject profile) {
-		int miningSpeedStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) * 20);
-		int miningSpeed2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) * 40);
+		int miningSpeedStat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed"), 0)) *
+			20);
+		int miningSpeed2Stat = ((Utils.getElementAsInt(Utils.getElement(profile, "mining_core.nodes.mining_speed_2"), 0)) *
+			40);
 		return miningSpeedStat + miningSpeed2Stat;
 	}
 
@@ -302,8 +309,7 @@ public class PlayerStats {
 				case "LAPIS_ARMOR_":
 					bonuses.addStat(HEALTH, 60);
 					break;
-				case "EMERALD_ARMOR_":
-				{
+				case "EMERALD_ARMOR_": {
 					int bonus = (int) Math.floor(Utils.getElementAsFloat(Utils.getElement(collectionInfo, "EMERALD"), 0) / 3000);
 					bonuses.addStat(HEALTH, bonus);
 					bonuses.addStat(DEFENCE, bonus);
@@ -426,7 +432,12 @@ public class PlayerStats {
 					if (itemBonuses.containsKey(internalname)) {
 						continue;
 					}
-					if (!talismanOnly || Utils.checkItemType(item.get("lore").getAsJsonArray(), true, "ACCESSORY", "HATCCESSORY") >= 0) {
+					if (!talismanOnly || Utils.checkItemType(
+						item.get("lore").getAsJsonArray(),
+						true,
+						"ACCESSORY",
+						"HATCCESSORY"
+					) >= 0) {
 						Stats itemBonus = getStatForItem(internalname, item, item.get("lore").getAsJsonArray());
 
 						itemBonuses.put(internalname, itemBonus);
@@ -493,13 +504,11 @@ public class PlayerStats {
 					tierNum = "" + (Integer.parseInt(tierNum) + 1);
 				}
 
-				PetLeveling.PetLevel levelObj = PetLeveling.getPetLevelingForPet(
-					petname,
-					PetInfoOverlay.Rarity.valueOf(tier)
-				).getPetLevel(exp);
-				float level = levelObj.getCurrentLevel();
-				float currentLevelRequirement = levelObj.getExpRequiredForNextLevel();
-				float maxXP = levelObj.getMaxLevel();
+				GuiProfileViewer.PetLevel levelObj = GuiProfileViewer.getPetLevel(petname, tier, exp);
+				if (levelObj == null) return null;
+				float level = levelObj.level;
+				float currentLevelRequirement = levelObj.currentLevelRequirement;
+				float maxXP = levelObj.maxXP;
 				pet.addProperty("level", level);
 				pet.addProperty("currentLevelRequirement", currentLevelRequirement);
 				pet.addProperty("maxXP", maxXP);
@@ -539,7 +548,8 @@ public class PlayerStats {
 							String key = entryBoost.getKey().toLowerCase();
 							try {
 								stats.addStat(key, entryBoost.getValue());
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 						}
 					}
 					if (petStatBootsMult != null) {
@@ -547,7 +557,8 @@ public class PlayerStats {
 							String key = entryBoost.getKey().toLowerCase();
 							try {
 								stats.scale(key, entryBoost.getValue());
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 						}
 					}
 				}
@@ -662,18 +673,24 @@ public class PlayerStats {
 	 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getInventoryInfo(String)
 	 */
 	public static int getMagicalPower(JsonObject inventoryInfo, JsonObject profileInfo) {
-		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") || !inventoryInfo.get("talisman_bag").isJsonArray()) {
+		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") ||
+			!inventoryInfo.get("talisman_bag").isJsonArray()) {
 			return -1;
 		}
 
-		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo.get("talisman_bag").getAsJsonArray())
+		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo
+																									.get("talisman_bag")
+																									.getAsJsonArray())
 																								.map(o -> {
-				try {
-					return JsonToNBT.getTagFromJson(o.getAsJsonObject().get("nbttag").getAsString());
-				} catch (Exception ignored) {
-					return null;
-				}
-			}).filter(Objects::nonNull).map(tag -> {
+																									try {
+																										return JsonToNBT.getTagFromJson(o
+																											.getAsJsonObject()
+																											.get("nbttag")
+																											.getAsString());
+																									} catch (Exception ignored) {
+																										return null;
+																									}
+																								}).filter(Objects::nonNull).map(tag -> {
 				NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
 				String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
 				if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
@@ -685,7 +702,12 @@ public class PlayerStats {
 					tag.getCompoundTag("ExtraAttributes").getString("id"),
 					Utils.getRarityFromLore(lastElementJsonArray)
 				);
-			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)->v1, LinkedHashMap::new));
+			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(
+				Map.Entry::getKey,
+				Map.Entry::getValue,
+				(v1, v2) -> v1,
+				LinkedHashMap::new
+			));
 
 		Set<String> ignoredTalismans = new HashSet<>();
 		int powderAmount = 0;
@@ -694,7 +716,9 @@ public class PlayerStats {
 				continue;
 			}
 
-			JsonArray children = Utils.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray()).getAsJsonArray();
+			JsonArray children = Utils
+				.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray())
+				.getAsJsonArray();
 			for (JsonElement child : children) {
 				ignoredTalismans.add(child.getAsString());
 			}
@@ -711,8 +735,13 @@ public class PlayerStats {
 			}
 			if (entry.getKey().equals("ABICASE")) {
 				if (profileInfo.has("nether_island_player_data") &&
-					profileInfo.get("nether_island_player_data").getAsJsonObject().has("abiphone") && profileInfo.get(
-					"nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
+					profileInfo.get("nether_island_player_data").getAsJsonObject().has("abiphone") && profileInfo
+					.get(
+						"nether_island_player_data")
+					.getAsJsonObject()
+					.get("abiphone")
+					.getAsJsonObject()
+					.has("active_contacts")) { // BatChest
 					int contact =
 						profileInfo.get("nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().get(
 							"active_contacts").getAsJsonArray().size();

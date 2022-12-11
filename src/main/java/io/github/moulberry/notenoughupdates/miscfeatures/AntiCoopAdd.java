@@ -72,7 +72,8 @@ public class AntiCoopAdd {
 
 		String message = packet.getMessage().toLowerCase();
 		if (message.startsWith("/hypixelcommand:coopadd")) {
-			Utils.addChatMessage("§e[NEU] You just entered a malicious looking Co-op add command! If you truly want to add someone to your coop, type §e/coopadd <name>");
+			Utils.addChatMessage(
+				"§e[NEU] You just entered a malicious looking Co-op add command! If you truly want to add someone to your coop, type §e/coopadd <name>");
 			return true;
 		}
 		return false;

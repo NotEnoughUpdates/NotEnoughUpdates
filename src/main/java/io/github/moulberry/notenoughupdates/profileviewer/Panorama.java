@@ -61,7 +61,8 @@ public class Panorama {
 			try {
 				ResourceLocation[] panoramasArray = new ResourceLocation[6];
 				for (int i = 0; i < 6; i++) {
-					panoramasArray[i] = new ResourceLocation("notenoughupdates:panoramas/" + location + "/panorama_" + i + ".jpg");
+					panoramasArray[i] = new ResourceLocation(
+						"notenoughupdates:panoramas/" + location + "/panorama_" + i + ".jpg");
 					Minecraft.getMinecraft().getResourceManager().getResource(panoramasArray[i]);
 				}
 				panoramasMap.put(location + identifier, panoramasArray);
@@ -194,14 +195,17 @@ public class Panorama {
 
 		if (
 			backgroundTexture == null ||
-			lastWidth != width * scaledresolution.getScaleFactor() ||
-			lastHeight != height * scaledresolution.getScaleFactor()
+				lastWidth != width * scaledresolution.getScaleFactor() ||
+				lastHeight != height * scaledresolution.getScaleFactor()
 		) {
 			DynamicTexture viewportTexture = new DynamicTexture(
 				width * scaledresolution.getScaleFactor(),
 				height * scaledresolution.getScaleFactor()
 			);
-			backgroundTexture = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation("background", viewportTexture);
+			backgroundTexture = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation(
+				"background",
+				viewportTexture
+			);
 			lastWidth = width * scaledresolution.getScaleFactor();
 			lastHeight = height * scaledresolution.getScaleFactor();
 		}

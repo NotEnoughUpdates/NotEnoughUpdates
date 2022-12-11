@@ -37,11 +37,9 @@ public class EnderNodeHighlighter extends GenericBlockHighlighter {
 
 	private static final EnderNodeHighlighter INSTANCE = new EnderNodeHighlighter();
 
-	public static EnderNodeHighlighter getInstance()
-	{
+	public static EnderNodeHighlighter getInstance() {
 		return INSTANCE;
 	}
-
 
 	@SubscribeEvent
 	public void onParticleSpawn(SpawnParticleEvent event) {

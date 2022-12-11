@@ -75,7 +75,7 @@ public class MobLootRecipe implements NeuRecipe {
 			if (chance == null) {
 				return "";
 			}
-			
+
 			if (!chance.endsWith("%")) {
 				return chance;
 			}

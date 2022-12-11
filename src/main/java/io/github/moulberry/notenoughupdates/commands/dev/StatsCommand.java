@@ -120,7 +120,8 @@ public class StatsCommand extends ClientCommandBase {
 
 	private static void modPrefixedMessage(String message) {
 		Utils.addChatMessage(
-			EnumChatFormatting.GOLD + "[" + EnumChatFormatting.RED + "NotEnoughUpdates" + EnumChatFormatting.GOLD + "]: " + message);
+			EnumChatFormatting.GOLD + "[" + EnumChatFormatting.RED + "NotEnoughUpdates" + EnumChatFormatting.GOLD + "]: " +
+				message);
 	}
 
 	private static String createStats() {

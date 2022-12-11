@@ -49,7 +49,6 @@ public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 		}
 	}
 
-
 	@Override
 	protected boolean isEnabled() {
 		return "farming_1".equals(SBInfo.getInstance().getLocation())

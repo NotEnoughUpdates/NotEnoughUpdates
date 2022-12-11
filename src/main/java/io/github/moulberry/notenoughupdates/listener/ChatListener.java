@@ -116,19 +116,22 @@ public class ChatListener {
 
 		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 &&
 			((chatComponent.getChatStyle() != null &&
-			chatComponent.getChatStyle().getChatClickEvent() != null &&
-			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
+				chatComponent.getChatStyle().getChatClickEvent() != null &&
+				chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
 				// Party and guild chat components are different from global chats, so need to check for them here
-			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND)) &&
+				(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
+					chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
+					chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() ==
+						ClickEvent.Action.RUN_COMMAND)) &&
 			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 
 			String startsWith = null;
 			boolean partyOrGuildChat = false;
 
 			List<IChatComponent> siblings = chatComponent.getSiblings();
-			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
+			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null &&
+				siblings.get(0).getChatStyle().getChatClickEvent() != null &&
+				siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
 				partyOrGuildChat = true;
 			} else {

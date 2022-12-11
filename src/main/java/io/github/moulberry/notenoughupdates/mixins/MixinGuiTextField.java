@@ -43,7 +43,8 @@ public abstract class MixinGuiTextField {
 	};
 	private int currentStringStackIndex = -1;
 
-	@Shadow private int maxStringLength;
+	@Shadow
+	private int maxStringLength;
 
 	@Shadow
 	private String text;
@@ -74,7 +75,15 @@ public abstract class MixinGuiTextField {
 	}
 
 	@Inject(method = "writeText", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiTextField;moveCursorBy(I)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-	public void writeText_stringStack(String string, CallbackInfo ci, String string2, String string3, int i, int j, int l) {
+	public void writeText_stringStack(
+		String string,
+		CallbackInfo ci,
+		String string2,
+		String string3,
+		int i,
+		int j,
+		int l
+	) {
 		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
 			addToStack(string2);
 		}

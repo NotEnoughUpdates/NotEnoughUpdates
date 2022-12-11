@@ -31,7 +31,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.storage.MapData;
 

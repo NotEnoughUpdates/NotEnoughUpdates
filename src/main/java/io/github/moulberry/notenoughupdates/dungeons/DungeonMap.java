@@ -503,8 +503,10 @@ public class DungeonMap {
 			mapSizeX = borderSizeOption == 0 ? 90 : borderSizeOption == 1 ? 120 : borderSizeOption == 2 ? 160 : 240;
 		}
 		mapSizeY = mapSizeX;
-		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize + (isFloorOne ? getRenderRoomSize() : 0);
-		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize + (isEntrance ? getRenderRoomSize() : 0);
+		int roomsSizeX = (maxRoomX - minRoomX) * (renderRoomSize + renderConnSize) + renderRoomSize +
+			(isFloorOne ? getRenderRoomSize() : 0);
+		int roomsSizeY = (maxRoomY - minRoomY) * (renderRoomSize + renderConnSize) + renderRoomSize +
+			(isEntrance ? getRenderRoomSize() : 0);
 		int mapCenterX = mapSizeX / 2;
 		int mapCenterY = mapSizeY / 2;
 		int scaleFactor = 8;

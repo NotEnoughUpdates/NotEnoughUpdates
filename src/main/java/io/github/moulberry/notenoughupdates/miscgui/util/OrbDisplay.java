@@ -64,7 +64,13 @@ public class OrbDisplay {
 	}
 
 	public void spawnExperienceOrbs(int startX, int startY, int targetX, int targetY, int baseType) {
-		spawnExperienceOrbs(new Random(),new Vector2f(startX, startY), new Vector2f(targetX, targetY), baseType, DEFAULT_COUNT);
+		spawnExperienceOrbs(
+			new Random(),
+			new Vector2f(startX, startY),
+			new Vector2f(targetX, targetY),
+			baseType,
+			DEFAULT_COUNT
+		);
 	}
 
 	public void spawnExperienceOrbs(Random random, Vector2f start, Vector2f target, int baseType, int count) {

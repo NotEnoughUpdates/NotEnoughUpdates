@@ -75,7 +75,6 @@ public class GuiPositionEditor extends GuiScreen {
 			});
 		}
 
-
 		this.positions = pos;
 		this.originalPositions = ogPos;
 		this.renderCallback = renderCallbac;

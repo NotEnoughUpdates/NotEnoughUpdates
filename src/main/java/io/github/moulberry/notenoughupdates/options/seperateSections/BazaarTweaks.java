@@ -27,47 +27,47 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption
 
 public class BazaarTweaks {
 
-		@ConfigOption(
-			name = "Search GUI",
-			desc = ""
-		)
-		@ConfigEditorAccordion(id = 0)
-		public boolean searchAccordion = false;
+	@ConfigOption(
+		name = "Search GUI",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 0)
+	public boolean searchAccordion = false;
 
-		@Expose
-		@ConfigOption(
-			name = "Enable Search GUI",
-			desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI"
-		)
-		@ConfigEditorBoolean
-		@ConfigAccordionId(id = 0)
-		public boolean enableSearchOverlay = true;
+	@Expose
+	@ConfigOption(
+		name = "Enable Search GUI",
+		desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean enableSearchOverlay = true;
 
-		@Expose
-		@ConfigOption(
-			name = "Keep Previous Search",
-			desc = "Don't clear the search bar after closing the GUI"
-		)
-		@ConfigEditorBoolean
-		@ConfigAccordionId(id = 0)
-		public boolean keepPreviousSearch = false;
+	@Expose
+	@ConfigOption(
+		name = "Keep Previous Search",
+		desc = "Don't clear the search bar after closing the GUI"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean keepPreviousSearch = false;
 
-		@Expose
-		@ConfigOption(
-			name = "Past Searches",
-			desc = "Show past searches below the autocomplete box"
-		)
-		@ConfigEditorBoolean
-		@ConfigAccordionId(id = 0)
-		public boolean showPastSearches = true;
+	@Expose
+	@ConfigOption(
+		name = "Past Searches",
+		desc = "Show past searches below the autocomplete box"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean showPastSearches = true;
 
-		@Expose
-		@ConfigOption(
-			name = "ESC to Full Close",
-			desc = "Make pressing ESCAPE close the search GUI without opening up the Bazaar again\n" +
-				"ENTER can still be used to search"
-		)
-		@ConfigEditorBoolean
-		@ConfigAccordionId(id = 0)
-		public boolean escFullClose = true;
+	@Expose
+	@ConfigOption(
+		name = "ESC to Full Close",
+		desc = "Make pressing ESCAPE close the search GUI without opening up the Bazaar again\n" +
+			"ENTER can still be used to search"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean escFullClose = true;
 }

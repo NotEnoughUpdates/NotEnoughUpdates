@@ -31,8 +31,8 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.text.DecimalFormat;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class SignCalculator {

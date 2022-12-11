@@ -24,7 +24,6 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
@@ -124,7 +123,8 @@ public class KotlinLoadingTweaker implements ITweaker {
 				if (!areWeBundlingAKotlinVersionHigherThan(requiredVersion)) {
 					System.err.println(
 						"NEU is relinquishing loading Kotlin because a higher version is requested. This may lead to errors if the advertised Kotlin version is not found. (" +
-							Arrays.toString(requiredVersion) + " required, " + Arrays.toString(BUNDLED_KOTLIN_VERSION) + " available)");
+							Arrays.toString(requiredVersion) + " required, " + Arrays.toString(BUNDLED_KOTLIN_VERSION) +
+							" available)");
 					return;
 				}
 			}

@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
@@ -63,7 +62,8 @@ public class ViewProfileCommand extends ClientCommandBase {
 		} else {
 			NotEnoughUpdates.profileViewer.getProfileByName(args[0], profile -> {
 				if (profile == null) {
-					Utils.addChatMessage(EnumChatFormatting.RED + "Invalid player name/api key. Maybe the API is down? Try /api new.");
+					Utils.addChatMessage(
+						EnumChatFormatting.RED + "Invalid player name/api key. Maybe the API is down? Try /api new.");
 				} else {
 					profile.resetCache();
 					NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);

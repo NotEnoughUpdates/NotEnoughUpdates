@@ -55,7 +55,7 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 				weightStruct.add(
 					new WeightStruct(
 						Utils.getElement(Constants.WEIGHT, "lily.dungeons.overall").getAsDouble() *
-						((Math.pow(1.18340401286164044, (catacombs.level + 1)) - 1.05994990217254) * (1 + n))
+							((Math.pow(1.18340401286164044, (catacombs.level + 1)) - 1.05994990217254) * (1 + n))
 					)
 				);
 			} else {
@@ -67,7 +67,9 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 	public void getDungeonCompletionWeight(String cataMode) {
 		double max1000 = 0;
 		double mMax1000 = 0;
-		JsonObject dungeonsCompletionWorth = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth").getAsJsonObject();
+		JsonObject dungeonsCompletionWorth = Utils
+			.getElement(Constants.WEIGHT, "lily.dungeons.completion_worth")
+			.getAsJsonObject();
 		for (Map.Entry<String, JsonElement> dcwEntry : dungeonsCompletionWorth.entrySet()) {
 			if (dcwEntry.getKey().startsWith("catacombs_")) {
 				max1000 += dcwEntry.getValue().getAsDouble();
@@ -102,7 +104,9 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 
 			weightStruct.add(new WeightStruct(score / max1000 * upperBound * 2));
 		} else {
-			JsonObject dungeonsCompletionBuffs = Utils.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs").getAsJsonObject();
+			JsonObject dungeonsCompletionBuffs = Utils
+				.getElement(Constants.WEIGHT, "lily.dungeons.completion_buffs")
+				.getAsJsonObject();
 
 			if (Utils.getElement(profileJson, "dungeons.dungeon_types.master_catacombs.tier_completions") == null) {
 				return;
@@ -119,7 +123,10 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 						upperBound += dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt();
 					} else {
 						upperBound +=
-							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt() * Math.pow((amount / threshold), 1.840896416);
+							dungeonsCompletionBuffs.get(masterFloor.getKey()).getAsInt() * Math.pow(
+								(amount / threshold),
+								1.840896416
+							);
 					}
 				}
 			}
@@ -136,7 +143,9 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 					amount = 1000;
 				}
 
-				double floorScore = amount * dungeonsCompletionWorth.get("master_catacombs_" + masterFloor.getKey()).getAsDouble();
+				double floorScore = amount * dungeonsCompletionWorth
+					.get("master_catacombs_" + masterFloor.getKey())
+					.getAsDouble();
 				if (excess > 0) {
 					floorScore *= (Math.log((excess / 1000) + 1) / Math.log(6)) + 1;
 				}
