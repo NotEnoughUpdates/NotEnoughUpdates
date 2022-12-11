@@ -32,7 +32,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -130,7 +129,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		drawDojoStats(netherIslandPlayerData, guiLeft, guiTop);
 
 		// Kuudra stats
-		drawKuudraStats(netherIslandPlayerData, guiLeft, guiTop, mouseX, mouseY);
+		drawKuudraStats(netherIslandPlayerData, guiLeft, guiTop);
 
 		// Last matriarch attempt
 		drawLastMatriarchAttempt(netherIslandPlayerData, guiLeft, guiTop);
@@ -139,7 +138,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		drawFactionReputation(netherIslandPlayerData, guiLeft, guiTop);
 	}
 
-	public void drawKuudraStats(JsonObject data, int guiLeft, int guiTop, int mouseX, int mouseY) {
+	public void drawKuudraStats(JsonObject data, int guiLeft, int guiTop) {
 		Utils.drawStringCentered(
 			EnumChatFormatting.RED + "Kuudra Stats",
 			Minecraft.getMinecraft().fontRendererObj,
@@ -162,48 +161,26 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			int completions =
 				kuudraCompletedTiers.has(kuudraTiers[i]) ? kuudraCompletedTiers.get(kuudraTiers[i]).getAsInt() : 0;
 
-			// Get the highest wave for this tier of kuudra if they have completed a run
-			// since infernal kuudra was released
-			int highestWaveCompleted = kuudraCompletedTiers.has("highest_wave_" + kuudraTiers[i]) ?
-				kuudraCompletedTiers.get("highest_wave_" + kuudraTiers[i]).getAsInt() : 0;
-
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
 				KUUDRA_KEYS[i],
 				guiLeft + 8,
-				guiTop + 30 + (i * 30)
+				guiTop + 25 + (i * 12)
 			);
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + KUUDRA_TIERS[i] + ": ",
 				EnumChatFormatting.WHITE + String.valueOf(completions),
 				guiLeft + 23,
-				guiTop + 30 + (i * 30),
+				guiTop + 30 + (i * 12),
 				110
 			);
-
-			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "Highest Wave: ",
-				EnumChatFormatting.WHITE + (highestWaveCompleted != 0 ? String.valueOf(highestWaveCompleted) : "N/A"),
-				guiLeft + 23,
-				guiTop + 42 + (i * 30),
-				110
-			);
-
-			if (highestWaveCompleted == 0) {
-				if (mouseX > guiLeft + 23 && mouseX < guiLeft + 133 && mouseY < guiTop + 50 + (i*30) && mouseY > guiTop + 42 + (i*30)) {
-					getInstance().tooltipToDisplay = new ArrayList<>();
-					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "N/A will only show for highest wave");
-					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "if you have not completed a run for");
-					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "this tier since Infernal tier was released.");
-				}
-			}
 		}
 
 		Utils.renderAlignedString(
-			EnumChatFormatting.RED + "Total runs: ",
+			EnumChatFormatting.RED + "Total: ",
 			EnumChatFormatting.WHITE + String.valueOf(getTotalKuudraRuns(kuudraCompletedTiers)),
 			guiLeft + 23,
-			guiTop + 30 + (5 * 30),
+			guiTop + 40 + (5 * 12),
 			110
 		);
 	}
