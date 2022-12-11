@@ -1075,7 +1075,6 @@ public class ProfileViewer {
 						skyblockProfiles = jsonObject.get("profiles").getAsJsonArray();
 
 						String lastCuteName = null;
-						long lastLastSave = 0;
 
 						profileNames.clear();
 
@@ -1098,15 +1097,6 @@ public class ProfileViewer {
 								profileNames.add(cuteName);
 								if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
 									lastCuteName = cuteName;
-									break;
-								}
-								if (lastCuteName == null) lastCuteName = cuteName;
-								if (member.has("last_save")) {
-									long lastSave = member.get("last_save").getAsLong();
-									if (lastSave > lastLastSave) {
-										lastLastSave = lastSave;
-										lastCuteName = cuteName;
-									}
 								}
 							}
 						}

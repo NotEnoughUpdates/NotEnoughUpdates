@@ -242,7 +242,7 @@ public class TimersOverlay extends TextTabOverlay {
 		if (hidden == null) return;
 
 		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab &&
-			!Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+			!lastTabState) {
 			overlayStrings = null;
 			return;
 		}
@@ -358,7 +358,7 @@ public class TimersOverlay extends TextTabOverlay {
 					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
 
-					for (int i = 0; i < cleanSplit.length; i++) {
+					for (int i = 0; i + 1 < cleanSplit.length; i++) {
 						if (i % 2 == 1) continue;
 
 						String number = cleanSplit[i];

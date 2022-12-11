@@ -79,6 +79,7 @@ import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1764,6 +1765,10 @@ public class Utils {
 		worldrenderer.pos(left, top, 0.0D).endVertex();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
+	}
+
+	public static String prettyTime(Duration time) {
+		return prettyTime(time.toMillis());
 	}
 
 	public static String prettyTime(long millis) {

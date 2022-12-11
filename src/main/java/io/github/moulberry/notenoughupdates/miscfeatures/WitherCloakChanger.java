@@ -35,6 +35,13 @@ import org.lwjgl.opengl.GL14;
 
 public class WitherCloakChanger {
 	public static boolean isCloakActive = false;
+	/**
+	 * When was the last charged Creeper that is a member of the group rendered?
+	 * Used to determine if the cloak was deactivated by Hypixel without sending a message
+	 *
+	 * @see io.github.moulberry.notenoughupdates.mixins.MixinEntityChargedCreeper#cancelChargedCreeperLayer(net.minecraft.entity.monster.EntityCreeper , float, float, float, float, float, float, float, org.spongepowered.asm.mixin.injection.callback.CallbackInfo)
+	 */
+	public static long lastCreeperRender = 0;
 	public static long lastDeactivate = System.currentTimeMillis();
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -63,6 +70,16 @@ public class WitherCloakChanger {
 
 	@SubscribeEvent
 	public void onRenderLast(RenderWorldLastEvent event) {
+		if (isCloakActive) {
+			//last creeper rendered over 2 seconds ago -> Creeper Veil de activated without a message. Happens for example when picking up the item in the inventory
+			if (System.currentTimeMillis() - lastCreeperRender >= 2000) {
+				isCloakActive = false;
+				lastDeactivate = System.currentTimeMillis();
+				lastCreeperRender = 0;
+				return;
+			}
+		}
+
 		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock() || !isCloakActive ||
 			!NotEnoughUpdates.INSTANCE.config.itemOverlays.customWitherCloakToggle) return;
 		Minecraft mc = Minecraft.getMinecraft();

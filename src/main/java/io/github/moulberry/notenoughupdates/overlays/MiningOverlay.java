@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
@@ -450,8 +451,8 @@ public class MiningOverlay extends TextTabOverlay {
 			if (starCultDisplay) {
 				if(overlayStrings == null) overlayStrings = new ArrayList<>();
 
-				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
-					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+				if (!NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayOnlyShowTab ||
+					lastTabState) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayEnabledLocations == 1 &&
 						!SBInfo.getInstance().isInDungeon) {
 						overlayStrings.add(
@@ -469,7 +470,7 @@ public class MiningOverlay extends TextTabOverlay {
 				if(overlayStrings == null) 	overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
-					Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+					lastTabState) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 1 &&
 						!SBInfo.getInstance().isInDungeon) {
 						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));

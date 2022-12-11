@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -118,19 +119,18 @@ public class PetsPage extends GuiProfileViewerPage {
 				PetInfoOverlay.Pet parsedPet = new PetInfoOverlay.Pet();
 				parsedPet.petType = pet.get("type").getAsString();
 				parsedPet.rarity = PetInfoOverlay.Rarity.valueOf(pet.get("tier").getAsString());
-				parsedPet.petLevel = GuiProfileViewer.getPetLevel(
+				parsedPet.petLevel = PetLeveling.getPetLevelingForPet(
 					parsedPet.petType,
-					parsedPet.rarity.name(),
-					pet.get("exp").getAsFloat()
-				);
+					parsedPet.rarity
+				).getPetLevel(pet.get("exp").getAsFloat());
 				parsedPet.petXpType = "unknown";
 				parsedPet.petItem = Utils.getElementAsString(pet.get("heldItem"), null);
 				parsedPet.skin = Utils.getElementAsString(pet.get("skin"), null);
 				parsedPet.candyUsed = pet.get("candyUsed").getAsInt();
 				sortedPetsStack.add(ItemUtils.createPetItemstackFromPetInfo(parsedPet));
-				pet.addProperty("level", parsedPet.petLevel.level);
-				pet.addProperty("currentLevelRequirement", parsedPet.petLevel.currentLevelRequirement);
-				pet.addProperty("maxXP", parsedPet.petLevel.maxXP);
+				pet.addProperty("level", parsedPet.petLevel.getCurrentLevel());
+				pet.addProperty("currentLevelRequirement", parsedPet.petLevel.getExpRequiredForNextLevel());
+				pet.addProperty("maxXP", parsedPet.petLevel.getExpRequiredForMaxLevel());
 			}
 		}
 

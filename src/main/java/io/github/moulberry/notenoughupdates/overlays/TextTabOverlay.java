@@ -36,7 +36,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 		super(position, dummyStrings, styleSupplier);
 	}
 
-	private boolean lastTabState = false;
+	protected boolean lastTabState = false;
 	private boolean shouldUpdateOverlay = true;
 
 	@Override
@@ -48,7 +48,7 @@ public abstract class TextTabOverlay extends TextOverlay {
 
 	public void realTick() {
 		shouldUpdateOverlay = shouldUpdate();
-		if (shouldUpdateOverlay) {
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChat)) {
 			int keycode = Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode();
 			boolean currentTabState;
 			if (keycode > 0) {
@@ -58,17 +58,14 @@ public abstract class TextTabOverlay extends TextOverlay {
 			}
 			if (lastTabState != currentTabState) {
 				lastTabState = currentTabState;
-				update();
 			}
+		} else lastTabState = false; // disallow showing overlays that use tab while having chat open
+		if (shouldUpdateOverlay) {
+				update();
 		}
 	}
 
 	private boolean shouldUpdate() {
-		//prevent rendering when tab completing a command
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChat) {
-			return false;
-		}
-
 		//prevent rendering when tab completing in ah search overlay
 		if (AuctionSearchOverlay.shouldReplace()) {
 			return false;
