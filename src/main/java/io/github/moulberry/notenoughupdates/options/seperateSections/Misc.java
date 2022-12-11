@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccord
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
@@ -294,5 +295,30 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean abiphoneFavourites = true;
+
+	@ConfigOption(
+		name = "Museum Overlay",
+		desc = "Display items you've taken out of the museum"
+	)
+	@ConfigEditorAccordion(id = 2)
+	public boolean museumAccordion = false;
+
+	@ConfigOption(
+		name = "Show Museum Items",
+		desc = "Show real items instead of green dye in the museum"
+	)
+	@ConfigAccordionId(id = 2)
+	@ConfigEditorBoolean
+	@Expose
+	public boolean museumItemShow = true;
+
+	@ConfigOption(
+		name = "Highlight the virtual museum items",
+		desc = "Highlight virtual museum items"
+	)
+	@ConfigAccordionId(id = 2)
+	@ConfigEditorColour
+	@Expose
+	public String museumItemColor = "0:255:0:255:0";
 
 }
