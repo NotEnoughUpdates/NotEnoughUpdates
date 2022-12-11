@@ -52,10 +52,7 @@ import java.util.regex.Pattern;
 
 public class EssenceUpgrades implements NeuRecipe {
 
-	private static final ResourceLocation BACKGROUND = new ResourceLocation(
-		"notenoughupdates",
-		"textures/gui/essence_upgrades_tall.png"
-	);
+	private static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates", "textures/gui/essence_upgrades_tall.png");
 	private static final List<RenderLocation> buttonLocations = new ArrayList<RenderLocation>() {{
 		add(new RenderLocation(20, 20));
 		add(new RenderLocation(40, 20));
@@ -232,8 +229,7 @@ public class EssenceUpgrades implements NeuRecipe {
 			if (essenceItemStack != null) {
 				essenceItemStack = essenceItemStack.copy();
 				essenceItemStack.setStackDisplayName(
-					EnumChatFormatting.AQUA + NumberFormat.getInstance().format(tierUpgrade.getEssenceRequired()) + " " +
-						EnumChatFormatting.DARK_GRAY +
+					EnumChatFormatting.AQUA + NumberFormat.getInstance().format(tierUpgrade.getEssenceRequired()) + " " + EnumChatFormatting.DARK_GRAY +
 						tierUpgrade.getEssenceType() + " Essence");
 
 				essenceItemStack.getTagCompound().setInteger(
@@ -265,7 +261,7 @@ public class EssenceUpgrades implements NeuRecipe {
 				if (itemStack != null) {
 					RenderLocation renderLocation = slotLocations.get(i++);
 					if (renderLocation != null) {
-						slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY() + 1, itemStack));
+						slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY()+1, itemStack));
 					}
 				}
 			}
@@ -277,8 +273,8 @@ public class EssenceUpgrades implements NeuRecipe {
 	/**
 	 * Draws an empty slot texture at the specified location
 	 *
-	 * @param x x location
-	 * @param y y location
+	 * @param x     x location
+	 * @param y     y location
 	 */
 	private void drawSlot(int x, int y) {
 		GlStateManager.color(1, 1, 1, 1);

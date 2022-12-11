@@ -55,6 +55,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
@@ -1270,8 +1271,7 @@ public class StorageOverlay extends GuiElement {
 		if (fastRender) {
 			fontRendererObj.drawString(
 				"Fast render and antialiasing do not work with Storage overlay.",
-				sizeX / 2 -
-					fontRendererObj.getStringWidth("Fast render and antialiasing do not work with Storage overlay.") / 2,
+				sizeX / 2 - fontRendererObj.getStringWidth("Fast render and antialiasing do not work with Storage overlay.") / 2,
 				-10,
 				0xFFFF0000
 			);
@@ -1975,10 +1975,8 @@ public class StorageOverlay extends GuiElement {
 							"You just disabled the custom storage gui, did you mean to do that? If not click this message to turn it back on.");
 					storageMessage.setChatStyle(Utils.createClickStyle(ClickEvent.Action.RUN_COMMAND, "/neuenablestorage"));
 					storageMessage.setChatStyle(storageMessage.getChatStyle().setChatHoverEvent(
-						new HoverEvent(
-							HoverEvent.Action.SHOW_TEXT,
-							new ChatComponentText(EnumChatFormatting.YELLOW + "Click to enable the custom storage gui.")
-						)));
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+							new ChatComponentText(EnumChatFormatting.YELLOW + "Click to enable the custom storage gui."))));
 					ChatComponentText storageChatMessage = new ChatComponentText("");
 					storageChatMessage.appendSibling(storageMessage);
 					Minecraft.getMinecraft().thePlayer.addChatMessage(storageChatMessage);

@@ -43,7 +43,7 @@ public class LinksCommand extends ClientCommandBase {
 				JsonObject update = NotEnoughUpdates.INSTANCE.manager.getJsonFromFile(updateJson);
 
 				Utils.addChatMessage("");
-				NotEnoughUpdates.INSTANCE.displayLinks(update, 0);
+				NotEnoughUpdates.INSTANCE.displayLinks(update,0 );
 				Utils.addChatMessage("");
 			} catch (Exception ignored) {
 			}

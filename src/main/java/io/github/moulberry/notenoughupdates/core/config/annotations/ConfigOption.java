@@ -30,7 +30,6 @@ public @interface ConfigOption {
 	String name();
 
 	String desc();
-
 	String[] searchTags() default "";
 
 	int subcategoryId() default -1;

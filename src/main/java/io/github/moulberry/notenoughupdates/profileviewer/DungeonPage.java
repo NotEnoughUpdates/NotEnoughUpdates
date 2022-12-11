@@ -54,7 +54,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
 	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
-	private static final String[] dungSkillsName = {"Healer", "Mage", "Berserk", "Archer", "Tank"};
+	private static final String[] dungSkillsName = { "Healer", "Mage", "Berserk", "Archer", "Tank" };
 	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
 	private static final ItemStack[] dungSkillsStack = {
 		new ItemStack(Items.potionitem, 1, 16389),
@@ -63,7 +63,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		new ItemStack(Items.bow),
 		new ItemStack(Items.leather_chestplate),
 	};
-	private static final String[] bossFloorArr = {"Bonzo", "Scarf", "Professor", "Thorn", "Livid", "Sadan", "Necron"};
+	private static final String[] bossFloorArr = { "Bonzo", "Scarf", "Professor", "Thorn", "Livid", "Sadan", "Necron" };
 	private static final String[] bossFloorHeads = {
 		"12716ecbf5b8da00b05f316ec6af61e8bd02805b21eb8e440151468dc656549c",
 		"7de7bbbdf22bfe17980d4e20687e386f11d59ee1db6f8b4762391b79a5ac532d",
@@ -145,10 +145,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		//Catacombs level thingy
 		{
 			if (levelObjCata == null) {
-				float cataXp = Utils.getElementAsFloat(Utils.getElement(
-					profileInfo,
-					"dungeons.dungeon_types.catacombs.experience"
-				), 0);
+				float cataXp = Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.experience"), 0);
 				levelObjCata =
 					ProfileViewer.getLevel(
 						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
@@ -184,20 +181,11 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			if (mouseX > x && mouseX < x + sectionWidth && mouseY > y + 16 && mouseY < y + 24 && !onMasterMode) {
 				float F5 =
-					(Utils.getElementAsFloat(Utils.getElement(
-						profileInfo,
-						"dungeons.dungeon_types.catacombs.tier_completions." + 5
-					), 0)); //this can prob be done better
+					(Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.tier_completions." + 5), 0)); //this can prob be done better
 				float F6 =
-					(Utils.getElementAsFloat(Utils.getElement(
-						profileInfo,
-						"dungeons.dungeon_types.catacombs.tier_completions." + 6
-					), 0));
+					(Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.tier_completions." + 6), 0));
 				float F7 =
-					(Utils.getElementAsFloat(Utils.getElement(
-						profileInfo,
-						"dungeons.dungeon_types.catacombs.tier_completions." + 7
-					), 0));
+					(Utils.getElementAsFloat(Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.tier_completions." + 7), 0));
 				if (F5 > 150) {
 					F5 = 150;
 				}
@@ -235,8 +223,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
-						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY +
-							String.format("%,d", floorLevelToXP),
+						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY + String.format("%,d", floorLevelToXP),
 						String.format("# F5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF5), runsF5),
 						String.format("# F6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF6), runsF6),
 						String.format("# F7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpF7), runsF7),
@@ -245,26 +232,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 				boolean hasTime = false;
 				if (timeF5 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (F5) : %s",
-							Utils.prettyTime(runsF5 * (long) (timeF5 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (F5) : %s", Utils.prettyTime(runsF5 * (long) (timeF5 * 1.2))));
 					hasTime = true;
 				}
 				if (timeF6 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (F6) : %s",
-							Utils.prettyTime(runsF6 * (long) (timeF6 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (F6) : %s", Utils.prettyTime(runsF6 * (long) (timeF6 * 1.2))));
 					hasTime = true;
 				}
 				if (timeF7 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (F7) : %s",
-							Utils.prettyTime(runsF7 * (long) (timeF7 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (F7) : %s", Utils.prettyTime(runsF7 * (long) (timeF7 * 1.2))));
 					hasTime = true;
 				}
 				if (hasTime) {
@@ -283,20 +261,19 @@ public class DungeonPage extends GuiProfileViewerPage {
 					getInstance()
 						.tooltipToDisplay.add(
 							"The " +
-								EnumChatFormatting.DARK_PURPLE +
-								"Catacombs Expert Ring" +
-								EnumChatFormatting.GRAY +
-								" is assumed to be used, unless " +
-								EnumChatFormatting.YELLOW +
-								"SHIFT" +
-								EnumChatFormatting.GRAY +
-								" is held."
+							EnumChatFormatting.DARK_PURPLE +
+							"Catacombs Expert Ring" +
+							EnumChatFormatting.GRAY +
+							" is assumed to be used, unless " +
+							EnumChatFormatting.YELLOW +
+							"SHIFT" +
+							EnumChatFormatting.GRAY +
+							" is held."
 						);
 					getInstance().tooltipToDisplay.add("[Time per run] is calculated using Fastest S+ x 120%");
 				} else {
 					getInstance()
-						.tooltipToDisplay.add(
-							"[Hold " + EnumChatFormatting.YELLOW + "CTRL" + EnumChatFormatting.GRAY + " to see details]");
+						.tooltipToDisplay.add("[Hold " + EnumChatFormatting.YELLOW + "CTRL" + EnumChatFormatting.GRAY + " to see details]");
 				}
 			}
 
@@ -394,54 +371,38 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
-						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY +
-							String.format("%,d", floorLevelToXP),
+						EnumChatFormatting.YELLOW + "Remaining XP: " + EnumChatFormatting.GRAY + String.format("%,d", floorLevelToXP),
 						String.format("# M3 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM3), runsM3),
 						String.format("# M4 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM4), runsM4),
 						String.format("# M5 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM5), runsM5),
 						String.format("# M6 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM6), runsM6),
-						String.format("# M7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM7), runsM7),
+            String.format("# M7 Runs (%s xp) : %d", StringUtils.shortNumberFormat(xpM7), runsM7),
 						""
 					);
 				boolean hasTime = false;
 				if (timeM3 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M3) : %s",
-							Utils.prettyTime(runsM3 * (long) (timeM3 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (M3) : %s", Utils.prettyTime(runsM3 * (long) (timeM3 * 1.2))));
 					hasTime = true;
 				}
 				if (timeM4 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M4) : %s",
-							Utils.prettyTime(runsM4 * (long) (timeM4 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (M4) : %s", Utils.prettyTime(runsM4 * (long) (timeM4 * 1.2))));
 					hasTime = true;
 				}
 				if (timeM5 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M5) : %s",
-							Utils.prettyTime(runsM5 * (long) (timeM5 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (M5) : %s", Utils.prettyTime(runsM5 * (long) (timeM5 * 1.2))));
 					hasTime = true;
 				}
 				if (timeM6 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M6) : %s",
-							Utils.prettyTime(runsM6 * (long) (timeM6 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (M6) : %s", Utils.prettyTime(runsM6 * (long) (timeM6 * 1.2))));
 					hasTime = true;
 				}
 				if (timeM7 > 1000) {
 					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M7) : %s",
-							Utils.prettyTime(runsM7 * (long) (timeM7 * 1.2))
-						));
+						.tooltipToDisplay.add(String.format("Expected Time (M7) : %s", Utils.prettyTime(runsM7 * (long) (timeM7 * 1.2))));
 					hasTime = true;
 				}
 				if (hasTime) {
@@ -460,32 +421,26 @@ public class DungeonPage extends GuiProfileViewerPage {
 					getInstance()
 						.tooltipToDisplay.add(
 							"The " +
-								EnumChatFormatting.DARK_PURPLE +
-								"Catacombs Expert Ring" +
-								EnumChatFormatting.GRAY +
-								" is assumed to be used, unless " +
-								EnumChatFormatting.YELLOW +
-								"SHIFT" +
-								EnumChatFormatting.GRAY +
-								" is held."
+							EnumChatFormatting.DARK_PURPLE +
+							"Catacombs Expert Ring" +
+							EnumChatFormatting.GRAY +
+							" is assumed to be used, unless " +
+							EnumChatFormatting.YELLOW +
+							"SHIFT" +
+							EnumChatFormatting.GRAY +
+							" is held."
 						);
 					getInstance().tooltipToDisplay.add("[Time per run] is calculated using Fastest S+ x 120%");
 				} else {
 					getInstance()
-						.tooltipToDisplay.add(
-							"[Hold " + EnumChatFormatting.YELLOW + "CTRL" + EnumChatFormatting.GRAY + " to see details]");
+						.tooltipToDisplay.add("[Hold " + EnumChatFormatting.YELLOW + "CTRL" + EnumChatFormatting.GRAY + " to see details]");
 				}
 			}
 
 			dungeonLevelTextField.setSize(20, 10);
 			dungeonLevelTextField.render(x + 22, y + 29);
 			int calcLen = fontRendererObj.getStringWidth("Calculate");
-			Utils.renderShadowedString(
-				EnumChatFormatting.WHITE + "Calculate",
-				x + sectionWidth - 17 - calcLen / 2f,
-				y + 30,
-				100
-			);
+			Utils.renderShadowedString(EnumChatFormatting.WHITE + "Calculate", x + sectionWidth - 17 - calcLen / 2f, y + 30, 100);
 
 			//Random stats
 
@@ -563,8 +518,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Secrets (/Run)  ",
-				EnumChatFormatting.WHITE.toString() + (secrets == -1 ? "?" : (Math.round(
-					secrets / Math.max(1, totalRuns) * 100) / 100f)),
+				EnumChatFormatting.WHITE.toString() + (secrets == -1 ? "?" :  (Math.round(secrets / Math.max(1, totalRuns) * 100) / 100f)),
 				x,
 				miscTopY + 30,
 				sectionWidth
@@ -660,8 +614,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (BOSS_HEADS[i - 1] == null) {
 					String textureLink = bossFloorHeads[i - 1];
 
-					String b64Decoded =
-						"{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + textureLink + "\"}}}";
+					String b64Decoded = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + textureLink + "\"}}}";
 					String b64Encoded = new String(Base64.getEncoder().encode(b64Decoded.getBytes()));
 
 					ItemStack stack = new ItemStack(Items.skull, 1, 3);
@@ -693,11 +646,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				GlStateManager.popMatrix();
 
 				Utils.renderAlignedString(
-					String.format(
-						EnumChatFormatting.YELLOW + "%s (" + (onMasterMode ? "M" : "F") + "%d) ",
-						bossFloorArr[i - 1],
-						i
-					),
+					String.format(EnumChatFormatting.YELLOW + "%s (" + (onMasterMode ? "M" : "F") + "%d) ", bossFloorArr[i - 1], i),
 					EnumChatFormatting.WHITE.toString() + (int) compl,
 					x + 16,
 					y + 18 + 20 * (i - 1),
@@ -713,12 +662,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			//Gui.drawRect(x, y, x+120, y+147, 0xffffffff);
 
-			Utils.renderShadowedString(
-				EnumChatFormatting.DARK_PURPLE + "Class Levels",
-				x + sectionWidth / 2,
-				y,
-				sectionWidth
-			);
+			Utils.renderShadowedString(EnumChatFormatting.DARK_PURPLE + "Class Levels", x + sectionWidth / 2, y, sectionWidth);
 
 			JsonElement activeClassElement = Utils.getElement(profileInfo, "dungeons.selected_dungeon_class");
 			String activeClass = null;
@@ -731,10 +675,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			for (int i = 0; i < dungSkillsName.length; i++) {
 				String skillName = dungSkillsName[i];
 
-				HashMap<String, ProfileViewer.Level> levelObjClasses = levelObjClasseses.computeIfAbsent(
-					profileId,
-					k -> new HashMap<>()
-				);
+				HashMap<String, ProfileViewer.Level> levelObjClasses = levelObjClasseses.computeIfAbsent(profileId, k -> new HashMap<>());
 				if (!levelObjClasses.containsKey(skillName)) {
 					float cataXp = Utils.getElementAsFloat(
 						Utils.getElement(profileInfo, "dungeons.player_classes." + skillName.toLowerCase() + ".experience"),
@@ -767,16 +708,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				ProfileViewer.Level levelObj = levelObjClasses.get(skillName);
 
 				getInstance()
-					.renderXpBar(
-						colour + skillName,
-						dungSkillsStack[i],
-						x,
-						y + 20 + 24 * i,
-						sectionWidth,
-						levelObj,
-						mouseX,
-						mouseY
-					);
+					.renderXpBar(colour + skillName, dungSkillsStack[i], x, y + 20 + 24 * i, sectionWidth, levelObj, mouseX, mouseY);
 			}
 
 			getInstance().renderXpBar(
@@ -786,8 +718,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				y + 20 + 24 * 5,
 				sectionWidth,
 				classAverage,
-				mouseX, mouseY
-			);
+				mouseX, mouseY);
 		}
 
 		drawSideButtons();
@@ -806,8 +737,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		}
 
 		int cW = fontRendererObj.getStringWidth("Calculate");
-		if (mouseX >= guiLeft + 23 + 110 - 17 - cW && mouseX <= guiLeft + 23 + 110 - 17 && mouseY >= guiTop + 55 &&
-			mouseY <= guiTop + 65) {
+		if (mouseX >= guiLeft + 23 + 110 - 17 - cW && mouseX <= guiLeft + 23 + 110 - 17 && mouseY >= guiTop + 55 && mouseY <= guiTop + 65) {
 			calculateFloorLevelXP();
 		}
 
@@ -922,7 +852,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				if (level < Math.floor(levelObjCata.level)) {
 					continue;
 				}
-				remaining += levelingArray.get(level).getAsFloat();
+					remaining += levelingArray.get(level).getAsFloat();
 			}
 
 			if (remaining < 0) {

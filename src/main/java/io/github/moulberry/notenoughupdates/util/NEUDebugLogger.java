@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.util;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.function.Consumer;

@@ -88,7 +88,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 	public int getGuiLeft() {
 		return this.guiLeft;
 	}
-
 	public int getGuiTop() {
 		return this.guiTop;
 	}
@@ -448,13 +447,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 
 		if (!validShareContents()) {
-			Gui.drawRect(
-				guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
-				guiTop + 2,
-				guiLeft - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
-				guiTop + 2 + 20,
-				0x80000000
-			);
+			Gui.drawRect(guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0), guiTop + 2, guiLeft - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0), guiTop + 2 + 20, 0x80000000);
 		}
 
 		GlStateManager.color(1, 1, 1, 1);

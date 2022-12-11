@@ -1806,7 +1806,6 @@ public class NEUOverlay extends Gui {
 
 	int guiScaleLast = 0;
 	private boolean showVanillaLast = false;
-
 	/**
 	 * Renders the search bar, quick commands, item selection (right), item info (left) and armor hud gui elements.
 	 */
@@ -2226,6 +2225,7 @@ public class NEUOverlay extends Gui {
 			searchMode = false;
 		}
 	}
+
 
 	/**
 	 * Used in SettingsInfoPane to redraw the items when a setting changes.

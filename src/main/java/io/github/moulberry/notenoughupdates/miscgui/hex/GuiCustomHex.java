@@ -539,8 +539,7 @@ public class GuiCustomHex extends Gui {
 									if (enchanterCurrentEnch == null) {
 										enchanterCurrentEnch = enchantment;
 									} else if (updateLevel) {
-										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level &&
-											!aboveMaxLevelFromEt) {
+										if (removingEnchantPlayerLevel < 0 && enchantment.level > enchanterCurrentEnch.level && !aboveMaxLevelFromEt) {
 											enchanterCurrentEnch = enchantment;
 										} else if (removingEnchantPlayerLevel >= 0 && enchantment.level < enchanterCurrentEnch.level) {
 											enchanterCurrentEnch = enchantment;
@@ -3605,8 +3604,7 @@ public class GuiCustomHex extends Gui {
 					Gui.drawRect(guiLeft + 295 + 18, guiTop + 147, guiLeft + 295 + 16 + 18, guiTop + 147 + 16, 0x80ffffff);
 					tooltipToDisplay = createTooltip("Max Level",
 						(NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel ? 0 : 1),
-						"Enabled", "Disabled"
-					);
+						"Enabled", "Disabled");
 					tooltipToDisplay.add(1, EnumChatFormatting.GRAY + "Show max level of enchant");
 					tooltipToDisplay.add(2, EnumChatFormatting.GRAY + "from either hex or enchantment table");
 					tooltipToDisplay.add(3, EnumChatFormatting.GRAY + "max level");
@@ -4382,8 +4380,7 @@ public class GuiCustomHex extends Gui {
 						break;
 					}
 					case 1: {
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel =
-							!NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel;
+						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel = !NotEnoughUpdates.INSTANCE.config.enchantingSolvers.maxEnchLevel;
 						break;
 					}
 					case 2: {

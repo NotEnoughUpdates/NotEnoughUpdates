@@ -66,8 +66,7 @@ public class UpdateCommand extends ClientCommandBase {
 				neu.autoUpdater.scheduleDownload();
 				break;
 			case "updatemodes":
-				sender.addChatMessage(new ChatComponentText(
-					"§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
+				sender.addChatMessage(new ChatComponentText("§e[NEU] §bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files"));
 				break;
 			default:
 				displayHelp(sender);

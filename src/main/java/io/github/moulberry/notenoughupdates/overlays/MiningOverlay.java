@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
@@ -38,6 +39,10 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.WorldSettings;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -389,8 +394,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 			if (ItemCooldowns.firstLoadMillis > 0) {
 				//set cooldown on first skyblock load.
-				ItemCooldowns.pickaxeUseCooldownMillisRemaining =
-					60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
+				ItemCooldowns.pickaxeUseCooldownMillisRemaining = 60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
 				ItemCooldowns.firstLoadMillis = 0;
 			}
 
@@ -445,7 +449,7 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (starCultDisplay) {
-				if (overlayStrings == null) overlayStrings = new ArrayList<>();
+				if(overlayStrings == null) overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayOnlyShowTab ||
 					lastTabState) {
@@ -463,7 +467,7 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (forgeDisplay) {
-				if (overlayStrings == null) overlayStrings = new ArrayList<>();
+				if(overlayStrings == null) 	overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
 					lastTabState) {

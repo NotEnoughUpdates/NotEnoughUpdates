@@ -180,10 +180,7 @@ public class FairySouls {
 			double factor = normalize(currentDistSq, 0.0, farSoulDistSq);
 			int rgb = interpolateColors(closeColor, farColor, Math.min(0.40, factor));
 			RenderUtils.renderBeaconBeamOrBoundingBox(currentSoul, rgb, 1.0f, event.partialTicks);
-			if (NotEnoughUpdates.INSTANCE.config.misc.fairySoulWaypointDistance) RenderUtils.renderWayPoint(
-				currentSoul,
-				event.partialTicks
-			);
+			if (NotEnoughUpdates.INSTANCE.config.misc.fairySoulWaypointDistance) RenderUtils.renderWayPoint(currentSoul, event.partialTicks);
 		}
 	}
 
@@ -330,7 +327,7 @@ public class FairySouls {
 			//noinspection UnstableApiUsage
 			Type multiProfileSoulsType = new TypeToken<HashMap<String, HashMap<String, Set<Integer>>>>() {}.getType();
 			allProfilesFoundSouls = gson.fromJson(fileContent, multiProfileSoulsType);
-			if (allProfilesFoundSouls == null) {
+			if (allProfilesFoundSouls == null){
 				allProfilesFoundSouls = new HashMap<>();
 			}
 		} catch (JsonSyntaxException e) {
@@ -404,8 +401,7 @@ public class FairySouls {
 		if (!trackSouls || event.type == 2) return;
 
 		var cleanString = StringUtils.cleanColour(event.message.getUnformattedText());
-		if (cleanString.equals("You have already found that Fairy Soul!") || cleanString.equals(
-			"SOUL! You found a Fairy Soul!")) {
+ 		if (cleanString.equals("You have already found that Fairy Soul!") || cleanString.equals("SOUL! You found a Fairy Soul!")) {
 			markClosestSoulFound();
 		}
 	}

@@ -74,14 +74,7 @@ public class ConfigProcessor {
 		private final Field field;
 		private final Object container;
 
-		public ProcessedOption(
-			String name,
-			String desc,
-			int subcategoryId,
-			Field field,
-			Object container,
-			String[] searchTags
-		) {
+		public ProcessedOption(String name, String desc, int subcategoryId, Field field, Object container, String[] searchTags) {
 			this.name = name;
 			this.desc = desc;
 			this.subcategoryId = subcategoryId;

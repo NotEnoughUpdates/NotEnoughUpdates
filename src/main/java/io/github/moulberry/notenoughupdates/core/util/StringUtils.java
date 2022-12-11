@@ -71,7 +71,7 @@ public class StringUtils {
 		return shortNumberFormat(n, 0);
 	}
 
-	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
+	private static final char[] c = new char[] { 'k', 'm', 'b', 't' };
 
 	public static String shortNumberFormat(double n, int iteration) {
 		if (n < 1000) {
@@ -84,10 +84,7 @@ public class StringUtils {
 
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(
-			d,
-			iteration + 1
-		);
+		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(d, iteration + 1);
 	}
 
 	public static String urlEncode(String something) {

@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
@@ -26,14 +28,26 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class PowderGrindingOverlay extends TextTabOverlay {
 
 	private final static JsonParser PARSER = new JsonParser();
+
 
 	public int chestCount = 0;
 	public int openedChestCount = 0;
@@ -98,8 +112,7 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + format.format(this.openedChestCount));
 						break;
 					case 2:
-						overlayStrings.add(
-							"\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
+						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
 						break;
 					case 3:
 						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" +

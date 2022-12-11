@@ -176,10 +176,7 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField(
-		"",
-		GuiElementTextField.SCALE_TEXT
-	);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -232,68 +229,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		return xpTotal;
-	}
-
-	public static PetLevel getPetLevel(
-		String petType,
-		String rarity,
-		float exp
-	) {
-		int offset = PetInfoOverlay.Rarity.valueOf(rarity).petOffset;
-		int maxLevel = 100;
-
-		JsonArray levels = new JsonArray();
-		levels.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
-		JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
-		if (customLevelingJson != null) {
-			switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
-				case 1:
-					levels.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
-					break;
-				case 2:
-					levels = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
-					break;
-			}
-			maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
-		}
-
-		float maxXP = getMaxLevelXp(levels, offset, maxLevel);
-		boolean isMaxed = exp >= maxXP;
-
-		int level = 1;
-		float currentLevelRequirement = 0;
-		float xpThisLevel = 0;
-		float pct = 0;
-
-		if (isMaxed) {
-			level = maxLevel;
-			currentLevelRequirement = levels.get(offset + level - 2).getAsFloat();
-			xpThisLevel = currentLevelRequirement;
-			pct = 1;
-		} else {
-			long totalExp = 0;
-			for (int i = offset; i < levels.size(); i++) {
-				currentLevelRequirement = levels.get(i).getAsLong();
-				totalExp += currentLevelRequirement;
-				if (totalExp >= exp) {
-					xpThisLevel = currentLevelRequirement - (totalExp - exp);
-					level = Math.min(i - offset + 1, maxLevel);
-					break;
-				}
-			}
-			pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
-			level += pct;
-		}
-
-		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
-		levelObj.level = level;
-		levelObj.maxLevel = maxLevel;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = maxXP;
-		levelObj.levelPercentage = pct;
-		levelObj.levelXp = xpThisLevel;
-		levelObj.totalXp = exp;
-		return levelObj;
 	}
 
 	@Deprecated
@@ -1040,17 +975,14 @@ public class GuiProfileViewer extends GuiScreen {
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
 						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
-				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
+        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
 					levelStr = levelObj.maxLevel != 7 ?
-						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
-							"%.2f",
-							levelObj.level
-						) + ")" :
-						EnumChatFormatting.GOLD + "MAXED!";
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
 				} else {
 					if (skillName.contains("Class Average")) {
 						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
@@ -1357,16 +1289,5 @@ public class GuiProfileViewer extends GuiScreen {
 		public Optional<ItemStack> getItem() {
 			return Optional.ofNullable(stack);
 		}
-	}
-
-	public static class PetLevel {
-
-		public float level;
-		public float maxLevel;
-		public float currentLevelRequirement;
-		public float maxXP;
-		public float levelPercentage;
-		public float levelXp;
-		public float totalXp;
 	}
 }

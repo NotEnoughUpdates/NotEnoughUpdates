@@ -71,60 +71,57 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			put("steaming_hot_flounder", EnumChatFormatting.WHITE);
 		}
 	};
-	private static final LinkedHashMap<ItemStack, Pair<String, Integer>> armorHelmets =
-		new LinkedHashMap<ItemStack, Pair<String, Integer>>() {
-			{
-				put(
-					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("BRONZE_HUNTER_HELMET")
-					),
-					Pair.of(EnumChatFormatting.GREEN + "Novice Fisher", 1)
-				);
-				put(
-					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SILVER_HUNTER_HELMET")
-					),
-					Pair.of(EnumChatFormatting.BLUE + "Adept Fisher", 2)
-				);
-				put(
-					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("GOLD_HUNTER_HELMET")
-					),
-					Pair.of(EnumChatFormatting.DARK_PURPLE + "Expert Fisher", 3)
-				);
-				put(
-					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
-						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DIAMOND_HUNTER_HELMET")
-					),
-					Pair.of(EnumChatFormatting.GOLD + "Master Fisher", 4)
-				);
-			}
-		};
-	private static final Map<Integer, Pair<Integer, Integer>> slotLocations =
-		new HashMap<Integer, Pair<Integer, Integer>>() {
-			{
-				put(0, Pair.of(277, 46));
-				put(1, Pair.of(253, 58));
-				put(2, Pair.of(301, 58));
-				put(3, Pair.of(229, 70));
-				put(4, Pair.of(325, 70));
-				put(5, Pair.of(277, 70));
-				put(6, Pair.of(253, 82));
-				put(7, Pair.of(301, 82));
-				put(8, Pair.of(229, 94));
-				put(9, Pair.of(325, 94));
-				put(10, Pair.of(253, 106));
-				put(11, Pair.of(301, 106));
-				put(12, Pair.of(277, 118));
-				put(13, Pair.of(229, 118));
-				put(14, Pair.of(325, 118));
-				put(15, Pair.of(253, 130));
-				put(16, Pair.of(301, 130));
-				put(17, Pair.of(277, 142));
-			}
-		};
-	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation(
-		"notenoughupdates:pv_trophy_fish_tab.png");
+	private static final LinkedHashMap<ItemStack, Pair<String, Integer>> armorHelmets = new LinkedHashMap<ItemStack, Pair<String, Integer>>() {
+		{
+			put(
+				NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+					NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("BRONZE_HUNTER_HELMET")
+				),
+				Pair.of(EnumChatFormatting.GREEN + "Novice Fisher", 1)
+			);
+			put(
+				NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+					NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("SILVER_HUNTER_HELMET")
+				),
+				Pair.of(EnumChatFormatting.BLUE + "Adept Fisher", 2)
+			);
+			put(
+				NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+					NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("GOLD_HUNTER_HELMET")
+				),
+				Pair.of(EnumChatFormatting.DARK_PURPLE + "Expert Fisher", 3)
+			);
+			put(
+				NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+					NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("DIAMOND_HUNTER_HELMET")
+				),
+				Pair.of(EnumChatFormatting.GOLD + "Master Fisher", 4)
+			);
+		}
+	};
+	private static final Map<Integer, Pair<Integer, Integer>> slotLocations = new HashMap<Integer, Pair<Integer, Integer>>() {
+		{
+			put(0, Pair.of(277, 46));
+			put(1, Pair.of(253, 58));
+			put(2, Pair.of(301, 58));
+			put(3, Pair.of(229, 70));
+			put(4, Pair.of(325, 70));
+			put(5, Pair.of(277, 70));
+			put(6, Pair.of(253, 82));
+			put(7, Pair.of(301, 82));
+			put(8, Pair.of(229, 94));
+			put(9, Pair.of(325, 94));
+			put(10, Pair.of(253, 106));
+			put(11, Pair.of(301, 106));
+			put(12, Pair.of(277, 118));
+			put(13, Pair.of(229, 118));
+			put(14, Pair.of(325, 118));
+			put(15, Pair.of(253, 130));
+			put(16, Pair.of(301, 130));
+			put(17, Pair.of(277, 142));
+		}
+	};
+	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation("notenoughupdates:pv_trophy_fish_tab.png");
 	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 	private static final String checkX = "§c✖";
 	private static final String check = "§a✔";
@@ -143,8 +140,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		trophyFishList.clear();
 
-		JsonObject profileInformation =
-			GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		JsonObject profileInformation = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
 		if (profileInformation == null || !profileInformation.has("trophy_fish")) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "No data found",
@@ -306,14 +302,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			y = guiTop + 50 + i;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
-			Utils.drawStringF(
-				armorHelmets.get(itemStack).getLeft(),
-				Minecraft.getMinecraft().fontRendererObj,
-				x + 20,
-				y + 4,
-				true,
-				0
-			);
+			Utils.drawStringF(armorHelmets.get(itemStack).getLeft(), Minecraft.getMinecraft().fontRendererObj, x + 20, y + 4, true, 0);
 
 			int hasValue = trophiesPerTier[integer - 1];
 			int neededValue = integer == 1 ? 15 : 18;
@@ -336,7 +325,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 	}
 
 	private int[] getTrophiesPerTier(JsonObject trophyFish) {
-		int[] trophiesPerTier = new int[]{0, 0, 0, 0};
+		int[] trophiesPerTier = new int[] { 0, 0, 0, 0 };
 		for (String fishType : internalTrophyFish.keySet()) {
 			int highestTier = 0;
 			if (trophyFish.has((fishType + "_bronze"))) highestTier = 1;
@@ -354,8 +343,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 	private List<String> getTooltip(String name, Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap) {
 		List<String> tooltip = new ArrayList<>();
-		tooltip.add(internalTrophyFish.get(name.toLowerCase(Locale.US).replace(" ", "_")) +
-			WordUtils.capitalize(name.replace("_", " ")));
+		tooltip.add(internalTrophyFish.get(name.toLowerCase(Locale.US).replace(" ", "_")) + WordUtils.capitalize(name.replace("_", " ")));
 
 		List<String> lore = readLoreFromRepo(name.toUpperCase(Locale.US));
 		List<String> description = readDescriptionFromLore(lore);
@@ -390,8 +378,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 
 		if (trophyFishRarityIntegerMap.containsKey(rarity)) {
-			return color + name + ": " + EnumChatFormatting.GOLD +
-				NUMBER_FORMAT.format(trophyFishRarityIntegerMap.get(rarity));
+			return color + name + ": " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishRarityIntegerMap.get(rarity));
 		} else {
 			return color + name + ": " + checkX;
 		}

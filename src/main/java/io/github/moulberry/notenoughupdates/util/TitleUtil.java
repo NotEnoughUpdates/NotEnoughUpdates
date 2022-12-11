@@ -44,14 +44,12 @@ public class TitleUtil {
 		this.titleLifetime = System.nanoTime() + (ticks * 50000000L);
 		this.color = color;
 	}
-
 	/**
 	 * Adapted from SkyblockAddons under MIT license
-	 *
 	 * @link https://github.com/BiscuitDevelopment/SkyblockAddons/blob/master/LICENSE
 	 * @author BiscuitDevelopment
 	 */
-	private void renderTitles(ScaledResolution scaledResolution) {
+	private void renderTitles (ScaledResolution scaledResolution) {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (mc.theWorld == null || mc.thePlayer == null || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 
@@ -65,14 +63,14 @@ public class TitleUtil {
 				scale = scaledWidth * 0.9f / (float) stringWidth;
 			}
 			GlStateManager.pushMatrix();
-			GlStateManager.translate((float) (scaledWidth / 2), (float) (scaledHeight / 2), 0.0f);
+			GlStateManager.translate((float)(scaledWidth / 2),(float)(scaledHeight / 2), 0.0f);
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(scale, scale, scale);
 			mc.fontRendererObj.drawString(
 				this.title,
-				((float) -mc.fontRendererObj.getStringWidth(this.title) / 2),
+				((float)-mc.fontRendererObj.getStringWidth(this.title) / 2),
 				-20.0f,
 				color,
 				true

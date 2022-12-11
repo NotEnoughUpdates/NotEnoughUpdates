@@ -1434,7 +1434,6 @@ public class RenderListener {
 
 	/**
 	 * Support for switching between different pages in the RecipeView gui via right and left arrow key
-	 *
 	 * @param event
 	 */
 	//Because GuiScreen.keyTyped does not fire the KEY_LEFT and KEY_RIGHT keys. Maybe some event cancelled it?

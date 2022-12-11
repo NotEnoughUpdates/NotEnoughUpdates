@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
@@ -378,7 +379,7 @@ public class ItemOverlays {
 	public boolean enableDirtWandOverlay = true;
 
 	@ConfigOption(
-		name = "Custom Wither Cloak",
+		name="Custom Wither Cloak",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 7)

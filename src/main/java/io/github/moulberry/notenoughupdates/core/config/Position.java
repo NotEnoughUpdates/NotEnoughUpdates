@@ -76,7 +76,6 @@ public class Position {
 	public void setClicked(boolean state) {
 		this.clicked = state;
 	}
-
 	public boolean getClicked() {
 		return clicked;
 	}

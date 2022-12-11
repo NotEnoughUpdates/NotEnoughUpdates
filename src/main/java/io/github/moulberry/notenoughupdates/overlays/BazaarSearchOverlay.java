@@ -409,11 +409,11 @@ public class BazaarSearchOverlay {
 			// Amalgamated Crimsonite (Old) // TODO remove from repo
 			bazaarItems.remove("AMALGAMATED_CRIMSONITE");
 
-			title.retainAll(bazaarItems);
-			desc.retainAll(bazaarItems);
+				title.retainAll(bazaarItems);
+				desc.retainAll(bazaarItems);
 
-			title.sort(salesComparator);
-			desc.sort(salesComparator);
+				title.sort(salesComparator);
+				desc.sort(salesComparator);
 
 			if (thisSearchId != searchId.get()) return;
 

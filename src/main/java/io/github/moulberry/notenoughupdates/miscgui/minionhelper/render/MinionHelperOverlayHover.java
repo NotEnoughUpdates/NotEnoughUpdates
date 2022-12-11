@@ -90,6 +90,7 @@ public class MinionHelperOverlayHover {
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
 
+
 		int x = guiLeft + xSize + 4 + 149 - 3;
 		int y = guiTop + 109 - 3;
 		if (mouseX > x && mouseX < x + 16 &&

@@ -254,9 +254,8 @@ public class MinionHelperManager {
 		Utils.addChatMessage("§6/neudevtest minion clearapi §7Clears the api data");
 		Utils.addChatMessage("§6/neudevtest minion maxperpage <number> §7Changes the max minions per page number");
 		Utils.addChatMessage("§6/neudevtest minion arrowpos <x, y> §7Changes the position of the page numbers");
-		Utils.addChatMessage(
-			"§6/neudevtest minion debugplayer <player-uuid> <player-profile-name> [need-for-next-slot] §7" +
-				"See the Minions missing of other player");
+		Utils.addChatMessage("§6/neudevtest minion debugplayer <player-uuid> <player-profile-name> [need-for-next-slot] §7" +
+			"See the Minions missing of other player");
 		Utils.addChatMessage("");
 	}
 

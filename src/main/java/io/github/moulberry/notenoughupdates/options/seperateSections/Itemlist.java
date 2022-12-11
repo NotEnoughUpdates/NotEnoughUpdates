@@ -59,6 +59,7 @@ public class Itemlist {
 	@ConfigEditorBoolean
 	public boolean openWhenSearching = true;
 
+
 	@Expose
 	@ConfigOption(
 		name = "Item Style",

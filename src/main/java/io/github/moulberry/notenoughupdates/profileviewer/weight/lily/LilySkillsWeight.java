@@ -64,24 +64,18 @@ public class LilySkillsWeight extends SkillsWeight {
 		double base =
 			(
 				(12 * Math.pow((skillAverage / 60), 2.44780217148309)) *
-					srwTable.get(currentLevel).getAsDouble() *
-					srwTable.get(srwTable.size() - 1).getAsDouble()
+				srwTable.get(currentLevel).getAsDouble() *
+				srwTable.get(srwTable.size() - 1).getAsDouble()
 			) +
-				(srwTable.get(srwTable.size() - 1).getAsDouble() * Math.pow(currentLevel / 60.0, Math.pow(2, 0.5)));
+			(srwTable.get(srwTable.size() - 1).getAsDouble() * Math.pow(currentLevel / 60.0, Math.pow(2, 0.5)));
 		base *= Utils.getElement(Constants.WEIGHT, "lily.skills.overall").getAsDouble();
 		double overflow = 0;
 		if (currentExp > SKILLS_LEVEL_60) {
-			double factor = Utils.getElementAsFloat(
-				Utils.getElement(Constants.WEIGHT, "lily.skills.factors." + skillName),
-				0
-			);
+			double factor = Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.factors." + skillName), 0);
 			double effectiveOver = effectiveXP(currentExp - SKILLS_LEVEL_60, factor);
 			double t =
 				(effectiveOver / SKILLS_LEVEL_60) *
-					Utils.getElementAsFloat(
-						Utils.getElement(Constants.WEIGHT, "lily.skills.overflow_multipliers." + skillName),
-						0
-					);
+				Utils.getElementAsFloat(Utils.getElement(Constants.WEIGHT, "lily.skills.overflow_multipliers." + skillName), 0);
 			if (t > 0) {
 				overflow += Utils.getElement(Constants.WEIGHT, "lily.skills.overall").getAsDouble() * t;
 			}

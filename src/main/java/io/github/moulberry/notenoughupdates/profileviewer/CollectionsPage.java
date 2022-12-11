@@ -49,7 +49,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	private static final int COLLS_YCOUNT = 4;
 	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
 	private static final float COLLS_YPADDING = (202 - COLLS_YCOUNT * 20) / (float) (COLLS_YCOUNT + 1);
-	private static final String[] romans = new String[]{
+	private static final String[] romans = new String[] {
 		"I",
 		"II",
 		"III",
@@ -122,12 +122,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 						0,
 						GL11.GL_NEAREST
 					);
-					Utils.drawItemStackWithText(
-						stack,
-						guiLeft + 10,
-						guiTop + 13 + collectionCatYSize * yIndex,
-						"" + (yIndex + 1)
-					);
+					Utils.drawItemStackWithText(stack, guiLeft + 10, guiTop + 13 + collectionCatYSize * yIndex, "" + (yIndex + 1));
 				} else {
 					Utils.drawTexturedRect(
 						guiLeft + 7,
@@ -149,10 +144,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		List<String> collections = ProfileViewer.getCollectionCatToCollectionMap().get(selectedCollectionCategory);
 		List<String> minions = ProfileViewer.getCollectionCatToMinionMap().get(selectedCollectionCategory);
 
-		maxPage = Math.max(
-			(collections != null ? collections.size() : 0) / 20,
-			(minions != null ? minions.size() : 0) / 20
-		);
+		maxPage = Math.max((collections != null ? collections.size() : 0) / 20, (minions != null ? minions.size() : 0) / 20);
 
 		if (maxPage != 0) {
 			boolean leftHovered = false;
@@ -276,9 +268,9 @@ public class CollectionsPage extends GuiProfileViewerPage {
 								tooltipToDisplay = new ArrayList<>();
 								tooltipToDisplay.add(
 									collectionItem.getDisplayName() +
-										" " +
-										(completedness >= 1 ? EnumChatFormatting.GOLD : EnumChatFormatting.GRAY) +
-										tierString
+									" " +
+									(completedness >= 1 ? EnumChatFormatting.GOLD : EnumChatFormatting.GRAY) +
+									tierString
 								);
 								tooltipToDisplay.add(
 									"Collected: " + numberFormat.format(Utils.getElementAsFloat(personalAmounts.get(collection), 0))
@@ -326,10 +318,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 				String minion = minions.get(i);
 				if (minion != null) {
 					JsonObject misc = Constants.MISC;
-					float MAX_MINION_TIER = Utils.getElementAsFloat(
-						Utils.getElement(misc, "minions." + minion + "_GENERATOR"),
-						11
-					);
+					float MAX_MINION_TIER = Utils.getElementAsFloat(Utils.getElement(misc, "minions." + minion + "_GENERATOR"), 11);
 
 					int tier = (int) Utils.getElementAsFloat(minionTiers.get(minion), 0);
 					JsonObject minionJson;
@@ -493,8 +482,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		int yIndex = 0;
 		for (ItemStack stack : ProfileViewer.getCollectionCatToCollectionMap().keySet()) {
 			if (mouseX > guiLeft + 7 && mouseX < guiLeft + 7 + 20) {
-				if (mouseY > guiTop + 10 + collectionCatYSize * yIndex &&
-					mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
+				if (mouseY > guiTop + 10 + collectionCatYSize * yIndex && mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
 					selectedCollectionCategory = stack;
 					page = 0;
 					Utils.playPressSound();

@@ -155,7 +155,7 @@ public class HotmInformation {
 	@SubscribeEvent
 	public synchronized void onChat(ClientChatReceivedEvent event) {
 		if (event.message.getUnformattedText().equals("Welcome to Hypixel SkyBlock!"))
-			neu.manager.apiUtils.updateProfileData();
+			 neu.manager.apiUtils.updateProfileData();
 	}
 
 	/*
@@ -167,7 +167,6 @@ public class HotmInformation {
 		if (level > 20) return -1;
 		return QUICK_FORGE_MULTIPLIERS[level - 1];
 	}
-
 	@SubscribeEvent
 	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
 		JsonObject data = event.getData();
