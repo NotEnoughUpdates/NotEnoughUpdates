@@ -55,8 +55,6 @@ import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -842,27 +840,9 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
 				String url = "https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
 					profileId;
-				try {
-					Desktop desk = Desktop.getDesktop();
-					desk.browse(
-						new URI(
-							url
-						)
-					);
-					Utils.playPressSound();
-					return;
-				} catch (UnsupportedOperationException | IOException | URISyntaxException ignored) {
-					Runtime runtime = Runtime.getRuntime();
-					try {
-						runtime.exec("xdg-open " + url);
-						Utils.playPressSound();
-						return;
-					} catch (IOException e) {
-						//no idea how this sounds, but ya know just in case
-						Utils.playSound(new ResourceLocation("game.player.hurt"), true);
-						return;
-					}
-				}
+				Utils.openUrl(url);
+				Utils.playPressSound();
+				return;
 			}
 		}
 
