@@ -79,4 +79,31 @@ public class WorldConfig {
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
 	public String enderNodeColor = "0:255:0:255:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Frozen Treasures",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 3)
+	public boolean frozenTreasuresAccordion = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Highlight Frozen Treasures",
+		desc = "Highlight frozen treasures in a glacial cave"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 3)
+	public boolean highlightFrozenTreasures = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Frozen Treasures Color",
+		desc = "In which color should frozen treasures be highlighted"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 3)
+	public String frozenTreasuresColor = "0:255:0:255:0";
+
 }
