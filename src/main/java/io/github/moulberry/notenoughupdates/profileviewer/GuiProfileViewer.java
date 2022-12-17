@@ -20,19 +20,16 @@
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
-import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -58,8 +55,6 @@ import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -843,21 +838,11 @@ public class GuiProfileViewer extends GuiScreen {
 				profileId != null
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				try {
-					Desktop desk = Desktop.getDesktop();
-					desk.browse(
-						new URI(
-							"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-								profileId
-						)
-					);
-					Utils.playPressSound();
-					return;
-				} catch (UnsupportedOperationException | IOException | URISyntaxException ignored) {
-					//no idea how this sounds, but ya know just in case
-					Utils.playSound(new ResourceLocation("game.player.hurt"), true);
-					return;
-				}
+				String url = "https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+					profileId;
+				Utils.openUrl(url);
+				Utils.playPressSound();
+				return;
 			}
 		}
 
