@@ -20,14 +20,16 @@ package io.github.moulberry.notenoughupdates.miscfeatures
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper
+import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class WardrobeMouseButtons {
 
-    private val keybinds = arrayListOf(
+    private var keybinds: ArrayList<Int> = arrayListOf(
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot1,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot2,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot3,
@@ -45,7 +47,7 @@ class WardrobeMouseButtons {
         if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds) return
         if (event.gui !is GuiChest) return
         val gui = event.gui as GuiChest
-        if (!gui.lowerChestInventory.displayName.unformattedText.contains("Wardrobe")) return
+        if (!Utils.getOpenChestName().contains("Wardrobe")) return
 
         for (i in 0 until keybinds.size) {
             if (KeybindHelper.isKeyDown(keybinds[i])) {
@@ -56,7 +58,24 @@ class WardrobeMouseButtons {
                     )
                 }
                 lastClick = System.currentTimeMillis()
+                break
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onGuiOpen(event: GuiOpenEvent) {
+        if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds) return
+        keybinds = arrayListOf(
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot1,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot2,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot3,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot4,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot5,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot6,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot7,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot8,
+            NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot9,
+        )
     }
 }
