@@ -337,6 +337,25 @@ internal class PetLevelingTest {
         PetLeveling.petConstants = testJson
     }
 
+
+    @Test
+    fun testMaxedLevel200Pet() {
+        val leveling = PetLeveling.getPetLevelingForPet0("GOLDEN_DRAGON", PetInfoOverlay.Rarity.LEGENDARY)
+        Assertions.assertEquals(200, leveling.cumulativeLevelCost.size)
+        val level = leveling.getPetLevel(219451664.0)
+        Assertions.assertEquals(200, level.maxLevel)
+        Assertions.assertEquals(200, level.currentLevel)
+    }
+
+    @Test
+    fun testNonLegendaryMaxLevelPet() {
+        val leveling = PetLeveling.getPetLevelingForPet0("GUARDIAN", PetInfoOverlay.Rarity.EPIC)
+        Assertions.assertEquals(100, leveling.cumulativeLevelCost.size)
+        val level = leveling.getPetLevel(67790664.0)
+        Assertions.assertEquals(100, level.currentLevel)
+        Assertions.assertEquals(100, level.maxLevel)
+    }
+
     @Test
     fun testPetLevelGrandmaWolf() {
         val leveling = PetLeveling.getPetLevelingForPet0("GRANDMA_WOLF", PetInfoOverlay.Rarity.LEGENDARY)

@@ -105,7 +105,7 @@ object PetLeveling {
             }
             maxLevel = customLeveling["max_level"]?.asInt ?: maxLevel
         }
-        return ExpLadder(levels.drop(offset).take(maxLevel))
+        return ExpLadder(levels.drop(offset).take(maxLevel - 1))
     }
 
 }
