@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.miscfeatures
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper
 import io.github.moulberry.notenoughupdates.util.Utils
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent
@@ -29,7 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class WardrobeMouseButtons {
 
-    private var keybinds: ArrayList<Int> = arrayListOf(
+    private var keybinds: List<Int> = listOf(
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot1,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot2,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot3,
@@ -45,17 +44,13 @@ class WardrobeMouseButtons {
     @SubscribeEvent
     fun onGui(event: GuiScreenEvent) {
         if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds) return
-        if (event.gui !is GuiChest) return
-        val gui = event.gui as GuiChest
+        val gui = event.gui as? GuiChest ?: return
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
 
-        for (i in 0 until keybinds.size) {
+        for (i in keybinds.indices) {
             if (KeybindHelper.isKeyDown(keybinds[i])) {
                 if (System.currentTimeMillis() - lastClick > 300) {
-                    Minecraft.getMinecraft().playerController.windowClick(
-                        gui.inventorySlots.windowId,
-                        36 + i, 0, 0, Minecraft.getMinecraft().thePlayer
-                    )
+                    Utils.sendLeftMouseClick(gui.inventorySlots.windowId, 36 + i)
                 }
                 lastClick = System.currentTimeMillis()
                 break
@@ -66,7 +61,7 @@ class WardrobeMouseButtons {
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) {
         if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds) return
-        keybinds = arrayListOf(
+        keybinds = listOf(
             NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot1,
             NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot2,
             NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot3,

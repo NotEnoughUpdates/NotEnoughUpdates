@@ -2057,4 +2057,11 @@ public class Utils {
 			}
 		}
 	}
+
+	public static void sendLeftMouseClick(int windowId, int slot) {
+		Minecraft.getMinecraft().playerController.windowClick(
+			windowId,
+			slot, 0, 0, Minecraft.getMinecraft().thePlayer
+		);
+	}
 }
