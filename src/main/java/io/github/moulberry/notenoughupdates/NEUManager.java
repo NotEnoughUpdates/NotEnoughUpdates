@@ -72,6 +72,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -143,6 +144,7 @@ public class NEUManager {
 
 	public File configLocation;
 	public File repoLocation;
+	public File defaultRepoLocation;
 	public File configFile;
 	public HotmInformation hotm;
 
@@ -161,6 +163,7 @@ public class NEUManager {
 		gson = new GsonBuilder().setPrettyPrinting().create();
 
 		this.repoLocation = new File(configLocation, "repo");
+		this.defaultRepoLocation = repoLocation;
 		repoLocation.mkdir();
 	}
 
@@ -222,7 +225,10 @@ public class NEUManager {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) return false;
+				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) {
+					useModRepo();
+					return false;
+				}
 
 				if (new File(configLocation, "repo").exists() && new File(configLocation, "repo/items").exists()) {
 					if (currentCommitJSON != null && currentCommitJSON.get("sha").getAsString().equals(latestRepoCommit)) {
@@ -236,6 +242,7 @@ public class NEUManager {
 				try {
 					itemsZip.createNewFile();
 				} catch (IOException e) {
+					useModRepo();
 					return false;
 				}
 
@@ -249,6 +256,7 @@ public class NEUManager {
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.err.println("Failed to download NEU Repo! Please report this issue to the mod creator");
+					useModRepo();
 					return false;
 				}
 
@@ -264,6 +272,7 @@ public class NEUManager {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				useModRepo();
 			}
 			return true;
 		});
@@ -1657,5 +1666,17 @@ public class NEUManager {
 
 		displayNameCache.put(internalName, displayName);
 		return displayName;
+	}
+
+	public boolean useModRepo() {
+		File file;
+		try {
+			file = new File(this.getClass().getClassLoader().getResource("assets/neurepo/").toURI());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
+		NotEnoughUpdates.INSTANCE.manager.repoLocation = file;
+		return true;
 	}
 }

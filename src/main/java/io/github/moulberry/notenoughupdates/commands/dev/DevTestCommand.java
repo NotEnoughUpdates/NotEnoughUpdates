@@ -19,20 +19,17 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev;
 
-import com.google.gson.Gson;
 import io.github.moulberry.notenoughupdates.BuildFlags;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
-import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
@@ -214,6 +211,20 @@ public class DevTestCommand extends ClientCommandBase {
 			}
 			MiscUtils.copyToClipboard(builder.toString());
 			Utils.addChatMessage("§e[NEU] Copied tablist to clipboard!");
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("repoloc")) {
+			System.out.println("Repo location: " + NotEnoughUpdates.INSTANCE.manager.repoLocation.getAbsolutePath());
+			/*File file;
+			try {
+				file = new File(this.getClass().getClassLoader().getResource("assets/neurepo/").toURI());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				return;
+			}
+			NotEnoughUpdates.INSTANCE.manager.repoLocation = file;
+			NotEnoughUpdates.INSTANCE.manager.reloadRepository();
+			System.out.println("Repo location: " + NotEnoughUpdates.INSTANCE.manager.repoLocation.getAbsolutePath());
+			NotEnoughUpdates.INSTANCE.overlay.updateSearch();*/
 		}
 	}
 }
