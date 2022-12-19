@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
-import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.LRUCache
 import net.minecraft.client.gui.Gui

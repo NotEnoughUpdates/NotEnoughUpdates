@@ -32,13 +32,15 @@ public interface LRUCache<K, V> extends Function<K, V> {
 	}
 
 	static <K, V> LRUCache<K, V> memoize(Function<K, V> mapper, IntSupplier maxCacheSize) {
-		Map<K, V> cache = new LinkedHashMap<K, V>(10, 0.75F, true) {
+		Map<K, Object> cache = new LinkedHashMap<K, Object>(10, 0.75F, true) {
 			@Override
-			protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+			protected boolean removeEldestEntry(Map.Entry<K, Object> eldest) {
 				return this.size() > maxCacheSize.getAsInt();
 			}
 		};
-		Map<K, V> synchronizedCache = Collections.synchronizedMap(cache);
+		Object SENTINEL_CACHE_RESULT_NULL = new Object();
+		Function<K, Object> sentinelAwareMapper = mapper.andThen(it -> it == null ? SENTINEL_CACHE_RESULT_NULL : it);
+		Map<K, Object> synchronizedCache = Collections.synchronizedMap(cache);
 		return new LRUCache<K, V>() {
 			@Override
 			public void clearCache() {
@@ -52,7 +54,8 @@ public interface LRUCache<K, V> extends Function<K, V> {
 
 			@Override
 			public V apply(K k) {
-				return synchronizedCache.computeIfAbsent(k, mapper);
+				Object value = synchronizedCache.computeIfAbsent(k, sentinelAwareMapper);
+				return value == SENTINEL_CACHE_RESULT_NULL ? null : (V) value;
 			}
 		};
 	}
