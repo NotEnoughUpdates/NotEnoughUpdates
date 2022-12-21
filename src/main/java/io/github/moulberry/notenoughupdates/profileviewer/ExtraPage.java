@@ -156,11 +156,15 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 				for (Map.Entry<String, JsonElement> entry : essenceShops.get(essenceName).getAsJsonObject().entrySet()) {
 					int perkTier =
-						(profileInfo.has("perks") && profileInfo.get("perks").getAsJsonObject().has(entry.getKey()) ? profileInfo.get("perks").getAsJsonObject().get(entry.getKey()).getAsInt() : 0);
-					getInstance().tooltipToDisplay.add(
-						EnumChatFormatting.GOLD + entry.getValue().getAsJsonObject().get("name").getAsString() + ": " + EnumChatFormatting.AQUA +
-							perkTier + "/" + entry.getValue().getAsJsonObject().get("costs").getAsJsonArray().size()
-					);
+						(profileInfo.has("perks") && profileInfo.get("perks").getAsJsonObject().has(entry.getKey()) ? profileInfo
+							.get("perks")
+							.getAsJsonObject()
+							.get(entry.getKey())
+							.getAsInt() : 0);
+					int max = entry.getValue().getAsJsonObject().get("costs").getAsJsonArray().size();
+					EnumChatFormatting formatting = perkTier == max ? EnumChatFormatting.GREEN : EnumChatFormatting.AQUA;
+					String name = entry.getValue().getAsJsonObject().get("name").getAsString();
+					getInstance().tooltipToDisplay.add(EnumChatFormatting.GOLD + name + ": " + formatting + perkTier + "/" + max);
 				}
 
 			}
