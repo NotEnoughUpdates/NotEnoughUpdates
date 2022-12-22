@@ -32,7 +32,7 @@ import java.util.Set;
 public class Ingredient {
 
 	public static final String SKYBLOCK_COIN = "SKYBLOCK_COIN";
-	private final int count;
+	private final double count;
 	private final String internalItemId;
 	private final NEUManager manager;
 	private ItemStack itemStack;
@@ -42,7 +42,7 @@ public class Ingredient {
 		String[] parts = ingredientIdentifier.split(":");
 		internalItemId = parts[0];
 		if (parts.length == 2) {
-			count = Integer.parseInt(parts[1]);
+			count = Double.parseDouble(parts[1]);
 		} else if (parts.length == 1) {
 			count = 1;
 		} else {
@@ -56,7 +56,7 @@ public class Ingredient {
 		this.internalItemId = internalItemId;
 	}
 
-	private Ingredient(NEUManager manager, int coinValue) {
+	private Ingredient(NEUManager manager, double coinValue) {
 		this.manager = manager;
 		this.internalItemId = SKYBLOCK_COIN;
 		this.count = coinValue;
@@ -68,7 +68,7 @@ public class Ingredient {
 			newIngredients.merge(
 				i.getInternalItemId(),
 				i,
-				(a, b) -> new Ingredient(i.manager, i.internalItemId, a.count + b.count)
+				(a, b) -> new Ingredient(i.manager, i.internalItemId, (int) (a.count + b.count))
 			);
 		}
 		return new HashSet<>(newIngredients.values());
@@ -83,7 +83,7 @@ public class Ingredient {
 	}
 
 	public int getCount() {
-		return count;
+		return (int) count;
 	}
 
 	public String getInternalItemId() {
@@ -97,7 +97,7 @@ public class Ingredient {
 		}
 		JsonObject itemInfo = manager.getItemInformation().get(internalItemId);
 		itemStack = manager.jsonToStack(itemInfo);
-		itemStack.stackSize = count;
+		itemStack.stackSize = (int) count;
 		return itemStack;
 	}
 
