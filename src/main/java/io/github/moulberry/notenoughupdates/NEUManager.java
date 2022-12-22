@@ -226,7 +226,6 @@ public class NEUManager {
 					e.printStackTrace();
 				}
 				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) {
-					useModRepo();
 					return false;
 				}
 
@@ -242,7 +241,6 @@ public class NEUManager {
 				try {
 					itemsZip.createNewFile();
 				} catch (IOException e) {
-					useModRepo();
 					return false;
 				}
 
@@ -256,7 +254,6 @@ public class NEUManager {
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.err.println("Failed to download NEU Repo! Please report this issue to the mod creator");
-					useModRepo();
 					return false;
 				}
 
@@ -272,7 +269,6 @@ public class NEUManager {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				useModRepo();
 			}
 			return true;
 		});
@@ -1677,6 +1673,7 @@ public class NEUManager {
 			return false;
 		}
 		NotEnoughUpdates.INSTANCE.manager.repoLocation = file;
+		NotEnoughUpdates.INSTANCE.manager.reloadRepository();
 		return true;
 	}
 }

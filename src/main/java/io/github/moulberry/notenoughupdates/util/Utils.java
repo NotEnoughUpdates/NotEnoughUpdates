@@ -1957,7 +1957,17 @@ public class Utils {
 		return stringBuilder.toString();
 	}
 
+	private static boolean isUsingModRepo = false;
+
 	public static void showOutdatedRepoNotification() {
+		if (!isUsingModRepo) {
+			NotEnoughUpdates.INSTANCE.manager.useModRepo();
+			isUsingModRepo = true;
+			Utils.addChatMessage(EnumChatFormatting.RED + "[NEU] You are using the backup repository");
+			Utils.addChatMessage(EnumChatFormatting.RED + "You will (probably) not get new items");
+			Utils.addChatMessage(EnumChatFormatting.RED + "You can safely ignore this message");
+			return;
+		}
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
