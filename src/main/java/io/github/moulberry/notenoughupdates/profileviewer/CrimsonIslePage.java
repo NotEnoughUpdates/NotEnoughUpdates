@@ -156,6 +156,8 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		RenderHelper.enableGUIStandardItemLighting();
 
+		int totalHighestWaves = 0;
+
 		for (int i = 0; i < 5; i++) {
 			// Checking the player has completions for each tier
 			// and get the number of completions if they do
@@ -166,6 +168,8 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			// since infernal kuudra was released
 			int highestWaveCompleted = kuudraCompletedTiers.has("highest_wave_" + kuudraTiers[i]) ?
 				kuudraCompletedTiers.get("highest_wave_" + kuudraTiers[i]).getAsInt() : 0;
+
+			totalHighestWaves += highestWaveCompleted;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
 				KUUDRA_KEYS[i],
@@ -201,19 +205,19 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Total runs: ",
-			EnumChatFormatting.WHITE + String.valueOf(getTotalKuudraRuns(kuudraCompletedTiers)),
+			EnumChatFormatting.WHITE + String.valueOf(getTotalKuudraRuns(kuudraCompletedTiers, totalHighestWaves)),
 			guiLeft + 23,
 			guiTop + 30 + (5 * 30),
 			110
 		);
 	}
 
-	public int getTotalKuudraRuns(JsonObject completedRuns) {
+	public int getTotalKuudraRuns(JsonObject completedRuns, int totalHighestWaves) {
 		int totalRuns = 0;
 		for (Map.Entry<String, JsonElement> runs : completedRuns.entrySet()) {
 			totalRuns += runs.getValue().getAsInt();
 		}
-		return totalRuns;
+		return totalRuns - totalHighestWaves;
 	}
 
 	public void drawDojoStats(JsonObject data, int guiLeft, int guiTop) {
