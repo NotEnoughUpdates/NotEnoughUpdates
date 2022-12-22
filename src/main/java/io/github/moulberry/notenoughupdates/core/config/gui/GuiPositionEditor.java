@@ -109,7 +109,8 @@ public class GuiPositionEditor extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		GlStateManager.pushMatrix();
-		ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+		//ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 		this.width = scaledResolution.getScaledWidth();
 		this.height = scaledResolution.getScaledHeight();
@@ -135,7 +136,7 @@ public class GuiPositionEditor extends GuiScreen {
 			if (position.isCenterY()) y -= elementHeight / 2;
 			Gui.drawRect(x, y, x + elementWidth, y + elementHeight, 0x80404040);
 
-			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+			//scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			Utils.drawStringCentered("Position Editor", Minecraft.getMinecraft().fontRendererObj,
 				scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff
 			);
@@ -151,7 +152,8 @@ public class GuiPositionEditor extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
 		if (mouseButton == 0) {
-			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+			//ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 			mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 			for (int i = positions.size() - 1; i >= 0; i--) {
