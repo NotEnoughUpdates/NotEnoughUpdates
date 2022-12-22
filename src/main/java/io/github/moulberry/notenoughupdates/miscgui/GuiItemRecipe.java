@@ -232,7 +232,7 @@ public class GuiItemRecipe extends GuiScreen {
 			int row = i / hotbarSize;
 			int col = i % hotbarSize;
 			if (row == 0)
-				slots.add(new RecipeSlot(HOTBAR_SLOT_X + i * SLOT_SPACING, HOTBAR_SLOT_Y, item));
+				slots.add(new RecipeSlot(HOTBAR_SLOT_X + i * SLOT_SPACING, HOTBAR_SLOT_Y + 1, item));
 			else
 				slots.add(new RecipeSlot(
 					PLAYER_INVENTORY_X + col * SLOT_SPACING,
