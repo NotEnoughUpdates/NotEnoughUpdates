@@ -50,7 +50,7 @@ public class Ingredient {
 		}
 	}
 
-	public Ingredient(NEUManager manager, String internalItemId, int count) {
+	public Ingredient(NEUManager manager, String internalItemId, double count) {
 		this.manager = manager;
 		this.count = count;
 		this.internalItemId = internalItemId;
@@ -68,7 +68,7 @@ public class Ingredient {
 			newIngredients.merge(
 				i.getInternalItemId(),
 				i,
-				(a, b) -> new Ingredient(i.manager, i.internalItemId, (int) (a.count + b.count))
+				(a, b) -> new Ingredient(i.manager, i.internalItemId, a.count + b.count)
 			);
 		}
 		return new HashSet<>(newIngredients.values());
@@ -82,8 +82,8 @@ public class Ingredient {
 		return "SKYBLOCK_COIN".equals(internalItemId);
 	}
 
-	public int getCount() {
-		return (int) count;
+	public double getCount() {
+		return count;
 	}
 
 	public String getInternalItemId() {
