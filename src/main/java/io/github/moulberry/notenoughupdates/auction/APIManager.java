@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.ItemShopRecipe;
-import io.github.moulberry.notenoughupdates.recipes.KatRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -904,7 +903,6 @@ public class APIManager {
 		if (recipes != null)
 			RECIPE_ITER:
 				for (NeuRecipe recipe : recipes) {
-					if (recipe instanceof KatRecipe) continue;
 					if (recipe instanceof ItemShopRecipe) {
 						if (vanillaItem) {
 							continue;
