@@ -590,4 +590,10 @@ public class ExtraPage extends GuiProfileViewerPage {
 		}
 		return null;
 	}
+
+	@Override
+	public void resetCache() {
+		topDeaths = null;
+		topKills = null;
+	}
 }
