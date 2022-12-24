@@ -227,7 +227,7 @@ public class TooltipTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Abiphone NPC Location",
-		desc = "Click on an NPC to set an marker at the location"
+		desc = "Click on an NPC to set a marker at the location"
 	)
 	@ConfigEditorBoolean
 	public boolean abiphoneContactMarker = true;
