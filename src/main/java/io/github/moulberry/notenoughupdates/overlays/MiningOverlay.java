@@ -521,6 +521,7 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.startsWith("Jade")) return "Break green" + mithril;
 			if (name.startsWith("Amethyst")) return "Break purple" + jungle;
 			if (name.startsWith("Ruby")) return "Break red (everywhere)";
+			if (name.startsWith("Topaz")) return "Break yellow" + magma;
 		}
 
 		return null;
