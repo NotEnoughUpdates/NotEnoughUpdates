@@ -492,6 +492,7 @@ public class MiningOverlay extends TextTabOverlay {
 
 	private String getTip(String name) {
 		if (name.equals("Chest Looter")) return "Open 3 chests";
+		if (name.equals("Hard Stone Miner")) return "Break 1,000 Hard Stone";
 
 		String jungle = " §a(Jungle)";
 		String goblin = " §6(Golbin Holdout)";
