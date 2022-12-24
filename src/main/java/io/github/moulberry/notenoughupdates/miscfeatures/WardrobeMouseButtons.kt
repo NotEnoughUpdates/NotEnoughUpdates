@@ -51,8 +51,8 @@ class WardrobeMouseButtons {
             if (KeybindHelper.isKeyDown(keybinds[i])) {
                 if (System.currentTimeMillis() - lastClick > 300) {
                     Utils.sendLeftMouseClick(gui.inventorySlots.windowId, 36 + i)
+                    lastClick = System.currentTimeMillis()
                 }
-                lastClick = System.currentTimeMillis()
                 break
             }
         }
