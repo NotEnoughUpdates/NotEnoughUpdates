@@ -764,7 +764,7 @@ public class TimersOverlay extends TextTabOverlay {
 		}
 
 		// Daily Gemstone Powder Display
-		if (hidden.dailyGemstonePowderCompleted < midnightReset) {
+		if (hidden.dailyGemstonePowderCompleted < catacombsReset) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
@@ -772,29 +772,29 @@ public class TimersOverlay extends TextTabOverlay {
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
-				(hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+				(hidden.dailyGemstonePowderCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.SOON.ordinal() &&
-			(hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+			(hidden.dailyGemstonePowderCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
-				(hidden.dailyGemstonePowderCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+				(hidden.dailyGemstonePowderCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >=
 			DISPLAYTYPE.ALWAYS.ordinal()) {
@@ -802,7 +802,7 @@ public class TimersOverlay extends TextTabOverlay {
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 
