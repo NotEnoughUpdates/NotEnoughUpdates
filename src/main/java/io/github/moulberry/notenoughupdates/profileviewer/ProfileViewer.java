@@ -89,7 +89,6 @@ public class ProfileViewer {
 				put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
 				put("runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
 				put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
-				// put("catacombs", Utils.createItemStack(Item.getItemFromBlock(Blocks.deadbush), EnumChatFormatting.GOLD+"Catacombs"));
 				put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
 				put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
 				put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
@@ -908,14 +907,17 @@ public class ProfileViewer {
 						final String cuteName = profile.get("cute_name").getAsString();
 						final String profileId = profile.get("profile_id").getAsString();
 
-						final SoopyNetworthData networth;
+						final SoopyNetworthData soopyNetworthData;
 						if (jsonObject.getAsJsonObject("data").get(profileId).isJsonNull()) {
-							networth = new SoopyNetworthData(null);
+							soopyNetworthData = new SoopyNetworthData(null);
 						} else {
-							networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
+							soopyNetworthData = new SoopyNetworthData(jsonObject
+								.getAsJsonObject("data")
+								.get(profileId)
+								.getAsJsonObject());
 						}
 
-						soopyNetworth.put(cuteName, networth);
+						soopyNetworth.put(cuteName, soopyNetworthData);
 					}
 
 					updatingSoopyNetworth.set(false);
@@ -936,7 +938,7 @@ public class ProfileViewer {
 
 			final HashMap<String, Long> mostExpensiveInternal = new HashMap<>();
 
-			long networth = 0;
+			long playerNetworth = 0;
 			for (final Map.Entry<String, JsonElement> entry : inventoryInfo.entrySet()) {
 				if (entry.getValue().isJsonArray()) {
 					for (final JsonElement element : entry.getValue().getAsJsonArray()) {
@@ -946,17 +948,7 @@ public class ProfileViewer {
 
 							if (manager.auctionManager.isVanillaItem(internalname)) continue;
 
-							final JsonObject bzInfo = manager.auctionManager.getBazaarInfo(internalname);
-
-							long auctionPrice;
-							if (bzInfo != null && bzInfo.has("curr_sell")) {
-								auctionPrice = (int) bzInfo.get("curr_sell").getAsFloat();
-							} else {
-								auctionPrice = (long) manager.auctionManager.getItemAvgBin(internalname);
-								if (auctionPrice <= 0) {
-									auctionPrice = manager.auctionManager.getLowestBin(internalname);
-								}
-							}
+							final long auctionPrice = getAuctionPriceHelper(internalname);
 
 							try {
 								if (item.has("item_contents")) {
@@ -969,31 +961,20 @@ public class ProfileViewer {
 										bytes));
 									final NBTTagList items = contents_nbt.getTagList("i", 10);
 									for (int j = 0; j < items.tagCount(); j++) {
-										if (items.getCompoundTagAt(j).getKeySet().size() > 0) {
+										if (!items.getCompoundTagAt(j).getKeySet().isEmpty()) {
 											final NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
 											final String internalname2 = manager.getInternalnameFromNBT(nbt);
 											if (internalname2 != null) {
 												if (manager.auctionManager.isVanillaItem(internalname2)) continue;
 
-												final JsonObject bzInfo2 = manager.auctionManager.getBazaarInfo(internalname2);
-
-												long auctionPrice2;
-												if (bzInfo2 != null && bzInfo2.has("curr_sell")) {
-													auctionPrice2 = (int) bzInfo2.get("curr_sell").getAsFloat();
-												} else {
-													auctionPrice2 = (long) manager.auctionManager.getItemAvgBin(internalname2);
-													if (auctionPrice2 <= 0) {
-														auctionPrice2 = manager.auctionManager.getLowestBin(internalname2);
-													}
-												}
-
+												final long auctionPrice2 = getAuctionPriceHelper(internalname2);
 												final int count2 = items.getCompoundTagAt(j).getByte("Count");
 
 												mostExpensiveInternal.put(
 													internalname2,
 													auctionPrice2 * count2 + mostExpensiveInternal.getOrDefault(internalname2, 0L)
 												);
-												networth += auctionPrice2 * count2;
+												playerNetworth += auctionPrice2 * count2;
 											}
 										}
 									}
@@ -1009,34 +990,32 @@ public class ProfileViewer {
 								internalname,
 								auctionPrice * count + mostExpensiveInternal.getOrDefault(internalname, 0L)
 							);
-							networth += auctionPrice * count;
+							playerNetworth += auctionPrice * count;
 						}
 					}
 				}
 			}
-			if (networth == 0) return -1;
+			if (playerNetworth == 0) return -1;
 
-			networth = (int) (networth * 1.3f);
+			playerNetworth = (int) (playerNetworth * 1.3f);
 
 			final JsonObject petsInfo = getPetsInfo(profileName);
-			if (petsInfo != null && petsInfo.has("pets")) {
-				if (petsInfo.get("pets").isJsonArray()) {
-					final JsonArray pets = petsInfo.get("pets").getAsJsonArray();
-					for (final JsonElement element : pets) {
-						if (element.isJsonObject()) {
-							final JsonObject pet = element.getAsJsonObject();
+			if (petsInfo != null && petsInfo.has("pets") && petsInfo.get("pets").isJsonArray()) {
+				final JsonArray pets = petsInfo.get("pets").getAsJsonArray();
+				for (final JsonElement element : pets) {
+					if (element.isJsonObject()) {
+						final JsonObject pet = element.getAsJsonObject();
 
-							final String petname = pet.get("type").getAsString();
-							final String tier = pet.get("tier").getAsString();
-							final String tierNum = petRarityToNumMap.get(tier);
-							if (tierNum != null) {
-								final String internalname2 = petname + ";" + tierNum;
-								final JsonObject info2 = manager.auctionManager.getItemAuctionInfo(internalname2);
-								if (info2 == null || !info2.has("price") || !info2.has("count")) continue;
-								final int auctionPrice2 = (int) (info2.get("price").getAsFloat() / info2.get("count").getAsFloat());
+						final String petname = pet.get("type").getAsString();
+						final String tier = pet.get("tier").getAsString();
+						final String tierNum = petRarityToNumMap.get(tier);
+						if (tierNum != null) {
+							final String internalname2 = petname + ";" + tierNum;
+							final JsonObject info2 = manager.auctionManager.getItemAuctionInfo(internalname2);
+							if (info2 == null || !info2.has("price") || !info2.has("count")) continue;
+							final int auctionPrice2 = (int) (info2.get("price").getAsFloat() / info2.get("count").getAsFloat());
 
-								networth += auctionPrice2;
-							}
+							playerNetworth += auctionPrice2;
 						}
 					}
 				}
@@ -1045,10 +1024,24 @@ public class ProfileViewer {
 			final float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), 0);
 			final float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
 
-			networth += bankBalance + purseBalance;
+			playerNetworth += bankBalance + purseBalance;
 
-			this.networth.put(profileName, networth);
-			return networth;
+			networth.put(profileName, playerNetworth);
+			return playerNetworth;
+		}
+
+		private long getAuctionPriceHelper(final String internalname) {
+			final JsonObject bzInfo = manager.auctionManager.getBazaarInfo(internalname);
+
+			if (bzInfo != null && bzInfo.has("curr_sell")) {
+				return (int) bzInfo.get("curr_sell").getAsFloat();
+			} else {
+				final long auctionPrice = (long) manager.auctionManager.getItemAvgBin(internalname);
+				if (auctionPrice <= 0) {
+					return manager.auctionManager.getLowestBin(internalname);
+				}
+				return auctionPrice;
+			}
 		}
 
 		public String getLatestProfile() {
@@ -1088,10 +1081,9 @@ public class ProfileViewer {
 							if (members.has(uuid)) {
 								final JsonObject member = members.get(uuid).getAsJsonObject();
 
-								if (member.has("coop_invitation")) {
-									if (!member.get("coop_invitation").getAsJsonObject().get("confirmed").getAsBoolean()) {
-										continue;
-									}
+								if (member.has("coop_invitation") &&
+									!member.get("coop_invitation").getAsJsonObject().get("confirmed").getAsBoolean()) {
+									continue;
 								}
 
 								final String cuteName = profile.get("cute_name").getAsString();
@@ -1175,20 +1167,20 @@ public class ProfileViewer {
 
 		public List<JsonObject> getCoopProfileInformation(String profileName) {
 			final JsonArray playerInfo = getSkyblockProfiles(() -> {});
-			if (playerInfo == null) return null;
+			if (playerInfo == null) return Collections.emptyList();
 			if (profileName == null) profileName = latestProfile;
 			if (coopProfileMap.containsKey(profileName)) return coopProfileMap.get(profileName);
 
 			for (int i = 0; i < skyblockProfiles.size(); i++) {
 				if (!skyblockProfiles.get(i).isJsonObject()) {
 					skyblockProfiles = null;
-					return null;
+					return Collections.emptyList();
 				}
 				final JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
 				if (profile.get("cute_name").getAsString().equalsIgnoreCase(profileName)) {
-					if (!profile.has("members")) return null;
+					if (!profile.has("members")) return Collections.emptyList();
 					final JsonObject members = profile.get("members").getAsJsonObject();
-					if (!members.has(uuid)) return null;
+					if (!members.has(uuid)) return Collections.emptyList();
 					final List<JsonObject> coopList = new ArrayList<>();
 					for (final Map.Entry<String, JsonElement> islandMember : members.entrySet()) {
 						if (!islandMember.getKey().equals(uuid)) {
@@ -1201,7 +1193,7 @@ public class ProfileViewer {
 				}
 			}
 
-			return null;
+			return Collections.emptyList();
 		}
 
 		public void resetCache() {
@@ -1230,7 +1222,7 @@ public class ProfileViewer {
 		public Map<String, Level> getSkyblockInfo(String profileName) {
 			final JsonObject profileInfo = getProfileInformation(profileName);
 
-			if (profileInfo == null) return null;
+			if (profileInfo == null) return Collections.emptyMap();
 			if (profileName == null) profileName = latestProfile;
 			final List<JsonObject> coopProfileInfo = getCoopProfileInformation(profileName);
 			if (skyblockInfoCache.containsKey(profileName)) return skyblockInfoCache.get(profileName);
@@ -1238,7 +1230,7 @@ public class ProfileViewer {
 			final JsonObject leveling = Constants.LEVELING;
 			if (leveling == null || !leveling.has("social")) {
 				Utils.showOutdatedRepoNotification();
-				return null;
+				return Collections.emptyMap();
 			}
 
 			final Map<String, Level> out = new HashMap<>();
@@ -1292,7 +1284,7 @@ public class ProfileViewer {
 
 			// Skills API disabled?
 			if (totalSkillXP <= 0) {
-				return null;
+				return Collections.emptyMap();
 			}
 
 			out.put(
@@ -1702,15 +1694,18 @@ public class ProfileViewer {
 			final JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) return null;
 
-			final PlayerStats.Stats passiveStats = PlayerStats.getPassiveBonuses(getSkyblockInfo(profileName), profileInfo);
+			final PlayerStats.Stats passivePlayerStats = PlayerStats.getPassiveBonuses(
+				getSkyblockInfo(profileName),
+				profileInfo
+			);
 
-			if (passiveStats != null) {
-				passiveStats.add(PlayerStats.getBaseStats());
+			if (passivePlayerStats != null) {
+				passivePlayerStats.add(PlayerStats.getBaseStats());
 			}
 
-			this.passiveStats.put(profileName, passiveStats);
+			passiveStats.put(profileName, passivePlayerStats);
 
-			return passiveStats;
+			return passivePlayerStats;
 		}
 
 		public PlayerStats.Stats getStats(final String profileName) {
@@ -1720,16 +1715,16 @@ public class ProfileViewer {
 				return null;
 			}
 
-			final PlayerStats.Stats stats = PlayerStats.getStats(
+			final PlayerStats.Stats playerStats = PlayerStats.getStats(
 				getSkyblockInfo(profileName),
 				getInventoryInfo(profileName),
 				getCollectionInfo(profileName),
 				getPetsInfo(profileName),
 				profileInfo
 			);
-			if (stats == null) return null;
-			this.stats.put(profileName, stats);
-			return stats;
+			if (playerStats == null) return null;
+			stats.put(profileName, playerStats);
+			return playerStats;
 		}
 
 		public String getUuid() {
