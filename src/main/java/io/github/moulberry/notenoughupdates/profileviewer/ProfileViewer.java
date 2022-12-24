@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -56,46 +57,56 @@ import java.util.regex.Pattern;
 
 public class ProfileViewer {
 
-	private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {
-		{
-			put("COMMON", "0");
-			put("UNCOMMON", "1");
-			put("RARE", "2");
-			put("EPIC", "3");
-			put("LEGENDARY", "4");
-			put("MYTHIC", "5");
-		}
-	};
-	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
-		new LinkedHashMap<String, ItemStack>() {
-			{
-				put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"));
-				put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"));
-				put(
-					"foraging",
-					Utils.createItemStack(Item.getItemFromBlock(Blocks.sapling), EnumChatFormatting.DARK_GREEN + "Foraging")
-				);
-				put(
-					"enchanting",
-					Utils.createItemStack(Item.getItemFromBlock(Blocks.enchanting_table), EnumChatFormatting.GREEN + "Enchanting")
-				);
-				put(
-					"carpentry",
-					Utils.createItemStack(Item.getItemFromBlock(Blocks.crafting_table), EnumChatFormatting.DARK_RED + "Carpentry")
-				);
-				put("farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"));
-				put("combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"));
-				put("fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"));
-				put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"));
-				put("runecrafting", Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting"));
-				put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"));
-				put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"));
-				put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"));
-				put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"));
-				put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"));
-				put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"));
-			}
-		};
+	private static final ImmutableMap<String, String> petRarityToNumMap =
+		ImmutableMap.<String, String>builder()
+								.put("COMMON", "0")
+								.put("UNCOMMON", "1")
+								.put("RARE", "2")
+								.put("EPIC", "3")
+								.put("LEGENDARY", "4")
+								.put("MYTHIC", "5")
+								.build();
+
+	private static final ImmutableMap<String, ItemStack> skillToSkillDisplayMap =
+		ImmutableMap.<String, ItemStack>builder()
+								.put("taming", Utils.createItemStack(Items.spawn_egg, EnumChatFormatting.LIGHT_PURPLE + "Taming"))
+								.put("mining", Utils.createItemStack(Items.stone_pickaxe, EnumChatFormatting.GRAY + "Mining"))
+								.put(
+									"foraging",
+									Utils.createItemStack(
+										Item.getItemFromBlock(Blocks.sapling),
+										EnumChatFormatting.DARK_GREEN + "Foraging"
+									)
+								)
+								.put(
+									"enchanting",
+									Utils.createItemStack(
+										Item.getItemFromBlock(Blocks.enchanting_table),
+										EnumChatFormatting.GREEN + "Enchanting"
+									)
+								)
+								.put(
+									"carpentry",
+									Utils.createItemStack(
+										Item.getItemFromBlock(Blocks.crafting_table),
+										EnumChatFormatting.DARK_RED + "Carpentry"
+									)
+								)
+								.put("farming", Utils.createItemStack(Items.golden_hoe, EnumChatFormatting.YELLOW + "Farming"))
+								.put("combat", Utils.createItemStack(Items.stone_sword, EnumChatFormatting.RED + "Combat"))
+								.put("fishing", Utils.createItemStack(Items.fishing_rod, EnumChatFormatting.AQUA + "Fishing"))
+								.put("alchemy", Utils.createItemStack(Items.brewing_stand, EnumChatFormatting.BLUE + "Alchemy"))
+								.put(
+									"runecrafting",
+									Utils.createItemStack(Items.magma_cream, EnumChatFormatting.DARK_PURPLE + "Runecrafting")
+								)
+								.put("social", Utils.createItemStack(Items.emerald, EnumChatFormatting.DARK_GREEN + "Social"))
+								.put("zombie", Utils.createItemStack(Items.rotten_flesh, EnumChatFormatting.GOLD + "Rev Slayer"))
+								.put("spider", Utils.createItemStack(Items.spider_eye, EnumChatFormatting.GOLD + "Tara Slayer"))
+								.put("wolf", Utils.createItemStack(Items.bone, EnumChatFormatting.GOLD + "Sven Slayer"))
+								.put("enderman", Utils.createItemStack(Items.ender_pearl, EnumChatFormatting.GOLD + "Ender Slayer"))
+								.put("blaze", Utils.createItemStack(Items.blaze_rod, EnumChatFormatting.GOLD + "Blaze Slayer"))
+								.build();
 	private static final ItemStack CAT_FARMING = Utils.createItemStack(
 		Items.golden_hoe,
 		EnumChatFormatting.YELLOW + "Farming"
@@ -467,7 +478,7 @@ public class ProfileViewer {
 	}
 
 	public static Map<String, ItemStack> getSkillToSkillDisplayMap() {
-		return Collections.unmodifiableMap(skillToSkillDisplayMap);
+		return skillToSkillDisplayMap;
 	}
 
 	public static Level getLevel(final JsonArray levelingArray, float xp, final int levelCap, final boolean cumulative) {
