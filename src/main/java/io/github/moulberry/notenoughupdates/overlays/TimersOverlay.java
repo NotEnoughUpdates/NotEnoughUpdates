@@ -37,7 +37,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.time.ZoneId;
@@ -302,10 +301,14 @@ public class TimersOverlay extends TextTabOverlay {
 
 		boolean foundCookieBuffText = false;
 		boolean foundGodPotText = false;
+		boolean foundEffectsText = false;
 		if (SBInfo.getInstance().getLocation() != null && !SBInfo.getInstance().getLocation().equals("dungeon") &&
 			SBInfo.getInstance().footer != null) {
 			String formatted = SBInfo.getInstance().footer.getFormattedText();
 			for (String line : formatted.split("\n")) {
+				if (line.contains("Active Effects")) {
+					foundEffectsText = true;
+				}
 				Matcher activeEffectsMatcher = PATTERN_ACTIVE_EFFECTS.matcher(line);
 				if (activeEffectsMatcher.matches()) {
 					foundGodPotText = true;
@@ -411,7 +414,7 @@ public class TimersOverlay extends TextTabOverlay {
 			}
 		}
 
-		if (!foundGodPotText) {
+		if (!foundGodPotText && foundEffectsText) {
 			hidden.godPotionDuration = 0;
 		}
 
