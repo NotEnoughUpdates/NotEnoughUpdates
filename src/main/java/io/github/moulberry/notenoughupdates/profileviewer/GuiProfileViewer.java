@@ -20,19 +20,16 @@
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryPage;
 import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
-import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -58,8 +55,6 @@ import org.lwjgl.opengl.GL20;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -229,68 +224,6 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		return xpTotal;
-	}
-
-	public static PetLevel getPetLevel(
-		String petType,
-		String rarity,
-		float exp
-	) {
-		int offset = PetInfoOverlay.Rarity.valueOf(rarity).petOffset;
-		int maxLevel = 100;
-
-		JsonArray levels = new JsonArray();
-		levels.addAll(Constants.PETS.get("pet_levels").getAsJsonArray());
-		JsonElement customLevelingJson = Constants.PETS.get("custom_pet_leveling").getAsJsonObject().get(petType);
-		if (customLevelingJson != null) {
-			switch (Utils.getElementAsInt(Utils.getElement(customLevelingJson, "type"), 0)) {
-				case 1:
-					levels.addAll(customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray());
-					break;
-				case 2:
-					levels = customLevelingJson.getAsJsonObject().get("pet_levels").getAsJsonArray();
-					break;
-			}
-			maxLevel = Utils.getElementAsInt(Utils.getElement(customLevelingJson, "max_level"), 100);
-		}
-
-		float maxXP = getMaxLevelXp(levels, offset, maxLevel);
-		boolean isMaxed = exp >= maxXP;
-
-		int level = 1;
-		float currentLevelRequirement = 0;
-		float xpThisLevel = 0;
-		float pct = 0;
-
-		if (isMaxed) {
-			level = maxLevel;
-			currentLevelRequirement = levels.get(offset + level - 2).getAsFloat();
-			xpThisLevel = currentLevelRequirement;
-			pct = 1;
-		} else {
-			long totalExp = 0;
-			for (int i = offset; i < levels.size(); i++) {
-				currentLevelRequirement = levels.get(i).getAsLong();
-				totalExp += currentLevelRequirement;
-				if (totalExp >= exp) {
-					xpThisLevel = currentLevelRequirement - (totalExp - exp);
-					level = Math.min(i - offset + 1, maxLevel);
-					break;
-				}
-			}
-			pct = currentLevelRequirement != 0 ? xpThisLevel / currentLevelRequirement : 0;
-			level += pct;
-		}
-
-		GuiProfileViewer.PetLevel levelObj = new GuiProfileViewer.PetLevel();
-		levelObj.level = level;
-		levelObj.maxLevel = maxLevel;
-		levelObj.currentLevelRequirement = currentLevelRequirement;
-		levelObj.maxXP = maxXP;
-		levelObj.levelPercentage = pct;
-		levelObj.levelXp = xpThisLevel;
-		levelObj.totalXp = exp;
-		return levelObj;
 	}
 
 	@Deprecated
@@ -905,21 +838,11 @@ public class GuiProfileViewer extends GuiScreen {
 				profileId != null
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				try {
-					Desktop desk = Desktop.getDesktop();
-					desk.browse(
-						new URI(
-							"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-								profileId
-						)
-					);
-					Utils.playPressSound();
-					return;
-				} catch (UnsupportedOperationException | IOException | URISyntaxException ignored) {
-					//no idea how this sounds, but ya know just in case
-					Utils.playSound(new ResourceLocation("game.player.hurt"), true);
-					return;
-				}
+				String url = "https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+					profileId;
+				Utils.openUrl(url);
+				Utils.playPressSound();
+				return;
 			}
 		}
 
@@ -1351,16 +1274,5 @@ public class GuiProfileViewer extends GuiScreen {
 		public Optional<ItemStack> getItem() {
 			return Optional.ofNullable(stack);
 		}
-	}
-
-	public static class PetLevel {
-
-		public float level;
-		public float maxLevel;
-		public float currentLevelRequirement;
-		public float maxXP;
-		public float levelPercentage;
-		public float levelXp;
-		public float totalXp;
 	}
 }

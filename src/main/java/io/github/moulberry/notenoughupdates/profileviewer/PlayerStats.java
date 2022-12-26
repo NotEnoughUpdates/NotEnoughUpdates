@@ -24,9 +24,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
+import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
@@ -491,11 +493,13 @@ public class PlayerStats {
 					tierNum = "" + (Integer.parseInt(tierNum) + 1);
 				}
 
-				GuiProfileViewer.PetLevel levelObj = GuiProfileViewer.getPetLevel(petname, tier, exp);
-				if (levelObj == null) return null;
-				float level = levelObj.level;
-				float currentLevelRequirement = levelObj.currentLevelRequirement;
-				float maxXP = levelObj.maxXP;
+				PetLeveling.PetLevel levelObj = PetLeveling.getPetLevelingForPet(
+					petname,
+					PetInfoOverlay.Rarity.valueOf(tier)
+				).getPetLevel(exp);
+				float level = levelObj.getCurrentLevel();
+				float currentLevelRequirement = levelObj.getExpRequiredForNextLevel();
+				float maxXP = levelObj.getMaxLevel();
 				pet.addProperty("level", level);
 				pet.addProperty("currentLevelRequirement", currentLevelRequirement);
 				pet.addProperty("maxXP", maxXP);

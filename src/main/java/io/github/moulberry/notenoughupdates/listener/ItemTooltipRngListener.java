@@ -210,7 +210,8 @@ public class ItemTooltipRngListener {
 		dungeonData.clear();
 
 		JsonObject leveling = Constants.LEVELING;
-		if (!leveling.has("slayer_boss_xp") ||
+		if (leveling == null ||
+			!leveling.has("slayer_boss_xp") ||
 			!leveling.has("slayer_highest_tier") ||
 			!leveling.has("slayer_tier_colors") ||
 			!leveling.has("rng_meter_dungeon_score")) {

@@ -109,13 +109,20 @@ public class OverlayManager {
 			"\u00a73Gemstone Powder Found: \u00a7d6,243",
 			"\u00a73Average Gemstone Powder/Chest: \u00a7d568"
 		);
-		powderGrindingOverlay = new PowderGrindingOverlay(NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerPosition, () -> {
-			List<String> strings = new ArrayList<>();
-			for (int i : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
-				if (i >= 0 && i < powderGrindingDummy.size()) strings.add(powderGrindingDummy.get(i));
-			}
-			return strings;
-		}, () -> TextOverlayStyle.BACKGROUND);
+		powderGrindingOverlay =
+			new PowderGrindingOverlay(NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerPosition, () -> {
+				List<String> strings = new ArrayList<>();
+				for (int i : NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerText) {
+					if (i >= 0 && i < powderGrindingDummy.size()) strings.add(powderGrindingDummy.get(i));
+				}
+				return strings;
+			}, () -> {
+				int style = NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerOverlayStyle;
+				if (style >= 0 && style < TextOverlayStyle.values().length) {
+					return TextOverlayStyle.values()[style];
+				}
+				return TextOverlayStyle.BACKGROUND;
+			});
 
 		List<String> farmingDummy = Lists.newArrayList(
 			"\u00a7bCounter: \u00a7e37,547,860",

@@ -100,7 +100,8 @@ public class FuelBar {
 			fuelAmount = .3f;
 		}
 		if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
-			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+			GlStateManager.pushMatrix();
+			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 
 			Position position = NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition;
 			int x = position.getAbsX(scaledResolution, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth);
@@ -139,6 +140,8 @@ public class FuelBar {
 			Minecraft.getMinecraft().fontRendererObj.drawString(str,
 				x + 2, y, 0xffffff, false
 			);
+			Utils.pushGuiScale(0);
+			GlStateManager.popMatrix();
 		}
 	}
 

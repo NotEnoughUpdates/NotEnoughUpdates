@@ -29,11 +29,6 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 public class FeaturesCommand extends ClientCommandBase {
 	public FeaturesCommand() {
 		super("neufeatures");
@@ -48,13 +43,11 @@ public class FeaturesCommand extends ClientCommandBase {
 		}
 		String url = Constants.MISC.get("featureslist").getAsString();
 
-		Desktop desk = Desktop.getDesktop();
-		try {
-			desk.browse(new URI(url));
-			Utils.addChatMessage(				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
-				EnumChatFormatting.GOLD + "> Opening Feature List in browser.");
-		} catch (URISyntaxException | IOException ignored) {
-
+		if (Utils.openUrl(url)) {
+			Utils.addChatMessage(
+				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
+					EnumChatFormatting.GOLD + "> Opening Feature List in browser.");
+		} else {
 			ChatComponentText clickTextFeatures = new ChatComponentText(
 				EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET +
 					EnumChatFormatting.GOLD + "> Click here to open the Feature List in your browser.");

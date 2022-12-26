@@ -275,7 +275,8 @@ public class BasicPage extends GuiProfileViewerPage {
 				true,
 				0
 			);
-			try {
+			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE") != null &&
+				NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy")) {
 				double networthInCookies =
 					(
 						networth /
@@ -305,13 +306,12 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
 							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
-							&& profile.isProfileMaxSoopyNetworth(profileId)) {
+							&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
 
 							String lbPosStr =
 								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
 									profile.getSoopyNetworthLeaderboardPosition());
-							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on the networth leaderboard!");
-							getInstance().tooltipToDisplay.add("");
+							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
 						}
 
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -334,8 +334,6 @@ public class BasicPage extends GuiProfileViewerPage {
 						}
 					}
 				}
-			} catch (Exception ignored) {
-				ignored.printStackTrace();
 			}
 		} else {
 			//Networth is under 0
@@ -810,6 +808,9 @@ public class BasicPage extends GuiProfileViewerPage {
 			return;
 		}
 
+		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
+		String profileId = GuiProfileViewer.getProfileId();
+
 		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
 			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
 			Utils.showOutdatedRepoNotification();
@@ -822,6 +823,12 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
 		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, profileInfo);
+
+		long weight = -2L;
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
+			weight = profile.getSoopyWeightLeaderboardPosition();
+		}
+
 
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
@@ -871,6 +878,23 @@ public class BasicPage extends GuiProfileViewerPage {
 								roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
 							)
 					);
+
+				if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+					&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
+
+					String lbPosStr =
+						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+							profile.getSoopyWeightLeaderboardPosition());
+					getInstance().tooltipToDisplay.add("");
+					String stateStr = EnumChatFormatting.RED + "An error occured";
+					if (weight == -2) {
+						stateStr = EnumChatFormatting.YELLOW + "Loading";
+					}
+					if (weight > 0)
+						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's weight leaderboard!");
+					else
+						getInstance().tooltipToDisplay.add(stateStr + " soopy's weight leaderboard");
+				}
 			}
 		}
 

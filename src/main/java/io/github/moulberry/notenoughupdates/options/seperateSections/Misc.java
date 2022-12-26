@@ -186,7 +186,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Cache Tooltip Enchants",
-		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup.\nNOTE: It doesn't work on items without a uuid"
+		desc = "Caches item enchants in tooltip to only use the neuec config once per item lookup."
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
@@ -286,5 +286,13 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean textFieldTweaksEnabled = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Abiphone Favourites",
+		desc = "Allows to set abiphone contacts as favourites, toggle between displaying all contacts or favourites only and deactivates the option to remove contacts at all."
+	)
+	@ConfigEditorBoolean
+	public boolean abiphoneFavourites = true;
 
 }

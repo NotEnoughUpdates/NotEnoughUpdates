@@ -21,8 +21,9 @@ package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -63,14 +64,21 @@ public class KatSitterOverlay {
 		if (petInfo == null || !petInfo.has("exp") || !petInfo.has("tier") || !petInfo.has("type")) return;
 		String petId = petInfo.get("type").getAsString();
 		double xp = petInfo.get("exp").getAsDouble();
-		String rarity = petInfo.get("tier").getAsString();
+		PetInfoOverlay.Rarity rarity = PetInfoOverlay.Rarity.valueOf(petInfo.get("tier").getAsString());
 		Slot katSlot = container.getSlot(22);
-		String upgradedRarity = nextRarity(rarity);
+		PetInfoOverlay.Rarity upgradedRarity = rarity.nextRarity();
 		boolean nextRarityPresent = katSlot.getStack() != null && katSlot.getStack().getItem() != Item.getItemFromBlock(
 			Blocks.barrier) && upgradedRarity != null;
 		renderPetInformation(
-			(int) GuiProfileViewer.getPetLevel(petId, rarity, (float) xp).level,
-			nextRarityPresent ? (int) GuiProfileViewer.getPetLevel(petId, upgradedRarity, (float) xp).level : null,
+			PetLeveling
+				.getPetLevelingForPet(petId, rarity)
+				.getPetLevel(xp)
+				.getCurrentLevel(),
+			nextRarityPresent ?
+				PetLeveling
+					.getPetLevelingForPet(petId, rarity)
+					.getPetLevel(xp)
+					.getCurrentLevel() : null,
 			gui
 		);
 	}
@@ -100,20 +108,6 @@ public class KatSitterOverlay {
 			);
 	}
 
-	public String nextRarity(String currentRarity) {
-		switch (currentRarity.intern()) {
-			case "COMMON":
-				return "UNCOMMON";
-			case "UNCOMMON":
-				return "RARE";
-			case "RARE":
-				return "EPIC";
-			case "EPIC":
-				return "LEGENDARY";
-			case "LEGENDARY":
-				return "MYTHIC";
-		}
-		return null;
-	}
+
 
 }

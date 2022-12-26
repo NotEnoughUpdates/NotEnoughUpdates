@@ -44,8 +44,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -737,10 +735,7 @@ public class NEUConfigEditor extends GuiElement {
 
 				if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
 					mouseY >= y + 6 && mouseY <= y + 23) {
-					try {
-						Desktop.getDesktop().browse(new URI(socialsLink[socialIndex]));
-					} catch (Exception ignored) {
-					}
+					Utils.openUrl(socialsLink[socialIndex]);
 					return true;
 				}
 			}
@@ -850,6 +845,11 @@ public class NEUConfigEditor extends GuiElement {
 		int innerWidth = xSize - 154 - innerPadding * 2;
 
 		if (Keyboard.getEventKeyState()) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
+				searchField.setFocus(!searchField.getFocus());
+				return true;
+			}
+
 			String old = searchField.getText();
 			searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 			searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(

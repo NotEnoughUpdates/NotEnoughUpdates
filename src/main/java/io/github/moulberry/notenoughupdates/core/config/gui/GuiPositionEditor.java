@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.core.config.gui;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -27,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -45,10 +47,9 @@ public class GuiPositionEditor extends GuiScreen {
 	private int grabbedX = 0;
 	private int grabbedY = 0;
 	private int clickedPos = -1;
-
+	private int oldGuiScale = -1;
 	public static boolean renderDrill = false;
 
-	private int guiScaleOverride = -1;
 
 	public GuiPositionEditor(
 		LinkedHashMap<TextOverlay, Position> overlayPositions,
@@ -83,6 +84,16 @@ public class GuiPositionEditor extends GuiScreen {
 		this.elementHeights = height;
 		this.positionChangedCallback = positionChangedCallback;
 		this.closedCallback = closedCallback;
+		int newGuiScale = NotEnoughUpdates.INSTANCE.config.locationedit.guiScale;
+		if (newGuiScale != 0) {
+			if (Minecraft.getMinecraft().gameSettings.guiScale != 0) {
+				this.oldGuiScale = Minecraft.getMinecraft().gameSettings.guiScale;
+			} else {
+				this.oldGuiScale = 4;
+			}
+			if (newGuiScale == 4) Minecraft.getMinecraft().gameSettings.guiScale = 0;
+			else Minecraft.getMinecraft().gameSettings.guiScale = NotEnoughUpdates.INSTANCE.config.locationedit.guiScale;
+		}
 	}
 
 	@Override
@@ -91,17 +102,14 @@ public class GuiPositionEditor extends GuiScreen {
 		closedCallback.run();
 		renderDrill = false;
 		clickedPos = -1;
+		if (this.oldGuiScale != -1) Minecraft.getMinecraft().gameSettings.guiScale = this.oldGuiScale;
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		ScaledResolution scaledResolution;
-		if (guiScaleOverride >= 0) {
-			scaledResolution = Utils.pushGuiScale(guiScaleOverride);
-		} else {
-			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		}
+		GlStateManager.pushMatrix();
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 		this.width = scaledResolution.getScaledWidth();
 		this.height = scaledResolution.getScaledHeight();
@@ -127,9 +135,6 @@ public class GuiPositionEditor extends GuiScreen {
 			if (position.isCenterY()) y -= elementHeight / 2;
 			Gui.drawRect(x, y, x + elementWidth, y + elementHeight, 0x80404040);
 
-			Utils.pushGuiScale(-1);
-
-			scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			Utils.drawStringCentered("Position Editor", Minecraft.getMinecraft().fontRendererObj,
 				scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff
 			);
@@ -137,6 +142,7 @@ public class GuiPositionEditor extends GuiScreen {
 				scaledResolution.getScaledWidth() / 2, 18, true, 0xffffff
 			);
 		}
+		GlStateManager.popMatrix();
 	}
 
 	@Override
@@ -144,12 +150,7 @@ public class GuiPositionEditor extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
 		if (mouseButton == 0) {
-			ScaledResolution scaledResolution;
-			if (guiScaleOverride >= 0) {
-				scaledResolution = Utils.pushGuiScale(guiScaleOverride);
-			} else {
-				scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-			}
+			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 			mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 			for (int i = positions.size() - 1; i >= 0; i--) {
@@ -171,7 +172,6 @@ public class GuiPositionEditor extends GuiScreen {
 					}
 				}
 
-				Utils.pushGuiScale(-1);
 			}
 		}
 	}

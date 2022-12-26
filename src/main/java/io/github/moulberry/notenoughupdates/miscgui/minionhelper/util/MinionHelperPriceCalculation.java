@@ -84,6 +84,10 @@ public class MinionHelperPriceCalculation {
 				int amount = items.get("SKYBLOCK_PELT").get(0);
 				result += " §7+ §5" + amount + " Pelts";
 			}
+			if (items.containsKey("SKYBLOCK_NORTH_STAR")) {
+				int amount = items.get("SKYBLOCK_NORTH_STAR").get(0);
+				result += " §7+ §d" + amount + " North Stars";
+			}
 		}
 
 		if (upgradeOnly) {

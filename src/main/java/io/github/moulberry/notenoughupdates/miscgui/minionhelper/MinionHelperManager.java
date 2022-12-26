@@ -116,8 +116,8 @@ public class MinionHelperManager {
 		return null;
 	}
 
-	public void createMinion(String internalName, int tier) {
-		minions.put(internalName, new Minion(internalName, tier));
+	public void createMinion(String internalName, int tier, int xpGain) {
+		minions.put(internalName, new Minion(internalName, tier, xpGain));
 	}
 
 	public String formatInternalName(String minionName) {

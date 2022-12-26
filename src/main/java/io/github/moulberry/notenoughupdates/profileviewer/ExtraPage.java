@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,20 +109,24 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float xStart,
 		float yStartTop,
 		float xOffset,
-		float yOffset
+		float yOffset,
+		float mouseX,
+		float mouseY
 	) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		yStartTop = yStartTop + 78;
+		yStartTop += 77;
 		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
 		JsonObject parents = Constants.PARENTS;
-		JsonArray essenceArray = parents.get("ESSENCE_WITHER").getAsJsonArray();
+		JsonArray essenceArray = new JsonArray();
+		essenceArray.addAll(parents.get("ESSENCE_WITHER").getAsJsonArray());
+		//add wither essence since it's not part of the parents array
+		essenceArray.add(new JsonPrimitive("ESSENCE_WITHER"));
 
 		for (int i = 0; i < essenceArray.size(); i++) {
-
 			JsonElement jsonElement = essenceArray.get(i);
 			String essenceName = jsonElement.getAsString();
 
@@ -132,15 +137,37 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();
 			int essenceNumber =
-				(profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0);
+				profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0;
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.GOLD + displayName,
 				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(essenceNumber, 0),
 				guiLeft + xStart + xOffset,
-				guiTop + yStartTop + yOffset * i,
+				guiTop + yStartTop + (yOffset - 1) * i,
 				76
 			);
+			if (Constants.ESSENCESHOPS == null) return;
+			JsonObject essenceShops = Constants.ESSENCESHOPS;
+			if (mouseX >= guiLeft + xStart + xOffset && mouseX <= guiLeft + xStart + xOffset + 76 &&
+				mouseY >= guiTop + yStartTop + (yOffset - 1) * i &&
+				mouseY <= guiTop + yStartTop + (yOffset - 1) * i + 10) {
+				getInstance().tooltipToDisplay = new ArrayList<>();
+				if (essenceShops.get(essenceName) == null) continue;
+
+				for (Map.Entry<String, JsonElement> entry : essenceShops.get(essenceName).getAsJsonObject().entrySet()) {
+					int perkTier =
+						(profileInfo.has("perks") && profileInfo.get("perks").getAsJsonObject().has(entry.getKey()) ? profileInfo
+							.get("perks")
+							.getAsJsonObject()
+							.get(entry.getKey())
+							.getAsInt() : 0);
+					int max = entry.getValue().getAsJsonObject().get("costs").getAsJsonArray().size();
+					EnumChatFormatting formatting = perkTier == max ? EnumChatFormatting.GREEN : EnumChatFormatting.AQUA;
+					String name = entry.getValue().getAsJsonObject().get("name").getAsString();
+					getInstance().tooltipToDisplay.add(EnumChatFormatting.GOLD + name + ": " + formatting + perkTier + "/" + max);
+				}
+
+			}
 		}
 	}
 
@@ -412,7 +439,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		drawEssence(profileInfo, xStart, yStartTop, xOffset, yOffset);
+		drawEssence(profileInfo, xStart, yStartTop, xOffset, yOffset, mouseX, mouseY);
 
 		if (topKills == null) {
 			topKills = new TreeMap<>();
@@ -562,5 +589,11 @@ public class ExtraPage extends GuiProfileViewerPage {
 			return renderText;
 		}
 		return null;
+	}
+
+	@Override
+	public void resetCache() {
+		topDeaths = null;
+		topKills = null;
 	}
 }

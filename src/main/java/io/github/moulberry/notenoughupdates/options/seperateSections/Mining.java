@@ -78,6 +78,24 @@ public class Mining {
 	@ConfigAccordionId(id = 0)
 	public int emissaryWaypoints = 1;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable Powder Ghast Waypoints",
+		desc = "Shows a waypoint at the location of the Powder Ghast"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean powderGhastWaypoint = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Fallen Star Waypoints",
+		desc = "Shows a waypoint at the location of the Fallen Star"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean fallenStarWaypoint = true;
+
 	@ConfigOption(
 		name = "Drill Fuel Bar",
 		desc = ""
@@ -138,11 +156,12 @@ public class Mining {
 			"\u00a73Mithril Powder: \u00a726,243",
 			"\u00a73Gemstone Powder: \u00a7d6,243",
 			"\u00a73Forge 1) \u00a79Diamonite\u00a77: \u00a7aReady!",
-			"\u00a73Pickaxe CD: \u00a7a78s"
+			"\u00a73Pickaxe CD: \u00a7a78s",
+			"\u00a73Star Cult: \u00a7a78s"
 		}
 	)
 	@ConfigAccordionId(id = 2)
-	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
+	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
 
 	@Expose
 	public Position overlayPosition = new Position(10, 100);
@@ -198,6 +217,27 @@ public class Mining {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
 	public boolean forgeDisplayOnlyShowTab = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Star Cult Location",
+		desc = "Change when the Star Cult timer gets shown"
+	)
+	@ConfigEditorDropdown(
+		values = {"Dwarven Mines+Crystal Hollows", "Everywhere except dungeons", "Everywhere"}
+	)
+	@ConfigAccordionId(id = 2)
+	public int starCultDisplayEnabledLocations = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Star Cult Tab",
+		desc = "Only show the star cult timer when tab list is open\n" +
+			"\u00A7cThis only works outside of Dwarven Caves!"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean starCultDisplayOnlyShowTab = false;
 
 	@ConfigOption(
 		name = "Metal Detector Solver",
@@ -695,7 +735,6 @@ public class Mining {
 	@ConfigEditorAccordion(id = 9)
 	public boolean powderGrindingTrackerAccordion = false;
 
-
 	@Expose
 	@ConfigOption(
 		name = "Enable Tracker",
@@ -727,6 +766,17 @@ public class Mining {
 
 	@Expose
 	public Position powderGrindingTrackerPosition = new Position(10, 265);
+
+	@Expose
+	@ConfigOption(
+		name = "Overlay Style",
+		desc = "Change the style of the Powder Grinding Tracker information Overlay"
+	)
+	@ConfigEditorDropdown(
+		values = {"Background", "No Shadow", "Shadow", "Full Shadow"}
+	)
+	@ConfigAccordionId(id = 9)
+	public int powderGrindingTrackerOverlayStyle = 0;
 
 	@Expose
 	@ConfigOption(

@@ -139,6 +139,16 @@ public class DevTestCommand extends ClientCommandBase {
 										.collect(Collectors.joining("\n"))));
 			return;
 		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("exteditor")) {
+			if (args.length > 1) {
+				NotEnoughUpdates.INSTANCE.config.hidden.externalEditor = String.join(
+					" ",
+					Arrays.copyOfRange(args, 1, args.length)
+				);
+			}
+			Utils.addChatMessage("§e[NEU] §fYour external editor is: §Z" + NotEnoughUpdates.INSTANCE.config.hidden.externalEditor);
+			return;
+		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
 			if (args.length == 1) {
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar();
@@ -166,8 +176,7 @@ public class DevTestCommand extends ClientCommandBase {
 		}
 
 		if (args.length == 2 && args[0].equalsIgnoreCase("pt")) {
-			EnumParticleTypes t = EnumParticleTypes.valueOf(args[1]);
-			FishingHelper.type = t;
+			FishingHelper.type = EnumParticleTypes.valueOf(args[1]);
 			return;
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("dev")) {

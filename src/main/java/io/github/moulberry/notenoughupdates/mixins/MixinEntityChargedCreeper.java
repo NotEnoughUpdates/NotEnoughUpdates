@@ -41,6 +41,7 @@ public abstract class MixinEntityChargedCreeper {
 				(WitherCloakChanger.isCloakActive || System.currentTimeMillis() - WitherCloakChanger.lastDeactivate < 300) &&
 				NotEnoughUpdates.INSTANCE.isOnSkyblock();
 		if (isWitherCloak) {
+			WitherCloakChanger.lastCreeperRender = System.currentTimeMillis();
 			if (ci.isCancellable()) {
 				ci.cancel();
 			}

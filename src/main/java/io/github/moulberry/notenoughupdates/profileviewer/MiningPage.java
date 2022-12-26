@@ -575,7 +575,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
 					"",
 					"§7Increases the chance for you to",
-					"§7trigger rare occurrences im",
+					"§7trigger rare occurrences in",
 					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
@@ -589,7 +589,7 @@ public class MiningPage extends GuiProfileViewerPage {
 						"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
 						"",
 						"§7Increases the chance for you to",
-						"§7trigger rare occurrences im",
+						"§7trigger rare occurrences in",
 						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7."
 					),
 			45

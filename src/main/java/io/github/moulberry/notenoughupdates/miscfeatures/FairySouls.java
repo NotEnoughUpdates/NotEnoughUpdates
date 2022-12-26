@@ -26,10 +26,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -38,6 +40,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.BufferedReader;
@@ -393,13 +396,12 @@ public class FairySouls {
 		print("");
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatReceived(ClientChatReceivedEvent event) {
 		if (!trackSouls || event.type == 2) return;
 
-		if (event.message.getUnformattedText().equals("You have already found that Fairy Soul!") ||
-			event.message.getUnformattedText().equals(
-				"SOUL! You found a Fairy Soul!")) {
+		var cleanString = StringUtils.cleanColour(event.message.getUnformattedText());
+ 		if (cleanString.equals("You have already found that Fairy Soul!") || cleanString.equals("SOUL! You found a Fairy Soul!")) {
 			markClosestSoulFound();
 		}
 	}

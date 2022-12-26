@@ -30,6 +30,8 @@ plugins {
 		id("com.github.johnrengelman.shadow") version "7.1.2"
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
+		id("io.freefair.lombok") version "6.5.1"
+		kotlin("jvm") version "1.7.20"
 }
 
 
@@ -47,7 +49,7 @@ loom {
 				"client" {
 						property("mixin.debug", "true")
 						property("asmhelper.verbose", "true")
-						arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
+						arg("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
 						arg("--mixin", "mixins.notenoughupdates.json")
 				}
 		}
@@ -75,6 +77,11 @@ repositories {
 		maven("https://jitpack.io")
 }
 
+lombok {
+		version.set("1.18.24")
+}
+
+
 val shadowImplementation by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
@@ -90,10 +97,20 @@ val devEnv by configurations.creating {
 		isVisible = false
 }
 
+val kotlinDependencies by configurations.creating {
+		configurations.implementation.get().extendsFrom(this)
+}
+
 dependencies {
+		implementation("org.projectlombok:lombok:1.18.22")
 		minecraft("com.mojang:minecraft:1.8.9")
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+
+
+		// Please keep this version in sync with KotlinLoadingTweaker
+		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.7.21"))
+		kotlinDependencies(kotlin("stdlib"))
 
 		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
@@ -128,7 +145,7 @@ tasks.withType(Jar::class) {
 		archiveBaseName.set("NotEnoughUpdates")
 		manifest.attributes.run {
 				this["Main-Class"] = "NotSkyblockAddonsInstallerFrame"
-				this["TweakClass"] = "org.spongepowered.asm.launch.MixinTweaker"
+				this["TweakClass"] = "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker"
 				this["MixinConfigs"] = "mixins.notenoughupdates.json"
 				this["FMLCorePluginContainsFMLMod"] = "true"
 				this["ForceLoadAsMod"] = "true"
@@ -145,8 +162,19 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 		}
 }
 
+/* Bypassing https://github.com/johnrengelman/shadow/issues/111 */
+// Use Zip instead of Jar as to not include META-INF
+val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
+		archiveFileName.set("kotlin-libraries-wrapped.jar")
+		destinationDirectory.set(project.layout.buildDirectory.dir("kotlinwrapper"))
+		from(kotlinDependencies.files)
+		into("neu-kotlin-libraries-wrapped")
+}
+
+
 tasks.shadowJar {
 		archiveClassifier.set("dep-dev")
+		archiveBaseName.set("NotEnoughUpdates")
 		configurations = listOf(shadowImplementation, shadowApi)
 		exclude("**/module-info.class", "LICENSE.txt")
 		dependencies {
@@ -155,6 +183,8 @@ tasks.shadowJar {
 										listOf("logback-classic", "commons-logging", "commons-codec", "logback-core")
 				}
 		}
+		from(kotlinDependencyCollectionJar)
+		dependsOn(kotlinDependencyCollectionJar)
 		fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
 }
 

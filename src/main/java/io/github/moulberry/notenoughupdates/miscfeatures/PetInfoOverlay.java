@@ -35,9 +35,9 @@ import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
@@ -125,23 +125,25 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 			return COMMON;
 		}
-	}
 
-	public static class Pet {
-		public String petType;
-		public Rarity rarity;
-		public GuiProfileViewer.PetLevel petLevel;
-		public String petXpType;
-		public String petItem;
-		public String skin;
-		public int candyUsed;
-
-		public String getPetId(boolean withoutBoost) {
-			boolean shouldDecreaseRarity = withoutBoost && "PET_ITEM_TIER_BOOST".equals(petItem);
-			return petType + ";" + (shouldDecreaseRarity ? rarity.petId - 1 : rarity.petId);
+		public PetInfoOverlay.Rarity nextRarity() {
+			switch (this) {
+				case COMMON:
+					return PetInfoOverlay.Rarity.UNCOMMON;
+				case UNCOMMON:
+					return PetInfoOverlay.Rarity.RARE;
+				case RARE:
+					return PetInfoOverlay.Rarity.EPIC;
+				case EPIC:
+					return PetInfoOverlay.Rarity.LEGENDARY;
+				case LEGENDARY:
+					return PetInfoOverlay.Rarity.MYTHIC;
+			}
+			return null;
 		}
-
 	}
+
+	private static final HashMap<Integer, Integer> removeMap = new HashMap<>();
 
 	public static class PetConfig {
 		public HashMap<Integer, Pet> petMap = new HashMap<>();
@@ -221,33 +223,7 @@ public class PetInfoOverlay extends TextOverlay {
 		return config.petMap.get(config.selectedPet2);
 	}
 
-	public float getLevelPercent(Pet pet) {
-		DecimalFormat df = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-		if (pet == null) return 0;
-		try {
-			return Float.parseFloat(df.format(pet.petLevel.levelPercentage * 100f));
-		} catch (Exception ignored) {
-			return 0;
-		}
-	}
-
-	private static int getIdForPet(Pet pet) {
-		for (Map.Entry<Integer, Pet> entry : config.petMap.entrySet()) {
-			if (entry.getValue() == pet) {
-				return entry.getKey();
-			}
-		}
-		return -1;
-	}
-
-	private static int getClosestPetIndex(String petType, int petId, String petItem, float petLevel) {
-		Pet pet = getClosestPet(petType, petId, petItem, petLevel);
-		if (pet == null) {
-			return -1;
-		} else {
-			return getIdForPet(pet);
-		}
-	}
+	private final HashMap<String, Float> skillInfoMapLast = new HashMap<>();
 
 	private static Pet getClosestPet(String petType, int petId, String petItem, float petLevel) {
 		Set<Pet> pets = config.petMap.values().stream().filter(pet -> pet.petType.equals(petType) &&
@@ -278,7 +254,7 @@ public class PetInfoOverlay extends TextOverlay {
 		Pet closestPet = null;
 
 		for (Pet pet : pets) {
-			float distXp = Math.abs(pet.petLevel.level - petLevel);
+			float distXp = Math.abs(pet.petLevel.getCurrentLevel() - petLevel);
 
 			if (closestPet == null || distXp < closestXp) {
 				closestXp = distXp;
@@ -287,6 +263,24 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		return closestPet;
+	}
+
+	private static int getIdForPet(Pet pet) {
+		for (Map.Entry<Integer, Pet> entry : config.petMap.entrySet()) {
+			if (entry.getValue() == pet) {
+				return entry.getKey();
+			}
+		}
+		return -1;
+	}
+
+	private static int getClosestPetIndex(String petType, int petId, String petItem, float petLevel) {
+		Pet pet = getClosestPet(petType, petId, petItem, petLevel);
+		if (pet == null) {
+			return -1;
+		} else {
+			return getIdForPet(pet);
+		}
 	}
 
 	private static void getAndSetPet(ProfileViewer.Profile profile) {
@@ -401,21 +395,129 @@ public class PetInfoOverlay extends TextOverlay {
 		return interp;
 	}
 
+	public static Pet getPetFromStack(NBTTagCompound tag) {
+		if (Constants.PETS == null || Constants.PETS.get("pet_levels") == null ||
+			Constants.PETS.get("pet_levels") instanceof JsonNull) {
+			Utils.showOutdatedRepoNotification();
+			return null;
+		}
+
+		String petType = null;
+		Rarity rarity = null;
+		String heldItem = null;
+		PetLeveling.PetLevel level = null;
+		String skin = null;
+
+		if (tag != null && tag.hasKey("ExtraAttributes")) {
+			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
+			if (ea.hasKey("petInfo")) {
+				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
+				petType = petInfo.get("type").getAsString();
+				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
+				// Should only default if from item list and repo missing exp: 0
+				level = PetLeveling.getPetLevelingForPet(petType, rarity)
+													 .getPetLevel(Utils.getElementAsFloat(petInfo.get("exp"), 0));
+				if (petInfo.has("heldItem")) {
+					heldItem = petInfo.get("heldItem").getAsString();
+				}
+				if (petInfo.has("skin")) {
+					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
+				}
+			}
+		}
+
+		if (petType == null) {
+			return null;
+		}
+
+		Pet pet = new Pet();
+		pet.petItem = heldItem;
+		pet.petLevel = level;
+		pet.rarity = rarity;
+		pet.petType = petType;
+		JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
+		pet.petXpType =
+			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
+		pet.skin = skin;
+
+		return pet;
+	}
+
+	public static float getXpGain(Pet pet, float xp, String xpType) {
+		if (pet.petLevel.getCurrentLevel() >= pet.petLevel.getMaxLevel()) return 0;
+
+		if (validXpTypes == null)
+			validXpTypes = Lists.newArrayList("mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+		if (!validXpTypes.contains(xpType.toLowerCase())) return 0;
+
+		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
+		xp = xp * tamingPercent;
+		xp = xp + (xp * config.beastMultiplier / 100f);
+		if (pet.petXpType != null && !pet.petXpType.equalsIgnoreCase(xpType)) {
+			xp = xp / 3f;
+
+			if (xpType.equalsIgnoreCase("alchemy") || xpType.equalsIgnoreCase("enchanting")) {
+				xp = xp / 4f;
+			}
+		}
+		if (xpType.equalsIgnoreCase("mining") || xpType.equalsIgnoreCase("fishing")) {
+			xp = xp * 1.5f;
+		}
+		if (pet.petItem != null) {
+			Matcher petItemMatcher = XP_BOOST_PATTERN.matcher(pet.petItem);
+			if ((petItemMatcher.matches() && petItemMatcher.group(1).equalsIgnoreCase(xpType))
+				|| pet.petItem.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
+				xp = xp * getBoostMultiplier(pet.petItem);
+			}
+		}
+		return xp;
+	}
+
+	@Override
+	public void updateFrequent() {
+		Pet currentPet = getCurrentPet();
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null) {
+			overlayStrings = null;
+		} else {
+			overlayStrings = new ArrayList<>();
+
+			overlayStrings.addAll(createStringsForPet(currentPet, false));
+
+			Pet currentPet2 = getCurrentPet2();
+			if (currentPet2 != null) {
+				overlayStrings.add("");
+				overlayStrings.addAll(createStringsForPet(currentPet2, true));
+			}
+
+		}
+	}
+
+	public float getLevelPercent(Pet pet) {
+		DecimalFormat df = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		if (pet == null) return 0;
+		try {
+			return Float.parseFloat(df.format(pet.petLevel.getPercentageToNextLevel() * 100f));
+		} catch (Exception ignored) {
+			return 0;
+		}
+	}
+
 	private List<String> createStringsForPet(Pet currentPet, boolean secondPet) {
-		float levelXp = currentPet.petLevel.levelXp;
-		if (!secondPet) levelXp = interp(currentPet.petLevel.levelXp, levelXpLast);
+		float levelXp = currentPet.petLevel.getExpInCurrentLevel();
+		if (!secondPet) levelXp = interp(currentPet.petLevel.getExpInCurrentLevel(), levelXpLast);
 		if (levelXp < 0) levelXp = 0;
 
 		String petName =
-			EnumChatFormatting.GREEN + "[Lvl " + (int) currentPet.petLevel.level + "] " + currentPet.rarity.chatFormatting +
+			EnumChatFormatting.GREEN + "[Lvl " + currentPet.petLevel.getCurrentLevel() + "] " +
+				currentPet.rarity.chatFormatting +
 				WordUtils.capitalizeFully(currentPet.petType.replace("_", " "));
 
 		String lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(levelXp) + "/" +
-			roundFloat(currentPet.petLevel.currentLevelRequirement)
+			roundFloat(currentPet.petLevel.getExpRequiredForNextLevel())
 			+ EnumChatFormatting.YELLOW + " (" + getLevelPercent(currentPet) + "%)";
 
 		String lvlString = EnumChatFormatting.AQUA + "" + Utils.shortNumberFormat(levelXp, 0) + "/" +
-			Utils.shortNumberFormat(currentPet.petLevel.currentLevelRequirement, 0)
+			Utils.shortNumberFormat(currentPet.petLevel.getExpRequiredForNextLevel(), 0)
 			+ EnumChatFormatting.YELLOW + " (" + getLevelPercent(currentPet) + "%)";
 
 		float xpGain;
@@ -438,7 +540,8 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		String totalXpString =
-			EnumChatFormatting.AQUA + "Total XP: " + EnumChatFormatting.YELLOW + roundFloat(currentPet.petLevel.totalXp);
+			EnumChatFormatting.AQUA + "Total XP: " + EnumChatFormatting.YELLOW +
+				roundFloat(currentPet.petLevel.getExpTotal());
 
 		String petItemStr = EnumChatFormatting.AQUA + "Held Item: " + EnumChatFormatting.RED + "None";
 		if (currentPet.petItem != null) {
@@ -451,27 +554,27 @@ public class PetInfoOverlay extends TextOverlay {
 
 		String etaStr = null;
 		String etaMaxStr = null;
-		if (currentPet.petLevel.level < currentPet.petLevel.maxLevel) {
-			float remaining = currentPet.petLevel.currentLevelRequirement - currentPet.petLevel.levelXp;
+		if (currentPet.petLevel.getCurrentLevel() < currentPet.petLevel.getMaxLevel()) {
+			float remaining = currentPet.petLevel.getExpRequiredForNextLevel() - currentPet.petLevel.getExpInCurrentLevel();
 			if (remaining > 0) {
 				if (xpGain < 1000) {
-					etaStr = EnumChatFormatting.AQUA + "Until L" + (int) (currentPet.petLevel.level + 1) + ": " +
+					etaStr = EnumChatFormatting.AQUA + "Until L" + (currentPet.petLevel.getCurrentLevel() + 1) + ": " +
 						EnumChatFormatting.YELLOW + "N/A";
 				} else {
-					etaStr = EnumChatFormatting.AQUA + "Until L" + (int) (currentPet.petLevel.level + 1) + ": " +
+					etaStr = EnumChatFormatting.AQUA + "Until L" + (currentPet.petLevel.getCurrentLevel() + 1) + ": " +
 						EnumChatFormatting.YELLOW + Utils.prettyTime((long) (remaining) * 1000 * 60 * 60 / (long) xpGain);
 				}
 			}
 
-			if (currentPet.petLevel.level < (currentPet.petLevel.maxLevel - 1) ||
+			if (currentPet.petLevel.getCurrentLevel() < (currentPet.petLevel.getMaxLevel() - 1) ||
 				!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.contains(6)) {
-				float remainingMax = currentPet.petLevel.maxXP - currentPet.petLevel.totalXp;
+				float remainingMax = currentPet.petLevel.getExpRequiredForMaxLevel() - currentPet.petLevel.getExpTotal();
 				if (remaining > 0) {
 					if (xpGain < 1000) {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.getMaxLevel() + ": " +
 							EnumChatFormatting.YELLOW + "N/A";
 					} else {
-						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + (int) currentPet.petLevel.maxLevel + ": " +
+						etaMaxStr = EnumChatFormatting.AQUA + "Until L" + currentPet.petLevel.getMaxLevel() + ": " +
 							EnumChatFormatting.YELLOW + Utils.prettyTime((long) (remainingMax) * 1000 * 60 * 60 / (long) xpGain);
 					}
 				}
@@ -514,25 +617,6 @@ public class PetInfoOverlay extends TextOverlay {
 		}};
 	}
 
-	@Override
-	public void updateFrequent() {
-		Pet currentPet = getCurrentPet();
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null) {
-			overlayStrings = null;
-		} else {
-			overlayStrings = new ArrayList<>();
-
-			overlayStrings.addAll(createStringsForPet(currentPet, false));
-
-			Pet currentPet2 = getCurrentPet2();
-			if (currentPet2 != null) {
-				overlayStrings.add("");
-				overlayStrings.addAll(createStringsForPet(currentPet2, true));
-			}
-
-		}
-	}
-
 	public void update() {
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo &&
 			!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableMonkeyCheck) {
@@ -551,62 +635,194 @@ public class PetInfoOverlay extends TextOverlay {
 			overlayStrings = null;
 		} else {
 			lastUpdate = System.currentTimeMillis();
-			levelXpLast = currentPet.petLevel.levelXp;
+			levelXpLast = currentPet.petLevel.getExpInCurrentLevel();
 			updatePetLevels();
 		}
 	}
 
-	public static Pet getPetFromStack(NBTTagCompound tag) {
-		if (Constants.PETS == null || Constants.PETS.get("pet_levels") == null ||
-			Constants.PETS.get("pet_levels") instanceof JsonNull) {
-			Utils.showOutdatedRepoNotification();
-			return null;
+	@Override
+	protected Vector2f getSize(List<String> strings) {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return super.getSize(strings);
+		return super.getSize(strings).translate(25, 0);
+	}
+
+	@Override
+	protected Vector2f getTextOffset() {
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return super.getTextOffset();
+		if (this.styleSupplier.get() != TextOverlayStyle.BACKGROUND) return super.getTextOffset().translate(30, 0);
+		return super.getTextOffset().translate(25, 0);
+	}
+
+	@Override
+	public void renderDummy() {
+		super.renderDummy();
+
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
+
+		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ROCK;0");
+		if (petItem != null) {
+			Vector2f position = getPosition(overlayWidth, overlayHeight, false);
+			int x = (int) position.x;
+			int y = (int) position.y;
+
+			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
+			GlStateManager.enableDepth();
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(x - 2, y - 2, 0);
+			GlStateManager.scale(2, 2, 1);
+			Utils.drawItemStack(stack, 0, 0);
+			GlStateManager.popMatrix();
+		}
+	}
+
+	@Override
+	public void render() {
+		super.render();
+
+		Pet currentPet = getCurrentPet();
+		if (currentPet == null) {
+			overlayStrings = null;
+			return;
 		}
 
-		String petType = null;
-		Rarity rarity = null;
-		String heldItem = null;
-		GuiProfileViewer.PetLevel level = null;
-		String skin = null;
+		if (overlayStrings == null) {
+			return;
+		}
 
-		if (tag != null && tag.hasKey("ExtraAttributes")) {
-			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
-			if (ea.hasKey("petInfo")) {
-				JsonObject petInfo = new JsonParser().parse(ea.getString("petInfo")).getAsJsonObject();
-				petType = petInfo.get("type").getAsString();
-				rarity = Rarity.valueOf(petInfo.get("tier").getAsString());
-				level = GuiProfileViewer.getPetLevel(
-					petType,
-					rarity.name(),
-					Utils.getElementAsFloat(petInfo.get("exp"), 0) // Should only default if from item list and repo missing exp:0
-				);
-				if (petInfo.has("heldItem")) {
-					heldItem = petInfo.get("heldItem").getAsString();
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
+		int mythicRarity = currentPet.rarity.petId;
+		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
+
+		if (petItem == null && currentPet.rarity.petId == 5) {
+			petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
+		}
+
+		if (petItem != null) {
+			Vector2f position = getPosition(overlayWidth, overlayHeight, true);
+			int x = (int) position.x;
+			int y = (int) position.y;
+
+			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
+			GlStateManager.enableDepth();
+			GlStateManager.pushMatrix();
+			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+			GlStateManager.translate(x - 2, y - 2, 0);
+			GlStateManager.scale(2, 2, 1);
+			Utils.drawItemStack(stack, 0, 0);
+			Utils.pushGuiScale(0);
+			GlStateManager.popMatrix();
+		}
+
+		Pet currentPet2 = getCurrentPet2();
+		if (currentPet2 != null) {
+			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
+				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
+			if (petItem2 != null) {
+				Vector2f position = getPosition(overlayWidth, overlayHeight, false);
+				int x = (int) position.x;
+				int y = (int) position.y + NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.size() * 10 + 10;
+
+				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
+				GlStateManager.enableDepth();
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x - 2, y - 2, 0);
+				GlStateManager.scale(2, 2, 1);
+				Utils.drawItemStack(stack, 0, 0);
+				GlStateManager.popMatrix();
+			}
+		}
+	}
+
+	public static float getBoostMultiplier(String boostName) {
+		if (boostName == null) return 1;
+		boostName = boostName.toLowerCase();
+		if (boostName.equalsIgnoreCase("PET_ITEM_ALL_SKILLS_BOOST_COMMON")) {
+			return 1.1f;
+		} else if (boostName.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
+			return 1.2f;
+		} else if (boostName.endsWith("epic")) {
+			return 1.5f;
+		} else if (boostName.endsWith("rare")) {
+			return 1.4f;
+		} else if (boostName.endsWith("uncommon")) {
+			return 1.3f;
+		} else if (boostName.endsWith("common")) {
+			return 1.2f;
+		} else {
+			return 1;
+		}
+	}
+
+	private static List<String> validXpTypes = Lists.newArrayList(
+		"mining",
+		"foraging",
+		"enchanting",
+		"farming",
+		"combat",
+		"fishing",
+		"alchemy"
+	);
+
+	@SubscribeEvent
+	public void onStackClick(SlotClickEvent event) {
+		if (event.clickedButton != 0 && event.clickedButton != 1 && event.clickedButton != 2) return;
+
+		int slotIdMod = (event.slotId - 10) % 9;
+		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
+			Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest container = (ContainerChest) chest.inventorySlots;
+			IInventory lower = container.getLowerChestInventory();
+			String containerName = lower.getDisplayName().getUnformattedText();
+
+			if (lower.getSizeInventory() >= 54 && event.guiContainer.inventorySlots.windowId == container.windowId) {
+				int page = 0;
+				boolean isPets = false;
+
+				if (containerName.equals("Pets")) {
+					isPets = true;
+				} else {
+					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
+					if (matcher.matches()) {
+						try {
+							page = Integer.parseInt(matcher.group(1)) - 1;
+							isPets = true;
+						} catch (NumberFormatException ignored) {
+						}
+					}
 				}
-				if (petInfo.has("skin")) {
-					skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
+
+				if (isPets) {
+					ItemStack removingStack = lower.getStackInSlot(50);
+					boolean isRemoving =
+						removingStack != null && removingStack.getItem() == Items.dye && removingStack.getItemDamage() == 10;
+
+					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
+
+					lastPetSelect = System.currentTimeMillis();
+
+					if (isRemoving) {
+						if (newSelected == config.selectedPet) {
+							clearPet();
+						} else if (config.selectedPet > newSelected) {
+							config.selectedPet--;
+						}
+					} else {
+						setCurrentPet(newSelected);
+
+						if (event.slot.getStack() != null && event.slot.getStack().getTagCompound() != null) {
+							Pet pet = getPetFromStack(event.slot.getStack().getTagCompound());
+							if (pet != null) {
+								config.petMap.put(config.selectedPet, pet);
+							}
+						}
+					}
 				}
 			}
 		}
-
-		if (petType == null) {
-			return null;
-		}
-
-		Pet pet = new Pet();
-		pet.petItem = heldItem;
-		pet.petLevel = level;
-		pet.rarity = rarity;
-		pet.petType = petType;
-		JsonObject petTypes = Constants.PETS.get("pet_types").getAsJsonObject();
-		pet.petXpType =
-			petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
-		pet.skin = skin;
-
-		return pet;
 	}
-
-	private static final HashMap<Integer, Integer> removeMap = new HashMap<>();
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
@@ -726,7 +942,9 @@ public class PetInfoOverlay extends TextOverlay {
 
 								float petXp = petInfoObject.get("exp").getAsFloat();
 
-								double petLevel = GuiProfileViewer.getPetLevel(name, rarityString, petXp).level;
+								double petLevel = PetLeveling.getPetLevelingForPet(name, Rarity.valueOf(rarityString))
+																						 .getPetLevel(petXp)
+																						 .getCurrentLevel();
 								int index = getClosestPetIndex(name, rarity, "", (float) petLevel);
 								if (index != config.selectedPet) {
 									clearPet();
@@ -739,220 +957,6 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 		}
 	}
-
-	@Override
-	protected Vector2f getSize(List<String> strings) {
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return super.getSize(strings);
-		return super.getSize(strings).translate(25, 0);
-	}
-
-	@Override
-	protected Vector2f getTextOffset() {
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return super.getTextOffset();
-		if (this.styleSupplier.get() != TextOverlayStyle.BACKGROUND) return super.getTextOffset().translate(30, 0);
-		return super.getTextOffset().translate(25, 0);
-	}
-
-	@Override
-	public void renderDummy() {
-		super.renderDummy();
-
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
-
-		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ROCK;0");
-		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight);
-			int x = (int) position.x;
-			int y = (int) position.y;
-
-			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
-			GlStateManager.enableDepth();
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(x - 2, y - 2, 0);
-			GlStateManager.scale(2, 2, 1);
-			Utils.drawItemStack(stack, 0, 0);
-			GlStateManager.popMatrix();
-		}
-	}
-
-	@Override
-	public void render() {
-		super.render();
-
-		Pet currentPet = getCurrentPet();
-		if (currentPet == null) {
-			overlayStrings = null;
-			return;
-		}
-
-		if (overlayStrings == null) {
-			return;
-		}
-
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayIcon) return;
-		int mythicRarity = currentPet.rarity.petId;
-		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-			currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + mythicRarity));
-
-		if (petItem == null && currentPet.rarity.petId == 5) {
-			petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet.skin != null ? currentPet.skin : (currentPet.petType + ";" + 4));
-		}
-
-		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight);
-			int x = (int) position.x;
-			int y = (int) position.y;
-
-			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
-			GlStateManager.enableDepth();
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(x - 2, y - 2, 0);
-			GlStateManager.scale(2, 2, 1);
-			Utils.drawItemStack(stack, 0, 0);
-			GlStateManager.popMatrix();
-		}
-
-		Pet currentPet2 = getCurrentPet2();
-		if (currentPet2 != null) {
-			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
-				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
-			if (petItem2 != null) {
-				Vector2f position = getPosition(overlayWidth, overlayHeight);
-				int x = (int) position.x;
-				int y = (int) position.y + NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.size() * 10 + 10;
-
-				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
-				GlStateManager.enableDepth();
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(x - 2, y - 2, 0);
-				GlStateManager.scale(2, 2, 1);
-				Utils.drawItemStack(stack, 0, 0);
-				GlStateManager.popMatrix();
-			}
-		}
-	}
-
-	public static float getBoostMultiplier(String boostName) {
-		if (boostName == null) return 1;
-		boostName = boostName.toLowerCase();
-		if (boostName.equalsIgnoreCase("PET_ITEM_ALL_SKILLS_BOOST_COMMON")) {
-			return 1.1f;
-		} else if (boostName.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
-			return 1.2f;
-		} else if (boostName.endsWith("epic")) {
-			return 1.5f;
-		} else if (boostName.endsWith("rare")) {
-			return 1.4f;
-		} else if (boostName.endsWith("uncommon")) {
-			return 1.3f;
-		} else if (boostName.endsWith("common")) {
-			return 1.2f;
-		} else {
-			return 1;
-		}
-	}
-
-	private static List<String> validXpTypes = Lists.newArrayList(
-		"mining",
-		"foraging",
-		"enchanting",
-		"farming",
-		"combat",
-		"fishing",
-		"alchemy"
-	);
-
-	@SubscribeEvent
-	public void onStackClick(SlotClickEvent event) {
-		if (event.clickedButton != 0 && event.clickedButton != 1 && event.clickedButton != 2) return;
-
-		int slotIdMod = (event.slotId - 10) % 9;
-		if (event.slotId >= 10 && event.slotId <= 43 && slotIdMod >= 0 && slotIdMod <= 6 &&
-			Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-			ContainerChest container = (ContainerChest) chest.inventorySlots;
-			IInventory lower = container.getLowerChestInventory();
-			String containerName = lower.getDisplayName().getUnformattedText();
-
-			if (lower.getSizeInventory() >= 54 && event.guiContainer.inventorySlots.windowId == container.windowId) {
-				int page = 0;
-				boolean isPets = false;
-
-				if (containerName.equals("Pets")) {
-					isPets = true;
-				} else {
-					Matcher matcher = PET_CONTAINER_PAGE.matcher(containerName);
-					if (matcher.matches()) {
-						try {
-							page = Integer.parseInt(matcher.group(1)) - 1;
-							isPets = true;
-						} catch (NumberFormatException ignored) {
-						}
-					}
-				}
-
-				if (isPets) {
-					ItemStack removingStack = lower.getStackInSlot(50);
-					boolean isRemoving =
-						removingStack != null && removingStack.getItem() == Items.dye && removingStack.getItemDamage() == 10;
-
-					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
-
-					lastPetSelect = System.currentTimeMillis();
-
-					if (isRemoving) {
-						if (newSelected == config.selectedPet) {
-							clearPet();
-						} else if (config.selectedPet > newSelected) {
-							config.selectedPet--;
-						}
-					} else {
-						setCurrentPet(newSelected);
-
-						if (event.slot.getStack() != null && event.slot.getStack().getTagCompound() != null) {
-							Pet pet = getPetFromStack(event.slot.getStack().getTagCompound());
-							if (pet != null) {
-								config.petMap.put(config.selectedPet, pet);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public static float getXpGain(Pet pet, float xp, String xpType) {
-		if (pet.petLevel.level >= pet.petLevel.maxLevel) return 0;
-
-		if (validXpTypes == null)
-			validXpTypes = Lists.newArrayList("mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
-		if (!validXpTypes.contains(xpType.toLowerCase())) return 0;
-
-		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
-		xp = xp * tamingPercent;
-		xp = xp + (xp * config.beastMultiplier / 100f);
-		if (pet.petXpType != null && !pet.petXpType.equalsIgnoreCase(xpType)) {
-			xp = xp / 3f;
-
-			if (xpType.equalsIgnoreCase("alchemy") || xpType.equalsIgnoreCase("enchanting")) {
-				xp = xp / 4f;
-			}
-		}
-		if (xpType.equalsIgnoreCase("mining") || xpType.equalsIgnoreCase("fishing")) {
-			xp = xp * 1.5f;
-		}
-		if (pet.petItem != null) {
-			Matcher petItemMatcher = XP_BOOST_PATTERN.matcher(pet.petItem);
-			if ((petItemMatcher.matches() && petItemMatcher.group(1).equalsIgnoreCase(xpType))
-				|| pet.petItem.equalsIgnoreCase("ALL_SKILLS_SUPER_BOOST")) {
-				xp = xp * getBoostMultiplier(pet.petItem);
-			}
-		}
-		return xp;
-	}
-
-	private final HashMap<String, Float> skillInfoMapLast = new HashMap<>();
 
 	public void updatePetLevels() {
 		HashMap<String, XPInformation.SkillInfo> skillInfoMap = XPInformation.getInstance().getSkillInfoMap();
@@ -991,7 +995,7 @@ public class PetInfoOverlay extends TextOverlay {
 				xpAddTimer--;
 			}
 
-			currentPet.petLevel.totalXp += totalGain;
+			currentPet.petLevel.setExpTotal(totalGain + currentPet.petLevel.getExpTotal());
 
 			xpGainQueue.add(0, totalGain);
 			while (xpGainQueue.size() > 30) {
@@ -1012,12 +1016,25 @@ public class PetInfoOverlay extends TextOverlay {
 
 		JsonObject petsJson = Constants.PETS;
 		if (currentPet != null && petsJson != null) {
-			currentPet.petLevel = GuiProfileViewer.getPetLevel(
-				currentPet.petType,
-				currentPet.rarity.name(),
-				currentPet.petLevel.totalXp
-			);
+			currentPet.petLevel = PetLeveling.getPetLevelingForPet(currentPet.petType, currentPet.rarity)
+																			 .getPetLevel(currentPet.petLevel.getExpTotal());
 		}
+	}
+
+	public static class Pet {
+		public String petType;
+		public Rarity rarity;
+		public PetLeveling.PetLevel petLevel;
+		public String petXpType;
+		public String petItem;
+		public String skin;
+		public int candyUsed;
+
+		public String getPetId(boolean withoutBoost) {
+			boolean shouldDecreaseRarity = withoutBoost && "PET_ITEM_TIER_BOOST".equals(petItem);
+			return petType + ";" + (shouldDecreaseRarity ? rarity.petId - 1 : rarity.petId);
+		}
+
 	}
 
 	public String roundFloat(float f) {

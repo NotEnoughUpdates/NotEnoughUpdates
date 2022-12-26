@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
@@ -35,6 +36,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import org.luaj.vm2.ast.Str;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -655,6 +657,7 @@ public class ProfileViewer {
 		private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
 		private final Pattern COLL_TIER_PATTERN = Pattern.compile("_(-?\\d+)");
 		private long soopyNetworthLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
+		private long soopyWeightLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 		private String latestProfile = null;
 		private JsonArray skyblockProfiles = null;
 		private JsonObject guildInformation = null;
@@ -784,18 +787,26 @@ public class ProfileViewer {
 			return soopyNetworthLeaderboardPosition;
 		}
 
-		public boolean isProfileMaxSoopyNetworth(String profileName) {
+		public long getSoopyWeightLeaderboardPosition() {
+			if ("d0e05de76067454dbeaec6d19d886191".equals(uuid)) return 1;
+			return soopyWeightLeaderboardPosition;
+		}
+
+		public boolean isProfileMaxSoopyWeight(ProfileViewer.Profile profile, String profileName) {
 			String highestProfileName = "";
-			long largestProfileNetworth = 0;
+			double largestProfileWeight = 0;
 
-			for (String pName : soopyNetworth.keySet()) {
-				if (soopyNetworth.get(pName) == null) continue;
+			for (int yIndex = 0; yIndex < profileNames.size(); yIndex++) {
+				String otherProfileId = profileNames.get(yIndex);
+				Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(otherProfileId);
+				if (skyblockInfo == null) continue;
+				SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
+				double weightValue = senitherWeight.getTotalWeight().getRaw();
 
-				long pNet = soopyNetworth.get(pName).totalWorth;
-				if (pNet < largestProfileNetworth) continue;
-
-				highestProfileName = pName;
-				largestProfileNetworth = pNet;
+				if (weightValue > largestProfileWeight) {
+					largestProfileWeight = weightValue;
+					highestProfileName = otherProfileId;
+				}
 			}
 
 			return highestProfileName.equals(profileName);
@@ -836,6 +847,27 @@ public class ProfileViewer {
 						return null;
 					}
 					soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+						"position").getAsLong();
+					return null;
+				});
+
+			soopyWeightLeaderboardPosition = -2; //loading
+			manager.apiUtils
+				.request()
+				.url("https://soopy.dev/api/v2/leaderboard/weight/user/" + this.uuid)
+				.requestJson()
+				.handle((jsonObject, throwable) -> {
+					if (throwable != null) throwable.printStackTrace();
+					if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
+						|| !jsonObject.has("data")
+						|| !jsonObject.get("data").getAsJsonObject().has("data")
+						|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+						//Something went wrong
+						//Set profile lb position to -3 to indicate that
+						soopyWeightLeaderboardPosition = -3; //error
+						return null;
+					}
+					soopyWeightLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
 						"position").getAsLong();
 					return null;
 				});
@@ -1043,7 +1075,6 @@ public class ProfileViewer {
 						skyblockProfiles = jsonObject.get("profiles").getAsJsonArray();
 
 						String lastCuteName = null;
-						long lastLastSave = 0;
 
 						profileNames.clear();
 
@@ -1066,15 +1097,6 @@ public class ProfileViewer {
 								profileNames.add(cuteName);
 								if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
 									lastCuteName = cuteName;
-									break;
-								}
-								if (lastCuteName == null) lastCuteName = cuteName;
-								if (member.has("last_save")) {
-									long lastSave = member.get("last_save").getAsLong();
-									if (lastSave > lastLastSave) {
-										lastLastSave = lastSave;
-										lastCuteName = cuteName;
-									}
 								}
 							}
 						}

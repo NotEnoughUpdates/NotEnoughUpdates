@@ -38,3 +38,5 @@ pluginManagement {
 				}
 		}
 }
+
+rootProject.name = "NotEnoughUpdates"

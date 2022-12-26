@@ -500,6 +500,9 @@ public class NEUConfig extends Config {
 		@Expose
 		public boolean hasOpenedWaypointMenu = false;
 
+		@Expose
+		public String externalEditor = null;
+
 	}
 
 	public static ArrayList<String> createDefaultEnchantColours() {
@@ -615,6 +618,12 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public int gemstonePowderFound = 0;
+
+		@Expose
+		public List<String> abiphoneFavouriteContacts = new ArrayList<>();
+
+		@Expose
+		public boolean abiphoneShowOnlyFavourites = false;
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

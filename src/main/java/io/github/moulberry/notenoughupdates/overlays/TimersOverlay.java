@@ -53,7 +53,7 @@ import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([0-9]*?:?[0-9]*?:?[0-9]*)\u00a7r");
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?\u00a7r");
 
 	public TimersOverlay(
 		Position position,
@@ -231,6 +231,8 @@ public class TimersOverlay extends TextTabOverlay {
 		super.renderLine(line, position, dummy);
 	}
 
+	boolean hasErrorMessage = false;
+
 	@Override
 	public void update() {
 
@@ -240,7 +242,7 @@ public class TimersOverlay extends TextTabOverlay {
 		if (hidden == null) return;
 
 		if (NotEnoughUpdates.INSTANCE.config.miscOverlays.todoOverlayOnlyShowTab &&
-			!Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindPlayerList.getKeyCode())) {
+			!lastTabState) {
 			overlayStrings = null;
 			return;
 		}
@@ -307,28 +309,44 @@ public class TimersOverlay extends TextTabOverlay {
 				Matcher activeEffectsMatcher = PATTERN_ACTIVE_EFFECTS.matcher(line);
 				if (activeEffectsMatcher.matches()) {
 					foundGodPotText = true;
-					String[] godpotRemaingTimeUnformatted = activeEffectsMatcher.group(1).split(":");
 					long godPotDuration = 0;
 					try {
-						int i = 0;
-						if (godpotRemaingTimeUnformatted.length == 4) {
-							godPotDuration =
-								godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 24 * 60 * 60 * 1000;
-							i++;
+						long godpotRemainingTime;
+						for (int i = 1; i < activeEffectsMatcher.groupCount(); i += 2) {
+							if (activeEffectsMatcher.group(i) == null) {
+								continue;
+							}
+							godpotRemainingTime = Integer.parseInt(activeEffectsMatcher.group(i));
+							String godpotRemainingTimeType = activeEffectsMatcher.group(i + 1);
+							switch (godpotRemainingTimeType) {
+								case "Days":
+								case "Day":
+									godPotDuration += godpotRemainingTime * 24 * 60 * 60 * 1000;
+									break;
+								case "Hours":
+								case "Hour":
+								case "h":
+									godPotDuration += godpotRemainingTime * 60 * 60 * 1000;
+									break;
+								case "Minutes":
+								case "Minute":
+								case "m":
+									godPotDuration += godpotRemainingTime * 60 * 1000;
+									break;
+								case "Seconds":
+								case "Second":
+								case "s":
+									godPotDuration += godpotRemainingTime * 1000;
+									break;
+							}
 						}
-						if (godpotRemaingTimeUnformatted.length >= 3) {
-							godPotDuration =
-								godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 60 * 60 * 1000;
-							i++;
+					} catch (Exception e) {
+						e.printStackTrace();
+						if (!hasErrorMessage) {
+							Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your god pot timer");
+							hasErrorMessage = true;
 						}
-						if (godpotRemaingTimeUnformatted.length >= 2) {
-							godPotDuration = godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 60 * 1000;
-							i++;
-						}
-						if (godpotRemaingTimeUnformatted.length >= 1) {
-							godPotDuration = godPotDuration + (long) Integer.parseInt(godpotRemaingTimeUnformatted[i]) * 1000;
-						}
-					} catch (Exception ignored) {
+						break;
 					}
 
 					hidden.godPotionDuration = godPotDuration;
@@ -336,50 +354,55 @@ public class TimersOverlay extends TextTabOverlay {
 				} else if (line.contains("\u00a7d\u00a7lCookie Buff")) {
 					foundCookieBuffText = true;
 				} else if (foundCookieBuffText) {
-					String cleanNoSpace = line.replaceAll("(\u00a7.| )", "");
-
+					String clean = line.replaceAll("(\u00a7.)", "");
+					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
-					StringBuilder number = new StringBuilder();
-					for (int i = 0; i < cleanNoSpace.length(); i++) {
-						char c = cleanNoSpace.charAt(i);
+					if (line.contains("Not")) break;
 
-						if (c >= '0' && c <= '9') {
-							number.append(c);
-						} else {
-							if (number.length() == 0) {
-								hidden.cookieBuffRemaining = 0;
-								break;
-							}
-							if ("ydhms".contains("" + c)) {
-								try {
-									long val = Integer.parseInt(number.toString());
-									switch (c) {
-										case 'y':
-											hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
-											break;
-										case 'd':
-											hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
-											break;
-										case 'h':
-											hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
-											break;
-										case 'm':
-											hidden.cookieBuffRemaining += val * 60 * 1000;
-											break;
-										case 's':
-											hidden.cookieBuffRemaining += val * 1000;
-											break;
-									}
-								} catch (NumberFormatException e) {
-									hidden.cookieBuffRemaining = 0;
+					for (int i = 0; i + 1 < cleanSplit.length; i++) {
+						if (i % 2 == 1) continue;
+
+						String number = cleanSplit[i];
+						String unit = cleanSplit[i + 1];
+						try {
+							long val = Integer.parseInt(number);
+							switch (unit) {
+								case "Years":
+								case "Year":
+									hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
 									break;
-								}
-
-								number = new StringBuilder();
-							} else {
-								hidden.cookieBuffRemaining = 0;
-								break;
+								case "Months":
+								case "Month":
+									hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
+									break;
+								case "Days":
+								case "Day":
+									hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
+									break;
+								case "Hours":
+								case "Hour":
+								case "h":
+									hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
+									break;
+								case "Minutes":
+								case "Minute":
+								case "m":
+									hidden.cookieBuffRemaining += val * 60 * 1000;
+									break;
+								case "Seconds":
+								case "Second":
+								case "s":
+									hidden.cookieBuffRemaining += val * 1000;
+									break;
 							}
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+							hidden.cookieBuffRemaining = 0;
+							if (!hasErrorMessage) {
+								Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
+								hasErrorMessage = true;
+							}
+							break;
 						}
 					}
 

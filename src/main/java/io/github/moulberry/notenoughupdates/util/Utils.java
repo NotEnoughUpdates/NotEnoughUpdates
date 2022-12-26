@@ -71,14 +71,18 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -301,7 +305,12 @@ public class Utils {
 	}
 
 	public static String chromaString(String str, float offset, boolean bold) {
+		return chromaString(str, offset, bold ? "§l" : "");
+	}
+
+	public static String chromaString(String str, float offset, String extraFormatting) {
 		str = cleanColour(str);
+		boolean bold = extraFormatting.contains("§l");
 
 		long currentTimeMillis = System.currentTimeMillis();
 		if (startTime == 0) startTime = currentTimeMillis;
@@ -320,7 +329,7 @@ public class Utils {
 
 			if (index < 0) index += rainbow.length;
 			rainbowText.append(rainbow[index]);
-			if (bold) rainbowText.append(EnumChatFormatting.BOLD);
+			rainbowText.append(extraFormatting);
 			rainbowText.append(c);
 		}
 		return rainbowText.toString();
@@ -1761,6 +1770,10 @@ public class Utils {
 		GlStateManager.enableTexture2D();
 	}
 
+	public static String prettyTime(Duration time) {
+		return prettyTime(time.toMillis());
+	}
+
 	public static String prettyTime(long millis) {
 		long seconds = millis / 1000 % 60;
 		long minutes = (millis / 1000 / 60) % 60;
@@ -2025,6 +2038,23 @@ public class Utils {
 			thePlayer.addChatMessage(new ChatComponentText(message));
 		} else {
 			System.out.println(message);
+		}
+	}
+
+	public static boolean openUrl(String url) {
+		try {
+			Desktop desk = Desktop.getDesktop();
+			desk.browse(new URI(url));
+			return true;
+		} catch (UnsupportedOperationException | IOException | URISyntaxException ignored) {
+			Runtime runtime = Runtime.getRuntime();
+			try {
+				runtime.exec("xdg-open " + url);
+				return true;
+			} catch (IOException e) {
+				Utils.playSound(new ResourceLocation("game.player.hurt"), true);
+				return false;
+			}
 		}
 	}
 }

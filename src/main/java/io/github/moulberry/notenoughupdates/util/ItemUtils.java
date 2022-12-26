@@ -42,13 +42,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
 public class ItemUtils {
 
-	public static ItemStack getCoinItemStack(long coinAmount) {
+	public static ItemStack getCoinItemStack(double coinAmount) {
 		String uuid = "2070f6cb-f5db-367a-acd0-64d39a7e5d1b";
 		String texture =
 			"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4MDcxNzIxY2M1YjRjZDQwNmNlNDMxYTEzZjg2MDgzYTg5NzNlMTA2NGQyZjg4OTc4Njk5MzBlZTZlNTIzNyJ9fX0=";
@@ -63,7 +62,7 @@ public class ItemUtils {
 				"ewogICJ0aW1lc3RhbXAiIDogMTYzNTk1NzQ4ODQxNywKICAicHJvZmlsZUlkIiA6ICJmNThkZWJkNTlmNTA0MjIyOGY2MDIyMjExZDRjMTQwYyIsCiAgInByb2ZpbGVOYW1lIiA6ICJ1bnZlbnRpdmV0YWxlbnQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I5NTFmZWQ2YTdiMmNiYzIwMzY5MTZkZWM3YTQ2YzRhNTY0ODE1NjRkMTRmOTQ1YjZlYmMwMzM4Mjc2NmQzYiIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9";
 		}
 		ItemStack skull = Utils.createSkull(
-			"\u00A7r\u00A76" + NumberFormat.getInstance(Locale.US).format(coinAmount) + " Coins",
+			"§r§6" + NumberFormat.getInstance().format(coinAmount) + " Coins",
 			uuid,
 			texture
 		);
@@ -189,6 +188,16 @@ public class ItemUtils {
 	}
 
 	public static ItemStack createPetItemstackFromPetInfo(PetInfoOverlay.Pet currentPet) {
+		if (currentPet == null) {
+			ItemStack stack = ItemUtils.createQuestionMarkSkull(EnumChatFormatting.RED + "Unknown Pet");
+			appendLore(stack, Arrays.asList(
+				"§cNull Pet",
+				"",
+				"§cIf you expected it to be there please send a message in",
+				"§c§l#neu-support §r§con §ldiscord.gg/moulberry"
+			));
+			return stack;
+		}
 		String petname = currentPet.petType;
 		String tier = Utils.getRarityFromInt(currentPet.rarity.petId).toUpperCase();
 		String heldItem = currentPet.petItem;
@@ -196,11 +205,13 @@ public class ItemUtils {
 		JsonObject heldItemJson = heldItem == null ? null : NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
 			heldItem);
 		String petId = currentPet.getPetId(false);
-		float exp = currentPet.petLevel.totalXp;
+		float exp = currentPet.petLevel.getExpTotal();
 
-		GuiProfileViewer.PetLevel levelObj = GuiProfileViewer.getPetLevel(petname, tier, exp);
+		PetLeveling.PetLevel levelObj = PetLeveling
+			.getPetLevelingForPet(petname, PetInfoOverlay.Rarity.valueOf(tier))
+			.getPetLevel(exp);
 
-		float level = levelObj.level;
+		int level = levelObj.getCurrentLevel();
 
 		ItemStack petItemstack = NotEnoughUpdates.INSTANCE.manager
 			.createItemResolutionQuery()
@@ -348,7 +359,7 @@ public class ItemUtils {
 				if (Utils.cleanColour(lore.getStringTagAt(0)).matches(ItemTooltipListener.petToolTipRegex) &&
 					lore.tagCount() > 7) {
 
-					GuiProfileViewer.PetLevel petLevel;
+					PetLeveling.PetLevel petLevel;
 
 					PetInfoOverlay.Pet pet = PetInfoOverlay.getPetFromStack(
 						stack.getTagCompound()
@@ -373,13 +384,13 @@ public class ItemUtils {
 					for (int i = 0; i < lore.tagCount(); i++) {
 						if (i == lore.tagCount() - 2) {
 							newLore.appendTag(new NBTTagString(""));
-							if (petLevel.level >= maxLvl) {
+							if (petLevel.getCurrentLevel() >= maxLvl) {
 								newLore.appendTag(new NBTTagString(
 									EnumChatFormatting.AQUA + "" + EnumChatFormatting.BOLD + "MAX LEVEL"));
 							} else {
-								double levelPercent = (Math.round(petLevel.levelPercentage * 1000) / 10.0);
+								double levelPercent = (Math.round(petLevel.getPercentageToNextLevel() * 1000) / 10.0);
 								newLore.appendTag(new NBTTagString(
-									EnumChatFormatting.GRAY + "Progress to Level " + (int) (petLevel.level + 1) + ": " +
+									EnumChatFormatting.GRAY + "Progress to Level " + (petLevel.getCurrentLevel() + 1) + ": " +
 										EnumChatFormatting.YELLOW + levelPercent + "%"));
 								StringBuilder sb = new StringBuilder();
 
@@ -394,9 +405,9 @@ public class ItemUtils {
 								newLore.appendTag(new NBTTagString(sb.toString()));
 								newLore.appendTag(new NBTTagString(
 									EnumChatFormatting.GRAY + "EXP: " + EnumChatFormatting.YELLOW +
-										decimalFormatter.format(petLevel.levelXp) +
+										decimalFormatter.format(petLevel.getExpInCurrentLevel()) +
 										EnumChatFormatting.GOLD + "/" + EnumChatFormatting.YELLOW +
-										decimalFormatter.format(petLevel.currentLevelRequirement)
+										decimalFormatter.format(petLevel.getExpRequiredForNextLevel())
 								));
 							}
 						}
@@ -415,6 +426,15 @@ public class ItemUtils {
 		return ItemUtils.getLore(item).stream()
 										.anyMatch(line -> line.equals("§8§l* §8Co-op Soulbound §8§l*") ||
 											line.equals("§8§l* Soulbound §8§l*"));
+	}
+
+	public static String fixDraconicId(String id) {
+		if (id.equals("ASPECT_OF_THE_DRAGONS")) return "ASPECT_OF_THE_DRAGON";
+		if (id.equals("ENDER_HELMET")) return "END_HELMET";
+		if (id.equals("ENDER_CHESTPLATE")) return "END_CHESTPLATE";
+		if (id.equals("ENDER_LEGGINGS")) return "END_LEGGINGS";
+		if (id.equals("ENDER_BOOTS")) return "END_BOOTS";
+		return id;
 	}
 
 }

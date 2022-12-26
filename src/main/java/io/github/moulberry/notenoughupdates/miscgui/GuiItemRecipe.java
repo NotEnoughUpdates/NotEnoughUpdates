@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -231,7 +232,7 @@ public class GuiItemRecipe extends GuiScreen {
 			int row = i / hotbarSize;
 			int col = i % hotbarSize;
 			if (row == 0)
-				slots.add(new RecipeSlot(HOTBAR_SLOT_X + i * SLOT_SPACING, HOTBAR_SLOT_Y, item));
+				slots.add(new RecipeSlot(HOTBAR_SLOT_X + i * SLOT_SPACING, HOTBAR_SLOT_Y + 1, item));
 			else
 				slots.add(new RecipeSlot(
 					PLAYER_INVENTORY_X + col * SLOT_SPACING,
@@ -314,7 +315,7 @@ public class GuiItemRecipe extends GuiScreen {
 				TAB_SIZE_X,
 				TAB_SIZE_Y
 			)) {
-				changeRecipe(i, currentIndex);
+				changeRecipe(i, 0);
 				Utils.playPressSound();
 				return;
 			}
@@ -334,6 +335,16 @@ public class GuiItemRecipe extends GuiScreen {
 		}
 
 		currentRecipe.mouseClicked(this, mouseX, mouseY, mouseButton);
+	}
+
+	@Override
+	public void handleMouseInput() throws IOException {
+		super.handleMouseInput();
+		ScaledResolution scaledResolution = Utils.peekGuiScale();
+		int mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
+		int mouseY = scaledResolution.getScaledHeight() -
+			Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
+		getCurrentRecipe().genericMouseInput(mouseX, mouseY);
 	}
 
 	public void arrowKeyboardInput() {

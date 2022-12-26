@@ -118,6 +118,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 		int i = 0;
 		int yOff = 0;
 		for (int strIndex : activeText) {
+			if (strIndex >= exampleText.length) continue;
 			String str = exampleText[strIndex];
 
 			String[] multilines = str.split("\n");

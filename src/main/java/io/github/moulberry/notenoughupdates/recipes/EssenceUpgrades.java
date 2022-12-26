@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.recipes;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
@@ -38,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -227,8 +229,13 @@ public class EssenceUpgrades implements NeuRecipe {
 			if (essenceItemStack != null) {
 				essenceItemStack = essenceItemStack.copy();
 				essenceItemStack.setStackDisplayName(
-					EnumChatFormatting.AQUA.toString() + tierUpgrade.getEssenceRequired() + " " + EnumChatFormatting.DARK_GRAY +
+					EnumChatFormatting.AQUA + NumberFormat.getInstance().format(tierUpgrade.getEssenceRequired()) + " " + EnumChatFormatting.DARK_GRAY +
 						tierUpgrade.getEssenceType() + " Essence");
+
+				essenceItemStack.getTagCompound().setInteger(
+					ItemPriceInformation.STACKSIZE_OVERRIDE,
+					tierUpgrade.getEssenceRequired()
+				);
 				RenderLocation renderLocation = slotLocations.get(0);
 				slotList.add(new RecipeSlot(renderLocation.getX() + 1, renderLocation.getY() + 1, essenceItemStack));
 			}

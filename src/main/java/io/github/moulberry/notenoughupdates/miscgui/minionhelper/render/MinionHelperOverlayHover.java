@@ -253,6 +253,12 @@ public class MinionHelperOverlayHover {
 				lines.add(" §8- §5" + peltCount + "§8/§5" + amount + " Pelts");
 				continue;
 			}
+			if (internalName.equals("SKYBLOCK_NORTH_STAR")) {
+				// North Stars are not in the API
+
+				lines.add(" §8- §a" + amount + "§7x §d" + "North Star");
+				continue;
+			}
 
 			String name = NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalName);
 			double price = manager.getPriceCalculation().getPrice(internalName);

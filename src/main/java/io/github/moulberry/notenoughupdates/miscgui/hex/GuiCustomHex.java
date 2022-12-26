@@ -773,31 +773,7 @@ public class GuiCustomHex extends Gui {
 								if (itemId.equalsIgnoreCase("Item_Maxed_Out")) continue;
 								if (searchField.getText().trim().isEmpty() ||
 									name.toLowerCase().contains(searchField.getText().trim().toLowerCase())) {
-									if (name.equalsIgnoreCase("Hot Potato Book")) {
-										name = "Hot Potato";
-									} else if (name.equalsIgnoreCase("Fuming Potato Book")) {
-										name = "Fuming Potato";
-									} else if (name.equalsIgnoreCase("Recombobulator 3000")) {
-										name = "Recombobulator";
-									} else if (name.contains("Power Scroll")) {
-										name = name.replace("Power ", "");
-									} else if (name.contains("\u272a")) {
-										name = name.replaceAll("[^✪]*", "");
-									} else if (name.equalsIgnoreCase("First Master Star")) {
-										name = "Master Star \u00a7c➊";
-									} else if (name.equalsIgnoreCase("Second Master Star")) {
-										name = "Master Star \u00a7c➋";
-									} else if (name.equalsIgnoreCase("Third Master Star")) {
-										name = "Master Star \u00a7c➌";
-									} else if (name.equalsIgnoreCase("Fourth Master Star")) {
-										name = "Master Star \u00a7c➍";
-									} else if (name.equalsIgnoreCase("Fifth Master Star")) {
-										name = "Master Star \u00a7c➎";
-									} else if (name.equalsIgnoreCase("The Art Of Peace")) {
-										name = "Art Of Peace";
-									} else if (name.equalsIgnoreCase("Mana Disintegrator")) {
-										name = "M Disintegrator";
-									}
+									name = fixName(name);
 									/*if (playerEnchantIds.containsKey(itemId)) {
 										HexItem item = new HexItem(slotIndex, name, itemId,
 											Utils.getRawTooltip(book), false, false
@@ -928,6 +904,9 @@ public class GuiCustomHex extends Gui {
 											} else if (item.itemType == ItemType.MANA_DISINTEGRATOR) {
 												if (manaDisintegratorCount >= 10) removableItem.add(item);
 												else applicableItem.add(item);
+
+											} else if (item.isEnrichment()) {
+												applicableItem.add(item);
 
 											} else {
 												applicableItem.add(item);
@@ -2422,31 +2401,7 @@ public class GuiCustomHex extends Gui {
 
 			//Enchant name
 			String name = WordUtils.capitalizeFully(enchanterCurrentItem.itemId.replace("_", " "));
-			if (name.equalsIgnoreCase("Hot Potato Book")) {
-				name = "Hot Potato";
-			} else if (name.equalsIgnoreCase("Fuming Potato Book")) {
-				name = "Fuming Potato";
-			} else if (name.equalsIgnoreCase("Recombobulator 3000")) {
-				name = "Recombobulator";
-			} else if (name.contains("Power Scroll")) {
-				name = name.replace("Power ", "");
-			} else if (name.contains("\u272a")) {
-				name = name.replaceAll("[^✪]*", "");
-			} else if (name.equalsIgnoreCase("First Master Star")) {
-				name = "Master Star \u00a7c➊";
-			} else if (name.equalsIgnoreCase("Second Master Star")) {
-				name = "Master Star \u00a7c➋";
-			} else if (name.equalsIgnoreCase("Third Master Star")) {
-				name = "Master Star \u00a7c➌";
-			} else if (name.equalsIgnoreCase("Fourth Master Star")) {
-				name = "Master Star \u00a7c➍";
-			} else if (name.equalsIgnoreCase("Fifth Master Star")) {
-				name = "Master Star \u00a7c➎";
-			} else if (name.equalsIgnoreCase("The Art Of Peace")) {
-				name = "Art Of Peace";
-			} else if (name.equalsIgnoreCase("Mana Disintegrator")) {
-				name = "M Disintegrator";
-			}
+			name = fixName(name);
 			Utils.drawStringCentered(
 				name,
 				Minecraft.getMinecraft().fontRendererObj,
@@ -4881,5 +4836,49 @@ public class GuiCustomHex extends Gui {
 			Keyboard.getEventKey() != Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode() &&
 			(!NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking ||
 				Keyboard.getEventKey() != NotEnoughUpdates.INSTANCE.config.slotLocking.slotLockKey);
+	}
+
+	private String fixName(String name) {
+		name = name.replace("Enrichment", "Enrich");
+		if (name.equalsIgnoreCase("Hot Potato Book")) {
+			name = "Hot Potato";
+		} else if (name.equalsIgnoreCase("Fuming Potato Book")) {
+			name = "Fuming Potato";
+		} else if (name.equalsIgnoreCase("Recombobulator 3000")) {
+			name = "Recombobulator";
+		} else if (name.contains("Power Scroll")) {
+			name = name.replace("Power ", "");
+		} else if (name.contains("\u272a")) {
+			name = name.replaceAll("[^✪]*", "");
+		} else if (name.equalsIgnoreCase("First Master Star")) {
+			name = "Master Star \u00a7c➊";
+		} else if (name.equalsIgnoreCase("Second Master Star")) {
+			name = "Master Star \u00a7c➋";
+		} else if (name.equalsIgnoreCase("Third Master Star")) {
+			name = "Master Star \u00a7c➌";
+		} else if (name.equalsIgnoreCase("Fourth Master Star")) {
+			name = "Master Star \u00a7c➍";
+		} else if (name.equalsIgnoreCase("Fifth Master Star")) {
+			name = "Master Star \u00a7c➎";
+		} else if (name.equalsIgnoreCase("The Art Of Peace")) {
+			name = "Art Of Peace";
+		} else if (name.equalsIgnoreCase("Mana Disintegrator")) {
+			name = "M Disintegrator";
+		} else if (name.equalsIgnoreCase("Intelligence Enrich")) {
+			name = "Int Enrich";
+		} else if (name.equalsIgnoreCase("Critical Damage Enrich")) {
+			name = "Cd Enrich";
+		} else if (name.equalsIgnoreCase("Strength Enrich")) {
+			name = "Str Enrich";
+		} else if (name.equalsIgnoreCase("Magic Find Enrich")) {
+			name = "Mf Enrich";
+		} else if (name.equalsIgnoreCase("Ferocity Enrich")) {
+			name = "Fero Enrich";
+		} else if (name.equalsIgnoreCase("Sea Creature Chance Enrich")) {
+			name = "SCC Enrich";
+		} else if (name.equalsIgnoreCase("Attack Speed Enrich")) {
+			name = "Atk Spd Enrich";
+		}
+		return name;
 	}
 }
