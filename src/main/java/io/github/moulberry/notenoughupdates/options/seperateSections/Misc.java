@@ -323,7 +323,7 @@ public class Misc {
 
 	@ConfigOption(
 		name = "Museum Overlay",
-		desc = "Display items you've taken out of the museum"
+		desc = ""
 	)
 	@ConfigEditorAccordion(id = 2)
 	public boolean museumAccordion = false;
@@ -345,5 +345,14 @@ public class Misc {
 	@ConfigEditorColour
 	@Expose
 	public String museumItemColor = "0:255:0:255:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Overlay",
+		desc = "Show the cheapest items you have not yet donated to the Museum"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean museumCheapestItemOverlay = true;
 
 }

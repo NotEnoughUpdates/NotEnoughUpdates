@@ -439,4 +439,11 @@ public class MiscOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean todoIcons = true;
+
+	@ConfigOption(
+		name = "Museum Overlay",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 1)
+	public boolean museumOverlay = true;
 }
