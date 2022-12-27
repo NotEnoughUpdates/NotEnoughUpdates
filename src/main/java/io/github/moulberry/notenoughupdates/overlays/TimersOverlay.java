@@ -37,7 +37,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.time.ZoneId;
@@ -355,6 +354,7 @@ public class TimersOverlay extends TextTabOverlay {
 					foundCookieBuffText = true;
 				} else if (foundCookieBuffText) {
 					String clean = line.replaceAll("(\u00a7.)", "");
+					clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
 					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
 					if (line.contains("Not")) break;

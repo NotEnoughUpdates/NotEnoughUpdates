@@ -74,7 +74,9 @@ public class CookieWarning {
 				return;
 			}
 			if (timeLine != null) {
-				String[] digits = timeLine.replaceAll("(\u00a7.)", "").split(" ");
+				String clean = timeLine.replaceAll("(\u00a7.)", "");
+				clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
+				String[] digits = clean.split(" ");
 				int minutes = 0;
 				try {
 					for (int i = 0; i < digits.length; i++) {
