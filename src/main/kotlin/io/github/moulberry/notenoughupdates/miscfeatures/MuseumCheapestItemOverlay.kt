@@ -187,11 +187,6 @@ object MuseumCheapestItemOverlay {
         }
     }
 
-    @SubscribeEvent
-    fun onKey(event: KeyboardInputEvent) {
-        println(guessInternalNames("Mushroom Armor", true))
-    }
-
 
     private fun guessInternalNames(itemName: String, armor: Boolean): List<String> {
         return if (armor) {
