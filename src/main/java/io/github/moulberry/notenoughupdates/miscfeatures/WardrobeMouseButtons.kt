@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 class WardrobeMouseButtons {
 
-    private fun keybinds(): List<Int> = listOf(
+    private val keybinds: List<Int> get() = listOf(
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot1,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot2,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot3,
@@ -46,8 +46,8 @@ class WardrobeMouseButtons {
         val gui = event.gui as? GuiChest ?: return
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
 
-        for (i in keybinds().indices) {
-            if (KeybindHelper.isKeyDown(keybinds()[i])) {
+        for (i in keybinds.indices) {
+            if (KeybindHelper.isKeyDown(keybinds[i])) {
                 if (System.currentTimeMillis() - lastClick > 300) {
                     Utils.sendLeftMouseClick(gui.inventorySlots.windowId, 36 + i)
                     lastClick = System.currentTimeMillis()
