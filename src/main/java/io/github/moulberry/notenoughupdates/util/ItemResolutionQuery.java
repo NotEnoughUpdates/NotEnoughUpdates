@@ -201,7 +201,7 @@ public class ItemResolutionQuery {
 		return null;
 	}
 
-	private String getInternalNameByDisplayName(String displayName) {
+	public static String getInternalNameByDisplayName(String displayName) {
 		String cleanDisplayName = StringUtils.cleanColour(displayName);
 		for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
 			.getItemInformation()
