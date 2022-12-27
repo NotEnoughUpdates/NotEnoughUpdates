@@ -221,7 +221,7 @@ public class GuiItemCustomize extends GuiScreen {
 			tooltipToDisplay = Lists.newArrayList(
 				EnumChatFormatting.AQUA + "Set a custom name for the item",
 				EnumChatFormatting.GREEN + "",
-				EnumChatFormatting.GREEN + "Type \"&&\" to use colour codes",
+				EnumChatFormatting.GREEN + "Type \"&&\" for \u00B6",
 				EnumChatFormatting.GREEN + "Type \"**\" for \u272A",
 				EnumChatFormatting.GREEN + "Type \"*1-9\" for \u278A-\u2792",
 				EnumChatFormatting.GREEN + "",
