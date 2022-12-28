@@ -340,9 +340,9 @@ public class TimersOverlay extends TextTabOverlay {
 							}
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
 						if (!hasErrorMessage) {
 							Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your god pot timer");
+							e.printStackTrace();
 							hasErrorMessage = true;
 						}
 						break;

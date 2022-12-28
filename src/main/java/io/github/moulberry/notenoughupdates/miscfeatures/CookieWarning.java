@@ -30,6 +30,7 @@ import net.minecraft.util.EnumChatFormatting;
 public class CookieWarning {
 
 	private static boolean hasNotified;
+	private static boolean hasErrorMessage;
 
 	public static void resetNotification() {
 		hasNotified = false;
@@ -111,9 +112,12 @@ public class CookieWarning {
 						} // ignore seconds
 					}
 				} catch (NumberFormatException e) {
-					e.printStackTrace();
-					Utils.addChatMessage(EnumChatFormatting.RED +
-						"NEU ran into an issue when retrieving the Booster Cookie Timer. Check the logs for details.");
+					if (!hasErrorMessage) {
+						e.printStackTrace();
+						Utils.addChatMessage(EnumChatFormatting.RED +
+							"NEU ran into an issue when retrieving the Booster Cookie Timer. Check the logs for details.");
+						hasErrorMessage = true;
+					}
 					hasNotified = true;
 				}
 				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
