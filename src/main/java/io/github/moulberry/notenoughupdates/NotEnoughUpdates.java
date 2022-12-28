@@ -55,7 +55,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
-import io.github.moulberry.notenoughupdates.miscfeatures.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
@@ -68,6 +67,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.item.enchants.EnchantStyleCustomizer;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
@@ -207,6 +207,13 @@ public class NotEnoughUpdates {
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
+	}
+
 	public File getConfigFile() {
 		return this.configFile;
 	}
@@ -217,13 +224,6 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
-	}
-
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**
