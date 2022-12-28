@@ -50,17 +50,23 @@ object MuseumCheapestItemOverlay {
         var priceRefreshedAt: Long
     )
 
+    private const val ITEMS_PER_PAGE = 8
+
     private val backgroundResource: ResourceLocation by lazy {
         ResourceLocation("notenoughupdates:dungeon_chest_worth.png")
     }
 
-    private const val ITEMS_PER_PAGE = 8
+    /**
+     * The top left position of the arrows to be drawn, used by [ArrowPagesUtils]
+     */
     private var topLeft = intArrayOf(237, 110)
     private var currentPage: Int = 0
     private var previousSlots: List<Slot> = emptyList()
     private var itemsToDonate: MutableList<MuseumItem> = emptyList<MuseumItem>().toMutableList()
 
-    //category -> was the highest page visited?
+    /**
+     *category -> was the highest page visited?
+     */
     private var checkedPages: HashMap<String, Boolean> = hashMapOf(
         //this page only shows items when you have already donated them -> there is no useful information to gather
         "Special Items" to true,
@@ -69,6 +75,9 @@ object MuseumCheapestItemOverlay {
         "Rarities" to false
     )
 
+    /**
+     * Draw the overlay and parse items, if applicable
+     */
     @SubscribeEvent
     fun onDrawBackground(event: BackgroundDrawnEvent) {
         if (!shouldRender(event.gui)) return
@@ -91,6 +100,9 @@ object MuseumCheapestItemOverlay {
         drawLines(guiLeft, guiTop)
     }
 
+    /**
+     * Pass on mouse clicks to [ArrowPagesUtils], if applicable
+     */
     @SubscribeEvent
     fun onMouseClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
         if (!shouldRender(event.gui)) return
@@ -102,11 +114,16 @@ object MuseumCheapestItemOverlay {
         ) { pageChange: Int -> currentPage = pageChange }
     }
 
-
+    /**
+     * Sort the collected items by their calculated value
+     */
     private fun sortByValue() {
         itemsToDonate.sortBy { it.value }
     }
 
+    /**
+     * Update all values that have not been updated for the last minute
+     */
     private fun updateOutdatedValues() {
         val time = System.currentTimeMillis()
         itemsToDonate.filter { time - it.priceRefreshedAt >= 60000 }
@@ -116,6 +133,9 @@ object MuseumCheapestItemOverlay {
             }
     }
 
+    /**
+     * Calculate the value of an item as displayed in the museum, which may consist of multiple pieces
+     */
     private fun calculateValue(internalNames: List<String>): Double {
         var totalValue = 0.0
         internalNames.forEach {
@@ -139,9 +159,10 @@ object MuseumCheapestItemOverlay {
         return totalValue
     }
 
-
+    /**
+     * Draw the lines containing the displayname and value over the background
+     */
     private fun drawLines(guiLeft: Int, guiTop: Int) {
-        //render
         val lines = buildLines()
         lines.forEachIndexed { index, line ->
             if (index == ITEMS_PER_PAGE && !visitedAllPages()) {
@@ -171,6 +192,9 @@ object MuseumCheapestItemOverlay {
         return
     }
 
+    /**
+     * Create the list of [MuseumItem]s that should be displayed on the current page
+     */
     private fun buildLines(): List<MuseumItem> {
         val list = emptyList<MuseumItem>().toMutableList()
         for (i in (if (currentPage == 0) ITEMS_PER_PAGE else ITEMS_PER_PAGE + 1) * (currentPage)..(if (currentPage == 0) ITEMS_PER_PAGE else ITEMS_PER_PAGE + 1) * currentPage + ITEMS_PER_PAGE) {
@@ -182,7 +206,9 @@ object MuseumCheapestItemOverlay {
         return list
     }
 
-
+    /**
+     * Parse the not already donated items present in the currently open Museum page
+     */
     private fun parseItems(slots: List<Slot>) {
         //iterate upper chest with 56 slots
         val time = System.currentTimeMillis()
@@ -209,6 +235,9 @@ object MuseumCheapestItemOverlay {
         }
     }
 
+    /**
+     * Check if the highest page for the current category is currently open and update [checkedPages] accordingly
+     */
     private fun checkIfHighestPageWasVisited(slots: List<Slot>) {
         val category = getCategory()
         val nextPageSlot = slots[53]
@@ -218,7 +247,9 @@ object MuseumCheapestItemOverlay {
         }
     }
 
-
+    /**
+     * Try to guess the internal names for a given item from the Museum. Due to Hypixels naming inconsistencies this does not work on every armor set
+     */
     private fun guessInternalNames(itemName: String, armor: Boolean): List<String> {
         return if (armor) {
             val mustHaves = arrayOf(
@@ -251,7 +282,9 @@ object MuseumCheapestItemOverlay {
         }
     }
 
-
+    /**
+     * Draw the background texture to the right side of the open Museum Page
+     */
     private fun drawBackground(guiLeft: Int, xSize: Int, guiTop: Int) {
         Minecraft.getMinecraft().textureManager.bindTexture(backgroundResource)
         GL11.glColor4f(1F, 1F, 1F, 1F)
@@ -269,14 +302,26 @@ object MuseumCheapestItemOverlay {
         )
     }
 
+    /**
+     * Determine if the overlay should be active based on the config option and the currently open GuiChest, if applicable
+     */
     private fun shouldRender(gui: GuiScreen): Boolean =
         NotEnoughUpdates.INSTANCE.config.miscOverlays.museumCheapestItemOverlay && gui is GuiChest && Utils.getOpenChestName()
             .startsWith("Museum ➜")
 
+    /**
+     * Determine the name of the currently open Museum Category
+     */
     private fun getCategory(): String = Utils.getOpenChestName().substring(9, Utils.getOpenChestName().length)
 
+    /**
+     * Determine if all useful pages have been visited
+     */
     private fun visitedAllPages(): Boolean = !checkedPages.containsValue(false)
 
+    /**
+     * Calculate the total amount of pages the overlay should have
+     */
     private fun totalPages(): Int = when (itemsToDonate.size % ITEMS_PER_PAGE) {
         0 -> itemsToDonate.size / ITEMS_PER_PAGE
         else -> (itemsToDonate.size / ITEMS_PER_PAGE) + 1
