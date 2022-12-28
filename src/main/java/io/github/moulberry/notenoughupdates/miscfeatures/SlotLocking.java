@@ -24,8 +24,10 @@ import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEventInventory;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -39,7 +41,9 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -416,6 +420,9 @@ public class SlotLocking {
 			}
 
 			drawLinkArrow(x1, y1, x2, y2);
+			setTopHalfBarrier = true;
+		} else {
+			setTopHalfBarrier = false;
 		}
 	}
 
@@ -728,5 +735,17 @@ public class SlotLocking {
 
 		return locked != null &&
 			(locked.locked || (NotEnoughUpdates.INSTANCE.config.slotLocking.bindingAlsoLocks && locked.boundTo != -1));
+	}
+
+	boolean setTopHalfBarrier = false;
+	@SubscribeEvent
+	public void barrierInventory(ReplaceItemEventInventory event) {
+		if (event.getSlotNumber() < 9 || !setTopHalfBarrier) return;
+		ItemStack stack = new ItemStack(Blocks.barrier);
+		ItemUtils.getOrCreateTag(stack).setBoolean(
+			"NEUHIDETOOLIP",
+			true
+		);
+		event.replaceWith(stack);
 	}
 }

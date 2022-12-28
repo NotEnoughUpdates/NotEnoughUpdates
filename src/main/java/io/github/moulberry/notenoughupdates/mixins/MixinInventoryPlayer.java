@@ -19,13 +19,17 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEventInventory;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InventoryPlayer.class)
 public class MixinInventoryPlayer {
@@ -41,5 +45,28 @@ public class MixinInventoryPlayer {
 		InventoryPlayer $this = (InventoryPlayer) (Object) this;
 
 		SlotLocking.getInstance().changedSlot($this.currentItem);
+	}
+
+	@Shadow public ItemStack[] mainInventory;
+	@Shadow public ItemStack[] armorInventory;
+
+	@Inject(method = "getStackInSlot", at = @At("HEAD"), cancellable = true)
+	public void on(int index, CallbackInfoReturnable<ItemStack> cir) {
+		boolean indexChanged = false;
+		ItemStack[] aitemstack = mainInventory;
+		if (index >= aitemstack.length) {
+			index -= aitemstack.length;
+			indexChanged = true;
+			aitemstack = this.armorInventory;
+		}
+		ReplaceItemEventInventory replaceItemEventInventory = new ReplaceItemEventInventory(
+			aitemstack[index],
+			((InventoryPlayer) (Object) this),
+			(indexChanged ? index + 100 : index)
+		);
+		replaceItemEventInventory.post();
+		if (replaceItemEventInventory.getReplacement() != replaceItemEventInventory.getOriginal()) {
+			cir.setReturnValue(replaceItemEventInventory.getReplacement());
+		}
 	}
 }
