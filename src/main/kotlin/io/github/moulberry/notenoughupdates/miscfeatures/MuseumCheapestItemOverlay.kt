@@ -37,14 +37,18 @@ import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent
-import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
 
 object MuseumCheapestItemOverlay {
-    data class MuseumItem(var name: String, var value: Double, var priceRefreshedAt: Long)
+    data class MuseumItem(
+        var name: String,
+        var internalNames: List<String>,
+        var value: Double,
+        var priceRefreshedAt: Long
+    )
 
     private val backgroundResource: ResourceLocation by lazy {
         ResourceLocation("notenoughupdates:dungeon_chest_worth.png")
@@ -72,9 +76,10 @@ object MuseumCheapestItemOverlay {
 
         val slots = chest.inventorySlots.inventorySlots
         if (!slots.equals(previousSlots)) {
-            parseItems(slots)
             checkIfHighestPageWasVisited(slots)
-            sortByPrice()
+            parseItems(slots)
+            updateOutdatedValues()
+            sortByValue()
         }
         previousSlots = slots
 
@@ -98,8 +103,40 @@ object MuseumCheapestItemOverlay {
     }
 
 
-    private fun sortByPrice() {
+    private fun sortByValue() {
         itemsToDonate.sortBy { it.value }
+    }
+
+    private fun updateOutdatedValues() {
+        val time = System.currentTimeMillis()
+        itemsToDonate.filter { time - it.priceRefreshedAt >= 60000 }
+            .forEach {
+                it.value = calculateValue(it.internalNames)
+                it.priceRefreshedAt = time
+            }
+    }
+
+    private fun calculateValue(internalNames: List<String>): Double {
+        var totalValue = 0.0
+        internalNames.forEach {
+            val itemValue: Double =
+                when (NotEnoughUpdates.INSTANCE.config.miscOverlays.museumCheapestItemOverlayValueSource) {
+                    0 -> NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(it, false)
+                    1 -> NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(it)?.craftCost ?: return@forEach
+                    else -> -1.0 //unreachable
+                }
+            if (itemValue == -1.0 || itemValue == 0.0) {
+                totalValue = Double.MAX_VALUE
+                return@forEach
+            } else {
+                totalValue += itemValue
+            }
+        }
+        if (totalValue == 0.0) {
+            totalValue = Double.MAX_VALUE
+        }
+
+        return totalValue
     }
 
 
@@ -116,7 +153,7 @@ object MuseumCheapestItemOverlay {
                 )
             } else {
                 Utils.renderAlignedString(
-                    "${EnumChatFormatting.RESET}${EnumChatFormatting.BLUE}${line.name}",
+                    "${EnumChatFormatting.RESET}${line.name}",
                     if (line.value == Double.MAX_VALUE) "${EnumChatFormatting.RED}Unknown" else "${EnumChatFormatting.AQUA}${
                         Utils.shortNumberFormat(
                             line.value,
@@ -136,7 +173,7 @@ object MuseumCheapestItemOverlay {
 
     private fun buildLines(): List<MuseumItem> {
         val list = emptyList<MuseumItem>().toMutableList()
-        for (i in ITEMS_PER_PAGE * currentPage..ITEMS_PER_PAGE * currentPage + ITEMS_PER_PAGE) {
+        for (i in (if (currentPage == 0) ITEMS_PER_PAGE else ITEMS_PER_PAGE + 1) * (currentPage)..(if (currentPage == 0) ITEMS_PER_PAGE else ITEMS_PER_PAGE + 1) * currentPage + ITEMS_PER_PAGE) {
             if (i >= itemsToDonate.size) {
                 break
             }
@@ -154,25 +191,19 @@ object MuseumCheapestItemOverlay {
             //check for gray dye which indicates that the item has not been donated
             if (stack.item is ItemDye && stack.itemDamage == 8) {
                 val name = stack.displayName.stripControlCodes()
-                val internalNames = guessInternalNames(name, Utils.getOpenChestName().endsWith("Armor Sets"))
-//                println("$name resolves to ${internalNames.toString()}")
-                var totalValue = 0.0
-                internalNames.forEach {
-                    val itemValue = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(it, false)
-                    if (itemValue == -1.0 || itemValue == 0.0) {
-                        totalValue = Double.MAX_VALUE
-                        return@forEach
-                    } else {
-                        totalValue += itemValue
-                    }
-                }
-                if (totalValue == 0.0) {
-                    totalValue = Double.MAX_VALUE
+                val armor = Utils.getOpenChestName().endsWith("Armor Sets")
+                val internalNames = guessInternalNames(name, armor)
+                val value = calculateValue(internalNames)
+
+                val displayName = if (armor) {
+                    "${EnumChatFormatting.BLUE}$name"
+                } else {
+                    NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalNames[0]) ?: "ERROR"
                 }
 
                 //make sure this item does not already exist
-                if (itemsToDonate.none { it.name == name }) {
-                    itemsToDonate.add(MuseumItem(name, totalValue, time))
+                if (itemsToDonate.none { it.internalNames == internalNames }) {
+                    itemsToDonate.add(MuseumItem(displayName, internalNames, value, time))
                 }
             }
         }
@@ -239,7 +270,7 @@ object MuseumCheapestItemOverlay {
     }
 
     private fun shouldRender(gui: GuiScreen): Boolean =
-        NotEnoughUpdates.INSTANCE.config.misc.museumCheapestItemOverlay && gui is GuiChest && Utils.getOpenChestName()
+        NotEnoughUpdates.INSTANCE.config.miscOverlays.museumCheapestItemOverlay && gui is GuiChest && Utils.getOpenChestName()
             .startsWith("Museum ➜")
 
     private fun getCategory(): String = Utils.getOpenChestName().substring(9, Utils.getOpenChestName().length)

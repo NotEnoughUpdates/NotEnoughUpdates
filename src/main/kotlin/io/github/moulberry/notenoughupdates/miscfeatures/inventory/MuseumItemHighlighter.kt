@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Linnea Gräf
+ * Copyright (C) 2022 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -40,7 +40,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object MuseumItemHighlighter {
 
     val manager get() = NotEnoughUpdates.INSTANCE.manager
-    val config get() = NotEnoughUpdates.INSTANCE.config.misc
+    val config get() = NotEnoughUpdates.INSTANCE.config.miscOverlays
 
     fun getHighlightColor() = ChromaColour.specialToChromaRGB(config.museumItemColor)
 
