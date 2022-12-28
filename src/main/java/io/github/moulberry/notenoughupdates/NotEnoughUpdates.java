@@ -38,13 +38,13 @@ import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
-import io.github.moulberry.notenoughupdates.miscfeatures.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
@@ -171,6 +171,13 @@ public class NotEnoughUpdates {
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
+	}
+
 	public File getConfigFile() {
 		return this.configFile;
 	}
@@ -181,13 +188,6 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
-	}
-
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**
