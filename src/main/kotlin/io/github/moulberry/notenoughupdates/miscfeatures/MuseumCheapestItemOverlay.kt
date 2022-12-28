@@ -198,6 +198,7 @@ object MuseumCheapestItemOverlay {
             )
             val monochromeName = NEUManager.cleanForTitleMapSearch(itemName)
             val candidates = monochromeName.split(" ")
+                .asSequence()
                 .mapNotNull { NotEnoughUpdates.INSTANCE.manager.titleWordMap[it]?.keys }
                 .flatten()
                 .filter {
@@ -209,6 +210,9 @@ object MuseumCheapestItemOverlay {
                         item.contains(it)
                     }
                 }
+                //filter out duplicates
+                .toSet()
+                .toList()
 
             return candidates
         } else {
