@@ -482,7 +482,10 @@ public class MiningOverlay extends TextTabOverlay {
 	}
 
 	private String getTipPart(String name) {
-		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) return "";
+		int settings = NotEnoughUpdates.INSTANCE.config.mining.commissionTaskTips;
+		if (settings == 0) return "";
+
+		if (!Minecraft.getMinecraft().thePlayer.isSneaking() && settings == 1) return "";
 
 		String tip = getTip(name);
 		if (tip == null) return "  §4???";
