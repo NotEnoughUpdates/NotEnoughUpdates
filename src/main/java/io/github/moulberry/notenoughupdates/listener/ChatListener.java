@@ -38,6 +38,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -147,15 +148,7 @@ public class ChatListener {
 
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
-					ChatStyle pvClickStyle = Utils.createClickStyle(
-						ClickEvent.Action.RUN_COMMAND,
-						"/pv " + username,
-						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
-							EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
-							EnumChatFormatting.YELLOW + " profile viewer."
-					);
-
+					ChatStyle pvClickStyle = getPVChatStyle(username);
 					if (partyOrGuildChat) {
 						chatComponent.getSiblings().get(0).setChatStyle(pvClickStyle);
 					} else {
@@ -183,6 +176,17 @@ public class ChatListener {
 		return chatComponent;
 	}
 
+	private static ChatStyle getPVChatStyle(String username) {
+		return Utils.createClickStyle(
+			ClickEvent.Action.RUN_COMMAND,
+			"/pv " + username,
+			"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+				username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
+				EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
+				EnumChatFormatting.YELLOW + " profile viewer."
+		);
+	}
+
 	/**
 	 * 1) When receiving "You are playing on profile" messages, will set the current profile.
 	 * 2) When a /viewrecipe command fails (i.e. player does not have recipe unlocked, will open the custom recipe GUI)
@@ -197,6 +201,9 @@ public class ChatListener {
 			return;
 		} else if (e.type == 0) {
 			e.message = replaceSocialControlsWithPV(e.message);
+			if (NotEnoughUpdates.INSTANCE.config.misc.dungeonGroupsPV) {
+				e.message = dungeonPartyJoinPV(e.message);
+			}
 		}
 
 		DungeonWin.onChatMessage(e);
@@ -316,5 +323,20 @@ public class ChatListener {
 
 		if (unformatted.equals("ENDER NODE! You found Endermite Nest!"))
 			EnderNodes.displayEndermiteNotif();
+	}
+
+	private IChatComponent dungeonPartyJoinPV(IChatComponent message) {
+		String text = message.getFormattedText();
+		Pattern pattern = Pattern.compile("§dParty Finder §r§f> (.*)§ejoined the dungeon group!");
+		Matcher matcher = pattern.matcher(text);
+
+		if (matcher.find()) {
+			String name = StringUtils.stripControlCodes(matcher.group(1)).trim();
+			ChatComponentText componentText = new ChatComponentText(text);
+			componentText.setChatStyle(getPVChatStyle(name));
+			return componentText;
+		} else {
+			return message;
+		}
 	}
 }

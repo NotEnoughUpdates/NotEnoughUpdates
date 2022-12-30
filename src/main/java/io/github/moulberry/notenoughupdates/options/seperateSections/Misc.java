@@ -295,4 +295,12 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean abiphoneFavourites = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Dungeon Groups PV",
+		desc = "View another player's profile by clicking on the chat message when they join in a dungeon group."
+	)
+	@ConfigEditorBoolean
+	public boolean dungeonGroupsPV = true;
+
 }
