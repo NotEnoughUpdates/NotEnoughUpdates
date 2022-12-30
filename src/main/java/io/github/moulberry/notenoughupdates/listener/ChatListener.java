@@ -55,12 +55,15 @@ import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.timeSi
 import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.timeSinceLastBoss2;
 
 public class ChatListener {
-	private final NotEnoughUpdates neu;
-	private static final Pattern SLAYER_XP = Pattern.compile(
-		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
 
-	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,4})\\] .*");
-	AtomicBoolean missingRecipe = new AtomicBoolean(false);
+	private final NotEnoughUpdates neu;
+
+	private static final Pattern slayerExpPattern = Pattern.compile(
+		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
+	private static final Pattern skyBlockLevelPattern = Pattern.compile("\\[(\\d{1,4})\\] .*");
+	private final Pattern partyFinderPattern = Pattern.compile("§dParty Finder §r§f> (.*)§ejoined the dungeon group!");
+
+	private AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -210,7 +213,7 @@ public class ChatListener {
 
 		String r = null;
 		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
-		Matcher matcher = SLAYER_XP.matcher(unformatted);
+		Matcher matcher = slayerExpPattern.matcher(unformatted);
 		if (unformatted.startsWith("You are playing on profile: ")) {
 			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("You are playing on profile: ".length())
@@ -305,7 +308,7 @@ public class ChatListener {
 			"  You've earned a Crystal Loot Bundle!"))
 			OverlayManager.crystalHollowOverlay.message(unformatted);
 
-		Matcher LvlMatcher = SKYBLOCK_LVL_MESSAGE.matcher(unformatted);
+		Matcher LvlMatcher = skyBlockLevelPattern.matcher(unformatted);
 		if (LvlMatcher.matches()) {
 			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
 				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
@@ -327,8 +330,7 @@ public class ChatListener {
 
 	private IChatComponent dungeonPartyJoinPV(IChatComponent message) {
 		String text = message.getFormattedText();
-		Pattern pattern = Pattern.compile("§dParty Finder §r§f> (.*)§ejoined the dungeon group!");
-		Matcher matcher = pattern.matcher(text);
+		Matcher matcher = partyFinderPattern.matcher(text);
 
 		if (matcher.find()) {
 			String name = StringUtils.stripControlCodes(matcher.group(1)).trim();
