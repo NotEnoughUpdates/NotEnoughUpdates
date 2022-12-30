@@ -487,16 +487,16 @@ public class MiningOverlay extends TextTabOverlay {
 		String tip = getTip(name);
 		if (tip == null) return "  §4???";
 
-		return " §f" + tip;
+		return " §8§l>§7 " + tip;
 	}
 
 	private String getTip(String name) {
 		if (SBInfo.getInstance().getLocation().equals("mining_3")) { // Dwarven Mines
-			if (name.equals("Lucky Raffle")) return "Collect 20 Raffle Tickets during §6Raffle event";
-			if (name.equals("Goblin Raid Slayer")) return "Kill 20 Goblins during §6Goblin Raid event";
+			if (name.equals("Lucky Raffle")) return "Collect 20 Raffle Tickets during §6Raffle Event";
+			if (name.equals("Goblin Raid Slayer")) return "Kill 20 Goblins during §6Goblin Raid Event";
 
-			if (name.equals("Mithril Miner")) return "Break 500 Mithril (everywhere)";
-			if (name.equals("Titanium Miner")) return "Break 15 Titanium (everywhere)";
+			if (name.equals("Mithril Miner")) return "Break 500 Mithril (anywhere)";
+			if (name.equals("Titanium Miner")) return "Break 15 Titanium (anywhere)";
 			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
 			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Borrows)";
 
@@ -517,7 +517,7 @@ public class MiningOverlay extends TextTabOverlay {
 			String jungle = " §a(Jungle)";
 			String goblin = " §6(Golbin Holdout)";
 			String mithril = " §b(Mithril Deposits)";
-			String precursor = " §7(Precursor Remenants)";
+			String precursor = " §8(Precursor Remenants)";
 			String magma = " §c(Magma Fields)";
 
 			if (name.equals("Goblin Slayer")) return "Kill 13 Goblins" + goblin;
@@ -537,12 +537,12 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (name.endsWith("Gemstone Collector")) {
-				if (name.startsWith("Amber")) return "Break orange" + goblin;
-				if (name.startsWith("Sapphire")) return "Break blue" + precursor;
-				if (name.startsWith("Jade")) return "Break green" + mithril;
-				if (name.startsWith("Amethyst")) return "Break purple" + jungle;
-				if (name.startsWith("Ruby")) return "Break red (everywhere)";
-				if (name.startsWith("Topaz")) return "Break yellow" + magma;
+				if (name.startsWith("Amber")) return "Break orange glass" + goblin;
+				if (name.startsWith("Sapphire")) return "Break blue glass" + precursor;
+				if (name.startsWith("Jade")) return "Break green glass" + mithril;
+				if (name.startsWith("Amethyst")) return "Break purple glass" + jungle;
+				if (name.startsWith("Ruby")) return "Break red glass (anywhere)";
+				if (name.startsWith("Topaz")) return "Break yellow glass" + magma;
 			}
 		}
 
