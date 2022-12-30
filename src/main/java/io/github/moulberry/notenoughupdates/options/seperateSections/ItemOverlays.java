@@ -477,4 +477,12 @@ public class ItemOverlays {
 	@ConfigEditorBoolean
 	public boolean bonzoAbility = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Spirit Mask Ability Cooldown",
+		desc = "Show the cooldown duration of the spirit mask ability as the durability."
+	)
+	@ConfigEditorBoolean
+	public boolean spiritAbility = true;
+
 }

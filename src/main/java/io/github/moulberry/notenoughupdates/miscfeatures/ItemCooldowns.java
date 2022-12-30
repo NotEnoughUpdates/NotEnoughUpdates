@@ -37,11 +37,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ItemCooldowns {
+
+	private static final Pattern COOLDOWN_LORE = Pattern.compile("\\u00a78Cooldown: \\u00a7a(\\d+)s");
+
+	private static final Pattern PICKAXE_ABILITY_ACTIVATION =
+		Pattern.compile("\\u00a7r\\u00a7aYou used your \\u00a7r\\u00a7..+ \\u00a7r\\u00a7aPickaxe Ability!\\u00a7r");
+
+	private static final Pattern BONZO_ABILITY_ACTIVATION =
+		Pattern.compile("\\u00a7r\\u00a7aYour \\u00a7r\\u00a7[9|5](\\u269A )*Bonzo's Mask \\u00a7r\\u00a7asaved your life!\\u00a7r");
+
+	private static final Pattern SPIRIT_ABILITY_ACTIVATION =
+		Pattern.compile("\\u00a7r\\u00a76Second Wind Activated\\u00a7r\\u00a7a! \\u00a7r\\u00a7aYour Spirit Mask saved your life!\\u00a7r");
+
 	private static final Map<ItemStack, Float> durabilityOverrideMap = new HashMap<>();
+
 	public static long pickaxeUseCooldownMillisRemaining = -1;
 	private static long treecapitatorCooldownMillisRemaining = -1;
 	private static long bonzomaskCooldownMillisRemaining = -1;
 	private static long fraggedBonzomaskCooldownMillisRemaining = -1;
+	private static long spiritMaskCooldownMillisRemaining = -1;
 
 	public static boolean firstLoad = true;
 	public static long firstLoadMillis = 0;
@@ -51,6 +65,7 @@ public class ItemCooldowns {
 	public static long pickaxeCooldown = -1;
 	private static long bonzoMaskCooldown = -1;
 	private static long fraggedBonzoMaskCooldown = -1;
+	private static long spiritMaskCooldown = -1;
 
 	public static TreeMap<Long, BlockPos> blocksClicked = new TreeMap<>();
 
@@ -64,6 +79,7 @@ public class ItemCooldowns {
 				pickaxeCooldown = -1;
 				bonzoMaskCooldown = -1;
 				fraggedBonzoMaskCooldown = -1;
+				spiritMaskCooldown = -1;
 			}
 
 			long currentTime = System.currentTimeMillis();
@@ -93,6 +109,9 @@ public class ItemCooldowns {
 			}
 			if (fraggedBonzomaskCooldownMillisRemaining >= 0) {
 				fraggedBonzomaskCooldownMillisRemaining -= millisDelta;
+			}
+			if (spiritMaskCooldownMillisRemaining >= 0) {
+				spiritMaskCooldownMillisRemaining -= millisDelta;
 			}
 		}
 	}
@@ -132,14 +151,14 @@ public class ItemCooldowns {
 		if (blocksClicked.containsValue(pos)) {
 			IBlockState oldState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
 			if (oldState.getBlock() != packetIn.getBlockState().getBlock()) {
-				onBlockMined(pos);
+				onBlockMined();
 			}
 		}
 	}
 
-	public static void onBlockMined(BlockPos pos) {
+	public static void onBlockMined() {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
+		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(held).resolveInternalName();
 		if (internalname != null) {
 			if (treecapitatorCooldownMillisRemaining < 0 &&
 				(internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE"))) {
@@ -147,14 +166,6 @@ public class ItemCooldowns {
 			}
 		}
 	}
-
-	private static final Pattern PICKAXE_ABILITY_REGEX = Pattern.compile("\\u00a7r\\u00a7aYou used your " +
-		"\\u00a7r\\u00a7..+ \\u00a7r\\u00a7aPickaxe Ability!\\u00a7r");
-
-	private static final Pattern COOLDOWN_LORE = Pattern.compile("\\u00a78Cooldown: \\u00a7a(\\d+)s");
-
-	private static final Pattern BONZO_ABILITY_ACTIVATION =
-		Pattern.compile("\\u00a7r\\u00a7aYour \\u00a7r\\u00a7[9|5](\\u269A )*Bonzo's Mask \\u00a7r\\u00a7asaved your life!\\u00a7r");
 
 	private static boolean isPickaxe(String internalname) {
 		if (internalname == null) return false;
@@ -167,63 +178,11 @@ public class ItemCooldowns {
 		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") || internalname.equals("DIVAN_DRILL");
 	}
 
-	private static void updatePickaxeCooldown() {
-		if (pickaxeCooldown == -1 && NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
-			for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
-				if (stack != null && stack.hasTagCompound()) {
-					String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
-					if (isPickaxe(internalname)) {
-						for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound())) {
-							Matcher matcher = COOLDOWN_LORE.matcher(line);
-							if (matcher.find()) {
-								try {
-									pickaxeCooldown = Integer.parseInt(matcher.group(1));
-									return;
-								} catch (Exception ignored) {
-								}
-							}
-						}
-					}
-				}
-			}
-			pickaxeCooldown = 0;
-		}
-	}
-
-	private static void updateBonzoMaskCooldown(boolean fragged) {
-		if (bonzoMaskCooldown == -1 || fraggedBonzoMaskCooldown == -1 && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
-			for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
-				findBonzoCooldown(stack, fragged);
-			}
-			// Only need to check the helmet slot in armorInventory since the mask can only go there
-			findBonzoCooldown(Minecraft.getMinecraft().thePlayer.inventory.armorInventory[3], fragged);
-		}
-	}
-
-	private static void findBonzoCooldown(ItemStack stack, boolean fragged) {
-		if (stack != null && stack.hasTagCompound() && stack.getDisplayName().contains("Bonzo's Mask")) {
-			for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound())) {
-				Matcher matcher = COOLDOWN_LORE.matcher(line);
-				if (matcher.find()) {
-					try {
-						if (fragged) {
-							fraggedBonzoMaskCooldown = Integer.parseInt(matcher.group(1));
-						} else {
-							bonzoMaskCooldown = Integer.parseInt(matcher.group(1));
-						}
-						return;
-					} catch (Exception ignored) {
-					}
-				}
-			}
-		}
-	}
-
 	@SubscribeEvent
 	public void onChatMessage(ClientChatReceivedEvent event) {
-		if (pickaxeCooldown != 0 && PICKAXE_ABILITY_REGEX.matcher(event.message.getFormattedText()).matches() &&
-			NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
-			updatePickaxeCooldown();
+		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
+			NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility && pickaxeCooldown != 0) {
+			findCooldownInTooltip("Pickaxe");
 			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
 		}
 
@@ -231,13 +190,66 @@ public class ItemCooldowns {
 				NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility &&
 				(bonzoMaskCooldown != 0 || fraggedBonzoMaskCooldown != 0)) {
 			if (event.message.getFormattedText().contains("⚚")) {
-				updateBonzoMaskCooldown(true);
+				findCooldownInTooltip("Fragged Bonzo Mask");
 				fraggedBonzomaskCooldownMillisRemaining = fraggedBonzoMaskCooldown * 1000;
 			} else {
-				updateBonzoMaskCooldown(false);
+				findCooldownInTooltip("Bonzo Mask");
 				bonzomaskCooldownMillisRemaining = bonzoMaskCooldown * 1000;
 			}
 		}
+
+		if (SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
+				NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && spiritMaskCooldown != 0) {
+			findCooldownInTooltip("Spirit Mask");
+			spiritMaskCooldownMillisRemaining = spiritMaskCooldown * 1000;
+		}
+	}
+
+	private static void findCooldownInTooltip(String item) {
+		for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
+			setSpecificCooldown(stack, item);
+		}
+
+		// Check helmet slot for items that can also be equipped as a helmet
+		ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.armorInventory[3];
+		setSpecificCooldown(stack, item);
+	}
+
+	private static void setSpecificCooldown(ItemStack stack, String item) {
+		if (stack != null && stack.hasTagCompound()) {
+
+			String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
+
+			if (internalname != null) {
+				switch (item) {
+					case "Pickaxe":
+						if (isPickaxe(internalname)) pickaxeCooldown = setCooldown(stack);
+						break;
+					case "Bonzo Mask":
+						if (internalname.equals("BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
+						break;
+					case "Fragged Bonzo Mask":
+						if (internalname.equals("STARRED_BONZO_MASK")) fraggedBonzoMaskCooldown = setCooldown(stack);
+						break;
+					case "Spirit Mask":
+						if (internalname.equals("SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
+						break;
+				}
+			}
+		}
+	}
+
+	private static int setCooldown(ItemStack stack) {
+		for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound())) {
+			Matcher matcher = COOLDOWN_LORE.matcher(line);
+			if (matcher.find()) {
+				try {
+					return Integer.parseInt(matcher.group(1));
+				} catch (Exception ignored) {
+				}
+			}
+		}
+		return -1;
 	}
 
 	public static float getDurabilityOverride(ItemStack stack) {
@@ -248,15 +260,15 @@ public class ItemCooldowns {
 			return durabilityOverrideMap.get(stack);
 		}
 
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 		if (internalname == null) {
 			durabilityOverrideMap.put(stack, -1f);
 			return -1;
 		}
 
 		// Pickaxes
-		if (isPickaxe(internalname)) {
-			updatePickaxeCooldown();
+		if (isPickaxe(internalname) && NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
+			findCooldownInTooltip("Pickaxe");
 
 			return durabilityOverride(pickaxeUseCooldownMillisRemaining, pickaxeCooldown, stack);
 		}
@@ -277,15 +289,21 @@ public class ItemCooldowns {
 			return durability;
 		}
 		// Bonzo Masks
-		if (internalname.equals("BONZO_MASK")) {
-			updateBonzoMaskCooldown(false);
+		if (internalname.equals("BONZO_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
+			findCooldownInTooltip("Bonzo Mask");
 
 			return durabilityOverride(bonzomaskCooldownMillisRemaining, bonzoMaskCooldown, stack);
 		}
-		if (internalname.equals("STARRED_BONZO_MASK")) {
-			updateBonzoMaskCooldown(true);
+		if (internalname.equals("STARRED_BONZO_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
+			findCooldownInTooltip("Fragged Bonzo Mask");
 
 			return durabilityOverride(fraggedBonzomaskCooldownMillisRemaining, fraggedBonzoMaskCooldown, stack);
+		}
+		// Spirit Mask
+		if (internalname.equals("SPIRIT_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility) {
+			findCooldownInTooltip("Spirit Mask");
+
+			return durabilityOverride(spiritMaskCooldownMillisRemaining, spiritMaskCooldown, stack);
 		}
 
 		durabilityOverrideMap.put(stack, -1f);
