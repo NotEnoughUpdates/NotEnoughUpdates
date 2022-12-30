@@ -265,6 +265,16 @@ public class BasicPage extends GuiProfileViewerPage {
 			networth = profile.getNetWorth(profileId);
 		}
 
+		//Networth is under 0
+		//If = -1 -> an error occurred
+		//If = -2 -> still loading networth
+		String stateStr = EnumChatFormatting.RED + "An error occurred";
+		if (networth == -2) {
+			stateStr = EnumChatFormatting.YELLOW + "Loading...";
+		} else if (networth == -1) {
+			networth = profile.getNetWorth(profileId);
+		}
+
 		if (networth > 0) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
@@ -302,16 +312,16 @@ public class BasicPage extends GuiProfileViewerPage {
 									EnumChatFormatting.GOLD +
 									networthIRLMoney
 							);
-						getInstance().tooltipToDisplay.add("");
 
 						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
 							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
 							&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
-
+							getInstance().tooltipToDisplay.add("");
 							String lbPosStr =
 								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
 									profile.getSoopyNetworthLeaderboardPosition());
-							getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
+							getInstance().tooltipToDisplay.add(
+								lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
 						}
 
 						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -336,15 +346,6 @@ public class BasicPage extends GuiProfileViewerPage {
 				}
 			}
 		} else {
-			//Networth is under 0
-			//If = -1 -> an error occured
-			//If = -2 -> still loading networth
-
-			String stateStr = EnumChatFormatting.RED + "An error occured";
-			if (networth == -2) {
-				stateStr = EnumChatFormatting.YELLOW + "Loading...";
-			}
-
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
 				fr,
@@ -886,14 +887,14 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
 							profile.getSoopyWeightLeaderboardPosition());
 					getInstance().tooltipToDisplay.add("");
-					String stateStr = EnumChatFormatting.RED + "An error occured";
+					String stateStr = EnumChatFormatting.RED + "An error occurred";
 					if (weight == -2) {
 						stateStr = EnumChatFormatting.YELLOW + "Loading";
 					}
 					if (weight > 0)
 						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's weight leaderboard!");
 					else
-						getInstance().tooltipToDisplay.add(stateStr + " soopy's weight leaderboard");
+						getInstance().tooltipToDisplay.add(stateStr + " on soopy's weight leaderboard");
 				}
 			}
 		}
