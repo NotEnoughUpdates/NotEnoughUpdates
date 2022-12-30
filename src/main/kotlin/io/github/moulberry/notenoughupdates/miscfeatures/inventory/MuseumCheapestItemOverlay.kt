@@ -231,6 +231,23 @@ object MuseumCheapestItemOverlay {
                 if (itemsToDonate.none { it.internalNames == internalNames }) {
                     itemsToDonate.add(MuseumItem(displayName, internalNames, value, time))
                 }
+            } else if (stack.item is ItemDye && stack.itemDamage == 10) { //also check donated items
+                val name = stack.displayName.stripControlCodes()
+                println(name)
+                val armor = Utils.getOpenChestName().endsWith("Armor Sets")
+                val internalNames = guessInternalNames(name, armor)
+                println(internalNames)
+                //remove items that have these internalnames
+                itemsToDonate.retainAll { it.internalNames != internalNames }
+            } else {
+                var name = listOf(
+                    NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack)
+                        .resolveInternalName()
+                )
+                if (name[0] == null) {
+                    name = guessInternalNames(stack.displayName, true)
+                }
+                itemsToDonate.retainAll { it.internalNames != name }
             }
         }
     }
