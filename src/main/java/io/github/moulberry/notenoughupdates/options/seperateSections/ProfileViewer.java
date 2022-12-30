@@ -36,7 +36,7 @@ public class ProfileViewer {
 	@ConfigOption(
 		name = "Profile Viewer info",
 		desc =
-			"The Profile Viewer requires you to have an \u00A72api key\u00A77 set (if you don't have one set do \u00A72/api new\u00A77)\n"
+			"The Profile Viewer requires you to have an §2api key§7 set (if you don't have one set do §2/api new§7)\n"
 	)
 	@ConfigEditorFSR(
 		runnableId = 12,
@@ -59,22 +59,22 @@ public class ProfileViewer {
 	@Expose
 	@ConfigOption(
 		name = "Page layout",
-		desc = "\u00a7rSelect the order of the pages at the top of the Profile Viewer\n" +
-			"\u00a7eDrag text to rearrange"
+		desc = "§rSelect the order of the pages at the top of the Profile Viewer\n" +
+			"§eDrag text to rearrange"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7eBasic Info",
-			"\u00a7eDungeons",
-			"\u00a7eExtra Info",
-			"\u00a7eInventories",
-			"\u00a7eCollections",
-			"\u00a7ePets",
-			"\u00a7eMining",
-			"\u00a7eBingo",
-			"\u00a7eTrophy Fish",
-			"\u00a7eBestiary",
-			"\u00a7eCrimson Isle",
+			"§eBasic Info",
+			"§eDungeons",
+			"§eExtra Info",
+			"§eInventories",
+			"§eCollections",
+			"§ePets",
+			"§eMining",
+			"§eBingo",
+			"§eTrophy Fish",
+			"§eBestiary",
+			"§eCrimson Isle",
 		},
 		allowDeleting = false
 	)

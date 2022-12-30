@@ -19,8 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
@@ -28,21 +26,10 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class PowderGrindingOverlay extends TextTabOverlay {
 
@@ -106,30 +93,30 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 				NumberFormat format = NumberFormat.getIntegerInstance();
 				switch (index) {
 					case 0:
-						overlayStrings.add("\u00a73Chests Found: \u00a7a" + format.format(this.chestCount));
+						overlayStrings.add("§3Chests Found: §a" + format.format(this.chestCount));
 						break;
 					case 1:
-						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + format.format(this.openedChestCount));
+						overlayStrings.add("§3Opened Chests: §a" + format.format(this.openedChestCount));
 						break;
 					case 2:
-						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
+						overlayStrings.add("§3Unopened Chests: §c" + format.format(this.chestCount - this.openedChestCount));
 						break;
 					case 3:
-						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" +
+						overlayStrings.add("§3Mithril Powder Found: §2" +
 							format.format(interp(this.mithrilPowderFound, lastMithrilPowderFound)));
 						break;
 					case 4:
-						overlayStrings.add("\u00a73Average Mithril Powder/Chest: \u00a72" + format.format(interp(
+						overlayStrings.add("§3Average Mithril Powder/Chest: §2" + format.format(interp(
 							(this.openedChestCount > 0 ?
 								1f * this.mithrilPowderFound / this.openedChestCount :
 								0), lastMithrilPowderAverage)));
 						break;
 					case 5:
-						overlayStrings.add("\u00a73Gemstone Powder Found: \u00a7d" +
+						overlayStrings.add("§3Gemstone Powder Found: §d" +
 							format.format(interp(this.gemstonePowderFound, lastGemstonePowderFound)));
 						break;
 					case 6:
-						overlayStrings.add("\u00a73Average Gemstone Powder/Chest: \u00a7d" + format.format(interp(
+						overlayStrings.add("§3Average Gemstone Powder/Chest: §d" + format.format(interp(
 							(this.openedChestCount > 0 ?
 								1f * this.gemstonePowderFound / this.openedChestCount :
 								0), lastGemstonePowderAverage)));

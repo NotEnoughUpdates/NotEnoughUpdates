@@ -249,7 +249,7 @@ public class CalendarOverlay {
 							JsonArray arr = farmingEventTypes.get("" + jfEvent).getAsJsonArray();
 							jf.desc = new ArrayList<>();
 							for (JsonElement e : arr) {
-								jf.desc.add(EnumChatFormatting.YELLOW + "\u25CB " + e.getAsString());
+								jf.desc.add(EnumChatFormatting.YELLOW + "○ " + e.getAsString());
 								jf.id += ":" + e.getAsString();
 							}
 						}
@@ -307,7 +307,7 @@ public class CalendarOverlay {
 									NBTTagList list = display.getTagList("Lore", 8);
 									for (int j = 0; j < list.tagCount(); j++) {
 										String line = list.getStringTagAt(j);
-										if (line.startsWith(EnumChatFormatting.YELLOW + "\u25CB")) {
+										if (line.startsWith(EnumChatFormatting.YELLOW + "○")) {
 											array.add(new JsonPrimitive(Utils.cleanColour(line.substring(4))));
 										}
 									}
@@ -359,7 +359,7 @@ public class CalendarOverlay {
 							JsonArray arr = farmingEventTypes.get("" + jfEvent).getAsJsonArray();
 							jf.desc = new ArrayList<>();
 							for (JsonElement e : arr) {
-								jf.desc.add(EnumChatFormatting.YELLOW + "\u25CB " + e.getAsString());
+								jf.desc.add(EnumChatFormatting.YELLOW + "○ " + e.getAsString());
 								jf.id += ":" + e.getAsString();
 							}
 						}
@@ -397,7 +397,7 @@ public class CalendarOverlay {
 					JsonArray arr = farmingEventTypes.get("" + jfEvent).getAsJsonArray();
 					jf.desc = new ArrayList<>();
 					for (JsonElement e : arr) {
-						jf.desc.add(EnumChatFormatting.YELLOW + "\u25CB " + e.getAsString());
+						jf.desc.add(EnumChatFormatting.YELLOW + "○ " + e.getAsString());
 						jf.id += ":" + e.getAsString();
 					}
 				}

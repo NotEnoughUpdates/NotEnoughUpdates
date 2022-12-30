@@ -34,7 +34,6 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
-import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
@@ -66,6 +65,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.StorageGUI;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Toolbar;
 import io.github.moulberry.notenoughupdates.options.seperateSections.TooltipTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.TradeMenu;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -463,13 +463,13 @@ public class NEUConfig extends Config {
 
 	public static ArrayList<String> createDefaultEnchantColours() {
 		return Lists.newArrayList(
-			"[a-zA-Z\\- ]+:\u003e:9:6:0",
-			"[a-zA-Z\\- ]+:\u003e:6:c:0",
-			"[a-zA-Z\\- ]+:\u003e:5:5:0",
-			"Experience:\u003e:3:5:0",
-			"Life Steal:\u003e:3:5:0",
-			"Scavenger:\u003e:3:5:0",
-			"Looting:\u003e:3:5:0"
+			"[a-zA-Z\\- ]+:>:9:6:0",
+			"[a-zA-Z\\- ]+:>:6:c:0",
+			"[a-zA-Z\\- ]+:>:5:5:0",
+			"Experience:>:3:5:0",
+			"Life Steal:>:3:5:0",
+			"Scavenger:>:3:5:0",
+			"Looting:>:3:5:0"
 		);
 	}
 

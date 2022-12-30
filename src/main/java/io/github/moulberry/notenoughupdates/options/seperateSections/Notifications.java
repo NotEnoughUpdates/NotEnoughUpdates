@@ -49,7 +49,7 @@ public class Notifications {
 	@ConfigOption(
 		name = "RAM Warning",
 		desc = "Warning when game starts with lots of RAM allocated\n" +
-			"\u00a7cBefore disabling this, please seriously read the message. If you complain about FPS issues without listening to the warning, that's your fault."
+			"§cBefore disabling this, please seriously read the message. If you complain about FPS issues without listening to the warning, that's your fault."
 	)
 	@ConfigEditorBoolean
 	public boolean doRamNotif = true;
@@ -65,7 +65,7 @@ public class Notifications {
 	@Expose
 	@ConfigOption(
 		name = "Fast Render Warning",
-		desc = "\u00a7cIf and ONLY if you have Fast Render disabled and are still seeing the warning, you can disable it here.\nDisabling it with Fast Render still on will lead to broken features."
+		desc = "§cIf and ONLY if you have Fast Render disabled and are still seeing the warning, you can disable it here.\nDisabling it with Fast Render still on will lead to broken features."
 	)
 	@ConfigEditorBoolean
 	public boolean doFastRenderNotif = true;

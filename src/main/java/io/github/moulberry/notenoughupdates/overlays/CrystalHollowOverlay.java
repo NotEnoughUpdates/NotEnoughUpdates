@@ -74,9 +74,9 @@ public class CrystalHollowOverlay extends TextOverlay {
 		super(position, dummyStrings, styleSupplier);
 	}
 
-	private final Pattern hotmCrystalNotFoundPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) \\u2716 Not Found");
-	private final Pattern hotmCrystalNotPlacedPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) \\u2716 Not Placed");
-	private final Pattern hotmCrystalPlacedPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) \\u2714 Placed");
+	private final Pattern hotmCrystalNotFoundPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) ✖ Not Found");
+	private final Pattern hotmCrystalNotPlacedPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) ✖ Not Placed");
+	private final Pattern hotmCrystalPlacedPattern = Pattern.compile("(?<crystal>[a-zA-Z]+) ✔ Placed");
 
 	private void updateHotmCrystalState(IInventory lower) {
 		NEUConfig.HiddenProfileSpecific perProfileConfig = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();

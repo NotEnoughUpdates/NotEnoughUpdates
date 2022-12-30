@@ -50,7 +50,7 @@ public class AuctionBINWarning extends GuiElement {
 		return INSTANCE;
 	}
 
-	private static final Pattern ITEM_PRICE_REGEX = Pattern.compile("\u00a7fItem price: \u00a76([0-9,]+) coins");
+	private static final Pattern ITEM_PRICE_REGEX = Pattern.compile("§fItem price: §6([0-9,]+) coins");
 
 	private boolean showWarning = false;
 	private List<String> sellingTooltip;
@@ -171,9 +171,9 @@ public class AuctionBINWarning extends GuiElement {
 
 		RenderUtils.drawFloatingRectDark(width / 2 - 90, height / 2 - 45, 180, 90);
 
-		int neuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth("\u00a7lNEU");
+		int neuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth("§lNEU");
 		Minecraft.getMinecraft().fontRendererObj.drawString(
-			"\u00a7lNEU",
+			"§lNEU",
 			width / 2 + 90 - neuLength - 3,
 			height / 2 - 45 + 4,
 			0xff000000
@@ -197,15 +197,15 @@ public class AuctionBINWarning extends GuiElement {
 			sellingPriceStr = "" + sellingPrice;
 		}
 
-		String sellLine = "\u00a77[ \u00a7r" + sellingName + "\u00a77 ]";
+		String sellLine = "§7[ §r" + sellingName + "§7 ]";
 
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(sellLine, Minecraft.getMinecraft().fontRendererObj,
 			width / 2, height / 2 - 45 + 25, false, 170, 0xffffffff
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			(lowestPrice > 0
-				? "has a lowest BIN of \u00a76" + lowestPriceStr + "\u00a7r coins"
-				: "\u00a7cWarning: No lowest BIN found!"),
+				? "has a lowest BIN of §6" + lowestPriceStr + "§r coins"
+				: "§cWarning: No lowest BIN found!"),
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2,
 			height / 2 - 45 + 34,
@@ -233,8 +233,8 @@ public class AuctionBINWarning extends GuiElement {
 			0xffa0a0a0
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
-			"\u00a76" + sellingPriceStr + "\u00a7r coins?" +
-				(lowestPrice > 0 ? "(\u00a7" + (isALoss ? "c-" : "a+") + (buyPercentage >= 100 ? buyPercentage - 100 : buyPercentage) + "%\u00a7r)" : ""),
+			"§6" + sellingPriceStr + "§r coins?" +
+				(lowestPrice > 0 ? "(§" + (isALoss ? "c-" : "a+") + (buyPercentage >= 100 ? buyPercentage - 100 : buyPercentage) + "%§r)" : ""),
 			Minecraft.getMinecraft().fontRendererObj,
 			width / 2,
 			height / 2 - 45 + 59,

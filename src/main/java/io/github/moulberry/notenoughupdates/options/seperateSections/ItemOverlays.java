@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
@@ -287,13 +286,13 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Bonemerang Overlay Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rHold a Bonemerang to display the overlay"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rHold a Bonemerang to display the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7cBonemerang will break!",
-			"\u00a77Targets: \u00a76\u00a7l10"
+			"§cBonemerang will break!",
+			"§7Targets: §6§l10"
 		}
 	)
 	@ConfigAccordionId(id = 4)
@@ -453,8 +452,8 @@ public class ItemOverlays {
 	@Expose
 	@ConfigAccordionId(id = 7)
 	@ConfigOption(
-		name = "\u00A7aInspiration:",
-		desc = "\u00A76u/Sori0612 \u00A77on \u00A7cReddit\n\n\u00A78https://tinyurl.com/creeperveil"
+		name = "§aInspiration:",
+		desc = "§6u/Sori0612 §7on §cReddit\n\n§8https://tinyurl.com/creeperveil"
 	)
 	@ConfigEditorFSR(
 		runnableId = 12

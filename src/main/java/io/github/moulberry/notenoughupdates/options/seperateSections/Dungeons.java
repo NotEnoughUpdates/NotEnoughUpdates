@@ -158,7 +158,7 @@ public class Dungeons {
 	public boolean dungeonBlocksAccordion = false;
 
 	@ConfigOption(
-		name = "\u00A7cWarning",
+		name = "§cWarning",
 		desc = "You need Fast Render and Antialiasing off for these settings to work\n" +
 			"You can find these in your video settings"
 	)
@@ -192,7 +192,7 @@ public class Dungeons {
 	@ConfigOption(
 		name = "Slow Update",
 		desc = "Updates the colour every second instead of every tick.\n" +
-			"\u00A7cWARNING: This will cause all texture animations (eg. flowing water) to update slowly.\n" +
+			"§cWARNING: This will cause all texture animations (eg. flowing water) to update slowly.\n" +
 			"This should only be used on low-end machines",
 		searchTags = "color"
 	)

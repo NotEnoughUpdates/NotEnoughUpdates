@@ -458,7 +458,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 				editorXSize / 256f, (editorXSize + 80) / 256f, 41 / 256f, (41 + ySize) / 256f, GL11.GL_NEAREST
 			);
 			Utils.drawStringCenteredScaledMaxWidth(
-				"\u00a7nPresets",
+				"§nPresets",
 				fontRendererObj,
 				guiLeft + xSize + 22 + 40,
 				guiTop + 10,
@@ -544,7 +544,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 			if (commandTextField.getText().startsWith("/")) {
 				commandTextField.setPrependText("");
 			} else {
-				commandTextField.setPrependText("\u00a77/\u00a7r");
+				commandTextField.setPrependText("§7/§r");
 			}
 			commandTextField.render(editorLeft + 7, editorTop + 19);
 

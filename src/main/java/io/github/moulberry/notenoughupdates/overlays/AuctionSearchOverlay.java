@@ -633,23 +633,23 @@ public class AuctionSearchOverlay {
 								if (essenceCosts != null && essenceCosts.has(str) && selectedStars > 0) {
 									for (int i = 0; i < selectedStars; i++) {
 										if (i > 4) break;
-										searchStringExtra += "\u272A";
+										searchStringExtra += "✪";
 									}
 									switch (selectedStars) {
 										case 6:
-											searchStringExtra += "\u278A";
+											searchStringExtra += "➊";
 											break;
 										case 7:
-											searchStringExtra += "\u278B";
+											searchStringExtra += "➋";
 											break;
 										case 8:
-											searchStringExtra += "\u278C";
+											searchStringExtra += "➌";
 											break;
 										case 9:
-											searchStringExtra += "\u278D";
+											searchStringExtra += "➍";
 											break;
 										case 10:
-											searchStringExtra += "\u278E";
+											searchStringExtra += "➎";
 											break;
 									}
 									if (selectedStars < 6 && !atLeast) {

@@ -31,7 +31,6 @@ import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
@@ -39,10 +38,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.WorldSettings;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -211,9 +206,9 @@ public class MiningOverlay extends TextTabOverlay {
 							}
 						}
 					}
-					if (line.startsWith("\u00a77\u00a79")) {
+					if (line.startsWith("§7§9")) {
 						String textAfter = line.substring(4);
-						if (!textAfter.contains("\u00a7") && !textAfter.equals("Rewards") && !textAfter.equals("Progress")) {
+						if (!textAfter.contains("§") && !textAfter.equals("Rewards") && !textAfter.equals("Progress")) {
 							commName = textAfter;
 						}
 					}
@@ -264,12 +259,12 @@ public class MiningOverlay extends TextTabOverlay {
 
 			for (String name : TabListUtils.getTabList()) {
 				if (name.contains("Mithril Powder:")) {
-					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
+					mithrilPowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("§[f|F|r]", "");
 					continue;
 				}
 
 				if (name.contains("Gemstone Powder:")) {
-					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("\u00a7[f|F|r]", "");
+					gemstonePowder = DARK_AQUA + Utils.trimWhitespaceAndFormatCodes(name).replaceAll("§[f|F|r]", "");
 					continue;
 				}
 
@@ -400,10 +395,10 @@ public class MiningOverlay extends TextTabOverlay {
 
 			String pickaxeCooldown;
 			if (ItemCooldowns.pickaxeUseCooldownMillisRemaining <= 0) {
-				pickaxeCooldown = DARK_AQUA + "Pickaxe CD: \u00a7aReady";
+				pickaxeCooldown = DARK_AQUA + "Pickaxe CD: §aReady";
 			} else {
 				pickaxeCooldown =
-					DARK_AQUA + "Pickaxe CD: \u00a7a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
+					DARK_AQUA + "Pickaxe CD: §a" + (ItemCooldowns.pickaxeUseCooldownMillisRemaining / 1000) + "s";
 			}
 
 			overlayStrings = new ArrayList<>();

@@ -63,7 +63,7 @@ public class FuelBar {
 				String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(held.getTagCompound());
 				for (String line : lore) {
 					try {
-						if (line.startsWith("\u00A77Fuel: ")) {
+						if (line.startsWith("§7Fuel: ")) {
 							String[] split = Utils.cleanColour(line).split("/");
 							if (split.length == 2) {
 								String fuelS = split[0].split(" ")[1];
@@ -109,7 +109,7 @@ public class FuelBar {
 			x -= NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth / 2;
 			renderBar(x, y + 4, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, fuelAmount);
 
-			String str = fuelString.replace("\u00A77", EnumChatFormatting.DARK_GREEN.toString()) +
+			String str = fuelString.replace("§7", EnumChatFormatting.DARK_GREEN.toString()) +
 				EnumChatFormatting.GOLD + String.format(" (%d%%)", (int) (fuelAmount * 100));
 
 			GlStateManager.enableBlend();

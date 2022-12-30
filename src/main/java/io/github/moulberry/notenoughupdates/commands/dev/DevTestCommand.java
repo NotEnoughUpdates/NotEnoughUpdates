@@ -84,7 +84,7 @@ public class DevTestCommand extends ClientCommandBase {
 		"No.",
 		"I said no.",
 		"Dammit. I thought that would work. Uhh...",
-		"\u00a7dFrom \u00a7c[ADMIN] Minikloon\u00a77: If you use that command again, I'll have to ban you",
+		"§dFrom §c[ADMIN] Minikloon§7: If you use that command again, I'll have to ban you",
 		"",
 		"Ok, this is actually the last message, use the command again and you'll crash I promise"
 	};
@@ -109,13 +109,13 @@ public class DevTestCommand extends ClientCommandBase {
 			if (devFailIndex == DEV_FAIL_STRINGS.length - 2) {
 				devFailIndex++;
 
-				ChatComponentText component = new ChatComponentText("\u00a7cYou are permanently banned from this server!");
+				ChatComponentText component = new ChatComponentText("§cYou are permanently banned from this server!");
 				component.appendText("\n");
-				component.appendText("\n\u00a77Reason: \u00a7rI told you not to run the command - Moulberry");
-				component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal");
+				component.appendText("\n§7Reason: §rI told you not to run the command - Moulberry");
+				component.appendText("\n§7Find out more: §b§nhttps://www.hypixel.net/appeal");
 				component.appendText("\n");
-				component.appendText("\n\u00a77Ban ID: \u00a7r#49871982");
-				component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!");
+				component.appendText("\n§7Ban ID: §r#49871982");
+				component.appendText("\n§7Sharing your Ban ID may affect the processing of your appeal!");
 				Minecraft.getMinecraft().getNetHandler().getNetworkManager().closeChannel(component);
 				return;
 			}

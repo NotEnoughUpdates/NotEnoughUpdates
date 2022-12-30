@@ -100,7 +100,7 @@ public class RancherBootOverlay {
 				true,
 				0xffffffff
 			);
-			//Minecraft.getMinecraft().fontRendererObj.drawString("\u2710", iconsLeft+i*25+15, topY+40, 0xffffff, false);
+			//Minecraft.getMinecraft().fontRendererObj.drawString("✐", iconsLeft+i*25+15, topY+40, 0xffffff, false);
 		}
 
 		//Minecraft.getMinecraft().fontRendererObj.drawString("Hello!", 100, 100, 0xffffff);
@@ -184,7 +184,7 @@ public class RancherBootOverlay {
 					}
 					return;
 				}
-				//Minecraft.getMinecraft().fontRendererObj.drawString("\u2710", iconsLeft+i*25+15, topY+40, 0xffffff, false);
+				//Minecraft.getMinecraft().fontRendererObj.drawString("✐", iconsLeft+i*25+15, topY+40, 0xffffff, false);
 			}
 		}
 	}

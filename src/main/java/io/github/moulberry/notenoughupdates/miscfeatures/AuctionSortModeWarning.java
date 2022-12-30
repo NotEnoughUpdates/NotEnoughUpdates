@@ -55,8 +55,8 @@ public class AuctionSortModeWarning {
 
 		String selectedSort = null;
 		for (String line : tooltip) {
-			if (line.startsWith("\u00a75\u00a7o\u00a7b\u25B6 ")) {
-				selectedSort = Utils.cleanColour(line.substring("\u00a75\u00a7o\u00a7b\u25B6 ".length()));
+			if (line.startsWith("§5§o§b▶ ")) {
+				selectedSort = Utils.cleanColour(line.substring("§5§o§b▶ ".length()));
 			}
 		}
 
@@ -66,13 +66,13 @@ public class AuctionSortModeWarning {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0, 0, 500);
 
-		String selectedColour = "\u00a7e";
+		String selectedColour = "§e";
 
 		if (selectedSort.trim().equals("Highest Price")) {
-			selectedColour = "\u00a7c";
+			selectedColour = "§c";
 		}
 
-		String warningText = "\u00a7aSort: " + selectedColour + selectedSort;
+		String warningText = "§aSort: " + selectedColour + selectedSort;
 		int warningLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth(warningText);
 
 		int centerX =

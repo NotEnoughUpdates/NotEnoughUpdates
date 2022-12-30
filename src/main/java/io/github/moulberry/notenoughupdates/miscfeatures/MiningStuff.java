@@ -199,7 +199,7 @@ public class MiningStuff {
 			return;
 		}
 
-		if (event.message.getFormattedText().startsWith("\u00A7e[NPC] \u00A7dPuzzler") &&
+		if (event.message.getFormattedText().startsWith("§e[NPC] §dPuzzler") &&
 			event.message.getUnformattedText().contains(":")) {
 			String clean = Utils.cleanColour(event.message.getUnformattedText());
 			clean = clean.split(":")[1].trim();
@@ -209,13 +209,13 @@ public class MiningStuff {
 			for (int i = 0; i < clean.length(); i++) {
 				char c = clean.charAt(i);
 
-				if (c == '\u25C0') { //Left
+				if (c == '◀') { //Left
 					pos = pos.add(1, 0, 0);
-				} else if (c == '\u25B2') { //Up
+				} else if (c == '▲') { //Up
 					pos = pos.add(0, 0, 1);
-				} else if (c == '\u25BC') { //Down
+				} else if (c == '▼') { //Down
 					pos = pos.add(0, 0, -1);
-				} else if (c == '\u25B6') { //Right
+				} else if (c == '▶') { //Right
 					pos = pos.add(-1, 0, 0);
 				} else {
 					return;

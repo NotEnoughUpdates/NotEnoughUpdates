@@ -76,7 +76,7 @@ public class GuiCustomEnchant extends Gui {
 		"textures/entity/enchanting_table_book.png");
 	private static final ModelBook MODEL_BOOK = new ModelBook();
 
-	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
+	private static final Pattern XP_COST_PATTERN = Pattern.compile("§3(\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
 	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
 
@@ -545,7 +545,7 @@ public class GuiCustomEnchant extends Gui {
 	}
 
 	private List<String> createTooltip(String title, int selectedOption, String... options) {
-		String selPrefix = EnumChatFormatting.DARK_AQUA + " \u25b6 ";
+		String selPrefix = EnumChatFormatting.DARK_AQUA + " ▶ ";
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
 
 		for (int i = 0; i < options.length; i++) {
@@ -1000,7 +1000,7 @@ public class GuiCustomEnchant extends Gui {
 		if (currentState == EnchantState.HAS_ITEM) {
 			if (searchField.getText().isEmpty() && !searchField.getFocus()) {
 				searchField.setSize(90, 14);
-				searchField.setPrependText("\u00a77Search...");
+				searchField.setPrependText("§7Search...");
 			} else {
 				if (searchField.getFocus()) {
 					int len = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getTextDisplay()) + 10;
@@ -1207,7 +1207,7 @@ public class GuiCustomEnchant extends Gui {
 					}
 				} else if (mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48) {
 					disallowClick = true;
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel");
+					tooltipToDisplay = Lists.newArrayList("§cCancel");
 				}
 			}
 
@@ -1312,9 +1312,9 @@ public class GuiCustomEnchant extends Gui {
 			if (mouseX > left + 96 && mouseX <= left + 96 + 16 &&
 				mouseY > top && mouseY <= top + 16) {
 				if (isChangingEnchLevel) {
-					tooltipToDisplay = Lists.newArrayList("\u00a7cCancel level change");
+					tooltipToDisplay = Lists.newArrayList("§cCancel level change");
 				} else {
-					tooltipToDisplay = Lists.newArrayList("\u00a7aChange enchant level");
+					tooltipToDisplay = Lists.newArrayList("§aChange enchant level");
 				}
 			}
 		}

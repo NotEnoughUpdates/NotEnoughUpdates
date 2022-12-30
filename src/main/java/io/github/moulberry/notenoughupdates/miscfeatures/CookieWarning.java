@@ -64,17 +64,17 @@ public class CookieWarning {
 			if (!hasCookie) {
 				if (!hasNotified) {
 					NotificationHandler.displayNotification(Lists.newArrayList(
-						"\u00a7cBooster Cookie Ran Out!",
-						"\u00a77Your Booster Cookie expired!",
-						"\u00a77",
-						"\u00a77Press X on your keyboard to close this notification"
+						"§cBooster Cookie Ran Out!",
+						"§7Your Booster Cookie expired!",
+						"§7",
+						"§7Press X on your keyboard to close this notification"
 					), true, true);
 					hasNotified = true;
 				}
 				return;
 			}
 			if (timeLine != null) {
-				String[] digits = timeLine.replaceAll("(\u00a7.)", "").split(" ");
+				String[] digits = timeLine.replaceAll("(§.)", "").split(" ");
 				int minutes = 0;
 				try {
 					for (int i = 0; i < digits.length; i++) {
@@ -116,10 +116,10 @@ public class CookieWarning {
 				}
 				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 					NotificationHandler.displayNotification(Lists.newArrayList(
-						"\u00a7cBooster Cookie Running Low!",
-						"\u00a77Your Booster Cookie will expire in " + timeLine,
-						"\u00a77",
-						"\u00a77Press X on your keyboard to close this notification"
+						"§cBooster Cookie Running Low!",
+						"§7Your Booster Cookie will expire in " + timeLine,
+						"§7",
+						"§7Press X on your keyboard to close this notification"
 					), true, true);
 					hasNotified = true;
 				}

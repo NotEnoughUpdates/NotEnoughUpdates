@@ -118,7 +118,7 @@ public class Toolbar {
 	@Expose
 	@ConfigOption(
 		name = "Show Quick Commands",
-		desc = "Show QuickCommands\u2122 in the NEU toolbar"
+		desc = "Show QuickCommands™ in the NEU toolbar"
 	)
 	@ConfigEditorBoolean
 	public boolean quickCommands = false;

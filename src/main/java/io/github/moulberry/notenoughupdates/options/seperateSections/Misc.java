@@ -136,7 +136,7 @@ public class Misc {
 	@ConfigOption(
 		name = "Damage Indicator Style",
 		desc = "Change SkyBlock damage indicators to use shortened numbers\n" +
-			"\u00A7cSome old animations mods break this feature"
+			"§cSome old animations mods break this feature"
 	)
 	@ConfigEditorBoolean
 	public boolean damageIndicatorStyle2 = false;

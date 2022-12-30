@@ -659,11 +659,11 @@ public class AccessoryBagOverlay {
 								padNum--;
 							}
 						}
-						line.append('\u00A7').append(Utils.getPrimaryColourCode(missing.get(i).getDisplayName()));
+						line.append('§').append(Utils.getPrimaryColourCode(missing.get(i).getDisplayName()));
 						if (i < 9) {
-							line.append((char) ('\u2776' + i)).append(' ');
+							line.append((char) ('❶' + i)).append(' ');
 						} else {
-							line.append("\u2b24 ");
+							line.append("⬤ ");
 						}
 						line.append(name);
 						if (i % 3 < 2) line.append("  ");

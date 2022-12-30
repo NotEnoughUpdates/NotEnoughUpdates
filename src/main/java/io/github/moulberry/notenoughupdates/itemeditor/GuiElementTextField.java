@@ -148,7 +148,7 @@ public class GuiElementTextField extends GuiElement {
 
 		int lineNum = Math.round(((yComp - (searchBarYSize - 8) / 2)) / extraSize);
 
-		Pattern patternControlCode = Pattern.compile("(?i)\\u00A7([^\\u00B6])(?!\\u00B6)");
+		Pattern patternControlCode = Pattern.compile("(?i)§([^✓])(?!✓)");
 		String text = renderText;
 		String textNoColour = renderText;
 		if ((options & COLOUR) != 0) {
@@ -156,14 +156,14 @@ public class GuiElementTextField extends GuiElement {
 				Matcher matcher = patternControlCode.matcher(text);
 				if (!matcher.find() || matcher.groupCount() < 1) break;
 				String code = matcher.group(1);
-				text = matcher.replaceFirst("\u00A7" + code + "\u00B6" + code);
+				text = matcher.replaceFirst("§" + code + "✓" + code);
 			}
 		}
 		while (true) {
 			Matcher matcher = patternControlCode.matcher(textNoColour);
 			if (!matcher.find() || matcher.groupCount() < 1) break;
 			String code = matcher.group(1);
-			textNoColour = matcher.replaceFirst("\u00B6" + code);
+			textNoColour = matcher.replaceFirst("✓" + code);
 		}
 
 		int currentLine = 0;
@@ -176,7 +176,7 @@ public class GuiElementTextField extends GuiElement {
 		}
 
 		String textNC = textNoColour.substring(0, cursorIndex);
-		int colorCodes = StringUtils.countMatches(textNC, "\u00B6");
+		int colorCodes = StringUtils.countMatches(textNC, "✓");
 		String[] lines = text.substring(cursorIndex + (((options & COLOUR) != 0) ? colorCodes * 2 : 0)).split("\n");
 		if (lines.length < 1) {
 			return 0;
@@ -222,7 +222,7 @@ public class GuiElementTextField extends GuiElement {
 	}
 
 	public int strLenNoColor(String str) {
-		return str.replaceAll("(?i)\\u00A7.", "").length();
+		return str.replaceAll("(?i)§.", "").length();
 	}
 
 	public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
@@ -262,7 +262,7 @@ public class GuiElementTextField extends GuiElement {
 			}
 
 			if ((options & MULTILINE) != 0) { //Carriage return
-				Pattern patternControlCode = Pattern.compile("(?i)\\u00A7([^\\u00B6\n])(?!\\u00B6)");
+				Pattern patternControlCode = Pattern.compile("(?i)§([^✓\n])(?!✓)");
 
 				String text = textField.getText();
 				String textNoColour = textField.getText();
@@ -270,13 +270,13 @@ public class GuiElementTextField extends GuiElement {
 					Matcher matcher = patternControlCode.matcher(text);
 					if (!matcher.find() || matcher.groupCount() < 1) break;
 					String code = matcher.group(1);
-					text = matcher.replaceFirst("\u00A7" + code + "\u00B6" + code);
+					text = matcher.replaceFirst("§" + code + "✓" + code);
 				}
 				while (true) {
 					Matcher matcher = patternControlCode.matcher(textNoColour);
 					if (!matcher.find() || matcher.groupCount() < 1) break;
 					String code = matcher.group(1);
-					textNoColour = matcher.replaceFirst("\u00B6" + code);
+					textNoColour = matcher.replaceFirst("✓" + code);
 				}
 
 				if (keyCode == 28) {
@@ -288,7 +288,7 @@ public class GuiElementTextField extends GuiElement {
 					return;
 				} else if (keyCode == 200) { //Up
 					String textNCBeforeCursor = textNoColour.substring(0, textField.getSelectionEnd());
-					int colorCodes = StringUtils.countMatches(textNCBeforeCursor, "\u00B6");
+					int colorCodes = StringUtils.countMatches(textNCBeforeCursor, "✓");
 					String textBeforeCursor = text.substring(0, textField.getSelectionEnd() + colorCodes * 2);
 
 					int numLinesBeforeCursor = StringUtils.countMatches(textBeforeCursor, "\n");
@@ -329,7 +329,7 @@ public class GuiElementTextField extends GuiElement {
 					}
 				} else if (keyCode == 208) { //Down
 					String textNCBeforeCursor = textNoColour.substring(0, textField.getSelectionEnd());
-					int colorCodes = StringUtils.countMatches(textNCBeforeCursor, "\u00B6");
+					int colorCodes = StringUtils.countMatches(textNCBeforeCursor, "✓");
 					String textBeforeCursor = text.substring(0, textField.getSelectionEnd() + colorCodes * 2);
 
 					int numLinesBeforeCursor = StringUtils.countMatches(textBeforeCursor, "\n");
@@ -390,7 +390,7 @@ public class GuiElementTextField extends GuiElement {
 							if (pos + 2 < textField.getText().length()) {
 								after = textField.getText().substring(pos + 2);
 							}
-							textField.setText(before + "\u00A7" + after);
+							textField.setText(before + "§" + after);
 							textField.setCursorPosition(pos + 1);
 						}
 					}
@@ -443,7 +443,7 @@ public class GuiElementTextField extends GuiElement {
 		);
 
 		//bar text
-		Pattern patternControlCode = Pattern.compile("(?i)\\u00A7([^\\u00B6\n])(?!\\u00B6)");
+		Pattern patternControlCode = Pattern.compile("(?i)§([^✓\n])(?!✓)");
 
 		String text = renderText;
 		String textNoColor = renderText;
@@ -452,14 +452,14 @@ public class GuiElementTextField extends GuiElement {
 				Matcher matcher = patternControlCode.matcher(text);
 				if (!matcher.find() || matcher.groupCount() < 1) break;
 				String code = matcher.group(1);
-				text = matcher.replaceFirst("\u00A7" + code + "\u00B6" + code);
+				text = matcher.replaceFirst("§" + code + "✓" + code);
 			}
 		}
 		while (true) {
 			Matcher matcher = patternControlCode.matcher(textNoColor);
 			if (!matcher.find() || matcher.groupCount() < 1) break;
 			String code = matcher.group(1);
-			textNoColor = matcher.replaceFirst("\u00B6" + code);
+			textNoColor = matcher.replaceFirst("✓" + code);
 		}
 
 		int xStartOffset = 5;
@@ -492,7 +492,7 @@ public class GuiElementTextField extends GuiElement {
 
 		if (focus && System.currentTimeMillis() % 1000 > 500) {
 			String textNCBeforeCursor = textNoColor.substring(0, textField.getCursorPosition() + prependText.length());
-			int colorCodes = StringUtils.countMatches(textNCBeforeCursor, "\u00B6");
+			int colorCodes = StringUtils.countMatches(textNCBeforeCursor, "✓");
 			String textBeforeCursor = text.substring(
 				0,
 				textField.getCursorPosition() + prependText.length() + (((options & COLOUR) != 0) ? colorCodes * 2 : 0)
@@ -541,7 +541,7 @@ public class GuiElementTextField extends GuiElement {
 						bold = c == 'l' || c == 'L';
 					}
 				}
-				sectionSignPrev = c == '\u00B6';
+				sectionSignPrev = c == '✓';
 
 				if (c == '\n') {
 					if (i >= leftIndex && i < rightIndex) {

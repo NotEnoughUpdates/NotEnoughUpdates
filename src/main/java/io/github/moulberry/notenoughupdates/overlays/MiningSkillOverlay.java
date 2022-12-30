@@ -367,7 +367,7 @@ public class MiningSkillOverlay
 			if (yaw > 180) yaw -= 360;
 
 			lineMap.put(6, EnumChatFormatting.AQUA + "Yaw: " + EnumChatFormatting.YELLOW +
-				String.format("%.2f", yaw) + EnumChatFormatting.BOLD + "\u1D52");
+				String.format("%.2f", yaw) + EnumChatFormatting.BOLD + "ᵒ");
 
 			for (int strIndex : NotEnoughUpdates.INSTANCE.config.skillOverlays.miningText) {
 				if (lineMap.get(strIndex) != null) {

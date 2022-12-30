@@ -201,7 +201,7 @@ public class GuiCosmetics extends GuiScreen {
 		if (unlockTextField.getFocus() || !unlockTextField.getText().isEmpty()) {
 			unlockTextField.setPrependText("");
 		} else {
-			unlockTextField.setPrependText("\u00a77Creator Code");
+			unlockTextField.setPrependText("§7Creator Code");
 		}
 
 		unlockTextField.setSize(80, 20);

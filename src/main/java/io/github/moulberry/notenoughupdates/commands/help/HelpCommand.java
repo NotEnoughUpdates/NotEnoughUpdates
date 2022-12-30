@@ -36,42 +36,42 @@ public class HelpCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
 		ArrayList<String> neuHelpMessages = Lists.newArrayList(
-			"\u00a75\u00a7lNotEnoughUpdates commands",
-			"\u00a76/neu \u00a77- Opens the main NEU GUI.",
-			"\u00a76/pv \u00a7b?{name} \u00a72\u2D35 \u00a7r\u00a77- Opens the profile viewer",
-			"\u00a76/neusouls {on/off/clear/unclear} \u00a7r\u00a77- Shows waypoints to fairy souls.",
-			"\u00a76/neubuttons \u00a7r\u00a77- Opens a GUI which allows you to customize inventory buttons.",
-			"\u00a76/neuec \u00a7r\u00a77- Opens the enchant colour GUI.",
-			"\u00a76/join {floor} \u00a7r\u00a77- Short Command to join a Dungeon. \u00a7lNeed a Party of 5 People\u00a7r\u00a77 {4/f7/m5}.",
-			"\u00a76/neucosmetics \u00a7r\u00a77- Opens the cosmetic GUI.",
-			"\u00a76/neurename \u00a7r\u00a77- Opens the NEU Item Customizer.",
-			"\u00a76/cata \u00a7b?{name} \u00a72\u2D35 \u00a7r\u00a77- Opens the profile viewer's Catacombs page.",
-			"\u00a76/neulinks \u00a7r\u00a77- Shows links to NEU/Moulberry.",
-			"\u00a76/neuoverlay \u00a7r\u00a77- Opens GUI Editor for quickcommands and searchbar.",
-			"\u00a76/neuah \u00a7r\u00a77- Opens NEU's custom auction house GUI.",
-			"\u00a76/neucalendar \u00a7r\u00a77- Opens NEU's custom calendar GUI.",
-			"\u00a76/neucalc \u00a7r\u00a77- Run calculations.",
+			"§5§lNotEnoughUpdates commands",
+			"§6/neu §7- Opens the main NEU GUI.",
+			"§6/pv §b?{name} §2ⴵ §r§7- Opens the profile viewer",
+			"§6/neusouls {on/off/clear/unclear} §r§7- Shows waypoints to fairy souls.",
+			"§6/neubuttons §r§7- Opens a GUI which allows you to customize inventory buttons.",
+			"§6/neuec §r§7- Opens the enchant colour GUI.",
+			"§6/join {floor} §r§7- Short Command to join a Dungeon. §lNeed a Party of 5 People§r§7 {4/f7/m5}.",
+			"§6/neucosmetics §r§7- Opens the cosmetic GUI.",
+			"§6/neurename §r§7- Opens the NEU Item Customizer.",
+			"§6/cata §b?{name} §2ⴵ §r§7- Opens the profile viewer's Catacombs page.",
+			"§6/neulinks §r§7- Shows links to NEU/Moulberry.",
+			"§6/neuoverlay §r§7- Opens GUI Editor for quickcommands and searchbar.",
+			"§6/neuah §r§7- Opens NEU's custom auction house GUI.",
+			"§6/neucalendar §r§7- Opens NEU's custom calendar GUI.",
+			"§6/neucalc §r§7- Run calculations.",
 			"",
-			"\u00a76\u00a7lOld commands:",
-			"\u00a76/peek \u00a7b?{user} \u00a72\u2D35 \u00a7r\u00a77- Shows quick stats for a user.",
+			"§6§lOld commands:",
+			"§6/peek §b?{user} §2ⴵ §r§7- Shows quick stats for a user.",
 			"",
-			"\u00a76\u00a7lDebug commands:",
-			"\u00a76/neustats \u00a7r\u00a77- Copies helpful info to the clipboard.",
-			"\u00a76/neustats modlist \u00a7r\u00a77- Copies mod list info to clipboard.",
-			"\u00a76/neuresetrepo \u00a7r\u00a77- Deletes all repo files.",
-			"\u00a76/neureloadrepo \u00a7r\u00a77- Debug command with repo.",
+			"§6§lDebug commands:",
+			"§6/neustats §r§7- Copies helpful info to the clipboard.",
+			"§6/neustats modlist §r§7- Copies mod list info to clipboard.",
+			"§6/neuresetrepo §r§7- Deletes all repo files.",
+			"§6/neureloadrepo §r§7- Debug command with repo.",
 			"",
-			"\u00a76\u00a7lDev commands:",
-			"\u00a76/neupackdev \u00a7r\u00a77- pack creator command - getnpc, getmob(s), getarmorstand(s), getall. Optional radius argument for all."
+			"§6§lDev commands:",
+			"§6/neupackdev §r§7- pack creator command - getnpc, getmob(s), getarmorstand(s), getall. Optional radius argument for all."
 		);
 		for (String neuHelpMessage : neuHelpMessages) {
 			Utils.addChatMessage(neuHelpMessage);
 		}
 		if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 			ArrayList<String> neuDevHelpMessages = Lists.newArrayList(
-				"\u00a76/neudevtest \u00a7r\u00a77- dev test command",
-				"\u00a76/neuzeephere \u00a7r\u00a77- sphere",
-				"\u00a76/neudungeonwintest \u00a7r\u00a77- displays the dungeon win screen"
+				"§6/neudevtest §r§7- dev test command",
+				"§6/neuzeephere §r§7- sphere",
+				"§6/neudungeonwintest §r§7- displays the dungeon win screen"
 			);
 
 			for (String neuDevHelpMessage : neuDevHelpMessages) {
@@ -80,11 +80,11 @@ public class HelpCommand extends ClientCommandBase {
 		}
 		String[] helpInfo = {
 			"",
-			"\u00a77Commands marked with a \u00a72\"\u2D35\"\u00a77 require an api key. You can set your api key via \"/api new\" or by manually putting it in the api field in \"/neu\"",
+			"§7Commands marked with a §2\"ⴵ\"§7 require an api key. You can set your api key via \"/api new\" or by manually putting it in the api field in \"/neu\"",
 			"",
-			"\u00a77Arguments marked with a \u00a7b\"?\"\u00a77 are optional.",
+			"§7Arguments marked with a §b\"?\"§7 are optional.",
 			"",
-			"\u00a76\u00a7lScroll up to see everything"
+			"§6§lScroll up to see everything"
 		};
 
 		for (String message : helpInfo) {

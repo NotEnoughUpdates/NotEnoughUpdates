@@ -83,7 +83,6 @@ import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import io.github.moulberry.notenoughupdates.recipes.KatRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -176,7 +175,7 @@ public class NotEnoughUpdates {
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
-		Sets.newHashSet("SKYBLOCK", "\u7A7A\u5C9B\u751F\u5B58", "\u7A7A\u5CF6\u751F\u5B58");
+		Sets.newHashSet("SKYBLOCK", "空岛生存", "空島生存");
 	public static NotEnoughUpdates INSTANCE = null;
 	public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
 		put("UNKNOWN", EnumChatFormatting.RED.toString());
@@ -554,7 +553,7 @@ public class NotEnoughUpdates {
 			Scoreboard scoreboard = mc.theWorld.getScoreboard();
 			ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
 			if (sidebarObjective != null) {
-				String objectiveName = sidebarObjective.getDisplayName().replaceAll("(?i)\\u00A7.", "");
+				String objectiveName = sidebarObjective.getDisplayName().replaceAll("(?i)§.", "");
 				for (String skyblock : SKYBLOCK_IN_ALL_LANGUAGES) {
 					if (objectiveName.startsWith(skyblock)) {
 						hasSkyblockScoreboard = true;

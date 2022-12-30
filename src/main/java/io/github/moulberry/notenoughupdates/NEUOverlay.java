@@ -88,7 +88,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -256,13 +255,13 @@ public class NEUOverlay extends Gui {
 							lastSearchMode = System.currentTimeMillis();
 							if (searchMode && NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus) {
 								NotificationHandler.displayNotification(Lists.newArrayList(
-									"\u00a7eSearch Highlight",
-									"\u00a77In this mode NEU will gray out non matching items in",
-									"\u00a77your inventory or chests.",
-									"\u00a77This allows you easily find items as the item will stand out.",
-									"\u00a77To toggle this please double click on the search bar in your inventory.",
-									"\u00a77",
-									"\u00a77Press X on your keyboard to close this notification"
+									"§eSearch Highlight",
+									"§7In this mode NEU will gray out non matching items in",
+									"§7your inventory or chests.",
+									"§7This allows you easily find items as the item will stand out.",
+									"§7To toggle this please double click on the search bar in your inventory.",
+									"§7",
+									"§7Press X on your keyboard to close this notification"
 								), true, true);
 								NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = false;
 
@@ -1287,8 +1286,8 @@ public class NEUOverlay extends Gui {
 				if (type1 > type2) return mult;
 			}
 
-			int nameComp = mult * o1.get("displayname").getAsString().replaceAll("(?i)\\u00A7.", "")
-															.compareTo(o2.get("displayname").getAsString().replaceAll("(?i)\\u00A7.", ""));
+			int nameComp = mult * o1.get("displayname").getAsString().replaceAll("(?i)§.", "")
+															.compareTo(o2.get("displayname").getAsString().replaceAll("(?i)§.", ""));
 			if (nameComp != 0) {
 				return nameComp;
 			}

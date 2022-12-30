@@ -52,7 +52,7 @@ import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?\u00a7r");
+		"§r§r§7You have a §r§cGod Potion §r§7active! §r§d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?§r");
 
 	public TimersOverlay(
 		Position position,
@@ -63,17 +63,17 @@ public class TimersOverlay extends TextTabOverlay {
 	}
 
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
-		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
+		"§r§d§lYum! §r§eYou gain .+ §r§efor §r§a48 §r§ehours!§r");
 	private static final Pattern PUZZLER_PATTERN =
-		Pattern.compile("\u00a7r\u00a7dPuzzler\u00a7r\u00a76 gave you .+ \u00a7r\u00a76for solving the puzzle!\u00a7r");
+		Pattern.compile("§r§dPuzzler§r§6 gave you .+ §r§6for solving the puzzle!§r");
 	private static final Pattern FETCHUR_PATTERN =
-		Pattern.compile("\u00a7e\\[NPC] Fetchur\u00a7f: \u00a7rthanks thats probably what i needed\u00a7r");
+		Pattern.compile("§e\\[NPC] Fetchur§f: §rthanks thats probably what i needed§r");
 	private static final Pattern FETCHUR2_PATTERN =
-		Pattern.compile("\u00a7e\\[NPC] Fetchur\u00a7f: \u00a7rcome back another time, maybe tmrw\u00a7r");
+		Pattern.compile("§e\\[NPC] Fetchur§f: §rcome back another time, maybe tmrw§r");
 	private static final Pattern DAILY_MITHRIL_POWDER = Pattern.compile(
-		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a72.+ Mithril Powder \u00a7r\u00a7ffrom mining your first Mithril Ore of the day!\u00a7r");
+		"§r§9᠅ §r§fYou've earned §r§2.+ Mithril Powder §r§ffrom mining your first Mithril Ore of the day!§r");
 	private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile(
-		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
+		"§r§9᠅ §r§fYou've earned §r§d.+ Gemstone Powder §r§ffrom mining your first Gemstone of the day!§r");
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatMessageReceived(ClientChatReceivedEvent event) {
@@ -354,10 +354,10 @@ public class TimersOverlay extends TextTabOverlay {
 
 					hidden.godPotionDuration = godPotDuration;
 
-				} else if (line.contains("\u00a7d\u00a7lCookie Buff")) {
+				} else if (line.contains("§d§lCookie Buff")) {
 					foundCookieBuffText = true;
 				} else if (foundCookieBuffText) {
-					String clean = line.replaceAll("(\u00a7.)", "");
+					String clean = line.replaceAll("(§.)", "");
 					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
 					if (line.contains("Not")) break;

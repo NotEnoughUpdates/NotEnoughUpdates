@@ -66,7 +66,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 
 			RenderUtils.drawFloatingRectDark(left, top, dropdownWidth, 14, false);
 			TextRenderUtils.drawStringScaled(
-				"\u25BC",
+				"▼",
 				fr,
 				left + dropdownWidth - 10,
 				y + height - 7 - 15,
@@ -128,7 +128,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 			}
 
 			TextRenderUtils.drawStringScaled(
-				"\u25B2",
+				"▲",
 				fr,
 				left + dropdownWidth - 10,
 				y + height - 7 - 15,

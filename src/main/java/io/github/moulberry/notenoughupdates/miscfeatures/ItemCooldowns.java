@@ -137,10 +137,10 @@ public class ItemCooldowns {
 		}
 	}
 
-	private static final Pattern PICKAXE_ABILITY_REGEX = Pattern.compile("\\u00a7r\\u00a7aYou used your " +
-		"\\u00a7r\\u00a7..+ \\u00a7r\\u00a7aPickaxe Ability!\\u00a7r");
+	private static final Pattern PICKAXE_ABILITY_REGEX = Pattern.compile("§r§aYou used your " +
+		"§r§..+ §r§aPickaxe Ability!§r");
 
-	private static final Pattern PICKAXE_COOLDOWN_LORE_REGEX = Pattern.compile("\\u00a78Cooldown: \\u00a7a(\\d+)s");
+	private static final Pattern PICKAXE_COOLDOWN_LORE_REGEX = Pattern.compile("§8Cooldown: §a(\\d+)s");
 
 	private static boolean isPickaxe(String internalname) {
 		if (internalname == null) return false;

@@ -900,12 +900,12 @@ public class PetInfoOverlay extends TextOverlay {
 								if (currentTime - lastPetSelect > 500) {
 									boolean foundDespawn = false;
 									for (String line : lore) {
-										if (line.startsWith("\u00a77\u00a7cClick to despawn")) {
+										if (line.startsWith("§7§cClick to despawn")) {
 											config.selectedPet = petIndex;
 											foundDespawn = true;
 											break;
 										}
-										if (line.equals("\u00a77\u00a77Selected pet: \u00a7cNone")) {
+										if (line.equals("§7§7Selected pet: §cNone")) {
 											clearPet();
 										}
 									}
@@ -1062,7 +1062,7 @@ public class PetInfoOverlay extends TextOverlay {
 	private int lastLevelHovered = 0;
 
 	private static final Pattern AUTOPET_EQUIP = Pattern.compile(
-		"\u00a7cAutopet \u00a7eequipped your \u00a77\\[Lvl (\\d+)] \u00a7(.{2,})\u00a7e! \u00a7a\u00a7lVIEW RULE\u00a7r");
+		"§cAutopet §eequipped your §7\\[Lvl (\\d+)] §(.{2,})§e! §a§lVIEW RULE§r");
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onChatReceived(ClientChatReceivedEvent event) {
@@ -1082,7 +1082,7 @@ public class PetInfoOverlay extends TextOverlay {
 					char colChar = petStringMatch.charAt(0);
 					EnumChatFormatting col = EnumChatFormatting.RESET;
 					for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
-						if (formatting.toString().equals("\u00a7" + colChar)) {
+						if (formatting.toString().equals("§" + colChar)) {
 							col = formatting;
 							break;
 						}
@@ -1103,7 +1103,7 @@ public class PetInfoOverlay extends TextOverlay {
 						if (!"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
 							PetInfoOverlay.config.selectedPet = -1;
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
+								EnumChatFormatting.RED + "[NEU] Can't find pet §" + petStringMatch +
 								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
 						}
 					}

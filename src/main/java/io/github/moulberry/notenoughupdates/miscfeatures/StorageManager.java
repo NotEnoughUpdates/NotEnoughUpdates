@@ -265,10 +265,10 @@ public class StorageManager {
 
 	public static final ItemStack LOCKED_ENDERCHEST_STACK =
 		Utils.createItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane),
-			"\u00a7cLocked Page", 14,
-			"\u00a77Unlock more Ender Chest",
-			"\u00a77pages in the community",
-			"\u00a77shop!"
+			"§cLocked Page", 14,
+			"§7Unlock more Ender Chest",
+			"§7pages in the community",
+			"§7shop!"
 		);
 
 	public static class StorageConfig {
@@ -334,11 +334,11 @@ public class StorageManager {
 		}
 
 		ItemStack stack = Utils.createItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane),
-			"\u00a7cEmpty Backpack Slot " + (storageId + 1), 12,
+			"§cEmpty Backpack Slot " + (storageId + 1), 12,
 			"",
-			"\u00a7eLeft-click a backpack",
-			"\u00a7eitem on this slot to place",
-			"\u00a7eit!"
+			"§eLeft-click a backpack",
+			"§eitem on this slot to place",
+			"§eit!"
 		);
 
 		missingBackpackStacks[storageId] = stack;

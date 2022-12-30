@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
@@ -62,22 +61,22 @@ public class MiscOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Todo Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rIf you want to see the time until something is available, click \"Add\" and then the respective timer"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rIf you want to see the time until something is available, click \"Add\" and then the respective timer"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a73Cakes: \u00a7e1d21h",
-			"\u00a73Cookie Buff: \u00a7e2d23h",
-			"\u00a73Godpot: \u00a7e19h",
-			"\u00a73Puzzler: \u00a7e13h",
-			"\u00a73Fetchur: \u00a7e3h38m",
-			"\u00a73Commissions: \u00a7e3h38m",
-			"\u00a73Experiments: \u00a7e3h38m",
-			"\u00a73Mithril Powder: \u00a7e3h38m",
-			"\u00a73Gemstone Powder: \u00a7e3h38m",
-			"\u00a73Heavy Pearls: \u00a7e3h38m",
-			"\u00a73Crimson Isle Quests: \u00a7e3h38m",
+			"§3Cakes: §e1d21h",
+			"§3Cookie Buff: §e2d23h",
+			"§3Godpot: §e19h",
+			"§3Puzzler: §e13h",
+			"§3Fetchur: §e3h38m",
+			"§3Commissions: §e3h38m",
+			"§3Experiments: §e3h38m",
+			"§3Mithril Powder: §e3h38m",
+			"§3Gemstone Powder: §e3h38m",
+			"§3Heavy Pearls: §e3h38m",
+			"§3Crimson Isle Quests: §e3h38m",
 		}
 	)
 	@ConfigAccordionId(id = 0)

@@ -219,7 +219,7 @@ public class DungeonWin {
 				if (text.size() > 50) text.clear();
 
 				e.setCanceled(true);
-				if (unformatted.contains("\u25AC")) {
+				if (unformatted.contains("▬")) {
 					hideChat = false;
 					displayWin();
 				} else {
@@ -238,7 +238,7 @@ public class DungeonWin {
 					}
 				}
 			} else {
-				if (unformatted.contains("\u25AC")) {
+				if (unformatted.contains("▬")) {
 					hideChat = true;
 					text.clear();
 					e.setCanceled(true);

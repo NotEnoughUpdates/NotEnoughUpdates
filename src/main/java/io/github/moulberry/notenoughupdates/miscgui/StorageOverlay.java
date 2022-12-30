@@ -55,7 +55,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
@@ -834,7 +833,7 @@ public class StorageOverlay extends GuiElement {
 
 				if (mouseX >= guiLeft + storageX && mouseX <= guiLeft + storageX + titleLen + 15 &&
 					mouseY >= guiTop + storageY - 14 && mouseY <= guiTop + storageY + 1) {
-					pageTitle += " \u270E";
+					pageTitle += " ✎";
 				}
 				fontRendererObj.drawString(pageTitle, storageX, storageY - 11, textColour);
 			}
@@ -1588,9 +1587,9 @@ public class StorageOverlay extends GuiElement {
 							"Locked",
 							"Off"
 						);
-						tooltipToDisplay.add(1, "\u00a7eReplace the glass pane textures");
-						tooltipToDisplay.add(2, "\u00a7ein your storage containers with");
-						tooltipToDisplay.add(3, "\u00a7ea fancy connected texture");
+						tooltipToDisplay.add(1, "§eReplace the glass pane textures");
+						tooltipToDisplay.add(2, "§ein your storage containers with");
+						tooltipToDisplay.add(3, "§ea fancy connected texture");
 						break;
 					case 7:
 						tooltipToDisplay = createTooltip(
@@ -1709,7 +1708,7 @@ public class StorageOverlay extends GuiElement {
 	}
 
 	private List<String> createTooltip(String title, int selectedOption, String... options) {
-		String selPrefix = EnumChatFormatting.DARK_AQUA + " \u25b6 ";
+		String selPrefix = EnumChatFormatting.DARK_AQUA + " ▶ ";
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
 
 		for (int i = 0; i < options.length; i++) {
@@ -2322,14 +2321,14 @@ public class StorageOverlay extends GuiElement {
 			NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3) {
 			this.fastRender = true;
 			NotificationHandler.displayNotification(Lists.newArrayList(
-				"\u00a74Warning",
-				"\u00a77Due to the way fast render and antialiasing work, they're not compatible with NEU.",
-				"\u00a77Please disable fast render and antialiasing in your options under",
-				"\u00a77ESC > Options > Video Settings > Performance > \u00A7cFast Render",
-				"\u00a77ESC > Options > Video Settings > Quality > \u00A7cAntialiasing",
-				"\u00a77This can't be fixed.",
-				"\u00a77",
-				"\u00a77Press X on your keyboard to close this notification"
+				"§4Warning",
+				"§7Due to the way fast render and antialiasing work, they're not compatible with NEU.",
+				"§7Please disable fast render and antialiasing in your options under",
+				"§7ESC > Options > Video Settings > Performance > §cFast Render",
+				"§7ESC > Options > Video Settings > Quality > §cAntialiasing",
+				"§7This can't be fixed.",
+				"§7",
+				"§7Press X on your keyboard to close this notification"
 			), true, true);
 			return;
 		}

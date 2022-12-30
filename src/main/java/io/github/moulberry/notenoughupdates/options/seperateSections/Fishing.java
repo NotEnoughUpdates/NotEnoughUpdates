@@ -32,7 +32,7 @@ public class Fishing {
 	@Expose
 	@ConfigOption(
 		name = "Hide Other Players Fishing",
-		desc = "Convenience option to easily hide \u00a7lother players'\u00a7r bobbers, rod lines and fishing particles\n" +
+		desc = "Convenience option to easily hide §lother players'§r bobbers, rod lines and fishing particles\n" +
 			"The advanced options below allow you to set the precise colour, particles, etc."
 	)
 	@ConfigEditorBoolean

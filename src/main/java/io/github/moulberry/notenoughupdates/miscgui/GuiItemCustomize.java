@@ -147,7 +147,7 @@ public class GuiItemCustomize extends GuiScreen {
 
 					int i;
 					for (i = 0; i < chars.length; i += 2) {
-						if (chars[i] != '\u00a7') {
+						if (chars[i] != '§') {
 							break;
 						}
 					}
@@ -191,13 +191,13 @@ public class GuiItemCustomize extends GuiScreen {
 		RenderUtils.drawFloatingRectDark(xCenter - 100, yTop - 9, 200, renderHeight + 11);
 
 		RenderUtils.drawFloatingRectDark(xCenter - 90, yTop - 5, 180, 14);
-		Utils.renderShadowedString("\u00a75\u00a7lNEU Item Customizer", xCenter, yTop - 1, 180);
+		Utils.renderShadowedString("§5§lNEU Item Customizer", xCenter, yTop - 1, 180);
 
 		yTop += 14;
 
 		if (!textFieldRename.getFocus() && textFieldRename.getText().isEmpty()) {
 			textFieldRename.setOptions(GuiElementTextField.SCISSOR_TEXT);
-			textFieldRename.setPrependText("\u00a77Enter Custom Name...");
+			textFieldRename.setPrependText("§7Enter Custom Name...");
 		} else {
 			textFieldRename.setOptions(GuiElementTextField.COLOUR | GuiElementTextField.SCISSOR_TEXT);
 			textFieldRename.setPrependText("");
@@ -221,35 +221,35 @@ public class GuiItemCustomize extends GuiScreen {
 			tooltipToDisplay = Lists.newArrayList(
 				EnumChatFormatting.AQUA + "Set a custom name for the item",
 				EnumChatFormatting.GREEN + "",
-				EnumChatFormatting.GREEN + "Type \"&&\" for \u00B6",
-				EnumChatFormatting.GREEN + "Type \"**\" for \u272A",
-				EnumChatFormatting.GREEN + "Type \"*1-9\" for \u278A-\u2792",
+				EnumChatFormatting.GREEN + "Type \"&&\" for ✓",
+				EnumChatFormatting.GREEN + "Type \"**\" for ✪",
+				EnumChatFormatting.GREEN + "Type \"*1-9\" for ➊-➒",
 				EnumChatFormatting.GREEN + "",
 				EnumChatFormatting.GREEN + "Available colour codes:",
-				Utils.chromaString("\u00B6z = Chroma"),
-				EnumChatFormatting.DARK_BLUE + "\u00B61 = Dark Blue",
-				EnumChatFormatting.DARK_GREEN + "\u00B62 = Dark Green",
-				EnumChatFormatting.DARK_AQUA + "\u00B63 = Dark Aqua",
-				EnumChatFormatting.DARK_RED + "\u00B64 = Dark Red",
-				EnumChatFormatting.DARK_PURPLE + "\u00B65 = Dark Purple",
-				EnumChatFormatting.GOLD + "\u00B66 = Gold",
-				EnumChatFormatting.GRAY + "\u00B67 = Gray",
-				EnumChatFormatting.DARK_GRAY + "\u00B68 = Dark Gray",
-				EnumChatFormatting.BLUE + "\u00B69 = Blue",
-				EnumChatFormatting.GREEN + "\u00B6a = Green",
-				EnumChatFormatting.AQUA + "\u00B6b = Aqua",
-				EnumChatFormatting.RED + "\u00B6c = Red",
-				EnumChatFormatting.LIGHT_PURPLE + "\u00B6d = Purple",
-				EnumChatFormatting.YELLOW + "\u00B6e = Yellow",
-				EnumChatFormatting.WHITE + "\u00B6f = White",
-				"\u00A7Z\u00B6Z = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
+				Utils.chromaString("✓z = Chroma"),
+				EnumChatFormatting.DARK_BLUE + "✓1 = Dark Blue",
+				EnumChatFormatting.DARK_GREEN + "✓2 = Dark Green",
+				EnumChatFormatting.DARK_AQUA + "✓3 = Dark Aqua",
+				EnumChatFormatting.DARK_RED + "✓4 = Dark Red",
+				EnumChatFormatting.DARK_PURPLE + "✓5 = Dark Purple",
+				EnumChatFormatting.GOLD + "✓6 = Gold",
+				EnumChatFormatting.GRAY + "✓7 = Gray",
+				EnumChatFormatting.DARK_GRAY + "✓8 = Dark Gray",
+				EnumChatFormatting.BLUE + "✓9 = Blue",
+				EnumChatFormatting.GREEN + "✓a = Green",
+				EnumChatFormatting.AQUA + "✓b = Aqua",
+				EnumChatFormatting.RED + "✓c = Red",
+				EnumChatFormatting.LIGHT_PURPLE + "✓d = Purple",
+				EnumChatFormatting.YELLOW + "✓e = Yellow",
+				EnumChatFormatting.WHITE + "✓f = White",
+				"§Z✓Z = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
 				"",
 				EnumChatFormatting.GREEN + "Available formatting codes:",
-				EnumChatFormatting.GRAY + "\u00B6k = " + EnumChatFormatting.OBFUSCATED + "Obfuscated",
-				EnumChatFormatting.GRAY + "\u00B6l = " + EnumChatFormatting.BOLD + "Bold",
-				EnumChatFormatting.GRAY + "\u00B6m = " + EnumChatFormatting.STRIKETHROUGH + "Strikethrough",
-				EnumChatFormatting.GRAY + "\u00B6n = " + EnumChatFormatting.UNDERLINE + "Underline",
-				EnumChatFormatting.GRAY + "\u00B6o = " + EnumChatFormatting.ITALIC + "Italic"
+				EnumChatFormatting.GRAY + "✓k = " + EnumChatFormatting.OBFUSCATED + "Obfuscated",
+				EnumChatFormatting.GRAY + "✓l = " + EnumChatFormatting.BOLD + "Bold",
+				EnumChatFormatting.GRAY + "✓m = " + EnumChatFormatting.STRIKETHROUGH + "Strikethrough",
+				EnumChatFormatting.GRAY + "✓n = " + EnumChatFormatting.UNDERLINE + "Underline",
+				EnumChatFormatting.GRAY + "✓o = " + EnumChatFormatting.ITALIC + "Italic"
 			);
 		}
 
@@ -296,7 +296,7 @@ public class GuiItemCustomize extends GuiScreen {
 			Gui.drawRect(xCenter - 90, yTop, xCenter + 90, yTop + 15, 0xff101016);
 			Gui.drawRect(xCenter - 89, yTop + 1, xCenter + 89, yTop + 14, 0xff000000 | glintColour);
 
-			Utils.renderShadowedString("\u00a7a\u00a7lCustom Glint Colour", xCenter, yTop + 4, 180);
+			Utils.renderShadowedString("§a§lCustom Glint Colour", xCenter, yTop + 4, 180);
 
 			Minecraft.getMinecraft().getTextureManager().bindTexture(RESET);
 			GlStateManager.color(1, 1, 1, 1);
@@ -315,7 +315,7 @@ public class GuiItemCustomize extends GuiScreen {
 			Gui.drawRect(xCenter - 90, yTop, xCenter + 90, yTop + 15, 0xff101016);
 			Gui.drawRect(xCenter - 89, yTop + 1, xCenter + 89, yTop + 14, 0xff000000 | leatherColour);
 
-			Utils.renderShadowedString("\u00a7b\u00a7lCustom Leather Colour", xCenter, yTop + 4, 180);
+			Utils.renderShadowedString("§b§lCustom Leather Colour", xCenter, yTop + 4, 180);
 
 			Minecraft.getMinecraft().getTextureManager().bindTexture(RESET);
 			GlStateManager.color(1, 1, 1, 1);
@@ -327,10 +327,10 @@ public class GuiItemCustomize extends GuiScreen {
         /*if(true) {
             yTop += 20;
 
-            String titleStr = "\u00a76\u00a7lWant other players to see your customized item?";
-            String buttonStr = "\u00a76Purchase Item Customize Tag";
+            String titleStr = "§6§lWant other players to see your customized item?";
+            String buttonStr = "§6Purchase Item Customize Tag";
             if(true) {
-                buttonStr = "\u00a76Use item customize tag (3 remaining)";
+                buttonStr = "§6Use item customize tag (3 remaining)";
             }
 
             int w = Minecraft.getMinecraft().fontRendererObj.getStringWidth(titleStr)+8;

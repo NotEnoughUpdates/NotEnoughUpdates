@@ -106,7 +106,7 @@ public class Utils {
 		EnumChatFormatting.LIGHT_PURPLE,
 		EnumChatFormatting.DARK_PURPLE
 	};
-	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("\u00a7z(.+?)(?=\u00a7|$)");
+	private static final Pattern CHROMA_REPLACE_PATTERN = Pattern.compile("§z(.+?)(?=§|$)");
 	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	private static final LerpingFloat scrollY = new LerpingFloat(0, 100);
 	public static boolean hasEffectOverride = false;
@@ -284,7 +284,7 @@ public class Utils {
 	}
 
 	public static String chromaStringByColourCode(String str) {
-		if (str.contains("\u00a7z")) {
+		if (str.contains("§z")) {
 			Matcher matcher = CHROMA_REPLACE_PATTERN.matcher(str);
 
 			StringBuffer sb = new StringBuffer();
@@ -361,11 +361,11 @@ public class Utils {
 		for (int i = 0; i < str.length(); i++) {
 			char c = str.charAt(i);
 			if (colourCodeLast) {
-				colours.append('\u00a7').append(c);
+				colours.append('§').append(c);
 				colourCodeLast = false;
 				continue;
 			}
-			if (c == '\u00A7') {
+			if (c == '§') {
 				colourCodeLast = true;
 			} else if (c != ' ') {
 				return colours.append(str.substring(i)).toString();
@@ -381,7 +381,7 @@ public class Utils {
 			char c = str.charAt(i);
 			if (c == ' ') {
 				continue;
-			} else if (i > 0 && str.charAt(i - 1) == '\u00a7') {
+			} else if (i > 0 && str.charAt(i - 1) == '§') {
 				i--;
 				continue;
 			}
@@ -405,7 +405,7 @@ public class Utils {
 			char ch = str.charAt(i);
 			if (Character.isWhitespace(ch)) {
 				continue;
-			} else if (ch == '\u00a7') {
+			} else if (ch == '§') {
 				i++;
 				continue;
 			}
@@ -417,7 +417,7 @@ public class Utils {
 	private static int lastIndexOfNonWhitespaceNonFormatCode(String str) {
 		for (int i = str.length() - 1; i >= 0; i--) {
 			char ch = str.charAt(i);
-			if (Character.isWhitespace(ch) || ch == '\u00a7' || (i > 0 && str.charAt(i - 1) == '\u00a7')) {
+			if (Character.isWhitespace(ch) || ch == '§' || (i > 0 && str.charAt(i - 1) == '§')) {
 				continue;
 			}
 			return i;
@@ -587,15 +587,15 @@ public class Utils {
 	}
 
 	public static String cleanColour(String in) {
-		return in.replaceAll("(?i)\\u00A7.", "");
+		return in.replaceAll("(?i)§.", "");
 	}
 
 	public static String cleanColourNotModifiers(String in) {
-		return in.replaceAll("(?i)\\u00A7[0-9a-f]", "");
+		return in.replaceAll("(?i)§[0-9a-f]", "");
 	}
 
 	public static String fixBrokenAPIColour(String in) {
-		return in.replaceAll("(?i)\\u00C2(\\u00A7.)", "$1");
+		return in.replaceAll("(?i)Â(§.)", "$1");
 	}
 
 	public static String prettyCase(String str) {
@@ -754,12 +754,12 @@ public class Utils {
 		for (char c : line.toCharArray()) {
 			if ((int) c > 50000) continue;
 
-			if (c == '\u00a7') {
+			if (c == '§') {
 				sectionSymbolLast = true;
 			} else {
 				if (sectionSymbolLast) {
 					if (currentColourCode != c) {
-						sb.append('\u00a7');
+						sb.append('§');
 						sb.append(c);
 						currentColourCode = c;
 					}
@@ -1228,7 +1228,7 @@ public class Utils {
 		String trimmed = trimToWidth(str, len);
 
 		String colourCodes = "";
-		Pattern pattern = Pattern.compile("\\u00A7.");
+		Pattern pattern = Pattern.compile("§.");
 		Matcher matcher = pattern.matcher(trimmed);
 		while (matcher.find()) {
 			colourCodes += matcher.group();
@@ -1447,7 +1447,7 @@ public class Utils {
 		int[] mostCommon = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (int i = 0; i < displayName.length(); i++) {
 			char c = displayName.charAt(i);
-			if (c == '\u00A7') {
+			if (c == '§') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
 				int colIndex = "0123456789abcdef".indexOf(c);
@@ -1949,9 +1949,9 @@ public class Utils {
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < stars; i++) {
 			if (i < amount) {
-				stringBuilder.append(colorCode).append('\u272A');
+				stringBuilder.append(colorCode).append('✪');
 			} else {
-				stringBuilder.append(defaultColorCode).append('\u272A');
+				stringBuilder.append(defaultColorCode).append('✪');
 			}
 		}
 		return stringBuilder.toString();

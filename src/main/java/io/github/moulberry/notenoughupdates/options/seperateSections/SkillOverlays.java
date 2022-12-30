@@ -40,9 +40,9 @@ public class SkillOverlays {
 	@ConfigOption(
 		name = "Skill Overlay info",
 		desc =
-			"The skill trackers need you to have an \u00A72api key\u00A77 set (if you don't have one set do \u00A72/api new\u00A77)\n" +
-				"For the overlays to show you need a \u00A7bmathematical hoe\u00A77 or an axe with \u00A7bcultivating\u00A77 " +
-				"enchant for farming, a pickaxe with \u00A7bcompact\u00A77 for mining or a rod with \u00A7bexpertise\u00A77"
+			"The skill trackers need you to have an §2api key§7 set (if you don't have one set do §2/api new§7)\n" +
+				"For the overlays to show you need a §bmathematical hoe§7 or an axe with §bcultivating§7 " +
+				"enchant for farming, a pickaxe with §bcompact§7 for mining or a rod with §bexpertise§7"
 	)
 	@ConfigEditorFSR(
 		runnableId = 12,
@@ -67,22 +67,22 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Farming Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rHold a mathematical hoe or use an axe with cultivating enchantment while gaining farming xp to show the overlay"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rHold a mathematical hoe or use an axe with cultivating enchantment while gaining farming xp to show the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7bCounter: \u00a7e37,547,860",
-			"\u00a7bCrops/m: \u00a7e38.29",
-			"\u00a7bFarming: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52",
-			"\u00a7bETA: \u00a7e13h12m",
-			"\u00a7bPitch: \u00a7e69.42\u00a7l\u1D52",
-			"\u00a7bCultivating: \u00a7e10,137,945/20,000,000",
-			"\u00a7bCoins/m \u00a7e57,432"
+			"§bCounter: §e37,547,860",
+			"§bCrops/m: §e38.29",
+			"§bFarming: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			"§bYaw: §e68.25§lᵒ",
+			"§bETA: §e13h12m",
+			"§bPitch: §e69.42§lᵒ",
+			"§bCultivating: §e10,137,945/20,000,000",
+			"§bCoins/m §e57,432"
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -141,20 +141,20 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Mining Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rHold a pickaxe with compact while gaining mining xp to show the overlay"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rHold a pickaxe with compact while gaining mining xp to show the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7bCompact: \u00a7e547,860",
-			"\u00a7bBlocks/m: \u00a7e38.29",
-			"\u00a7bMining: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52",
-			"\u00a7bETA: \u00a7e13h12m",
-			"\u00a7bCompact Progress: \u00a7e137,945/150,000"
+			"§bCompact: §e547,860",
+			"§bBlocks/m: §e38.29",
+			"§bMining: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			"§bYaw: §e68.25§lᵒ",
+			"§bETA: §e13h12m",
+			"§bCompact Progress: §e137,945/150,000"
 		}
 	)
 	@ConfigAccordionId(id = 1)
@@ -205,21 +205,21 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Fishing Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rHold a fishing rod with expertise enchantment while gaining fishing xp to show the overlay"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rHold a fishing rod with expertise enchantment while gaining fishing xp to show the overlay"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7bExpertise: \u00a7e7,945/10,000",
-			//"\u00a7bCatches/m: \u00a7e38.29",
-			"\u00a7bFishing: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			//"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52",
-			"\u00a7bETA: \u00a7e13h12m",
-			//"\u00a7bExpertise Progress: \u00a7e7,945/10,000",
-			"\u00a7bTimer: \u00a7e1m15s"
+			"§bExpertise: §e7,945/10,000",
+			//"§bCatches/m: §e38.29",
+			"§bFishing: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			//"§bYaw: §e68.25§lᵒ",
+			"§bETA: §e13h12m",
+			//"§bExpertise Progress: §e7,945/10,000",
+			"§bTimer: §e1m15s"
 		}
 	)
 	@ConfigAccordionId(id = 3)
@@ -284,7 +284,7 @@ public class SkillOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "\u00A7cWarning",
+		name = "§cWarning",
 		desc = "The combat display will only show if you have a Book of Stats or the Champion enchant"
 	)
 	@ConfigEditorFSR(
@@ -307,18 +307,18 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Combat Text",
-		desc = "\u00a7eDrag text to change the appearance of the overlay\n" +
-			"\u00a7rHold an item with Book of Stats to show the display"
+		desc = "§eDrag text to change the appearance of the overlay\n" +
+			"§rHold an item with Book of Stats to show the display"
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a7bKills: \u00a7e547,860",
-			"\u00a7bCombat: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
-			"\u00a7bCurrent XP: \u00a7e6,734",
-			"\u00a7bRemaining XP: \u00a7e3,265",
-			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bETA: \u00a7e13h12m",
-			"\u00a7bChampion XP: \u00a7e3,523"
+			"§bKills: §e547,860",
+			"§bCombat: §e12§7 [§e|||||||||||||||||§8||||||||§7] §e67%",
+			"§bCurrent XP: §e6,734",
+			"§bRemaining XP: §e3,265",
+			"§bXP/h: §e238,129",
+			"§bETA: §e13h12m",
+			"§bChampion XP: §e3,523"
 		}
 	)
 	@ConfigAccordionId(id = 4)

@@ -704,7 +704,7 @@ public class RenderListener {
 								}
 
 								Utils.drawHoveringText(
-									Lists.newArrayList("\u00a77" + command),
+									Lists.newArrayList("§7" + command),
 									event.mouseX,
 									event.mouseY,
 									event.gui.width,
@@ -784,7 +784,7 @@ public class RenderListener {
 							continue;
 						}
 						if (internal != null) {
-							internal = internal.replace("\u00CD", "I").replace("\u0130", "I");
+							internal = internal.replace("Í", "I").replace("Í", "I");
 							float bazaarPrice = -1;
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(internal);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {
@@ -1340,8 +1340,8 @@ public class RenderListener {
 						String[] lore = neu.manager.getLoreFromNBT(stack.getTagCompound());
 
 						for (String line : lore) {
-							if (line.contains(":") && (line.startsWith("\u00A77Upgrade to") || line.startsWith(
-								"\u00A77Convert to Dungeon Item"))) {
+							if (line.contains(":") && (line.startsWith("§7Upgrade to") || line.startsWith(
+								"§7Convert to Dungeon Item"))) {
 								String[] split = line.split(":");
 								String after = Utils.cleanColour(split[1]);
 								StringBuilder costS = new StringBuilder();
@@ -1360,12 +1360,12 @@ public class RenderListener {
 								JsonObject obj = essenceJson.get(internalname).getAsJsonObject();
 								obj.addProperty("type", type);
 
-								if (line.startsWith("\u00A77Convert to Dungeon Item")) {
+								if (line.startsWith("§7Convert to Dungeon Item")) {
 									obj.addProperty("dungeonize", cost);
-								} else if (line.startsWith("\u00A77Upgrade to")) {
+								} else if (line.startsWith("§7Upgrade to")) {
 									int stars = 0;
 									for (char c : line.toCharArray()) {
-										if (c == '\u272A') stars++;
+										if (c == '✪') stars++;
 									}
 									if (stars > 0) {
 										obj.addProperty(stars + "", cost);

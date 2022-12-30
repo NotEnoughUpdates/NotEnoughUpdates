@@ -33,13 +33,13 @@ public class StorageViewerWhyCommand extends ClientCommandBase {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
 		NotificationHandler.displayNotification(Lists.newArrayList(
-			"\u00a7eStorage Viewer",
-			"\u00a77Currently, the storage viewer requires you to click twice",
-			"\u00a77in order to switch between pages. This is because Hypixel",
-			"\u00a77has not yet added a shortcut command to go to any enderchest/",
-			"\u00a77storage page.",
-			"\u00a77While it is possible to send the second click",
-			"\u00a77automatically, doing so violates Hypixel's new mod rules."
+			"§eStorage Viewer",
+			"§7Currently, the storage viewer requires you to click twice",
+			"§7in order to switch between pages. This is because Hypixel",
+			"§7has not yet added a shortcut command to go to any enderchest/",
+			"§7storage page.",
+			"§7While it is possible to send the second click",
+			"§7automatically, doing so violates Hypixel's new mod rules."
 		), true);
 	}
 }

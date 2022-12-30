@@ -30,7 +30,7 @@ import org.lwjgl.input.Keyboard;
 public class SlotLocking {
 	@Expose
 	@ConfigOption(
-		name = "\u00A7cWarning",
+		name = "§cWarning",
 		desc = "Make sure you have SBA's locked slots off before you turn NEU's on"
 	)
 	@ConfigEditorFSR(

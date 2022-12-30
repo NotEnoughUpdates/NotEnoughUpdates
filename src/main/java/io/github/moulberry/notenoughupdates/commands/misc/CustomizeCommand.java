@@ -47,14 +47,14 @@ public class CustomizeCommand extends ClientCommandBase {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
 		if (held == null) {
-			sender.addChatMessage(new ChatComponentText("\u00a7cYou can't customize your hand..."));
+			sender.addChatMessage(new ChatComponentText("§cYou can't customize your hand..."));
 			return;
 		}
 
 		String heldUUID = NotEnoughUpdates.INSTANCE.manager.getUUIDForItem(held);
 
 		if (heldUUID == null) {
-			sender.addChatMessage(new ChatComponentText("\u00a7cHeld item does not have a UUID, so it cannot be customized"));
+			sender.addChatMessage(new ChatComponentText("§cHeld item does not have a UUID, so it cannot be customized"));
 			return;
 		}
 

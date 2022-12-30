@@ -43,12 +43,12 @@ public class DamageCommas {
 		EnumChatFormatting.WHITE
 	};
 
-	private static final char STAR = '\u2727';
-	private static final char OVERLOAD_STAR = '\u272F';
+	private static final char STAR = '✧';
+	private static final char OVERLOAD_STAR = '✯';
 	private static final Pattern PATTERN_CRIT = Pattern.compile(
-		"\u00a7f" + STAR + "((?:\u00a7.\\d(?:§.,)?)+)\u00a7." + STAR + "(.*)");
-	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(\u00a7.)([\\d+,]*)(.*)");
-	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(\u00a7.)" + OVERLOAD_STAR + "((?:\u00a7.[\\d,])+)(\u00a7.)" + OVERLOAD_STAR + "\u00a7r");
+		"§f" + STAR + "((?:§.\\d(?:§.,)?)+)§." + STAR + "(.*)");
+	private static final Pattern PATTERN_NO_CRIT = Pattern.compile("(§.)([\\d+,]*)(.*)");
+	private static final Pattern OVERLOAD_PATTERN = Pattern.compile("(§.)" + OVERLOAD_STAR + "((?:§.[\\d,])+)(§.)" + OVERLOAD_STAR + "§r");
 
 	public static IChatComponent replaceName(EntityLivingBase entity) {
 		if (!entity.hasCustomName()) return entity.getDisplayName();
@@ -75,19 +75,19 @@ public class DamageCommas {
 		if (matcherCrit.matches()) {
 			crit = true;
 			numbers = StringUtils.cleanColour(matcherCrit.group(1)).replace(",", "");
-			prefix = "\u00a7f" + STAR;
-			suffix = "\u00a7f" + STAR + matcherCrit.group(2);
+			prefix = "§f" + STAR;
+			suffix = "§f" + STAR + matcherCrit.group(2);
 		} else if (matcherOverload.matches()) {
 				crit = true;
         numbers = StringUtils.cleanColour(matcherOverload.group(2)).replace(",", "");
         prefix = matcherOverload.group(1) + OVERLOAD_STAR;
-        suffix = matcherOverload.group(3) + OVERLOAD_STAR + "\u00a7r";
+        suffix = matcherOverload.group(3) + OVERLOAD_STAR + "§r";
 			} else {
 			Matcher matcherNoCrit = PATTERN_NO_CRIT.matcher(formatted);
 			if (matcherNoCrit.matches()) {
 				numbers = matcherNoCrit.group(2).replace(",", "");
 				prefix = matcherNoCrit.group(1);
-				suffix = "\u00A7r" + (matcherNoCrit.group(3).contains("♞") ? "\u00A7d" + matcherNoCrit.group(3) : matcherNoCrit.group(3));
+				suffix = "§r" + (matcherNoCrit.group(3).contains("♞") ? "§d" + matcherNoCrit.group(3) : matcherNoCrit.group(3));
 			} else {
 				replacementMap.put(entity, null);
 				return name;
@@ -130,10 +130,10 @@ public class DamageCommas {
 		replacementMap.put(entity, finalComponent);
 		return finalComponent;
 
-        /*if (formatted.startsWith("\u00A7f\u2727")) System.out.println(formatted);
+        /*if (formatted.startsWith("§f✧")) System.out.println(formatted);
 
-        if (formatted.length() >= 7 && (formatted.startsWith("\u00A7f\u2727") || formatted.startsWith("\u00A7f\u2694")) &&
-                (formatted.endsWith("\u2727\u00a7r") || formatted.endsWith("\u2694\u00a7r"))) {
+        if (formatted.length() >= 7 && (formatted.startsWith("§f✧") || formatted.startsWith("§f⚔")) &&
+                (formatted.endsWith("✧§r") || formatted.endsWith("⚔§r"))) {
 
             if (NotEnoughUpdates.INSTANCE.config.misc.damageIndicatorStyle == 2) {
                 String numbers = Utils.cleanColour(formatted.substring(3, formatted.length() - 3)).trim().replaceAll("[^0-9]", "");
@@ -160,7 +160,7 @@ public class DamageCommas {
                         }
                     }
 
-                    ChatComponentText ret = new ChatComponentText("\u00A7f\u2727" + colouredString + "\u00a7r\u2727\u00a7r");
+                    ChatComponentText ret = new ChatComponentText("§f✧" + colouredString + "§r✧§r");
                     replacementMap.put(hashCode, ret);
                     return ret;
                 } catch (NumberFormatException ignored) {}
@@ -175,7 +175,7 @@ public class DamageCommas {
                 char c = formatted.charAt(i);
                 colLastLast = colLast;
 
-                if (c == '\u00a7') {
+                if (c == '§') {
                     if (numLast) numCount--;
                     numLast = false;
                     colLast = true;
@@ -195,7 +195,7 @@ public class DamageCommas {
                 builder.append(c);
             }
 
-            ChatComponentText ret = new ChatComponentText("\u00A7f\u2727" + builder.reverse().toString() + "\u2727\u00a7r");
+            ChatComponentText ret = new ChatComponentText("§f✧" + builder.reverse().toString() + "✧§r");
             replacementMap.put(hashCode, ret);
             return ret;
         }

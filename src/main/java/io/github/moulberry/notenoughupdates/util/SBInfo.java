@@ -302,9 +302,9 @@ public class SBInfo {
 		return lastLocation;
 	}
 
-	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
-	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
-	private static final String completedFactionQuests = "\u00a7r \u00a7r\u00a7a";
+	private static final String profilePrefix = "§r§e§lProfile: §r§a";
+	private static final String skillsPrefix = "§r§e§lSkills: §r§a";
+	private static final String completedFactionQuests = "§r §r§a";
 	public ArrayList<String> completedQuests = new ArrayList<>();
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");

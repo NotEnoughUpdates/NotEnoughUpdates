@@ -107,9 +107,9 @@ public class DwarvenMinesWaypoints {
 	private String dynamicLocation = null;
 	private String dynamicName = null;
 	private final Pattern ghastRegex = Pattern.compile(
-		"\u00A7r\u00A7eFind the \u00A7r\u00A76Powder Ghast\u00A7r\u00A7e near the \u00A7r\u00A7b(.+)!");
+		"§r§eFind the §r§6Powder Ghast§r§e near the §r§b(.+)!");
 	private final Pattern fallenStarRegex = Pattern.compile(
-		"\u00A7r\u00A75Fallen Star \u00A7r\u00A7ehas crashed at \u00A7r\u00A7b(.+)\u00A7r\u00A7e!");
+		"§r§5Fallen Star §r§ehas crashed at §r§b(.+)§r§e!");
 
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {

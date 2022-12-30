@@ -200,8 +200,8 @@ public class HTMLInfoPane extends TextInfoPane {
 			wiki = wiki.replaceAll("<h1 id=\"section_0\">.*</h1>", ""); // hide title
 			wiki = wiki.replace("src=\"/", "src=\"https://wiki.hypixel.net/");
 			wiki = wiki.replace("\uD83D\uDDF8", "✓"); // replace checkmark with one that renders
-			wiki = wiki.replace("\uD83E\uDC10", "\u27F5"); // replace left arrow with one that renders
-			wiki = wiki.replace("\uD83E\uDC12", "\u27F6"); // replace right arrow with one that renders
+			wiki = wiki.replace("\uD83E\uDC10", "⟵"); // replace left arrow with one that renders
+			wiki = wiki.replace("\uD83E\uDC12", "⟶"); // replace right arrow with one that renders
 		} else {
 			String[] split = wiki.split("</infobox>");
 			wiki = split[split.length - 1]; //Remove everything before infobox
@@ -329,7 +329,7 @@ public class HTMLInfoPane extends TextInfoPane {
 		}
 
 		File input = new File(manager.configLocation, "tmp/input.html");
-		String outputFileName = filename.replaceAll("(?i)\\u00A7.", "")
+		String outputFileName = filename.replaceAll("(?i)§.", "")
 																		.replaceAll("[^a-zA-Z0-9_\\-]", "_");
 		File output = new File(manager.configLocation, "tmp/" +
 			outputFileName + ".png");

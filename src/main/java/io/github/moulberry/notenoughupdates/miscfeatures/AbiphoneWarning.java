@@ -115,9 +115,9 @@ public class AbiphoneWarning extends GuiElement {
 
 		RenderUtils.drawFloatingRectDark(width / 2 - 90, height / 2 - 45, 180, 90);
 
-		int neuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth("\u00a7lNEU");
+		int neuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth("§lNEU");
 		Minecraft.getMinecraft().fontRendererObj.drawString(
-			"\u00a7lNEU",
+			"§lNEU",
 			width / 2 + 90 - neuLength - 3,
 			height / 2 - 45 + 4,
 			0xff000000
@@ -127,7 +127,7 @@ public class AbiphoneWarning extends GuiElement {
 			width / 2, height / 2 - 45 + 10, false, 170, 0xffff4040
 		);
 
-		String sellLine = "\u00a77[ \u00a7r" + contactName + "\u00a77 ]";
+		String sellLine = "§7[ §r" + contactName + "§7 ]";
 
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(sellLine, Minecraft.getMinecraft().fontRendererObj,
 			width / 2, height / 2 - 45 + 25, false, 170, 0xffffffff

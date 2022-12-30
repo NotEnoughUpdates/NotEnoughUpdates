@@ -214,7 +214,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						if (rankName != null) {
 							String icon = getIcon(getGameModeType(profileInfo));
 							playerName =
-								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name +
+								"§" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "§" + rankColor + "] " + name +
 									(icon.equals("") ? "" : " " + icon);
 							;
 						}

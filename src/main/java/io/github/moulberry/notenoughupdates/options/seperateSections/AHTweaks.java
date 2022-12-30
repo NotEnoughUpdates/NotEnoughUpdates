@@ -37,7 +37,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Enable Search GUI",
-		desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI\n\u00a7eStar Selection Texture: Johnny#4567"
+		desc = "Use the advanced search GUI with autocomplete and history instead of the normal sign GUI\n§eStar Selection Texture: Johnny#4567"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
@@ -112,7 +112,7 @@ public class AHTweaks {
 	@Expose
 	@ConfigOption(
 		name = "Overcut Warning Threshold",
-		desc = "Threshold for BIN warning\nExample: 50% means warn if sell price is 50% higher than lowest bin\n\u00A7c\u00a7lWARNING: \u00A7r\u00A7c100% will if above lbin always trigger, 0% instead will never trigger"
+		desc = "Threshold for BIN warning\nExample: 50% means warn if sell price is 50% higher than lowest bin\n§c§lWARNING: §r§c100% will if above lbin always trigger, 0% instead will never trigger"
 	)
 	@ConfigEditorSlider(
 		minValue = 0.0f,

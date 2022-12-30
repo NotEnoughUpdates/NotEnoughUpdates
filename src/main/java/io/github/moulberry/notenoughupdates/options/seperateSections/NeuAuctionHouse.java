@@ -29,7 +29,7 @@ NeuAuctionHouse {
 	@Expose
 	@ConfigOption(
 		name = "Enable NeuAH",
-		desc = "Turn on the NEU Auction House. \u00A7cWARNING: May negatively impact performance on low-end machines"
+		desc = "Turn on the NEU Auction House. §cWARNING: May negatively impact performance on low-end machines"
 	)
 	@ConfigEditorBoolean
 	public boolean enableNeuAuctionHouse = false;

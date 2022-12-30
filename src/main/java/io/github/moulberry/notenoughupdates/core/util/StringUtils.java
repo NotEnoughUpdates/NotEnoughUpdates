@@ -32,11 +32,11 @@ public class StringUtils {
 	public static final Set<String> PROTOCOLS = Sets.newHashSet("http", "https");
 
 	public static String cleanColour(String in) {
-		return in.replaceAll("(?i)\\u00A7.", "");
+		return in.replaceAll("(?i)§.", "");
 	}
 
 	public static String cleanColourNotModifiers(String in) {
-		return in.replaceAll("(?i)\\u00A7[0-9a-f]", "\u00A7r");
+		return in.replaceAll("(?i)§[0-9a-f]", "§r");
 	}
 
 	public static String trimToWidth(String str, int len) {

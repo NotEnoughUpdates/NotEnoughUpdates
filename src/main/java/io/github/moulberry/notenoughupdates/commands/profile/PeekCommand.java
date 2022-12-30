@@ -245,10 +245,10 @@ public class PeekCommand extends ClientCommandBase {
 									: EnumChatFormatting.YELLOW)
 									: EnumChatFormatting.RED;
 
-								Utils.addChatMessage(									g + "Stats  : " + healthPrefix + health + EnumChatFormatting.RED + "\u2764 " +
-									defencePrefix + defence + EnumChatFormatting.GREEN + "\u2748 " +
-									strengthPrefix + strength + EnumChatFormatting.RED + "\u2741 " +
-									intelligencePrefix + intelligence + EnumChatFormatting.AQUA + "\u270e ");
+								Utils.addChatMessage(									g + "Stats  : " + healthPrefix + health + EnumChatFormatting.RED + "❤ " +
+									defencePrefix + defence + EnumChatFormatting.GREEN + "❈ " +
+									strengthPrefix + strength + EnumChatFormatting.RED + "❁ " +
+									intelligencePrefix + intelligence + EnumChatFormatting.AQUA + "✎ ");
 							}
 							float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), -1);
 							float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);

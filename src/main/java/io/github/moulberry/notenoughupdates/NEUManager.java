@@ -863,7 +863,7 @@ public class NEUManager {
 	}
 
 	private String clean(String str) {
-		return str.replaceAll("(\u00a7.)|[^0-9a-zA-Z ]", "").toLowerCase().trim();
+		return str.replaceAll("(§.)|[^0-9a-zA-Z ]", "").toLowerCase().trim();
 	}
 
 	public void showRecipe(JsonObject item) {
@@ -1319,9 +1319,9 @@ public class NEUManager {
 				Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petname).has("max_level")) {
 				int maxLvl =
 					Constants.PETS.getAsJsonObject("custom_pet_leveling").getAsJsonObject(petname).get("max_level").getAsInt();
-				replacements.put("LVL", "1\u27A1" + maxLvl);
+				replacements.put("LVL", "1➡" + maxLvl);
 			} else {
-				replacements.put("LVL", "1\u27A1100");
+				replacements.put("LVL", "1➡100");
 			}
 		} else {
 			replacements.put("LVL", "" + level);
@@ -1355,17 +1355,17 @@ public class NEUManager {
 						for (int i = 0; i < otherNumsMax.size(); i++) {
 							replacements.put(
 								"" + i,
-								(addZero ? "0\u27A1" : "") +
+								(addZero ? "0➡" : "") +
 									removeUnusedDecimal(Math.floor(otherNumsMin.get(i).getAsFloat() * 10) / 10f) +
-									"\u27A1" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
+									"➡" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
 							);
 						}
 
 						for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
 							int statMax = (int) Math.floor(entry.getValue().getAsFloat());
 							int statMin = (int) Math.floor(min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat());
-							String statStr = (statMin > 0 ? "+" : "") + statMin + "\u27A1" + statMax;
-							statStr = (addZero ? "0\u27A1" : "") + statStr;
+							String statStr = (statMin > 0 ? "+" : "") + statMin + "➡" + statMax;
+							statStr = (addZero ? "0➡" : "") + statStr;
 							replacements.put(entry.getKey(), statStr);
 						}
 					} else {

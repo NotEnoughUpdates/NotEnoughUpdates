@@ -188,7 +188,7 @@ public class GuiEnchantColour extends GuiScreen {
 			int modifierI = getIntModifier(modifier);
 			if ((modifierI & GuiEnchantColour.BOLD_MODIFIER) != 0) {
 				Minecraft.getMinecraft().fontRendererObj.drawString(
-					"\u00a7l\u2713",
+					"§l✓",
 					guiLeft + 181,
 					guiTop + 23 + 25 * yIndex - 2,
 					0xff202020,
@@ -197,7 +197,7 @@ public class GuiEnchantColour extends GuiScreen {
 			}
 			if ((modifierI & GuiEnchantColour.ITALIC_MODIFIER) != 0) {
 				Minecraft.getMinecraft().fontRendererObj.drawString(
-					"\u00a7l\u2713",
+					"§l✓",
 					guiLeft + 181,
 					guiTop + 23 + 25 * yIndex + 10,
 					0xff202020,
@@ -206,7 +206,7 @@ public class GuiEnchantColour extends GuiScreen {
 			}
 			if ((modifierI & GuiEnchantColour.UNDERLINE_MODIFIER) != 0) {
 				Minecraft.getMinecraft().fontRendererObj.drawString(
-					"\u00a7l\u2713",
+					"§l✓",
 					guiLeft + 196,
 					guiTop + 23 + 25 * yIndex - 2,
 					0xff202020,
@@ -215,7 +215,7 @@ public class GuiEnchantColour extends GuiScreen {
 			}
 			if ((modifierI & GuiEnchantColour.STRIKETHROUGH_MODIFIER) != 0) {
 				Minecraft.getMinecraft().fontRendererObj.drawString(
-					"\u00a7l\u2713",
+					"§l✓",
 					guiLeft + 196,
 					guiTop + 23 + 25 * yIndex + 10,
 					0xff202020,
@@ -315,7 +315,7 @@ public class GuiEnchantColour extends GuiScreen {
 					EnumChatFormatting.LIGHT_PURPLE + "d = Purple",
 					EnumChatFormatting.YELLOW + "e = Yellow",
 					EnumChatFormatting.WHITE + "f = White",
-					"\u00A7ZZ = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
+					"§ZZ = SBA Chroma" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + " (Requires SBA)",
 					"",
 					EnumChatFormatting.GREEN + "Available formatting:",
 					EnumChatFormatting.GRAY + "" + EnumChatFormatting.BOLD + "B = " + EnumChatFormatting.BOLD + "Bold",

@@ -30,7 +30,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -309,9 +308,9 @@ public class ItemTooltipListener {
 					continue;
 				}
 
-			} else if (line.contains("\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune")) {
+			} else if (line.contains("§cR§6a§ei§an§bb§9o§dw§9 Rune")) {
 				line = line.replace(
-					"\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune",
+					"§cR§6a§ei§an§bb§9o§dw§9 Rune",
 					Utils.chromaString("Rainbow Rune", k, false) + EnumChatFormatting.BLUE
 				);
 			} else if (hasEnchantments) {
@@ -413,7 +412,7 @@ public class ItemTooltipListener {
 						ItemStack item = lower.getStackInSlot(11 + i);
 						String internal = neu.manager.getInternalNameForItem(item);
 						if (internal != null) {
-							internal = internal.replace("\u00CD", "I").replace("\u0130", "I");
+							internal = internal.replace("Í", "I").replace("Í", "I");
 							float bazaarPrice = -1;
 							JsonObject bazaarInfo = neu.manager.auctionManager.getBazaarInfo(internal);
 							if (bazaarInfo != null && bazaarInfo.has("curr_sell")) {

@@ -1120,7 +1120,7 @@ public class CustomAH extends Gui {
 		if (controls[index] == null) return lore;
 
 		lore.add(controls[index].getDisplayName());
-		String arrow = "\u25b6";
+		String arrow = "▶";
 		String selPrefixNC = " " + arrow + " ";
 		String selPrefix = EnumChatFormatting.DARK_AQUA + selPrefixNC;
 		String unselPrefix = EnumChatFormatting.GRAY.toString();
