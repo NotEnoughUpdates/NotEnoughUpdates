@@ -211,6 +211,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	public int getTotalKuudraRuns(JsonObject completedRuns) {
 		int totalRuns = 0;
 		for (Map.Entry<String, JsonElement> runs : completedRuns.entrySet()) {
+			if (runs.getKey().startsWith("highest_wave")) continue;
 			totalRuns += runs.getValue().getAsInt();
 		}
 		return totalRuns;

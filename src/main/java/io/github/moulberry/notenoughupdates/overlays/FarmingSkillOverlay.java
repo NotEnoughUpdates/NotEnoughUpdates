@@ -167,6 +167,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 			//Set default skilltype to Farming and get BZprice config value
 			boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
 			skillType = "Farming";
+			Farming = 1;
+			Alch = 0;
+			Foraging = 0;
 
 			//WARTS
 			if (internalname.startsWith("THEORETICAL_HOE_WARTS")) {

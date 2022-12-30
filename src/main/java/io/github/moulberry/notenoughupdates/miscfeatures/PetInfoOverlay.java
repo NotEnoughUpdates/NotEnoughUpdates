@@ -661,7 +661,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 		JsonObject petItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("ROCK;0");
 		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight);
+			Vector2f position = getPosition(overlayWidth, overlayHeight, false);
 			int x = (int) position.x;
 			int y = (int) position.y;
 
@@ -700,16 +700,18 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 
 		if (petItem != null) {
-			Vector2f position = getPosition(overlayWidth, overlayHeight);
+			Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 			int x = (int) position.x;
 			int y = (int) position.y;
 
 			ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem);
 			GlStateManager.enableDepth();
 			GlStateManager.pushMatrix();
+			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 			GlStateManager.translate(x - 2, y - 2, 0);
 			GlStateManager.scale(2, 2, 1);
 			Utils.drawItemStack(stack, 0, 0);
+			Utils.pushGuiScale(0);
 			GlStateManager.popMatrix();
 		}
 
@@ -718,7 +720,7 @@ public class PetInfoOverlay extends TextOverlay {
 			JsonObject petItem2 = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(
 				currentPet2.skin != null ? currentPet2.skin : (currentPet2.petType + ";" + currentPet2.rarity.petId));
 			if (petItem2 != null) {
-				Vector2f position = getPosition(overlayWidth, overlayHeight);
+				Vector2f position = getPosition(overlayWidth, overlayHeight, false);
 				int x = (int) position.x;
 				int y = (int) position.y + NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.size() * 10 + 10;
 

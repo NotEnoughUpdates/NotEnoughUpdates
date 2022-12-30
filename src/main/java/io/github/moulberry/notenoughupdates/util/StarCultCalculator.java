@@ -101,7 +101,7 @@ public class StarCultCalculator {
 		}
 
 		if (active && activeTill != 0) {
-			return "Active!";
+			return "Active! (" + Utils.prettyTime(activeTill - System.currentTimeMillis()) + ")";
 		}
 
 		return Utils.prettyTime(cultStart.toEpochMilli() - l);

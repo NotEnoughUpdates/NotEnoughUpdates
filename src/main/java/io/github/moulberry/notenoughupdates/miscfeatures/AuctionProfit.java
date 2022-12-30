@@ -104,7 +104,7 @@ public class AuctionProfit {
 					int coins = tryParse(EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim()));
 					if (coins != 0) {
 						if (coins > 1000000) {
-							coins /= 1.1;
+							coins /= 1.01;
 						}
 						coinsToCollect += coins;
 					}
@@ -113,7 +113,7 @@ public class AuctionProfit {
 				if (line.contains("§7Status: §aSold!") || line.contains("§7Status: §aEnded!")) {
 					if (coinsToCheck != 0) {
 						if (coinsToCheck > 1000000) {
-							coinsToCheck /= 1.1;
+							coinsToCheck /= 1.01;
 						}
 						coinsToCollect += coinsToCheck;
 						coinsToCheck = 0;

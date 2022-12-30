@@ -288,7 +288,7 @@ public class NEUManager {
 	public void loadItem(String internalName) {
 		itemstackCache.remove(internalName);
 		try {
-			JsonObject json = getJsonFromFile(new File(new File(repoLocation, "items"), internalName + ".json"));
+			JsonObject json = getJsonFromFile(getItemFileForInternalName(internalName));
 			if (json == null) {
 				return;
 			}
@@ -971,6 +971,10 @@ public class NEUManager {
 		return getUUIDFromNBT(tag);
 	}
 
+	public File getItemFileForInternalName(String internalName) {
+		return new File(new File(repoLocation, "items"), internalName + ".json");
+	}
+
 	public void writeItemToFile(ItemStack stack) {
 		String internalname = getInternalNameForItem(stack);
 
@@ -984,7 +988,7 @@ public class NEUManager {
 		json.addProperty("modver", NotEnoughUpdates.VERSION);
 
 		try {
-			writeJson(json, new File(new File(repoLocation, "items"), internalname + ".json"));
+			writeJson(json, getItemFileForInternalName(internalname));
 		} catch (IOException ignored) {
 		}
 

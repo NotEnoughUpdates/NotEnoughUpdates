@@ -46,6 +46,7 @@ import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -84,8 +85,10 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1156,8 +1159,30 @@ public class NEUOverlay extends Gui {
 									manager.jsonToStack(item));
 							}
 						} else if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing &&
-							Keyboard.getEventCharacter() == 'k') {
-							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(internalname.get(), item));
+							keyPressed == Keyboard.KEY_K) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+								var externalEditorCommand = NotEnoughUpdates.INSTANCE.config.hidden.externalEditor;
+								if (externalEditorCommand == null) {
+									Utils.addChatMessage(
+										"§e[NEU] §3No external editor set! Run §b/neudevtest exteditor <editorcommand>§3 " +
+											"to set your external editor. Optionally use {} as a placeholder for the filename.");
+								} else {
+									var externalFileName = manager.getItemFileForInternalName(internalname.get()).getAbsolutePath();
+									if (externalEditorCommand.contains("{}")) {
+										externalEditorCommand = externalEditorCommand.replace("{}", externalFileName);
+									} else {
+										externalEditorCommand += " " + externalFileName;
+									}
+									try {
+										Runtime.getRuntime().exec(externalEditorCommand);
+									} catch (IOException e) {
+										Utils.addChatMessage("§e[NEU]§4 Could not open external editor.");
+										e.printStackTrace();
+									}
+								}
+							} else {
+								Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(internalname.get(), item));
+							}
 							return true;
 						} else if (keyPressed == manager.keybindItemSelect.getKeyCode() &&
 							NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {

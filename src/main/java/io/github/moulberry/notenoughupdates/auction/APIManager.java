@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
+import io.github.moulberry.notenoughupdates.recipes.ItemShopRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -902,6 +903,11 @@ public class APIManager {
 		if (recipes != null)
 			RECIPE_ITER:
 				for (NeuRecipe recipe : recipes) {
+					if (recipe instanceof ItemShopRecipe) {
+						if (vanillaItem) {
+							continue;
+						}
+					}
 					if (recipe.hasVariableCost() || !recipe.shouldUseForCraftCost()) continue;
 					float craftPrice = 0;
 					for (Ingredient i : recipe.getIngredients()) {

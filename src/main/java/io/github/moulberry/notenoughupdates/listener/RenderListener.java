@@ -965,7 +965,7 @@ public class RenderListener {
 						mayor.getAsJsonObject().get("name").getAsString().equals("Derpy")
 						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
-							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "shMayor Derpy active!",
+							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Mayor Derpy active!",
 							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + xSize + 4 + 10,
 							guiTop + 85,
