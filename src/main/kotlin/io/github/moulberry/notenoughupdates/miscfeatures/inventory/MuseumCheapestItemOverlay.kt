@@ -233,10 +233,8 @@ object MuseumCheapestItemOverlay {
                 }
             } else if (stack.item is ItemDye && stack.itemDamage == 10) { //also check donated items
                 val name = stack.displayName.stripControlCodes()
-                println(name)
                 val armor = Utils.getOpenChestName().endsWith("Armor Sets")
                 val internalNames = guessInternalNames(name, armor)
-                println(internalNames)
                 //remove items that have these internalnames
                 itemsToDonate.retainAll { it.internalNames != internalNames }
             } else {
