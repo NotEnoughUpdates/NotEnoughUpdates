@@ -43,18 +43,27 @@ object EnforcedConfigValues {
         var enforcedValues: List<EnforcedValue> = listOf()
         var notificationPSA: List<String>? = null
         var chatPSA: List<String>? = null
+        lateinit var affectedVersions: List<Int>
     }
 
 
-    var enforcedValues = EnforcedValueData()
+    var enforcedValues: List<EnforcedValueData> = listOf()
 
     @SubscribeEvent
     fun onRepoReload(event: RepositoryReloadEvent) {
-        val fixedValues = event.repositoryRoot.resolve("constants/enforced_values.json")
+        val fixedValues = event.repositoryRoot.resolve("enforced_values")
         enforcedValues = if (fixedValues.exists()) {
-            NotEnoughUpdates.INSTANCE.manager.gson.fromJson(fixedValues.readText())
+            fixedValues.listFiles()
+                .filter {
+                    it != null && it.isFile && it.canRead()
+                }
+                .map {
+                    NotEnoughUpdates.INSTANCE.manager.gson.fromJson<EnforcedValueData>(it.readText())
+                }.filter {
+                    NotEnoughUpdates.VERSION_ID in it.affectedVersions
+                }
         } else {
-            EnforcedValueData()
+            listOf()
         }
         if (!event.isFirstLoad)
             sendPSAs()
@@ -76,20 +85,21 @@ object EnforcedConfigValues {
     }
 
     fun sendPSAs() {
-        val notification = enforcedValues.notificationPSA
-        if (notification != null) {
+        val notification = enforcedValues.flatMap { it.notificationPSA ?: emptyList() }
+        if (notification.isNotEmpty()) {
             NotificationHandler.displayNotification(notification, true)
         }
-        val chat = enforcedValues.chatPSA
-        if (chat != null) {
-            for (line in chat)
+        val chat = enforcedValues.flatMap { it.chatPSA ?: emptyList() }
+        if (chat.isNotEmpty()) {
+            for (line in chat) {
                 Utils.addChatMessage(line)
+            }
         }
     }
 
 
     fun enforceOntoConfig(config: Any) {
-        for (enforcedValue in enforcedValues.enforcedValues) {
+        for (enforcedValue in enforcedValues.flatMap { it.enforcedValues }) {
             val shimmy = Shimmy.makeShimmy(config, enforcedValue.path.split("."))
             if (shimmy == null) {
                 println("Could not create shimmy for path ${enforcedValue.path}")
@@ -104,7 +114,7 @@ object EnforcedConfigValues {
     }
 
     fun isBlockedFromEditing(optionPath: String): Boolean {
-        return enforcedValues.enforcedValues.any { it.path == optionPath }
+        return enforcedValues.flatMap { it.enforcedValues }.any { it.path == optionPath }
     }
 
 
