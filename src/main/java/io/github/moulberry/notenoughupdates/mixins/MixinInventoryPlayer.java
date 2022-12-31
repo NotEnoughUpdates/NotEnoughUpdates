@@ -19,7 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.events.ReplaceItemEventInventory;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -52,17 +52,14 @@ public class MixinInventoryPlayer {
 
 	@Inject(method = "getStackInSlot", at = @At("HEAD"), cancellable = true)
 	public void on(int index, CallbackInfoReturnable<ItemStack> cir) {
-		boolean indexChanged = false;
-		ItemStack[] aitemstack = mainInventory;
-		if (index >= aitemstack.length) {
-			index -= aitemstack.length;
-			indexChanged = true;
-			aitemstack = this.armorInventory;
-		}
-		ReplaceItemEventInventory replaceItemEventInventory = new ReplaceItemEventInventory(
-			aitemstack[index],
+		ItemStack itemStack =
+			index < mainInventory.length
+				? this.mainInventory[index]
+				: this.armorInventory[index - mainInventory.length];
+		ReplaceItemEvent replaceItemEventInventory = new ReplaceItemEvent(
+			itemStack,
 			((InventoryPlayer) (Object) this),
-			(indexChanged ? index + 100 : index)
+			index
 		);
 		replaceItemEventInventory.post();
 		if (replaceItemEventInventory.getReplacement() != replaceItemEventInventory.getOriginal()) {
