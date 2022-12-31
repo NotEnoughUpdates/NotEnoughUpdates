@@ -50,6 +50,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
 import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.DwarvenMinesWaypoints;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnforcedConfigValues;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
@@ -353,6 +354,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
 		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(new WardrobeMouseButtons());
+		MinecraftForge.EVENT_BUS.register(EnforcedConfigValues.INSTANCE);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
