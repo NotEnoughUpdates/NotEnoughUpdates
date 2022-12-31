@@ -250,6 +250,14 @@ public class Mining {
 	@ConfigAccordionId(id = 2)
 	public int commissionTaskTips = 0;
 
+	@Expose
+	@ConfigOption(
+		name = "Tips in New Line",
+		desc = "Show the Commission Task Tips in the next line.")
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean commissionTaskTipNewLine = true;
+
 	@ConfigOption(
 		name = "Metal Detector Solver",
 		desc = ""

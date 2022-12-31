@@ -375,6 +375,14 @@ public class MiningOverlay extends TextTabOverlay {
 						col = GOLD;
 					}
 					String tips = getTipPart(entry.getKey());
+					boolean newLine = NotEnoughUpdates.INSTANCE.config.mining.commissionTaskTipNewLine;
+					String newLineTip = null;
+					if (newLine) {
+						if (!tips.isEmpty()) {
+							newLineTip = tips;
+							tips = "";
+						}
+					}
 					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
 					int max;
 					if (-1 != (max = locationSpecific.commissionMaxes.getOrDefault(entry.getKey(), -1))) {
@@ -384,6 +392,9 @@ public class MiningOverlay extends TextTabOverlay {
 						String valS = Utils.floatToString(entry.getValue() * 100, 1);
 
 						commissionsStrings.add(DARK_AQUA + entry.getKey() + ": " + col + valS + "%" + tips);
+					}
+					if (newLineTip != null) {
+						commissionsStrings.add(newLineTip);
 					}
 				}
 			}
