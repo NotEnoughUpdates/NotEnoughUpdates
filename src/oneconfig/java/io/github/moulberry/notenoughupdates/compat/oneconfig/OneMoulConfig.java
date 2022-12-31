@@ -41,6 +41,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 
 import java.lang.reflect.Field;
 
@@ -85,14 +86,16 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 			if (annotation == null) continue;
 			String cat = category.getName();
 			String subcategory = "";
+			String annotationName = StringUtils.cleanColour( annotation.name());
+			String annotationDesc = StringUtils.cleanColour( annotation.desc());
 			ConfigEditorBoolean configEditorBoolean = optionField.getAnnotation(ConfigEditorBoolean.class);
 			if (configEditorBoolean != null) {
 				category.options.add(new ConfigSwitch(
 					optionField,
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
-					cat, subcategory, 1
+					annotationName,
+					annotationDesc,
+					cat, subcategory, 2
 				));
 			}
 			ConfigEditorText configEditorText = optionField.getAnnotation(ConfigEditorText.class);
@@ -100,10 +103,10 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 				category.options.add(new ConfigTextBox(
 					optionField,
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
-					cat, subcategory, 1,
-					annotation.name(), false, false
+					annotationName,
+					annotationDesc,
+					cat, subcategory, 2,
+					annotationName, false, false
 				));
 			}
 			ConfigEditorKeybind configEditorKeybind = optionField.getAnnotation(ConfigEditorKeybind.class);
@@ -111,9 +114,9 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 				category.options.add(new OneFancyKeybind(
 					optionField,
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
-					cat, subcategory, 1
+					annotationName,
+					annotationDesc,
+					cat, subcategory, 2
 				));
 			}
 			ConfigEditorColour configEditorColour = optionField.getAnnotation(ConfigEditorColour.class);
@@ -121,9 +124,9 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 				category.options.add(new OneFancyColor(
 					optionField,
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
-					cat, subcategory, 1, true
+					annotationName,
+					annotationDesc,
+					cat, subcategory, 2, true
 				));
 			}
 			ConfigEditorSlider configEditorSlider = optionField.getAnnotation(ConfigEditorSlider.class);
@@ -131,8 +134,8 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 				category.options.add(new WrappedConfigSlider(
 					optionField,
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
+					annotationName,
+					annotationDesc,
 					cat,
 					subcategory,
 					configEditorSlider.minValue(),
@@ -145,11 +148,11 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 				category.options.add(new ConfigButton(
 					() -> moulConfig.executeRunnable(configEditorButton.runnableId()),
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
+					annotationName,
+					annotationDesc,
 					cat,
 					subcategory,
-					1, configEditorButton.buttonText()
+					2, configEditorButton.buttonText()
 				));
 			}
 			ConfigEditorDropdown configEditorDropdown = optionField.getAnnotation(ConfigEditorDropdown.class);
@@ -157,25 +160,25 @@ public class OneMoulConfig extends cc.polyfrost.oneconfig.config.Config {
 				category.options.add(new ConfigDropdown(
 					optionField,
 					categoryInstance,
-					annotation.name(),
-					annotation.desc(),
+					annotationName,
+					annotationDesc,
 					cat, subcategory,
-					1, configEditorDropdown.values()
+					2, configEditorDropdown.values()
 				));
 			}
 			ConfigEditorDraggableList configEditorDraggableList = optionField.getAnnotation(ConfigEditorDraggableList.class);
 			if (configEditorDraggableList != null) {
 				category.options.add(new ConfigInfo(
 					optionField, categoryInstance,
-					"This option (" + annotation.name() + ") is not available via the oneconfig gui",
-					cat, subcategory, 1, InfoType.ERROR
+					"This option (" + annotationName + ") is not available via the oneconfig gui",
+					cat, subcategory, 2, InfoType.ERROR
 				));
 			}
 			ConfigEditorFSR configEditorFSR = optionField.getAnnotation(ConfigEditorFSR.class);
 			if (configEditorFSR != null) {
 				category.options.add(new ConfigInfo(
 					optionField, categoryInstance,
-					annotation.desc(), cat, subcategory, 1, InfoType.WARNING
+					annotationDesc, cat, subcategory, 2, InfoType.WARNING
 				));
 			}
 		}
