@@ -379,7 +379,7 @@ public class MiningOverlay extends TextTabOverlay {
 					String newLineTip = null;
 					if (newLine) {
 						if (!tips.isEmpty()) {
-							newLineTip = tips;
+							newLineTip = "  " + tips;
 							tips = "";
 						}
 					}
@@ -693,6 +693,9 @@ public class MiningOverlay extends TextTabOverlay {
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlayIcons) return;
 		GlStateManager.enableDepth();
+
+		// No icon for the tip line
+		if (line.contains(">")) return;
 
 		ItemStack icon = null;
 		String cleaned = Utils.cleanColour(line);
