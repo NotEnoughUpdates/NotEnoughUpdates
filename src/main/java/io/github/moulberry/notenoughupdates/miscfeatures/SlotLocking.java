@@ -42,6 +42,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -741,7 +742,7 @@ public class SlotLocking {
 	boolean setTopHalfBarrier = false;
 	@SubscribeEvent
 	public void barrierInventory(ReplaceItemEvent event) {
-		if (event.getSlotNumber() < 9 || !setTopHalfBarrier) return;
+		if (event.getSlotNumber() < 9 || !setTopHalfBarrier || !(event.getInventory() instanceof InventoryPlayer)) return;
 		ItemStack stack = new ItemStack(Blocks.barrier);
 		ItemUtils.getOrCreateTag(stack).setBoolean(
 			"NEUHIDETOOLIP",
