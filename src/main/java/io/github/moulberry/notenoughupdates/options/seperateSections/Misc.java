@@ -55,6 +55,14 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean streamerMode = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Fix Steve skulls",
+		desc = "Fix some skulls and skins not downloading on old java versions. May require restart."
+	)
+	@ConfigEditorBoolean
+	public boolean fixSteveSkulls = true;
+
 	@ConfigOption(
 		name = "Fairy Soul Waypoints",
 		desc = ""
