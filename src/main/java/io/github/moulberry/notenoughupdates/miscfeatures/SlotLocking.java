@@ -25,7 +25,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
-import io.github.moulberry.notenoughupdates.events.ReplaceItemEventInventory;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
@@ -742,7 +741,10 @@ public class SlotLocking {
 	boolean setTopHalfBarrier = false;
 	@SubscribeEvent
 	public void barrierInventory(ReplaceItemEvent event) {
-		if (event.getSlotNumber() < 9 || !setTopHalfBarrier || !(event.getInventory() instanceof InventoryPlayer)) return;
+		if (event.getSlotNumber() < 9 ||
+			(pairingSlot != null && event.getSlotNumber() == pairingSlot.slotNumber) ||
+			!setTopHalfBarrier ||
+			!(event.getInventory() instanceof InventoryPlayer)) return;
 		ItemStack stack = new ItemStack(Blocks.barrier);
 		ItemUtils.getOrCreateTag(stack).setBoolean(
 			"NEUHIDETOOLIP",
