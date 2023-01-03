@@ -64,12 +64,12 @@ public class Toolbar {
 
 	@Expose
 	@ConfigOption(
-		name = "Show a help settings button",
-		desc = "Show quick settings button in the NEU toolbar"
+		name = "Show an inventory search button",
+		desc = "Show button to enable inventory searching in the NEU toolbar"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
-	public boolean enableHelpButton = true;
+	public boolean enableSearchModeButton = true;
 
 	@Expose
 	@ConfigOption(
