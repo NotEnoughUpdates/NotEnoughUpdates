@@ -38,6 +38,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -54,12 +55,15 @@ import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.timeSi
 import static io.github.moulberry.notenoughupdates.overlays.SlayerOverlay.timeSinceLastBoss2;
 
 public class ChatListener {
-	private final NotEnoughUpdates neu;
-	private static final Pattern SLAYER_XP = Pattern.compile(
-		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
 
-	private static final Pattern SKYBLOCK_LVL_MESSAGE = Pattern.compile("\\[(\\d{1,4})\\] .*");
-	AtomicBoolean missingRecipe = new AtomicBoolean(false);
+	private final NotEnoughUpdates neu;
+
+	private static final Pattern SLAYER_EXP_PATTERN = Pattern.compile(
+		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
+	private static final Pattern SKY_BLOCK_LEVEL_PATTERN = Pattern.compile("\\[(\\d{1,4})\\] .*");
+	private final Pattern PARTY_FINDER_PATTERN = Pattern.compile("§dParty Finder §r§f> (.*)§ejoined the dungeon group!");
+
+	private AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
 	public ChatListener(NotEnoughUpdates neu) {
 		this.neu = neu;
@@ -147,15 +151,7 @@ public class ChatListener {
 
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
-					ChatStyle pvClickStyle = Utils.createClickStyle(
-						ClickEvent.Action.RUN_COMMAND,
-						"/pv " + username,
-						"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
-							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
-							EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
-							EnumChatFormatting.YELLOW + " profile viewer."
-					);
-
+					ChatStyle pvClickStyle = getPVChatStyle(username);
 					if (partyOrGuildChat) {
 						chatComponent.getSiblings().get(0).setChatStyle(pvClickStyle);
 					} else {
@@ -183,6 +179,17 @@ public class ChatListener {
 		return chatComponent;
 	}
 
+	private static ChatStyle getPVChatStyle(String username) {
+		return Utils.createClickStyle(
+			ClickEvent.Action.RUN_COMMAND,
+			"/pv " + username,
+			"" + EnumChatFormatting.YELLOW + "Click to open " + EnumChatFormatting.AQUA + EnumChatFormatting.BOLD +
+				username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s profile in " +
+				EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD + "NEU's" + EnumChatFormatting.RESET +
+				EnumChatFormatting.YELLOW + " profile viewer."
+		);
+	}
+
 	/**
 	 * 1) When receiving "You are playing on profile" messages, will set the current profile.
 	 * 2) When a /viewrecipe command fails (i.e. player does not have recipe unlocked, will open the custom recipe GUI)
@@ -197,13 +204,16 @@ public class ChatListener {
 			return;
 		} else if (e.type == 0) {
 			e.message = replaceSocialControlsWithPV(e.message);
+			if (NotEnoughUpdates.INSTANCE.config.misc.dungeonGroupsPV) {
+				e.message = dungeonPartyJoinPV(e.message);
+			}
 		}
 
 		DungeonWin.onChatMessage(e);
 
 		String r = null;
 		String unformatted = Utils.cleanColour(e.message.getUnformattedText());
-		Matcher matcher = SLAYER_XP.matcher(unformatted);
+		Matcher matcher = SLAYER_EXP_PATTERN.matcher(unformatted);
 		if (unformatted.startsWith("You are playing on profile: ")) {
 			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("You are playing on profile: ".length())
@@ -298,7 +308,7 @@ public class ChatListener {
 			"  You've earned a Crystal Loot Bundle!"))
 			OverlayManager.crystalHollowOverlay.message(unformatted);
 
-		Matcher LvlMatcher = SKYBLOCK_LVL_MESSAGE.matcher(unformatted);
+		Matcher LvlMatcher = SKY_BLOCK_LEVEL_PATTERN.matcher(unformatted);
 		if (LvlMatcher.matches()) {
 			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
 				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
@@ -316,5 +326,19 @@ public class ChatListener {
 
 		if (unformatted.equals("ENDER NODE! You found Endermite Nest!"))
 			EnderNodes.displayEndermiteNotif();
+	}
+
+	private IChatComponent dungeonPartyJoinPV(IChatComponent message) {
+		String text = message.getFormattedText();
+		Matcher matcher = PARTY_FINDER_PATTERN.matcher(text);
+
+		if (matcher.find()) {
+			String name = StringUtils.stripControlCodes(matcher.group(1)).trim();
+			ChatComponentText componentText = new ChatComponentText(text);
+			componentText.setChatStyle(getPVChatStyle(name));
+			return componentText;
+		} else {
+			return message;
+		}
 	}
 }

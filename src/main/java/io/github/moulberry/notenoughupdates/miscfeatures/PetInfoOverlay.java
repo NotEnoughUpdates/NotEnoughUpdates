@@ -496,7 +496,7 @@ public class PetInfoOverlay extends TextOverlay {
 		DecimalFormat df = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 		if (pet == null) return 0;
 		try {
-			return Float.parseFloat(df.format(pet.petLevel.getPercentageToNextLevel() * 100f));
+			return Float.parseFloat(df.format(Math.min(pet.petLevel.getPercentageToNextLevel() * 100f, 100f)));
 		} catch (Exception ignored) {
 			return 0;
 		}
@@ -516,7 +516,8 @@ public class PetInfoOverlay extends TextOverlay {
 			roundFloat(currentPet.petLevel.getExpRequiredForNextLevel())
 			+ EnumChatFormatting.YELLOW + " (" + getLevelPercent(currentPet) + "%)";
 
-		String lvlString = EnumChatFormatting.AQUA + "" + Utils.shortNumberFormat(levelXp, 0) + "/" +
+		String lvlString = EnumChatFormatting.AQUA + "" +
+			Utils.shortNumberFormat(Math.min(levelXp, currentPet.petLevel.getExpRequiredForNextLevel()), 0) + "/" +
 			Utils.shortNumberFormat(currentPet.petLevel.getExpRequiredForNextLevel(), 0)
 			+ EnumChatFormatting.YELLOW + " (" + getLevelPercent(currentPet) + "%)";
 

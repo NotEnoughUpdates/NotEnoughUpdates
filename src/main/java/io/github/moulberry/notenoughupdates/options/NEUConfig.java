@@ -34,7 +34,6 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
-import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
@@ -66,6 +65,8 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.StorageGUI;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Toolbar;
 import io.github.moulberry.notenoughupdates.options.seperateSections.TooltipTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.TradeMenu;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WardrobeKeybinds;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -357,6 +358,13 @@ public class NEUConfig extends Config {
 		desc = "Graph of auction and bazaar prices"
 	)
 	public AHGraph ahGraph = new AHGraph();
+
+	@Expose
+	@Category(
+		name = "Wardrobe Keybinds",
+		desc = "Keybinds for your wardrobe"
+	)
+	public WardrobeKeybinds wardrobeKeybinds = new WardrobeKeybinds();
 
 	@Expose
 	@Category(

@@ -344,9 +344,9 @@ public class TimersOverlay extends TextTabOverlay {
 							}
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
 						if (!hasErrorMessage) {
 							Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your god pot timer");
+							e.printStackTrace();
 							hasErrorMessage = true;
 						}
 						break;
@@ -358,6 +358,7 @@ public class TimersOverlay extends TextTabOverlay {
 					foundCookieBuffText = true;
 				} else if (foundCookieBuffText) {
 					String clean = line.replaceAll("(\u00a7.)", "");
+					clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
 					String[] cleanSplit = clean.split(" ");
 					hidden.cookieBuffRemaining = 0;
 					if (line.contains("Not")) break;
@@ -725,7 +726,7 @@ public class TimersOverlay extends TextTabOverlay {
 		// Daily Mithril Powder display
 		long mithrilPowderCompleted = hidden.dailyMithrilPowerCompleted + 1000 * 60 * 60 * 24 - currentTime;
 
-		if (hidden.dailyMithrilPowerCompleted < midnightReset) {
+		if (hidden.dailyMithrilPowerCompleted < catacombsReset) {
 			map.put(
 				7,
 				DARK_AQUA + "Mithril Powder: " +
@@ -733,29 +734,29 @@ public class TimersOverlay extends TextTabOverlay {
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
-				(hidden.dailyMithrilPowerCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+				(hidden.dailyMithrilPowerCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				7,
 				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.SOON.ordinal() &&
-			(hidden.dailyMithrilPowerCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+			(hidden.dailyMithrilPowerCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
 			map.put(
 				7,
 				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
-				(hidden.dailyMithrilPowerCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+				(hidden.dailyMithrilPowerCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				7,
 				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyMithrilPowderDisplay >=
 			DISPLAYTYPE.ALWAYS.ordinal()) {
@@ -763,12 +764,12 @@ public class TimersOverlay extends TextTabOverlay {
 				7,
 				DARK_AQUA + "Mithril Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 
 		// Daily Gemstone Powder Display
-		if (hidden.dailyGemstonePowderCompleted < midnightReset) {
+		if (hidden.dailyGemstonePowderCompleted < catacombsReset) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
@@ -776,29 +777,29 @@ public class TimersOverlay extends TextTabOverlay {
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
-				(hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+				(hidden.dailyGemstonePowderCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.SOON.ordinal() &&
-			(hidden.dailyGemstonePowderCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+			(hidden.dailyGemstonePowderCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
-				(hidden.dailyGemstonePowderCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+				(hidden.dailyGemstonePowderCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.dailyGemstonePowderDisplay >=
 			DISPLAYTYPE.ALWAYS.ordinal()) {
@@ -806,7 +807,7 @@ public class TimersOverlay extends TextTabOverlay {
 				8,
 				DARK_AQUA + "Gemstone Powder: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(timeDiffMidnightNow)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 

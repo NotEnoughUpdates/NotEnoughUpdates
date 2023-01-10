@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
@@ -121,7 +120,7 @@ public class ItemOverlays {
 		name = "Block Zapper Overlay",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 6)
+	@ConfigEditorAccordion(id = 2)
 	public boolean zapperAccordion = false;
 
 	@Expose
@@ -130,7 +129,7 @@ public class ItemOverlays {
 		desc = "Show which blocks will be destroyed when using the Block Zapper"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 6)
+	@ConfigAccordionId(id = 2)
 	public boolean enableZapperOverlay = true;
 
 	@Expose
@@ -140,14 +139,14 @@ public class ItemOverlays {
 		searchTags = "color"
 	)
 	@ConfigEditorColour
-	@ConfigAccordionId(id = 6)
+	@ConfigAccordionId(id = 2)
 	public String zapperOverlayColour = "0:102:171:5:0";
 
 	@ConfigOption(
 		name = "Smooth AOTE/AOTV/Hyp",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 2)
+	@ConfigEditorAccordion(id = 3)
 	public boolean aoteAccordion = false;
 
 	@Expose
@@ -156,7 +155,7 @@ public class ItemOverlays {
 		desc = "Teleport smoothly to your destination when using AOTE or AOTV"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 2)
+	@ConfigAccordionId(id = 3)
 	public boolean enableSmoothAOTE = true;
 
 	@Expose
@@ -165,7 +164,7 @@ public class ItemOverlays {
 		desc = "Teleport smoothly to your destination when using Hyperion"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 2)
+	@ConfigAccordionId(id = 3)
 	public boolean enableSmoothHyperion = true;
 
 	@Expose
@@ -178,7 +177,7 @@ public class ItemOverlays {
 		maxValue = 500,
 		minStep = 25
 	)
-	@ConfigAccordionId(id = 2)
+	@ConfigAccordionId(id = 3)
 	public int smoothTpMillis = 125;
 
 	@Expose
@@ -191,7 +190,7 @@ public class ItemOverlays {
 		maxValue = 500,
 		minStep = 25
 	)
-	@ConfigAccordionId(id = 2)
+	@ConfigAccordionId(id = 3)
 	public int smoothTpMillisEtherwarp = 50;
 
 	@Expose
@@ -200,14 +199,14 @@ public class ItemOverlays {
 		desc = "Remove the explosion effect when using a hyperion"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 2)
+	@ConfigAccordionId(id = 3)
 	public boolean disableHyperionParticles = true;
 
 	@ConfigOption(
 		name = "Etherwarp",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 3)
+	@ConfigEditorAccordion(id = 4)
 	public boolean etherwarpAccordion = false;
 
 	@Expose
@@ -216,7 +215,7 @@ public class ItemOverlays {
 		desc = "Zoom in on targeted blocks with etherwarp, making it easier to adjust at a distance"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean etherwarpZoom = true;
 
 	@Expose
@@ -225,7 +224,7 @@ public class ItemOverlays {
 		desc = "Display an overlay which tells you if the etherwarp will fail."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean enableEtherwarpHelperOverlay = true;
 
 	@Expose
@@ -234,7 +233,7 @@ public class ItemOverlays {
 		desc = "Display an overlay that tells you what block you will TP to."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean enableEtherwarpBlockOverlay = true;
 
 	@Expose
@@ -243,7 +242,7 @@ public class ItemOverlays {
 		desc = "Don't display the etherwarp block overlay when you can't TP to the block"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public boolean disableOverlayWhenFailed = false;
 
 	@Expose
@@ -253,14 +252,14 @@ public class ItemOverlays {
 		searchTags = "color"
 	)
 	@ConfigEditorColour
-	@ConfigAccordionId(id = 3)
+	@ConfigAccordionId(id = 4)
 	public String etherwarpHighlightColour = "00:70:156:8:96";
 
 	@ConfigOption(
 		name = "Bonemerang Overlay",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 4)
+	@ConfigEditorAccordion(id = 5)
 	public boolean bonemerangAccordion = false;
 
 	@Expose
@@ -269,7 +268,7 @@ public class ItemOverlays {
 		desc = "Shows info about the bonemerang while holding it."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 4)
+	@ConfigAccordionId(id = 5)
 	public boolean enableBonemerangOverlay = true;
 
 	@Expose
@@ -278,7 +277,7 @@ public class ItemOverlays {
 		desc = "Highlight entities that will be hit by your bonemerang"
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 4)
+	@ConfigAccordionId(id = 5)
 	public boolean highlightTargeted = true;
 
 	@Expose
@@ -296,7 +295,7 @@ public class ItemOverlays {
 			"\u00a77Targets: \u00a76\u00a7l10"
 		}
 	)
-	@ConfigAccordionId(id = 4)
+	@ConfigAccordionId(id = 5)
 	public List<Integer> bonemerangOverlayText = new ArrayList<>(Arrays.asList(0, 1));
 
 	@Expose
@@ -307,7 +306,7 @@ public class ItemOverlays {
 	@ConfigEditorDropdown(
 		values = {"Background", "No Shadow", "Shadow Only", "Full Shadow"}
 	)
-	@ConfigAccordionId(id = 4)
+	@ConfigAccordionId(id = 5)
 	public int bonemerangOverlayStyle = 0;
 	@Expose
 	@ConfigOption(
@@ -316,14 +315,14 @@ public class ItemOverlays {
 			"Might cause some lag."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 4)
+	@ConfigAccordionId(id = 5)
 	public boolean bonemerangFastUpdate = false;
 
 	@ConfigOption(
 		name = "Minion Crystal Radius Overlay",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 5)
+	@ConfigEditorAccordion(id = 6)
 	public boolean crystalAccordion = false;
 
 	@Expose
@@ -332,7 +331,7 @@ public class ItemOverlays {
 		desc = "Show a block overlay for the effective radius of minion crystals (farming, mining, etc)."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 5)
+	@ConfigAccordionId(id = 6)
 	public boolean enableCrystalOverlay = true;
 
 	@Expose
@@ -341,14 +340,14 @@ public class ItemOverlays {
 		desc = "Show the crystal overlay, even when a minion crystal is not being held."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 5)
+	@ConfigAccordionId(id = 6)
 	public boolean alwaysShowCrystal = false;
 
 	@ConfigOption(
 		name = "Farming Overlays",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 6)
+	@ConfigEditorAccordion(id = 7)
 	public boolean farmingAccordion = false;
 
 	@Expose
@@ -357,7 +356,7 @@ public class ItemOverlays {
 		desc = "Show a block overlay for the effected blocks of prismapump's ability."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 6)
+	@ConfigAccordionId(id = 7)
 	public boolean enablePrismapumpOverlay = true;
 
 	@Expose
@@ -366,7 +365,7 @@ public class ItemOverlays {
 		desc = "Show a block overlay for the effected blocks of the hoe of tilling's ability."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 6)
+	@ConfigAccordionId(id = 7)
 	public boolean enableHoeOverlay = true;
 
 	@Expose
@@ -375,18 +374,18 @@ public class ItemOverlays {
 		desc = "Show a block overlay for the effected blocks of dirt wand's ability."
 	)
 	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 6)
+	@ConfigAccordionId(id = 7)
 	public boolean enableDirtWandOverlay = true;
 
 	@ConfigOption(
 		name="Custom Wither Cloak",
 		desc = ""
 	)
-	@ConfigEditorAccordion(id = 7)
+	@ConfigEditorAccordion(id = 8)
 	public boolean customWitherCloakAccordion = false;
 
 	@Expose
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigOption(
 		name = "Enable Custom Wither Cloak",
 		desc = "Replaces Hypixel Wither Cloak with custom shields due to the Hypixel Wither Cloak being difficult to see through"
@@ -395,7 +394,7 @@ public class ItemOverlays {
 	public boolean customWitherCloakToggle = true;
 
 	@Expose
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigOption(
 		name = "Shield Count",
 		desc = "The amount of shields circling the player\n0 = No shields"
@@ -408,7 +407,7 @@ public class ItemOverlays {
 	public int customWitherCloakCount = 6;
 
 	@Expose
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigOption(
 		name = "Shield Speed",
 		desc = "How fast they circle the player\n0 = Not moving\nNegative = Spinning opposite direction"
@@ -437,7 +436,7 @@ public class ItemOverlays {
 	*/
 
 	@Expose
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigOption(
 		name = "Shield Distance From Player",
 		desc = "How far (in blocks) each shield is from the player\n" +
@@ -451,7 +450,7 @@ public class ItemOverlays {
 	public float customWitherCloakDistance = 1.2f;
 
 	@Expose
-	@ConfigAccordionId(id = 7)
+	@ConfigAccordionId(id = 8)
 	@ConfigOption(
 		name = "\u00A7aInspiration:",
 		desc = "\u00A76u/Sori0612 \u00A77on \u00A7cReddit\n\n\u00A78https://tinyurl.com/creeperveil"

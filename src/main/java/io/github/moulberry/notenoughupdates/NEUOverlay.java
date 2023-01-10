@@ -88,7 +88,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -113,6 +112,7 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:supersecretassets/lunar.png");
 	private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
+	private static final ResourceLocation SEARCH_MODE_BUTTON = new ResourceLocation("notenoughupdates:search_mode_button.png");
 
 	private final NEUManager manager;
 
@@ -429,7 +429,7 @@ public class NEUOverlay extends Gui {
 		};
 	}
 
-	private MBGuiElement createHelpButton(NEUOverlay overlay) {
+	private MBGuiElement createSearchModeButton() {
 		return new MBGuiElement() {
 			@Override
 			public int getWidth() {
@@ -446,14 +446,12 @@ public class NEUOverlay extends Gui {
 
 			@Override
 			public void mouseClick(float x, float y, int mouseX, int mouseY) {
-				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableHelpButton) {
+				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableSearchModeButton) {
 					return;
 				}
 				if (Mouse.getEventButtonState()) {
-					//displayInformationPane(HTMLInfoPane.createFromWikiUrl(overlay, manager, "Help",
-					//        "https://moulberry.github.io/files/neu_help.html"));
-					//Minecraft.getMinecraft().displayGuiScreen(new HelpGUI());
-					ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neuhelp");
+					searchMode = !searchMode;
+					lastSearchMode = System.currentTimeMillis();
 					Utils.playPressSound();
 				}
 			}
@@ -466,7 +464,7 @@ public class NEUOverlay extends Gui {
 				int paddingUnscaled = getPaddingUnscaled();
 				int searchYSize = getSearchBarYSize();
 
-				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableHelpButton) {
+				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableSearchModeButton) {
 					return;
 				}
 
@@ -476,7 +474,7 @@ public class NEUOverlay extends Gui {
 					searchYSize + paddingUnscaled * 2, searchYSize + paddingUnscaled * 2, GL11.GL_NEAREST
 				);
 
-				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_MODE_BUTTON);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				Utils.drawTexturedRect((int) x + paddingUnscaled, (int) y + paddingUnscaled,
 					getSearchBarYSize(), getSearchBarYSize()
@@ -621,7 +619,7 @@ public class NEUOverlay extends Gui {
 		List<MBGuiElement> children = Lists.newArrayList(
 			createSettingsButton(this),
 			createSearchBar(),
-			createHelpButton(this)
+			createSearchModeButton()
 		);
 		return new MBGuiGroupAligned(children, false) {
 			public int getPadding() {
