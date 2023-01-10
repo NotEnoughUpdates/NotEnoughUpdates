@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccord
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
@@ -144,6 +145,16 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean missingEnchantList = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Resize tooltips",
+		desc = "Resizes tooltips to make them readable"
+	)
+	@ConfigEditorDropdown(
+		values = {"Default", "Small", "Normal", "Large", "Auto"}
+	)
+	public int guiScale = 0;
 
 	@Expose
 	@ConfigOption(
