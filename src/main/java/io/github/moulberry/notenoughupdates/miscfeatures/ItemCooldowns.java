@@ -54,7 +54,6 @@ public class ItemCooldowns {
 	public static long pickaxeUseCooldownMillisRemaining = -1;
 	private static long treecapitatorCooldownMillisRemaining = -1;
 	private static long bonzomaskCooldownMillisRemaining = -1;
-	private static long fraggedBonzomaskCooldownMillisRemaining = -1;
 	private static long spiritMaskCooldownMillisRemaining = -1;
 
 	public static boolean firstLoad = true;
@@ -64,7 +63,6 @@ public class ItemCooldowns {
 
 	public static long pickaxeCooldown = -1;
 	private static long bonzoMaskCooldown = -1;
-	private static long fraggedBonzoMaskCooldown = -1;
 	private static long spiritMaskCooldown = -1;
 
 	public static TreeMap<Long, BlockPos> blocksClicked = new TreeMap<>();
@@ -74,7 +72,6 @@ public class ItemCooldowns {
 	enum Item {
 		PICKAXES,
 		BONZO_MASK,
-		FRAGGED_BONZO_MASK,
 		SPIRIT_MASK
 	}
 
@@ -85,7 +82,6 @@ public class ItemCooldowns {
 				tickCounter = 0;
 				pickaxeCooldown = -1;
 				bonzoMaskCooldown = -1;
-				fraggedBonzoMaskCooldown = -1;
 				spiritMaskCooldown = -1;
 			}
 
@@ -113,9 +109,6 @@ public class ItemCooldowns {
 			}
 			if (bonzomaskCooldownMillisRemaining >= 0) {
 				bonzomaskCooldownMillisRemaining -= millisDelta;
-			}
-			if (fraggedBonzomaskCooldownMillisRemaining >= 0) {
-				fraggedBonzomaskCooldownMillisRemaining -= millisDelta;
 			}
 			if (spiritMaskCooldownMillisRemaining >= 0) {
 				spiritMaskCooldownMillisRemaining -= millisDelta;
@@ -188,21 +181,15 @@ public class ItemCooldowns {
 	@SubscribeEvent
 	public void onChatMessage(ClientChatReceivedEvent event) {
 		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-			NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility && pickaxeCooldown != 0) {
+				NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility && pickaxeCooldown != 0) {
 			findCooldownInTooltip(Item.PICKAXES);
 			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
 		}
 
 		if (BONZO_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-				NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility &&
-				(bonzoMaskCooldown != 0 || fraggedBonzoMaskCooldown != 0)) {
-			if (event.message.getFormattedText().contains("⚚")) {
-				findCooldownInTooltip(Item.FRAGGED_BONZO_MASK);
-				fraggedBonzomaskCooldownMillisRemaining = fraggedBonzoMaskCooldown * 1000;
-			} else {
-				findCooldownInTooltip(Item.BONZO_MASK);
-				bonzomaskCooldownMillisRemaining = bonzoMaskCooldown * 1000;
-			}
+				NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility && bonzoMaskCooldown != 0) {
+			findCooldownInTooltip(Item.BONZO_MASK);
+			bonzomaskCooldownMillisRemaining = bonzoMaskCooldown * 1000;
 		}
 
 		if (SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
@@ -233,10 +220,7 @@ public class ItemCooldowns {
 						if (isPickaxe(internalname)) pickaxeCooldown = setCooldown(stack);
 						break;
 					case BONZO_MASK:
-						if (internalname.equals("BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
-						break;
-					case FRAGGED_BONZO_MASK:
-						if (internalname.equals("STARRED_BONZO_MASK")) fraggedBonzoMaskCooldown = setCooldown(stack);
+						if (internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
 						break;
 					case SPIRIT_MASK:
 						if (internalname.equals("SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
@@ -295,16 +279,11 @@ public class ItemCooldowns {
 
 			return durability;
 		}
-		// Bonzo Masks
-		if (internalname.equals("BONZO_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
+		// Bonzo Mask
+		if ((internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
 			findCooldownInTooltip(Item.BONZO_MASK);
 
 			return durabilityOverride(bonzomaskCooldownMillisRemaining, bonzoMaskCooldown, stack);
-		}
-		if (internalname.equals("STARRED_BONZO_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
-			findCooldownInTooltip(Item.FRAGGED_BONZO_MASK);
-
-			return durabilityOverride(fraggedBonzomaskCooldownMillisRemaining, fraggedBonzoMaskCooldown, stack);
 		}
 		// Spirit Mask
 		if (internalname.equals("SPIRIT_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility) {
