@@ -236,7 +236,8 @@ public class BasicPage extends GuiProfileViewerPage {
 					new Color(0, 0, 0, 64).getRGB()
 				);
 
-				fr.drawString(playerName, x - halfRankPrefixLen, y, 0, true);
+				String level = profile.getSkyBlockLevel();
+				fr.drawString(level + playerName, x - halfRankPrefixLen, y, 0, true);
 			}
 		}
 
@@ -829,7 +830,6 @@ public class BasicPage extends GuiProfileViewerPage {
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
 			weight = profile.getSoopyWeightLeaderboardPosition();
 		}
-
 
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +

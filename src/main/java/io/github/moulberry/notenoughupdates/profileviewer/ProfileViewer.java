@@ -676,9 +676,30 @@ public class ProfileViewer {
 		private long lastStatusInfoState = 0;
 		private long lastGuildInfoState = 0;
 		private long lastBingoInfoState = 0;
+		private String skyBlockExperience = "";
 
 		public Profile(final String uuid) {
 			this.uuid = uuid;
+		}
+
+		public String getSkyBlockLevel() {
+			if (skyBlockExperience.isEmpty()) {
+				final JsonObject profileInfo = getProfileInformation(latestProfile);
+
+				long exp = Utils.getElement(profileInfo, "leveling.experience").getAsLong();
+				int level = (int) (exp / 100);
+				String color = getLevelColor(level);
+				skyBlockExperience = "§8[" + color + level + "§8] ";
+			}
+			return skyBlockExperience;
+		}
+
+		private String getLevelColor(int level) {
+			if (level < 300) {
+				return "§f";
+			} else {
+				return "§c";
+			}
 		}
 
 		public JsonObject getPlayerStatus() {
