@@ -472,7 +472,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Bonzo Mask Ability Cooldown",
-		desc = "Show the cooldown duration of a bonzo mask ability as the durability.\nSupports using both fragged and non-fragged masks."
+		desc = "Show the cooldown duration of a bonzo mask ability as the durability."
 	)
 	@ConfigEditorBoolean
 	public boolean bonzoAbility = true;
