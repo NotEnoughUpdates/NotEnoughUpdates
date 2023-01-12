@@ -688,20 +688,19 @@ public class ProfileViewer {
 			}
 
 			final JsonObject profileInfo = getProfileInformation(profileName);
-			String sbExpString = getSbExpString(Utils.getElement(profileInfo, "leveling.experience"));
+			JsonElement element = Utils.getElement(profileInfo, "leveling.experience");
+
+			String sbExpString;
+			if (element == null) {
+				sbExpString = "§c[?]";
+			} else {
+				long experience = element.getAsLong();
+				int level = (int) (experience / 100);
+				String colour = getLevelColour(level);
+				sbExpString = "§8[" + colour + level + "§8]";
+			}
 			skyBlockExperience.put(profileName, sbExpString);
 			return sbExpString;
-		}
-
-		private String getSbExpString(JsonElement element) {
-			if (element == null) {
-				return "§c[?]";
-			}
-
-			long experience = element.getAsLong();
-			int level = (int) (experience / 100);
-			String colour = getLevelColour(level);
-			return "§8[" + colour + level + "§8]";
 		}
 
 		private String getLevelColour(int level) {
