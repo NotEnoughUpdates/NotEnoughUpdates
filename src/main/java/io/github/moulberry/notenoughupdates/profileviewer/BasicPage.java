@@ -236,7 +236,7 @@ public class BasicPage extends GuiProfileViewerPage {
 					new Color(0, 0, 0, 64).getRGB()
 				);
 
-				String level = profile.getSkyBlockLevel();
+				String level = profile.getSkyBlockLevel(profileId);
 				fr.drawString(level + playerName, x - halfRankPrefixLen, y, 0, true);
 			}
 		}
