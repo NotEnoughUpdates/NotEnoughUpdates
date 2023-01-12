@@ -235,9 +235,10 @@ public class BasicPage extends GuiProfileViewerPage {
 					y + 8,
 					new Color(0, 0, 0, 64).getRGB()
 				);
-
-				String level = profile.getSkyBlockLevel();
-				fr.drawString(level + playerName, x - halfRankPrefixLen, y, 0, true);
+				fr.drawString(playerName, x - halfRankPrefixLen, y, 0, true);
+				String level = profile.getSkyBlockLevel(profileId);
+				int halfLevelLength = fr.getStringWidth(level) / 2;
+				fr.drawString(level, x - halfLevelLength, y - 10, 0, true);
 			}
 		}
 
