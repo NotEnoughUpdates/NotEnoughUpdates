@@ -676,29 +676,32 @@ public class ProfileViewer {
 		private long lastStatusInfoState = 0;
 		private long lastGuildInfoState = 0;
 		private long lastBingoInfoState = 0;
-		private HashMap<String, String> skyBlockExperience = new HashMap<>();
+		private final HashMap<String, String> skyBlockExperience = new HashMap<>();
 
 		public Profile(String uuid) {
 			this.uuid = uuid;
 		}
 
 		public String getSkyBlockLevel(String profileName) {
-			if (!skyBlockExperience.containsKey(profileName)) {
-				final JsonObject profileInfo = getProfileInformation(profileName);
-
-				if (Utils.getElement(profileInfo, "leveling.experience") == null) {
-					skyBlockExperience.put(profileName, "§c[?]");
-					return "§c[?] ";
-				};
-				long exp = Utils.getElement(profileInfo, "leveling.experience").getAsLong();
-				int level = (int) (exp / 100);
-				String colour = getLevelColour(level);
-				String sbExpString = "§8[" + colour + level + "§8]";
-				skyBlockExperience.put(profileName, sbExpString);
-				return sbExpString;
-			} else {
+			if (skyBlockExperience.containsKey(profileName)) {
 				return skyBlockExperience.get(profileName);
 			}
+
+			final JsonObject profileInfo = getProfileInformation(profileName);
+			String sbExpString = getSbExpString(Utils.getElement(profileInfo, "leveling.experience"));
+			skyBlockExperience.put(profileName, sbExpString);
+			return sbExpString;
+		}
+
+		private String getSbExpString(JsonElement element) {
+			if (element == null) {
+				return "§c[?]";
+			}
+
+			long experience = element.getAsLong();
+			int level = (int) (experience / 100);
+			String colour = getLevelColour(level);
+			return "§8[" + colour + level + "§8]";
 		}
 
 		private String getLevelColour(int level) {
