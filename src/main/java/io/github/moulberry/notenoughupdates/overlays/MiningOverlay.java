@@ -506,23 +506,36 @@ public class MiningOverlay extends TextTabOverlay {
 
 	private String getTip(String name) {
 		if (SBInfo.getInstance().getLocation().equals("mining_3")) { // Dwarven Mines
+			if (name.equals("First Event")) return "Participate in any §6Mining Event";
+
+			// During Event
 			if (name.equals("Lucky Raffle")) return "Collect 20 Raffle Tickets during §6Raffle Event";
 			if (name.equals("Goblin Raid Slayer")) return "Kill 20 Goblins during §6Goblin Raid Event";
+			if (name.equals("Raffle")) return "Participate in §6Raffle Event";
+			if (name.equals("Goblin Raid")) return "Participate in §6Goblin Raid event";
+			if (name.equals("2x Mithril Powder Collector")) return "Collect 500 Mithril Powder during §62x Powder event";
 
-			if (name.equals("Mithril Miner")) return "Break 500 Mithril (anywhere)";
-			if (name.equals("Titanium Miner")) return "Break 15 Titanium (anywhere)";
+			// Slay
 			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
 			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Borrows)";
+			if (name.equals("Golden Goblin Slayer")) return "Kill 1 Golden Goblin (anywhere)";
+			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
+
+			// Mining
+			if (name.equals("Mithril Miner")) return "Break 500 Mithril (anywhere)";
+			if (name.equals("Titanium Miner")) return "Break 15 Titanium (anywhere)";
 
 			if (name.equals("Cliffside Veins Mithril")) return "Break 350 Mithril §b(Cliffside Veins)";
 			if (name.equals("Royal Mines Mithril")) return "Break 350 Mithril §b(Royal Mines)";
 			if (name.equals("Lava Springs Mithril")) return "Break 350 Mithril §b(Lava Springs)";
 			if (name.equals("Rampart's Quarry Mithril")) return "Break 350 Mithril §b(Rampart's Quarry)";
+			if (name.equals("Upper Mines Mithril")) return "Break 350 Mithril §b(Upper Mines)";
 
 			if (name.equals("Cliffside Veins Titanium")) return "Break 10 Titanium §b(Cliffside Veins)";
 			if (name.equals("Lava Springs Titanium")) return "Break 10 Titanium §b(Lava Springs)";
 			if (name.equals("Royal Mines Titanium")) return "Break 10 Titanium §b(Royal Mines)";
 			if (name.equals("Rampart's Quarry Titanium")) return "Break 10 Titanium §b(Rampart's Quarry)";
+			if (name.equals("Upper Mines Titanium")) return "Break 10 Titanium §b(Upper Mines)";
 
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
 			if (name.equals("Chest Looter")) return "Open 3 chests";
