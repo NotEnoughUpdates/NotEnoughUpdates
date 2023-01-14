@@ -375,6 +375,14 @@ public class MiningOverlay extends TextTabOverlay {
 						col = GOLD;
 					}
 					String tips = getTipPart(entry.getKey());
+					boolean newLine = NotEnoughUpdates.INSTANCE.config.mining.commissionTaskTipNewLine;
+					String newLineTip = null;
+					if (newLine) {
+						if (!tips.isEmpty()) {
+							newLineTip = "  " + tips;
+							tips = "";
+						}
+					}
 					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
 					int max;
 					if (-1 != (max = locationSpecific.commissionMaxes.getOrDefault(entry.getKey(), -1))) {
@@ -384,6 +392,9 @@ public class MiningOverlay extends TextTabOverlay {
 						String valS = Utils.floatToString(entry.getValue() * 100, 1);
 
 						commissionsStrings.add(DARK_AQUA + entry.getKey() + ": " + col + valS + "%" + tips);
+					}
+					if (newLineTip != null) {
+						commissionsStrings.add(newLineTip);
 					}
 				}
 			}
@@ -482,33 +493,49 @@ public class MiningOverlay extends TextTabOverlay {
 	}
 
 	private String getTipPart(String name) {
-		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) return "";
+		int settings = NotEnoughUpdates.INSTANCE.config.mining.commissionTaskTips;
+		if (settings == 0) return "";
+
+		if (!Minecraft.getMinecraft().thePlayer.isSneaking() && settings == 1) return "";
 
 		String tip = getTip(name);
 		if (tip == null) return "  §4???";
 
-		return " §f" + tip;
+		return " §8§l>§7 " + tip;
 	}
 
 	private String getTip(String name) {
 		if (SBInfo.getInstance().getLocation().equals("mining_3")) { // Dwarven Mines
-			if (name.equals("Lucky Raffle")) return "Collect 20 Raffle Tickets during §6Raffle event";
-			if (name.equals("Goblin Raid Slayer")) return "Kill 20 Goblins during §6Goblin Raid event";
+			if (name.equals("First Event")) return "Participate in any §6Mining Event";
 
-			if (name.equals("Mithril Miner")) return "Break 500 Mithril (everywhere)";
-			if (name.equals("Titanium Miner")) return "Break 15 Titanium (everywhere)";
+			// During Event
+			if (name.equals("Lucky Raffle")) return "Collect 20 Raffle Tickets during §6Raffle Event";
+			if (name.equals("Goblin Raid Slayer")) return "Kill 20 Goblins during §6Goblin Raid Event";
+			if (name.equals("Raffle")) return "Participate in §6Raffle Event";
+			if (name.equals("Goblin Raid")) return "Participate in §6Goblin Raid event";
+			if (name.equals("2x Mithril Powder Collector")) return "Collect 500 Mithril Powder during §62x Powder event";
+
+			// Slay
 			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
 			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Borrows)";
+			if (name.equals("Golden Goblin Slayer")) return "Kill 1 Golden Goblin (anywhere)";
+			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
+
+			// Mining
+			if (name.equals("Mithril Miner")) return "Break 500 Mithril (anywhere)";
+			if (name.equals("Titanium Miner")) return "Break 15 Titanium (anywhere)";
 
 			if (name.equals("Cliffside Veins Mithril")) return "Break 350 Mithril §b(Cliffside Veins)";
 			if (name.equals("Royal Mines Mithril")) return "Break 350 Mithril §b(Royal Mines)";
 			if (name.equals("Lava Springs Mithril")) return "Break 350 Mithril §b(Lava Springs)";
 			if (name.equals("Rampart's Quarry Mithril")) return "Break 350 Mithril §b(Rampart's Quarry)";
+			if (name.equals("Upper Mines Mithril")) return "Break 350 Mithril §b(Upper Mines)";
 
 			if (name.equals("Cliffside Veins Titanium")) return "Break 10 Titanium §b(Cliffside Veins)";
 			if (name.equals("Lava Springs Titanium")) return "Break 10 Titanium §b(Lava Springs)";
 			if (name.equals("Royal Mines Titanium")) return "Break 10 Titanium §b(Royal Mines)";
 			if (name.equals("Rampart's Quarry Titanium")) return "Break 10 Titanium §b(Rampart's Quarry)";
+			if (name.equals("Upper Mines Titanium")) return "Break 10 Titanium §b(Upper Mines)";
 
 		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
 			if (name.equals("Chest Looter")) return "Open 3 chests";
@@ -517,7 +544,7 @@ public class MiningOverlay extends TextTabOverlay {
 			String jungle = " §a(Jungle)";
 			String goblin = " §6(Golbin Holdout)";
 			String mithril = " §b(Mithril Deposits)";
-			String precursor = " §7(Precursor Remenants)";
+			String precursor = " §8(Precursor Remenants)";
 			String magma = " §c(Magma Fields)";
 
 			if (name.equals("Goblin Slayer")) return "Kill 13 Goblins" + goblin;
@@ -537,12 +564,12 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (name.endsWith("Gemstone Collector")) {
-				if (name.startsWith("Amber")) return "Break orange" + goblin;
-				if (name.startsWith("Sapphire")) return "Break blue" + precursor;
-				if (name.startsWith("Jade")) return "Break green" + mithril;
-				if (name.startsWith("Amethyst")) return "Break purple" + jungle;
-				if (name.startsWith("Ruby")) return "Break red (everywhere)";
-				if (name.startsWith("Topaz")) return "Break yellow" + magma;
+				if (name.startsWith("Amber")) return "Break orange glass" + goblin;
+				if (name.startsWith("Sapphire")) return "Break blue glass" + precursor;
+				if (name.startsWith("Jade")) return "Break green glass" + mithril;
+				if (name.startsWith("Amethyst")) return "Break purple glass" + jungle;
+				if (name.startsWith("Ruby")) return "Break red glass (anywhere)";
+				if (name.startsWith("Topaz")) return "Break yellow glass" + magma;
 			}
 		}
 
@@ -679,6 +706,9 @@ public class MiningOverlay extends TextTabOverlay {
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
 		if (!NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlayIcons) return;
 		GlStateManager.enableDepth();
+
+		// No icon for the tip line
+		if (line.contains(">")) return;
 
 		ItemStack icon = null;
 		String cleaned = Utils.cleanColour(line);

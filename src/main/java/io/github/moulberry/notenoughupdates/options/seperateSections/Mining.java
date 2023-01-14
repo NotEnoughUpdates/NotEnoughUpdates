@@ -233,11 +233,30 @@ public class Mining {
 	@ConfigOption(
 		name = "Star Cult Tab",
 		desc = "Only show the star cult timer when tab list is open\n" +
-			"\u00A7cThis only works outside of Dwarven Caves!"
+			"§cThis only works outside of Dwarven Caves!"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
 	public boolean starCultDisplayOnlyShowTab = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Commission Task Tips",
+		desc = "Show tips to help complete commission tasks"
+	)
+	@ConfigEditorDropdown(
+		values = {"Off", "Only while sneaking", "Always"}
+	)
+	@ConfigAccordionId(id = 2)
+	public int commissionTaskTips = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Tips in New Line",
+		desc = "Show the Commission Task Tips in the next line.")
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean commissionTaskTipNewLine = true;
 
 	@ConfigOption(
 		name = "Metal Detector Solver",
