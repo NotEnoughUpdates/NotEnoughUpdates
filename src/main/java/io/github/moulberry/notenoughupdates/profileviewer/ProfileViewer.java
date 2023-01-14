@@ -666,9 +666,39 @@ public class ProfileViewer {
 		private long lastStatusInfoState = 0;
 		private long lastGuildInfoState = 0;
 		private long lastBingoInfoState = 0;
+		private final HashMap<String, String> skyBlockExperience = new HashMap<>();
 
 		public Profile(String uuid) {
 			this.uuid = uuid;
+		}
+
+		public String getSkyBlockLevel(String profileName) {
+			if (skyBlockExperience.containsKey(profileName)) {
+				return skyBlockExperience.get(profileName);
+			}
+
+			final JsonObject profileInfo = getProfileInformation(profileName);
+			JsonElement element = Utils.getElement(profileInfo, "leveling.experience");
+
+			String sbExpString;
+			if (element == null) {
+				sbExpString = "§c[?]";
+			} else {
+				long experience = element.getAsLong();
+				int level = (int) (experience / 100);
+				String colour = getLevelColour(level);
+				sbExpString = "§8[" + colour + level + "§8]";
+			}
+			skyBlockExperience.put(profileName, sbExpString);
+			return sbExpString;
+		}
+
+		private String getLevelColour(int level) {
+			if (level < 300) {
+				return "§f";
+			} else {
+				return "§c";
+			}
 		}
 
 		public JsonObject getPlayerStatus() {
