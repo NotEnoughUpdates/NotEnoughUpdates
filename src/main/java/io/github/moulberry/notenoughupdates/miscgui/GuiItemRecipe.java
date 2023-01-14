@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -71,6 +70,7 @@ public class GuiItemRecipe extends GuiScreen {
 
 	private int currentIndex = 0;
 	private int currentTab = 0;
+	public static long lastKeybindMs = -1;
 
 	private final Map<RecipeType, List<NeuRecipe>> craftingRecipes = new HashMap<>();
 	private final List<RecipeType> tabs = new ArrayList<>();
@@ -257,9 +257,11 @@ public class GuiItemRecipe extends GuiScreen {
 		for (RecipeSlot slot : getAllRenderedSlots()) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
 				ItemStack itemStack = slot.getItemStack();
-				if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
+				if (keyPressed == manager.keybindViewRecipe.getKeyCode() &&
+				System.currentTimeMillis() - lastKeybindMs > 200) {
 					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack));
-				} else if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
+				} else if (keyPressed == manager.keybindViewUsages.getKeyCode() &&
+					System.currentTimeMillis() - lastKeybindMs > 200) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
 				}
 			}

@@ -37,6 +37,7 @@ import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
+import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
@@ -1143,12 +1144,14 @@ public class NEUOverlay extends Gui {
 					JsonObject item = manager.getItemInformation().get(internalname.get());
 					if (item != null) {
 						if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
+							GuiItemRecipe.lastKeybindMs = System.currentTimeMillis();
 							manager.displayGuiItemUsages(internalname.get());
 							return true;
 						} else if (keyPressed == manager.keybindFavourite.getKeyCode()) {
 							toggleFavourite(item.get("internalname").getAsString());
 							return true;
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
+							GuiItemRecipe.lastKeybindMs = System.currentTimeMillis();
 							manager.showRecipe(item);
 							return true;
 						} else if (keyPressed == manager.keybindGive.getKeyCode()) {
