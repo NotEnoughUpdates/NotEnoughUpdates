@@ -742,7 +742,7 @@ public class SlotLocking {
 	@SubscribeEvent
 	public void barrierInventory(ReplaceItemEvent event) {
 		if (event.getSlotNumber() < 9 ||
-			(pairingSlot != null && event.getSlotNumber() == pairingSlot.slotNumber) ||
+			(pairingSlot != null && (event.getSlotNumber() == pairingSlot.slotNumber || isArmourSlot(event.getSlotNumber(), pairingSlot.slotNumber))) ||
 			!setTopHalfBarrier ||
 			!(event.getInventory() instanceof InventoryPlayer)) return;
 		ItemStack stack = new ItemStack(Blocks.barrier);
@@ -751,5 +751,13 @@ public class SlotLocking {
 			true
 		);
 		event.replaceWith(stack);
+	}
+
+	boolean isArmourSlot(int eventSlotNumber, int pairingSlotNumber) {
+		if (eventSlotNumber == 39 && pairingSlotNumber == 5) return true;
+		if (eventSlotNumber == 38 && pairingSlotNumber == 6) return true;
+		if (eventSlotNumber == 37 && pairingSlotNumber == 7) return true;
+		if (eventSlotNumber == 36 && pairingSlotNumber == 8) return true;
+		return false;
 	}
 }
