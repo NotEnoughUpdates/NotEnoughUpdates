@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -19,51 +19,42 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
-import io.github.moulberry.notenoughupdates.NEUManager
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.ChromaColour
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.LRUCache
+import io.github.moulberry.notenoughupdates.util.MuseumUtil
 import net.minecraft.client.gui.Gui
 import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.IInventory
-import net.minecraft.inventory.Slot
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MuseumItemHighlighter {
 
-    val manager get() = NotEnoughUpdates.INSTANCE.manager
-    val config get() = NotEnoughUpdates.INSTANCE.config.miscOverlays
+    private val manager get() = NotEnoughUpdates.INSTANCE.manager
+    private val config get() = NotEnoughUpdates.INSTANCE.config.museum
 
-    fun getHighlightColor() = ChromaColour.specialToChromaRGB(config.museumItemColor)
+    private fun getHighlightColor() = ChromaColour.specialToChromaRGB(config.museumItemColor)
 
 
-    val findRawItemForName = LRUCache.memoize(::findRawItemForName0, 4 * 7 * 2)
+    private val findRawItemForName = LRUCache.memoize(::findRawItemForName0, 4 * 7 * 2)
 
     @SubscribeEvent
     fun onRepositoryReload(event: RepositoryReloadEvent) {
         findRawItemForName.clearCache()
     }
 
-    fun findRawItemForName0(name: String): ItemStack? {
-        val monochromeName = NEUManager.cleanForTitleMapSearch(name)
-        return monochromeName.split(" ")
-            .mapNotNull { manager.titleWordMap[it]?.keys }
-            .flatten()
-            .toSet()
-            .asSequence()
-            .map { manager.createItem(it) }
-            .filter {
-                it.displayName != null && it.displayName.isNotEmpty() && NEUManager.cleanForTitleMapSearch(it.displayName) in monochromeName
-            }
-            .maxByOrNull { it.displayName.length }
+    private fun findRawItemForName0(arg: Pair<String, Boolean>): ItemStack? {
+        val (name, armor) = arg
+        return MuseumUtil.findItemsByName(name, armor).firstOrNull()?.let { manager.createItem(it) }
     }
 
 
@@ -73,7 +64,8 @@ object MuseumItemHighlighter {
         if (!isMuseumInventory(event.inventory)) return
         val original = event.original ?: return
         if (!isCompletedRetrievedItem(original)) return
-        val rawItem = findRawItemForName.apply(original.displayName) ?: return
+        val armor = StringUtils.cleanColour(event.inventory.displayName.unformattedText).endsWith("Armor Sets")
+        val rawItem = findRawItemForName.apply(original.displayName to armor) ?: return
         val hydratedItem = hydrateMuseumItem(rawItem, original)
         event.replaceWith(hydratedItem)
     }
@@ -120,11 +112,6 @@ object MuseumItemHighlighter {
 
     fun isHydratedMuseumItem(stack: ItemStack): Boolean {
         return ItemUtils.getOrCreateTag(stack).getBoolean(MUSEUM_HYDRATED_ITEM_TAG)
-    }
-
-    @JvmStatic
-    fun onDrawSlot(slotIn: Slot) {
-
     }
 
     const val MUSEUM_HYDRATED_ITEM_TAG = "NEU_HYDRATED_MUSEUM_ITEM"

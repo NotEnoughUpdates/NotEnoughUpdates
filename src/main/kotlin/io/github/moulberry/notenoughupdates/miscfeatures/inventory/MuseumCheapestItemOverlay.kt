@@ -19,20 +19,18 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
-import io.github.moulberry.notenoughupdates.NEUManager
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
-import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery
+import io.github.moulberry.notenoughupdates.util.MuseumUtil
+import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
 import io.github.moulberry.notenoughupdates.util.Utils
-import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
 import net.minecraft.inventory.Slot
-import net.minecraft.item.ItemDye
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiScreenEvent
@@ -52,9 +50,9 @@ object MuseumCheapestItemOverlay {
 
     private const val ITEMS_PER_PAGE = 8
 
-    private val backgroundResource: ResourceLocation by lazy {
-        ResourceLocation("notenoughupdates:dungeon_chest_worth.png")
-    }
+    private val backgroundResource: ResourceLocation = ResourceLocation("notenoughupdates:dungeon_chest_worth.png")
+
+    val config get() = NotEnoughUpdates.INSTANCE.config.museum
 
     /**
      * The top left position of the arrows to be drawn, used by [ArrowPagesUtils]
@@ -140,7 +138,7 @@ object MuseumCheapestItemOverlay {
         var totalValue = 0.0
         internalNames.forEach {
             val itemValue: Double =
-                when (NotEnoughUpdates.INSTANCE.config.miscOverlays.museumCheapestItemOverlayValueSource) {
+                when (config.museumCheapestItemOverlayValueSource) {
                     0 -> NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(it, false)
                     1 -> NotEnoughUpdates.INSTANCE.manager.auctionManager.getCraftCost(it)?.craftCost ?: return@forEach
                     else -> -1.0 //unreachable
@@ -210,42 +208,25 @@ object MuseumCheapestItemOverlay {
      * Parse the not already donated items present in the currently open Museum page
      */
     private fun parseItems(slots: List<Slot>) {
-        //iterate upper chest with 56 slots
+        // Iterate upper chest with 56 slots
         val time = System.currentTimeMillis()
+        val armor = Utils.getOpenChestName().endsWith("Armor Sets")
         for (i in 0..53) {
             val stack = slots[i].stack ?: continue
-            //check for gray dye which indicates that the item has not been donated
-            if (stack.item is ItemDye && stack.itemDamage == 8) {
-                val name = stack.displayName.stripControlCodes()
-                val armor = Utils.getOpenChestName().endsWith("Armor Sets")
-                val internalNames = guessInternalNames(name, armor)
-                val value = calculateValue(internalNames)
+            val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
+            when (parsedItems.state) {
+                MISSING ->
+                    if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds })
+                        itemsToDonate.add(
+                            MuseumItem(
+                                stack.displayName,
+                                parsedItems.skyblockItemIds,
+                                calculateValue(parsedItems.skyblockItemIds),
+                                time
+                            )
+                        )
 
-                val displayName = if (armor) {
-                    "${EnumChatFormatting.BLUE}$name"
-                } else {
-                    NotEnoughUpdates.INSTANCE.manager.getDisplayName(internalNames[0]) ?: "ERROR"
-                }
-
-                //make sure this item does not already exist
-                if (itemsToDonate.none { it.internalNames == internalNames }) {
-                    itemsToDonate.add(MuseumItem(displayName, internalNames, value, time))
-                }
-            } else if (stack.item is ItemDye && stack.itemDamage == 10) { //also check donated items
-                val name = stack.displayName.stripControlCodes()
-                val armor = Utils.getOpenChestName().endsWith("Armor Sets")
-                val internalNames = guessInternalNames(name, armor)
-                //remove items that have these internalnames
-                itemsToDonate.retainAll { it.internalNames != internalNames }
-            } else {
-                var name = listOf(
-                    NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack)
-                        .resolveInternalName()
-                )
-                if (name[0] == null) {
-                    name = guessInternalNames(stack.displayName, true)
-                }
-                itemsToDonate.retainAll { it.internalNames != name }
+                else -> itemsToDonate.retainAll { it.internalNames != parsedItems.skyblockItemIds }
             }
         }
     }
@@ -256,44 +237,9 @@ object MuseumCheapestItemOverlay {
     private fun checkIfHighestPageWasVisited(slots: List<Slot>) {
         val category = getCategory()
         val nextPageSlot = slots[53]
-        //if the "Next Page" arrow is missing, we are at the highest page
+        // If the "Next Page" arrow is missing, we are at the highest page
         if ((nextPageSlot.stack ?: return).item != Items.arrow) {
             checkedPages[category] = true
-        }
-    }
-
-    /**
-     * Try to guess the internal names for a given item from the Museum. Due to Hypixels naming inconsistencies this does not work on every armor set
-     */
-    private fun guessInternalNames(itemName: String, armor: Boolean): List<String> {
-        return if (armor) {
-            val mustHaves = arrayOf(
-                "HELMET",
-                "LEGGINGS",
-                "CHESTPLATE",
-                "BOOTS"
-            )
-            val monochromeName = NEUManager.cleanForTitleMapSearch(itemName)
-            val candidates = monochromeName.split(" ")
-                .asSequence()
-                .mapNotNull { NotEnoughUpdates.INSTANCE.manager.titleWordMap[it]?.keys }
-                .flatten()
-                .filter {
-                    val item = NotEnoughUpdates.INSTANCE.manager.createItem(it)
-                    val name = NEUManager.cleanForTitleMapSearch(item.displayName)
-                    monochromeName.replace("armor", "") in name
-                }.filter { item ->
-                    mustHaves.any {
-                        item.contains(it)
-                    }
-                }
-                //filter out duplicates
-                .toSet()
-                .toList()
-
-            return candidates
-        } else {
-            listOf(ItemResolutionQuery.getInternalNameByDisplayName(itemName))
         }
     }
 
@@ -321,7 +267,7 @@ object MuseumCheapestItemOverlay {
      * Determine if the overlay should be active based on the config option and the currently open GuiChest, if applicable
      */
     private fun shouldRender(gui: GuiScreen): Boolean =
-        NotEnoughUpdates.INSTANCE.config.miscOverlays.museumCheapestItemOverlay && gui is GuiChest && Utils.getOpenChestName()
+        config.museumCheapestItemOverlay && gui is GuiChest && Utils.getOpenChestName()
             .startsWith("Museum ➜")
 
     /**
