@@ -471,7 +471,8 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 		}
 		JsonObject pets = Constants.PETS;
-		if (pets != null && pets.has("custom_pet_leveling") && pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase())) {
+		if (pets != null && pets.has("custom_pet_leveling") && pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase()) &&
+			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().has("xp_multiplier")) {
 			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().get("xp_multiplier").getAsFloat();
 		}
 		return xp;
