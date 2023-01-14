@@ -24,6 +24,7 @@ import com.google.gson.JsonParseException;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -36,9 +37,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -188,31 +190,63 @@ public class ItemResolutionQuery {
 		return null;
 	}
 
+	/**
+	 * Search for an item by the display name
+	 *
+	 * @param displayName  The display name of the item we are searching
+	 * @param mayBeMangled Whether the item name may be mangled (for example: reforges, stars)
+	 * @return the internal neu item id of that item, or null
+	 */
+	public static String findInternalNameByDisplayName(String displayName, boolean mayBeMangled) {
+		var cleanDisplayName = StringUtils.cleanColour(displayName);
+		var manager = NotEnoughUpdates.INSTANCE.manager;
+		String bestMatch = null;
+		int bestMatchLength = -1;
+		for (String internalName : findInternalNameCandidatesForDisplayName(cleanDisplayName)) {
+			var item = manager.createItem(internalName);
+			if (item.getDisplayName() == null) continue;
+			var cleanItemDisplayName = StringUtils.cleanColour(item.getDisplayName());
+			if (cleanItemDisplayName.length() == 0) continue;
+			if (mayBeMangled
+				? !cleanDisplayName.contains(cleanItemDisplayName)
+				: !cleanItemDisplayName.equals(cleanDisplayName)) {
+				continue;
+			}
+			if (cleanItemDisplayName.length() > bestMatchLength) {
+				bestMatchLength = cleanItemDisplayName.length();
+				bestMatch = internalName;
+			}
+		}
+		return bestMatch;
+	}
+
+	/**
+	 * Find potential item ids for a given display name. This function is over eager to give results,
+	 * and may give invalid results, but if there is a matching item in the repository it will return <em>at least</em>
+	 * that item. This should be used as a first filtering pass. Use {@link #findInternalNameByDisplayName} for a more
+	 * user-friendly API.
+	 *
+	 * @param displayName The display name of the item we are searching
+	 * @return a list of internal neu item ids some of which may have a matching display name
+	 */
+	public static Set<String> findInternalNameCandidatesForDisplayName(String displayName) {
+		var cleanDisplayName = NEUManager.cleanForTitleMapSearch(displayName);
+		var titleWordMap = NotEnoughUpdates.INSTANCE.manager.titleWordMap;
+		var candidates = new HashSet<String>();
+		for (var partialDisplayName : cleanDisplayName.split(" ")) {
+			if (!titleWordMap.containsKey(partialDisplayName)) continue;
+			candidates.addAll(titleWordMap.get(partialDisplayName).keySet());
+		}
+		return candidates;
+	}
+
 	private String resolveItemInCatacombsRngMeter() {
 		List<String> lore = ItemUtils.getLore(compound);
 		if (lore.size() > 16) {
 			String s = lore.get(15);
 			if (s.equals("§7Selected Drop")) {
 				String displayName = lore.get(16);
-				return getInternalNameByDisplayName(displayName);
-			}
-		}
-
-		return null;
-	}
-
-	public static String getInternalNameByDisplayName(String displayName) {
-		String cleanDisplayName = StringUtils.cleanColour(displayName);
-		for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
-			.getItemInformation()
-			.entrySet()) {
-
-			JsonObject object = entry.getValue();
-			if (object.has("displayname")) {
-				String name = object.get("displayname").getAsString();
-				if (StringUtils.cleanColour(name).equals(cleanDisplayName)) {
-					return entry.getKey();
-				}
+				return findInternalNameByDisplayName(displayName, false);
 			}
 		}
 
