@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.dungeons;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.util.NEUResourceManager;
@@ -73,6 +74,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@NEUAutoSubscribe
 public class DungeonMap {
 	private static final ResourceLocation GREEN_CHECK = new ResourceLocation(
 		"notenoughupdates:dungeon_map/green_check.png");

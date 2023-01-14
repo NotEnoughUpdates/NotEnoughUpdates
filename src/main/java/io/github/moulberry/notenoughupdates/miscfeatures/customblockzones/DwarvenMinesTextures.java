@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -46,6 +47,7 @@ import java.util.Set;
 import static io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes.isMithril;
 import static io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes.isTitanium;
 
+@NEUAutoSubscribe
 public class DwarvenMinesTextures implements IslandZoneSubdivider {
 
 	private static class IgnoreColumn {

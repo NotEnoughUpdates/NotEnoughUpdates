@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.util;
 import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@NEUAutoSubscribe
 public class XPInformation {
 	private static final XPInformation INSTANCE = new XPInformation();
 

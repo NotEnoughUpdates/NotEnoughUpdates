@@ -23,7 +23,9 @@ import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay.Rarity
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 
+@NEUAutoSubscribe
 object PetLeveling {
 
     data class ExpLadder(

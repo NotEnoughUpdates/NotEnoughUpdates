@@ -19,8 +19,13 @@
 
 package neubs
 
+import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.tasks.*
+import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.the
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -28,22 +33,16 @@ import java.util.*
 const val NEU_BUILDFLAGS_PREFIX = "neu.buildflags."
 
 class NEUBuildFlags : Plugin<Project> {
+
     override fun apply(target: Project) {
         val props =
             target.properties.filterKeys { it.startsWith(NEU_BUILDFLAGS_PREFIX) }.mapValues { it.value as String }
         target.extensions.add("buildflags", Extension(props))
-        target.tasks.create("generateBuildFlags") {
-            outputs.upToDateWhen { false }
-            val t = target.layout.buildDirectory.file("buildflags.properties")
-            outputs.file(t)
-            doLast {
-                val p = Properties()
-                p.putAll(props)
-                t.get().asFile.writer(StandardCharsets.UTF_8).use {
-                    p.store(it, "Store build time configuration for NEU")
-                }
-            }
-
+        target.tasks.create<WriteProperties>("generateBuildFlags") {
+            this.encoding = StandardCharsets.UTF_8.name()
+            this.setProperties(props)
+            this.comment = "Store build time configuration for NEU"
+            this.setOutputFile(target.layout.buildDirectory.file("buildflags.properties"))
         }
     }
 

@@ -30,8 +30,8 @@ plugins {
 		id("com.github.johnrengelman.shadow") version "7.1.2"
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
-		id("io.freefair.lombok") version "6.5.1"
-		kotlin("jvm") version "1.7.20"
+		kotlin("jvm") version "1.8.0"
+		id("com.google.devtools.ksp") version "1.8.0-1.0.8"
 }
 
 
@@ -62,6 +62,7 @@ loom {
 				pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
 				mixinConfig("mixins.notenoughupdates.json")
 		}
+		@Suppress("UnstableApiUsage")
 		mixin {
 				defaultRefmapName.set("mixins.notenoughupdates.refmap.json")
 		}
@@ -78,44 +79,43 @@ repositories {
 		maven("https://repo.polyfrost.cc/releases")
 }
 
-lombok {
-		version.set("1.18.24")
-}
-
-
-val shadowImplementation by configurations.creating {
+val shadowImplementation: Configuration by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
 
-val shadowOnly by configurations.creating {
+val shadowOnly: Configuration by configurations.creating {
 
 }
 
-val shadowApi by configurations.creating {
+val shadowApi: Configuration by configurations.creating {
 		configurations.api.get().extendsFrom(this)
 }
 
-val devEnv by configurations.creating {
+val devEnv: Configuration by configurations.creating {
 		configurations.runtimeClasspath.get().extendsFrom(this)
 		isCanBeResolved = false
 		isCanBeConsumed = false
 		isVisible = false
 }
 
-val kotlinDependencies by configurations.creating {
+val kotlinDependencies: Configuration by configurations.creating {
 		configurations.implementation.get().extendsFrom(this)
 }
 
-val oneconfigQuarantineSourceSet = sourceSets.create("oneconfig") {
+val oneconfigQuarantineSourceSet: SourceSet = sourceSets.create("oneconfig") {
 		java {
 				srcDir(layout.projectDirectory.dir("src/main/oneconfig"))
 		}
-		kotlin {
+}
+
+configurations {
+		val main = getByName(sourceSets.main.get().compileClasspathConfigurationName)
+		"oneconfigImplementation" {
+				extendsFrom(main)
 		}
 }
 
 dependencies {
-		implementation("org.projectlombok:lombok:1.18.22")
 		minecraft("com.mojang:minecraft:1.8.9")
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
@@ -126,21 +126,27 @@ dependencies {
 				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
 		}
 
-		"oneconfigImplementation"(sourceSets.main.get().output)
-		"oneconfigImplementation"(sourceSets.main.get().compileClasspath)
 		"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
+		"oneconfigImplementation"(sourceSets.main.get().output)
 		"runtimeOnly"(oneconfigQuarantineSourceSet.output)
 
 		// Please keep this version in sync with KotlinLoadingTweaker
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.7.21"))
 		kotlinDependencies(kotlin("stdlib"))
 
+		ksp(shadowImplementation(project(":annotations"))!!)
+		compileOnly("org.projectlombok:lombok:1.18.24")
+		annotationProcessor("org.projectlombok:lombok:1.18.24")
+		"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
+
 		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
 		}
 		annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
+
+		@Suppress("VulnerableLibrariesLocal")
 		shadowApi("info.bliki.wiki:bliki-core:3.1.0")
-		testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+		testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 		testAnnotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
 
@@ -151,14 +157,23 @@ dependencies {
 
 java {
 		withSourcesJar()
-		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+//		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 // Tasks:
 
 tasks.withType(JavaCompile::class) {
 		options.encoding = "UTF-8"
+		options.isFork = true
+		if (JavaVersion.current().isJava9Compatible)
+				options.release.set(8)
 }
+tasks.named("compileOneconfigJava", JavaCompile::class) {
+		doFirst {
+				println("oneconfig args: ${this@named.options.compilerArgs}")
+		}
+}
+
 
 tasks.named<Test>("test") {
 		useJUnitPlatform()
@@ -189,12 +204,16 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 		}
 }
 
+tasks.remapSourcesJar {
+		this.enabled = false
+}
+
 /* Bypassing https://github.com/johnrengelman/shadow/issues/111 */
 // Use Zip instead of Jar as to not include META-INF
 val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
 		archiveFileName.set("kotlin-libraries-wrapped.jar")
 		destinationDirectory.set(project.layout.buildDirectory.dir("kotlinwrapper"))
-		from(kotlinDependencies.files)
+		from(kotlinDependencies)
 		into("neu-kotlin-libraries-wrapped")
 }
 
@@ -224,6 +243,15 @@ tasks.processResources {
 				expand(
 						"version" to project.version, "mcversion" to "1.8.9"
 				)
+		}
+}
+
+idea {
+		module {
+				// Not using += due to https://github.com/gradle/gradle/issues/8749
+				sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin") // or tasks["kspKotlin"].destination
+				testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
+				generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
 		}
 }
 

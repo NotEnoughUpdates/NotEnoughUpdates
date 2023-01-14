@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.customblockzones;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.OnBlockBreakSoundEffect;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.block.BlockColored;
@@ -37,6 +38,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+
+@NEUAutoSubscribe
 public class CustomBiomes {
 
 	public static final CustomBiomes INSTANCE = new CustomBiomes();

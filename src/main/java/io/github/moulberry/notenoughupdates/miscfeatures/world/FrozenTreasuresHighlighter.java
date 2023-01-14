@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.world;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import net.minecraft.block.Block;
@@ -34,6 +35,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 
+@NEUAutoSubscribe
 public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 
 	private static final FrozenTreasuresHighlighter INSTANCE = new FrozenTreasuresHighlighter();

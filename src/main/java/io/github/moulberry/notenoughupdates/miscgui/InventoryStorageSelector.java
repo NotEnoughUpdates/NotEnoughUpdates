@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -39,7 +40,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
+@NEUAutoSubscribe
 public class InventoryStorageSelector {
 	private static final InventoryStorageSelector INSTANCE = new InventoryStorageSelector();
 
