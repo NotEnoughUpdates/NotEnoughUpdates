@@ -68,6 +68,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.item.enchants.EnchantStyleCustomizer;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
@@ -207,6 +209,13 @@ public class NotEnoughUpdates {
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
+	}
+
 	public File getConfigFile() {
 		return this.configFile;
 	}
@@ -217,13 +226,6 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
-	}
-
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**
@@ -353,6 +355,8 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
 		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(new WardrobeMouseButtons());
+		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

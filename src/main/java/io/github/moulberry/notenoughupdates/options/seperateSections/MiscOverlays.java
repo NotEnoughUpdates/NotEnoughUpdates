@@ -24,7 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
@@ -431,4 +431,49 @@ public class MiscOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean todoIcons = true;
+
+	@ConfigOption(
+		name = "Museum Overlay",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 1)
+	public boolean museumAccordion = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Show Museum Items",
+		desc = "Show real items instead of green dye in the museum"
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorBoolean
+	public boolean museumItemShow = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Highlight virtual museum items",
+		desc = "Highlight virtual museum items with a background color"
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorColour
+	public String museumItemColor = "0:255:0:255:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Show Items to donate",
+		desc = "Show the cheapest items you have not yet donated to the Museum"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean museumCheapestItemOverlay = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Value calculation",
+		desc = "Choose the source for the value calculation"
+	)
+	@ConfigEditorDropdown(
+		values = {"Lowest BIN", "Craft cost"}
+	)
+	@ConfigAccordionId(id = 1)
+	public int museumCheapestItemOverlayValueSource = 0;
 }
