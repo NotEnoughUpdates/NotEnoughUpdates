@@ -161,4 +161,6 @@ data class KatRecipe(
     override fun getBackground(): ResourceLocation {
         return ResourceLocation("notenoughupdates:textures/gui/katting_tall.png")
     }
+
+    override fun shouldUseForCraftCost() = false
 }

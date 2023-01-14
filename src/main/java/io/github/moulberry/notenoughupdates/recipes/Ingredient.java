@@ -32,7 +32,7 @@ import java.util.Set;
 public class Ingredient {
 
 	public static final String SKYBLOCK_COIN = "SKYBLOCK_COIN";
-	private final int count;
+	private final double count;
 	private final String internalItemId;
 	private final NEUManager manager;
 	private ItemStack itemStack;
@@ -42,7 +42,7 @@ public class Ingredient {
 		String[] parts = ingredientIdentifier.split(":");
 		internalItemId = parts[0];
 		if (parts.length == 2) {
-			count = Integer.parseInt(parts[1]);
+			count = Double.parseDouble(parts[1]);
 		} else if (parts.length == 1) {
 			count = 1;
 		} else {
@@ -50,13 +50,13 @@ public class Ingredient {
 		}
 	}
 
-	public Ingredient(NEUManager manager, String internalItemId, int count) {
+	public Ingredient(NEUManager manager, String internalItemId, double count) {
 		this.manager = manager;
 		this.count = count;
 		this.internalItemId = internalItemId;
 	}
 
-	private Ingredient(NEUManager manager, int coinValue) {
+	private Ingredient(NEUManager manager, double coinValue) {
 		this.manager = manager;
 		this.internalItemId = SKYBLOCK_COIN;
 		this.count = coinValue;
@@ -82,7 +82,7 @@ public class Ingredient {
 		return "SKYBLOCK_COIN".equals(internalItemId);
 	}
 
-	public int getCount() {
+	public double getCount() {
 		return count;
 	}
 
@@ -97,7 +97,7 @@ public class Ingredient {
 		}
 		JsonObject itemInfo = manager.getItemInformation().get(internalItemId);
 		itemStack = manager.jsonToStack(itemInfo);
-		itemStack.stackSize = count;
+		itemStack.stackSize = (int) count;
 		return itemStack;
 	}
 

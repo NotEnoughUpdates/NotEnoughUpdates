@@ -34,33 +34,33 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
 		super(option);
 		if (minStep < 0) minStep = 0.01f;
 
-		float floatVal = ((Number) option.get()).floatValue();
-		{
-			String strVal;
-			if (floatVal % 1 == 0) {
-				strVal = Integer.toString((int) floatVal);
-			} else {
-				strVal = Float.toString(floatVal);
-			}
-			textField = new GuiElementTextField(
-				strVal,
-				GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT
-			);
-		}
+		float floatVal = getFloatValue();
+		textField = new GuiElementTextField(
+			getStringifiedFloatValue(),
+			GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT
+		);
 
 		slider = new GuiElementSlider(0, 0, 80, minValue, maxValue, minStep, floatVal, (val) -> {
 			option.set(val);
-
-			String strVal;
-			if (val % 1 == 0) {
-				strVal = Integer.toString(val.intValue());
-			} else {
-				strVal = Float.toString(val);
-				strVal = strVal.replaceAll("(\\.\\d\\d\\d)(?:\\d)+", "$1");
-				strVal = strVal.replaceAll("0+$", "");
-			}
-			textField.setText(strVal);
+			textField.setText(getStringifiedFloatValue());
 		});
+	}
+
+	public String getStringifiedFloatValue() {
+		float floatVal = getFloatValue();
+		String strVal;
+		if (floatVal % 1 == 0) {
+			strVal = Integer.toString((int) floatVal);
+		} else {
+			strVal = Float.toString(floatVal);
+			strVal = strVal.replaceAll("(\\.\\d\\d\\d)\\d+", "$1");
+			strVal = strVal.replaceAll("0+$", "");
+		}
+		return strVal;
+	}
+
+	public float getFloatValue() {
+		return ((Number) option.get()).floatValue();
 	}
 
 	@Override
@@ -72,6 +72,9 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
 		int sliderWidth = (fullWidth - 5) * 3 / 4;
 		int textFieldWidth = (fullWidth - 5) / 4;
 
+		if (!Mouse.isButtonDown(0)) {
+			slider.setValue(getFloatValue());
+		}
 		slider.x = x + width / 6 - fullWidth / 2;
 		slider.y = y + height - 7 - 14;
 		slider.width = sliderWidth;
@@ -84,6 +87,7 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
 				16
 			);
 		} else {
+			textField.setText(getStringifiedFloatValue());
 			textField.setSize(textFieldWidth, 16);
 			textField.setOptions(
 				GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT);

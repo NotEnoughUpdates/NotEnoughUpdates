@@ -35,14 +35,16 @@ import static io.github.moulberry.notenoughupdates.util.GuiTextures.button_tex;
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
 	private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
 
-	private int keyCode;
 	private final int defaultKeyCode;
 	private boolean editingKeycode;
 
-	public GuiOptionEditorKeybind(ConfigProcessor.ProcessedOption option, int keyCode, int defaultKeyCode) {
+	public GuiOptionEditorKeybind(ConfigProcessor.ProcessedOption option, int defaultKeyCode) {
 		super(option);
-		this.keyCode = keyCode;
 		this.defaultKeyCode = defaultKeyCode;
+	}
+
+	public int getKeyCode() {
+		return (int) option.get();
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(button_tex);
 		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 
-		String keyName = KeybindHelper.getKeyName(keyCode);
+		String keyName = KeybindHelper.getKeyName(getKeyCode());
 		String text = editingKeycode ? "> " + keyName + " <" : keyName;
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(text,
 			Minecraft.getMinecraft().fontRendererObj,
@@ -72,8 +74,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
 	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
 		if (Mouse.getEventButtonState() && Mouse.getEventButton() != -1 && editingKeycode) {
 			editingKeycode = false;
-			keyCode = Mouse.getEventButton() - 100;
-			option.set(keyCode);
+			option.set(Mouse.getEventButton() - 100);
 			return true;
 		}
 
@@ -86,8 +87,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
 			}
 			if (mouseX > x + width / 6 - 24 + 48 + 3 && mouseX < x + width / 6 - 24 + 48 + 13 &&
 				mouseY > y + height - 7 - 14 + 3 && mouseY < y + height - 7 - 14 + 3 + 11) {
-				keyCode = defaultKeyCode;
-				option.set(keyCode);
+				option.set(defaultKeyCode);
 				return true;
 			}
 		}
@@ -99,13 +99,15 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
 	public boolean keyboardInput() {
 		if (editingKeycode) {
 			editingKeycode = false;
+			int keyCode = -1;
 			if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 				keyCode = 0;
 			} else if (Keyboard.getEventKey() != 0) {
 				keyCode = Keyboard.getEventKey();
 			}
 			if (keyCode > 256) keyCode = 0;
-			option.set(keyCode);
+			if (keyCode != -1)
+				option.set(keyCode);
 			return true;
 		}
 		return false;

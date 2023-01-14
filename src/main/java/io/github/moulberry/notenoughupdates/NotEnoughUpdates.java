@@ -63,6 +63,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PowerStoneStatsDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
+import io.github.moulberry.notenoughupdates.miscfeatures.WardrobeMouseButtons;
 import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
@@ -80,6 +81,7 @@ import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
+import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.FuelBar;
@@ -295,6 +297,8 @@ public class NotEnoughUpdates {
 			if (config.mining.powderGrindingTrackerResetMode == 2)
 				OverlayManager.powderGrindingOverlay.load();
 
+		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config, this::saveConfig));
+
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
@@ -352,6 +356,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(new WardrobeMouseButtons());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

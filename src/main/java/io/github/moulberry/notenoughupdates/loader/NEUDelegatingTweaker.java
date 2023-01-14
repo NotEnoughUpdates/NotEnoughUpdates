@@ -19,14 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.loader;
 
+import io.github.moulberry.notenoughupdates.BuildFlags;
 import io.github.moulberry.notenoughupdates.envcheck.EnvironmentScan;
 import net.minecraft.launchwrapper.ITweaker;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.launch.MixinTweaker;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class NEUDelegatingTweaker implements ITweaker {
 		EnvironmentScan.checkEnvironmentOnce();
 	}
 
-	List<ITweaker> delegates = new ArrayList<>();
+	List<String> delegates = new ArrayList<>();
 
 	public NEUDelegatingTweaker() {
 		discoverTweakers();
@@ -56,45 +57,32 @@ public class NEUDelegatingTweaker implements ITweaker {
 	}
 
 	private void discoverTweakers() {
-		delegates.add(new MixinTweaker());
-		delegates.add(new ModLoadingTweaker());
-		delegates.add(new KotlinLoadingTweaker());
+		if (BuildFlags.ENABLE_ONECONFIG_COMPAT_LAYER) {
+			delegates.add("cc.polyfrost.oneconfigwrapper.OneConfigWrapper");
+		}
+		delegates.add(MixinTweaker.class.getName());
+		delegates.add(ModLoadingTweaker.class.getName());
+		delegates.add(KotlinLoadingTweaker.class.getName());
 	}
 
 	@Override
 	public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
-		for (ITweaker delegate : delegates) {
-			delegate.acceptOptions(args, gameDir, assetsDir, profile);
-		}
+		List<String> tweakClasses = (List<String>) Launch.blackboard.get("TweakClasses");
+		tweakClasses.addAll(delegates);
 	}
 
 	@Override
 	public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-		for (ITweaker delegate : delegates) {
-			delegate.injectIntoClassLoader(classLoader);
-		}
 	}
 
 	@Override
 	public String getLaunchTarget() {
-		String target = null;
-		for (ITweaker delegate : delegates) {
-			String launchTarget = delegate.getLaunchTarget();
-			if (launchTarget != null)
-				target = launchTarget;
-		}
-		return target;
+		return null;
 	}
 
 	@Override
 	public String[] getLaunchArguments() {
-		List<String> launchArguments = new ArrayList<>();
-		for (ITweaker delegate : delegates) {
-			String[] delegateLaunchArguments = delegate.getLaunchArguments();
-			if (delegateLaunchArguments != null)
-				launchArguments.addAll(Arrays.asList(delegateLaunchArguments));
-		}
-		return launchArguments.toArray(new String[0]);
+		return new String[0];
 	}
 
 }

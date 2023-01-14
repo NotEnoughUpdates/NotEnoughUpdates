@@ -37,7 +37,7 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
 		super(option);
 		this.config = config;
 		this.runnableId = runnableId;
-		bool = new GuiElementBoolean(0, 0, (boolean) option.get(), 10, (value) -> onUpdate(option, value));
+		bool = new GuiElementBoolean(0, 0, () -> (boolean) option.get(), 10, (value) -> onUpdate(option, value));
 	}
 
 	@Override

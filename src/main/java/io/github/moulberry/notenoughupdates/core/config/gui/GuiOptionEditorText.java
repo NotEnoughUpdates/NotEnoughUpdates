@@ -47,6 +47,8 @@ public class GuiOptionEditorText extends GuiOptionEditor {
 				fullWidth,
 				Minecraft.getMinecraft().fontRendererObj.getStringWidth(textField.getText()) + 10
 			);
+		} else {
+			textField.setText((String) option.get());
 		}
 
 		textField.setSize(fullWidth, 16);

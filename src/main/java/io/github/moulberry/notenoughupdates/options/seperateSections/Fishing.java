@@ -263,8 +263,8 @@ public class Fishing {
 
 	@Expose
 	@ConfigOption(
-		name = "Fishing timer colour (30s)",
-		desc = "Colour of the fishing timer after 30 seconds or more have passed",
+		name = "Fishing timer colour (20s)",
+		desc = "Colour of the fishing timer after 20 seconds or more have passed",
 		searchTags = "color"
 	)
 	@ConfigEditorColour
@@ -273,8 +273,8 @@ public class Fishing {
 
 	@Expose
 	@ConfigOption(
-		name = "Fishing timer ping (30s)",
-		desc = "Play a sound after 30 seconds passed"
+		name = "Fishing timer ping (20s)",
+		desc = "Play a sound after 20 seconds passed"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 6)

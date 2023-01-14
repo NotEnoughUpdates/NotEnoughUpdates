@@ -71,10 +71,13 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -2036,5 +2039,29 @@ public class Utils {
 		} else {
 			System.out.println(message);
 		}
+	}
+
+	public static boolean openUrl(String url) {
+		try {
+			Desktop desk = Desktop.getDesktop();
+			desk.browse(new URI(url));
+			return true;
+		} catch (UnsupportedOperationException | IOException | URISyntaxException ignored) {
+			Runtime runtime = Runtime.getRuntime();
+			try {
+				runtime.exec("xdg-open " + url);
+				return true;
+			} catch (IOException e) {
+				Utils.playSound(new ResourceLocation("game.player.hurt"), true);
+				return false;
+			}
+		}
+	}
+
+	public static void sendLeftMouseClick(int windowId, int slot) {
+		Minecraft.getMinecraft().playerController.windowClick(
+			windowId,
+			slot, 0, 0, Minecraft.getMinecraft().thePlayer
+		);
 	}
 }

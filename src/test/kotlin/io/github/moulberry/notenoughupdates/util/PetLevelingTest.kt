@@ -265,6 +265,16 @@ internal class PetLevelingTest {
                 1886700
               ],
               "max_level": 200
+            },
+            "BINGO": {
+                "rarity_offset": {
+                    "COMMON": 0,
+                    "UNCOMMON": 0,
+                    "RARE": 0,
+                    "EPIC": 0,
+                    "LEGENDARY": 0,
+                    "MYTHIC": 0
+                }
             }
           },
           "pet_types": {
@@ -336,6 +346,33 @@ internal class PetLevelingTest {
     fun setup() {
         PetLeveling.petConstants = testJson
     }
+
+
+    @Test
+    fun testMaxedLevel200Pet() {
+        val leveling = PetLeveling.getPetLevelingForPet0("GOLDEN_DRAGON", PetInfoOverlay.Rarity.LEGENDARY)
+        Assertions.assertEquals(200, leveling.cumulativeLevelCost.size)
+        val level = leveling.getPetLevel(219451664.0)
+        Assertions.assertEquals(200, level.maxLevel)
+        Assertions.assertEquals(200, level.currentLevel)
+    }
+
+    @Test
+    fun testNonLegendaryMaxLevelPet() {
+        val leveling = PetLeveling.getPetLevelingForPet0("GUARDIAN", PetInfoOverlay.Rarity.EPIC)
+        Assertions.assertEquals(100, leveling.cumulativeLevelCost.size)
+        val level = leveling.getPetLevel(67790664.0)
+        Assertions.assertEquals(100, level.currentLevel)
+        Assertions.assertEquals(100, level.maxLevel)
+    }
+
+    @Test
+    fun testBingoPetsLevelLikeCommon() {
+        val levelingC = PetLeveling.getPetLevelingForPet0("BINGO", PetInfoOverlay.Rarity.COMMON)
+        val levelingE = PetLeveling.getPetLevelingForPet0("BINGO", PetInfoOverlay.Rarity.EPIC)
+        Assertions.assertEquals(levelingC.getPetLevel(67790664.0), levelingE.getPetLevel(67790664.0))
+    }
+
 
     @Test
     fun testPetLevelGrandmaWolf() {

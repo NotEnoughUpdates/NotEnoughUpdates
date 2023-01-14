@@ -39,4 +39,5 @@ pluginManagement {
 		}
 }
 
+include("oneconfigquarantine")
 rootProject.name = "NotEnoughUpdates"

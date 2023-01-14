@@ -46,6 +46,7 @@ import io.github.moulberry.notenoughupdates.util.LerpingFloat;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -84,6 +85,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -110,6 +112,7 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:supersecretassets/lunar.png");
 	private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
+	private static final ResourceLocation SEARCH_MODE_BUTTON = new ResourceLocation("notenoughupdates:search_mode_button.png");
 
 	private final NEUManager manager;
 
@@ -426,7 +429,7 @@ public class NEUOverlay extends Gui {
 		};
 	}
 
-	private MBGuiElement createHelpButton(NEUOverlay overlay) {
+	private MBGuiElement createSearchModeButton() {
 		return new MBGuiElement() {
 			@Override
 			public int getWidth() {
@@ -443,14 +446,12 @@ public class NEUOverlay extends Gui {
 
 			@Override
 			public void mouseClick(float x, float y, int mouseX, int mouseY) {
-				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableHelpButton) {
+				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableSearchModeButton) {
 					return;
 				}
 				if (Mouse.getEventButtonState()) {
-					//displayInformationPane(HTMLInfoPane.createFromWikiUrl(overlay, manager, "Help",
-					//        "https://moulberry.github.io/files/neu_help.html"));
-					//Minecraft.getMinecraft().displayGuiScreen(new HelpGUI());
-					ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neuhelp");
+					searchMode = !searchMode;
+					lastSearchMode = System.currentTimeMillis();
 					Utils.playPressSound();
 				}
 			}
@@ -463,7 +464,7 @@ public class NEUOverlay extends Gui {
 				int paddingUnscaled = getPaddingUnscaled();
 				int searchYSize = getSearchBarYSize();
 
-				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableHelpButton) {
+				if (!NotEnoughUpdates.INSTANCE.config.toolbar.enableSearchModeButton) {
 					return;
 				}
 
@@ -473,7 +474,7 @@ public class NEUOverlay extends Gui {
 					searchYSize + paddingUnscaled * 2, searchYSize + paddingUnscaled * 2, GL11.GL_NEAREST
 				);
 
-				Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
+				Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_MODE_BUTTON);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				Utils.drawTexturedRect((int) x + paddingUnscaled, (int) y + paddingUnscaled,
 					getSearchBarYSize(), getSearchBarYSize()
@@ -618,7 +619,7 @@ public class NEUOverlay extends Gui {
 		List<MBGuiElement> children = Lists.newArrayList(
 			createSettingsButton(this),
 			createSearchBar(),
-			createHelpButton(this)
+			createSearchModeButton()
 		);
 		return new MBGuiGroupAligned(children, false) {
 			public int getPadding() {
@@ -1156,8 +1157,30 @@ public class NEUOverlay extends Gui {
 									manager.jsonToStack(item));
 							}
 						} else if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing &&
-							Keyboard.getEventCharacter() == 'k') {
-							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(internalname.get(), item));
+							keyPressed == Keyboard.KEY_K) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+								var externalEditorCommand = NotEnoughUpdates.INSTANCE.config.hidden.externalEditor;
+								if (externalEditorCommand == null) {
+									Utils.addChatMessage(
+										"§e[NEU] §3No external editor set! Run §b/neudevtest exteditor <editorcommand>§3 " +
+											"to set your external editor. Optionally use {} as a placeholder for the filename.");
+								} else {
+									var externalFileName = manager.getItemFileForInternalName(internalname.get()).getAbsolutePath();
+									if (externalEditorCommand.contains("{}")) {
+										externalEditorCommand = externalEditorCommand.replace("{}", externalFileName);
+									} else {
+										externalEditorCommand += " " + externalFileName;
+									}
+									try {
+										Runtime.getRuntime().exec(externalEditorCommand);
+									} catch (IOException e) {
+										Utils.addChatMessage("§e[NEU]§4 Could not open external editor.");
+										e.printStackTrace();
+									}
+								}
+							} else {
+								Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(internalname.get(), item));
+							}
 							return true;
 						} else if (keyPressed == manager.keybindItemSelect.getKeyCode() &&
 							NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
