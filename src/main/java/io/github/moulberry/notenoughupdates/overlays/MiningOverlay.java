@@ -31,7 +31,6 @@ import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
@@ -39,10 +38,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.WorldSettings;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -379,22 +374,24 @@ public class MiningOverlay extends TextTabOverlay {
 					} else if (entry.getValue() >= 0.25) {
 						col = GOLD;
 					}
+					String tips = getTipPart(entry.getKey());
 					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
 					int max;
 					if (-1 != (max = locationSpecific.commissionMaxes.getOrDefault(entry.getKey(), -1))) {
 						commissionsStrings.add(
-							DARK_AQUA + entry.getKey() + ": " + col + Math.round(entry.getValue() * max) + "/" + max);
+							DARK_AQUA + entry.getKey() + ": " + col + Math.round(entry.getValue() * max) + "/" + max + tips);
 					} else {
 						String valS = Utils.floatToString(entry.getValue() * 100, 1);
 
-						commissionsStrings.add(DARK_AQUA + entry.getKey() + ": " + col + valS + "%");
+						commissionsStrings.add(DARK_AQUA + entry.getKey() + ": " + col + valS + "%" + tips);
 					}
 				}
 			}
 
 			if (ItemCooldowns.firstLoadMillis > 0) {
 				//set cooldown on first skyblock load.
-				ItemCooldowns.pickaxeUseCooldownMillisRemaining = 60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
+				ItemCooldowns.pickaxeUseCooldownMillisRemaining =
+					60 * 1000 - (System.currentTimeMillis() - ItemCooldowns.firstLoadMillis);
 				ItemCooldowns.firstLoadMillis = 0;
 			}
 
@@ -449,7 +446,7 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (starCultDisplay) {
-				if(overlayStrings == null) overlayStrings = new ArrayList<>();
+				if (overlayStrings == null) overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.starCultDisplayOnlyShowTab ||
 					lastTabState) {
@@ -467,7 +464,7 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 
 			if (forgeDisplay) {
-				if(overlayStrings == null) 	overlayStrings = new ArrayList<>();
+				if (overlayStrings == null) overlayStrings = new ArrayList<>();
 
 				if (!NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayOnlyShowTab ||
 					lastTabState) {
@@ -484,14 +481,81 @@ public class MiningOverlay extends TextTabOverlay {
 		if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
 	}
 
+	private String getTipPart(String name) {
+		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) return "";
+
+		String tip = getTip(name);
+		if (tip == null) return "  §4???";
+
+		return " §f" + tip;
+	}
+
+	private String getTip(String name) {
+		if (SBInfo.getInstance().getLocation().equals("mining_3")) { // Dwarven Mines
+			if (name.equals("Lucky Raffle")) return "Collect 20 Raffle Tickets during §6Raffle event";
+			if (name.equals("Goblin Raid Slayer")) return "Kill 20 Goblins during §6Goblin Raid event";
+
+			if (name.equals("Mithril Miner")) return "Break 500 Mithril (everywhere)";
+			if (name.equals("Titanium Miner")) return "Break 15 Titanium (everywhere)";
+			if (name.equals("Ice Walker Slayer")) return "Kill 50 Ice Walkers §b(Great Ice Wall)";
+			if (name.equals("Goblin Slayer")) return "Kill 100 Goblins §b(Goblin Borrows)";
+
+			if (name.equals("Cliffside Veins Mithril")) return "Break 350 Mithril §b(Cliffside Veins)";
+			if (name.equals("Royal Mines Mithril")) return "Break 350 Mithril §b(Royal Mines)";
+			if (name.equals("Lava Springs Mithril")) return "Break 350 Mithril §b(Lava Springs)";
+			if (name.equals("Rampart's Quarry Mithril")) return "Break 350 Mithril §b(Rampart's Quarry)";
+
+			if (name.equals("Cliffside Veins Titanium")) return "Break 10 Titanium §b(Cliffside Veins)";
+			if (name.equals("Lava Springs Titanium")) return "Break 10 Titanium §b(Lava Springs)";
+			if (name.equals("Royal Mines Titanium")) return "Break 10 Titanium §b(Royal Mines)";
+			if (name.equals("Rampart's Quarry Titanium")) return "Break 10 Titanium §b(Rampart's Quarry)";
+
+		} else if (SBInfo.getInstance().getLocation().equals("crystal_hollows")) { // Crystal Hollows
+			if (name.equals("Chest Looter")) return "Open 3 chests";
+			if (name.equals("Hard Stone Miner")) return "Break 1,000 Hard Stone";
+
+			String jungle = " §a(Jungle)";
+			String goblin = " §6(Golbin Holdout)";
+			String mithril = " §b(Mithril Deposits)";
+			String precursor = " §7(Precursor Remenants)";
+			String magma = " §c(Magma Fields)";
+
+			if (name.equals("Goblin Slayer")) return "Kill 13 Goblins" + goblin;
+			if (name.equals("Sludge Slayer")) return "Kill 25 Sludges" + jungle;
+			if (name.equals("Thyst Slayer")) return "Kill 5 Thysts, when breaking Amethysts" + jungle;
+			if (name.equals("Boss Corleone Slayer")) return "Find and kill Corleone" + mithril;
+			if (name.equals("Yog Slayer")) return "Kill 13 Yogs" + magma;
+			if (name.equals("Automaton Slayer")) return "Kill 13 Automatons" + precursor;
+			if (name.equals("Team Treasurite Member Slayer")) return "Kill 13 Team Treasurite Members" + mithril;
+
+			if (name.endsWith("Crystal Hunter")) {
+				if (name.startsWith("Amethyst")) return "Temple Jump & Run" + jungle;
+				if (name.startsWith("Jade")) return "4 weapons from Mines of Divan" + mithril;
+				if (name.startsWith("Amber")) return "King and Queen" + goblin;
+				if (name.startsWith("Sapphire")) return "6 Robot Parts in Precursor City" + precursor;
+				if (name.startsWith("Topaz")) return "Kill Bal" + magma;
+			}
+
+			if (name.endsWith("Gemstone Collector")) {
+				if (name.startsWith("Amber")) return "Break orange" + goblin;
+				if (name.startsWith("Sapphire")) return "Break blue" + precursor;
+				if (name.startsWith("Jade")) return "Break green" + mithril;
+				if (name.startsWith("Amethyst")) return "Break purple" + jungle;
+				if (name.startsWith("Ruby")) return "Break red (everywhere)";
+				if (name.startsWith("Topaz")) return "Break yellow" + magma;
+			}
+		}
+
+		return null;
+	}
+
 	private static List<String> getForgeStrings(List<ForgeItem> forgeItems) {
 		List<String> forgeString = new ArrayList<>();
 		long currentTimeMillis = System.currentTimeMillis();
 		forgeIDLabel:
 		for (int i = 0; i < 5; i++) {
-			for (ForgeItem forgeItem : forgeItems) {
-				if (forgeItem.forgeID == i) {
-					ForgeItem item = forgeItem;
+			for (ForgeItem item : forgeItems) {
+				if (item.forgeID == i) {
 					if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplay == 0) {
 						if (item.status == 2 && item.finishTime < currentTimeMillis) {
 
@@ -541,7 +605,6 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 		}
 		forgeItems.add(item);
-		return;
 	}
 
 	public static class ForgeItem {
