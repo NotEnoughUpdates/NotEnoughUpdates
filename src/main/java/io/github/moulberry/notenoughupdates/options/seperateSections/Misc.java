@@ -306,7 +306,7 @@ public class Misc {
 	@Expose
 	@ConfigOption(
 		name = "Group Join PV",
-		desc = "View another player's profile by clicking on the chat message when they join in a dungeon pr kuudra group."
+		desc = "View another player's profile by clicking on the chat message when they join in a dungeon or kuudra group."
 	)
 	@ConfigEditorBoolean
 	public boolean dungeonGroupsPV = true;
