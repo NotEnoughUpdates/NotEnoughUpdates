@@ -55,6 +55,7 @@
     "MixinEntityChargedCreeper",
     "MixinGuiEditSign",
     "MixinGuiTextField",
+    "MixinLayerDeadmau5Head",
     "MixinThreadDownloadImageData",
     "MixinThreadDownloadImageDataThread"
   ]
