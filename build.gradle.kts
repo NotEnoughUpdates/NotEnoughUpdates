@@ -131,7 +131,7 @@ dependencies {
 		"runtimeOnly"(oneconfigQuarantineSourceSet.output)
 
 		// Please keep this version in sync with KotlinLoadingTweaker
-		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.7.21"))
+		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 		kotlinDependencies(kotlin("stdlib"))
 
 		ksp(shadowImplementation(project(":annotations"))!!)

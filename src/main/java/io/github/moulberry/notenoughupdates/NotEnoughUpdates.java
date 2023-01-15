@@ -270,7 +270,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(new RenderListener(this));
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
-		AutoLoad.INSTANCE.provide(MinecraftForge.EVENT_BUS::register);
+		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

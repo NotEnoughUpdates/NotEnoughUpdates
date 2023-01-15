@@ -46,7 +46,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Map;
 
 @NEUAutoSubscribe
-
 public class MiningStuff {
 	private static BlockPos overlayLoc = null;
 	private static long titaniumNotifMillis = 0;

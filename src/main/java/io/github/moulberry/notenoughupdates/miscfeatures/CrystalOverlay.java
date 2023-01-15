@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 @NEUAutoSubscribe
 public class CrystalOverlay {
 	private enum CrystalType {
