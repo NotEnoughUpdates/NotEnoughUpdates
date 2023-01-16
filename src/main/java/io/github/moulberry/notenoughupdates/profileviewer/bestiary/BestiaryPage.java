@@ -117,7 +117,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Color color = new Color(128, 128, 128, 255);
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Bestiary Level: ",
-			EnumChatFormatting.GRAY + "" + (float) getBestiaryTiers(profileInfo) / 10,
+			EnumChatFormatting.GRAY + "" + (float) GuiProfileViewer.getProfile().getBestiaryTiers(profileInfo) / 10,
 			guiLeft + 220,
 			guiTop + 50,
 			110
@@ -264,39 +264,5 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			}
 			yIndex++;
 		}
-	}
-
-	private int getBestiaryTiers(JsonObject profileInfo) {
-		int beLevel = 0;
-		for (ItemStack items : BestiaryData.getBestiaryLocations().keySet()) {
-			List<String> mobs = BestiaryData.getBestiaryLocations().get(items);
-			if (mobs != null) {
-				for (String mob : mobs) {
-					if (mob != null) {
-						float kills = Utils.getElementAsFloat(Utils.getElement(profileInfo, "bestiary.kills_" + mob), 0);
-						String type;
-						if (BestiaryData.getMobType().get(mob) != null) {
-							type = BestiaryData.getMobType().get(mob);
-						} else {
-							type = "MOB";
-						}
-						JsonObject leveling = Constants.LEVELING;
-						ProfileViewer.Level level = null;
-						if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
-							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
-							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
-						}
-
-						float levelNum = 0;
-						if (level != null) {
-							levelNum = level.level;
-						}
-						beLevel += (int) Math.floor(levelNum);
-					}
-				}
-			}
-		}
-		return beLevel;
 	}
 }

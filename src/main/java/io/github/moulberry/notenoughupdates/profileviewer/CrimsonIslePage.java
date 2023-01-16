@@ -63,7 +63,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		"Infernal"
 	};
 
-	private static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
+	public static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
 		put("mob_kb", EnumChatFormatting.GOLD + "Test of Force");
 		put("wall_jump", EnumChatFormatting.LIGHT_PURPLE + "Test of Stamina");
 		put("archer", EnumChatFormatting.YELLOW + "Test of Mastery");
@@ -73,7 +73,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		put("fireball", EnumChatFormatting.GOLD + "Test of Tenacity");
 	}};
 
-	private static final LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<Integer, String>() {{
+	public static final LinkedHashMap<Integer, String> dojoPointsToRank = new LinkedHashMap<Integer, String>() {{
 		put(0, EnumChatFormatting.GRAY + "None");
 		put(1000, EnumChatFormatting.YELLOW + "Yellow");
 		put(2000, EnumChatFormatting.GREEN + "Green");
@@ -278,7 +278,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		);
 	}
 
-	public String getRank(int points) {
+	public static String getRank(int points) {
 		int lastRank = 0;
 		for (Map.Entry<Integer, String> rank : dojoPointsToRank.entrySet()) {
 			if (points < rank.getKey()) {

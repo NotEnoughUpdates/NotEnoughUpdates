@@ -147,7 +147,7 @@ public class DevTestCommand extends ClientCommandBase {
 																								})
 																								.thenCompose(obj -> ProfileCollectionInfo.getCollectionData(
 																									obj,
-																									Minecraft.getMinecraft().thePlayer.getUniqueID()
+																									Minecraft.getMinecraft().thePlayer.getUniqueID().toString()
 																								))
 																								.thenAccept(it ->
 																									Utils.addChatMessage("Response: " + it));

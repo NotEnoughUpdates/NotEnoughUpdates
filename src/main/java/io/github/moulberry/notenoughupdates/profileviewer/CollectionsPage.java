@@ -37,6 +37,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -217,10 +218,10 @@ public class CollectionsPage extends GuiProfileViewerPage {
 
 						String tierString;
 						int tier = (int) Utils.getElementAsFloat(collectionTiers.get(collection), 0);
-						if (tier > 20 || tier < 0) {
+						if (tier > 20 || tier <= 0) {
 							tierString = String.valueOf(tier);
 						} else {
-							tierString = romans[tier];
+							tierString = romans[tier-1];
 						}
 						float amount = Utils.getElementAsFloat(totalAmounts.get(collection), 0);
 						float maxAmount = Utils.getElementAsFloat(maxAmounts.get(collection), 0);

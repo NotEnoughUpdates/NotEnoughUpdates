@@ -25,14 +25,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
@@ -40,19 +44,27 @@ import net.minecraft.util.EnumChatFormatting;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ProfileViewer {
 
@@ -247,7 +259,7 @@ public class ProfileViewer {
 						"REDSTONE",
 						"QUARTZ",
 						"OBSIDIAN",
-						"GLOWSTONE",
+						"GLOWSTONE_DUST",
 						"GRAVEL",
 						"ICE",
 						null,
@@ -449,6 +461,10 @@ public class ProfileViewer {
 	private final NEUManager manager;
 	private final HashMap<String, JsonObject> uuidToHypixelProfile = new HashMap<>();
 	private final HashMap<String, Profile> uuidToProfileMap = new HashMap<>();
+	private final HashMap<String, Double> skyBlockExperience = new HashMap<>();
+
+	private final HashMap<String, EnumChatFormatting> skyBlockExperienceColour = new HashMap<>();
+
 	private final HashMap<String, String> nameToUuid = new HashMap<>();
 
 	public ProfileViewer(NEUManager manager) {
@@ -648,6 +664,10 @@ public class ProfileViewer {
 		private final HashMap<String, PlayerStats.Stats> stats = new HashMap<>();
 		private final HashMap<String, PlayerStats.Stats> passiveStats = new HashMap<>();
 		private final HashMap<String, Long> networth = new HashMap<>();
+		private final HashMap<String, Integer> magicalPower = new HashMap<>();
+
+		private final HashMap<String, CompletableFuture<ProfileCollectionInfo>> collectionInfoHashMap = new HashMap<>();
+
 		private final HashMap<String, SoopyNetworthData> soopyNetworth = new HashMap<>();
 		private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
@@ -669,6 +689,118 @@ public class ProfileViewer {
 
 		public Profile(String uuid) {
 			this.uuid = uuid;
+		}
+
+		/**
+		 * Calculates the amount of Magical Power the player has using the list of accessories
+		 *
+		 * @return the amount of Magical Power or -1
+		 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getInventoryInfo(String)
+		 */
+		public int getMagicalPower(String profileId) {
+			JsonObject inventoryInfo = getInventoryInfo(profileId);
+			JsonObject profileInfo = getProfileInformation(profileId);
+			if (magicalPower.containsKey(profileId)) return magicalPower.get(profileId);
+			if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") ||
+				!inventoryInfo.get("talisman_bag").isJsonArray()) {
+				return -1;
+			}
+
+			Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo
+																										.get("talisman_bag")
+																										.getAsJsonArray())
+																									.map(o -> {
+																										try {
+																											return JsonToNBT.getTagFromJson(o
+																												.getAsJsonObject()
+																												.get("nbttag")
+																												.getAsString());
+																										} catch (Exception ignored) {
+																											return null;
+																										}
+																									}).filter(Objects::nonNull).map(tag -> {
+					NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
+					String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
+					if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
+						lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
+					}
+					JsonArray lastElementJsonArray = new JsonArray();
+					lastElementJsonArray.add(new JsonPrimitive(lastElement));
+					return new AbstractMap.SimpleEntry<>(
+						tag.getCompoundTag("ExtraAttributes").getString("id"),
+						Utils.getRarityFromLore(lastElementJsonArray)
+					);
+				}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(
+					Map.Entry::getKey,
+					Map.Entry::getValue,
+					(v1, v2) -> v1,
+					LinkedHashMap::new
+				));
+
+			Set<String> ignoredTalismans = new HashSet<>();
+			int powerAmount = 0;
+			for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
+				if (ignoredTalismans.contains(entry.getKey())) {
+					continue;
+				}
+
+				JsonArray children = Utils
+					.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray())
+					.getAsJsonArray();
+				for (JsonElement child : children) {
+					ignoredTalismans.add(child.getAsString());
+				}
+
+				if (entry.getKey().equals("HEGEMONY_ARTIFACT")) {
+					switch (entry.getValue()) {
+						case 4:
+							powerAmount += 16;
+							break;
+						case 5:
+							powerAmount += 22;
+							break;
+					}
+				}
+				if (entry.getKey().equals("ABICASE")) {
+					if (profileInfo != null && profileInfo.has("nether_island_player_data") &&
+						profileInfo.get("nether_island_player_data").getAsJsonObject().has("abiphone") && profileInfo
+						.get(
+							"nether_island_player_data")
+						.getAsJsonObject()
+						.get("abiphone")
+						.getAsJsonObject()
+						.has("active_contacts")) { // BatChest
+						int contact =
+							profileInfo.get("nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().get(
+								"active_contacts").getAsJsonArray().size();
+						powerAmount += Math.floor(contact / 2);
+					}
+				}
+				switch (entry.getValue()) {
+					case 0:
+					case 6:
+						powerAmount += 3;
+						break;
+					case 1:
+					case 7:
+						powerAmount += 5;
+						break;
+					case 2:
+						powerAmount += 8;
+						break;
+					case 3:
+						powerAmount += 12;
+						break;
+					case 4:
+						powerAmount += 16;
+						break;
+					case 5:
+						powerAmount += 22;
+						break;
+				}
+			}
+			magicalPower.put(profileId, powerAmount);
+			return powerAmount;
 		}
 
 		public JsonObject getPlayerStatus() {
@@ -924,6 +1056,69 @@ public class ProfileViewer {
 			return null;
 		}
 
+		/*
+		public LevelData getLevelData(String profileName) {
+			if (levelData.containsKey(profileName)) {
+				return levelData.get(profileName);
+			}
+			LevelData data = new LevelData(
+				new CoreTaskData().loadInformation(profileName),
+				new DungeonTaskData().loadInformation(profileName),
+				new EssenceTaskData().loadInformation(profileName),
+				new MiscTaskData().loadInformation(profileName),
+				new SkillRelatedTaskData().loadInformation(profileName),
+				new SlayingTaskData().loadInformation(profileName),
+				new StoryTaskData().loadInformation(profileName),
+				Constants.SBLEVELS
+			);
+			levelData.put(profileName, data);
+
+			return data;
+		}
+
+		 */
+
+		public EnumChatFormatting getSkyblockLevelColour(String profileName) {
+			if (skyBlockExperienceColour.containsKey(profileName)) {
+				return skyBlockExperienceColour.get(profileName);
+			}
+
+			double skyblockLevel = getSkyblockLevel(profileName);
+
+			EnumChatFormatting previousColor = EnumChatFormatting.WHITE;
+			JsonObject sblevelColours = Constants.SBLEVELS.getAsJsonObject("sblevel_colours");
+			try {
+				for (Map.Entry<String, JsonElement> stringJsonElementEntry : sblevelColours.entrySet()) {
+					int key = Integer.parseInt(stringJsonElementEntry.getKey());
+					EnumChatFormatting valueByName = EnumChatFormatting.getValueByName(stringJsonElementEntry
+						.getValue()
+						.getAsString());
+					if (skyblockLevel <= key) {
+
+						skyBlockExperienceColour.put(profileName, previousColor);
+						return previousColor;
+					}
+					previousColor = valueByName;
+				}
+			} catch (RuntimeException ignored) { // catch both numberformat and getValueByName being wrong
+			}
+			return EnumChatFormatting.WHITE;
+		}
+
+		public double getSkyblockLevel(String profileName) {
+			if (skyBlockExperience.containsKey(profileName)) {
+				return skyBlockExperience.get(profileName);
+			}
+			final JsonObject profileInfo = getProfileInformation(profileName);
+			JsonElement element = Utils.getElement(profileInfo, "leveling.experience");
+			double level = 0;
+			if (element != null) {
+				level = (element.getAsLong() / 100F);
+			}
+			skyBlockExperience.put(profileName, level);
+			return level;
+		}
+
 		public long getNetWorth(String profileName) {
 			if (profileName == null) profileName = latestProfile;
 			if (networth.get(profileName) != null) return networth.get(profileName);
@@ -1163,6 +1358,10 @@ public class ProfileViewer {
 					if (profile.has("game_mode")) {
 						profileInfo.add("game_mode", profile.get("game_mode"));
 					}
+					if (profile.has("community_upgrades")) {
+						profileInfo.add("community_upgrades", profile.get("community_upgrades"));
+					}
+					profileInfo.add("members", members);
 					profileMap.put(profileName, profileInfo);
 					return profileInfo;
 				}
@@ -1216,6 +1415,7 @@ public class ProfileViewer {
 			inventoryCacheMap.clear();
 			collectionInfoMap.clear();
 			networth.clear();
+			magicalPower.clear();
 		}
 
 		public int getCap(JsonObject leveling, String skillName) {
@@ -1223,6 +1423,40 @@ public class ProfileViewer {
 			return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
 				? capsElement.getAsJsonObject().get(skillName).getAsInt()
 				: 50;
+		}
+
+		public int getBestiaryTiers(JsonObject profileInfo) {
+			int beLevel = 0;
+			for (ItemStack items : BestiaryData.getBestiaryLocations().keySet()) {
+				List<String> mobs = BestiaryData.getBestiaryLocations().get(items);
+				if (mobs != null) {
+					for (String mob : mobs) {
+						if (mob != null) {
+							float kills = Utils.getElementAsFloat(Utils.getElement(profileInfo, "bestiary.kills_" + mob), 0);
+							String type;
+							if (BestiaryData.getMobType().get(mob) != null) {
+								type = BestiaryData.getMobType().get(mob);
+							} else {
+								type = "MOB";
+							}
+							JsonObject leveling = Constants.LEVELING;
+							ProfileViewer.Level level = null;
+							if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
+								JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
+								int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
+								level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+							}
+
+							float levelNum = 0;
+							if (level != null) {
+								levelNum = level.level;
+							}
+							beLevel += (int) Math.floor(levelNum);
+						}
+					}
+				}
+			}
+			return beLevel;
 		}
 
 		public Map<String, Level> getSkyblockInfo(String profileName) {
@@ -1560,6 +1794,23 @@ public class ProfileViewer {
 			return null;
 		}
 
+		public ProfileCollectionInfo getCollectionInfoNew(String profileName, String uuid)
+			throws ExecutionException, InterruptedException {
+			if (collectionInfoHashMap.containsKey(profileName)) {
+				return collectionInfoHashMap.get(profileName).getNow(null);
+			}
+			JsonObject profileInfo = getProfileInformation(profileName);
+			CompletableFuture<ProfileCollectionInfo> collectionData = ProfileCollectionInfo.getCollectionData(
+				profileInfo,
+				uuid
+			);
+			if(collectionData.isDone()) {
+				collectionInfoHashMap.put(profileName, collectionData);
+				return collectionData.get();
+			}
+			return null;
+		}
+
 		public JsonObject getCollectionInfo(String profileName) {
 			JsonObject profileInfo = getProfileInformation(profileName);
 			if (profileInfo == null) return null;
@@ -1666,7 +1917,7 @@ public class ProfileViewer {
 								}
 								maxAmountRequired = amountRequired;
 							}
-							if (maxTierAcquired >= 0 && maxTierAcquired > collTier) {
+							if (maxTierAcquired >= 0) {
 								updatedCollectionTiers.addProperty(collName, maxTierAcquired);
 							}
 							maxAmount.addProperty(collName, maxAmountRequired);

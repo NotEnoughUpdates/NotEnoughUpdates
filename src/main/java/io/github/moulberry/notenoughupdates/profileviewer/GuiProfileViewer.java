@@ -171,7 +171,10 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField(
+		"",
+		GuiElementTextField.SCALE_TEXT
+	);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -390,7 +393,7 @@ public class GuiProfileViewer extends GuiScreen {
 					GL11.GL_NEAREST
 				);
 				Utils.drawStringCenteredScaledMaxWidth(
-					"Open in Skycrypt",
+					"Open in SkyCrypt",
 					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 50 + 100 + 6,
 					guiTop + sizeY + 3 + 10,
@@ -838,8 +841,9 @@ public class GuiProfileViewer extends GuiScreen {
 				profileId != null
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				String url = "https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-					profileId;
+				String url =
+					"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+						profileId;
 				Utils.openUrl(url);
 				Utils.playPressSound();
 				return;
@@ -960,14 +964,17 @@ public class GuiProfileViewer extends GuiScreen {
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+						numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
 						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
-        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
+				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
 					levelStr = levelObj.maxLevel != 7 ?
-						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
-					EnumChatFormatting.GOLD + "MAXED!";
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
+							"%.2f",
+							levelObj.level
+						) + ")" :
+						EnumChatFormatting.GOLD + "MAXED!";
 				} else {
 					if (skillName.contains("Class Average")) {
 						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
@@ -1008,6 +1015,67 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public EntityOtherPlayerMP getEntityPlayer() {
 		return ((BasicPage) pages.get(ProfileViewerPage.BASIC)).entityPlayer;
+	}
+
+	public void renderLevelBar(
+		String name,
+		ItemStack stack,
+		int x,
+		int y,
+		int xSize,
+		double level,
+		double xp,
+		double max,
+		int mouseX,
+		int mouseY,
+		boolean percentage,
+		List<String> tooltip
+	) {
+
+		if (xp < 0) xp = 0;
+		double experienceRequired = (xp / max);
+
+		String second = EnumChatFormatting.WHITE.toString() + (int) level;
+		if (percentage) {
+			second = EnumChatFormatting.WHITE.toString() + (int) (experienceRequired * 100) + "%";
+		}
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + name,
+			second,
+			x + 14,
+			y - 4,
+			xSize - 20
+		);
+
+		if (xp >= max) {
+			renderGoldBar(x, y + 6, xSize);
+		} else {
+			renderBar(x, y + 6, xSize, (float) experienceRequired);
+		}
+		String levelStr;
+		if (mouseX > x && mouseX < x + 120) {
+			if (mouseY > y - 4 && mouseY < y + 13) {
+				levelStr =
+					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
+						"%" +
+						" §8(" + (int) xp + "/" + (int) max + " XP)";
+				if (tooltip != null && !tooltip.isEmpty()) {
+					tooltip.add("");
+					tooltip.add(levelStr);
+					tooltipToDisplay = tooltip;
+				} else {
+					tooltipToDisplay = Utils.createList(levelStr);
+				}
+			}
+		}
+
+		GlStateManager.enableDepth();
+		GL11.glTranslatef((x), (y - 6f), 0);
+		GL11.glScalef(0.7f, 0.7f, 1);
+		Utils.drawItemStackLinear(stack, 0, 0);
+		GL11.glScalef(1 / 0.7f, 1 / 0.7f, 1);
+		GL11.glTranslatef(-(x), -(y - 6f), 0);
+		GlStateManager.disableDepth();
 	}
 
 	public void renderGoldBar(float x, float y, float xSize) {

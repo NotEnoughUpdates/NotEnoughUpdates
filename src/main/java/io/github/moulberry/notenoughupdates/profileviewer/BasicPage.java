@@ -19,13 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -53,11 +53,12 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,6 +73,34 @@ import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 public class BasicPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation pv_basic = new ResourceLocation("notenoughupdates:pv_basic.png");
+
+	public static final ItemStack skull = Utils.createSkull(
+		"egirlefe",
+		"152de44a-43a3-46e1-badc-66cca2793471",
+		"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0="
+	);
+
+	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {
+		{
+			put(
+				"first_page",
+				Utils.editItemStackInfo(
+					new ItemStack(Items.paper),
+					EnumChatFormatting.GRAY + "Front Page",
+					true
+				)
+			);
+			put(
+				"second_page",
+				Utils.editItemStackInfo(
+					skull,
+					EnumChatFormatting.GRAY + "Level Page",
+					true
+				)
+			);
+		}
+	};
+
 	private static final ExecutorService profileLoader = Executors.newFixedThreadPool(1);
 	public EntityOtherPlayerMP entityPlayer = null;
 	private ResourceLocation playerLocationSkin = null;
@@ -88,9 +117,14 @@ public class BasicPage extends GuiProfileViewerPage {
 
 	private int backgroundClickedX = -1;
 
+	private boolean onSecondPage;
+
+	private final LevelPage levelPage;
+
 	public BasicPage(GuiProfileViewer instance) {
 		super(instance);
 		this.guiProfileViewer = instance;
+		this.levelPage = new LevelPage(guiProfileViewer, this);
 	}
 
 	@Override
@@ -100,6 +134,11 @@ public class BasicPage extends GuiProfileViewerPage {
 		String profileId = GuiProfileViewer.getProfileId();
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
+
+		if (onSecondPage) {
+			levelPage.drawPage(mouseX, mouseY, partialTicks);
+			return;
+		}
 
 		String location = null;
 		JsonObject status = profile.getPlayerStatus();
@@ -534,116 +573,29 @@ public class BasicPage extends GuiProfileViewerPage {
 			);
 		}
 
-		PlayerStats.Stats stats = profile.getStats(profileId);
+		// sb lvlL
 
-		if (stats != null) {
-			Splitter splitter = Splitter.on(" ").omitEmptyStrings().limit(2);
-			for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
-				String statName = PlayerStats.defaultStatNames[i];
-				//if (statName.equals("mining_fortune") || statName.equals("mining_speed")) continue;
-				String statNamePretty = PlayerStats.defaultStatNamesPretty[i];
+		int sbLevelX = guiLeft + 162;
+		int sbLevelY = guiTop + 90;
 
-				int val = Math.round(stats.get(statName));
+		double skyblockLevel = profile.getSkyblockLevel(profileId);
+		EnumChatFormatting skyblockLevelColour = profile.getSkyblockLevelColour(profileId);
 
-				GlStateManager.color(1, 1, 1, 1);
-				GlStateManager.enableBlend();
-				GL14.glBlendFuncSeparate(
-					GL11.GL_SRC_ALPHA,
-					GL11.GL_ONE_MINUS_SRC_ALPHA,
-					GL11.GL_ONE,
-					GL11.GL_ONE_MINUS_SRC_ALPHA
-				);
-				Utils.renderAlignedString(
-					statNamePretty,
-					EnumChatFormatting.WHITE.toString() + val,
-					guiLeft + 132,
-					guiTop + 21 + 11f * i,
-					80
-				);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(sbLevelX, sbLevelY, 0);
+		GlStateManager.scale(1.5f, 1.5f, 1);
+		Utils.drawItemStack(skull, 0, 0);
+		GlStateManager.popMatrix();
+		Utils.drawStringScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
+			sbLevelX - 2, sbLevelY - 15, true, 0, 1.5f
+		);
 
-				if (mouseX > guiLeft + 132 && mouseX < guiLeft + 212) {
-					if (mouseY > guiTop + 21 + 11f * i && mouseY < guiTop + 37 + 11f * i) {
-						List<String> split = splitter.splitToList(statNamePretty);
-						PlayerStats.Stats baseStats = PlayerStats.getBaseStats();
-						getInstance().tooltipToDisplay = new ArrayList<>();
-						getInstance().tooltipToDisplay.add(statNamePretty);
-						int base = Math.round(baseStats.get(statName));
-						getInstance()
-							.tooltipToDisplay.add(
-								EnumChatFormatting.GRAY +
-									"Base " +
-									split.get(1) +
-									": " +
-									EnumChatFormatting.GREEN +
-									base +
-									" " +
-									split.get(0)
-							);
-						int passive = Math.round(profile.getPassiveStats(profileId).get(statName) - baseStats.get(statName));
-						getInstance()
-							.tooltipToDisplay.add(
-								EnumChatFormatting.GRAY +
-									"Passive " +
-									split.get(1) +
-									" Bonus: +" +
-									EnumChatFormatting.YELLOW +
-									passive +
-									" " +
-									split.get(0)
-							);
-						int itemBonus = Math.round(stats.get(statName) - profile.getPassiveStats(profileId).get(statName));
-						getInstance()
-							.tooltipToDisplay.add(
-								EnumChatFormatting.GRAY +
-									"Item " +
-									split.get(1) +
-									" Bonus: +" +
-									EnumChatFormatting.DARK_PURPLE +
-									itemBonus +
-									" " +
-									split.get(0)
-							);
-						int finalStat = Math.round(stats.get(statName));
-						getInstance()
-							.tooltipToDisplay.add(
-								EnumChatFormatting.GRAY +
-									"Final " +
-									split.get(1) +
-									": +" +
-									EnumChatFormatting.RED +
-									finalStat +
-									" " +
-									split.get(0)
-							);
-					}
-				}
-			}
-		} else {
-			Utils.drawStringCentered(
-				EnumChatFormatting.RED + "Skill/Inv/Coll",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 172,
-				guiTop + 101 - 10,
-				true,
-				0
-			);
-			Utils.drawStringCentered(
-				EnumChatFormatting.RED + "APIs not",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 172,
-				guiTop + 101,
-				true,
-				0
-			);
-			Utils.drawStringCentered(
-				EnumChatFormatting.RED + "enabled!",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 172,
-				guiTop + 101 + 10,
-				true,
-				0
-			);
-		}
+		float progress = (float) (skyblockLevel - (long) skyblockLevel);
+		getInstance().renderBar(sbLevelX - 30, sbLevelY + 30, 80, progress);
+
+		Utils.drawStringScaled(EnumChatFormatting.YELLOW.toString() + (int) (progress * 100) + "/100", fr,
+			sbLevelX - 30, sbLevelY + 20, true, 0, 0.9f
+		);
 
 		if (skyblockInfo != null) {
 			int position = 0;
@@ -670,6 +622,12 @@ public class BasicPage extends GuiProfileViewerPage {
 					getInstance().renderGoldBar(x, y + 6, 80);
 				} else {
 					getInstance().renderBar(x, y + 6, 80, level.level % 1);
+				}
+
+				if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
+					if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
+						if(Mouse.isButtonDown(0)) onSecondPage = true;
+					}
 				}
 
 				if (mouseX > x && mouseX < x + 80) {
@@ -759,6 +717,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			);
 		}
 
+		drawSideButtons();
 		renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
 	}
 
@@ -992,10 +951,62 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 	}
 
+	@Override
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+
+		int i = onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		switch (i) {
+			case 1:
+				onSecondPage = false;
+				break;
+			case 2:
+				onSecondPage = true;
+				break;
+
+			default:
+				break;
+		}
+
+		return false;
+	}
+
+	public int onSlotToChangePage(int mouseX, int mouseY, int guiLeft, int guiTop) {
+		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
+			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
+				return 1;
+			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
+				return 2;
+			}
+		}
+		return 0;
+	}
+
 	public String getGameModeType(JsonObject profileInfo) {
 		if (profileInfo != null && profileInfo.has("game_mode")) {
 			return profileInfo.get("game_mode").getAsString();
 		}
 		return "";
+	}
+
+	public void drawSideButtons() {
+		GlStateManager.enableDepth();
+		GlStateManager.translate(0, 0, 5);
+		if (onSecondPage) {
+			Utils.drawPvSideButton(1, dungeonsModeIcons.get("second_page"), true, guiProfileViewer);
+		} else {
+			Utils.drawPvSideButton(0, dungeonsModeIcons.get("first_page"), true, guiProfileViewer);
+		}
+		GlStateManager.translate(0, 0, -3);
+
+		GlStateManager.translate(0, 0, -2);
+		if (!onSecondPage) {
+			Utils.drawPvSideButton(1, dungeonsModeIcons.get("second_page"), false, guiProfileViewer);
+		} else {
+			Utils.drawPvSideButton(0, dungeonsModeIcons.get("first_page"), false, guiProfileViewer);
+		}
+		GlStateManager.disableDepth();
 	}
 }

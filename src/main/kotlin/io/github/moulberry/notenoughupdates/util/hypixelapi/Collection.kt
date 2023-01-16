@@ -91,10 +91,10 @@ data class ProfileCollectionInfo(
 
         fun getCollectionData(
             profileData: JsonObject,
-            mainPlayer: UUID,
+            mainPlayer: String,
             collectionData: CollectionMetadata
         ): ProfileCollectionInfo? {
-            val mainPlayerUUID = mainPlayer.toString().replace("-", "")
+            val mainPlayerUUID = mainPlayer.replace("-", "")
             val members = profileData["members"] as? JsonObject ?: return null
             val mainPlayerData =
                 (members[mainPlayerUUID] as? JsonObject ?: return null)
@@ -136,7 +136,7 @@ data class ProfileCollectionInfo(
          * should contain profile_id, members, cute_name, etc.)
          */
         @JvmStatic
-        fun getCollectionData(profileData: JsonObject, mainPlayer: UUID): CompletableFuture<ProfileCollectionInfo?> {
+        fun getCollectionData(profileData: JsonObject, mainPlayer: String): CompletableFuture<ProfileCollectionInfo?> {
             return hypixelCollectionInfo.thenApply {
                 getCollectionData(profileData, mainPlayer, it)
             }

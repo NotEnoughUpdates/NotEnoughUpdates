@@ -170,12 +170,10 @@ public class PlayerStats {
 		return skillBonus;
 	}
 
-	private static Stats getTamingBonus(JsonObject profile) {
+	public static int getPetScore(JsonObject profile) {
 		JsonObject bonuses = Constants.BONUSES;
-		if (bonuses == null) return null;
-
 		JsonElement petsElement = Utils.getElement(profile, "pets");
-		if (petsElement == null) return new Stats();
+		if (petsElement == null) return 0;
 
 		JsonArray pets = petsElement.getAsJsonArray();
 
@@ -190,10 +188,18 @@ public class PlayerStats {
 		for (String value : highestRarityMap.values()) {
 			petScore += Utils.getElementAsFloat(Utils.getElement(bonuses, "pet_value." + value.toUpperCase()), 0);
 		}
+		return petScore;
+	}
+
+	private static Stats getTamingBonus(JsonObject profile) {
+		JsonObject bonuses = Constants.BONUSES;
+		if (bonuses == null) return null;
 
 		JsonElement petRewardsElement = Utils.getElement(bonuses, "pet_rewards");
 		if (petRewardsElement == null) return null;
 		JsonObject petRewards = petRewardsElement.getAsJsonObject();
+
+		int petScore = getPetScore(profile);
 
 		Stats petBonus = new Stats();
 		for (int i = 0; i <= petScore; i++) {
@@ -652,97 +658,6 @@ public class PlayerStats {
 		applyLimits(stats, inventoryInfo);
 
 		return stats;
-	}
-
-	/**
-	 * Calculates the amount of Magical Power the player has using the list of accessories
-	 *
-	 * @param inventoryInfo inventory info object
-	 * @return the amount of Magical Power or -1
-	 * @see io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer.Profile#getInventoryInfo(String)
-	 */
-	public static int getMagicalPower(JsonObject inventoryInfo, JsonObject profileInfo) {
-		if (inventoryInfo == null || !inventoryInfo.has("talisman_bag") || !inventoryInfo.get("talisman_bag").isJsonArray()) {
-			return -1;
-		}
-
-		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo.get("talisman_bag").getAsJsonArray())
-																								.map(o -> {
-				try {
-					return JsonToNBT.getTagFromJson(o.getAsJsonObject().get("nbttag").getAsString());
-				} catch (Exception ignored) {
-					return null;
-				}
-			}).filter(Objects::nonNull).map(tag -> {
-				NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
-				String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
-				if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
-					lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
-				}
-				JsonArray lastElementJsonArray = new JsonArray();
-				lastElementJsonArray.add(new JsonPrimitive(lastElement));
-				return new AbstractMap.SimpleEntry<>(
-					tag.getCompoundTag("ExtraAttributes").getString("id"),
-					Utils.getRarityFromLore(lastElementJsonArray)
-				);
-			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)->v1, LinkedHashMap::new));
-
-		Set<String> ignoredTalismans = new HashSet<>();
-		int powderAmount = 0;
-		for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
-			if (ignoredTalismans.contains(entry.getKey())) {
-				continue;
-			}
-
-			JsonArray children = Utils.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray()).getAsJsonArray();
-			for (JsonElement child : children) {
-				ignoredTalismans.add(child.getAsString());
-			}
-
-			if (entry.getKey().equals("HEGEMONY_ARTIFACT")) {
-				switch (entry.getValue()) {
-					case 4:
-						powderAmount += 16;
-						break;
-					case 5:
-						powderAmount += 22;
-						break;
-				}
-			}
-			if (entry.getKey().equals("ABICASE")) {
-				if (profileInfo.has("nether_island_player_data") &&
-					profileInfo.get("nether_island_player_data").getAsJsonObject().has("abiphone") && profileInfo.get(
-					"nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
-					int contact =
-						profileInfo.get("nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().get(
-							"active_contacts").getAsJsonArray().size();
-					powderAmount += Math.floor(contact / 2);
-				}
-			}
-			switch (entry.getValue()) {
-				case 0:
-				case 6:
-					powderAmount += 3;
-					break;
-				case 1:
-				case 7:
-					powderAmount += 5;
-					break;
-				case 2:
-					powderAmount += 8;
-					break;
-				case 3:
-					powderAmount += 12;
-					break;
-				case 4:
-					powderAmount += 16;
-					break;
-				case 5:
-					powderAmount += 22;
-					break;
-			}
-		}
-		return powderAmount;
 	}
 
 	/**
