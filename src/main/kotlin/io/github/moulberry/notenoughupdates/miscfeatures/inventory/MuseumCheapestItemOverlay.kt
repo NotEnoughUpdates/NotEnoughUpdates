@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.util.MuseumUtil
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
 import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiChest
@@ -82,7 +83,8 @@ object MuseumCheapestItemOverlay {
         val chest = event.gui as GuiChest
 
         val slots = chest.inventorySlots.inventorySlots
-        if (!slots.equals(previousSlots)) {
+        //check if there is any info to gather only when a category is currently open
+        if (!slots.equals(previousSlots) && Utils.getOpenChestName().startsWith("Museum ➜")) {
             checkIfHighestPageWasVisited(slots)
             parseItems(slots)
             updateOutdatedValues()
@@ -163,7 +165,7 @@ object MuseumCheapestItemOverlay {
     private fun drawLines(guiLeft: Int, guiTop: Int) {
         val lines = buildLines()
         lines.forEachIndexed { index, line ->
-            if (index == ITEMS_PER_PAGE && !visitedAllPages()) {
+            if (!visitedAllPages() && (index == ITEMS_PER_PAGE || index == lines.size - 1)) {
                 Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
                     "${EnumChatFormatting.RED}Visit all pages for accurate info!",
                     (guiLeft + 185).toFloat(),
@@ -172,8 +174,8 @@ object MuseumCheapestItemOverlay {
                 )
             } else {
                 Utils.renderAlignedString(
-                    "${EnumChatFormatting.RESET}${line.name}",
-                    if (line.value == Double.MAX_VALUE) "${EnumChatFormatting.RED}Unknown" else "${EnumChatFormatting.AQUA}${
+                    line.name,
+                    if (line.value == Double.MAX_VALUE) "${EnumChatFormatting.RED}Unknown ${if (config.museumCheapestItemOverlayValueSource == 0) "BIN" else "Craft Cost"}}" else "${EnumChatFormatting.AQUA}${
                         Utils.shortNumberFormat(
                             line.value,
                             0
@@ -184,6 +186,16 @@ object MuseumCheapestItemOverlay {
                     160
                 )
             }
+        }
+
+        //no page has been visited yet
+        if (lines.isEmpty()) {
+            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
+                "${EnumChatFormatting.RED}Open valid category to continue!",
+                (guiLeft + 185).toFloat(),
+                (guiTop + 85).toFloat(),
+                0
+            )
         }
 
         ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages())
@@ -215,16 +227,25 @@ object MuseumCheapestItemOverlay {
             val stack = slots[i].stack ?: continue
             val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
             when (parsedItems.state) {
-                MISSING ->
+                MISSING -> {
+                    val displayName = if (!armor) {
+                        NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+                            .withKnownInternalName(parsedItems.skyblockItemIds.first())
+                            .resolveToItemListJson()
+                            ?.get("displayname")?.asString ?: "${EnumChatFormatting.RED}ERROR"
+                    } else {
+                        "${EnumChatFormatting.BLUE}${stack.displayName.stripControlCodes()}"
+                    }
                     if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds })
                         itemsToDonate.add(
                             MuseumItem(
-                                stack.displayName,
+                                displayName,
                                 parsedItems.skyblockItemIds,
                                 calculateValue(parsedItems.skyblockItemIds),
                                 time
                             )
                         )
+                }
 
                 else -> itemsToDonate.retainAll { it.internalNames != parsedItems.skyblockItemIds }
             }
@@ -267,11 +288,11 @@ object MuseumCheapestItemOverlay {
      * Determine if the overlay should be active based on the config option and the currently open GuiChest, if applicable
      */
     private fun shouldRender(gui: GuiScreen): Boolean =
-        config.museumCheapestItemOverlay && gui is GuiChest && Utils.getOpenChestName()
-            .startsWith("Museum ➜")
+        config.museumCheapestItemOverlay && (gui is GuiChest && Utils.getOpenChestName()
+            .startsWith("Museum ➜") || Utils.getOpenChestName() == "Your Museum")
 
     /**
-     * Determine the name of the currently open Museum Category
+     * Determine the name of the currently open Museum Category. Please validate that the name does contain a category before calling
      */
     private fun getCategory(): String = Utils.getOpenChestName().substring(9, Utils.getOpenChestName().length)
 
@@ -283,8 +304,5 @@ object MuseumCheapestItemOverlay {
     /**
      * Calculate the total amount of pages the overlay should have
      */
-    private fun totalPages(): Int = when (itemsToDonate.size % ITEMS_PER_PAGE) {
-        0 -> itemsToDonate.size / ITEMS_PER_PAGE
-        else -> (itemsToDonate.size / ITEMS_PER_PAGE) + 1
-    }
+    private fun totalPages(): Int = itemsToDonate.size / ITEMS_PER_PAGE
 }
