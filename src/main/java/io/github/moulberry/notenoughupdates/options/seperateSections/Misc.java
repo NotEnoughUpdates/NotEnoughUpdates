@@ -55,6 +55,14 @@ public class Misc {
 	@ConfigEditorBoolean
 	public boolean streamerMode = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Fix Steve skulls",
+		desc = "Fix some skulls and skins not downloading on old java versions. May require restart."
+	)
+	@ConfigEditorBoolean
+	public boolean fixSteveSkulls = true;
+
 	@ConfigOption(
 		name = "Fairy Soul Waypoints",
 		desc = ""
@@ -297,8 +305,8 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
-		name = "Dungeon Groups PV",
-		desc = "View another player's profile by clicking on the chat message when they join in a dungeon group."
+		name = "Group Join PV",
+		desc = "View another player's profile by clicking on the chat message when they join in a dungeon or kuudra group."
 	)
 	@ConfigEditorBoolean
 	public boolean dungeonGroupsPV = true;

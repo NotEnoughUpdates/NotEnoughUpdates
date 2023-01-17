@@ -148,7 +148,7 @@ public class FishingHelper {
 		int ticksExisted = hook.ticksExisted;
 		float seconds = ticksExisted / 20F;
 		int color;
-		if (seconds >= 30) {
+		if (seconds >= 20) {
 			color = ChromaColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.fishing.fishingTimerColor30SecPlus);
 			if (NotEnoughUpdates.INSTANCE.config.fishing.fishingSound30Sec && !playedSound) {
 				ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{

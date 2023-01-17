@@ -50,6 +50,7 @@ public class BuildFlags {
 	}
 
 	public static final boolean ENABLE_PRONOUNS_IN_PV_BY_DEFAULT = getBuildFlag("pronouns");
+	public static final boolean ENABLE_ONECONFIG_COMPAT_LAYER = getBuildFlag("oneconfig");
 
 	private static class Holder {
 		static Map<String, Boolean> ALL_FLAGS = new HashMap<>();

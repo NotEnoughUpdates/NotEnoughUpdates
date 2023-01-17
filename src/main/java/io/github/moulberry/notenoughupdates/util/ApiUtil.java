@@ -162,8 +162,7 @@ public class ApiUtil {
 					try {
 						conn = url.openConnection();
 						if (conn instanceof HttpsURLConnection && ctx != null) {
-							HttpsURLConnection sslConn = (HttpsURLConnection) conn;
-							sslConn.setSSLSocketFactory(ctx.getSocketFactory());
+							patchHttpsRequest((HttpsURLConnection) conn);
 						}
 						if (conn instanceof HttpURLConnection) {
 							((HttpURLConnection) conn).setRequestMethod(method);
@@ -219,6 +218,10 @@ public class ApiUtil {
 			return requestString().thenApply(str -> gson.fromJson(str, clazz));
 		}
 
+	}
+
+	public static void patchHttpsRequest(HttpsURLConnection connection) {
+		connection.setSSLSocketFactory(ctx.getSocketFactory());
 	}
 
 	public Request request() {

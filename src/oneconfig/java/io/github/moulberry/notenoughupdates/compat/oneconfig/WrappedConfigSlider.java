@@ -17,27 +17,36 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-pluginManagement {
-		repositories {
-				mavenCentral()
-				gradlePluginPortal()
-				maven("https://oss.sonatype.org/content/repositories/snapshots")
-				maven("https://maven.architectury.dev/")
-				maven("https://maven.fabricmc.net")
-				maven(url = "https://jitpack.io/")
-				maven(url = "https://maven.minecraftforge.net/")
-				maven(url = "https://repo.spongepowered.org/maven/")
-				maven(url = "https://repo.sk1er.club/repository/maven-releases/")
-				maven(url = "https://maven.architectury.dev/")
-		}
-		resolutionStrategy {
-				eachPlugin {
-						when (requested.id.id) {
-								"gg.essential.loom" -> useModule("gg.essential:architectury-loom:${requested.version}")
-						}
-				}
-		}
-}
+package io.github.moulberry.notenoughupdates.compat.oneconfig;
 
-include("oneconfigquarantine")
-rootProject.name = "NotEnoughUpdates"
+import cc.polyfrost.oneconfig.gui.elements.config.ConfigSlider;
+
+import java.lang.reflect.Field;
+
+public class WrappedConfigSlider extends ConfigSlider {
+	public WrappedConfigSlider(
+		Field field,
+		Object parent,
+		String name,
+		String description,
+		String category,
+		String subcategory,
+		float min,
+		float max,
+		int step
+	) {
+		super(field, parent, name, description, category, subcategory, min, max, step);
+	}
+
+	@Override
+	public Object get() throws IllegalAccessException {
+		Object g = super.get();
+		if (g instanceof Double) {
+			return (float) (double) g;
+		}
+		if (g instanceof Long) {
+			return (int) (long) g;
+		}
+		return g;
+	}
+}

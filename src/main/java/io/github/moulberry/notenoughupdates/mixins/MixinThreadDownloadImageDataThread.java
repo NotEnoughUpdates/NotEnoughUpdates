@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -19,27 +19,28 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.gui.GuiScreen;
+import io.github.moulberry.notenoughupdates.hooks.ThreadDownloadImageHook;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.net.URI;
+import java.net.HttpURLConnection;
 
-@Mixin(GuiScreen.class)
-public class MixinGuiScreen {
-	@Inject(method = "sendChatMessage(Ljava/lang/String;Z)V", at = @At("HEAD"))
-	public void onSendChatMessage(String message, boolean addToChat, CallbackInfo ci) {
-		SBInfo.getInstance().onSendChatMessage(message);
+@Mixin(targets = "net.minecraft.client.renderer.ThreadDownloadImageData$1")
+public class MixinThreadDownloadImageDataThread {
+
+	@Inject(
+		method = "run",
+		at = @At(
+			value = "INVOKE",
+			target = "Ljava/net/HttpURLConnection;setDoOutput(Z)V"
+		),
+		locals = LocalCapture.CAPTURE_FAILSOFT
+	)
+	public void patchHttpConnection(CallbackInfo ci, HttpURLConnection httpURLConnection) {
+		ThreadDownloadImageHook.hookThreadImageConnection(httpURLConnection);
 	}
 
-	@Inject(method = "openWebLink", at = @At("HEAD"), cancellable = true)
-	public void onOpenWebLink(URI url, CallbackInfo ci) {
-		if (Utils.openUrl(url.toString())) {
-			ci.cancel();
-		}
-	}
 }

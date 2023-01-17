@@ -73,6 +73,8 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.ArrayList;
@@ -88,10 +90,11 @@ public class NEUConfig extends Config {
 		for (TextOverlay overlay : OverlayManager.textOverlays) {
 			overlayPositions.put(overlay, overlay.getPosition());
 		}
+		GuiScreen savedGui = Minecraft.getMinecraft().currentScreen;
 		Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditor(overlayPositions, () -> {
 		}, () -> {
 		}, () -> {
-			NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+			NotEnoughUpdates.INSTANCE.openGui = savedGui;
 		}));
 	}
 
@@ -109,8 +112,9 @@ public class NEUConfig extends Config {
 			case -1:
 				return;
 			case 0:
+				GuiScreen savedGui = Minecraft.getMinecraft().currentScreen;
 				NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(() -> {
-					NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+					NotEnoughUpdates.INSTANCE.openGui = savedGui;
 				});
 				return;
 			case 1:

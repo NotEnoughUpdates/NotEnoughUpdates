@@ -23,6 +23,7 @@
     "MixinGuiIngame",
     "MixinGuiInventory",
     "MixinGuiScreen",
+    "MixinGuiUtils",
     "MixinInventoryBasic",
     "MixinInventoryEffectRenderer",
     "MixinInventoryPlayer",
@@ -54,6 +55,9 @@
     "AccessorMinecraft",
     "MixinEntityChargedCreeper",
     "MixinGuiEditSign",
-    "MixinGuiTextField"
+    "MixinGuiTextField",
+    "MixinLayerDeadmau5Head",
+    "MixinThreadDownloadImageData",
+    "MixinThreadDownloadImageDataThread"
   ]
 }

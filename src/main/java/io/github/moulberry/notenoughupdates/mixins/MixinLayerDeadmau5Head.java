@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -19,27 +19,20 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.gui.GuiScreen;
+import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.GUIClientPlayer;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.layers.LayerDeadmau5Head;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.net.URI;
+@Mixin(LayerDeadmau5Head.class)
+public class MixinLayerDeadmau5Head {
 
-@Mixin(GuiScreen.class)
-public class MixinGuiScreen {
-	@Inject(method = "sendChatMessage(Ljava/lang/String;Z)V", at = @At("HEAD"))
-	public void onSendChatMessage(String message, boolean addToChat, CallbackInfo ci) {
-		SBInfo.getInstance().onSendChatMessage(message);
-	}
-
-	@Inject(method = "openWebLink", at = @At("HEAD"), cancellable = true)
-	public void onOpenWebLink(URI url, CallbackInfo ci) {
-		if (Utils.openUrl(url.toString())) {
-			ci.cancel();
-		}
+	@Inject(method = "doRenderLayer(Lnet/minecraft/client/entity/AbstractClientPlayer;FFFFFFF)V", at = @At("HEAD"), cancellable = true)
+	public void doRenderLayer(
+		AbstractClientPlayer entitylivingbaseIn, float f, float g, float partialTicks, float h, float i, float j, float scale, CallbackInfo ci) {
+		if (entitylivingbaseIn instanceof GUIClientPlayer) ci.cancel();
 	}
 }

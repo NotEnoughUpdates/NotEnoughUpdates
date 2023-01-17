@@ -38,7 +38,8 @@ public class ChromaColour {
 		return sb.toString();
 	}
 
-	private static int[] decompose(String csv) {
+	@Deprecated
+	public static int[] decompose(String csv) {
 		String[] split = csv.split(":");
 
 		int[] arr = new int[split.length];
@@ -66,6 +67,10 @@ public class ChromaColour {
 
 	public static float getSecondsForSpeed(int speed) {
 		return (255 - speed) / 254f * (MAX_CHROMA_SECS - MIN_CHROMA_SECS) + MIN_CHROMA_SECS;
+	}
+
+	public static int getSpeedForSeconds(float seconds) {
+		return (int) (255 - (seconds - MIN_CHROMA_SECS) * 254f / (MAX_CHROMA_SECS - MIN_CHROMA_SECS));
 	}
 
 	private static final int MIN_CHROMA_SECS = 1;

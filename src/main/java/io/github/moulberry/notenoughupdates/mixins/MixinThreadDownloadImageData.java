@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -19,27 +19,30 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.gui.GuiScreen;
+import io.github.moulberry.notenoughupdates.hooks.ThreadDownloadImageHook;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
+import org.spongepowered.asm.lib.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.net.URI;
+@Mixin(ThreadDownloadImageData.class)
+public class MixinThreadDownloadImageData {
+	@Mutable
+	@Shadow
+	@Final
+	private String imageUrl;
 
-@Mixin(GuiScreen.class)
-public class MixinGuiScreen {
-	@Inject(method = "sendChatMessage(Ljava/lang/String;Z)V", at = @At("HEAD"))
-	public void onSendChatMessage(String message, boolean addToChat, CallbackInfo ci) {
-		SBInfo.getInstance().onSendChatMessage(message);
-	}
-
-	@Inject(method = "openWebLink", at = @At("HEAD"), cancellable = true)
-	public void onOpenWebLink(URI url, CallbackInfo ci) {
-		if (Utils.openUrl(url.toString())) {
-			ci.cancel();
-		}
+	@Redirect(
+		method = "<init>",
+		at = @At(
+			value = "FIELD",
+			target = "Lnet/minecraft/client/renderer/ThreadDownloadImageData;imageUrl:Ljava/lang/String;",
+			opcode = Opcodes.PUTFIELD))
+	public void useHttpsDownloadLinks(ThreadDownloadImageData instance, String value) {
+		this.imageUrl = ThreadDownloadImageHook.hookThreadImageLink(value);
 	}
 }

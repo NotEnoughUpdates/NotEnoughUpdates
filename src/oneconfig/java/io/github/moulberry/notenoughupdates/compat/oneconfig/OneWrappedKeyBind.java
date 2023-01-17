@@ -17,27 +17,42 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-pluginManagement {
-		repositories {
-				mavenCentral()
-				gradlePluginPortal()
-				maven("https://oss.sonatype.org/content/repositories/snapshots")
-				maven("https://maven.architectury.dev/")
-				maven("https://maven.fabricmc.net")
-				maven(url = "https://jitpack.io/")
-				maven(url = "https://maven.minecraftforge.net/")
-				maven(url = "https://repo.spongepowered.org/maven/")
-				maven(url = "https://repo.sk1er.club/repository/maven-releases/")
-				maven(url = "https://maven.architectury.dev/")
-		}
-		resolutionStrategy {
-				eachPlugin {
-						when (requested.id.id) {
-								"gg.essential.loom" -> useModule("gg.essential:architectury-loom:${requested.version}")
-						}
-				}
-		}
-}
+package io.github.moulberry.notenoughupdates.compat.oneconfig;
 
-include("oneconfigquarantine")
-rootProject.name = "NotEnoughUpdates"
+import cc.polyfrost.oneconfig.config.core.OneKeyBind;
+import org.lwjgl.input.Keyboard;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class OneWrappedKeyBind extends OneKeyBind {
+
+	public int value = Keyboard.KEY_NONE;
+
+	@Override
+	public String getDisplay() {
+		keyBinds.clear();
+		keyBinds.addAll(getKeyBinds());
+		return super.getDisplay();
+	}
+
+	@Override
+	public void addKey(int key) {
+		value = key;
+	}
+
+	@Override
+	public void clearKeys() {
+		value = Keyboard.KEY_NONE;
+	}
+
+	@Override
+	public int getSize() {
+		return getKeyBinds().size();
+	}
+
+	@Override
+	public ArrayList<Integer> getKeyBinds() {
+		return value == Keyboard.KEY_NONE ? new ArrayList<>() : new ArrayList<>(Arrays.asList(value));
+	}
+}
