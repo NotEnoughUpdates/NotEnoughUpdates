@@ -208,7 +208,7 @@ public class ItemPriceInformation {
 			}
 
 			return added;
-		} else if (auctionItem) {
+		} else if (auctionItem && !auctionInfoErrored) {
 			List<Integer> lines = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.priceInfoAuc;
 
 			boolean added = false;
