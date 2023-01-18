@@ -19,8 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
@@ -28,26 +26,19 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PowderGrindingOverlay extends TextTabOverlay {
 
 	private final static JsonParser PARSER = new JsonParser();
 
+	private final static Pattern pattern =
+		Pattern.compile("You received \\+([0-9]+(?:,\\d+)*) (Mithril|Gemstone) Powder\\.");
 
 	public int chestCount = 0;
 	public int openedChestCount = 0;
@@ -112,7 +103,8 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 						overlayStrings.add("\u00a73Opened Chests: \u00a7a" + format.format(this.openedChestCount));
 						break;
 					case 2:
-						overlayStrings.add("\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
+						overlayStrings.add(
+							"\u00a73Unopened Chests: \u00a7c" + format.format(this.chestCount - this.openedChestCount));
 						break;
 					case 3:
 						overlayStrings.add("\u00a73Mithril Powder Found: \u00a72" +
@@ -141,21 +133,28 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 		if (overlayStrings != null && overlayStrings.isEmpty()) overlayStrings = null;
 	}
 
-	public void message(String message) {
+	public void onMessage(String message) {
 		if (message.equals("You uncovered a treasure chest!")) {
 			this.chestCount++;
 		} else if (message.equals("You have successfully picked the lock on this chest!")) {
 			this.openedChestCount++;
 		} else {
-			boolean mithril = message.endsWith(" Mithril Powder");
-			boolean gemstone = message.endsWith(" Gemstone Powder");
-			if (!(mithril || gemstone)) return;
-			try {
-				int amount = Integer.parseInt(message.split(" ")[2].replaceAll("\\+", ""));
-				if (mithril) this.mithrilPowderFound += amount;
-				else this.gemstonePowderFound += amount;
-			} catch (NumberFormatException | IndexOutOfBoundsException e) {
-				e.printStackTrace();
+			Matcher matcher = pattern.matcher(message);
+			if (matcher.matches()) {
+				String rawNumber = matcher.group(1).replace(",", "");
+				try {
+					int amount = Integer.parseInt(rawNumber);
+					String type = matcher.group(2);
+					if (type.equals("Mithril")) {
+							this.mithrilPowderFound += amount;
+					} else if (type.equals("Gemstone")) {
+						this.gemstonePowderFound += amount;
+					}
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("other message: '" + message + "'");
 			}
 		}
 	}

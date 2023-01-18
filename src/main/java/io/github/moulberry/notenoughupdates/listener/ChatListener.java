@@ -316,10 +316,7 @@ public class ChatListener {
 			}
 		}
 
-		if (unformatted.equals("You uncovered a treasure chest!") ||
-			unformatted.equals("You have successfully picked the lock on this chest!")
-			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
-			OverlayManager.powderGrindingOverlay.message(unformatted);
+		OverlayManager.powderGrindingOverlay.onMessage(unformatted);
 
 		if (unformatted.startsWith("ENDER NODE!"))
 			EnderNodeHighlighter.getInstance().highlightedBlocks.clear();
