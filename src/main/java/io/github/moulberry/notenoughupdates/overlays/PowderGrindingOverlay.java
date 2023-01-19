@@ -153,8 +153,6 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}
-			} else {
-				System.out.println("other message: '" + message + "'");
 			}
 		}
 	}
