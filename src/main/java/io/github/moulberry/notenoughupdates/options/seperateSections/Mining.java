@@ -738,7 +738,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Enable Tracker",
-		desc = "Show an Overlay with useful information related to Power Grinding"
+		desc = "Show an Overlay with useful information related to Powder Grinding"
 	)
 	@ConfigAccordionId(id = 9)
 	@ConfigEditorBoolean
