@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -41,8 +41,17 @@ class WardrobeMouseButtons {
     private var lastClick = -1L
 
     @SubscribeEvent
-    fun onGui(event: GuiScreenEvent) {
-        if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds) return
+    fun onGuiKeyboardInput(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        checkKeybinds(event)
+    }
+
+    @SubscribeEvent
+    fun onGuiMouseInput(event: GuiScreenEvent.MouseInputEvent.Pre) {
+        checkKeybinds(event)
+    }
+
+    private fun checkKeybinds(event: GuiScreenEvent) {
+        if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return
         val gui = event.gui as? GuiChest ?: return
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
 
@@ -51,9 +60,11 @@ class WardrobeMouseButtons {
                 if (System.currentTimeMillis() - lastClick > 300) {
                     Utils.sendLeftMouseClick(gui.inventorySlots.windowId, 36 + i)
                     lastClick = System.currentTimeMillis()
+                    event.isCanceled = true
                 }
                 break
             }
         }
     }
+
 }
