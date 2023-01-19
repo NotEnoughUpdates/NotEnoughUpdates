@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
@@ -164,6 +165,12 @@ object MuseumCheapestItemOverlay {
      */
     private fun drawLines(guiLeft: Int, guiTop: Int) {
         val lines = buildLines()
+        val mouseX = Utils.getMouseX()
+        val mouseY = Utils.getMouseY()
+        val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
+        val width = scaledResolution.scaledWidth
+        val height = scaledResolution.scaledHeight
+
         lines.forEachIndexed { index, line ->
             if (!visitedAllPages() && (index == ITEMS_PER_PAGE || index == lines.size - 1)) {
                 Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
@@ -173,18 +180,66 @@ object MuseumCheapestItemOverlay {
                     0
                 )
             } else {
+                val x = (guiLeft + 187).toFloat()
+                val y = (guiTop + 5 + (index * 10)).toFloat()
                 Utils.renderAlignedString(
                     line.name,
-                    if (line.value == Double.MAX_VALUE) "${EnumChatFormatting.RED}Unknown ${if (config.museumCheapestItemOverlayValueSource == 0) "BIN" else "Craft Cost"}}" else "${EnumChatFormatting.AQUA}${
+                    if (line.value == Double.MAX_VALUE) "${EnumChatFormatting.RED}Unknown ${if (config.museumCheapestItemOverlayValueSource == 0) "BIN" else "Craft Cost"}" else "${EnumChatFormatting.AQUA}${
                         Utils.shortNumberFormat(
                             line.value,
                             0
                         )
                     }",
-                    (guiLeft + 187).toFloat(),
-                    (guiTop + 5 + (index * 10)).toFloat(),
-                    160
+                    x,
+                    y,
+                    165
                 )
+
+                if (Utils.isWithinRect(mouseX, mouseY, x.toInt(), y.toInt(), 170, 10)) {
+                    val tooltip = mutableListOf(line.name, "")
+                    //armor set
+                    if (line.internalNames.size > 1) {
+                        tooltip.add("${EnumChatFormatting.AQUA}Consists of:")
+                        line.internalNames.forEach {
+                            val displayname =
+                                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(it)
+                                    .resolveToItemListJson()
+                                    ?.get("displayname")?.asString ?: "ERROR"
+                            val value = calculateValue(listOf(it))
+
+                            tooltip.add(
+                                "  ${EnumChatFormatting.DARK_GRAY}-${EnumChatFormatting.RESET} $displayname${EnumChatFormatting.DARK_GRAY} (${EnumChatFormatting.GOLD}${
+                                    Utils.shortNumberFormat(
+                                        value,
+                                        0
+                                    )
+                                }${EnumChatFormatting.DARK_GRAY})"
+                            )
+                        }
+                        tooltip.add("")
+                    }
+
+                    if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
+                        tooltip.add("${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Click to open recipe!")
+                    } else {
+                        tooltip.add("${EnumChatFormatting.RED}${EnumChatFormatting.BOLD}No recipe available!")
+                    }
+
+                    if (Mouse.getEventButtonState()) {
+                        //TODO? this only opens the recipe for one of the armor pieces
+                        NotEnoughUpdates.INSTANCE.manager.showRecipe(line.internalNames[0])
+                    }
+
+                    Utils.drawHoveringText(
+                        tooltip,
+                        x.toInt(),
+                        y.toInt(),
+                        width,
+                        height,
+                        -1,
+                        Minecraft.getMinecraft().fontRendererObj
+                    )
+                }
             }
         }
 
@@ -228,15 +283,19 @@ object MuseumCheapestItemOverlay {
             val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
             when (parsedItems.state) {
                 MISSING -> {
-                    val displayName = if (!armor) {
+                    val displayName = if (armor) {
+                        // Use the provided displayname for armor sets but change the color to blue (from red)
+                        "${EnumChatFormatting.BLUE}${stack.displayName.stripControlCodes()}"
+                    } else {
+                        // Find out the real displayname and use it for normal items, if possible
                         NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
                             .withKnownInternalName(parsedItems.skyblockItemIds.first())
                             .resolveToItemListJson()
                             ?.get("displayname")?.asString ?: "${EnumChatFormatting.RED}ERROR"
-                    } else {
-                        "${EnumChatFormatting.BLUE}${stack.displayName.stripControlCodes()}"
                     }
-                    if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds })
+
+                    //if the list does not already contain it, insert this MuseumItem
+                    if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds }) {
                         itemsToDonate.add(
                             MuseumItem(
                                 displayName,
@@ -245,6 +304,7 @@ object MuseumCheapestItemOverlay {
                                 time
                             )
                         )
+                    }
                 }
 
                 else -> itemsToDonate.retainAll { it.internalNames != parsedItems.skyblockItemIds }
@@ -288,7 +348,7 @@ object MuseumCheapestItemOverlay {
      * Determine if the overlay should be active based on the config option and the currently open GuiChest, if applicable
      */
     private fun shouldRender(gui: GuiScreen): Boolean =
-        config.museumCheapestItemOverlay && (gui is GuiChest && Utils.getOpenChestName()
+        config.museumCheapestItemOverlay && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && (gui is GuiChest && Utils.getOpenChestName()
             .startsWith("Museum ➜") || Utils.getOpenChestName() == "Your Museum")
 
     /**
