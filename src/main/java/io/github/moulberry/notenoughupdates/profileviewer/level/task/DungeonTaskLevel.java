@@ -64,7 +64,7 @@ public class DungeonTaskLevel {
 			for (String dungeonClass : dungeonClasses) {
 				ProfileViewer.Level level = skyblockInfo.get(dungeonClass);
 				for (int i = 1; i <= level.level; i++) {
-					if(i <= 50) sbXpGainedClass += dungeonTask.get("class_xp").getAsInt();
+					if (i <= 50) sbXpGainedClass += dungeonTask.get("class_xp").getAsInt();
 				}
 			}
 
