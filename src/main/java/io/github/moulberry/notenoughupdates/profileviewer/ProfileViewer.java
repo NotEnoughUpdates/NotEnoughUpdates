@@ -54,15 +54,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -659,7 +658,7 @@ public class ProfileViewer {
 		private final HashMap<String, List<JsonObject>> coopProfileMap = new HashMap<>();
 		private final HashMap<String, Map<String, Level>> skyblockInfoCache = new HashMap<>();
 		private final HashMap<String, JsonObject> inventoryCacheMap = new HashMap<>();
-		private final HashMap<String, JsonObject> collectionInfoMap = new HashMap<>();
+		private final HashMap<String, CompletableFuture<ProfileCollectionInfo>> collectionInfoMap = new HashMap<>();
 		private final List<String> profileNames = new ArrayList<>();
 		private final HashMap<String, PlayerStats.Stats> stats = new HashMap<>();
 		private final HashMap<String, PlayerStats.Stats> passiveStats = new HashMap<>();
@@ -1086,6 +1085,10 @@ public class ProfileViewer {
 			double skyblockLevel = getSkyblockLevel(profileName);
 
 			EnumChatFormatting previousColor = EnumChatFormatting.WHITE;
+			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
+				Utils.showOutdatedRepoNotification();
+				return EnumChatFormatting.WHITE;
+			}
 			JsonObject sblevelColours = Constants.SBLEVELS.getAsJsonObject("sblevel_colours");
 			try {
 				for (Map.Entry<String, JsonElement> stringJsonElementEntry : sblevelColours.entrySet()) {
@@ -1336,69 +1339,62 @@ public class ProfileViewer {
 		}
 
 		public JsonObject getProfileInformation(String profileName) {
+			if (profileName == null) profileName = latestProfile;
+			if (profileMap.containsKey(profileName)) return profileMap.get(profileName);
+			JsonObject profile = getRawProfileInformation(profileName);
+			if (profile == null) return null;
+			if (!profile.has("members")) return null;
+			JsonObject members = profile.get("members").getAsJsonObject();
+			if (!members.has(uuid)) return null;
+			JsonObject profileInfo = members.get(uuid).getAsJsonObject();
+			if (profile.has("banking")) {
+				profileInfo.add("banking", profile.get("banking").getAsJsonObject());
+			}
+			if (profile.has("game_mode")) {
+				profileInfo.add("game_mode", profile.get("game_mode"));
+			}
+			if (profile.has("community_upgrades")) {
+				profileInfo.add("community_upgrades", profile.get("community_upgrades"));
+			}
+			profileMap.put(profileName, profileInfo);
+			return profileInfo;
+		}
+
+		public JsonObject getRawProfileInformation(String profileName) {
 			JsonArray playerInfo = getSkyblockProfiles(() -> {});
 			if (playerInfo == null) return null;
 			if (profileName == null) profileName = latestProfile;
-			if (profileMap.containsKey(profileName)) return profileMap.get(profileName);
 
-			for (int i = 0; i < skyblockProfiles.size(); i++) {
-				if (!skyblockProfiles.get(i).isJsonObject()) {
+			for (JsonElement skyblockProfile : skyblockProfiles) {
+				if (!skyblockProfile.isJsonObject()) {
 					skyblockProfiles = null;
 					return null;
 				}
-				JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
-				if (profile.get("cute_name").getAsString().equalsIgnoreCase(profileName)) {
-					if (!profile.has("members")) return null;
-					JsonObject members = profile.get("members").getAsJsonObject();
-					if (!members.has(uuid)) continue;
-					JsonObject profileInfo = members.get(uuid).getAsJsonObject();
-					if (profile.has("banking")) {
-						profileInfo.add("banking", profile.get("banking").getAsJsonObject());
-					}
-					if (profile.has("game_mode")) {
-						profileInfo.add("game_mode", profile.get("game_mode"));
-					}
-					if (profile.has("community_upgrades")) {
-						profileInfo.add("community_upgrades", profile.get("community_upgrades"));
-					}
-					profileInfo.add("members", members);
-					profileMap.put(profileName, profileInfo);
-					return profileInfo;
-				}
+				if (skyblockProfile.getAsJsonObject().get("cute_name").getAsString().equalsIgnoreCase(profileName))
+					return skyblockProfile.getAsJsonObject();
 			}
-
 			return null;
 		}
 
 		public List<JsonObject> getCoopProfileInformation(String profileName) {
-			JsonArray playerInfo = getSkyblockProfiles(() -> {});
-			if (playerInfo == null) return null;
 			if (profileName == null) profileName = latestProfile;
 			if (coopProfileMap.containsKey(profileName)) return coopProfileMap.get(profileName);
+			JsonObject profile = getRawProfileInformation(profileName);
+			if (profile == null) return null;
 
-			for (int i = 0; i < skyblockProfiles.size(); i++) {
-				if (!skyblockProfiles.get(i).isJsonObject()) {
-					skyblockProfiles = null;
-					return null;
-				}
-				JsonObject profile = skyblockProfiles.get(i).getAsJsonObject();
-				if (profile.get("cute_name").getAsString().equalsIgnoreCase(profileName)) {
-					if (!profile.has("members")) return null;
-					JsonObject members = profile.get("members").getAsJsonObject();
-					if (!members.has(uuid)) return null;
-					List<JsonObject> coopList = new ArrayList<>();
-					for (Map.Entry<String, JsonElement> islandMember : members.entrySet()) {
-						if (!islandMember.getKey().equals(uuid)) {
-							JsonObject coopProfileInfo = islandMember.getValue().getAsJsonObject();
-							coopList.add(coopProfileInfo);
-						}
-					}
-					coopProfileMap.put(profileName, coopList);
-					return coopList;
+			if (!profile.has("members")) return null;
+			JsonObject members = profile.get("members").getAsJsonObject();
+			if (!members.has(uuid)) return null;
+			List<JsonObject> coopList = new ArrayList<>();
+			for (Map.Entry<String, JsonElement> islandMember : members.entrySet()) {
+				if (!islandMember.getKey().equals(uuid)) {
+					JsonObject coopProfileInfo = islandMember.getValue().getAsJsonObject();
+					coopList.add(coopProfileInfo);
 				}
 			}
+			coopProfileMap.put(profileName, coopList);
+			return coopList;
 
-			return null;
 		}
 
 		public void resetCache() {
@@ -1794,151 +1790,15 @@ public class ProfileViewer {
 			return null;
 		}
 
-		public ProfileCollectionInfo getCollectionInfoNew(String profileName, String uuid)
-			throws ExecutionException, InterruptedException {
-			if (collectionInfoHashMap.containsKey(profileName)) {
-				return collectionInfoHashMap.get(profileName).getNow(null);
-			}
-			JsonObject profileInfo = getProfileInformation(profileName);
-			CompletableFuture<ProfileCollectionInfo> collectionData = ProfileCollectionInfo.getCollectionData(
-				profileInfo,
-				uuid
-			);
-			if(collectionData.isDone()) {
-				collectionInfoHashMap.put(profileName, collectionData);
-				return collectionData.get();
-			}
-			return null;
-		}
-
-		public JsonObject getCollectionInfo(String profileName) {
-			JsonObject profileInfo = getProfileInformation(profileName);
-			if (profileInfo == null) return null;
-			JsonObject resourceCollectionInfo = getResourceCollectionInformation();
-			if (resourceCollectionInfo == null) return null;
-			if (profileName == null) profileName = latestProfile;
-			if (collectionInfoMap.containsKey(profileName)) return collectionInfoMap.get(profileName);
-
-			List<JsonObject> coopMembers = getCoopProfileInformation(profileName);
-			JsonElement unlocked_coll_tiers_element = Utils.getElement(profileInfo, "unlocked_coll_tiers");
-			JsonElement crafted_generators_element = Utils.getElement(profileInfo, "crafted_generators");
-			JsonObject fakeMember = new JsonObject();
-			fakeMember.add("crafted_generators", crafted_generators_element);
-			coopMembers.add(coopMembers.size(), fakeMember);
-			JsonElement collectionInfoElement = Utils.getElement(profileInfo, "collection");
-
-			if (unlocked_coll_tiers_element == null || collectionInfoElement == null) {
-				return null;
-			}
-
-			JsonObject collectionInfo = new JsonObject();
-			JsonObject collectionTiers = new JsonObject();
-			JsonObject minionTiers = new JsonObject();
-			JsonObject personalAmounts = new JsonObject();
-			JsonObject totalAmounts = new JsonObject();
-
-			if (collectionInfoElement.isJsonObject()) {
-				personalAmounts = collectionInfoElement.getAsJsonObject();
-			}
-
-			for (Map.Entry<String, JsonElement> entry : personalAmounts.entrySet()) {
-				totalAmounts.addProperty(entry.getKey(), entry.getValue().getAsLong());
-			}
-
-			List<JsonObject> coopProfiles = getCoopProfileInformation(profileName);
-			if (coopProfiles != null) {
-				for (JsonObject coopProfile : coopProfiles) {
-					JsonElement coopCollectionInfoElement = Utils.getElement(coopProfile, "collection");
-					if (coopCollectionInfoElement != null && coopCollectionInfoElement.isJsonObject()) {
-						for (Map.Entry<String, JsonElement> entry : coopCollectionInfoElement.getAsJsonObject().entrySet()) {
-							float existing = Utils.getElementAsFloat(totalAmounts.get(entry.getKey()), 0);
-							totalAmounts.addProperty(entry.getKey(), existing + entry.getValue().getAsLong());
-						}
-					}
-				}
-			}
-
-			if (unlocked_coll_tiers_element.isJsonArray()) {
-				JsonArray unlocked_coll_tiers = unlocked_coll_tiers_element.getAsJsonArray();
-				for (int i = 0; i < unlocked_coll_tiers.size(); i++) {
-					String unlocked = unlocked_coll_tiers.get(i).getAsString();
-
-					Matcher matcher = COLL_TIER_PATTERN.matcher(unlocked);
-
-					if (matcher.find()) {
-						String tier_str = matcher.group(1);
-						int tier = Integer.parseInt(tier_str);
-						String coll = unlocked.substring(0, unlocked.length() - (matcher.group().length()));
-						if (!collectionTiers.has(coll) || collectionTiers.get(coll).getAsInt() < tier) {
-							collectionTiers.addProperty(coll, tier);
-						}
-					}
-				}
-			}
-			for (JsonObject current_member_info : coopMembers) {
-				if (
-					!current_member_info.has("crafted_generators") || !current_member_info.get("crafted_generators").isJsonArray()
-				) continue;
-				JsonArray crafted_generators = Utils.getElement(current_member_info, "crafted_generators").getAsJsonArray();
-				for (int j = 0; j < crafted_generators.size(); j++) {
-					String unlocked = crafted_generators.get(j).getAsString();
-					Matcher matcher = COLL_TIER_PATTERN.matcher(unlocked);
-					if (matcher.find()) {
-						String tierString = matcher.group(1);
-						int tier = Integer.parseInt(tierString);
-						String coll = unlocked.substring(0, unlocked.length() - (matcher.group().length()));
-						if (!minionTiers.has(coll) || minionTiers.get(coll).getAsInt() < tier) {
-							minionTiers.addProperty(coll, tier);
-						}
-					}
-				}
-			}
-
-			JsonObject maxAmount = new JsonObject();
-			JsonObject updatedCollectionTiers = new JsonObject();
-			for (Map.Entry<String, JsonElement> totalAmountsEntry : totalAmounts.entrySet()) {
-				String collName = totalAmountsEntry.getKey();
-				int collTier = (int) Utils.getElementAsFloat(collectionTiers.get(collName), 0);
-
-				int currentAmount = (int) Utils.getElementAsFloat(totalAmounts.get(collName), 0);
-				if (currentAmount > 0) {
-					for (Map.Entry<String, JsonElement> resourceEntry : resourceCollectionInfo.entrySet()) {
-						JsonElement tiersElement = Utils.getElement(resourceEntry.getValue(), "items." + collName + ".tiers");
-						if (tiersElement != null && tiersElement.isJsonArray()) {
-							JsonArray tiers = tiersElement.getAsJsonArray();
-							int maxTierAcquired = -1;
-							int maxAmountRequired = -1;
-							for (int i = 0; i < tiers.size(); i++) {
-								JsonObject tierInfo = tiers.get(i).getAsJsonObject();
-								int tier = tierInfo.get("tier").getAsInt();
-								int amountRequired = tierInfo.get("amountRequired").getAsInt();
-								if (currentAmount >= amountRequired) {
-									maxTierAcquired = tier;
-								}
-								maxAmountRequired = amountRequired;
-							}
-							if (maxTierAcquired >= 0) {
-								updatedCollectionTiers.addProperty(collName, maxTierAcquired);
-							}
-							maxAmount.addProperty(collName, maxAmountRequired);
-						}
-					}
-				}
-			}
-
-			for (Map.Entry<String, JsonElement> collectionTiersEntry : updatedCollectionTiers.entrySet()) {
-				collectionTiers.add(collectionTiersEntry.getKey(), collectionTiersEntry.getValue());
-			}
-
-			collectionInfo.add("minion_tiers", minionTiers);
-			collectionInfo.add("max_amounts", maxAmount);
-			collectionInfo.add("personal_amounts", personalAmounts);
-			collectionInfo.add("total_amounts", totalAmounts);
-			collectionInfo.add("collection_tiers", collectionTiers);
-
-			collectionInfoMap.put(profileName, collectionInfo);
-
-			return collectionInfo;
+		public ProfileCollectionInfo getCollectionInfo(String profileName) {
+			JsonObject rawProfileInformation = getRawProfileInformation(profileName);
+			if (rawProfileInformation == null) return null;
+			CompletableFuture<ProfileCollectionInfo> future =
+				collectionInfoMap.computeIfAbsent(
+					profileName.toLowerCase(Locale.ROOT),
+					ignored -> ProfileCollectionInfo.getCollectionData(rawProfileInformation, uuid)
+				);
+			return future.getNow(null);
 		}
 
 		public PlayerStats.Stats getPassiveStats(String profileName) {
@@ -1967,7 +1827,6 @@ public class ProfileViewer {
 			PlayerStats.Stats stats = PlayerStats.getStats(
 				getSkyblockInfo(profileName),
 				getInventoryInfo(profileName),
-				getCollectionInfo(profileName),
 				getPetsInfo(profileName),
 				profileInfo
 			);

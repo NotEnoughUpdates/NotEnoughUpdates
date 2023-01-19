@@ -24,6 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
@@ -71,7 +72,17 @@ public class StringUtils {
 		return shortNumberFormat(n, 0);
 	}
 
-	private static final char[] c = new char[] { 'k', 'm', 'b', 't' };
+	private static final char[] sizeSuffix = new char[]{'k', 'm', 'b', 't'};
+
+	public static String shortNumberFormat(BigInteger bigInteger) {
+		BigInteger THOUSAND = BigInteger.valueOf(1000);
+		int i = -1;
+		while (bigInteger.compareTo(THOUSAND) > 0 && i < sizeSuffix.length) {
+			bigInteger = bigInteger.divide(THOUSAND);
+			i++;
+		}
+		return bigInteger.toString() + (i == -1 ? "" : sizeSuffix[i]);
+	}
 
 	public static String shortNumberFormat(double n, int iteration) {
 		if (n < 1000) {
@@ -84,7 +95,7 @@ public class StringUtils {
 
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + c[iteration] : shortNumberFormat(d, iteration + 1);
+		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + sizeSuffix[iteration] : shortNumberFormat(d, iteration + 1);
 	}
 
 	public static String urlEncode(String something) {
