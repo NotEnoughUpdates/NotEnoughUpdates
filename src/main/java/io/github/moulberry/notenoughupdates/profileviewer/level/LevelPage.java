@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.profileviewer.level;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -40,8 +39,8 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import java.text.NumberFormat;
 import java.util.Collections;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class LevelPage {
@@ -158,22 +157,25 @@ public class LevelPage {
 	}
 
 	public String buildLore(String name, double xpGotten, double xpGainful, boolean hasNoLimit) {
+		String xpGottenFormatted = NumberFormat.getInstance().format((int) xpGotten);
+		String xpGainfulFormatted = NumberFormat.getInstance().format((int) xpGainful);
+
 		if (xpGainful == 0 && xpGotten == 0 && !hasNoLimit) {
 			return EnumChatFormatting.GOLD + name + ": §c§lNOT DETECTABLE!";
 		}
 		if (hasNoLimit) {
-			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.YELLOW + (int) xpGotten + " XP";
+			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.YELLOW +  xpGottenFormatted + " XP";
 		}
 		int percentage = (int) ((xpGotten / xpGainful) * 100);
 		if (xpGotten >= xpGainful) {
 			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.GREEN
-				+ percentage + "%" + " §8(" + (int) xpGotten + "/" + (int) xpGainful + " XP)";
+				+ percentage + "%" + " §8(" + xpGottenFormatted + "/" + xpGainfulFormatted + " XP)";
 		} else if (xpGotten == -1) {
 			return EnumChatFormatting.GOLD + name + ": §c§lCOLLECTION DISABLED!";
 		} else {
 
 			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.YELLOW
-				+ percentage + "%" + " §8(" + (int) xpGotten + "/" + (int) xpGainful + " XP)";
+				+ percentage + "%" + " §8(" + xpGottenFormatted + "/" + xpGainfulFormatted + " XP)";
 		}
 	}
 

@@ -60,8 +60,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -1055,29 +1057,8 @@ public class ProfileViewer {
 			return null;
 		}
 
-		/*
-		public LevelData getLevelData(String profileName) {
-			if (levelData.containsKey(profileName)) {
-				return levelData.get(profileName);
-			}
-			LevelData data = new LevelData(
-				new CoreTaskData().loadInformation(profileName),
-				new DungeonTaskData().loadInformation(profileName),
-				new EssenceTaskData().loadInformation(profileName),
-				new MiscTaskData().loadInformation(profileName),
-				new SkillRelatedTaskData().loadInformation(profileName),
-				new SlayingTaskData().loadInformation(profileName),
-				new StoryTaskData().loadInformation(profileName),
-				Constants.SBLEVELS
-			);
-			levelData.put(profileName, data);
-
-			return data;
-		}
-
-		 */
-
 		public EnumChatFormatting getSkyblockLevelColour(String profileName) {
+			if (Constants.SBLEVELS == null) return EnumChatFormatting.WHITE;
 			if (skyBlockExperienceColour.containsKey(profileName)) {
 				return skyBlockExperienceColour.get(profileName);
 			}
@@ -1097,14 +1078,15 @@ public class ProfileViewer {
 						.getValue()
 						.getAsString());
 					if (skyblockLevel <= key) {
-
 						skyBlockExperienceColour.put(profileName, previousColor);
 						return previousColor;
 					}
 					previousColor = valueByName;
 				}
-			} catch (RuntimeException ignored) { // catch both numberformat and getValueByName being wrong
+			} catch (RuntimeException ignored) {
+				// catch both numberformat and getValueByName being wrong
 			}
+			skyBlockExperienceColour.put(profileName, EnumChatFormatting.WHITE);
 			return EnumChatFormatting.WHITE;
 		}
 
@@ -1113,11 +1095,8 @@ public class ProfileViewer {
 				return skyBlockExperience.get(profileName);
 			}
 			final JsonObject profileInfo = getProfileInformation(profileName);
-			JsonElement element = Utils.getElement(profileInfo, "leveling.experience");
-			double level = 0;
-			if (element != null) {
-				level = (element.getAsLong() / 100F);
-			}
+			int element = Utils.getElementAsInt(Utils.getElement(profileInfo, "leveling.experience"), 0);
+			double level = (element / 100F);
 			skyBlockExperience.put(profileName, level);
 			return level;
 		}
@@ -1412,6 +1391,8 @@ public class ProfileViewer {
 			collectionInfoMap.clear();
 			networth.clear();
 			magicalPower.clear();
+			skyBlockExperience.clear();
+			skyBlockExperienceColour.clear();
 		}
 
 		public int getCap(JsonObject leveling, String skillName) {
@@ -1789,7 +1770,6 @@ public class ProfileViewer {
 			}
 			return null;
 		}
-
 		public ProfileCollectionInfo getCollectionInfo(String profileName) {
 			JsonObject rawProfileInformation = getRawProfileInformation(profileName);
 			if (rawProfileInformation == null) return null;

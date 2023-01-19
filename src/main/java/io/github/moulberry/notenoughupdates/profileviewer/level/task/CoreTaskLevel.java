@@ -102,14 +102,18 @@ public class CoreTaskLevel {
 			levelPage.getProfileId()
 		);
 		if (collection != null) {
+			sbXpCollection = 0;
 			for (Map.Entry<String, ProfileCollectionInfo.CollectionInfo> stringCollectionInfoEntry : collection
 				.getCollections()
 				.entrySet()) {
 				ProfileCollectionInfo.CollectionInfo value = stringCollectionInfoEntry.getValue();
-				sbXpCollection = value.getUnlockedTiers().size() * collectionsXp;
+				sbXpCollection += value.getUnlockedTiers().size() * collectionsXp;
 			}
-			for (Integer tier : collection.getCraftedGenerators().values()) {
-				if (minionXp.has(tier + "")) sbXpMinionTier += minionXp.get(tier + "").getAsInt();
+
+			for (int tier : collection.getCraftedGenerators().values()) {
+				for (int i = 1; i <= tier; i++) {
+					if (minionXp.has(i + "")) sbXpMinionTier += minionXp.get(i + "").getAsInt();
+				}
 			}
 		}
 		List<String> lore = new ArrayList<>();

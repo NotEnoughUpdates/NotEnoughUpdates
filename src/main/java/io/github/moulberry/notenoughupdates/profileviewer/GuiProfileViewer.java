@@ -1055,10 +1055,14 @@ public class GuiProfileViewer extends GuiScreen {
 		String levelStr;
 		if (mouseX > x && mouseX < x + 120) {
 			if (mouseY > y - 4 && mouseY < y + 13) {
+				NumberFormat instance = NumberFormat.getInstance();
+				String xpFormatted = instance.format((int) xp);
+				String maxFormatted = instance.format((int) max);
+
 				levelStr =
 					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
 						"%" +
-						" §8(" + (int) xp + "/" + (int) max + " XP)";
+						" §8(" + xpFormatted + "/" + maxFormatted + " XP)";
 				if (tooltip != null && !tooltip.isEmpty()) {
 					tooltip.add("");
 					tooltip.add(levelStr);
