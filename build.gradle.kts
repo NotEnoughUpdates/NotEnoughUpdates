@@ -134,8 +134,8 @@ dependencies {
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 		kotlinDependencies(kotlin("stdlib"))
 
-		ksp(shadowImplementation(project(":annotations"))!!)
-		compileOnly("org.projectlombok:lombok:1.18.24")
+		compileOnly(ksp(project(":annotations"))!!)
+        compileOnly("org.projectlombok:lombok:1.18.24")
 		annotationProcessor("org.projectlombok:lombok:1.18.24")
 		"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
 
