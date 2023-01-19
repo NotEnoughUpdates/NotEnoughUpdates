@@ -19,9 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class CoreTaskLevel {
 
@@ -100,28 +97,20 @@ public class CoreTaskLevel {
 		int sbXpMinionTier = -1; // keeping at -1 here because cobblestone 1 minion XP isn't included for some reason?
 		JsonObject minionXp = Constants.MISC.get("minionXp").getAsJsonObject();
 		int collectionsXp = coreTask.get("collections_xp").getAsInt();
-		try {
-			ProfileCollectionInfo collection;
-			collection = levelPage.getProfile().getCollectionInfoNew(
-				levelPage.getProfileId(),
-				levelPage.getProfile().getUuid()
-			);
-			if (collection != null) {
-				for (Map.Entry<String, ProfileCollectionInfo.CollectionInfo> stringCollectionInfoEntry : collection
-					.getCollections()
-					.entrySet()) {
-					ProfileCollectionInfo.CollectionInfo value = stringCollectionInfoEntry.getValue();
-					sbXpCollection = value.getUnlockedTiers().size() * collectionsXp;
-				}
-				for (Map.Entry<String, Integer> stringIntegerEntry : collection.getCraftedGenerators().entrySet()) {
-					String key = stringIntegerEntry.getKey();
-					int value = stringIntegerEntry.getValue();
-					for (int i = 1; i <= value; i++) {
-						if (minionXp.has(i + "")) sbXpMinionTier += minionXp.get(i + "").getAsInt();
-					}
-				}
+		ProfileCollectionInfo collection;
+		collection = levelPage.getProfile().getCollectionInfo(
+			levelPage.getProfileId()
+		);
+		if (collection != null) {
+			for (Map.Entry<String, ProfileCollectionInfo.CollectionInfo> stringCollectionInfoEntry : collection
+				.getCollections()
+				.entrySet()) {
+				ProfileCollectionInfo.CollectionInfo value = stringCollectionInfoEntry.getValue();
+				sbXpCollection = value.getUnlockedTiers().size() * collectionsXp;
 			}
-		} catch (ExecutionException | InterruptedException e) {
+			for (Integer tier : collection.getCraftedGenerators().values()) {
+				if (minionXp.has(tier + "")) sbXpMinionTier += minionXp.get(tier + "").getAsInt();
+			}
 		}
 		List<String> lore = new ArrayList<>();
 
@@ -131,7 +120,8 @@ public class CoreTaskLevel {
 		lore.add(levelPage.buildLore("Museum Progression",
 			0, 0, false
 		));
-		lore.add(levelPage.buildLore("Fairy Soul",
+		lore.add(levelPage.buildLore(
+			"Fairy Soul",
 			sbXpGainedFairy, coreTask.get("fairy_souls").getAsInt(), false
 		));
 		lore.add(levelPage.buildLore("Accessory Bag",

@@ -23,8 +23,21 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import java.math.BigInteger
-import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.filter
+import kotlin.collections.flatMap
+import kotlin.collections.groupBy
+import kotlin.collections.mapNotNull
+import kotlin.collections.mapValues
+import kotlin.collections.maxOf
+import kotlin.collections.sumOf
+import kotlin.collections.toList
+import kotlin.collections.toMap
+import kotlin.collections.toSet
 
 data class ProfileCollectionInfo(
     val collections: Map<String, CollectionInfo>,

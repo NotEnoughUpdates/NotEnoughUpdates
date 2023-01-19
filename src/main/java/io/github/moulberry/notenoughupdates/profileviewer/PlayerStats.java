@@ -293,7 +293,6 @@ public class PlayerStats {
 	private static Stats getSetBonuses(
 		Stats stats,
 		JsonObject inventoryInfo,
-		JsonObject collectionInfo,
 		Map<String, ProfileViewer.Level> skyblockInfo,
 		JsonObject profile
 	) {
@@ -304,17 +303,11 @@ public class PlayerStats {
 		String fullset = getFullset(armor, -1);
 
 		if (fullset != null) {
+			// TODO @nea: repo based stat delivery? (with lisp)
 			switch (fullset) {
 				case "LAPIS_ARMOR_":
 					bonuses.addStat(HEALTH, 60);
 					break;
-				case "EMERALD_ARMOR_":
-				{
-					int bonus = (int) Math.floor(Utils.getElementAsFloat(Utils.getElement(collectionInfo, "EMERALD"), 0) / 3000);
-					bonuses.addStat(HEALTH, bonus);
-					bonuses.addStat(DEFENCE, bonus);
-				}
-				break;
 				case "FAIRY_":
 					bonuses.addStat(HEALTH, Utils.getElementAsFloat(Utils.getElement(profile, "fairy_souls_collected"), 0));
 					break;
@@ -622,11 +615,10 @@ public class PlayerStats {
 	public static Stats getStats(
 		Map<String, ProfileViewer.Level> skyblockInfo,
 		JsonObject inventoryInfo,
-		JsonObject collectionInfo,
 		JsonObject petsInfo,
 		JsonObject profile
 	) {
-		if (skyblockInfo == null || inventoryInfo == null || collectionInfo == null || profile == null) return null;
+		if (skyblockInfo == null || inventoryInfo == null || profile == null) return null;
 
 		JsonArray armor = Utils.getElement(inventoryInfo, "inv_armor").getAsJsonArray();
 		JsonArray inventory = Utils.getElement(inventoryInfo, "inv_contents").getAsJsonArray();
@@ -651,7 +643,7 @@ public class PlayerStats {
 
 		stats = stats.add(passiveBonuses).add(armorBonuses).add(talismanBonuses).add(petBonus).add(hotmBonuses);
 
-		stats.add(getSetBonuses(stats, inventoryInfo, collectionInfo, skyblockInfo, profile));
+		stats.add(getSetBonuses(stats, inventoryInfo, skyblockInfo, profile));
 
 		stats.scaleAll(getStatMult(inventoryInfo));
 
