@@ -110,7 +110,7 @@ public class MiscTaskLevel {
 		// community upgrades
 		int sbXpCommunityUpgrade = 0;
 		JsonObject profileInformation = levelPage.getProfile().getProfileInformation(levelPage.getProfileId());
-		if (profileInformation.has("community_upgrades")) {
+		if (profileInformation != null && profileInformation.has("community_upgrades")) {
 			JsonObject communityUpgrades = profileInformation.getAsJsonObject("community_upgrades");
 			JsonArray upgradeStates = communityUpgrades.getAsJsonArray("upgrade_states");
 			JsonObject communityShopUpgradesMax = miscellaneousTask.getAsJsonObject("community_shop_upgrades_max");
