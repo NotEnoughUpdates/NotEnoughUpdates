@@ -24,12 +24,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.events.GuiInventoryBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -147,6 +149,29 @@ public class EquipmentOverlay {
 	public ItemStack petStack;
 
 	//<editor-fold desc="events">
+	@SubscribeEvent
+	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
+		if (isRenderingArmorHud()) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight() - 200,
+					event.getGuiBaseRect().getTop(),
+					50, 84
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_LEFT
+			);
+		}
+		if (isRenderingPetHud()) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight() - 200,
+					event.getGuiBaseRect().getTop() + 60,
+					50, 60
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_LEFT
+			);
+		}
+	}
 
 	@SubscribeEvent
 	public void onGuiTick(TickEvent.ClientTickEvent event) {
