@@ -21,9 +21,11 @@ package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.util.MuseumUtil
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
+import io.github.moulberry.notenoughupdates.util.Rectangle
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
@@ -113,6 +115,19 @@ object MuseumCheapestItemOverlay {
         ArrowPagesUtils.onPageSwitchMouse(
             guiLeft, guiTop, topLeft, currentPage, totalPages()
         ) { pageChange: Int -> currentPage = pageChange }
+    }
+
+    @SubscribeEvent
+    fun onButtonExclusionZones(event: ButtonExclusionZoneEvent) {
+        if (shouldRender(event.gui)) {
+            event.blockArea(
+                Rectangle(
+                    event.guiBaseRect.right,
+                    event.guiBaseRect.top,
+                    185, 100
+                ), ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
+            )
+        }
     }
 
     /**
@@ -207,12 +222,17 @@ object MuseumCheapestItemOverlay {
                                     ?.get("displayname")?.asString ?: "ERROR"
                             val value = calculateValue(listOf(it))
 
+                            // Creates:"  - displayname (price)" OR "  - displayname (No BIN found!)"
                             tooltip.add(
                                 "  ${EnumChatFormatting.DARK_GRAY}-${EnumChatFormatting.RESET} $displayname${EnumChatFormatting.DARK_GRAY} (${EnumChatFormatting.GOLD}${
-                                    Utils.shortNumberFormat(
-                                        value,
-                                        0
-                                    )
+                                    if (value == Double.MAX_VALUE) {
+                                        "${EnumChatFormatting.RED}No BIN found!"
+                                    } else {
+                                        Utils.shortNumberFormat(
+                                            value,
+                                            0
+                                        )
+                                    }
                                 }${EnumChatFormatting.DARK_GRAY})"
                             )
                         }
@@ -232,8 +252,8 @@ object MuseumCheapestItemOverlay {
 
                     Utils.drawHoveringText(
                         tooltip,
-                        x.toInt(),
-                        y.toInt(),
+                        mouseX,
+                        mouseY,
                         width,
                         height,
                         -1,
