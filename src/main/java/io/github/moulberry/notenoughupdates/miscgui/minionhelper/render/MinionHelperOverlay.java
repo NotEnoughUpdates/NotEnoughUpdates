@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -34,6 +35,7 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSour
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -91,6 +93,20 @@ public class MinionHelperOverlay {
 	public void resetCache() {
 		cacheRenderMap = null;
 		cacheTotalPages = -1;
+	}
+
+	@SubscribeEvent
+	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
+		if (manager.inCraftedMinionsInventory() && NotEnoughUpdates.INSTANCE.config.minionHelper.gui) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight(),
+					event.getGuiBaseRect().getTop(),
+					168 /*width*/ + 4 /*space*/, 128
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
+			);
+		}
 	}
 
 	@SubscribeEvent
