@@ -462,9 +462,6 @@ public class ProfileViewer {
 	private final NEUManager manager;
 	private final HashMap<String, JsonObject> uuidToHypixelProfile = new HashMap<>();
 	private final HashMap<String, Profile> uuidToProfileMap = new HashMap<>();
-	private final HashMap<String, Double> skyBlockExperience = new HashMap<>();
-
-	private final HashMap<String, EnumChatFormatting> skyBlockExperienceColour = new HashMap<>();
 
 	private final HashMap<String, String> nameToUuid = new HashMap<>();
 
@@ -661,14 +658,13 @@ public class ProfileViewer {
 		private final HashMap<String, Map<String, Level>> skyblockInfoCache = new HashMap<>();
 		private final HashMap<String, JsonObject> inventoryCacheMap = new HashMap<>();
 		private final HashMap<String, CompletableFuture<ProfileCollectionInfo>> collectionInfoMap = new HashMap<>();
+		private final HashMap<String, Double> skyBlockExperience = new HashMap<>();
+		private final HashMap<String, EnumChatFormatting> skyBlockExperienceColour = new HashMap<>();
 		private final List<String> profileNames = new ArrayList<>();
 		private final HashMap<String, PlayerStats.Stats> stats = new HashMap<>();
 		private final HashMap<String, PlayerStats.Stats> passiveStats = new HashMap<>();
 		private final HashMap<String, Long> networth = new HashMap<>();
 		private final HashMap<String, Integer> magicalPower = new HashMap<>();
-
-		private final HashMap<String, CompletableFuture<ProfileCollectionInfo>> collectionInfoHashMap = new HashMap<>();
-
 		private final HashMap<String, SoopyNetworthData> soopyNetworth = new HashMap<>();
 		private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 		private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
