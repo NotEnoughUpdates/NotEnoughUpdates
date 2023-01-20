@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
