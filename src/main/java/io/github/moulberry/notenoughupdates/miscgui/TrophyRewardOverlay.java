@@ -22,9 +22,11 @@ package io.github.moulberry.notenoughupdates.miscgui;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -93,6 +95,21 @@ public class TrophyRewardOverlay {
 		}
 
 		return line.get(1);
+	}
+
+	@SubscribeEvent
+	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
+		if (inTrophyFishingInventory()) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight(),
+					event.getGuiBaseRect().getTop(),
+					168 /*width*/ + 4 /*space*/,
+					128
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
+			);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

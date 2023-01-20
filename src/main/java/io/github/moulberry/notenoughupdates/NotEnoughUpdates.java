@@ -75,6 +75,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.FrozenTreasuresHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.GlowingMushroomHighlighter;
+import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
@@ -357,6 +358,7 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(new WardrobeMouseButtons());
+		MinecraftForge.EVENT_BUS.register(AccessoryBagOverlay.INSTANCE);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
