@@ -28,13 +28,11 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.Craftin
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class MinionHelperPriceCalculation {
 
@@ -89,11 +87,7 @@ public class MinionHelperPriceCalculation {
 			}
 			if (items.containsKey("SKYBLOCK_NORTH_STAR")) {
 				int amount = items.get("SKYBLOCK_NORTH_STAR").get(0);
-				if (Minecraft.getMinecraft().thePlayer.getGameProfile().getId().equals(UUID.fromString("d3cb85e2-3075-48a1-b213-a9bfb62360c1"))) {
-					result += " §8+ §d" + amount + " NS";
-				} else {
-					result += " §8+ §d" + amount + " North Stars";
-				}
+				result += " §8+ §d" + amount + " North Stars";
 			}
 		}
 

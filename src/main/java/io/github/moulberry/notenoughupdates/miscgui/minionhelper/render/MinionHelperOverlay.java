@@ -58,7 +58,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class MinionHelperOverlay {
 
@@ -348,11 +347,7 @@ public class MinionHelperOverlay {
 			costFormat = costFormat + " §8+ §5" + peltsNeeded + " Pelts";
 		}
 		if (northStarsNeeded > 0) {
-			if (Minecraft.getMinecraft().thePlayer.getGameProfile().getId().equals(UUID.fromString("d3cb85e2-3075-48a1-b213-a9bfb62360c1"))) {
-				costFormat = costFormat + " §8+ §d" + northStarsNeeded + " NS";
-			} else {
-				costFormat = costFormat + " §8+ §d" + northStarsNeeded + " North Stars";
-			}
+			costFormat = costFormat + " §8+ §d" + northStarsNeeded + " North Stars";
 		}
 
 		List<String> lore;
