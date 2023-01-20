@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscgui.minionhelper.render;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
@@ -28,6 +29,8 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.Minion;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewLine;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.render.renderables.OverviewText;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
+import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
@@ -55,6 +58,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class MinionHelperOverlay {
 
@@ -72,7 +76,7 @@ public class MinionHelperOverlay {
 	private boolean filterEnabled = true;
 	private boolean useInstantBuyPrice = true;
 
-	private int maxPerPage = 8;
+	private int maxPerPage = 7;
 	private int currentPage = 0;
 
 	public MinionHelperOverlay(MinionHelperManager manager) {
@@ -262,18 +266,34 @@ public class MinionHelperOverlay {
 		for (Map.Entry<String, OverviewLine> entry : renderMap.entrySet()) {
 			String line = entry.getKey();
 
+			/*
+			 * Renders the part of the string after '§6' and before '§7' with shadows.
+			 *
+			 * I don't know how to tell mixin to "only capture part x if part y is present"
+			 * Therefore I use these bad splits. I'm Sorry!
+			 */
 			if (line.contains("§6")) {
 				String[] split = line.split("§6");
 				line = split[0];
 				String price = "§6§l" + split[1];
+
+				if (price.contains("§8")) {
+					split = price.split("§8");
+					String newPrice = split[0];
+					String stuffBehindPricePart = "§8" + price.substring(newPrice.length() + 2);
+					price = newPrice;
+					int lineLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line + price);
+					fontRendererObj.drawString(stuffBehindPricePart, x + lineLen, y, -1, false);
+				}
+
 				int lineLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line);
 				fontRendererObj.drawString(price, x + lineLen, y, -1, true);
 			}
 
 			fontRendererObj.drawString(line, x, y, -1, false);
 			i++;
-			if (i == 2) {
-				y += 15;
+			if (i == 3) {
+				y += 13;
 			} else {
 				y += 10;
 			}
@@ -302,13 +322,14 @@ public class MinionHelperOverlay {
 		LinkedHashMap<String, OverviewLine> renderMap
 	) {
 		int neededForNextSlot = manager.getNeedForNextSlot();
-		String color = "§8";
 		if (neededForNextSlot == -1) {
-			renderMap.put(color + "Next slot: ?", new OverviewText(Collections.emptyList(), () -> {}));
+			renderMap.put("§8Next slot: ?", new OverviewText(Collections.emptyList(), () -> {}));
 			return;
 		}
 
 		double priceNeeded = 0;
+		int peltsNeeded = 0;
+		int northStarsNeeded = 0;
 		int xpGain = 0;
 		int index = 0;
 		for (Minion minion : TrophyRewardOverlay.sortByValue(prices).keySet()) {
@@ -316,12 +337,24 @@ public class MinionHelperOverlay {
 			priceNeeded += price;
 			xpGain += minion.getXpGain();
 			index++;
+			peltsNeeded += getSpecialItemNeeds(minion, "SKYBLOCK_PELT");
+			northStarsNeeded += getSpecialItemNeeds(minion, "SKYBLOCK_NORTH_STAR");
 			if (index == neededForNextSlot) break;
 		}
-		String format = manager.getPriceCalculation().formatCoins(priceNeeded);
-		format = format.replace(" coins", "");
-		String text =
-			color + "Next slot: §3" + neededForNextSlot + " minions §8- " + format;
+		String costFormat = manager.getPriceCalculation().formatCoins(priceNeeded);
+		costFormat = costFormat.replace(" coins", "");
+
+		if (peltsNeeded > 0) {
+			costFormat = costFormat + " §8+ §5" + peltsNeeded + " Pelts";
+		}
+		if (northStarsNeeded > 0) {
+			if (Minecraft.getMinecraft().thePlayer.getGameProfile().getId().equals(UUID.fromString("d3cb85e2-3075-48a1-b213-a9bfb62360c1"))) {
+				costFormat = costFormat + " §8+ §d" + northStarsNeeded + " NS";
+			} else {
+				costFormat = costFormat + " §8+ §d" + northStarsNeeded + " North Stars";
+			}
+		}
+
 		List<String> lore;
 		if (xpGain == 0) {
 			if (index == 0) {
@@ -334,7 +367,25 @@ public class MinionHelperOverlay {
 				"§8DISCLAIMER: This only works if", "§8you follow the helper."
 			);
 		}
-		renderMap.put(text, new OverviewText(lore, () -> {}));
+		OverviewText overviewText = new OverviewText(lore, () -> {});
+		renderMap.put("§8Next slot: §3" + neededForNextSlot + " minions", overviewText);
+		renderMap.put("§8Cost: " + costFormat, overviewText);
+	}
+
+	private static int getSpecialItemNeeds(Minion minion, String specialItem) {
+		int count = 0;
+		MinionSource minionSource = minion.getMinionSource();
+
+		if (minionSource instanceof NpcSource) {
+			NpcSource source = (NpcSource) minionSource;
+			ArrayListMultimap<String, Integer> items = source.getItems();
+			if (items.containsKey(specialItem)) {
+				for (Integer amount : items.get(specialItem)) {
+					count += amount;
+				}
+			}
+		}
+		return count;
 	}
 
 	private void addTitle(Map<Minion, Double> prices, LinkedHashMap<String, OverviewLine> renderMap) {
@@ -424,8 +475,8 @@ public class MinionHelperOverlay {
 				return entry.getValue();
 			}
 			i++;
-			if (i == 2) {
-				y += 15;
+			if (i == 3) {
+				y += 13;
 			} else {
 				y += 10;
 			}

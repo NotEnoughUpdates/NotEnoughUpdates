@@ -28,11 +28,13 @@ import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.Craftin
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.MinionSource;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.sources.NpcSource;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MinionHelperPriceCalculation {
 
@@ -80,13 +82,18 @@ public class MinionHelperPriceCalculation {
 
 		if (source instanceof NpcSource) {
 			ArrayListMultimap<String, Integer> items = ((NpcSource) source).getItems();
+			// Please hypixel never ever add a minion recipe with pelts and north stars at the same time! Thank you :)
 			if (items.containsKey("SKYBLOCK_PELT")) {
 				int amount = items.get("SKYBLOCK_PELT").get(0);
-				result += " §7+ §5" + amount + " Pelts";
+				result += " §8+ §5" + amount + " Pelts";
 			}
 			if (items.containsKey("SKYBLOCK_NORTH_STAR")) {
 				int amount = items.get("SKYBLOCK_NORTH_STAR").get(0);
-				result += " §7+ §d" + amount + " North Stars";
+				if (Minecraft.getMinecraft().thePlayer.getGameProfile().getId().equals(UUID.fromString("d3cb85e2-3075-48a1-b213-a9bfb62360c1"))) {
+					result += " §8+ §d" + amount + " NS";
+				} else {
+					result += " §8+ §d" + amount + " North Stars";
+				}
 			}
 		}
 
