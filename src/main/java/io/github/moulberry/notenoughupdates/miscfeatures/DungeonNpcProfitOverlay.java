@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -334,7 +334,7 @@ public class DungeonNpcProfitOverlay {
 						}
 					}
 				}
-			} else if (essenceMatcher.matches()) {
+			} else if (essenceMatcher.matches() && NotEnoughUpdates.INSTANCE.config.dungeons.useEssenceCostFromBazaar) {
 				String essenceType = essenceMatcher.group("essenceType");
 				String essenceAmount = essenceMatcher.group("essenceAmount");
 				if (essenceType == null || essenceAmount == null) {
