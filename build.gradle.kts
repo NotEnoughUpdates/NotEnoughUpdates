@@ -139,6 +139,8 @@ dependencies {
 		annotationProcessor("org.projectlombok:lombok:1.18.24")
 		"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
 
+		shadowImplementation("com.mojang:brigadier:1.0.18")
+
 		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
 		}
@@ -233,6 +235,7 @@ tasks.shadowJar {
 		from(kotlinDependencyCollectionJar)
 		dependsOn(kotlinDependencyCollectionJar)
 		fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
+		relocate("com.mojang.brigadier")
 }
 
 tasks.assemble.get().dependsOn(remapJar)

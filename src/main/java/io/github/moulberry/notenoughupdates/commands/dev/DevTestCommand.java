@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.moulberry.notenoughupdates.BuildFlags;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
@@ -49,9 +51,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+
 public class DevTestCommand extends ClientCommandBase {
 
-	private static final List<String> DEV_TESTERS =
+	public static final List<String> DEV_TESTERS =
 		Arrays.asList(
 			"d0e05de7-6067-454d-beae-c6d19d886191", // moulberry
 			"66502b40-6ac1-4d33-950d-3df110297aab", // lucycoconut
