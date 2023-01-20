@@ -188,7 +188,7 @@ public class SlayingTaskLevel {
 		}
 
 		int mythologicalKillsMax = slayingTask.get("mythological_kills").getAsInt();
-		if(mythologicalKillsXp > mythologicalKillsMax) mythologicalKillsXp = mythologicalKillsMax;
+		if (mythologicalKillsXp > mythologicalKillsMax) mythologicalKillsXp = mythologicalKillsMax;
 
 		// dragons
 		int sbXpFromDragonKills = 0;
