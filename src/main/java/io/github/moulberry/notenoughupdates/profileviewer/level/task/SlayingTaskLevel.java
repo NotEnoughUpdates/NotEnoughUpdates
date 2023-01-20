@@ -184,7 +184,7 @@ public class SlayingTaskLevel {
 		int mythologicalKillsXp = 0;
 		if (object.has("stats")) {
 			JsonObject stats = object.get("stats").getAsJsonObject();
-			if (stats.has("mythos_kills")) mythologicalKillsXp += (mythologicalKillsXp += stats.get("mythos_kills").getAsLong() / 100);
+			if (stats.has("mythos_kills")) mythologicalKillsXp += (stats.get("mythos_kills").getAsLong() / 100);
 		}
 
 		int mythologicalKillsMax = slayingTask.get("mythological_kills").getAsInt();
