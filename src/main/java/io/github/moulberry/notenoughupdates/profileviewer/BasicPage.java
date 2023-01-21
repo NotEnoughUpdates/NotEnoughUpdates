@@ -319,7 +319,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
 					GuiProfileViewer.numberFormat.format(networth),
 				fr,
-				guiLeft + 63,
+				guiLeft + 165,
 				guiTop + 38,
 				true,
 				0
@@ -336,10 +336,9 @@ public class BasicPage extends GuiProfileViewerPage {
 					);
 				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
-				if (
-					mouseX > guiLeft + 8 &&
-						mouseX < guiLeft + 8 + fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth))
-				) {
+
+				int fontWidth = fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth));
+				if (mouseX > guiLeft + 165 - fontWidth / 2 && mouseX < guiLeft + 165 + fontWidth / 2) {
 					if (mouseY > guiTop + 32 && mouseY < guiTop + 32 + fr.FONT_HEIGHT) {
 						getInstance().tooltipToDisplay = new ArrayList<>();
 						getInstance()
@@ -388,7 +387,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			Utils.drawStringCentered(
 				EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
 				fr,
-				guiLeft + 63,
+				guiLeft + 165,
 				guiTop + 38,
 				true,
 				0
@@ -626,7 +625,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
 					if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
-						if(Mouse.isButtonDown(0)) onSecondPage = true;
+						if (Mouse.isButtonDown(0)) onSecondPage = true;
 					}
 				}
 
@@ -718,7 +717,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		drawSideButtons();
-		renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
 	}
 
 	private String getIcon(String gameModeType) {
@@ -789,14 +788,13 @@ public class BasicPage extends GuiProfileViewerPage {
 			weight = profile.getSoopyWeightLeaderboardPosition();
 		}
 
-
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
 				"Senither Weight: " +
 				EnumChatFormatting.GOLD +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
 			fr,
-			guiLeft + 63,
+			guiLeft + 165,
 			guiTop + 18,
 			true,
 			0
@@ -806,7 +804,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			"Senither Weight: " +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
 		);
-		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
+		if (mouseX > guiLeft + 165 - textWidth / 2 && mouseX < guiLeft + 165 + textWidth / 2) {
 			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
 				getInstance().tooltipToDisplay = new ArrayList<>();
 				getInstance()
@@ -864,7 +862,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				EnumChatFormatting.GOLD +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
 			fr,
-			guiLeft + 63,
+			guiLeft + 165,
 			guiTop + 28,
 			true,
 			0
@@ -873,7 +871,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int fontWidth = fr.getStringWidth(
 			"Lily Weight: " + GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
 		);
-		if (mouseX > guiLeft + 63 - fontWidth / 2 && mouseX < guiLeft + 63 + fontWidth / 2) {
+		if (mouseX > guiLeft + 165 - fontWidth / 2 && mouseX < guiLeft + 165 + fontWidth / 2) {
 			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fr.FONT_HEIGHT) {
 				getInstance().tooltipToDisplay = new ArrayList<>();
 				getInstance()

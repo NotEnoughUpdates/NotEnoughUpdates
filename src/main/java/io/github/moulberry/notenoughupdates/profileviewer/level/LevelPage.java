@@ -85,7 +85,7 @@ public class LevelPage {
 
 		ThreadLocalRandom current = ThreadLocalRandom.current();
 		randomNumber = current.nextInt(0, 69 + 69 + 69 + 69 + 69 + 69 + 7);
-		randomNumber2 = current.nextInt(0, 1);
+		randomNumber2 = current.nextInt(0, 2);
 	}
 
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {

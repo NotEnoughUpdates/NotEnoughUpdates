@@ -172,6 +172,10 @@ public class PlayerStats {
 
 	public static int getPetScore(JsonObject profile) {
 		JsonObject bonuses = Constants.BONUSES;
+		if (bonuses == null) {
+			Utils.showOutdatedRepoNotification();
+			return 0;
+		}
 		JsonElement petsElement = Utils.getElement(profile, "pets");
 		if (petsElement == null) return 0;
 
