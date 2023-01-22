@@ -70,7 +70,6 @@ public class GuiItemRecipe extends GuiScreen {
 
 	private int currentIndex = 0;
 	private int currentTab = 0;
-	public static long lastKeybindMs = -1;
 
 	private final Map<RecipeType, List<NeuRecipe>> craftingRecipes = new HashMap<>();
 	private final List<RecipeType> tabs = new ArrayList<>();
@@ -257,11 +256,9 @@ public class GuiItemRecipe extends GuiScreen {
 		for (RecipeSlot slot : getAllRenderedSlots()) {
 			if (isWithinRect(mouseX, mouseY, slot.getX(this), slot.getY(this), SLOT_SIZE, SLOT_SIZE)) {
 				ItemStack itemStack = slot.getItemStack();
-				if (keyPressed == manager.keybindViewRecipe.getKeyCode() &&
-				System.currentTimeMillis() - lastKeybindMs > 200) {
+				if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
 					manager.displayGuiItemRecipe(manager.getInternalNameForItem(itemStack));
-				} else if (keyPressed == manager.keybindViewUsages.getKeyCode() &&
-					System.currentTimeMillis() - lastKeybindMs > 200) {
+				} else if (keyPressed == manager.keybindViewUsages.getKeyCode()) {
 					manager.displayGuiItemUsages(manager.getInternalNameForItem(itemStack));
 				}
 			}
