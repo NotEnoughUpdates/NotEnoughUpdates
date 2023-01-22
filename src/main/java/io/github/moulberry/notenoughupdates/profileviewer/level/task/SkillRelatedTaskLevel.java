@@ -217,9 +217,7 @@ public class SkillRelatedTaskLevel {
 		double cons = 1758267;
 		if (left <= 0) return 0;
 
-		if (left >= CAP) {
-			left = CAP - 350_000;
-		}
+		left = Math.min(CAP, left);
 
 		return multiplier * (Math.sqrt(1 + 8 * (Math.sqrt((cons / CAP) * left + 9))) - 3);
 	}
