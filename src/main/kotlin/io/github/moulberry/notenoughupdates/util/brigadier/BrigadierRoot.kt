@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand.DEV_TESTERS
 import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils
+import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent
@@ -55,11 +56,13 @@ import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import java.util.concurrent.CompletableFuture
+import kotlin.math.floor
 
 @NEUAutoSubscribe
-object Rome {
-    val dispatcher = CommandDispatcher<DefaultSource>()
-    private val parseText =
+object BrigadierRoot {
+    var dispatcher = CommandDispatcher<DefaultSource>()
+        private set
+    val parseText =
         LRUCache.memoize<Pair<ICommandSender, String>, ParseResults<DefaultSource>>({ (sender, text) ->
             dispatcher.parse(text, sender)
         }, 1)
@@ -162,8 +165,8 @@ object Rome {
                 }
             }
             thenLiteralExecute("center") {
-                val x = Math.floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f
-                val z = Math.floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f
+                val x = floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f
+                val z = floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f
                 Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z)
                 reply("Literal hacks")
             }
@@ -186,56 +189,16 @@ object Rome {
     fun updateHooks() = registerHooks(ClientCommandHandler.instance)
 
     fun registerHooks(handler: ClientCommandHandler) {
-        dispatcher.root.children.forEach { commandNode ->
-            if (commandNode.name in handler.commands) return@forEach
-            handler.registerCommand(object : CommandBase() {
-                override fun getCommandName(): String {
-                    return commandNode.name
-                }
-
-                override fun getCommandUsage(sender: ICommandSender): String {
-                    return dispatcher.getAllUsage(commandNode, sender, true).joinToString("\n")
-                }
-
-                fun getText(args: Array<out String>) = "${commandNode.name} ${args.joinToString(" ")}"
-
-                override fun processCommand(sender: ICommandSender, args: Array<out String>) {
-                    val results = parseText.apply(sender to getText(args).trim())
-                    try {
-                        dispatcher.execute(results)
-                    } catch (syntax: CommandSyntaxException) {
-                        sender.addChatMessage(ChatComponentText("${RED}${syntax.message}"))
-                    }
-                }
-
-                var lastCompletionText: String? = null
-                var lastCompletion: CompletableFuture<Suggestions>? = null
-
-                override fun addTabCompletionOptions(
-                    sender: ICommandSender,
-                    args: Array<out String>,
-                    pos: BlockPos
-                ): List<String> {
-                    val originalText = getText(args)
-                    var lc: CompletableFuture<Suggestions>? = null
-                    if (lastCompletionText == originalText) {
-                        lc = lastCompletion
-                    }
-                    if (lc == null) {
-                        lastCompletion?.cancel(true)
-                        val results = parseText.apply(sender to originalText)
-                        lc = dispatcher.getCompletionSuggestions(results)
-                    }
-                    lastCompletion = lc
-                    lastCompletionText = originalText
-                    val suggestions = lastCompletion?.getNow(null) ?: return emptyList()
-                    return suggestions.list.map { it.text }
-                }
-
-                override fun canCommandSenderUseCommand(sender: ICommandSender): Boolean {
-                    return true
-                }
-            })
+        val iterator = handler.commands.entries.iterator()
+        while (iterator.hasNext()) {
+            if (iterator.next().value is NEUBrigadierHook)
+                iterator.remove()
+        }
+        dispatcher = CommandDispatcher()
+        val event = RegisterBrigadierCommandEvent(this)
+        event.post()
+        event.hooks.forEach {
+            handler.registerCommand(it)
         }
     }
 }

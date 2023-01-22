@@ -35,11 +35,7 @@ import java.lang.reflect.TypeVariable
 
 typealias DefaultSource = ICommandSender
 
-fun literal(
-    name: String,
-    block: LiteralArgumentBuilder<DefaultSource>.() -> Unit
-): LiteralArgumentBuilder<DefaultSource> =
-    LiteralArgumentBuilder.literal<DefaultSource>(name).also(block)
+
 
 private fun normalizeGeneric(argument: Type): Class<*> {
     return if (argument is Class<*>) {
@@ -105,6 +101,21 @@ fun <T : ArgumentBuilder<DefaultSource, T>, AT : Any> T.thenArgument(
     block: RequiredArgumentBuilder<DefaultSource, AT>.(TypeSafeArg<AT>) -> Unit
 ): T = then(argument(name, argument, block))
 
+fun <T : ArgumentBuilder<DefaultSource, T>, AT : Any> T.thenArgumentExecute(
+    name: String,
+    argument: ArgumentType<AT>,
+    block: CommandContext<DefaultSource>.(TypeSafeArg<AT>) -> Unit
+): T = thenArgument(name, argument) {
+    thenExecute {
+        block(it)
+    }
+}
+
+fun literal(
+    name: String,
+    block: LiteralArgumentBuilder<DefaultSource>.() -> Unit
+): LiteralArgumentBuilder<DefaultSource> =
+    LiteralArgumentBuilder.literal<DefaultSource>(name).also(block)
 
 fun <T : ArgumentBuilder<DefaultSource, T>> T.thenLiteral(
     name: String,
