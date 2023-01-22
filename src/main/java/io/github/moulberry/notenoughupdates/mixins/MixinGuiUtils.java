@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.SomeClass;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -67,5 +68,18 @@ public class MixinGuiUtils {
 	private static void drawHoveringText_tail(
 		List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font, CallbackInfo ci) {
 		Utils.resetGuiScale();
+	}
+	@Inject(at = @At("HEAD"), method = "drawHoveringText", remap = false)
+	private static void onDrawHoveringText(
+		List<String> textLines,
+		int mouseX,
+		int mouseY,
+		int screenWidth,
+		int screenHeight,
+		int maxTextWidth,
+		FontRenderer font,
+		CallbackInfo ci
+	) {
+		SomeClass.handleTextLineRendering(textLines);
 	}
 }
