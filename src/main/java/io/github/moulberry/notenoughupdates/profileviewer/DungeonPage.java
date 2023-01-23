@@ -42,7 +42,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -145,10 +144,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		//Catacombs level thingy
 		{
 			if (levelObjCata == null) {
-				float cataXp = Utils.getElementAsFloat(Utils.getElement(
-					profileInfo,
-					"dungeons.dungeon_types.catacombs.experience"
-				), 0);
+				float cataXp = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.experience");
 				levelObjCata =
 					ProfileViewer.getLevel(
 						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
@@ -220,18 +216,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 				long runsF6 = (int) Math.ceil(floorLevelToXP / xpF6);
 				long runsF7 = (int) Math.ceil(floorLevelToXP / xpF7);
 
-				float timeF5 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.fastest_time_s_plus.5"),
-					0
-				);
-				float timeF6 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.fastest_time_s_plus.6"),
-					0
-				);
-				float timeF7 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.fastest_time_s_plus.7"),
-					0
-				);
+				float timeF5 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.fastest_time_s_plus.5");
+				float timeF6 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.fastest_time_s_plus.6");
+				float timeF7 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.fastest_time_s_plus.7");
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
@@ -243,30 +230,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 						""
 					);
 				boolean hasTime = false;
-				if (timeF5 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (F5) : %s",
-							Utils.prettyTime(runsF5 * (long) (timeF5 * 1.2))
-						));
-					hasTime = true;
-				}
-				if (timeF6 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (F6) : %s",
-							Utils.prettyTime(runsF6 * (long) (timeF6 * 1.2))
-						));
-					hasTime = true;
-				}
-				if (timeF7 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (F7) : %s",
-							Utils.prettyTime(runsF7 * (long) (timeF7 * 1.2))
-						));
-					hasTime = true;
-				}
+				hasTime = isHasTime(timeF5, "Expected Time (F5) : %s", runsF5, hasTime);
+				hasTime = isHasTime(timeF6, "Expected Time (F6) : %s", runsF6, hasTime);
+				hasTime = isHasTime(timeF7, "Expected Time (F7) : %s", runsF7, hasTime);
 				if (hasTime) {
 					getInstance().tooltipToDisplay.add("");
 				}
@@ -371,26 +337,11 @@ public class DungeonPage extends GuiProfileViewerPage {
 				long runsM6 = (int) Math.ceil(floorLevelToXP / xpM6);
 				long runsM7 = (int) Math.ceil(floorLevelToXP / xpM7);
 
-				float timeM3 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.3"),
-					0
-				);
-				float timeM4 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.4"),
-					0
-				);
-				float timeM5 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.5"),
-					0
-				);
-				float timeM6 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.6"),
-					0
-				);
-				float timeM7 = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.7"),
-					0
-				);
+				float timeM3 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.3");
+				float timeM4 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.4");
+				float timeM5 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.5");
+				float timeM6 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.6");
+				float timeM7 = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.fastest_time_s_plus.7");
 
 				getInstance().tooltipToDisplay =
 					Lists.newArrayList(
@@ -404,46 +355,11 @@ public class DungeonPage extends GuiProfileViewerPage {
 						""
 					);
 				boolean hasTime = false;
-				if (timeM3 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M3) : %s",
-							Utils.prettyTime(runsM3 * (long) (timeM3 * 1.2))
-						));
-					hasTime = true;
-				}
-				if (timeM4 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M4) : %s",
-							Utils.prettyTime(runsM4 * (long) (timeM4 * 1.2))
-						));
-					hasTime = true;
-				}
-				if (timeM5 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M5) : %s",
-							Utils.prettyTime(runsM5 * (long) (timeM5 * 1.2))
-						));
-					hasTime = true;
-				}
-				if (timeM6 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M6) : %s",
-							Utils.prettyTime(runsM6 * (long) (timeM6 * 1.2))
-						));
-					hasTime = true;
-				}
-				if (timeM7 > 1000) {
-					getInstance()
-						.tooltipToDisplay.add(String.format(
-							"Expected Time (M7) : %s",
-							Utils.prettyTime(runsM7 * (long) (timeM7 * 1.2))
-						));
-					hasTime = true;
-				}
+				hasTime = isHasTime(timeM3, "Expected Time (M3) : %s", runsM3, hasTime);
+				hasTime = isHasTime(timeM4, "Expected Time (M4) : %s", runsM4, hasTime);
+				hasTime = isHasTime(timeM5, "Expected Time (M5) : %s", runsM5, hasTime);
+				hasTime = isHasTime(timeM6, "Expected Time (M6) : %s", runsM6, hasTime);
+				hasTime = isHasTime(timeM7, "Expected Time (M7) : %s", runsM7, hasTime);
 				if (hasTime) {
 					getInstance().tooltipToDisplay.add("");
 				}
@@ -496,10 +412,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			float totalRunsF = 0;
 			float totalRunsF5 = 0;
 			for (int i = 1; i <= 7; i++) {
-				float runs = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.tier_completions." + i),
-					0
-				);
+				float runs = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.tier_completions." + i);
 				totalRunsF += runs;
 				if (i >= 5) {
 					totalRunsF5 += runs;
@@ -508,10 +421,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			float totalRunsM = 0;
 			float totalRunsM5 = 0;
 			for (int i = 1; i <= 7; i++) {
-				float runs = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.tier_completions." + i),
-					0
-				);
+				float runs = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.tier_completions." + i);
 				totalRunsM += runs;
 				if (i >= 5) {
 					totalRunsM5 += runs;
@@ -522,18 +432,12 @@ public class DungeonPage extends GuiProfileViewerPage {
 			float mobKills;
 			float mobKillsF = 0;
 			for (int i = 1; i <= 7; i++) {
-				float kills = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.catacombs.mobs_killed." + i),
-					0
-				);
+				float kills = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.mobs_killed." + i);
 				mobKillsF += kills;
 			}
 			float mobKillsM = 0;
 			for (int i = 1; i <= 7; i++) {
-				float kills = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types.master_catacombs.mobs_killed." + i),
-					0
-				);
+				float kills = getElementAsFloat(profileInfo, "dungeons.dungeon_types.master_catacombs.mobs_killed." + i);
 				mobKillsM += kills;
 			}
 			mobKills = mobKillsF + mobKillsM;
@@ -584,28 +488,16 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 				int bx = x + sectionWidth * i / 8 - w / 2;
 
-				boolean invert = i == floorTime;
-				float uMin = 20 / 256f;
-				float uMax = 29 / 256f;
-				float vMin = 0 / 256f;
-				float vMax = 11 / 256f;
-
 				GlStateManager.color(1, 1, 1, 1);
 
 				Utils.renderShadowedString(EnumChatFormatting.WHITE.toString() + i, bx + w / 2, y3, 10);
 			}
 
-			float timeNorm = Utils.getElementAsFloat(
-				Utils.getElement(profileInfo, "dungeons.dungeon_types." + dungeonString + ".fastest_time." + floorTime),
-				0
-			);
-			float timeS = Utils.getElementAsFloat(
-				Utils.getElement(profileInfo, "dungeons.dungeon_types." + dungeonString + ".fastest_time_s." + floorTime),
-				0
-			);
-			float timeSPLUS = Utils.getElementAsFloat(
-				Utils.getElement(profileInfo, "dungeons.dungeon_types." + dungeonString + ".fastest_time_s_plus." + floorTime),
-				0
+			float timeNorm = getElementAsFloat(profileInfo, "dungeons.dungeon_types." + dungeonString + ".fastest_time." + floorTime);
+			float timeS = getElementAsFloat(profileInfo, "dungeons.dungeon_types." + dungeonString + ".fastest_time_s." + floorTime);
+			float timeSPLUS = getElementAsFloat(
+				profileInfo,
+				"dungeons.dungeon_types." + dungeonString + ".fastest_time_s_plus." + floorTime
 			);
 			String timeNormStr = timeNorm <= 0 ? "N/A" : Utils.prettyTime((long) timeNorm);
 			String timeSStr = timeS <= 0 ? "N/A" : Utils.prettyTime((long) timeS);
@@ -640,10 +532,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			Utils.renderShadowedString(EnumChatFormatting.RED + "Boss Collections", x + sectionWidth / 2, y, sectionWidth);
 			for (int i = 1; i <= 7; i++) {
-				float compl = Utils.getElementAsFloat(
-					Utils.getElement(profileInfo, "dungeons.dungeon_types." + dungeonString + ".tier_completions." + i),
-					0
-				);
+				float compl = getElementAsFloat(profileInfo, "dungeons.dungeon_types." + dungeonString + ".tier_completions." + i);
 
 				if (BOSS_HEADS[i - 1] == null) {
 					String textureLink = bossFloorHeads[i - 1];
@@ -724,10 +613,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 					k -> new HashMap<>()
 				);
 				if (!levelObjClasses.containsKey(skillName)) {
-					float cataXp = Utils.getElementAsFloat(
-						Utils.getElement(profileInfo, "dungeons.player_classes." + skillName.toLowerCase() + ".experience"),
-						0
-					);
+					float cataXp = getElementAsFloat(profileInfo, "dungeons.player_classes." + skillName.toLowerCase() + ".experience");
 					ProfileViewer.Level levelObj = ProfileViewer.getLevel(
 						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
 						cataXp,
@@ -779,6 +665,22 @@ public class DungeonPage extends GuiProfileViewerPage {
 		}
 
 		drawSideButtons();
+	}
+
+	private boolean isHasTime(float fastestTime, String format, long runsAmount, boolean hasTime) {
+		if (fastestTime > 1000) {
+			getInstance()
+				.tooltipToDisplay.add(String.format(
+					format,
+					Utils.prettyTime(runsAmount * (long) (fastestTime * 1.2))
+				));
+			hasTime = true;
+		}
+		return hasTime;
+	}
+
+	private static float getElementAsFloat(JsonObject profileInfo, String path) {
+		return Utils.getElementAsFloat(Utils.getElement(profileInfo, path), 0);
 	}
 
 	@Override
