@@ -49,10 +49,6 @@ public class LevelPage {
 	private final BasicPage basicPage;
 	private ProfileViewer.Profile profile;
 
-	private final int randomNumber;
-
-	private final int randomNumber2;
-
 	private String profileId;
 
 	private int guiLeft, guiTop;
@@ -81,11 +77,6 @@ public class LevelPage {
 		skillRelatedTaskLevel = new SkillRelatedTaskLevel(this);
 		slayingTaskLevel = new SlayingTaskLevel(this);
 		storyTaskLevel = new StoryTaskLevel(this);
-
-
-		ThreadLocalRandom current = ThreadLocalRandom.current();
-		randomNumber = current.nextInt(0, 69 + 69 + 69 + 69 + 69 + 69 + 7);
-		randomNumber2 = current.nextInt(0, 2);
 	}
 
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
@@ -107,9 +98,6 @@ public class LevelPage {
 		double skyblockLevel = profile.getSkyblockLevel(profileId);
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 
-		if (randomNumber == (69 + 69 + 69 + 69 + 69 + 69 + 6)) {
-			iVMMXVII(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		}
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
 		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
@@ -118,25 +106,6 @@ public class LevelPage {
 		skillRelatedTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		slayingTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		storyTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-	}
-
-	private void iVMMXVII(
-		JsonObject llllllllll,
-		int IIIIIIIIilIIIIIII,
-		int lllllIIIIlllII,
-		int llIIlll,
-		int iiIIIIlllLIIII
-	) {
-		if (randomNumber2 == 1) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(NEUOverlay.SUPERGEHEIMNISVERMOGEN);
-		} else {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(NEUOverlay.ATMOULBERRYWHYISMYLUNARCLIENTBUGGING);
-		}
-
-		GlStateManager.color(1, 1, 1, 1);
-
-		Utils.drawTexturedRect(llIIlll + 187, iiIIIIlllLIIII + (int) (69 + 42.0 + 2), 69 - 5, 69 - 5, GL11.GL_LINEAR);
-		GlStateManager.bindTexture(0);
 	}
 
 	private void drawMainBar(double skyblockLevel, int mouseX, int mouseY, int guiLeft, int guiTop) {
@@ -164,7 +133,7 @@ public class LevelPage {
 			return EnumChatFormatting.GOLD + name + ": §c§lNOT DETECTABLE!";
 		}
 		if (hasNoLimit) {
-			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.YELLOW +  xpGottenFormatted + " XP";
+			return EnumChatFormatting.GOLD + name + ": " + EnumChatFormatting.YELLOW + xpGottenFormatted + " XP";
 		}
 		int percentage = (int) ((xpGotten / xpGainful) * 100);
 		if (xpGotten >= xpGainful) {
