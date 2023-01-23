@@ -35,10 +35,6 @@ public class StoryTaskLevel {
 
 	public StoryTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
 
-	public void loadInformation() {
-
-	}
-
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject storyTask = levelPage.getConstant().getAsJsonObject("story_task");
 		JsonArray storyTaskNames = storyTask.getAsJsonArray("complete_objectives_names");
@@ -54,7 +50,6 @@ public class StoryTaskLevel {
 				if (jsonObject.has("status") && jsonObject.get("status").getAsString().equals("COMPLETE")) {
 					sbXpStory += storyTaskXp;
 				}
-			} else {
 			}
 		}
 
