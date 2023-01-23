@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
 import io.github.moulberry.notenoughupdates.profileviewer.ExtraPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -148,25 +149,14 @@ public class SlayingTaskLevel {
 			for (Map.Entry<String, JsonElement> stringJsonElementEntry : jsonObject.entrySet()) {
 				String key = stringJsonElementEntry.getKey();
 				int value = stringJsonElementEntry.getValue().getAsInt();
-				if (key.equals("none")) {
-					sbXpDefeatKuudra += defeatKuudraXp.get(0).getAsInt();
-					kuudraBossCollection += value;
-				}
-				if (key.equals("hot")) {
-					sbXpDefeatKuudra += defeatKuudraXp.get(1).getAsInt();
-					kuudraBossCollection += 2 * value;
-				}
-				if (key.equals("burning")) {
-					sbXpDefeatKuudra += defeatKuudraXp.get(2).getAsInt();
-					kuudraBossCollection += 3 * value;
-				}
-				if (key.equals("fiery")) {
-					sbXpDefeatKuudra += defeatKuudraXp.get(3).getAsInt();
-					kuudraBossCollection += 4 * value;
-				}
-				if (key.equals("infernal")) {
-					sbXpDefeatKuudra += defeatKuudraXp.get(4).getAsInt();
-					kuudraBossCollection += 5 * value;
+
+				int i = 0;
+				for (String kuudraTier : CrimsonIslePage.KUUDRA_TIERS) {
+					if (key.equals(kuudraTier)) {
+						sbXpDefeatKuudra += defeatKuudraXp.get(i).getAsInt();
+						kuudraBossCollection += (i + 1) * value;
+					}
+					i++;
 				}
 			}
 			if (kuudraBossCollection >= 10) bossCollectionXp += 10;
@@ -197,8 +187,7 @@ public class SlayingTaskLevel {
 			String key = stringJsonElementEntry.getKey();
 			int value = stringJsonElementEntry.getValue().getAsInt();
 			// kills_superior_dragon_100
-			float element = Utils.getElementAsFloat(Utils.getElement(object, "bestiary.kills_"
-				+ key + "_100"), 0);
+			float element = Utils.getElementAsFloat(Utils.getElement(object, "bestiary.kills_" + key + "_100"), 0);
 			if (element > 0) {
 				sbXpFromDragonKills += value;
 			}

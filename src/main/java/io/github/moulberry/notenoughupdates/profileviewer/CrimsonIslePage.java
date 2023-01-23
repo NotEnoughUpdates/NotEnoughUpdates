@@ -55,13 +55,10 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		NotEnoughUpdates.INSTANCE.manager.createItem("KUUDRA_INFERNAL_TIER_KEY"),
 	};
 
-	public static final String[] KUUDRA_TIERS = {
-		"Basic",
-		"Hot",
-		"Burning",
-		"Fiery",
-		"Infernal"
-	};
+	private static final String[] KUUDRA_TIERS_NAME = {"Basic", "Hot", "Burning", "Fiery", "Infernal"};
+
+	// This is different to the one above as these refer to the names of the tiers in the API
+	public static final String[] KUUDRA_TIERS = {"none", "hot", "burning", "fiery", "infernal"};
 
 	public static final LinkedHashMap<String, String> apiDojoTestNames = new LinkedHashMap<String, String>() {{
 		put("mob_kb", EnumChatFormatting.GOLD + "Test of Force");
@@ -151,21 +148,18 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
 
-		// This is different to the one initialised at the start of the class as these refer to the names of the tiers in the API
-		String[] kuudraTiers = {"none", "hot", "burning", "fiery", "infernal"};
-
 		RenderHelper.enableGUIStandardItemLighting();
 
 		for (int i = 0; i < 5; i++) {
 			// Checking the player has completions for each tier
 			// and get the number of completions if they do
 			int completions =
-				kuudraCompletedTiers.has(kuudraTiers[i]) ? kuudraCompletedTiers.get(kuudraTiers[i]).getAsInt() : 0;
+				kuudraCompletedTiers.has(KUUDRA_TIERS[i]) ? kuudraCompletedTiers.get(KUUDRA_TIERS[i]).getAsInt() : 0;
 
 			// Get the highest wave for this tier of kuudra if they have completed a run
 			// since infernal kuudra was released
-			int highestWaveCompleted = kuudraCompletedTiers.has("highest_wave_" + kuudraTiers[i]) ?
-				kuudraCompletedTiers.get("highest_wave_" + kuudraTiers[i]).getAsInt() : 0;
+			int highestWaveCompleted = kuudraCompletedTiers.has("highest_wave_" + KUUDRA_TIERS[i]) ?
+				kuudraCompletedTiers.get("highest_wave_" + KUUDRA_TIERS[i]).getAsInt() : 0;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(
 				KUUDRA_KEYS[i],
@@ -174,7 +168,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			);
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + KUUDRA_TIERS[i] + ": ",
+				EnumChatFormatting.RED + KUUDRA_TIERS_NAME[i] + ": ",
 				EnumChatFormatting.WHITE + String.valueOf(completions),
 				guiLeft + 23,
 				guiTop + 30 + (i * 30),
@@ -190,7 +184,8 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			);
 
 			if (highestWaveCompleted == 0) {
-				if (mouseX > guiLeft + 23 && mouseX < guiLeft + 133 && mouseY < guiTop + 50 + (i*30) && mouseY > guiTop + 42 + (i*30)) {
+				if (mouseX > guiLeft + 23 && mouseX < guiLeft + 133 && mouseY < guiTop + 50 + (i * 30) &&
+					mouseY > guiTop + 42 + (i * 30)) {
 					getInstance().tooltipToDisplay = new ArrayList<>();
 					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "N/A will only show for highest wave");
 					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "if you have not completed a run for");
