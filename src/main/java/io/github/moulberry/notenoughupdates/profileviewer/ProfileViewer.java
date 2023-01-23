@@ -58,12 +58,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -457,6 +454,9 @@ public class ProfileViewer {
 				);
 			}
 		};
+
+	public static final List<String> SLAYERS = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
+
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
 	private static JsonObject resourceCollection = null;
 	private final NEUManager manager;
@@ -1536,9 +1536,7 @@ public class ProfileViewer {
 					)
 				);
 			}
-
-			List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
-			for (String slayerName : slayers) {
+			for (String slayerName : SLAYERS) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
 					profileInfo,
 					"slayer_bosses." + slayerName + ".xp"

@@ -33,7 +33,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +48,10 @@ public class SlayingTaskLevel {
 		JsonObject slayingTask = levelPage.getConstant().get("slaying_task").getAsJsonObject();
 		JsonArray slayerLevelUpXp = slayingTask.get("slayer_level_up_xp").getAsJsonArray();
 		Map<String, ProfileViewer.Level> skyblockInfo = levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
-		List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 
 		int sbXpGainedSlayer = 0;
 		if (skyblockInfo != null) {
-			for (String slayer : slayers) {
+			for (String slayer : ProfileViewer.SLAYERS) {
 				ProfileViewer.Level level = skyblockInfo.get(slayer);
 				for (int i = 0; i < (int) level.level; i++) {
 					int asInt = slayerLevelUpXp.get(i).getAsInt();
@@ -112,27 +110,15 @@ public class SlayingTaskLevel {
 				case 1:
 				case 2:
 				case 3:
-					bossCollectionXp += loopThroughCollection(
-						bossLow,
-						value,
-						dungeonCollectionXp
-					);
+					bossCollectionXp += loopThroughCollection(bossLow, value, dungeonCollectionXp);
 					break;
 				case 4:
-					bossCollectionXp += loopThroughCollection(
-						thorn,
-						value,
-						dungeonCollectionXp
-					);
+					bossCollectionXp += loopThroughCollection(thorn, value, dungeonCollectionXp);
 					break;
 				case 5:
 				case 6:
 				case 7:
-					bossCollectionXp += loopThroughCollection(
-						bossHigh,
-						value,
-						dungeonCollectionXp
-					);
+					bossCollectionXp += loopThroughCollection(bossHigh, value, dungeonCollectionXp);
 					break;
 			}
 		}
