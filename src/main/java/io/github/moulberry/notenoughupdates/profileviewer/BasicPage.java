@@ -136,7 +136,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		if (onSecondPage) {
-			levelPage.drawPage(mouseX, mouseY, partialTicks);
+			levelPage.drawPage(mouseX, mouseY);
 			return;
 		}
 

@@ -124,22 +124,11 @@ public class EssenceTaskLevel {
 
 	class EssenceShop {
 		String name;
-		double percentage;
 		double max;
 		double current;
 
 		public EssenceShop setCurrent(double current) {
 			this.current = current;
-			return this;
-		}
-
-		public EssenceShop setPercentage(double percentage) {
-			this.percentage = percentage;
-			return this;
-		}
-
-		public EssenceShop setMax(double max) {
-			this.max = max;
 			return this;
 		}
 

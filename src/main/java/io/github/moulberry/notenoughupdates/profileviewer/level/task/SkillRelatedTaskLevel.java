@@ -51,7 +51,7 @@ public class SkillRelatedTaskLevel {
 			gemstonePowder;
 
 		float hotmXp = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.experience"), 0);
-		ProfileViewer.Level levelObjhotm =
+		ProfileViewer.Level levelObjHotm =
 			ProfileViewer.getLevel(
 				Utils.getElementOrDefault(Constants.LEVELING, "HOTM", new JsonArray()).getAsJsonArray(),
 				hotmXp,
@@ -60,7 +60,7 @@ public class SkillRelatedTaskLevel {
 			);
 
 		int hotmXP = 0;
-		float level = levelObjhotm.level;
+		float level = levelObjHotm.level;
 		JsonArray hotmXpArray = miningObj.get("hotm_xp").getAsJsonArray();
 		for (int i = 1; i <= level; i++) {
 			hotmXP += hotmXpArray.get(i - 1).getAsInt();
@@ -203,7 +203,7 @@ public class SkillRelatedTaskLevel {
 			guiTop + 115,
 			110,
 			0,
-			sbXpHotmTier + sbXpCommissionMilestone + +sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
+			sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
 				sbXpDolphinPet,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("skill_related_task").getAsInt(),
 			mouseX,

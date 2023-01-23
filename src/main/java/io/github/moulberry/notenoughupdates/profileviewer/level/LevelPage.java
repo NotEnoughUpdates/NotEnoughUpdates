@@ -55,9 +55,7 @@ public class LevelPage {
 
 	private String profileId;
 
-	private int guiLeft, guiTop;
-
-	private JsonObject constant;
+	private final JsonObject constant;
 
 	private final CoreTaskLevel coreTaskLevel;
 	private final DungeonTaskLevel dungeonTaskLevel;
@@ -88,9 +86,9 @@ public class LevelPage {
 		randomNumber2 = current.nextInt(0, 2);
 	}
 
-	public void drawPage(int mouseX, int mouseY, float partialTicks) {
-		this.guiLeft = GuiProfileViewer.getGuiLeft();
-		this.guiTop = GuiProfileViewer.getGuiTop();
+	public void drawPage(int mouseX, int mouseY) {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
 		this.profile = GuiProfileViewer.getProfile();
 		this.profileId = GuiProfileViewer.getProfileId();
 

@@ -179,7 +179,7 @@ public class SlayingTaskLevel {
 			}
 		}
 
-		// slasyer kills
+		// slayer kills
 		int sbXpFromSlayerDefeat = 0;
 
 		JsonArray defeatSlayersXp = slayingTask.get("defeat_slayers_xp").getAsJsonArray();
@@ -239,7 +239,7 @@ public class SlayingTaskLevel {
 			guiTop + 85,
 			110,
 			0, sbXpGainedSlayer + bossCollectionXp + mythologicalKillsXp +
-				+sbXpFromDragonKills + sbXpFromSlayerDefeat + sbXpDefeatKuudra + sbXpGainedArachne,
+				sbXpFromDragonKills + sbXpFromSlayerDefeat + sbXpDefeatKuudra + sbXpGainedArachne,
 			slayingTaskMax,
 			mouseX,
 			mouseY,
