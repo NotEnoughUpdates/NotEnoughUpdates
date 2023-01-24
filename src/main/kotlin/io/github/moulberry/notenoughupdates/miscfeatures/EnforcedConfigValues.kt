@@ -78,7 +78,7 @@ object EnforcedConfigValues {
 
     @SubscribeEvent
     fun onTick(tickEvent: TickEvent.ClientTickEvent) {
-        if (hasSentPSAsOnce || Minecraft.getMinecraft().thePlayer == null) return
+        if (hasSentPSAsOnce || Minecraft.getMinecraft().thePlayer == null || !NotEnoughUpdates.INSTANCE.isOnSkyblock) return
         hasSentPSAsOnce = true
         sendPSAs()
         enforceOntoConfig(NotEnoughUpdates.INSTANCE.config ?: return)
