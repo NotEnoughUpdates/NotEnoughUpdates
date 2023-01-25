@@ -170,7 +170,7 @@ public class MiscTaskLevel {
 			sbXpPersonalBank, miscellaneousTask.get("personal_bank_upgrades").getAsInt(), false
 		));
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Misc. Task",
 			new ItemStack(Items.map),
 			guiLeft + 299,

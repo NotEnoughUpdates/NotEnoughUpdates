@@ -105,7 +105,7 @@ public class DungeonTaskLevel {
 		lore.add(levelPage.buildLore("Class Level Up", sbXpGainedClass, classLevelUp, false));
 		lore.add(levelPage.buildLore("Complete Dungeons", sbLevelGainedFloor, completeDungeon, false));
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Dungeon",
 			NotEnoughUpdates.INSTANCE.manager
 				.createItemResolutionQuery()

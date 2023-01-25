@@ -156,7 +156,7 @@ public class SkillRelatedTaskLevel {
 			}
 
 		}
-		float pet_milestone_sea_creatures_killed = Utils.getElementAsFloat(
+		float petMilestoneKilled = Utils.getElementAsFloat(
 			Utils.getElement(object, "stats.pet_milestone_sea_creatures_killed"),
 			0
 		);
@@ -166,7 +166,7 @@ public class SkillRelatedTaskLevel {
 		JsonArray dolphinMilestoneRequired = fishingObj.get("dolphin_milestone_required").getAsJsonArray();
 		for (JsonElement jsonElement : dolphinMilestoneRequired) {
 			int value = jsonElement.getAsInt();
-			if (pet_milestone_sea_creatures_killed >= value) {
+			if (petMilestoneKilled >= value) {
 				sbXpDolphinPet += dolphinMilestoneXp;
 			}
 		}
@@ -196,7 +196,7 @@ public class SkillRelatedTaskLevel {
 			false
 		));
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
 			guiLeft + 23,

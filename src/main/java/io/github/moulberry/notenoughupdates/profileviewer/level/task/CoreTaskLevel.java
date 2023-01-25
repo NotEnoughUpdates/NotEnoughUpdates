@@ -144,7 +144,7 @@ public class CoreTaskLevel {
 			0, 0, false
 		));
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Core Task",
 			new ItemStack(Items.nether_star),
 			guiLeft + 23,

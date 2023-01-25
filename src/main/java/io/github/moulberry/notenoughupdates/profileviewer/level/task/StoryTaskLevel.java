@@ -58,7 +58,7 @@ public class StoryTaskLevel {
 			sbXpStory, storyTask.get("complete_objectives").getAsInt(), false
 		));
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Story Task",
 			new ItemStack(Items.map),
 			guiLeft + 299,

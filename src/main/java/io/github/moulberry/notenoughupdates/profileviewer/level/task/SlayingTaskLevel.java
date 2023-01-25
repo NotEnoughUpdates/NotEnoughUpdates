@@ -40,6 +40,10 @@ import java.util.Map;
 public class SlayingTaskLevel {
 
 	private final LevelPage levelPage;
+	private final int[] bossLow = {25, 50, 100, 150, 250, 1000};
+	private final int[] thorn = {25, 50, 150, 250, 400, 1000};
+	private final int[] bossHigh = {50, 100, 150, 250, 500, 750, 1000};
+
 
 	public SlayingTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
 
@@ -96,9 +100,6 @@ public class SlayingTaskLevel {
 				}
 			});
 		}
-		int[] bossLow = {25, 50, 100, 150, 250, 1000};
-		int[] thorn = {25, 50, 150, 250, 400, 1000};
-		int[] bossHigh = {50, 100, 150, 250, 500, 750, 1000};
 		// THIS SERVER IS AWESOME I LOVE CONSISTENCY!!!!!!!
 
 		int bossCollectionXp = 0;
@@ -232,7 +233,7 @@ public class SlayingTaskLevel {
 
 		int slayingTaskMax = levelPage.getConstant().getAsJsonObject("category_xp").get("slaying_task").getAsInt();
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Slaying Task",
 			new ItemStack(Items.golden_sword),
 			guiLeft + 23,

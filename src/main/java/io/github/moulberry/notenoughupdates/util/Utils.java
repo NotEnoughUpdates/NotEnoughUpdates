@@ -2129,10 +2129,4 @@ public class Utils {
 			slot, 0, 0, Minecraft.getMinecraft().thePlayer
 		);
 	}
-
-	public static void drawItemStackWithTextScaled(ItemStack skull, int x, int y, String s, double factor) {
-		GlStateManager.scale(factor, factor, 1);
-		drawItemStackWithText(skull,x,y,s);
-		GlStateManager.scale(1 / factor, 1 / factor, 1);
-	}
 }

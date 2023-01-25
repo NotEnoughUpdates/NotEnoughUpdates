@@ -104,7 +104,7 @@ public class EssenceTaskLevel {
 			total += value.current;
 		}
 
-		levelPage.getInstance().renderLevelBar(
+		levelPage.renderLevelBar(
 			"Essence",
 			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
 																			 .withKnownInternalName("ESSENCE_WITHER")

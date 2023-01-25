@@ -35,12 +35,14 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.text.NumberFormat;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class LevelPage {
@@ -106,8 +108,73 @@ public class LevelPage {
 		storyTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 	}
 
+	public void renderLevelBar(
+		String name,
+		ItemStack stack,
+		int x,
+		int y,
+		int xSize,
+		double level,
+		double xp,
+		double max,
+		int mouseX,
+		int mouseY,
+		boolean percentage,
+		List<String> tooltip
+	) {
+
+		if (xp < 0) xp = 0;
+		double experienceRequired = (xp / max);
+
+		String second = EnumChatFormatting.WHITE.toString() + (int) level;
+		if (percentage) {
+			second = EnumChatFormatting.WHITE.toString() + (int) (experienceRequired * 100) + "%";
+		}
+		Utils.renderAlignedString(
+			EnumChatFormatting.RED + name,
+			second,
+			x + 14,
+			y - 4,
+			xSize - 20
+		);
+
+		if (xp >= max) {
+			getInstance().renderGoldBar(x, y + 6, xSize);
+		} else {
+			getInstance().renderBar(x, y + 6, xSize, (float) experienceRequired);
+		}
+		String levelStr;
+		if (mouseX > x && mouseX < x + 120) {
+			if (mouseY > y - 4 && mouseY < y + 13) {
+				NumberFormat numberFormat = NumberFormat.getInstance();
+				String xpFormatted = numberFormat.format((int) xp);
+				String maxFormatted = numberFormat.format((int) max);
+
+				levelStr =
+					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
+						"%" +
+						" §8(" + xpFormatted + "/" + maxFormatted + " XP)";
+				if (tooltip != null && !tooltip.isEmpty()) {
+					tooltip.add("");
+					tooltip.add(levelStr);
+					getInstance().tooltipToDisplay = tooltip;
+				} else {
+					getInstance().tooltipToDisplay = Utils.createList(levelStr);
+				}
+			}
+		}
+
+		GlStateManager.enableDepth();
+		GL11.glTranslatef((x), (y - 6f), 0);
+		GL11.glScalef(0.7f, 0.7f, 1);
+		Utils.drawItemStackLinear(stack, 0, 0);
+		GL11.glScalef(1 / 0.7f, 1 / 0.7f, 1);
+		GL11.glTranslatef(-(x), -(y - 6f), 0);
+		GlStateManager.disableDepth();
+	}
+
 	private void drawMainBar(double skyblockLevel, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		instance.renderLevelBar(
+		renderLevelBar(
 			"Level",
 			BasicPage.skull,
 			guiLeft + 163,
