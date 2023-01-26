@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -66,6 +67,7 @@ import java.util.regex.Pattern;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.help;
 
+@NEUAutoSubscribe
 public class CalendarOverlay {
 	private static final ResourceLocation BACKGROUND = new ResourceLocation("notenoughupdates:calendar/background.png");
 	private static final ResourceLocation DISPLAYBAR = new ResourceLocation("notenoughupdates:calendar/displaybar.png");

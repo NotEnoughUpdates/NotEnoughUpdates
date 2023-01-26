@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -36,10 +37,26 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@NEUAutoSubscribe
 public class ItemCooldowns {
+
+	private static final Pattern COOLDOWN_LORE = Pattern.compile("\\u00a78Cooldown: \\u00a7a(\\d+)s");
+
+	private static final Pattern PICKAXE_ABILITY_ACTIVATION =
+		Pattern.compile("\\u00a7r\\u00a7aYou used your \\u00a7r\\u00a7..+ \\u00a7r\\u00a7aPickaxe Ability!\\u00a7r");
+
+	private static final Pattern BONZO_ABILITY_ACTIVATION =
+		Pattern.compile("\\u00a7r\\u00a7aYour \\u00a7r\\u00a7[9|5](\\u269A )*Bonzo's Mask \\u00a7r\\u00a7asaved your life!\\u00a7r");
+
+	private static final Pattern SPIRIT_ABILITY_ACTIVATION =
+		Pattern.compile("\\u00a7r\\u00a76Second Wind Activated\\u00a7r\\u00a7a! \\u00a7r\\u00a7aYour Spirit Mask saved your life!\\u00a7r");
+
 	private static final Map<ItemStack, Float> durabilityOverrideMap = new HashMap<>();
+
 	public static long pickaxeUseCooldownMillisRemaining = -1;
 	private static long treecapitatorCooldownMillisRemaining = -1;
+	private static long bonzomaskCooldownMillisRemaining = -1;
+	private static long spiritMaskCooldownMillisRemaining = -1;
 
 	public static boolean firstLoad = true;
 	public static long firstLoadMillis = 0;
@@ -47,10 +64,18 @@ public class ItemCooldowns {
 	private static long lastMillis = 0;
 
 	public static long pickaxeCooldown = -1;
+	private static long bonzoMaskCooldown = -1;
+	private static long spiritMaskCooldown = -1;
 
 	public static TreeMap<Long, BlockPos> blocksClicked = new TreeMap<>();
 
 	private static int tickCounter = 0;
+
+	enum Item {
+		PICKAXES,
+		BONZO_MASK,
+		SPIRIT_MASK
+	}
 
 	@SubscribeEvent
 	public void tick(TickEvent.ClientTickEvent event) {
@@ -58,6 +83,8 @@ public class ItemCooldowns {
 			if (tickCounter++ >= 20 * 10) {
 				tickCounter = 0;
 				pickaxeCooldown = -1;
+				bonzoMaskCooldown = -1;
+				spiritMaskCooldown = -1;
 			}
 
 			long currentTime = System.currentTimeMillis();
@@ -65,7 +92,6 @@ public class ItemCooldowns {
 				firstLoadMillis = currentTime;
 				firstLoad = false;
 			}
-
 
 			Long key;
 			while ((key = blocksClicked.floorKey(currentTime - 1500)) != null) {
@@ -82,6 +108,12 @@ public class ItemCooldowns {
 			}
 			if (treecapitatorCooldownMillisRemaining >= 0) {
 				treecapitatorCooldownMillisRemaining -= millisDelta;
+			}
+			if (bonzomaskCooldownMillisRemaining >= 0) {
+				bonzomaskCooldownMillisRemaining -= millisDelta;
+			}
+			if (spiritMaskCooldownMillisRemaining >= 0) {
+				spiritMaskCooldownMillisRemaining -= millisDelta;
 			}
 		}
 	}
@@ -121,14 +153,14 @@ public class ItemCooldowns {
 		if (blocksClicked.containsValue(pos)) {
 			IBlockState oldState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
 			if (oldState.getBlock() != packetIn.getBlockState().getBlock()) {
-				onBlockMined(pos);
+				onBlockMined();
 			}
 		}
 	}
 
-	public static void onBlockMined(BlockPos pos) {
+	public static void onBlockMined() {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
+		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(held).resolveInternalName();
 		if (internalname != null) {
 			if (treecapitatorCooldownMillisRemaining < 0 &&
 				(internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE"))) {
@@ -136,11 +168,6 @@ public class ItemCooldowns {
 			}
 		}
 	}
-
-	private static final Pattern PICKAXE_ABILITY_REGEX = Pattern.compile("\\u00a7r\\u00a7aYou used your " +
-		"\\u00a7r\\u00a7..+ \\u00a7r\\u00a7aPickaxe Ability!\\u00a7r");
-
-	private static final Pattern PICKAXE_COOLDOWN_LORE_REGEX = Pattern.compile("\\u00a78Cooldown: \\u00a7a(\\d+)s");
 
 	private static boolean isPickaxe(String internalname) {
 		if (internalname == null) return false;
@@ -153,36 +180,69 @@ public class ItemCooldowns {
 		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") || internalname.equals("DIVAN_DRILL");
 	}
 
-	private static void updatePickaxeCooldown() {
-		if (pickaxeCooldown == -1 && NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
-			for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
-				if (stack != null && stack.hasTagCompound()) {
-					String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
-					if (isPickaxe(internalname)) {
-						for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound())) {
-							Matcher matcher = PICKAXE_COOLDOWN_LORE_REGEX.matcher(line);
-							if (matcher.find()) {
-								try {
-									pickaxeCooldown = Integer.parseInt(matcher.group(1));
-									return;
-								} catch (Exception ignored) {
-								}
-							}
-						}
-					}
-				}
-			}
-			pickaxeCooldown = 0;
+	@SubscribeEvent
+	public void onChatMessage(ClientChatReceivedEvent event) {
+		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
+				NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility && pickaxeCooldown != 0) {
+			findCooldownInTooltip(Item.PICKAXES);
+			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
+		}
+
+		if (BONZO_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
+				NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility && bonzoMaskCooldown != 0) {
+			findCooldownInTooltip(Item.BONZO_MASK);
+			bonzomaskCooldownMillisRemaining = bonzoMaskCooldown * 1000;
+		}
+
+		if (SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
+				NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && spiritMaskCooldown != 0) {
+			findCooldownInTooltip(Item.SPIRIT_MASK);
+			spiritMaskCooldownMillisRemaining = spiritMaskCooldown * 1000;
 		}
 	}
 
-	@SubscribeEvent
-	public void onChatMessage(ClientChatReceivedEvent event) {
-		if (pickaxeCooldown != 0 && PICKAXE_ABILITY_REGEX.matcher(event.message.getFormattedText()).matches() &&
-			NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
-			updatePickaxeCooldown();
-			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
+	private static void findCooldownInTooltip(Item item) {
+		for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
+			setSpecificCooldown(stack, item);
 		}
+
+		// Check helmet slot for items that can also be equipped as a helmet
+		ItemStack stack = Minecraft.getMinecraft().thePlayer.inventory.armorInventory[3];
+		setSpecificCooldown(stack, item);
+	}
+
+	private static void setSpecificCooldown(ItemStack stack, Item item) {
+		if (stack != null && stack.hasTagCompound()) {
+
+			String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
+
+			if (internalname != null) {
+				switch (item) {
+					case PICKAXES:
+						if (isPickaxe(internalname)) pickaxeCooldown = setCooldown(stack);
+						break;
+					case BONZO_MASK:
+						if (internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
+						break;
+					case SPIRIT_MASK:
+						if (internalname.equals("SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
+						break;
+				}
+			}
+		}
+	}
+
+	private static int setCooldown(ItemStack stack) {
+		for (String line : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound())) {
+			Matcher matcher = COOLDOWN_LORE.matcher(line);
+			if (matcher.find()) {
+				try {
+					return Integer.parseInt(matcher.group(1));
+				} catch (Exception ignored) {
+				}
+			}
+		}
+		return -1;
 	}
 
 	public static float getDurabilityOverride(ItemStack stack) {
@@ -193,27 +253,20 @@ public class ItemCooldowns {
 			return durabilityOverrideMap.get(stack);
 		}
 
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 		if (internalname == null) {
 			durabilityOverrideMap.put(stack, -1f);
 			return -1;
 		}
 
-		if (isPickaxe(internalname)) {
-			updatePickaxeCooldown();
+		// Pickaxes
+		if (isPickaxe(internalname) && NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
+			findCooldownInTooltip(Item.PICKAXES);
 
-			if (pickaxeUseCooldownMillisRemaining < 0) {
-				durabilityOverrideMap.put(stack, -1f);
-				return -1;
-			}
-
-			if (pickaxeUseCooldownMillisRemaining > pickaxeCooldown * 1000) {
-				return stack.getItemDamage();
-			}
-			float dura = (float) (pickaxeUseCooldownMillisRemaining / (pickaxeCooldown * 1000.0));
-			durabilityOverrideMap.put(stack, dura);
-			return dura;
-		} else if (internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE")) {
+			return durabilityOverride(pickaxeUseCooldownMillisRemaining, pickaxeCooldown, stack);
+		}
+		// Treecapitator / Jungle Axe
+		if (internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE")) {
 			if (treecapitatorCooldownMillisRemaining < 0) {
 				durabilityOverrideMap.put(stack, -1f);
 				return -1;
@@ -222,12 +275,42 @@ public class ItemCooldowns {
 			if (treecapitatorCooldownMillisRemaining > getTreecapCooldownWithPet()) {
 				return stack.getItemDamage();
 			}
-			float dura = (treecapitatorCooldownMillisRemaining / (float) getTreecapCooldownWithPet());
-			durabilityOverrideMap.put(stack, dura);
-			return dura;
+
+			float durability = treecapitatorCooldownMillisRemaining / (float) getTreecapCooldownWithPet();
+			durabilityOverrideMap.put(stack, durability);
+
+			return durability;
+		}
+		// Bonzo Mask
+		if ((internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
+			findCooldownInTooltip(Item.BONZO_MASK);
+
+			return durabilityOverride(bonzomaskCooldownMillisRemaining, bonzoMaskCooldown, stack);
+		}
+		// Spirit Mask
+		if (internalname.equals("SPIRIT_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility) {
+			findCooldownInTooltip(Item.SPIRIT_MASK);
+
+			return durabilityOverride(spiritMaskCooldownMillisRemaining, spiritMaskCooldown, stack);
 		}
 
 		durabilityOverrideMap.put(stack, -1f);
 		return -1;
+	}
+
+	private static float durabilityOverride(float millisRemaining, long cooldown, ItemStack stack) {
+		if (millisRemaining < 0) {
+			durabilityOverrideMap.put(stack, -1f);
+			return -1;
+		}
+
+		if (millisRemaining > cooldown * 1000) {
+			return stack.getItemDamage();
+		}
+
+		float durability = (float) (millisRemaining / (cooldown * 1000.0));
+		durabilityOverrideMap.put(stack, durability);
+
+		return durability;
 	}
 }

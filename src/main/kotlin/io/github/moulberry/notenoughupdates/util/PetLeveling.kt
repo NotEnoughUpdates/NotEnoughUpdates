@@ -23,7 +23,9 @@ import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay.Rarity
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 
+@NEUAutoSubscribe
 object PetLeveling {
 
     data class ExpLadder(
@@ -100,7 +102,7 @@ object PetLeveling {
         val petConstants = this.petConstants ?: Constants.PETS ?: return stubExpLadder
         var levels = petConstants["pet_levels"]?.asJsonArray?.map { it.asLong }?.toMutableList() ?: return stubExpLadder
         val customLeveling = petConstants["custom_pet_leveling"]?.asJsonObject?.get(petIdWithoutRarity)
-        val offset = petConstants["pet_rarity_offset"]?.asJsonObject?.get(rarity.name)?.asInt ?: return stubExpLadder
+        var rarityOffsets = petConstants["pet_rarity_offset"]?.asJsonObject
         var maxLevel = 100
         if (customLeveling is JsonObject) {
             val customLevels by lazy { customLeveling["pet_levels"]?.asJsonArray?.map { it.asLong } }
@@ -109,7 +111,10 @@ object PetLeveling {
                 2 -> levels = customLevels?.toMutableList() ?: return stubExpLadder
             }
             maxLevel = customLeveling["max_level"]?.asInt ?: maxLevel
+            rarityOffsets = customLeveling["rarity_offset"]?.asJsonObject ?: rarityOffsets
         }
+        val offset = rarityOffsets?.get(rarity.name)?.asInt ?: return stubExpLadder
+
         return ExpLadder(levels.drop(offset).take(maxLevel - 1))
     }
 

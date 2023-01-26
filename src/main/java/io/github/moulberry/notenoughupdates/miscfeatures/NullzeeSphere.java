@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.ReverseWorldRenderer;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import net.minecraft.client.Minecraft;
@@ -41,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NEUAutoSubscribe
 public class NullzeeSphere {
 	public static boolean enabled = false;
 	public static float size = 20;

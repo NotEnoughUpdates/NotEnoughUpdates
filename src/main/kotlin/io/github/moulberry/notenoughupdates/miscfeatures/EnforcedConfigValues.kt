@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures
 
 import com.google.gson.JsonElement
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.util.NotificationHandler
 import io.github.moulberry.notenoughupdates.util.Shimmy
@@ -31,6 +32,7 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
+@NEUAutoSubscribe
 object EnforcedConfigValues {
 
     class EnforcedValue {

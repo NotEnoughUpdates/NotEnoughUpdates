@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.item.enchants;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.LRUCache;
 import io.github.moulberry.notenoughupdates.util.LateBindingChroma;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+@NEUAutoSubscribe
 public class EnchantStyleCustomizer {
 
 	public static EnchantStyleCustomizer INSTANCE = new EnchantStyleCustomizer();

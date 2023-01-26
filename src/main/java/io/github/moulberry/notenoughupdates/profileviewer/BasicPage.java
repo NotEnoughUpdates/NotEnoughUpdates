@@ -691,7 +691,7 @@ public class BasicPage extends GuiProfileViewerPage {
 										"/" +
 										StringUtils.shortNumberFormat(maxXp));
 						}
-						String totalXpS = GuiProfileViewer.numberFormat.format((int) level.totalXp);
+						String totalXpS = GuiProfileViewer.numberFormat.format((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
 							DECIMAL_FORMAT.format(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +

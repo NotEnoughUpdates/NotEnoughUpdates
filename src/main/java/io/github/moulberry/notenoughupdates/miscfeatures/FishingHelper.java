@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@NEUAutoSubscribe
 public class FishingHelper {
 	private static final FishingHelper INSTANCE = new FishingHelper();
 
@@ -148,7 +150,7 @@ public class FishingHelper {
 		int ticksExisted = hook.ticksExisted;
 		float seconds = ticksExisted / 20F;
 		int color;
-		if (seconds >= 30) {
+		if (seconds >= 20) {
 			color = ChromaColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.fishing.fishingTimerColor30SecPlus);
 			if (NotEnoughUpdates.INSTANCE.config.fishing.fishingSound30Sec && !playedSound) {
 				ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{

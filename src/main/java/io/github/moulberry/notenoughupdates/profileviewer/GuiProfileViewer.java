@@ -171,10 +171,7 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField(
-		"",
-		GuiElementTextField.SCALE_TEXT
-	);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -192,7 +189,7 @@ public class GuiProfileViewer extends GuiScreen {
 	private double lastBgBlurFactor = -1;
 	private boolean showBingoPage;
 
-	public GuiProfileViewer(final ProfileViewer.Profile profile) {
+	public GuiProfileViewer(ProfileViewer.Profile profile) {
 		GuiProfileViewer.profile = profile;
 		GuiProfileViewer.profileId = profile.getLatestProfile();
 		String name = "";
@@ -219,7 +216,7 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
 	}
 
-	private static float getMaxLevelXp(final JsonArray levels, final int offset, final int maxLevel) {
+	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
 		float xpTotal = 0;
 
 		for (int i = offset; i < offset + maxLevel - 1; i++) {
@@ -230,7 +227,7 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	@Deprecated
-	public static String shortNumberFormat(final double n, final int iteration) {
+	public static String shortNumberFormat(double n, int iteration) {
 		return StringUtils.shortNumberFormat(n, iteration
 		);
 	}
@@ -252,7 +249,7 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	@Override
-	public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		currentTime = System.currentTimeMillis();
 		if (startTime == 0) startTime = currentTime;
 
@@ -275,10 +272,10 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
-		sizeX = 431;
-		sizeY = 202;
-		guiLeft = (width - sizeX) / 2;
-		guiTop = (height - sizeY) / 2;
+		this.sizeX = 431;
+		this.sizeY = 202;
+		guiLeft = (this.width - this.sizeX) / 2;
+		guiTop = (this.height - this.sizeY) / 2;
 
 		JsonObject currProfileInfo = profile != null ? profile.getProfileInformation(profileId) : null;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
@@ -320,7 +317,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (!(page == ProfileViewerPage.LOADING)) {
 			playerNameTextField.render(guiLeft + sizeX - 100, guiTop + sizeY + 5);
-			final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 			if (profile != null) {
 				//Render Profile chooser button
@@ -378,10 +375,8 @@ public class GuiProfileViewer extends GuiScreen {
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
 					Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
 				}
-				//Render Open In SkyCrypt button
-				renderBlurredBackground(
-					width,
-					height, guiLeft + 100 + 6 + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
+				//Render Open In Skycrypt button
+				renderBlurredBackground(width, height, guiLeft + 100 + 6 + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
 				Utils.drawTexturedRect(
 					guiLeft + 100 + 6,
@@ -395,7 +390,7 @@ public class GuiProfileViewer extends GuiScreen {
 					GL11.GL_NEAREST
 				);
 				Utils.drawStringCenteredScaledMaxWidth(
-					"Open in SkyCrypt",
+					"Open in Skycrypt",
 					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 50 + 100 + 6,
 					guiTop + sizeY + 3 + 10,
@@ -404,15 +399,12 @@ public class GuiProfileViewer extends GuiScreen {
 					new Color(63, 224, 208, 255).getRGB()
 				);
 
-				if (
-					profileDropdownSelected && !profile.getProfileNames().isEmpty() && scaledResolution.getScaleFactor() < 4) {
-					final int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
+				if (profileDropdownSelected && !profile.getProfileNames().isEmpty() && scaledResolution.getScaleFactor() < 4) {
+					int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
 
-					final int numProfiles = profile.getProfileNames().size();
-					final int sizeYDropdown = numProfiles * dropdownOptionSize;
-					renderBlurredBackground(
-						width,
-						height, guiLeft + 2, guiTop + sizeY + 23, 100 - 4, sizeYDropdown - 2);
+					int numProfiles = profile.getProfileNames().size();
+					int sizeYDropdown = numProfiles * dropdownOptionSize;
+					renderBlurredBackground(width, height, guiLeft + 2, guiTop + sizeY + 23, 100 - 4, sizeYDropdown - 2);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
 					Utils.drawTexturedRect(guiLeft, guiTop + sizeY + 23 - 3, 100, 3, 100 / 200f, 1, 0, 3 / 185f, GL11.GL_NEAREST);
 					Utils.drawTexturedRect(
@@ -439,7 +431,7 @@ public class GuiProfileViewer extends GuiScreen {
 					);
 
 					for (int yIndex = 0; yIndex < profile.getProfileNames().size(); yIndex++) {
-						final String otherProfileId = profile.getProfileNames().get(yIndex);
+						String otherProfileId = profile.getProfileNames().get(yIndex);
 						Utils.drawStringCenteredScaledMaxWidth(
 							otherProfileId,
 							Minecraft.getMinecraft().fontRendererObj,
@@ -525,7 +517,7 @@ public class GuiProfileViewer extends GuiScreen {
 			switch (page) {
 				case LOADING:
 					String str = EnumChatFormatting.YELLOW + "Loading player profiles.";
-					final long currentTimeMod = System.currentTimeMillis() % 1000;
+					long currentTimeMod = System.currentTimeMillis() % 1000;
 					if (currentTimeMod > 333) {
 						if (currentTimeMod < 666) {
 							str += ".";
@@ -545,7 +537,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 					//This is just here to inform the player what to do
 					//like typing /api new or telling them to go find a psychotherapist
-					final long timeDiff = System.currentTimeMillis() - startTime;
+					long timeDiff = System.currentTimeMillis() - startTime;
 
 					if (timeDiff > 20000) {
 						Utils.drawStringCentered(
@@ -583,11 +575,11 @@ public class GuiProfileViewer extends GuiScreen {
 									0
 								);
 								if (timeDiff > 360000) {
-									final long second = (timeDiff / 1000) % 60;
-									final long minute = (timeDiff / (1000 * 60)) % 60;
-									final long hour = (timeDiff / (1000 * 60 * 60)) % 24;
+									long second = (timeDiff / 1000) % 60;
+									long minute = (timeDiff / (1000 * 60)) % 60;
+									long hour = (timeDiff / (1000 * 60 * 60)) % 24;
 
-									final String time = String.format("%02d:%02d:%02d", hour, minute, second);
+									String time = String.format("%02d:%02d:%02d", hour, minute, second);
 									Utils.drawStringCentered(
 										EnumChatFormatting.YELLOW + "You've wasted your time here for: " + time,
 										Minecraft.getMinecraft().fontRendererObj,
@@ -701,17 +693,17 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
 			int ignoredTabs = 0;
-			final List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
 			for (int i = 0; i < configList.size(); i++) {
-				final ProfileViewerPage iPage = ProfileViewerPage.getById(configList.get(i));
+				ProfileViewerPage iPage = ProfileViewerPage.getById(configList.get(i));
 				if (iPage == null) continue;
 				if (iPage.stack == null || (iPage == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
 				}
-				final int i2 = i - ignoredTabs;
-				final int x = guiLeft + i2 * 28;
-				final int y = guiTop - 28;
+				int i2 = i - ignoredTabs;
+				int x = guiLeft + i2 * 28;
+				int y = guiTop - 28;
 
 				if (mouseX > x && mouseX < x + 28) {
 					if (mouseY > y && mouseY < y + 32) {
@@ -728,42 +720,41 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		if (tooltipToDisplay != null) {
-			final List<String> grayTooltip = new ArrayList<>(tooltipToDisplay.size());
-			for (final String line : tooltipToDisplay) {
+			List<String> grayTooltip = new ArrayList<>(tooltipToDisplay.size());
+			for (String line : tooltipToDisplay) {
 				grayTooltip.add(EnumChatFormatting.GRAY + line);
 			}
-			Utils.drawHoveringText(grayTooltip, mouseX, mouseY,
-				width, height, -1, Minecraft.getMinecraft().fontRendererObj);
+			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
 			tooltipToDisplay = null;
 		}
 	}
 
-	private void renderTabs(final boolean renderPressed) {
+	private void renderTabs(boolean renderPressed) {
 		int ignoredTabs = 0;
-		final List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+		List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
 		for (int i = 0; i < configList.size(); i++) {
-			final ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+			ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
 			if (page == null) continue;
 			if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 				ignoredTabs++;
 				continue;
 			}
-			final boolean pressed = page == currentPage;
+			boolean pressed = page == currentPage;
 			if (pressed == renderPressed) {
 				renderTab(page.stack, i - ignoredTabs, pressed);
 			}
 		}
 	}
 
-	private void renderTab(final ItemStack stack, final int xIndex, final boolean pressed) {
+	private void renderTab(ItemStack stack, int xIndex, boolean pressed) {
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
 		GlStateManager.alphaFunc(516, 0.1F);
 
-		final int x = guiLeft + xIndex * 28;
-		final int y = guiTop - 28;
+		int x = guiLeft + xIndex * 28;
+		int y = guiTop - 28;
 
 		float uMin = 0;
 		float uMax = 28 / 256f;
@@ -797,20 +788,20 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
 			int ignoredTabs = 0;
-			final List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
+			List<Integer> configList = NotEnoughUpdates.INSTANCE.config.profileViewer.pageLayout;
 			for (int i = 0; i < configList.size(); i++) {
-				final ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
+				ProfileViewerPage page = ProfileViewerPage.getById(configList.get(i));
 				if (page == null) continue;
 				if (page.stack == null || (page == ProfileViewerPage.BINGO && !showBingoPage)) {
 					ignoredTabs++;
 					continue;
 				}
-				final int i2 = i - ignoredTabs;
-				final int x = guiLeft + i2 * 28;
-				final int y = guiTop - 28;
+				int i2 = i - ignoredTabs;
+				int x = guiLeft + i2 * 28;
+				int y = guiTop - 28;
 
 				if (mouseX > x && mouseX < x + 28) {
 					if (mouseY > y && mouseY < y + 32) {
@@ -847,9 +838,8 @@ public class GuiProfileViewer extends GuiScreen {
 				profileId != null
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				final String url =
-					"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-						profileId;
+				String url = "https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+					profileId;
 				Utils.openUrl(url);
 				Utils.playPressSound();
 				return;
@@ -857,7 +847,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 
 		if (mouseX > guiLeft && mouseX < guiLeft + 100 && profile != null && !profile.getProfileNames().isEmpty()) {
-			final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
 				if (scaledResolution.getScaleFactor() >= 4) {
 					profileDropdownSelected = false;
@@ -876,7 +866,7 @@ public class GuiProfileViewer extends GuiScreen {
 					if (profileNum >= profile.getProfileNames().size()) profileNum = 0;
 					if (profileNum < 0) profileNum = profile.getProfileNames().size() - 1;
 
-					final String newProfileId = profile.getProfileNames().get(profileNum);
+					String newProfileId = profile.getProfileNames().get(profileNum);
 					if (profileId != null && !profileId.equals(newProfileId)) {
 						resetCache();
 					}
@@ -885,11 +875,11 @@ public class GuiProfileViewer extends GuiScreen {
 					profileDropdownSelected = !profileDropdownSelected;
 				}
 			} else if (scaledResolution.getScaleFactor() < 4 && profileDropdownSelected) {
-				final int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
-				final int extraY = mouseY - (guiTop + sizeY + 23);
-				final int index = extraY / dropdownOptionSize;
+				int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
+				int extraY = mouseY - (guiTop + sizeY + 23);
+				int index = extraY / dropdownOptionSize;
 				if (index >= 0 && index < profile.getProfileNames().size()) {
-					final String newProfileId = profile.getProfileNames().get(index);
+					String newProfileId = profile.getProfileNames().get(index);
 					if (profileId != null && !profileId.equals(newProfileId)) {
 						resetCache();
 					}
@@ -908,7 +898,7 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	@Override
-	protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		super.keyTyped(typedChar, keyCode);
 
 		if (pages.containsKey(currentPage)) {
@@ -931,7 +921,7 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	@Override
-	protected void mouseReleased(final int mouseX, final int mouseY, final int mouseButton) {
+	protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
 		super.mouseReleased(mouseX, mouseY, mouseButton);
 
 		if (pages.containsKey(currentPage)) {
@@ -940,17 +930,17 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	public void renderXpBar(
-		final String skillName,
-		final ItemStack stack,
-		final int x,
-		final int y,
-		final int xSize,
-		final ProfileViewer.Level levelObj,
-		final int mouseX,
-		final int mouseY
+		String skillName,
+		ItemStack stack,
+		int x,
+		int y,
+		int xSize,
+		ProfileViewer.Level levelObj,
+		int mouseX,
+		int mouseY
 	) {
-		final float level = levelObj.level;
-		final int levelFloored = (int) Math.floor(level);
+		float level = levelObj.level;
+		int levelFloored = (int) Math.floor(level);
 
 		Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, xSize - 20);
 
@@ -966,27 +956,24 @@ public class GuiProfileViewer extends GuiScreen {
 
 		if (mouseX > x && mouseX < x + 120) {
 			if (mouseY > y - 4 && mouseY < y + 13) {
-				final String levelStr;
+				String levelStr;
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
 						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
-				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
+        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
 					levelStr = levelObj.maxLevel != 7 ?
-						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
-							"%.2f",
-							levelObj.level
-						) + ")" :
-						EnumChatFormatting.GOLD + "MAXED!";
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
 				} else {
 					if (skillName.contains("Class Average")) {
 						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
 						totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
 					} else {
-						final int maxXp = (int) levelObj.maxXpForLevel;
+						int maxXp = (int) levelObj.maxXpForLevel;
 						levelStr =
 							EnumChatFormatting.DARK_PURPLE +
 								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
@@ -1006,8 +993,8 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
-		final NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
-		final NBTTagCompound display = new NBTTagCompound();
+		NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+		NBTTagCompound display = new NBTTagCompound();
 		display.setString("Name", skillName);
 		nbt.setTag("display", display);
 		stack.setTagCompound(nbt);
@@ -1023,14 +1010,14 @@ public class GuiProfileViewer extends GuiScreen {
 		return ((BasicPage) pages.get(ProfileViewerPage.BASIC)).entityPlayer;
 	}
 
-	public void renderGoldBar(final float x, final float y, final float xSize) {
+	public void renderGoldBar(float x, float y, float xSize) {
 		if (!OpenGlHelper.areShadersSupported()) {
 			renderBar(x, y, xSize, 1);
 			return;
 		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(icons);
-		final ShaderManager shaderManager = ShaderManager.getInstance();
+		ShaderManager shaderManager = ShaderManager.getInstance();
 		shaderManager.loadShader("make_gold");
 		shaderManager.loadData("make_gold", "amount", (startTime - System.currentTimeMillis()) / 10000f);
 
@@ -1050,11 +1037,11 @@ public class GuiProfileViewer extends GuiScreen {
 		GL20.glUseProgram(0);
 	}
 
-	public void renderBar(final float x, final float y, final float xSize, float completed) {
+	public void renderBar(float x, float y, float xSize, float completed) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(icons);
 
 		completed = Math.round(completed / 0.05f) * 0.05f;
-		final float notCompleted = 1 - completed;
+		float notCompleted = 1 - completed;
 		GlStateManager.color(1, 1, 1, 1);
 		float width;
 
@@ -1118,8 +1105,8 @@ public class GuiProfileViewer extends GuiScreen {
 	 * This is so that we can render to and from the framebuffer in a way that is familiar to us, instead of needing to
 	 * apply scales and translations manually.
 	 */
-	private Matrix4f createProjectionMatrix(final int width, final int height) {
-		final Matrix4f projMatrix = new Matrix4f();
+	private Matrix4f createProjectionMatrix(int width, int height) {
+		Matrix4f projMatrix = new Matrix4f();
 		projMatrix.setIdentity();
 		projMatrix.m00 = 2.0F / (float) width;
 		projMatrix.m11 = 2.0F / (float) (-height);
@@ -1134,8 +1121,8 @@ public class GuiProfileViewer extends GuiScreen {
 	private void blurBackground() {
 		if (!OpenGlHelper.isFramebufferEnabled()) return;
 
-		final int width = Minecraft.getMinecraft().displayWidth;
-		final int height = Minecraft.getMinecraft().displayHeight;
+		int width = Minecraft.getMinecraft().displayWidth;
+		int height = Minecraft.getMinecraft().displayHeight;
 
 		if (blurOutputHorz == null) {
 			blurOutputHorz = new Framebuffer(width, height, false);
@@ -1167,7 +1154,7 @@ public class GuiProfileViewer extends GuiScreen {
 					);
 				blurShaderHorz.getShaderManager().getShaderUniform("BlurDir").set(1, 0);
 				blurShaderHorz.setProjectionMatrix(createProjectionMatrix(width, height));
-			} catch (final Exception ignored) {
+			} catch (Exception ignored) {
 			}
 		}
 		if (blurShaderVert == null) {
@@ -1180,7 +1167,7 @@ public class GuiProfileViewer extends GuiScreen {
 				);
 				blurShaderVert.getShaderManager().getShaderUniform("BlurDir").set(0, 1);
 				blurShaderVert.setProjectionMatrix(createProjectionMatrix(width, height));
-			} catch (final Exception ignored) {
+			} catch (Exception ignored) {
 			}
 		}
 		if (blurShaderHorz != null && blurShaderVert != null) {
@@ -1199,7 +1186,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 	}
 
-	public float getPercentage(final String skillName, final ProfileViewer.Level level) {
+	public float getPercentage(String skillName, ProfileViewer.Level level) {
 		if (level.maxed) {
 			return 100;
 		}
@@ -1222,13 +1209,13 @@ public class GuiProfileViewer extends GuiScreen {
 	 * Renders a subsection of the blurred framebuffer on to the corresponding section of the screen.
 	 * Essentially, this method will "blur" the background inside the bounds specified by [x->x+blurWidth, y->y+blurHeight]
 	 */
-	public void renderBlurredBackground(final int width, final int height, final int x, final int y, final int blurWidth, final int blurHeight) {
+	public void renderBlurredBackground(int width, int height, int x, int y, int blurWidth, int blurHeight) {
 		if (!OpenGlHelper.isFramebufferEnabled()) return;
 
-		final float uMin = x / (float) width;
-		final float uMax = (x + blurWidth) / (float) width;
-		final float vMin = (height - y) / (float) height;
-		final float vMax = (height - y - blurHeight) / (float) height;
+		float uMin = x / (float) width;
+		float uMax = (x + blurWidth) / (float) width;
+		float vMin = (height - y) / (float) height;
+		float vMax = (height - y - blurHeight) / (float) height;
 
 		blurOutputVert.bindFramebufferTexture();
 		GlStateManager.color(1f, 1f, 1f, 1f);
@@ -1261,22 +1248,22 @@ public class GuiProfileViewer extends GuiScreen {
 			this(-1, null, null);
 		}
 
-		ProfileViewerPage(final int id, final Item item, final String name) {
+		ProfileViewerPage(int id, Item item, String name) {
 			this.id = id;
 			if (item == null) {
 				stack = null;
 			} else {
 				stack = new ItemStack(item);
-				final NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
-				final NBTTagCompound display = new NBTTagCompound();
+				NBTTagCompound nbt = new NBTTagCompound(); //Adding NBT Data for Custom Resource Packs
+				NBTTagCompound display = new NBTTagCompound();
 				display.setString("Name", name);
 				nbt.setTag("display", display);
 				stack.setTagCompound(nbt);
 			}
 		}
 
-		public static ProfileViewerPage getById(final int id) {
-			for (final ProfileViewerPage page : values()) {
+		public static ProfileViewerPage getById(int id) {
+			for (ProfileViewerPage page : values()) {
 				if (page.id == id) {
 					return page;
 				}

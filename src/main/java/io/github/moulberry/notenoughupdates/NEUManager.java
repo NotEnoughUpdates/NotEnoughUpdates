@@ -748,7 +748,7 @@ public class NEUManager {
 		}
 	}
 
-	public String getUUIDFromNBT(NBTTagCompound tag) {
+	public static String getUUIDFromNBT(NBTTagCompound tag) {
 		String uuid = null;
 		if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
 			NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
@@ -965,7 +965,7 @@ public class NEUManager {
 			.resolveInternalName();
 	}
 
-	public String getUUIDForItem(ItemStack stack) {
+	public static String getUUIDForItem(ItemStack stack) {
 		if (stack == null) return null;
 		NBTTagCompound tag = stack.getTagCompound();
 		return getUUIDFromNBT(tag);

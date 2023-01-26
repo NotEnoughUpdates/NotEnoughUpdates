@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
@@ -52,6 +53,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@NEUAutoSubscribe
 public class DungeonNpcProfitOverlay {
 
 	private static final ResourceLocation dungeonProfitResource =
@@ -334,7 +336,7 @@ public class DungeonNpcProfitOverlay {
 						}
 					}
 				}
-			} else if (essenceMatcher.matches()) {
+			} else if (essenceMatcher.matches() && NotEnoughUpdates.INSTANCE.config.dungeons.useEssenceCostFromBazaar) {
 				String essenceType = essenceMatcher.group("essenceType");
 				String essenceAmount = essenceMatcher.group("essenceAmount");
 				if (essenceType == null || essenceAmount == null) {

@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -47,6 +48,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+@NEUAutoSubscribe
 public class BetterContainers {
 	private static final ResourceLocation TOGGLE_OFF = new ResourceLocation("notenoughupdates:dynamic_54/toggle_off.png");
 	private static final ResourceLocation TOGGLE_ON = new ResourceLocation("notenoughupdates:dynamic_54/toggle_on.png");
