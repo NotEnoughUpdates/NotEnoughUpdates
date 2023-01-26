@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.Line;
 import io.github.moulberry.notenoughupdates.core.util.Vec3Comparable;
 import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
@@ -52,6 +53,7 @@ import java.util.Locale;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 
+@NEUAutoSubscribe
 public class CrystalWishingCompassSolver {
 	enum SolverState {
 		NOT_STARTED,

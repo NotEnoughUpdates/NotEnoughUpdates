@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import net.minecraft.client.Minecraft;
@@ -67,8 +68,6 @@ public class ItemCustomizeManager {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static ItemDataMap itemDataMap = new ItemDataMap();
-	private static final HashMap<Integer, String> itemUuidCache = new HashMap<>();
-
 	public static class ItemDataMap {
 		public HashMap<String, ItemData> itemData = new HashMap<>();
 	}
@@ -269,25 +268,10 @@ public class ItemCustomizeManager {
 		return CUSTOM_GLINT_TEXTURE;
 	}
 
-	public static String getUuidForItem(ItemStack stack) {
-		if (!stack.hasTagCompound()) return null;
-
-		int nbtHash = stack.getTagCompound().hashCode();
-
-		if (itemUuidCache.containsKey(nbtHash)) {
-			return itemUuidCache.get(nbtHash);
-		}
-
-		String uuid = NotEnoughUpdates.INSTANCE.manager.getUUIDForItem(stack);
-
-		itemUuidCache.put(nbtHash, uuid);
-		return uuid;
-	}
-
 	public static ItemData getDataForItem(ItemStack stack) {
 		if (stack == null) return null;
 
-		String uuid = getUuidForItem(stack);
+		String uuid = NEUManager.getUUIDForItem(stack);
 
 		if (uuid == null) {
 			return null;
@@ -297,7 +281,6 @@ public class ItemCustomizeManager {
 	}
 
 	public static void tick() {
-		itemUuidCache.clear();
 		disableTextureBinding = false;
 	}
 

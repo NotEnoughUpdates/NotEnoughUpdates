@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -38,6 +39,7 @@ import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
+@NEUAutoSubscribe
 public class FuelBar {
 	public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");
 

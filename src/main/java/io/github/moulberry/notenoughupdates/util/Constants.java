@@ -30,6 +30,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.recipes.EssenceUpgrades;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
+@NEUAutoSubscribe
 public class Constants {
 	private static class PatternSerializer implements JsonDeserializer<Pattern>, JsonSerializer<Pattern> {
 		@Override

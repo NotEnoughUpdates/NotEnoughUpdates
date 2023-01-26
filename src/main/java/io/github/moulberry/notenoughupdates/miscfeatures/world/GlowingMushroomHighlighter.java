@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.world;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
@@ -33,6 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import static io.github.moulberry.notenoughupdates.util.MathUtil.isDecimalPartApproximately;
 
+@NEUAutoSubscribe
 public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 
 	@SubscribeEvent

@@ -22,10 +22,13 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -39,7 +42,10 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -59,6 +65,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+@NEUAutoSubscribe
 public class SlotLocking {
 	private static final SlotLocking INSTANCE = new SlotLocking();
 
@@ -416,6 +423,9 @@ public class SlotLocking {
 			}
 
 			drawLinkArrow(x1, y1, x2, y2);
+			setTopHalfBarrier = true;
+		} else {
+			setTopHalfBarrier = false;
 		}
 	}
 
@@ -728,5 +738,28 @@ public class SlotLocking {
 
 		return locked != null &&
 			(locked.locked || (NotEnoughUpdates.INSTANCE.config.slotLocking.bindingAlsoLocks && locked.boundTo != -1));
+	}
+
+	boolean setTopHalfBarrier = false;
+	@SubscribeEvent
+	public void barrierInventory(ReplaceItemEvent event) {
+		if (event.getSlotNumber() < 9 ||
+			(pairingSlot != null && (event.getSlotNumber() == pairingSlot.slotNumber || isArmourSlot(event.getSlotNumber(), pairingSlot.slotNumber))) ||
+			!setTopHalfBarrier ||
+			!(event.getInventory() instanceof InventoryPlayer)) return;
+		ItemStack stack = new ItemStack(Blocks.barrier);
+		ItemUtils.getOrCreateTag(stack).setBoolean(
+			"NEUHIDETOOLIP",
+			true
+		);
+		event.replaceWith(stack);
+	}
+
+	boolean isArmourSlot(int eventSlotNumber, int pairingSlotNumber) {
+		if (eventSlotNumber == 39 && pairingSlotNumber == 5) return true;
+		if (eventSlotNumber == 38 && pairingSlotNumber == 6) return true;
+		if (eventSlotNumber == 37 && pairingSlotNumber == 7) return true;
+		if (eventSlotNumber == 36 && pairingSlotNumber == 8) return true;
+		return false;
 	}
 }
