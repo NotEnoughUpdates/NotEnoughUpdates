@@ -287,16 +287,20 @@ public class ItemUtils {
 				if (secondLastBlankLine != -1) {
 					List<String> petItemLore = new ArrayList<>();
 					if (heldItem != null) {
-						petItemLore.add(EnumChatFormatting.GOLD + "Held Item: " + heldItemJson.get("displayname").getAsString());
-						List<String> heldItemLore = JsonUtils.getJsonArrayOrEmpty(heldItemJson, "lore", JsonElement::getAsString);
-						int blanks = 0;
-						for (String heldItemLoreLine : heldItemLore) {
-							if (heldItemLoreLine.trim().isEmpty()) {
-								blanks++;
-							} else if (blanks == 2) {
-								petItemLore.add(heldItemLoreLine);
-							} else if (blanks > 2) {
-								break;
+						if (heldItemJson == null) {
+							petItemLore.add(EnumChatFormatting.RED + "Could not find held item in repo!");
+						} else {
+							petItemLore.add(EnumChatFormatting.GOLD + "Held Item: " + heldItemJson.get("displayname").getAsString());
+							List<String> heldItemLore = JsonUtils.getJsonArrayOrEmpty(heldItemJson, "lore", JsonElement::getAsString);
+							int blanks = 0;
+							for (String heldItemLoreLine : heldItemLore) {
+								if (heldItemLoreLine.trim().isEmpty()) {
+									blanks++;
+								} else if (blanks == 2) {
+									petItemLore.add(heldItemLoreLine);
+								} else if (blanks > 2) {
+									break;
+								}
 							}
 						}
 					}
