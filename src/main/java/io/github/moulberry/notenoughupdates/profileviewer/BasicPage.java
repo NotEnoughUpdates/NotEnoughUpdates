@@ -339,7 +339,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				int fontWidth = fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth));
 				if (mouseX > guiLeft + 165 - fontWidth / 2 && mouseX < guiLeft + 165 + fontWidth / 2) {
-					if (mouseY > guiTop + 32 && mouseY < guiTop + 32 + fr.FONT_HEIGHT) {
+					if (mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
 						getInstance().tooltipToDisplay = new ArrayList<>();
 						getInstance()
 							.tooltipToDisplay.add(
