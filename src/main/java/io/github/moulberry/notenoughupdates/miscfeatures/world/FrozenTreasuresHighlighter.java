@@ -28,17 +28,29 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @NEUAutoSubscribe
 public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 
 	private static final FrozenTreasuresHighlighter INSTANCE = new FrozenTreasuresHighlighter();
+
+	private static final List<String> rideablePetTextureUrls = new ArrayList<String>() {{
+		// Armadillo
+		add("http://textures.minecraft.net/texture/c1eb6df4736ae24dd12a3d00f91e6e3aa7ade6bbefb0978afef2f0f92461018f");
+		// Rock
+		add("http://textures.minecraft.net/texture/cb2b5d48e57577563aca31735519cb622219bc058b1f34648b67b8e71bc0fa");
+		// Rat
+		add("http://textures.minecraft.net/texture/a8abb471db0ab78703011979dc8b40798a941f3a4dec3ec61cbeec2af8cffe8");
+	}};
 
 	public static FrozenTreasuresHighlighter getInstance() {return INSTANCE;}
 
@@ -62,10 +74,41 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 		World w = Minecraft.getMinecraft().theWorld;
 		if (w == null) return;
 		List<Entity> entities = w.getLoadedEntityList();
-		for (Entity e : entities) {
-			if ((e instanceof EntityArmorStand) && ((EntityArmorStand) e).getCurrentArmor(3) != null) highlightedBlocks.add(e
-				.getPosition()
-				.add(0, 1, 0));
+		for (Entity entity : entities) {
+			if ((entity instanceof EntityArmorStand) &&
+					((EntityArmorStand) entity).getCurrentArmor(3) != null) {
+
+				// If an armor stand has a 'hat' with a NBTTagCompound check if it has a pet texture url
+				if (((EntityArmorStand) entity).getCurrentArmor(3).hasTagCompound()) {
+					NBTTagCompound nbtTagCompound = ((EntityArmorStand) entity).getCurrentArmor(3).getTagCompound();
+
+					// Get Base64 texture value from the tag compound
+					String textureValue = nbtTagCompound
+						.getCompoundTag("SkullOwner")
+						.getCompoundTag("Properties")
+						.getTagList("textures", 10)
+						.getCompoundTagAt(0)
+						.getString("Value");
+
+					// Decode and find texture url from the texture value
+					String trimmedJson = new String(Base64.getDecoder().decode(textureValue)).replace(" ", "");
+					String textureUrl = trimmedJson.substring(
+						trimmedJson.indexOf("url")+6, // Start of url
+						trimmedJson.substring( // Get the substring from the start of the url to the end of string
+							trimmedJson.indexOf("url")+6).indexOf("\"") // Get index of first " after start of url
+							+ trimmedJson.indexOf("url")+6); // Add on the length of numbers up until the start of url to get correct index from overall string
+
+					// If the list of rideable pet texture urls doesn't include the found texture then it is a frozen treasure
+					if (!rideablePetTextureUrls.contains(textureUrl)) {
+						highlightedBlocks.add(entity.getPosition().add(0, 1, 0));
+						return;
+					}
+				}
+
+				// This is for frozen treasures which are just blocks i.e. Packed Ice, Enchanted Packed Ice etc.
+				// (Since I don't believe the blocks have NBTTagCompound data)
+				highlightedBlocks.add(entity.getPosition().add(0, 1, 0));
+			}
 		}
 	}
 
