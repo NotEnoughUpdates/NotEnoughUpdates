@@ -704,35 +704,34 @@ public class ProfileViewer {
 			}
 
 			Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo
-																										.get("talisman_bag")
-																										.getAsJsonArray())
-																									.map(o -> {
-																										try {
-																											return JsonToNBT.getTagFromJson(o
-																												.getAsJsonObject()
-																												.get("nbttag")
-																												.getAsString());
-																										} catch (Exception ignored) {
-																											return null;
-																										}
-																									}).filter(Objects::nonNull).map(tag -> {
-					NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
-					String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
-					if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
-						lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
-					}
-					JsonArray lastElementJsonArray = new JsonArray();
-					lastElementJsonArray.add(new JsonPrimitive(lastElement));
-					return new AbstractMap.SimpleEntry<>(
-						tag.getCompoundTag("ExtraAttributes").getString("id"),
-						Utils.getRarityFromLore(lastElementJsonArray)
-					);
-				}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(
-					Map.Entry::getKey,
-					Map.Entry::getValue,
-					(v1, v2) -> v1,
-					LinkedHashMap::new
-				));
+				.get("talisman_bag")
+				.getAsJsonArray()).map(o -> {
+				try {
+					return JsonToNBT.getTagFromJson(o
+						.getAsJsonObject()
+						.get("nbttag")
+						.getAsString());
+				} catch (Exception ignored) {
+					return null;
+				}
+			}).filter(Objects::nonNull).map(tag -> {
+				NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
+				String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
+				if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
+					lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
+				}
+				JsonArray lastElementJsonArray = new JsonArray();
+				lastElementJsonArray.add(new JsonPrimitive(lastElement));
+				return new AbstractMap.SimpleEntry<>(
+					tag.getCompoundTag("ExtraAttributes").getString("id"),
+					Utils.getRarityFromLore(lastElementJsonArray)
+				);
+			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(
+				Map.Entry::getKey,
+				Map.Entry::getValue,
+				(v1, v2) -> v1,
+				LinkedHashMap::new
+			));
 
 			Set<String> ignoredTalismans = new HashSet<>();
 			int powerAmount = 0;
@@ -1764,6 +1763,7 @@ public class ProfileViewer {
 			}
 			return null;
 		}
+
 		public ProfileCollectionInfo getCollectionInfo(String profileName) {
 			JsonObject rawProfileInformation = getRawProfileInformation(profileName);
 			if (rawProfileInformation == null) return null;

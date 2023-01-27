@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.profileviewer.level;
 
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
@@ -43,7 +42,6 @@ import org.lwjgl.opengl.GL11;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class LevelPage {
 
