@@ -373,7 +373,6 @@ public class ItemPriceInformation {
 				}
 			} else {
 				tooltip.add(message + " and no item data is cached");
-
 			}
 		}
 	}
