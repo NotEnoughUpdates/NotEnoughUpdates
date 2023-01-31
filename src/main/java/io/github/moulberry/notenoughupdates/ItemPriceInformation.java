@@ -54,8 +54,8 @@ public class ItemPriceInformation {
 	private static final NumberFormat format = new DecimalFormat("#,##0.#", new DecimalFormatSymbols(Locale.US));
 	public static String STACKSIZE_OVERRIDE = "NEU_STACKSIZE_OVERRIDE";
 
-	public static boolean addToTooltip(List<String> tooltip, String internalname, ItemStack stack) {
-		return addToTooltip(tooltip, internalname, stack, true);
+	public static void addToTooltip(List<String> tooltip, String internalName, ItemStack stack) {
+		addToTooltip(tooltip, internalName, stack, true);
 	}
 
 	public static void init(File saveLocation, Gson neuGson) {
@@ -92,16 +92,16 @@ public class ItemPriceInformation {
 		}
 	}
 
-	public static boolean addToTooltip(List<String> tooltip, String internalname, ItemStack stack, boolean useStackSize) {
+	public static void addToTooltip(List<String> tooltip, String internalname, ItemStack stack, boolean useStackSize) {
 		if (stack.getTagCompound().hasKey("disableNeuTooltip") && stack.getTagCompound().getBoolean("disableNeuTooltip")) {
-			return false;
+			return;
 		}
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.disablePriceKey &&
 			!KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.disablePriceKeyKeybind)) {
-			return false;
+			return;
 		}
 		if (internalname.equals("SKYBLOCK_MENU")) {
-			return false;
+			return;
 		}
 		JsonObject auctionInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalname);
 		JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname);
@@ -207,7 +207,6 @@ public class ItemPriceInformation {
 				}
 			}
 
-			return added;
 		} else if (auctionItem && !auctionInfoErrored) {
 			List<Integer> lines = NotEnoughUpdates.INSTANCE.config.tooltipTweaks.priceInfoAuc;
 
@@ -366,21 +365,17 @@ public class ItemPriceInformation {
 				}
 			}
 
-			return added;
 		} else if (auctionInfoErrored && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			String message = EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] API is down";
 			if (auctionableItems != null && !auctionableItems.isEmpty()) {
 				if (auctionableItems.contains(internalname)) {
 					tooltip.add(message);
-					return true;
 				}
 			} else {
 				tooltip.add(message + " and no item data is cached");
-				return true;
+
 			}
 		}
-
-		return false;
 	}
 
 	private static String formatPrice(String label, double price) {
