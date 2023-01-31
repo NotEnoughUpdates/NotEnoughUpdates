@@ -60,6 +60,7 @@ public class MinionHelperChatLoader {
 				String rawTier = ownMatcher.group(1);
 				int tier = Utils.parseRomanNumeral(rawTier);
 				String name = ownMatcher.group(2) + " Minion";
+				name = Utils.cleanColour(name);
 
 				setCrafted(manager.getMinionByName(name, tier));
 			}
@@ -80,7 +81,7 @@ public class MinionHelperChatLoader {
 
 		} catch (Exception e) {
 			Utils.addChatMessage(
-				"[NEU] §cMinion Helper failed reading the minion upgrade message. See the logs for more info!");
+				"§c[NEU] Minion Helper failed reading the minion upgrade message. See the logs for more info!");
 			e.printStackTrace();
 		}
 	}

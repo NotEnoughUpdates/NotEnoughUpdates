@@ -120,8 +120,14 @@ public class BackgroundBlur {
 			for (Map.Entry<Float, OutputStuff> entry : blurOutput.entrySet()) {
 				if (remove.contains(entry.getKey())) {
 					entry.getValue().framebuffer.deleteFramebuffer();
-					entry.getValue().blurShaderHorz.deleteShader();
-					entry.getValue().blurShaderVert.deleteShader();
+					Shader blurShaderHorz = entry.getValue().blurShaderHorz;
+					if (blurShaderHorz != null) {
+						blurShaderHorz.deleteShader();
+					}
+					Shader blurShaderVert = entry.getValue().blurShaderVert;
+					if (blurShaderVert != null) {
+						blurShaderVert.deleteShader();
+					}
 				}
 			}
 

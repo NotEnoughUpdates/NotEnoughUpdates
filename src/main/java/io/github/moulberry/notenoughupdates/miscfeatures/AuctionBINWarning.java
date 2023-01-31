@@ -107,6 +107,8 @@ public class AuctionBINWarning extends GuiElement {
 		}
 
 		ItemStack sellStack = event.guiContainer.inventorySlots.getSlot(13).getStack();
+		if (sellStack == null) return;
+
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(sellStack);
 		sellStackAmount = sellStack.stackSize;
 
