@@ -90,6 +90,8 @@ public class DevTestCommand extends ClientCommandBase {
 	};
 	private int devFailIndex = 0;
 
+	public static int testValue = 0;
+
 	public DevTestCommand() {
 		super("neudevtest");
 	}
@@ -146,7 +148,8 @@ public class DevTestCommand extends ClientCommandBase {
 					Arrays.copyOfRange(args, 1, args.length)
 				);
 			}
-			Utils.addChatMessage("§e[NEU] §fYour external editor is: §Z" + NotEnoughUpdates.INSTANCE.config.hidden.externalEditor);
+			Utils.addChatMessage(
+				"§e[NEU] §fYour external editor is: §Z" + NotEnoughUpdates.INSTANCE.config.hidden.externalEditor);
 			return;
 		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("pricetest")) {
@@ -181,7 +184,8 @@ public class DevTestCommand extends ClientCommandBase {
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("dev")) {
 			NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev;
-			Utils.addChatMessage("§e[NEU] Dev mode " + (NotEnoughUpdates.INSTANCE.config.hidden.dev ? "§aenabled": "§cdisabled"));
+			Utils.addChatMessage(
+				"§e[NEU] Dev mode " + (NotEnoughUpdates.INSTANCE.config.hidden.dev ? "§aenabled" : "§cdisabled"));
 			return;
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("saveconfig")) {
@@ -221,6 +225,13 @@ public class DevTestCommand extends ClientCommandBase {
 			}
 			MiscUtils.copyToClipboard(builder.toString());
 			Utils.addChatMessage("§e[NEU] Copied tablist to clipboard!");
+		}
+		if (args.length == 2 && args[0].equalsIgnoreCase("value")) {
+			try {
+				testValue = Integer.parseInt(args[1]);
+			} catch (NumberFormatException e) {
+				Utils.addChatMessage("NumberFormatException!");
+			}
 		}
 	}
 }
