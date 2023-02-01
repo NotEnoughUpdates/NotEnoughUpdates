@@ -45,6 +45,7 @@ import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorFSR;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorKeybind;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorSlider;
 import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditorText;
+import io.github.moulberry.notenoughupdates.miscfeatures.EnforcedConfigValues;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -133,6 +134,7 @@ public class ConfigProcessor {
 					boolean optionPresent = optionField.isAnnotationPresent(ConfigOption.class);
 
 					if (optionPresent) {
+						String optionPath = categoryField.getName() + "." + optionField.getName();
 						ConfigOption optionAnnotation = optionField.getAnnotation(ConfigOption.class);
 						ProcessedOption option = new ProcessedOption(
 							optionAnnotation.name(),
@@ -231,6 +233,10 @@ public class ConfigProcessor {
 							//System.err.printf("Failed to load config option %s. Could not find suitable editor.\n", optionField.getName());
 							continue;
 						}
+						if (EnforcedConfigValues.INSTANCE.isBlockedFromEditing(optionPath)) {
+							editor = new GuiOptionEditorBlocked(editor);
+						}
+
 						option.editor = editor;
 						cat.options.put(optionField.getName(), option);
 					}

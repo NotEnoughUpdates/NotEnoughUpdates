@@ -23,77 +23,35 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
-import io.github.moulberry.notenoughupdates.cosmetics.CapeManager;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
-import io.github.moulberry.notenoughupdates.dungeons.DungeonMap;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipEssenceShopListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipRngListener;
 import io.github.moulberry.notenoughupdates.listener.NEUEventListener;
-import io.github.moulberry.notenoughupdates.listener.OldAnimationChecker;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.listener.WorldListener;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneContactHelper;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.AntiCoopAdd;
-import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
-import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
-import io.github.moulberry.notenoughupdates.miscfeatures.CrystalOverlay;
-import io.github.moulberry.notenoughupdates.miscfeatures.CrystalWishingCompassSolver;
-import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
-import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
-import io.github.moulberry.notenoughupdates.miscfeatures.DwarvenMinesWaypoints;
-import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
-import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
-import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
-import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
-import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
-import io.github.moulberry.notenoughupdates.miscfeatures.PowerStoneStatsDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
-import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
-import io.github.moulberry.notenoughupdates.miscfeatures.WardrobeMouseButtons;
-import io.github.moulberry.notenoughupdates.miscfeatures.WitherCloakChanger;
-import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
-import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.DwarvenMinesTextures;
-import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
-import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
-import io.github.moulberry.notenoughupdates.miscfeatures.item.enchants.EnchantStyleCustomizer;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
-import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
-import io.github.moulberry.notenoughupdates.miscfeatures.world.FrozenTreasuresHighlighter;
-import io.github.moulberry.notenoughupdates.miscfeatures.world.GlowingMushroomHighlighter;
-import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
-import io.github.moulberry.notenoughupdates.miscgui.SignCalculator;
-import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
-import io.github.moulberry.notenoughupdates.overlays.FuelBar;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
-import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
-import io.github.moulberry.notenoughupdates.util.TitleUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -133,6 +91,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Set;
 
+@NEUAutoSubscribe
 @Mod(
 	modid = NotEnoughUpdates.MODID, version = NotEnoughUpdates.VERSION, clientSideOnly = true, useMetadata = true,
 	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
@@ -210,13 +169,6 @@ public class NotEnoughUpdates {
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
-	}
-
 	public File getConfigFile() {
 		return this.configFile;
 	}
@@ -227,6 +179,13 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
+	}
+
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**
@@ -300,65 +259,18 @@ public class NotEnoughUpdates {
 
 		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config, this::saveConfig));
 
-		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));
-		MinecraftForge.EVENT_BUS.register(CapeManager.getInstance());
-		//MinecraftForge.EVENT_BUS.register(new SBGamemodes());
-		MinecraftForge.EVENT_BUS.register(new EnchantingSolvers());
-		MinecraftForge.EVENT_BUS.register(new CalendarOverlay());
-		MinecraftForge.EVENT_BUS.register(SBInfo.getInstance());
-		MinecraftForge.EVENT_BUS.register(CustomItemEffects.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(new Constants());
-		MinecraftForge.EVENT_BUS.register(new DungeonMap());
-		MinecraftForge.EVENT_BUS.register(new SunTzu());
-		MinecraftForge.EVENT_BUS.register(new WitherCloakChanger());
-		MinecraftForge.EVENT_BUS.register(new MiningStuff());
-		MinecraftForge.EVENT_BUS.register(FairySouls.getInstance());
-		MinecraftForge.EVENT_BUS.register(new CrystalOverlay());
-		MinecraftForge.EVENT_BUS.register(new ItemCooldowns());
-		MinecraftForge.EVENT_BUS.register(new DwarvenMinesWaypoints());
-		MinecraftForge.EVENT_BUS.register(new FuelBar());
-		MinecraftForge.EVENT_BUS.register(new AuctionProfit());
-		MinecraftForge.EVENT_BUS.register(new DungeonNpcProfitOverlay());
-		MinecraftForge.EVENT_BUS.register(XPInformation.getInstance());
 		MinecraftForge.EVENT_BUS.register(OverlayManager.petInfoOverlay);
 		MinecraftForge.EVENT_BUS.register(OverlayManager.timersOverlay);
-		MinecraftForge.EVENT_BUS.register(new NullzeeSphere());
-		MinecraftForge.EVENT_BUS.register(InventoryStorageSelector.getInstance());
-		MinecraftForge.EVENT_BUS.register(SlotLocking.getInstance());
-		MinecraftForge.EVENT_BUS.register(FishingHelper.getInstance());
-		MinecraftForge.EVENT_BUS.register(CrystalWishingCompassSolver.getInstance());
-		MinecraftForge.EVENT_BUS.register(new DwarvenMinesTextures());
-		MinecraftForge.EVENT_BUS.register(EquipmentOverlay.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(CustomBiomes.INSTANCE);
 		MinecraftForge.EVENT_BUS.register(new ChatListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipRngListener(this));
 		MinecraftForge.EVENT_BUS.register(new ItemTooltipEssenceShopListener(this));
 		MinecraftForge.EVENT_BUS.register(new RenderListener(this));
-		MinecraftForge.EVENT_BUS.register(new OldAnimationChecker());
-		MinecraftForge.EVENT_BUS.register(new SignCalculator());
-		MinecraftForge.EVENT_BUS.register(TrophyRewardOverlay.getInstance());
-		MinecraftForge.EVENT_BUS.register(PowerStoneStatsDisplay.getInstance());
-		MinecraftForge.EVENT_BUS.register(AntiCoopAdd.getInstance());
-		MinecraftForge.EVENT_BUS.register(AbiphoneWarning.getInstance());
-		MinecraftForge.EVENT_BUS.register(new BetterContainers());
-		MinecraftForge.EVENT_BUS.register(AuctionBINWarning.getInstance());
-		MinecraftForge.EVENT_BUS.register(MinionHelperManager.getInstance());
 		MinecraftForge.EVENT_BUS.register(navigation);
-		MinecraftForge.EVENT_BUS.register(new GlowingMushroomHighlighter());
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
-		MinecraftForge.EVENT_BUS.register(EnchantStyleCustomizer.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
-		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());
-		MinecraftForge.EVENT_BUS.register(FrozenTreasuresHighlighter.getInstance());
-		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
-		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
-		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(new WardrobeMouseButtons());
-		MinecraftForge.EVENT_BUS.register(AccessoryBagOverlay.INSTANCE);
+		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();

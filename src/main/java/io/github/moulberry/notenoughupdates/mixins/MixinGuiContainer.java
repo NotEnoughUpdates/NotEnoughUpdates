@@ -295,8 +295,9 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
 	@Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = TARGET_CANBEHOVERED))
 	public boolean drawScreen_canBeHovered(Slot slot) {
-		if (NotEnoughUpdates.INSTANCE.config.improvedSBMenu.hideEmptyPanes &&
-			BetterContainers.isOverriding() && BetterContainers.isBlankStack(slot.slotNumber, slot.getStack())) {
+		if ((NotEnoughUpdates.INSTANCE.config.improvedSBMenu.hideEmptyPanes &&
+			BetterContainers.isOverriding() && BetterContainers.isBlankStack(slot.slotNumber, slot.getStack())) ||
+			slot.getStack() != null && slot.getStack().hasTagCompound() && slot.getStack().getTagCompound().getBoolean("NEUHIDETOOLIP")) {
 			return false;
 		}
 		return slot.canBeHovered();

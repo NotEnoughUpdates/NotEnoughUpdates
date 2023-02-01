@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.SignSubmitEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiEditSign;
 import io.github.moulberry.notenoughupdates.util.Calculator;
@@ -35,6 +36,7 @@ import java.text.DecimalFormat;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@NEUAutoSubscribe
 public class SignCalculator {
 
 	String lastSource = null;

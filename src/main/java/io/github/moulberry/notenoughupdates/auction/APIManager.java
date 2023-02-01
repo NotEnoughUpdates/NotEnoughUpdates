@@ -731,7 +731,7 @@ public class APIManager {
 
 	public void updateBazaar() {
 		manager.apiUtils
-			.newHypixelApiRequest("skyblock/bazaar")
+			.newAnonymousHypixelApiRequest("skyblock/bazaar")
 			.requestJson()
 			.thenAccept(jsonObject -> {
 				if (!jsonObject.get("success").getAsBoolean()) return;

@@ -30,6 +30,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.recipes.EssenceUpgrades;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
@@ -40,7 +41,9 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
+@NEUAutoSubscribe
 public class Constants {
+
 	private static class PatternSerializer implements JsonDeserializer<Pattern>, JsonSerializer<Pattern> {
 		@Override
 		public Pattern deserialize(
@@ -78,6 +81,7 @@ public class Constants {
 	public static JsonObject RNGSCORE;
 	public static JsonObject ABIPHONE;
 	public static JsonObject ESSENCESHOPS;
+	public static JsonObject SBLEVELS;
 
 	private static final ReentrantLock lock = new ReentrantLock();
 
@@ -102,6 +106,7 @@ public class Constants {
 			RNGSCORE = Utils.getConstant("rngscore", gson);
 			ABIPHONE = Utils.getConstant("abiphone", gson);
 			ESSENCESHOPS = Utils.getConstant("essenceshops", gson);
+			SBLEVELS = Utils.getConstant("sblevels", gson);
 
 			parseEssenceCosts();
 		} catch (Exception ex) {

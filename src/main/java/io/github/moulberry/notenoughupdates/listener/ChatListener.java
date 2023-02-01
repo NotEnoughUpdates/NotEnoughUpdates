@@ -61,7 +61,7 @@ public class ChatListener {
 	private static final Pattern SLAYER_EXP_PATTERN = Pattern.compile(
 		"   (Spider|Zombie|Wolf|Enderman|Blaze) Slayer LVL (\\d) - (?:Next LVL in ([\\d,]+) XP!|LVL MAXED OUT!)");
 	private static final Pattern SKY_BLOCK_LEVEL_PATTERN = Pattern.compile("\\[(\\d{1,4})\\] .*");
-	private final Pattern PARTY_FINDER_PATTERN = Pattern.compile("§dParty Finder §r§f> (.*)§ejoined the dungeon group!");
+	private final Pattern PARTY_FINDER_PATTERN = Pattern.compile("§dParty Finder §r§f> (.*)§ejoined the (dungeon )?group!");
 
 	private AtomicBoolean missingRecipe = new AtomicBoolean(false);
 
@@ -316,10 +316,7 @@ public class ChatListener {
 			}
 		}
 
-		if (unformatted.equals("You uncovered a treasure chest!") ||
-			unformatted.equals("You have successfully picked the lock on this chest!")
-			|| (unformatted.startsWith("You received +") && unformatted.endsWith(" Powder")))
-			OverlayManager.powderGrindingOverlay.message(unformatted);
+		OverlayManager.powderGrindingOverlay.onMessage(unformatted);
 
 		if (unformatted.startsWith("ENDER NODE!"))
 			EnderNodeHighlighter.getInstance().highlightedBlocks.clear();

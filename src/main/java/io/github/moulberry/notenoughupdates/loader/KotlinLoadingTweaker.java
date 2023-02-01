@@ -82,7 +82,7 @@ public class KotlinLoadingTweaker implements ITweaker {
 	 * Full version format: [1, 7, 20] (1.7.20)
 	 * RC version format: [1, 7, 20, 1] (1.7.20-rc1)
 	 */
-	public static final int[] BUNDLED_KOTLIN_VERSION = new int[]{1, 7, 20};
+	public static final int[] BUNDLED_KOTLIN_VERSION = new int[]{1, 8, 0};
 
 	@Override
 	public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {

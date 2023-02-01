@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -19,12 +19,14 @@
 package io.github.moulberry.notenoughupdates.miscfeatures
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@NEUAutoSubscribe
 class WardrobeMouseButtons {
 
     private val keybinds: List<Int> get() = listOf(
@@ -41,8 +43,17 @@ class WardrobeMouseButtons {
     private var lastClick = -1L
 
     @SubscribeEvent
-    fun onGui(event: GuiScreenEvent) {
-        if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds) return
+    fun onGuiKeyboardInput(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        checkKeybinds(event)
+    }
+
+    @SubscribeEvent
+    fun onGuiMouseInput(event: GuiScreenEvent.MouseInputEvent.Pre) {
+        checkKeybinds(event)
+    }
+
+    private fun checkKeybinds(event: GuiScreenEvent) {
+        if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return
         val gui = event.gui as? GuiChest ?: return
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
 
@@ -51,9 +62,11 @@ class WardrobeMouseButtons {
                 if (System.currentTimeMillis() - lastClick > 300) {
                     Utils.sendLeftMouseClick(gui.inventorySlots.windowId, 36 + i)
                     lastClick = System.currentTimeMillis()
+                    event.isCanceled = true
                 }
                 break
             }
         }
     }
+
 }

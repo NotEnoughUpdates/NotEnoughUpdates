@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -36,6 +37,7 @@ import org.lwjgl.input.Keyboard;
 import java.util.List;
 import java.util.Map;
 
+@NEUAutoSubscribe
 public class AbiphoneContactHelper {
 
 	private static final AbiphoneContactHelper INSTANCE = new AbiphoneContactHelper();

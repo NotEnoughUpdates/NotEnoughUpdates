@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Random;
 
+@NEUAutoSubscribe
 public class SunTzu {
 	private static boolean enabled = false;
 	private static int quoteNum = 0;

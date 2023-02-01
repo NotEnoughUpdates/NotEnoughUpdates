@@ -27,7 +27,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
 public abstract class GuiOptionEditor {
-	protected final ConfigProcessor.ProcessedOption option;
+	public final ConfigProcessor.ProcessedOption option;
 	private static final int HEIGHT = 45;
 
 	public GuiOptionEditor(ConfigProcessor.ProcessedOption option) {
