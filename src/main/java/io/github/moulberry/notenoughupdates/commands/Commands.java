@@ -21,10 +21,7 @@ package io.github.moulberry.notenoughupdates.commands;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.ResetRepoCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.StatsCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DhCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DnCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.JoinDungeonCommand;
@@ -54,10 +51,7 @@ public class Commands {
 
 		// Dev Commands
 		ClientCommandHandler.instance.registerCommand(new PackDevCommand());
-		ClientCommandHandler.instance.registerCommand(new DungeonWinTestCommand());
-		ClientCommandHandler.instance.registerCommand(new StatsCommand());
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
-		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
 
 		// Profile Commands
 		ClientCommandHandler.instance.registerCommand(new PeekCommand());

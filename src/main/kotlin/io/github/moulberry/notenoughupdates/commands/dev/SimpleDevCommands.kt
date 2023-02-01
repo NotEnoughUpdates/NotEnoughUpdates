@@ -30,8 +30,10 @@ import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.BlockPos
+import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.function.Consumer
 
 @NEUAutoSubscribe
 class SimpleDevCommands {
@@ -93,6 +95,15 @@ class SimpleDevCommands {
                 NullzeeSphere.size = this[size]
                 NullzeeSphere.overlayVBO = null
                 reply("Set size to ${this[size]}")
+            }
+        }
+        event.command("neuresetrepo") {
+            thenExecute {
+                NotEnoughUpdates.INSTANCE.manager
+                    .userFacingRepositoryReload()
+                    .thenAccept { it
+                        it.forEach(::reply)
+                    }
             }
         }
     }
