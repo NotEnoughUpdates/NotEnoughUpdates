@@ -34,7 +34,11 @@ import java.util.function.Predicate
 /**
  * Hook for converting brigadier commands to normal legacy Minecraft commands (string array style).
  */
-class NEUBrigadierHook(val brigadierRoot: BrigadierRoot, val commandNode: CommandNode<DefaultSource>) : CommandBase() {
+class NEUBrigadierHook(
+    val brigadierRoot: BrigadierRoot,
+    val commandNode: CommandNode<DefaultSource>,
+    val aliases: List<String>
+) : CommandBase() {
     /**
      * Runs before the command gets executed. Return false to prevent execution.
      */
@@ -42,6 +46,10 @@ class NEUBrigadierHook(val brigadierRoot: BrigadierRoot, val commandNode: Comman
 
     override fun getCommandName(): String {
         return commandNode.name
+    }
+
+    override fun getCommandAliases(): List<String> {
+        return aliases
     }
 
     override fun getCommandUsage(sender: ICommandSender): String {

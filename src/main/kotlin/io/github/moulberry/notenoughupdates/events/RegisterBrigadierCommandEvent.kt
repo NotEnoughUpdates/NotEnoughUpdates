@@ -35,9 +35,16 @@ data class RegisterBrigadierCommandEvent(val brigadierRoot: BrigadierRoot) : NEU
         }
     }
 
-    fun command(name: String, block: LiteralArgumentBuilder<ICommandSender>.() -> Unit): NEUBrigadierHook {
+    fun command(
+        name: String,
+        vararg aliases: String,
+        block: LiteralArgumentBuilder<ICommandSender>.() -> Unit
+    ): NEUBrigadierHook {
         val node = dispatcher.register(literal(name, block))
-        val hook = NEUBrigadierHook(brigadierRoot, node)
+        for (alias in aliases) {
+            dispatcher.register(literal(alias) { redirect(node) })
+        }
+        val hook = NEUBrigadierHook(brigadierRoot, node,  aliases.toList())
         hooks.add(hook)
         return hook
     }

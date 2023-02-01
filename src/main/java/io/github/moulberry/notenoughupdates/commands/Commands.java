@@ -20,13 +20,12 @@
 package io.github.moulberry.notenoughupdates.commands;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.EnableStorageCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.NullzeeSphereCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.ReloadRepoCommand;
+import io.github.moulberry.notenoughupdates.commands.dev.SimpleDevCommands;
 import io.github.moulberry.notenoughupdates.commands.dev.ResetRepoCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.StatsCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DhCommand;
@@ -70,10 +69,9 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new PackDevCommand());
 		ClientCommandHandler.instance.registerCommand(new DungeonWinTestCommand());
 		ClientCommandHandler.instance.registerCommand(new StatsCommand());
-		ClientCommandHandler.instance.registerCommand(new DevTestCommand());
 		ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
-		ClientCommandHandler.instance.registerCommand(new ReloadRepoCommand());
+		ClientCommandHandler.instance.registerCommand(new SimpleDevCommands());
 		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
 		ClientCommandHandler.instance.registerCommand(new EnableStorageCommand());
 

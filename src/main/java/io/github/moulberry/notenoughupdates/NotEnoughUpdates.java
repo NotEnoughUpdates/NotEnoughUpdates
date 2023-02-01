@@ -52,6 +52,7 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -281,6 +282,7 @@ public class NotEnoughUpdates {
 			manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
 		}
 
+		BrigadierRoot.INSTANCE.updateHooks();
 		this.commands = new Commands();
 
 		BackgroundBlur.registerListener();
