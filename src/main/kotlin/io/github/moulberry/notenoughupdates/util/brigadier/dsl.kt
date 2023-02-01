@@ -83,6 +83,10 @@ fun <T : ICommandSender, C : CommandContext<T>> C.reply(text: String) {
     source.addChatMessage(ChatComponentText(text))
 }
 
+fun <T : ICommandSender, C : CommandContext<T>> C.reply(text: String, block: ChatComponentText.() -> Unit) {
+    source.addChatMessage(ChatComponentText(text).also(block))
+}
+
 operator fun <T : Any, C : CommandContext<*>> C.get(arg: TypeSafeArg<T>): T {
     return arg.get(this)
 }

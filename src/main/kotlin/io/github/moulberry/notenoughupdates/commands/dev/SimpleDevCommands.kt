@@ -19,15 +19,17 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev
 
+import com.mojang.brigadier.arguments.FloatArgumentType.floatArg
 import com.mojang.brigadier.arguments.StringArgumentType.string
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.brigadier.get
-import io.github.moulberry.notenoughupdates.util.brigadier.reply
-import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
-import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.miscfeatures.NullzeeSphere
+import io.github.moulberry.notenoughupdates.util.brigadier.*
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.event.ClickEvent
+import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -48,6 +50,49 @@ class SimpleDevCommands {
             thenArgumentExecute("file", string()) { file ->
                 DungeonWin.TEAM_SCORE = ResourceLocation("notenoughupdates:dungeon_win/${this[file].lowercase()}.png")
                 reply("Changed the dungeon win display")
+            }
+        }
+        event.command("neuenablestorage") {
+            thenLiteralExecute("disable") {
+                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
+                NotEnoughUpdates.INSTANCE.saveConfig()
+                reply("Disabled the NEU storage overlay. Click here to enable again") {
+                    chatStyle.chatClickEvent = ClickEvent(
+                        ClickEvent.Action.SUGGEST_COMMAND,
+                        "/neuenablestorage"
+                    )
+                }
+            }
+            thenExecute {
+                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
+                NotEnoughUpdates.INSTANCE.saveConfig()
+                reply("Enabled the NEU storage overlay. Click here to disable again") {
+                    chatStyle.chatClickEvent = ClickEvent(
+                        ClickEvent.Action.SUGGEST_COMMAND,
+                        "/neuenablestorage disable"
+                    )
+                }
+            }
+        }
+        event.command("neuzeesphere") {
+            thenLiteralExecute("on") {
+                NullzeeSphere.enabled = true
+                reply("Enabled nullzee sphere")
+            }
+            thenLiteralExecute("off") {
+                NullzeeSphere.enabled = false
+                reply("Disabled nullzee sphere")
+            }
+            thenLiteralExecute("setcenter") {
+                val p = source as EntityPlayerSP
+                NullzeeSphere.centerPos = BlockPos(p.posX, p.posY, p.posZ)
+                NullzeeSphere.overlayVBO = null
+                reply("Set center to ${NullzeeSphere.centerPos}")
+            }
+            thenArgumentExecute("radius", floatArg(0F)) { size ->
+                NullzeeSphere.size = this[size]
+                NullzeeSphere.overlayVBO = null
+                reply("Set size to ${this[size]}")
             }
         }
     }

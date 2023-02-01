@@ -22,21 +22,13 @@ package io.github.moulberry.notenoughupdates.commands;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.DungeonWinTestCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.EnableStorageCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.NullzeeSphereCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.SimpleDevCommands;
 import io.github.moulberry.notenoughupdates.commands.dev.ResetRepoCommand;
 import io.github.moulberry.notenoughupdates.commands.dev.StatsCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DhCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.DnCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.JoinDungeonCommand;
 import io.github.moulberry.notenoughupdates.commands.dungeon.MapCommand;
-import io.github.moulberry.notenoughupdates.commands.help.FeaturesCommand;
-import io.github.moulberry.notenoughupdates.commands.help.HelpCommand;
-import io.github.moulberry.notenoughupdates.commands.help.LinksCommand;
-import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
-import io.github.moulberry.notenoughupdates.commands.help.StorageViewerWhyCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.AhCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalculatorCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
@@ -59,21 +51,13 @@ public class Commands {
 	public Commands() {
 
 		// Help Commands
-		ClientCommandHandler.instance.registerCommand(new LinksCommand());
-		ClientCommandHandler.instance.registerCommand(new HelpCommand());
-		ClientCommandHandler.instance.registerCommand(new StorageViewerWhyCommand());
-		ClientCommandHandler.instance.registerCommand(new FeaturesCommand());
-		ClientCommandHandler.instance.registerCommand(new SettingsCommand());
 
 		// Dev Commands
 		ClientCommandHandler.instance.registerCommand(new PackDevCommand());
 		ClientCommandHandler.instance.registerCommand(new DungeonWinTestCommand());
 		ClientCommandHandler.instance.registerCommand(new StatsCommand());
-		ClientCommandHandler.instance.registerCommand(new NullzeeSphereCommand());
 		ClientCommandHandler.instance.registerCommand(new DiagCommand());
-		ClientCommandHandler.instance.registerCommand(new SimpleDevCommands());
 		ClientCommandHandler.instance.registerCommand(new ResetRepoCommand());
-		ClientCommandHandler.instance.registerCommand(new EnableStorageCommand());
 
 		// Profile Commands
 		ClientCommandHandler.instance.registerCommand(new PeekCommand());
