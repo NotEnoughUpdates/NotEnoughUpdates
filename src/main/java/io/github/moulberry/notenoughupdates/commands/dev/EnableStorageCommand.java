@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,8 +21,11 @@ package io.github.moulberry.notenoughupdates.commands.dev;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 public class EnableStorageCommand extends ClientCommandBase {
 
@@ -34,6 +37,7 @@ public class EnableStorageCommand extends ClientCommandBase {
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true;
 		NotEnoughUpdates.INSTANCE.saveConfig();
+		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + "[NEU] Enabled custom storage GUI"));
 	}
 
 }
