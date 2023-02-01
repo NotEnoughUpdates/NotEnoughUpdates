@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,7 +25,6 @@ import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
-import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
