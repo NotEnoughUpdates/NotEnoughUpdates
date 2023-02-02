@@ -31,6 +31,7 @@ public class CookieWarning {
 
 	private static boolean hasNotified;
 	private static boolean hasErrorMessage;
+	private static long cookieEndTime = 0;
 
 	public static void resetNotification() {
 		hasNotified = false;
@@ -120,6 +121,7 @@ public class CookieWarning {
 					}
 					hasNotified = true;
 				}
+				cookieEndTime = System.currentTimeMillis() + minutes * 60 * 1000;
 				if (minutes < NotEnoughUpdates.INSTANCE.config.notifications.boosterCookieWarningMins && !hasNotified) {
 					NotificationHandler.displayNotification(Lists.newArrayList(
 						"\u00a7cBooster Cookie Running Low!",
@@ -131,6 +133,9 @@ public class CookieWarning {
 				}
 			}
 		}
+	}
 
+	public static boolean hasActiveBoosterCookie() {
+		return cookieEndTime > System.currentTimeMillis();
 	}
 }

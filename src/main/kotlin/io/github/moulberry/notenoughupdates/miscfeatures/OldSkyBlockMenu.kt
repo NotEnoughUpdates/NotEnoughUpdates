@@ -47,7 +47,13 @@ object OldSkyBlockMenu {
         if (!isRightInventory()) return
         if (event.inventory !is ContainerLocalMenu) return
 
-        map[event.slotNumber]?.let { event.replaceWith(it.item) }
+        val skyBlockButton = map[event.slotNumber] ?: return
+
+        if (skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()) {
+            event.replaceWith(skyBlockButton.itemWithCookieWarning)
+        } else {
+            event.replaceWith(skyBlockButton.itemWithoutCookieWarning)
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -56,6 +62,7 @@ object OldSkyBlockMenu {
 
         if (event.clickType != 0 || event.clickedButton != 0) return
         val skyBlockButton = map[event.slotId] ?: return
+        if (skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()) return
 
         event.isCanceled = true
         NotEnoughUpdates.INSTANCE.sendChatMessage("/" + skyBlockButton.command)
@@ -73,6 +80,7 @@ object OldSkyBlockMenu {
         private val displayName: String,
         private vararg val displayDescription: String,
         private val itemData: ItemData,
+        val requiresBoosterCookie: Boolean = true,
     ) {
         TRADES(
             "trades", 40,
@@ -143,29 +151,42 @@ object OldSkyBlockMenu {
                         "LAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5l" +
                         "Y3JhZnQubmV0L3RleHR1cmUvODBhMDc3ZTI0OGQxNDI3NzJlYTgwMDg2NGY4YzU3OGI5ZDM2ODg1YjI5ZGFmODM2YjY0" +
                         "YTcwNjg4MmI2ZWMxMCIKICAgIH0KICB9Cn0="
-            )
+            ),
+            requiresBoosterCookie = false
         ),
         ;
 
-        val item: ItemStack by lazy {
+        val itemWithCookieWarning: ItemStack by lazy { createItem(true) }
+        val itemWithoutCookieWarning: ItemStack by lazy { createItem(false) }
+
+        private fun createItem(showCookieWarning: Boolean): ItemStack {
             val lore = mutableListOf<String>()
             for (line in displayDescription) {
                 lore.add("§7$line")
             }
             lore.add("")
-            lore.add("§eClick to execute /$command")
+
+            if (showCookieWarning) {
+                lore.add("§cYou need a booster cookie active to use this shortcut!")
+            } else {
+                lore.add("§eClick to execute /${command}")
+            }
             val array = lore.toTypedArray()
-            val name = "§a$displayName"
-            when (itemData) {
+            val name = "§a${displayName}"
+            return when (itemData) {
                 is NormalItemData -> Utils.createItemStackArray(itemData.displayIcon, name, array)
-                is SkullItemData -> Utils.createSkull(name, itemData.uuid, itemData.value, array)
+                is SkullItemData -> Utils.createSkull(
+                    name,
+                    itemData.uuid,
+                    itemData.value,
+                    array
+                )
 
                 else -> {
                     throw Error("item data error!")
                 }
             }
         }
-
     }
 
     abstract class ItemData
