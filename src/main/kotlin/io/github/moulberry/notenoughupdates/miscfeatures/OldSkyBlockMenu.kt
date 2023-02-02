@@ -152,7 +152,7 @@ object OldSkyBlockMenu {
                 lore.add("§7$line")
             }
             lore.add("")
-            lore.add("§eClick to call /$command")
+            lore.add("§eClick to execute /$command")
             val array = lore.toTypedArray()
 
             val name = "§a$displayName"
