@@ -34,16 +34,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @NEUAutoSubscribe
 object OldSkyBlockMenu {
 
+    val map: Map<Int, SkyBlockButton> by lazy {
+        val map = mutableMapOf<Int, SkyBlockButton>()
+        for (button in SkyBlockButton.values()) {
+            map[button.slot] = button
+        }
+        map
+    }
+
     @SubscribeEvent
     fun replaceItem(event: ReplaceItemEvent) {
         if (!isRightInventory()) return
         if (event.inventory !is ContainerLocalMenu) return
 
-        for (skyBlockItem in SkyBlockButton.values()) {
-            if (event.slotNumber == skyBlockItem.slot) {
-                event.replaceWith(skyBlockItem.item)
-            }
-        }
+        map[event.slotNumber]?.let { event.replaceWith(it.item) }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -51,13 +55,10 @@ object OldSkyBlockMenu {
         if (!isRightInventory()) return
 
         if (event.clickType != 0 || event.clickedButton != 0) return
+        val skyBlockButton = map[event.slotId] ?: return
 
-        for (skyBlockItem in SkyBlockButton.values()) {
-            if (event.slotId == skyBlockItem.slot) {
-                event.isCanceled = true
-                NotEnoughUpdates.INSTANCE.sendChatMessage("/" + skyBlockItem.command)
-            }
-        }
+        event.isCanceled = true
+        NotEnoughUpdates.INSTANCE.sendChatMessage("/" + skyBlockButton.command)
     }
 
     private fun isRightInventory(): Boolean {
