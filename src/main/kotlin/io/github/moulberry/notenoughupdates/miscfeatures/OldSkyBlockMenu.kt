@@ -72,6 +72,7 @@ object OldSkyBlockMenu {
         private val displayName: String,
         private vararg val displayDescription: String,
         private val itemData: ItemData,
+        private var cachedItem: ItemStack? = null
     ) {
         TRADES(
             "trades", 40,
@@ -147,6 +148,8 @@ object OldSkyBlockMenu {
         ;
 
         fun buildItem(): ItemStack {
+            if (cachedItem != null) return cachedItem!!
+
             val lore = mutableListOf<String>()
             for (line in displayDescription) {
                 lore.add("§7$line")
@@ -156,7 +159,7 @@ object OldSkyBlockMenu {
             val array = lore.toTypedArray()
 
             val name = "§a$displayName"
-            return when (itemData) {
+            val result = when (itemData) {
                 is NormalItemData -> Utils.createItemStackArray(itemData.displayIcon, name, array)
                 is SkullItemData -> Utils.createSkull(name, itemData.uuid, itemData.value, array)
 
@@ -164,6 +167,8 @@ object OldSkyBlockMenu {
                     throw Error("item data error!")
                 }
             }
+            cachedItem = result
+            return result
         }
     }
 
