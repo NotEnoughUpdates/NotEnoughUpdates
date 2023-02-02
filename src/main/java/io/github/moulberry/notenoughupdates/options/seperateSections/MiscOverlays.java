@@ -61,7 +61,7 @@ public class MiscOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Todo Overlay Hide Bingo",
-		desc = "Hide some quests from the todo overlay while on a bingo profile: Cookie Buff, Godpot, Heavy Pearls, Cakes, Crimson Isle Quests"
+		desc = "Hide some tasks from the todo overlay while on a bingo profile: Cookie Buff, Godpot, Heavy Pearls, Cakes, Crimson Isle Quests"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
