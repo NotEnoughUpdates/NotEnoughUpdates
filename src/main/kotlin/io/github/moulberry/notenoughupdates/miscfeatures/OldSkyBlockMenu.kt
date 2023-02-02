@@ -41,7 +41,7 @@ object OldSkyBlockMenu {
 
         for (skyBlockItem in SkyBlockButton.values()) {
             if (event.slotNumber == skyBlockItem.slot) {
-                event.replaceWith(skyBlockItem.buildItem())
+                event.replaceWith(skyBlockItem.item)
             }
         }
     }
@@ -72,7 +72,6 @@ object OldSkyBlockMenu {
         private val displayName: String,
         private vararg val displayDescription: String,
         private val itemData: ItemData,
-        private var cachedItem: ItemStack? = null
     ) {
         TRADES(
             "trades", 40,
@@ -147,9 +146,7 @@ object OldSkyBlockMenu {
         ),
         ;
 
-        fun buildItem(): ItemStack {
-            if (cachedItem != null) return cachedItem!!
-
+        val item: ItemStack by lazy {
             val lore = mutableListOf<String>()
             for (line in displayDescription) {
                 lore.add("§7$line")
@@ -157,9 +154,8 @@ object OldSkyBlockMenu {
             lore.add("")
             lore.add("§eClick to execute /$command")
             val array = lore.toTypedArray()
-
             val name = "§a$displayName"
-            val result = when (itemData) {
+            when (itemData) {
                 is NormalItemData -> Utils.createItemStackArray(itemData.displayIcon, name, array)
                 is SkullItemData -> Utils.createSkull(name, itemData.uuid, itemData.value, array)
 
@@ -167,9 +163,8 @@ object OldSkyBlockMenu {
                     throw Error("item data error!")
                 }
             }
-            cachedItem = result
-            return result
         }
+
     }
 
     abstract class ItemData
