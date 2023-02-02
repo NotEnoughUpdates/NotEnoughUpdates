@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
@@ -57,15 +58,6 @@ public class MiscOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean todoOverlayOnlyShowTab = false;
-
-	@Expose
-	@ConfigOption(
-		name = "Todo Overlay Hide Bingo",
-		desc = "Hide some quests from the todo overlay while on a bingo profile: Cookie Buff, Godpot, Heavy Pearls, Cakes, Crimson Isle Quests"
-	)
-	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
-	public boolean todoOverlayHideAtBingo = false;
 
 	@Expose
 	@ConfigOption(
