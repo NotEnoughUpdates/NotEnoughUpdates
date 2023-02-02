@@ -913,7 +913,6 @@ public class TimersOverlay extends TextTabOverlay {
 		if (text.contains("Cookie Buff")) return true;
 		if (text.contains("Godpot")) return true;
 		if (text.contains("Heavy Pearls")) return true;
-		if (text.contains("Cakes")) return true;
 		if (text.contains("Crimson Isle Quests")) return true;
 
 		return false;
