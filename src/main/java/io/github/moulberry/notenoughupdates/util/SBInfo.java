@@ -86,6 +86,7 @@ public class SBInfo {
 	public String objective = "";
 	public String slayer = "";
 	public boolean stranded = false;
+	public boolean bingo = false;
 
 	public String mode = null;
 
@@ -388,6 +389,7 @@ public class SBInfo {
 			isInDungeon = tempIsInDungeon;
 
 			boolean containsStranded = false;
+			boolean containsBingo = false;
 			for (String line : lines) { //Slayer stuff
 				if (line.contains("Tarantula Broodfather")) {
 					slayer = "Tarantula";
@@ -422,8 +424,10 @@ public class SBInfo {
 					}
 				}
 				if (line.contains("☀ Stranded")) containsStranded = true;
+				if (line.contains("Ⓑ Bingo")) containsBingo = true;
 			}
 			stranded = containsStranded;
+			bingo = containsBingo;
 
 			if (lines.size() >= 5) {
 				date = Utils.cleanColour(lines.get(1)).trim();
