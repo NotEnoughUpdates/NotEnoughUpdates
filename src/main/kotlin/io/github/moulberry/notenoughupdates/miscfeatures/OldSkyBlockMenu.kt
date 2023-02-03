@@ -181,17 +181,13 @@ object OldSkyBlockMenu {
                     itemData.value,
                     array
                 )
-
-                else -> {
-                    throw Error("item data error!")
-                }
             }
         }
     }
 
-    abstract class ItemData
+    sealed interface ItemData
 
-    class NormalItemData(val displayIcon: Item) : ItemData()
+    class NormalItemData(val displayIcon: Item) : ItemData
 
-    class SkullItemData(val uuid: String, val value: String) : ItemData()
+    class SkullItemData(val uuid: String, val value: String) : ItemData
 }
