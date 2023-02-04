@@ -62,10 +62,11 @@ object OldSkyBlockMenu {
 
         if (event.clickType != 0 || event.clickedButton != 0) return
         val skyBlockButton = map[event.slotId] ?: return
-        if (skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()) return
-
         event.isCanceled = true
-        NotEnoughUpdates.INSTANCE.sendChatMessage("/" + skyBlockButton.command)
+
+        if (!skyBlockButton.requiresBoosterCookie || CookieWarning.hasActiveBoosterCookie()) {
+            NotEnoughUpdates.INSTANCE.sendChatMessage("/" + skyBlockButton.command)
+        }
     }
 
     private fun isRightInventory(): Boolean {
@@ -167,7 +168,8 @@ object OldSkyBlockMenu {
             lore.add("")
 
             if (showCookieWarning) {
-                lore.add("§cYou need a booster cookie active to use this shortcut!")
+                lore.add("§cYou need a booster cookie active")
+                lore.add("§cto use this shortcut!")
             } else {
                 lore.add("§eClick to execute /${command}")
             }
