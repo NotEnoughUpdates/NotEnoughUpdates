@@ -586,7 +586,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		Utils.drawItemStack(skull, 0, 0);
 		GlStateManager.popMatrix();
 		Utils.drawStringCenteredScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
-			sbLevelX + 8, sbLevelY - 12, true, 1.5f
+			sbLevelX + 9, sbLevelY - 12, true, 1.5f
 		);
 
 		float progress = (float) (skyblockLevel - (long) skyblockLevel);
