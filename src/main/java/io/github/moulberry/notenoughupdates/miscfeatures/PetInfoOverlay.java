@@ -481,22 +481,34 @@ public class PetInfoOverlay extends TextOverlay {
 		return xp;
 	}
 
+	private int firstPetLines = 0;
+	private int secondPetLines = 0;
+
 	@Override
 	public void updateFrequent() {
 		Pet currentPet = getCurrentPet();
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null) {
 			overlayStrings = null;
 		} else {
+			firstPetLines = 0;
+			secondPetLines = 0;
 			overlayStrings = new ArrayList<>();
 
 			overlayStrings.addAll(createStringsForPet(currentPet, false));
+			firstPetLines = overlayStrings.size();
 
 			Pet currentPet2 = getCurrentPet2();
 			if (currentPet2 != null) {
 				overlayStrings.add("");
+				if (firstPetLines == 1) {
+					overlayStrings.add("");
+				}
 				overlayStrings.addAll(createStringsForPet(currentPet2, true));
+				secondPetLines = overlayStrings.size() - firstPetLines - 1;
+				if (firstPetLines == 1) {
+					secondPetLines--;
+				}
 			}
-
 		}
 	}
 
@@ -726,8 +738,8 @@ public class PetInfoOverlay extends TextOverlay {
 			GlStateManager.pushMatrix();
 			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 
-			if (overlayStrings.size() == 1) y -= 9;
-			if (overlayStrings.size() == 2) y -= 3;
+			if (firstPetLines == 1) y -= 9;
+			if (firstPetLines == 2) y -= 3;
 
 			GlStateManager.translate(x - 2, y - 2, 0);
 			GlStateManager.scale(2, 2, 1);
@@ -743,12 +755,16 @@ public class PetInfoOverlay extends TextOverlay {
 			if (petItem2 != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 				int x = (int) position.x;
-				int y = (int) position.y + NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.size() * 10;
+				int y = (int) position.y + (overlayStrings.size() - secondPetLines - 2) * 10;
 
 				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
 				Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+				if (secondPetLines == 1) y -= 9;
+				if (secondPetLines == 2) y -= 3;
+
 				GlStateManager.translate(x - 2, y - 2, 0);
 				GlStateManager.scale(2, 2, 1);
 				Utils.drawItemStack(stack, 0, 0);
