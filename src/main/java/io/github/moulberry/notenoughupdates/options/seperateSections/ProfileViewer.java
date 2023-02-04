@@ -103,4 +103,12 @@ public class ProfileViewer {
 	)
 	@ConfigEditorBoolean
 	public boolean useSoopyNetworth = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Display Weight",
+		desc = "Display Lily and Senither Weight in the Basic PV page"
+	)
+	@ConfigEditorBoolean
+	public boolean displayWeight = true;
 }

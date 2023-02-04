@@ -19,6 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.BuildFlags;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
@@ -34,6 +37,7 @@ import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.CommandException;
@@ -123,6 +127,32 @@ public class DevTestCommand extends ClientCommandBase {
 			}
 			Utils.addChatMessage(EnumChatFormatting.RED + DEV_FAIL_STRINGS[devFailIndex++]);
 			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("testprofile")) {
+			NotEnoughUpdates.INSTANCE.manager.apiUtils.newHypixelApiRequest("skyblock/profiles")
+																								.queryArgument(
+																									"uuid",
+																									"" + Minecraft.getMinecraft().thePlayer.getUniqueID()
+																								)
+																								.requestJson()
+																								.thenApply(jsonObject -> {
+																									JsonArray profiles = jsonObject.get("profiles").getAsJsonArray();
+																									JsonObject cp = null;
+																									for (JsonElement profile : profiles) {
+																										JsonObject asJsonObject = profile.getAsJsonObject();
+																										if ((asJsonObject.has("selected") &&
+																											asJsonObject.get("selected").getAsBoolean()) || cp == null) {
+																											cp = asJsonObject;
+																										}
+																									}
+																									return cp;
+																								})
+																								.thenCompose(obj -> ProfileCollectionInfo.getCollectionData(
+																									obj,
+																									Minecraft.getMinecraft().thePlayer.getUniqueID().toString()
+																								))
+																								.thenAccept(it ->
+																									Utils.addChatMessage("Response: " + it));
 		}
 		if (args.length >= 1 && args[0].equalsIgnoreCase("profileinfo")) {
 			String currentProfile = SBInfo.getInstance().currentProfile;

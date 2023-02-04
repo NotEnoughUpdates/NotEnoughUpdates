@@ -1046,7 +1046,7 @@ public class NEUOverlay extends Gui {
 			}
 		}
 
-		if (!Keyboard.getEventKeyState()) {
+		if (Keyboard.getEventKeyState()) {
 			if (!NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
 				searchBarHasFocus = false;
 			}
