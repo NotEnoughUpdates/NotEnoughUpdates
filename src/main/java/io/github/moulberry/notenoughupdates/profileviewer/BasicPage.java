@@ -572,7 +572,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			);
 		}
 
-		// sb lvlL
+		// sb lvl
 
 		int sbLevelX = guiLeft + 162;
 		int sbLevelY = guiTop + 90;
@@ -585,8 +585,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.scale(1.5f, 1.5f, 1);
 		Utils.drawItemStack(skull, 0, 0);
 		GlStateManager.popMatrix();
-		Utils.drawStringScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
-			sbLevelX - 2, sbLevelY - 15, true, 0, 1.5f
+		Utils.drawStringCenteredScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
+			sbLevelX + 8, sbLevelY - 12, true, 1.5f
 		);
 
 		float progress = (float) (skyblockLevel - (long) skyblockLevel);

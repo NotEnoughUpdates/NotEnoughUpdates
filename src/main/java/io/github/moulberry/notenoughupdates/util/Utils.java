@@ -1229,6 +1229,22 @@ public class Utils {
 		drawStringScaled(str, fr, x - len / 2, y - fontHeight / 2, shadow, colour, factor);
 	}
 
+	public static void drawStringCenteredScaled(
+		String str,
+		FontRenderer fr,
+		float x,
+		float y,
+		boolean shadow,
+		float factor
+	) {
+		int strLen = fr.getStringWidth(str);
+
+		float x2 = x - strLen / 2f;
+		float y2 = y - fr.FONT_HEIGHT / 2f;
+
+		drawStringScaled(str, fr, x2, y2, shadow, 0, factor);
+	}
+
 	public static void drawStringCenteredYScaled(
 		String str,
 		FontRenderer fr,
