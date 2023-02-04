@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -567,6 +568,70 @@ public class Utils {
 
 	public static void drawTexturedRect(float x, float y, float width, float height) {
 		drawTexturedRect(x, y, width, height, 0, 1, 0, 1);
+	}
+
+	public static void drawPvSideButton(
+		int yIndex,
+		ItemStack itemStack,
+		boolean pressed,
+		GuiProfileViewer guiProfileViewer
+	) {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+
+		int x = guiLeft - 28;
+		int y = guiTop + yIndex * 28;
+
+		float uMin = 193 / 256f;
+		float uMax = 223 / 256f;
+		float vMin = 200 / 256f;
+		float vMax = 228 / 256f;
+		if (pressed) {
+			uMin = 224 / 256f;
+			uMax = 1f;
+
+			if (yIndex != 0) {
+				vMin = 228 / 256f;
+				vMax = 1f;
+			}
+
+			guiProfileViewer.renderBlurredBackground(
+				guiProfileViewer.width,
+				guiProfileViewer.height,
+				x + 2,
+				y + 2,
+				30,
+				28 - 4
+			);
+		} else {
+			guiProfileViewer.renderBlurredBackground(
+				guiProfileViewer.width,
+				guiProfileViewer.height,
+				x + 2,
+				y + 2,
+				28 - 2,
+				28 - 4
+			);
+		}
+
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
+
+		Utils.drawTexturedRect(x, y, pressed ? 32 : 28, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+
+		GlStateManager.enableDepth();
+		Utils.drawItemStack(itemStack, x + 8, y + 7);
 	}
 
 	public static void drawTexturedRect(float x, float y, float width, float height, int filter) {
@@ -1972,13 +2037,13 @@ public class Utils {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
-				EnumChatFormatting.RED +
-					"Data used for many NEU features is not up to date, this should normally not be the case.",
-				EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
-					EnumChatFormatting.RED + " and restart your game" +
-					" to see if that fixes the issue.",
-				EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
-					"discord.gg/moulberry" +
+					EnumChatFormatting.RED +
+						"Data used for many NEU features is not up to date, this should normally not be the case.",
+					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
+						EnumChatFormatting.RED + " and restart your game" +
+						" to see if that fixes the issue.",
+					EnumChatFormatting.RED + "If the problem persists please join " + EnumChatFormatting.BOLD +
+						"discord.gg/moulberry" +
 						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 				),

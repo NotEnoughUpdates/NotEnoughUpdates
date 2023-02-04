@@ -171,7 +171,10 @@ public class GuiProfileViewer extends GuiScreen {
 		);
 	public final GuiElementTextField playerNameTextField;
 	public final GuiElementTextField inventoryTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
-	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
+	public final GuiElementTextField killDeathSearchTextField = new GuiElementTextField(
+		"",
+		GuiElementTextField.SCALE_TEXT
+	);
 	private final Map<ProfileViewerPage, GuiProfileViewerPage> pages = new HashMap<>();
 	public int sizeX;
 	public int sizeY;
@@ -390,7 +393,7 @@ public class GuiProfileViewer extends GuiScreen {
 					GL11.GL_NEAREST
 				);
 				Utils.drawStringCenteredScaledMaxWidth(
-					"Open in Skycrypt",
+					"Open in SkyCrypt",
 					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 50 + 100 + 6,
 					guiTop + sizeY + 3 + 10,
@@ -838,8 +841,9 @@ public class GuiProfileViewer extends GuiScreen {
 				profileId != null
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				String url = "https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-					profileId;
+				String url =
+					"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+						profileId;
 				Utils.openUrl(url);
 				Utils.playPressSound();
 				return;
@@ -960,14 +964,17 @@ public class GuiProfileViewer extends GuiScreen {
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-							numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+						numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
 						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
-        // Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
+				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {
 					levelStr = levelObj.maxLevel != 7 ?
-						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" :
-					EnumChatFormatting.GOLD + "MAXED!";
+						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
+							"%.2f",
+							levelObj.level
+						) + ")" :
+						EnumChatFormatting.GOLD + "MAXED!";
 				} else {
 					if (skillName.contains("Class Average")) {
 						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
