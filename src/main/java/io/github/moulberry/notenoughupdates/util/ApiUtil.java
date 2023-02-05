@@ -61,7 +61,12 @@ import java.util.zip.GZIPInputStream;
 public class ApiUtil {
 	private static final Gson gson = new Gson();
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
-	private static final String USER_AGENT = "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
+	private static String getUserAgent() {
+		if(NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
+			return NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent;
+		}
+		return "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
+	}
 	private static SSLContext ctx;
 	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
 
@@ -169,7 +174,7 @@ public class ApiUtil {
 						}
 						conn.setConnectTimeout(10000);
 						conn.setReadTimeout(10000);
-						conn.setRequestProperty("User-Agent", USER_AGENT);
+						conn.setRequestProperty("User-Agent", getUserAgent());
 						if (this.postContentType != null) {
 							conn.setRequestProperty("Content-Type", this.postContentType);
 						}
