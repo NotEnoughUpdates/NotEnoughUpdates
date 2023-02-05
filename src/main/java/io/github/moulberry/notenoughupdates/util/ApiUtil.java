@@ -62,7 +62,7 @@ public class ApiUtil {
 	private static final Gson gson = new Gson();
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 	private static String getUserAgent() {
-		if(NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
+		if (NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
 			return NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent;
 		}
 		return "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
