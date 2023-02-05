@@ -596,6 +596,12 @@ public class BasicPage extends GuiProfileViewerPage {
 			sbLevelX - 30, sbLevelY + 20, true, 0, 0.9f
 		);
 
+		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
+			if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
+				if (Mouse.isButtonDown(0)) onSecondPage = true;
+			}
+		}
+
 		if (skyblockInfo != null) {
 			int position = 0;
 			for (Map.Entry<String, ItemStack> entry : ProfileViewer.getSkillToSkillDisplayMap().entrySet()) {
@@ -621,12 +627,6 @@ public class BasicPage extends GuiProfileViewerPage {
 					getInstance().renderGoldBar(x, y + 6, 80);
 				} else {
 					getInstance().renderBar(x, y + 6, 80, level.level % 1);
-				}
-
-				if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
-					if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
-						if (Mouse.isButtonDown(0)) onSecondPage = true;
-					}
 				}
 
 				if (mouseX > x && mouseX < x + 80) {
