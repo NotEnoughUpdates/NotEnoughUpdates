@@ -69,7 +69,6 @@ public class PowerStoneStatsDisplay {
 		if (configProfileSpecific == null) return;
 		int powerAmount = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
 		configProfileSpecific.magicalPower = powerAmount;
-		System.out.println("powerAmount (api): " + powerAmount);
 	}
 
 	@SubscribeEvent
@@ -94,7 +93,6 @@ public class PowerStoneStatsDisplay {
 					NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 					if (configProfileSpecific == null) return;
 					int magicalPower = Integer.parseInt(rawNumber);
-					System.out.println("magicalPower (inventory): " + magicalPower);
 					configProfileSpecific.magicalPower = magicalPower;
 				}
 			}
