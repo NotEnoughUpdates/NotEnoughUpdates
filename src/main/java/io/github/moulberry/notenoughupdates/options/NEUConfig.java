@@ -184,12 +184,6 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Museum",desc = "Musem overlays"
-	)
-	public Museum museum = new Museum();
-
-	@Expose
-	@Category(
 		name = "GUI Locations",
 		desc = "Edit the GUI locations of everything here"
 	)
@@ -253,8 +247,8 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Misc Overlays",
-		desc = "Miscellaneous Overlays"
+		name = "Todo Overlays",
+		desc = "Todo Overlays"
 	)
 	public MiscOverlays miscOverlays = new MiscOverlays();
 
@@ -383,6 +377,13 @@ public class NEUConfig extends Config {
 		desc = "Accessory Bag Overlay"
 	)
 	public AccessoryBag accessoryBag = new AccessoryBag();
+
+	@Expose
+	@Category(
+		name = "Museum",
+		desc = "Museum overlays"
+	)
+	public Museum museum = new Museum();
 
 	@Expose
 	@Category(
