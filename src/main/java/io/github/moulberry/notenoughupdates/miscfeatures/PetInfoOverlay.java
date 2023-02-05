@@ -755,7 +755,7 @@ public class PetInfoOverlay extends TextOverlay {
 			if (petItem2 != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 				int x = (int) position.x;
-				int y = (int) position.y + (overlayStrings.size() - secondPetLines - 2) * 10;
+				int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
 
 				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
 				GlStateManager.enableDepth();
