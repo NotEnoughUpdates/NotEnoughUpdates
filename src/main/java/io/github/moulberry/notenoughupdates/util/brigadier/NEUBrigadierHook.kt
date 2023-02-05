@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.util.brigadier
 import com.mojang.brigadier.ParseResults
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.tree.ArgumentCommandNode
 import com.mojang.brigadier.tree.CommandNode
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
@@ -52,8 +53,14 @@ class NEUBrigadierHook(
         return aliases
     }
 
+    data class Usage(
+        val path: String,
+        val help: String?,
+    )
+
+
     override fun getCommandUsage(sender: ICommandSender): String {
-        return brigadierRoot.dispatcher.getAllUsage(commandNode, sender, true).joinToString("\n")
+        return brigadierRoot.getAllUsages("/$commandName", commandNode, mutableSetOf()).joinToString("\n") { "${it.path} - ${it.help ?: "Missing help"}"}
     }
 
     private fun getText(args: Array<out String>) = "${commandNode.name} ${args.joinToString(" ")}"

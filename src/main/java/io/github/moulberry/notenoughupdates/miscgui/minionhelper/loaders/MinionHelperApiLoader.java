@@ -73,10 +73,7 @@ public class MinionHelperApiLoader {
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 		ticks++;
-
-		if (ticks % 20 != 0) return;
-
-		if (dirty) {
+		if (dirty && "Crafted Minions".equals(Utils.getOpenChestName())) {
 			load();
 		} else {
 			if (System.currentTimeMillis() > lastLoaded + 60_000 * 3) {

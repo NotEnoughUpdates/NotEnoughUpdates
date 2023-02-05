@@ -21,20 +21,52 @@ package io.github.moulberry.notenoughupdates.util.brigadier
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.ParseResults
+import com.mojang.brigadier.tree.ArgumentCommandNode
+import com.mojang.brigadier.tree.CommandNode
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.LRUCache
 import net.minecraft.command.ICommandSender
 import net.minecraftforge.client.ClientCommandHandler
+import java.util.*
 
 @NEUAutoSubscribe
 object BrigadierRoot {
+    private val help: MutableMap<CommandNode<DefaultSource>, String> = IdentityHashMap()
     var dispatcher = CommandDispatcher<DefaultSource>()
         private set
     val parseText =
         LRUCache.memoize<Pair<ICommandSender, String>, ParseResults<DefaultSource>>({ (sender, text) ->
             dispatcher.parse(text, sender)
         }, 1)
+
+    fun getHelpForNode(node: CommandNode<DefaultSource>): String? {
+        return help[node]
+    }
+
+    fun setHelpForNode(node: CommandNode<DefaultSource>, helpText: String) {
+        help[node] = helpText
+    }
+
+
+    fun getAllUsages(
+        path: String,
+        node: CommandNode<ICommandSender>,
+        visited: MutableSet<CommandNode<ICommandSender>>
+    ): Sequence<NEUBrigadierHook.Usage> = sequence {
+        if (node in visited) return@sequence
+        visited.add(node)
+        yield(NEUBrigadierHook.Usage(path, getHelpForNode(node)))
+        node.children.forEach {
+            val nodeName = when(node) {
+                is ArgumentCommandNode<*, *> -> "<${node.name}>"
+                else -> node.name
+            }
+            yieldAll(getAllUsages("$path $nodeName", it, visited))
+        }
+        visited.remove(node)
+    }
+
 
     fun updateHooks() = registerHooks(ClientCommandHandler.instance)
 
@@ -45,6 +77,8 @@ object BrigadierRoot {
                 iterator.remove()
         }
         dispatcher = CommandDispatcher()
+        help.clear()
+        parseText.clearCache()
         val event = RegisterBrigadierCommandEvent(this)
         event.post()
         event.hooks.forEach {
