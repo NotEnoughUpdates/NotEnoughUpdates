@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Linnea Gräf
+ * Copyright (C) 2022-2023 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -30,11 +30,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ThreadDownloadImageData.class)
-public class MixinThreadDownloadImageData {
+public class MixinThreadDownloadImageData implements ThreadDownloadImageHook.AccessorThreadDownloadImageData{
 	@Mutable
 	@Shadow
 	@Final
 	private String imageUrl;
+
+	private String originalUrl;
 
 	@Redirect(
 		method = "<init>",
@@ -44,5 +46,16 @@ public class MixinThreadDownloadImageData {
 			opcode = Opcodes.PUTFIELD))
 	public void useHttpsDownloadLinks(ThreadDownloadImageData instance, String value) {
 		this.imageUrl = ThreadDownloadImageHook.hookThreadImageLink(value);
+		this.originalUrl = value;
+	}
+
+	@Override
+	public String getOriginalUrl() {
+		return originalUrl;
+	}
+
+	@Override
+	public String getPatchedUrl() {
+		return imageUrl;
 	}
 }

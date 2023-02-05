@@ -94,7 +94,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 	}
 
 	// pls update in the future tyvm !!!
-	final static HashMap<String, Integer> slayers = new HashMap<String, Integer>() {
+	public final static HashMap<String, Integer> slayers = new HashMap<String, Integer>() {
 		{
 			put("zombie", 5);
 			put("spider", 4);

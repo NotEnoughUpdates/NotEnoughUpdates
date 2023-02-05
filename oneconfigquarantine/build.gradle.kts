@@ -1,3 +1,5 @@
+import net.fabricmc.loom.task.RemapJarTask
+
 /*
  * Copyright (C) 2022 NotEnoughUpdates contributors
  *
@@ -43,3 +45,10 @@ dependencies {
 		modApi("cc.polyfrost:oneconfig-1.8.9-forge:0.1.0-alpha+") // Don't you just love 0.1.0-alpha+
 }
 
+tasks.withType<JavaCompile> {
+		this.enabled = false
+}
+tasks.withType<RemapJarTask> {
+		println(this)
+		this.enabled = false
+}

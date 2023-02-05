@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.GuiElement;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@NEUAutoSubscribe
 public class AuctionBINWarning extends GuiElement {
 	private static final AuctionBINWarning INSTANCE = new AuctionBINWarning();
 
@@ -105,6 +107,8 @@ public class AuctionBINWarning extends GuiElement {
 		}
 
 		ItemStack sellStack = event.guiContainer.inventorySlots.getSlot(13).getStack();
+		if (sellStack == null) return;
+
 		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(sellStack);
 		sellStackAmount = sellStack.stackSize;
 

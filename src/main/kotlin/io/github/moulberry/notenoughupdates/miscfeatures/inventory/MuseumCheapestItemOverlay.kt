@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
 import io.github.moulberry.notenoughupdates.util.MuseumUtil
@@ -39,7 +40,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 
-
+@NEUAutoSubscribe
 object MuseumCheapestItemOverlay {
     data class MuseumItem(
         var name: String,

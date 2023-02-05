@@ -47,7 +47,7 @@ public class SettingsCommand extends ClientCommandBase {
 			NotEnoughUpdates.INSTANCE.openGui =
 				new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, StringUtils.join(args, " ")));
 		} else {
-			NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+			NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config));
 		}
 	}
 }
