@@ -73,7 +73,6 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
@@ -431,6 +430,8 @@ public class NEUConfig extends Config {
 		public String overlayQuickCommand = "";
 		@Expose
 		public boolean dev = false;
+		@Expose
+		public boolean logApiCalls = false;
 		@Expose
 		public boolean loadedModBefore = false;
 		@Expose

@@ -216,6 +216,12 @@ public class DevTestCommand extends ClientCommandBase {
 				"§e[NEU] Dev mode " + (NotEnoughUpdates.INSTANCE.config.hidden.dev ? "§aenabled" : "§cdisabled"));
 			return;
 		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("apilog")) {
+			NotEnoughUpdates.INSTANCE.config.hidden.logApiCalls = !NotEnoughUpdates.INSTANCE.config.hidden.logApiCalls;
+			Utils.addChatMessage(
+				"§e[NEU] API log " + (NotEnoughUpdates.INSTANCE.config.hidden.logApiCalls ? "§aenabled" : "§cdisabled"));
+			return;
+		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("saveconfig")) {
 			NotEnoughUpdates.INSTANCE.saveConfig();
 			return;

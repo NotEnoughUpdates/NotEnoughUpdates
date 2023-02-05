@@ -76,7 +76,7 @@ public class MinionHelperApiLoader {
 
 		if (ticks % 20 != 0) return;
 
-		if (dirty) {
+		if (dirty && Utils.getOpenChestName().equals("Crafted Minions")) {
 			load();
 		} else {
 			if (System.currentTimeMillis() > lastLoaded + 60_000 * 3) {

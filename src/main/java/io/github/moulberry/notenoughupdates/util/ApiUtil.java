@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.api.HypixelAPICache;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
@@ -139,23 +140,24 @@ public class ApiUtil {
 			return this;
 		}
 
-		private CompletableFuture<URL> buildUrl() {
-			CompletableFuture<URL> fut = new CompletableFuture<>();
-			try {
-				fut.complete(new URIBuilder(baseUrl)
-					.addParameters(queryArguments)
-					.build()
-					.toURL());
-			} catch (URISyntaxException |
-							 MalformedURLException |
-							 NullPointerException e) { // Using CompletableFuture as an exception monad, isn't that exiting?
-				fut.completeExceptionally(e);
-			}
-			return fut;
-		}
-
 		public CompletableFuture<String> requestString() {
-			return buildUrl().thenApplyAsync(url -> {
+			CompletableFuture<String> result = new CompletableFuture<>();
+			URL url;
+			try {
+				url = new URIBuilder(baseUrl).addParameters(queryArguments).build().toURL();
+			} catch (URISyntaxException | MalformedURLException | NullPointerException e) {
+				String message = "Error while building url! baseUrl: '" + this.baseUrl + "',  queryArguments: " + queryArguments;
+				result.completeExceptionally(new RuntimeException(message, e));
+				return result;
+			}
+			String link = url.toString();
+
+			CompletableFuture<String> cachedResult = HypixelAPICache.INSTANCE.getCacheFor(link);
+			if (cachedResult != null) return cachedResult;
+
+			HypixelAPICache.INSTANCE.addToCache(link, result);
+
+			executorService.execute(() -> {
 				try {
 					InputStream inputStream = null;
 					URLConnection conn = null;
@@ -175,11 +177,8 @@ public class ApiUtil {
 						}
 						if (this.postData != null) {
 							conn.setDoOutput(true);
-							OutputStream os = conn.getOutputStream();
-							try {
-								os.write(this.postData.getBytes("utf-8"));
-							} finally {
-								os.close();
+							try (OutputStream stream = conn.getOutputStream()) {
+								stream.write(this.postData.getBytes(StandardCharsets.UTF_8));
 							}
 						}
 
@@ -192,12 +191,14 @@ public class ApiUtil {
 						// While the assumption of UTF8 isn't always true; it *should* always be true.
 						// Not in the sense that this will hold in most cases (although that as well),
 						// but in the sense that any violation of this better have a good reason.
-						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+						result.complete(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
 					} finally {
 						try {
 							if (inputStream != null) {
 								inputStream.close();
 							}
+						} catch (Throwable t) {
+							result.completeExceptionally(t);
 						} finally {
 							if (conn instanceof HttpURLConnection) {
 								((HttpURLConnection) conn).disconnect();
@@ -205,9 +206,11 @@ public class ApiUtil {
 						}
 					}
 				} catch (IOException e) {
-					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
+					result.completeExceptionally(e);
 				}
-			}, executorService);
+			});
+
+			return result;
 		}
 
 		public CompletableFuture<JsonObject> requestJson() {
@@ -217,7 +220,6 @@ public class ApiUtil {
 		public <T> CompletableFuture<T> requestJson(Class<? extends T> clazz) {
 			return requestString().thenApply(str -> gson.fromJson(str, clazz));
 		}
-
 	}
 
 	public static void patchHttpsRequest(HttpsURLConnection connection) {
