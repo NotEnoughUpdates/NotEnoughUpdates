@@ -19,10 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -54,13 +57,26 @@ public class PowerStoneStatsDisplay {
 	}
 
 	@SubscribeEvent
-	public void onTick(TickEvent event) {
-		if (!dirty) return;
+	public void onProfileDataLoaded(ProfileDataLoadedEvent event) {
+		JsonObject profileInfo = event.getProfileInfo();
 
-		if (!Utils.getOpenChestName().equals("SkyBlock Menu")) {
-			dirty = false;
-			return;
-		}
+		if (profileInfo == null) return;
+
+		JsonObject inventoryInfo = ProfileViewerUtils.readInventoryInfo(profileInfo, "talisman_bag");
+		if (inventoryInfo == null) return;
+
+		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (configProfileSpecific == null) return;
+		int powerAmount = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
+		configProfileSpecific.magicalPower = powerAmount;
+		System.out.println("powerAmount (api): " + powerAmount);
+	}
+
+	@SubscribeEvent
+	public void onTick(TickEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.powerStoneStats) return;
+		if (!dirty) return;
+		if (!Utils.getOpenChestName().equals("Your Bags")) return;
 
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
 		Container openContainer = p.openContainer;
@@ -70,14 +86,16 @@ public class PowerStoneStatsDisplay {
 
 			String displayName = stack.getDisplayName();
 			if (!"§aAccessory Bag".equals(displayName)) continue;
+			dirty = false;
 
 			for (String line : ItemUtils.getLore(stack)) {
 				if (line.startsWith("§7Magical Power: ")) {
 					String rawNumber = line.split("§6")[1].replace(",", "");
 					NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 					if (configProfileSpecific == null) return;
-					configProfileSpecific.magicalPower = Integer.parseInt(rawNumber);
-					dirty = false;
+					int magicalPower = Integer.parseInt(rawNumber);
+					System.out.println("magicalPower (inventory): " + magicalPower);
+					configProfileSpecific.magicalPower = magicalPower;
 				}
 			}
 		}
