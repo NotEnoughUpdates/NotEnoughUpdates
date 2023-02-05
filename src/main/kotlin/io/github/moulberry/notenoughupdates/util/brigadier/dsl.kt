@@ -24,6 +24,9 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.tree.ArgumentCommandNode
+import com.mojang.brigadier.tree.CommandNode
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.github.moulberry.notenoughupdates.util.iterate
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.ChatComponentText
@@ -103,13 +106,13 @@ fun <T : ArgumentBuilder<DefaultSource, T>, AT : Any> T.thenArgument(
     name: String,
     argument: ArgumentType<AT>,
     block: RequiredArgumentBuilder<DefaultSource, AT>.(TypeSafeArg<AT>) -> Unit
-): T = then(argument(name, argument, block))
+): ArgumentCommandNode<DefaultSource, AT> = argument(name, argument, block).build().also(::then)
 
 fun <T : ArgumentBuilder<DefaultSource, T>, AT : Any> T.thenArgumentExecute(
     name: String,
     argument: ArgumentType<AT>,
     block: CommandContext<DefaultSource>.(TypeSafeArg<AT>) -> Unit
-): T = thenArgument(name, argument) {
+): ArgumentCommandNode<DefaultSource, AT> = thenArgument(name, argument) {
     thenExecute {
         block(it)
     }
@@ -117,27 +120,30 @@ fun <T : ArgumentBuilder<DefaultSource, T>, AT : Any> T.thenArgumentExecute(
 
 fun literal(
     name: String,
-    block: LiteralArgumentBuilder<DefaultSource>.() -> Unit
+    block: LiteralArgumentBuilder<DefaultSource>.() -> Unit = {}
 ): LiteralArgumentBuilder<DefaultSource> =
     LiteralArgumentBuilder.literal<DefaultSource>(name).also(block)
 
 fun <T : ArgumentBuilder<DefaultSource, T>> T.thenLiteral(
     name: String,
     block: LiteralArgumentBuilder<DefaultSource>.() -> Unit
-): T =
-    then(literal(name, block))
+): LiteralCommandNode<DefaultSource> =
+    then(literal(name), block) as LiteralCommandNode<DefaultSource>
 
 
 fun <T : ArgumentBuilder<DefaultSource, T>> T.thenLiteralExecute(
     name: String,
     block: CommandContext<DefaultSource>.() -> Unit
-): T =
+): LiteralCommandNode<DefaultSource> =
     thenLiteral(name) {
         thenExecute(block)
     }
 
-fun <T : ArgumentBuilder<DefaultSource, T>> T.then(node: ArgumentBuilder<DefaultSource, *>, block: T.() -> Unit): T =
-    then(node).also(block)
+fun <T : ArgumentBuilder<DefaultSource, T>, U : ArgumentBuilder<DefaultSource, U>> T.then(
+    node: U,
+    block: U.() -> Unit
+): CommandNode<DefaultSource> =
+    node.also(block).build().also(::then)
 
 fun <T : ArgumentBuilder<DefaultSource, T>> T.thenExecute(block: CommandContext<DefaultSource>.() -> Unit): T =
     executes {

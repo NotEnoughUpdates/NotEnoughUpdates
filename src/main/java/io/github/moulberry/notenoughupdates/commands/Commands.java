@@ -37,7 +37,6 @@ import io.github.moulberry.notenoughupdates.commands.profile.CataCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PeekCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.PvCommand;
 import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
-import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
@@ -46,12 +45,6 @@ import net.minecraftforge.fml.common.Loader;
 
 public class Commands {
 	public Commands() {
-
-		// Help Commands
-
-		// Dev Commands
-		ClientCommandHandler.instance.registerCommand(new PackDevCommand());
-		ClientCommandHandler.instance.registerCommand(new DiagCommand());
 
 		// Profile Commands
 		ClientCommandHandler.instance.registerCommand(new PeekCommand());
@@ -76,8 +69,5 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
 		ClientCommandHandler.instance.registerCommand(new UpdateCommand(NotEnoughUpdates.INSTANCE));
 		ClientCommandHandler.instance.registerCommand(new PronounsCommand());
-
-		// Fairy Soul Commands
-		ClientCommandHandler.instance.registerCommand(new FairySouls.FairySoulsCommand());
 	}
 }
