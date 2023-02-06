@@ -101,11 +101,12 @@ public class ApiUtil {
 	public void updateProfileData(String playerUuid) {
 		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
 
+		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
 		updateTasks.put(playerUuid, newHypixelApiRequest("skyblock/profiles")
-			.queryArgument("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))
+			.queryArgument("uuid", uuid)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
-				new ProfileDataLoadedEvent(jsonObject).post();
+				new ProfileDataLoadedEvent(uuid, jsonObject).post();
 				return null;
 			}));
 
