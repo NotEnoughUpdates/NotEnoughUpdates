@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
-import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
@@ -1052,7 +1051,14 @@ public class RenderListener {
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String username = tag.getCompoundTag("SkullOwner").getString("Name");
 						Utils.playPressSound();
-						ViewProfileCommand.RUNNABLE.accept(new String[]{username});
+						NotEnoughUpdates.profileViewer.getProfileByName(username, profile -> {
+							if (profile == null) {
+								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
+							} else {
+								profile.resetCache();
+								NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+							}
+						});
 					}
 				}
 			}

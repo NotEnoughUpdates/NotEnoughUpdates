@@ -80,15 +80,11 @@ data class TypeSafeArg<T : Any>(val name: String, val argument: ArgumentType<T>)
 }
 
 fun <T : ICommandSender, C : CommandContext<T>> C.reply(component: IChatComponent) {
-    source.addChatMessage(component)
+    source.addChatMessage(ChatComponentText("§e[NEU] ").appendSibling(component))
 }
 
-fun <T : ICommandSender, C : CommandContext<T>> C.reply(text: String) {
-    source.addChatMessage(ChatComponentText(text))
-}
-
-fun <T : ICommandSender, C : CommandContext<T>> C.reply(text: String, block: ChatComponentText.() -> Unit) {
-    source.addChatMessage(ChatComponentText(text).also(block))
+fun <T : ICommandSender, C : CommandContext<T>> C.reply(text: String, block: ChatComponentText.() -> Unit = {}) {
+    source.addChatMessage(ChatComponentText(text.split("\n").joinToString("\n") { "§e[NEU] $it" }).also(block))
 }
 
 operator fun <T : Any, C : CommandContext<*>> C.get(arg: TypeSafeArg<T>): T {
@@ -167,9 +163,13 @@ fun <T : CommandNode<DefaultSource>> T.withHelp(helpText: String): T {
     return this
 }
 
-fun <A : Any, T : RequiredArgumentBuilder<DefaultSource, A>> T.suggests(list: List<String>) {
+fun <A : Any, T : RequiredArgumentBuilder<DefaultSource, A>> T.suggestsList(list: List<String>) {
+    suggestsList { list }
+}
+
+fun <A : Any, T : RequiredArgumentBuilder<DefaultSource, A>> T.suggestsList(list: () -> List<String>) {
     suggests { context, builder ->
-        list.filter { it.startsWith(builder.remaining, ignoreCase = true) }
+        list().filter { it.startsWith(builder.remaining, ignoreCase = true) }
             .forEach { builder.suggest(it) }
         builder.buildFuture()
     }

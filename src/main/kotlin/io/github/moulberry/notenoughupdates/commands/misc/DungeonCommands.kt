@@ -52,7 +52,7 @@ class DungeonCommands {
         }.withHelp("Warps to the dungeon nuts")
         event.command("join") {
             thenArgument("floor", string()) { floor ->
-                suggests((1..7).flatMap { listOf("f$it", "m$it") })
+                suggestsList((1..7).flatMap { listOf("f$it", "m$it") })
                 thenExecute {
                     val floor = this[floor]
                     val prefix = if (floor.startsWith("m")) "master_catacombs" else "catacombs"
@@ -110,8 +110,8 @@ class DungeonCommands {
                             reply("${RED}Failed to save.")
                         }
                     }
-                }
-            }.withHelp("Save a colour map from an item")
+                }.withHelp("Save a colour map from an item")
+            }
             thenLiteral("load") {
                 thenArgument("filename", string()) { fileName ->
                     requiresDev()
@@ -134,8 +134,8 @@ class DungeonCommands {
                         }
                         reply("Loaded colour map from file")
                     }
-                }
-            }.withHelp("Load a colour map from a file")
+                }.withHelp("Load a colour map from a file")
+            }
             thenExecute {
                 NotEnoughUpdates.INSTANCE.openGui = GuiDungeonMapEditor(null)
             }
