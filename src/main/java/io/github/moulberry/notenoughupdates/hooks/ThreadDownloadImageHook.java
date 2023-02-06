@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Linnea Gräf
+ * Copyright (C) 2022-2023 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -26,15 +26,22 @@ import javax.net.ssl.HttpsURLConnection;
 import java.net.HttpURLConnection;
 
 public class ThreadDownloadImageHook {
+	public static String hookThreadImageLink(String originalLink) {
+		if (!NotEnoughUpdates.INSTANCE.config.misc.fixSteveSkulls || originalLink == null || !originalLink.startsWith(
+			"http://textures.minecraft.net"))
+			return originalLink;
+		return originalLink.replace("http://", "https://");
+	}
+
 	public static void hookThreadImageConnection(HttpURLConnection connection) {
 		if ((connection instanceof HttpsURLConnection) && NotEnoughUpdates.INSTANCE.config.misc.fixSteveSkulls) {
 			ApiUtil.patchHttpsRequest((HttpsURLConnection) connection);
 		}
 	}
 
-	public static String hookThreadImageLink(String originalLink) {
-		if (!NotEnoughUpdates.INSTANCE.config.misc.fixSteveSkulls || originalLink == null)
-			return originalLink;
-		return originalLink.replace("http://", "https://");
+	public interface AccessorThreadDownloadImageData {
+		String getOriginalUrl();
+
+		String getPatchedUrl();
 	}
 }

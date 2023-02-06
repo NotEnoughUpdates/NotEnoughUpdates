@@ -298,6 +298,7 @@ public class CalendarOverlay {
 					boolean changed = false;
 					for (int i = 0; i < 31; i++) {
 						ItemStack item = cc.getLowerChestInventory().getStackInSlot(1 + (i % 7) + (i / 7) * 9);
+						if (item == null) continue;
 
 						JsonArray array = new JsonArray();
 						if (item.getTagCompound() != null) {

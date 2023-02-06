@@ -154,7 +154,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					if (Objects.equals(entry.getKey(), "talisman_bag")) {
 						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
-						int magicalPower = PlayerStats.getMagicalPower(inventoryInfo, profileInformation);
+						int magicalPower = profile.getMagicalPower(profileId);
 						getInstance()
 							.tooltipToDisplay.add(
 								magicalPower == -1

@@ -744,7 +744,9 @@ public class APIManager {
 						JsonObject productInfo = new JsonObject();
 
 						JsonObject product = entry.getValue().getAsJsonObject();
-						JsonObject quickStatus = product.get("quick_status").getAsJsonObject();
+						JsonObject quickStatus = product.getAsJsonObject("quick_status");
+						if (!hasData(quickStatus)) continue;
+
 						productInfo.addProperty("avg_buy", quickStatus.get("buyPrice").getAsFloat());
 						productInfo.addProperty("avg_sell", quickStatus.get("sellPrice").getAsFloat());
 
@@ -769,6 +771,19 @@ public class APIManager {
 				}
 				GuiPriceGraph.addToCache(bazaarJson, true);
 			});
+	}
+
+	private static boolean hasData(JsonObject quickStatus) {
+		for (Map.Entry<String, JsonElement> e : quickStatus.entrySet()) {
+			String key = e.getKey();
+			if (!key.equals("productId")) {
+				double value = e.getValue().getAsDouble();
+				if (value != 0) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void updateAvgPrices() {

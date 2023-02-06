@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -152,6 +152,26 @@ public class StorageGUI {
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
 	public String selectedStorageColour = "0:255:255:223:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Custom Text Colour",
+		desc = "Use a custom default text colour.\nOverrides the colour set by the overlay style.\nCan be overridden by using colour codes in the page title.",
+		searchTags = "color"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean useCustomTextColour = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Custom Text Colour",
+		desc = "Requires the above option to be set to true",
+		searchTags = "color"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 1)
+	public String customTextColour = "0:255:144:144:144";
 
 	@Expose
 	@ConfigOption(
