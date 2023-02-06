@@ -36,6 +36,7 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumChatFormatting
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
 class PackDevCommand {
@@ -61,14 +62,14 @@ class PackDevCommand {
         thenLiteral(singleCommand) {
             thenArgumentExecute("distance", doubleArg(0.0)) { dist ->
                 val dist = this[dist]
-                val entity = getEntities(dist).firstOrNull()
+                val entity = getEntities(dist).minByOrNull { it.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer) }
                 if (entity == null) {
                     reply("No $name found within $dist blocks")
                     return@thenArgumentExecute
                 }
                 MiscUtils.copyToClipboard(StringBuilder().appendEntityData(entity).toString().trim())
                 reply("Copied data to clipboard")
-            }
+            }.withHelp("Find the nearest $name and copy data about them to your clipboard")
         }
         thenLiteral(multipleCommand) {
             thenArgumentExecute("distance", doubleArg(0.0)) { dist ->
@@ -84,7 +85,7 @@ class PackDevCommand {
 
                     reply("Copied data to clipboard")
                 }
-            }
+            }.withHelp("Find all $name within range and copy data about them to your clipboard")
         }
     }
 
@@ -136,16 +137,9 @@ class PackDevCommand {
     }
 
 
+    @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neupackdev") {
-            thenExecute {
-                NotEnoughUpdates.INSTANCE.packDevEnabled = !NotEnoughUpdates.INSTANCE.packDevEnabled
-                if (NotEnoughUpdates.INSTANCE.packDevEnabled) {
-                    reply("${EnumChatFormatting.GREEN}Enabled pack developer mode.")
-                } else {
-                    reply("${EnumChatFormatting.RED}Disabled pack developer mode.")
-                }
-            }
             npcListCommand("Player", "getplayer", "getplayers", AbstractClientPlayer::class.java) {
                 Minecraft.getMinecraft().theWorld.playerEntities
             }
@@ -158,6 +152,14 @@ class PackDevCommand {
             npcListCommand("armor stand", "getarmorstand", "getarmorstands", EntityArmorStand::class.java) {
                 Minecraft.getMinecraft().theWorld.loadedEntityList
             }
-        }
+            thenExecute {
+                NotEnoughUpdates.INSTANCE.packDevEnabled = !NotEnoughUpdates.INSTANCE.packDevEnabled
+                if (NotEnoughUpdates.INSTANCE.packDevEnabled) {
+                    reply("${EnumChatFormatting.GREEN}Enabled pack developer mode.")
+                } else {
+                    reply("${EnumChatFormatting.RED}Disabled pack developer mode.")
+                }
+            }
+        }.withHelp("Toggle pack developer mode")
     }
 }

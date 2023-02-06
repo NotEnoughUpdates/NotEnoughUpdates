@@ -24,10 +24,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor
-import io.github.moulberry.notenoughupdates.util.brigadier.RestArgumentType
-import io.github.moulberry.notenoughupdates.util.brigadier.get
-import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
-import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
@@ -35,10 +32,6 @@ class SettingsCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neu", "neusettings") {
-            thenExecute {
-                NotEnoughUpdates.INSTANCE.openGui =
-                    GuiScreenElementWrapper(NEUConfigEditor(NotEnoughUpdates.INSTANCE.config))
-            }
             thenArgumentExecute("search", RestArgumentType) { search ->
                 NotEnoughUpdates.INSTANCE.openGui = GuiScreenElementWrapper(
                     NEUConfigEditor(
@@ -46,7 +39,11 @@ class SettingsCommand {
                         this[search]
                     )
                 )
+            }.withHelp("Search the NEU settings")
+            thenExecute {
+                NotEnoughUpdates.INSTANCE.openGui =
+                    GuiScreenElementWrapper(NEUConfigEditor(NotEnoughUpdates.INSTANCE.config))
             }
-        }
+        }.withHelp("Open the NEU settings")
     }
 }

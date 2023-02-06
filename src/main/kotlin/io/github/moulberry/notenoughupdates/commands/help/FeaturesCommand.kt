@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
@@ -58,8 +59,7 @@ class FeaturesCommand {
                     reply(clickTextFeatures)
                 }
                 reply("")
-
             }
-        }
+        }.withHelp("List all of NEUs features")
     }
 }

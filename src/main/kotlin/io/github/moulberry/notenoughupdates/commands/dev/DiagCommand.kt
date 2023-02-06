@@ -37,28 +37,25 @@ class DiagCommand {
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neudiag") {
             thenLiteral("metal") {
-                thenExecute {
-                    CrystalMetalDetectorSolver.logDiagnosticData(true)
-                    reply("Enabled metal detector diagnostic logging.")
-                }
                 thenLiteral("center") {
                     thenArgumentExecute("usecenter", bool()) { useCenter ->
                         CrystalMetalDetectorSolver.setDebugDoNotUseCenter(this[useCenter])
                         reply("Center coordinates-based solutions ${if (this[useCenter]) "enabled" else "disabled"}")
                     }
+                }.withHelp("Toggle coordinate based solutions")
+                thenExecute {
+                    CrystalMetalDetectorSolver.logDiagnosticData(true)
+                    reply("Enabled metal detector diagnostic logging.")
                 }
-            }
+            }.withHelp("Enable metal detector diagnostics")
             thenLiteralExecute("wishing") {
                 CrystalWishingCompassSolver.getInstance().logDiagnosticData(true)
                 reply("Enabled wishing compass diagnostic logging")
-            }
+            }.withHelp("Enable wishing compass diagnostic logging")
             thenLiteral("debug") {
-                thenExecute {
-                    reply("Effective debug flags: \n${NEUDebugFlag.getEnabledFlags()}")
-                }
                 thenLiteralExecute("list") {
                     reply("Here are all flags:\n${NEUDebugFlag.getFlagList()}")
-                }
+                }.withHelp("List all debug diagnostic logging flags")
                 thenLiteral("setflag") {
                     thenArgument("flag", enum<NEUDebugFlag>()) { flag ->
                         thenArgumentExecute("enable", bool()) { enable ->
@@ -69,10 +66,13 @@ class DiagCommand {
                                 debugFlags.remove(this[flag])
                             }
                             reply("${if(this[enable]) "Enabled" else "Disabled"} the flag ${this[flag]}.")
-                        }
+                        }.withHelp("Enable or disable a diagnostic logging stream")
                     }
                 }
-            }
+                thenExecute {
+                    reply("Effective debug flags: \n${NEUDebugFlag.getEnabledFlags()}")
+                }
+            }.withHelp("Log diagnostic data.")
         }
     }
 }

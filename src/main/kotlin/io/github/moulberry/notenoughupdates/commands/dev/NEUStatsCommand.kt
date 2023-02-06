@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.command.ICommandSender
@@ -54,6 +55,27 @@ class NEUStatsCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("stats", "neustats") {
+            thenLiteralExecute("modlist") {
+                clipboardAndSendMessage(
+                    DiscordMarkdownBuilder()
+                        .also(::appendModList)
+                        .toString()
+                )
+            }.withHelp("Copy the mod list to your clipboard")
+            thenLiteralExecute("full") {
+                clipboardAndSendMessage(
+                    DiscordMarkdownBuilder()
+                        .also(::appendStats)
+                        .also(::appendModList)
+                        .toString()
+                )
+            }.withHelp("Copy the full list of all NEU stats and your mod list to your clipboard")
+            thenLiteralExecute("dump") {
+                reply("${GREEN}This will upload a dump of the java classes your game has loaded how big they are and how many there are. This can take a few seconds as it is uploading to HasteBin.")
+                uploadDataUsageDump().thenAccept {
+                    clipboardAndSendMessage(it)
+                }
+            }.withHelp("Dump all loaded classes and their memory usage and copy that to your clipboard.")
             thenExecute {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
@@ -64,28 +86,7 @@ class NEUStatsCommand {
                         .toString()
                 )
             }
-            thenLiteralExecute("modlist") {
-                clipboardAndSendMessage(
-                    DiscordMarkdownBuilder()
-                        .also(::appendModList)
-                        .toString()
-                )
-            }
-            thenLiteralExecute("full") {
-                clipboardAndSendMessage(
-                    DiscordMarkdownBuilder()
-                        .also(::appendStats)
-                        .also(::appendModList)
-                        .toString()
-                )
-            }
-            thenLiteralExecute("dump") {
-                reply("${GREEN}This will upload a dump of the java classes your game has loaded how big they are and how many there are. This can take a few seconds as it is uploading to HasteBin.")
-                uploadDataUsageDump().thenAccept {
-                    clipboardAndSendMessage(it)
-                }
-            }
-        }
+        }.withHelp("Copy a list of NEU relevant stats to your clipboard for debugging purposes")
     }
     interface DiagnosticCommandMXBean {
         fun gcClassHistogram(array: Array<String>): String

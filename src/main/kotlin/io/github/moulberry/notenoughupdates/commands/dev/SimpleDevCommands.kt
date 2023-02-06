@@ -44,16 +44,16 @@ class SimpleDevCommands {
                 NotEnoughUpdates.INSTANCE.manager.reloadRepository()
                 reply("§e[NEU] Reloaded repository.")
             }
-        }
+        }.withHelp("Reload the NEU data repository from disk (not from network)")
         event.command("neudungeonwintest") {
-            thenExecute {
-                DungeonWin.displayWin()
-            }
             thenArgumentExecute("file", string()) { file ->
                 DungeonWin.TEAM_SCORE = ResourceLocation("notenoughupdates:dungeon_win/${this[file].lowercase()}.png")
                 reply("Changed the dungeon win display")
+            }.withHelp("Change the dungeon win test to load from a file")
+            thenExecute {
+                DungeonWin.displayWin()
             }
-        }
+        }.withHelp("Display the dungeon win pop up")
         event.command("neuenablestorage") {
             thenLiteralExecute("disable") {
                 NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
@@ -64,7 +64,7 @@ class SimpleDevCommands {
                         "/neuenablestorage"
                     )
                 }
-            }
+            }.withHelp("Disable the neu storage overlay")
             thenExecute {
                 NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
                 NotEnoughUpdates.INSTANCE.saveConfig()
@@ -75,27 +75,27 @@ class SimpleDevCommands {
                     )
                 }
             }
-        }
+        }.withHelp("Enable the neu storage overlay")
         event.command("neuzeesphere") {
             thenLiteralExecute("on") {
                 NullzeeSphere.enabled = true
                 reply("Enabled nullzee sphere")
-            }
+            }.withHelp("Enable nullzee sphere")
             thenLiteralExecute("off") {
                 NullzeeSphere.enabled = false
                 reply("Disabled nullzee sphere")
-            }
+            }.withHelp("Disable nullzee sphere")
             thenLiteralExecute("setcenter") {
                 val p = source as EntityPlayerSP
                 NullzeeSphere.centerPos = BlockPos(p.posX, p.posY, p.posZ)
                 NullzeeSphere.overlayVBO = null
                 reply("Set center to ${NullzeeSphere.centerPos}")
-            }
+            }.withHelp("Set the center of the nullzee sphere")
             thenArgumentExecute("radius", floatArg(0F)) { size ->
                 NullzeeSphere.size = this[size]
                 NullzeeSphere.overlayVBO = null
                 reply("Set size to ${this[size]}")
-            }
+            }.withHelp("Set the radius of the nullzee sphere")
         }
         event.command("neuresetrepo") {
             thenExecute {
@@ -105,6 +105,6 @@ class SimpleDevCommands {
                         it.forEach(::reply)
                     }
             }
-        }
+        }.withHelp("Reload the NEU data repository from network")
     }
 }

@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.LRUCache
 import net.minecraft.command.ICommandSender
 import net.minecraftforge.client.ClientCommandHandler
+import java.lang.RuntimeException
 import java.util.*
 
 @NEUAutoSubscribe
@@ -45,6 +46,9 @@ object BrigadierRoot {
     }
 
     fun setHelpForNode(node: CommandNode<DefaultSource>, helpText: String) {
+        if (node.command == null) {
+            RuntimeException("Warning: Setting help on node that cannot be executed. Will be ignored").printStackTrace()
+        }
         help[node] = helpText
     }
 
@@ -52,15 +56,22 @@ object BrigadierRoot {
     fun getAllUsages(
         path: String,
         node: CommandNode<ICommandSender>,
-        visited: MutableSet<CommandNode<ICommandSender>>
+        visited: MutableSet<CommandNode<ICommandSender>> = mutableSetOf()
     ): Sequence<NEUBrigadierHook.Usage> = sequence {
         if (node in visited) return@sequence
         visited.add(node)
-        yield(NEUBrigadierHook.Usage(path, getHelpForNode(node)))
+        val redirect = node.redirect
+        if (redirect != null) {
+            yieldAll(getAllUsages(path, node, visited))
+            visited.remove(node)
+            return@sequence
+        }
+        if (node.command != null)
+            yield(NEUBrigadierHook.Usage(path, getHelpForNode(node)))
         node.children.forEach {
-            val nodeName = when(node) {
-                is ArgumentCommandNode<*, *> -> "<${node.name}>"
-                else -> node.name
+            val nodeName = when (it) {
+                is ArgumentCommandNode<*, *> -> "<${it.name}>"
+                else -> it.name
             }
             yieldAll(getAllUsages("$path $nodeName", it, visited))
         }

@@ -22,10 +22,7 @@ package io.github.moulberry.notenoughupdates.commands.misc
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls
-import io.github.moulberry.notenoughupdates.util.brigadier.literal
-import io.github.moulberry.notenoughupdates.util.brigadier.reply
-import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteral
-import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.util.EnumChatFormatting.DARK_PURPLE
 import net.minecraft.util.EnumChatFormatting.RED
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -43,22 +40,22 @@ class FairySoulsCommand {
                 }
                 reply("${DARK_PURPLE}Enabled fairy soul waypoints")
                 FairySouls.getInstance().setShowFairySouls(true)
-            }
+            }.withHelp("Show fairy soul waypoints")
             thenLiteral("on") { redirect(enable) }
             val disable = thenLiteralExecute("disable") {
                 FairySouls.getInstance().setShowFairySouls(false)
                 reply("${DARK_PURPLE}Disabled fairy soul waypoints")
-            }
+            }.withHelp("Hide fairy soul waypoints")
             thenLiteral("off") { redirect(disable) }
             val clear = thenLiteralExecute("clear") {
                 FairySouls.getInstance().markAllAsFound()
                 // Reply handled by mark all as found
-            }
+            }.withHelp("Mark all fairy souls in your current world as found")
             thenLiteral("markfound") { redirect(clear) }
             val unclear = thenLiteralExecute("unclear") {
                 FairySouls.getInstance().markAllAsMissing()
                 // Reply handled by mark all as missing
-            }
+            }.withHelp("Mark all fairy souls in your current world as not found")
             thenLiteral("marknotfound") { redirect(unclear) }
         }
     }

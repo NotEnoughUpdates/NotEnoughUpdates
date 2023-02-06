@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.util.iterate
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
+import java.lang.RuntimeException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
@@ -150,5 +151,15 @@ fun <T : ArgumentBuilder<DefaultSource, T>> T.thenExecute(block: CommandContext<
         block(it)
         1
     }
+
+fun NEUBrigadierHook.withHelp(helpText: String): NEUBrigadierHook {
+    commandNode.withHelp(helpText)
+    return this
+}
+
+fun <T : CommandNode<DefaultSource>> T.withHelp(helpText: String): T {
+    BrigadierRoot.setHelpForNode(this, helpText)
+    return this
+}
 
 

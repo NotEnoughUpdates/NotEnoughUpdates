@@ -23,10 +23,7 @@ import com.mojang.brigadier.arguments.StringArgumentType.string
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.brigadier.get
-import io.github.moulberry.notenoughupdates.util.brigadier.reply
-import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
-import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
@@ -83,14 +80,16 @@ class HelpCommand {
                     reply("Could not find NEU command with name ${this[commandName]}")
                     return@thenArgumentExecute
                 }
-                reply(event.dispatcher.getAllUsage(commandNode, source, true).joinToString("\n"))
-            }
+                reply(event.brigadierRoot.getAllUsages("/${this[commandName]}", commandNode).joinToString("\n"){
+                    "${it.path} - ${it.help}"
+                })
+            }.withHelp("Display help for a specific NEU command")
             thenExecute {
                 neuHelpMessages.forEach(::reply)
                 if (NotEnoughUpdates.INSTANCE.config.hidden.dev)
                     neuDevHelpMessages.forEach(::reply)
                 helpInfo.forEach(::reply)
             }
-        }
+        }.withHelp("Display a list of all NEU commands")
     }
 }

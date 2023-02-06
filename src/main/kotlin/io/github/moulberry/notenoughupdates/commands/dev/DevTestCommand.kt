@@ -41,7 +41,6 @@ import net.minecraft.command.ICommandSender
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.EnumChatFormatting.*
 import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.common.MinecraftForge
@@ -108,33 +107,33 @@ class DevTestCommand {
                 val currentProfile = SBInfo.getInstance().currentProfile
                 val gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile)
                 reply("${GOLD}You are on Profile $currentProfile with the mode $gamemode")
-            }
+            }.withHelp("Display information about your current profile")
             thenLiteralExecute("buildflags") {
                 reply("BuildFlags: \n" +
                         BuildFlags.getAllFlags().entries
                             .joinToString(("\n")) { (key, value) -> " + $key - $value" })
-            }
+            }.withHelp("List the flags with which NEU was built")
             thenLiteral("exteditor") {
-                thenExecute {
-                    reply("Your external editor is: §Z${NotEnoughUpdates.INSTANCE.config.hidden.externalEditor}")
-                }
                 thenArgument("editor", StringArgumentType.string()) { newEditor ->
                     thenExecute {
                         NotEnoughUpdates.INSTANCE.config.hidden.externalEditor = this[newEditor]
                         reply("You changed your external editor to: §Z${this[newEditor]}")
                     }
-                }
-            }
-            thenLiteral("pricetest") {
+                }.withHelp("Change the editor used to edit repo files")
                 thenExecute {
-                    NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar()
+                    reply("Your external editor is: §Z${NotEnoughUpdates.INSTANCE.config.hidden.externalEditor}")
                 }
+            }.withHelp("See your current external editor for repo files")
+            thenLiteral("pricetest") {
                 thenArgument("item", StringArgumentType.string()) { item ->
                     thenExecute {
                         NotEnoughUpdates.INSTANCE.openGui = GuiPriceGraph(this[item])
                     }
+                }.withHelp("Display the price graph for an item by id")
+                thenExecute {
+                    NotEnoughUpdates.INSTANCE.manager.auctionManager.updateBazaar()
                 }
-            }
+            }.withHelp("Update the price data from the bazaar")
             thenLiteralExecute("zone") {
                 val target = Minecraft.getMinecraft().objectMouseOver.blockPos
                     ?: Minecraft.getMinecraft().thePlayer.position
@@ -154,10 +153,10 @@ class DevTestCommand {
                             .getLocation()
                     )
                 )
-            }
+            }.withHelp("Display information about the special block zone at your cursor (Custom Texture Regions)")
             thenLiteralExecute("positiontest") {
                 NotEnoughUpdates.INSTANCE.openGui = GuiPositionEditor()
-            }
+            }.withHelp("Open the gui position editor")
             thenLiteral("pt") {
                 thenArgument("particle", EnumArgumentType.enum<EnumParticleTypes>()) { particle ->
                     thenExecute {
@@ -169,50 +168,46 @@ class DevTestCommand {
             thenLiteralExecute("dev") {
                 NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev
                 reply("§e[NEU] Dev mode " + if (NotEnoughUpdates.INSTANCE.config.hidden.dev) "§aenabled" else "§cdisabled")
-            }
+            }.withHelp("Toggle developer mode")
             thenLiteralExecute("saveconfig") {
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Config saved")
-            }
+            }.withHelp("Force sync the config to disk")
             thenLiteralExecute("searchmode") {
                 NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true
                 reply(AQUA.toString() + "I would never search")
-            }
+            }.withHelp("Reset your search data to redisplay the search tutorial")
             thenLiteralExecute("bluehair") {
                 PronounDB.test()
-            }
+            }.withHelp("Test the pronoundb integration")
             thenLiteral("opengui") {
-                thenArgument("class", StringArgumentType.string()) { className ->
-                    thenExecute {
-                        try {
-                            NotEnoughUpdates.INSTANCE.openGui =
-                                Class.forName(this[className]).newInstance() as GuiScreen
-                            reply("Opening gui: " + NotEnoughUpdates.INSTANCE.openGui)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            reply("Failed to open this GUI.")
-                        }
+                thenArgumentExecute("class", StringArgumentType.string()) { className ->
+                    try {
+                        NotEnoughUpdates.INSTANCE.openGui =
+                            Class.forName(this[className]).newInstance() as GuiScreen
+                        reply("Opening gui: " + NotEnoughUpdates.INSTANCE.openGui)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        reply("Failed to open this GUI.")
                     }
-                }
+                }.withHelp("Open a gui by class name")
             }
             thenLiteralExecute("center") {
                 val x = floor(Minecraft.getMinecraft().thePlayer.posX) + 0.5f
                 val z = floor(Minecraft.getMinecraft().thePlayer.posZ) + 0.5f
                 Minecraft.getMinecraft().thePlayer.setPosition(x, Minecraft.getMinecraft().thePlayer.posY, z)
                 reply("Literal hacks")
-            }
+            }.withHelp("Center yourself on the block you are currently standing (like using AOTE)")
             thenLiteral("minion") {
-                thenArgument("args", RestArgumentType) { arg ->
-                    thenExecute {
-                        MinionHelperManager.getInstance().handleCommand(arrayOf("minion") + this[arg].split(" "))
-                    }
-                }
+                thenArgumentExecute("args", RestArgumentType) { arg ->
+                    MinionHelperManager.getInstance().handleCommand(arrayOf("minion") + this[arg].split(" "))
+                }.withHelp("Minion related commands. Not yet integrated in brigadier")
             }
             thenLiteralExecute("copytablist") {
                 val tabList = TabListUtils.getTabList().joinToString("\n", postfix = "\n")
                 MiscUtils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
-            }
+            }.withHelp("Copy the tab list")
         }
         hook.beforeCommand = Predicate {
             if (!canPlayerExecute(it.context.source)) {

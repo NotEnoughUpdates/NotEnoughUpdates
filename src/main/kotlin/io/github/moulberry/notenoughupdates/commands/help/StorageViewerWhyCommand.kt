@@ -22,6 +22,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.NotificationHandler
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
@@ -42,6 +43,6 @@ class StorageViewerWhyCommand {
                     ), true
                 )
             }
-        }
+        }.withHelp("Display information about why you have to click twice in the NEU storage overlay")
     }
 }
