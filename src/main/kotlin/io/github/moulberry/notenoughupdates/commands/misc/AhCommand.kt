@@ -56,7 +56,6 @@ class AhCommand {
                     if (search.isBlank() && NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch)
                         null else search
                 )
-
             }
         }
         hook.beforeCommand = Predicate {

@@ -25,7 +25,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
@@ -159,7 +158,6 @@ public class NotEnoughUpdates {
 	public Navigation navigation = new Navigation(this);
 	public GuiScreen openGui = null;
 	public long lastOpenedGui = 0;
-	public Commands commands;
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
 	public AutoUpdater autoUpdater = new AutoUpdater(this);
@@ -283,7 +281,6 @@ public class NotEnoughUpdates {
 		}
 
 		BrigadierRoot.INSTANCE.updateHooks();
-		this.commands = new Commands();
 
 		BackgroundBlur.registerListener();
 
