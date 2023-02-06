@@ -182,8 +182,7 @@ public class ItemCooldowns {
 
 	@SubscribeEvent
 	public void onChatMessage(ClientChatReceivedEvent event) {
-		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-				NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility && pickaxeCooldown != 0) {
+		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() && pickaxeCooldown != 0) {
 			findCooldownInTooltip(Item.PICKAXES);
 			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
 		}
@@ -260,10 +259,12 @@ public class ItemCooldowns {
 		}
 
 		// Pickaxes
-		if (isPickaxe(internalname) && NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
+		if (isPickaxe(internalname)) {
 			findCooldownInTooltip(Item.PICKAXES);
 
-			return durabilityOverride(pickaxeUseCooldownMillisRemaining, pickaxeCooldown, stack);
+			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.pickaxeAbility) {
+				return durabilityOverride(pickaxeUseCooldownMillisRemaining, pickaxeCooldown, stack);
+			} else return -1;
 		}
 		// Treecapitator / Jungle Axe
 		if (internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE")) {
