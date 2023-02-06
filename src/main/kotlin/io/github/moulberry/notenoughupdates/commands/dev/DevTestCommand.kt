@@ -88,13 +88,17 @@ class DevTestCommand {
             SPECIAL_KICK,
             "Ok, this is actually the last message, use the command again and you'll crash I promise"
         )
+
+        fun isDeveloper(commandSender: ICommandSender): Boolean {
+            return DEV_TESTERS.contains((commandSender as? EntityPlayer)?.uniqueID?.toString())
+                    || Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
+
+        }
     }
 
     var devFailIndex = 0
-
     fun canPlayerExecute(commandSender: ICommandSender): Boolean {
-        return DEV_TESTERS.contains((commandSender as? EntityPlayer)?.uniqueID?.toString())
-                || Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
+        return isDeveloper(commandSender)
     }
 
     @SubscribeEvent

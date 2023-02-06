@@ -27,11 +27,11 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.ArgumentCommandNode
 import com.mojang.brigadier.tree.CommandNode
 import com.mojang.brigadier.tree.LiteralCommandNode
+import io.github.moulberry.notenoughupdates.commands.dev.DevTestCommand
 import io.github.moulberry.notenoughupdates.util.iterate
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
-import java.lang.RuntimeException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
@@ -152,6 +152,11 @@ fun <T : ArgumentBuilder<DefaultSource, T>> T.thenExecute(block: CommandContext<
         1
     }
 
+fun <T : ArgumentBuilder<DefaultSource, T>> T.requiresDev(): T {
+    requires { DevTestCommand.isDeveloper(it) }
+    return this
+}
+
 fun NEUBrigadierHook.withHelp(helpText: String): NEUBrigadierHook {
     commandNode.withHelp(helpText)
     return this
@@ -161,5 +166,14 @@ fun <T : CommandNode<DefaultSource>> T.withHelp(helpText: String): T {
     BrigadierRoot.setHelpForNode(this, helpText)
     return this
 }
+
+fun <A : Any, T : RequiredArgumentBuilder<DefaultSource, A>> T.suggests(list: List<String>) {
+    suggests { context, builder ->
+        list.filter { it.startsWith(builder.remaining, ignoreCase = true) }
+            .forEach { builder.suggest(it) }
+        builder.buildFuture()
+    }
+}
+
 
 

@@ -20,12 +20,6 @@
 package io.github.moulberry.notenoughupdates.commands;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.commands.dev.DiagCommand;
-import io.github.moulberry.notenoughupdates.commands.dev.PackDevCommand;
-import io.github.moulberry.notenoughupdates.commands.dungeon.DhCommand;
-import io.github.moulberry.notenoughupdates.commands.dungeon.DnCommand;
-import io.github.moulberry.notenoughupdates.commands.dungeon.JoinDungeonCommand;
-import io.github.moulberry.notenoughupdates.commands.dungeon.MapCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.AhCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalculatorCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
@@ -51,12 +45,6 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new ViewProfileCommand());
 		ClientCommandHandler.instance.registerCommand(new PvCommand());
 		if (!Loader.isModLoaded("skyblockextras")) ClientCommandHandler.instance.registerCommand(new CataCommand());
-
-		// Dungeon Commands
-		ClientCommandHandler.instance.registerCommand(new MapCommand());
-		ClientCommandHandler.instance.registerCommand(new JoinDungeonCommand());
-		ClientCommandHandler.instance.registerCommand(new DnCommand());
-		ClientCommandHandler.instance.registerCommand(new DhCommand());
 
 		// Misc Commands
 		ClientCommandHandler.instance.registerCommand(new CosmeticsCommand());
