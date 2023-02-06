@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.commands.help
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper
+import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor
 import io.github.moulberry.notenoughupdates.util.brigadier.*
@@ -32,13 +33,16 @@ class SettingsCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neu", "neusettings") {
-            thenArgumentExecute("search", RestArgumentType) { search ->
-                NotEnoughUpdates.INSTANCE.openGui = GuiScreenElementWrapper(
-                    NEUConfigEditor(
-                        NotEnoughUpdates.INSTANCE.config,
-                        this[search]
+            thenArgument("search", RestArgumentType) { search ->
+                suggestsList(ConfigProcessor.create(NotEnoughUpdates.INSTANCE.config).keys.toList())
+                thenExecute {
+                    NotEnoughUpdates.INSTANCE.openGui = GuiScreenElementWrapper(
+                        NEUConfigEditor(
+                            NotEnoughUpdates.INSTANCE.config,
+                            this[search]
+                        )
                     )
-                )
+                }
             }.withHelp("Search the NEU settings")
             thenExecute {
                 NotEnoughUpdates.INSTANCE.openGui =
