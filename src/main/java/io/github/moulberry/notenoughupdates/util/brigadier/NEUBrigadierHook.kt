@@ -72,7 +72,6 @@ class NEUBrigadierHook(
         try {
             brigadierRoot.dispatcher.execute(results)
         } catch (syntax: CommandSyntaxException) {
-            sender.addChatMessage(ChatComponentText("${YELLOW}[NEU] $RED${syntax.message}"))
             brigadierRoot.getAllUsages("/$commandName", commandNode, mutableSetOf()).forEach {
                 sender.addChatMessage(ChatComponentText("${YELLOW}[NEU] ${it.path} - ${it.help}"))
             }

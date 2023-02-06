@@ -62,7 +62,7 @@ object BrigadierRoot {
         visited.add(node)
         val redirect = node.redirect
         if (redirect != null) {
-            yieldAll(getAllUsages(path, node, visited))
+            yieldAll(getAllUsages(path, node.redirect, visited))
             visited.remove(node)
             return@sequence
         }
