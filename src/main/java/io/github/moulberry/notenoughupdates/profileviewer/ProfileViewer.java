@@ -29,8 +29,10 @@ import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -44,6 +46,7 @@ import net.minecraft.util.EnumChatFormatting;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -630,7 +633,7 @@ public class ProfileViewer {
 		if (profile.skyblockProfiles != null) {
 			callback.accept(profile);
 		} else {
-			profile.getSkyblockProfiles(() -> callback.accept(profile));
+			profile.getSkyblockProfiles(false, () -> callback.accept(profile));
 		}
 		return profile;
 	}
@@ -808,11 +811,10 @@ public class ProfileViewer {
 			lastStatusInfoState = currentTime;
 			updatingPlayerStatusState.set(true);
 
-			HashMap<String, String> args = new HashMap<>();
-			args.put("uuid", "" + uuid);
 			manager.apiUtils
 				.newHypixelApiRequest("status")
 				.queryArgument("uuid", "" + uuid)
+				.maxCacheAge(getMaxCacheAge(true))
 				.requestJson()
 				.handle((jsonObject, ex) -> {
 					updatingPlayerStatusState.set(false);
@@ -823,6 +825,16 @@ public class ProfileViewer {
 					return null;
 				});
 			return null;
+		}
+
+		private Duration getMaxCacheAge(boolean fromPV) {
+			String playerUuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
+			if (uuid.equals(playerUuid) && fromPV) {
+				long timeSinceLastWorldSwitch = System.currentTimeMillis() - SBInfo.getInstance().joinedWorld;
+				return Duration.ofMillis(Math.min(timeSinceLastWorldSwitch, 180_000));
+			} else {
+				return Duration.ofSeconds(180);
+			}
 		}
 
 		public JsonObject getBingoInformation() {
@@ -837,6 +849,7 @@ public class ProfileViewer {
 			NotEnoughUpdates.INSTANCE.manager.apiUtils
 				.newHypixelApiRequest("skyblock/bingo")
 				.queryArgument("uuid", "" + uuid)
+				.maxCacheAge(getMaxCacheAge(true))
 				.requestJson()
 				.handle(((jsonObject, throwable) -> {
 					updatingBingoInfo.set(false);
@@ -1226,6 +1239,10 @@ public class ProfileViewer {
 		}
 
 		public JsonArray getSkyblockProfiles(Runnable runnable) {
+			return getSkyblockProfiles(true, runnable);
+		}
+
+		public JsonArray getSkyblockProfiles(boolean fromPV, Runnable runnable) {
 			if (skyblockProfiles != null) return skyblockProfiles;
 
 			long currentTime = System.currentTimeMillis();
@@ -1237,6 +1254,7 @@ public class ProfileViewer {
 			manager.apiUtils
 				.newHypixelApiRequest("skyblock/profiles")
 				.queryArgument("uuid", "" + uuid)
+				.maxCacheAge(getMaxCacheAge(fromPV))
 				.requestJson()
 				.handle((jsonObject, throwable) -> {
 					updatingSkyblockProfilesState.set(false);

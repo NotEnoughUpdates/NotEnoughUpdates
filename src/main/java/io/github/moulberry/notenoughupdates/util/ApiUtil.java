@@ -68,12 +68,14 @@ public class ApiUtil {
 		.thenComparing(NameValuePair::getValue);
 
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
+
 	private static String getUserAgent() {
-		if(NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
+		if (NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
 			return NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent;
 		}
 		return "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
 	}
+
 	private static SSLContext ctx;
 	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
 
@@ -116,7 +118,7 @@ public class ApiUtil {
 		private final List<NameValuePair> queryArguments = new ArrayList<>();
 		private String baseUrl = null;
 		private boolean shouldGunzip = false;
-		private Duration cacheTimeout = Duration.ofSeconds(500);
+		private Duration maxCacheAge = Duration.ofSeconds(500);
 		private String method = "GET";
 		private String postData = null;
 		private String postContentType = null;
@@ -130,8 +132,8 @@ public class ApiUtil {
 		 * Specify a cache timeout of {@code null} to signify an uncacheable request.
 		 * Non {@code GET} requests are always uncacheable.
 		 */
-		public Request cacheTimeout(Duration cacheTimeout) {
-			this.cacheTimeout = cacheTimeout;
+		public Request maxCacheAge(Duration maxCacheAge) {
+			this.maxCacheAge = maxCacheAge;
 			return this;
 		}
 
@@ -207,11 +209,10 @@ public class ApiUtil {
 						}
 						if (this.postData != null) {
 							conn.setDoOutput(true);
-							OutputStream os = conn.getOutputStream();
-							try {
+							try (OutputStream os = conn.getOutputStream()) {
 								os.write(this.postData.getBytes("utf-8"));
-							} finally {
-								os.close();
+							} catch (Throwable t) {
+								throw new RuntimeException(t);
 							}
 						}
 
@@ -225,6 +226,8 @@ public class ApiUtil {
 						// Not in the sense that this will hold in most cases (although that as well),
 						// but in the sense that any violation of this better have a good reason.
 						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+					} catch (Throwable t) {
+						throw new RuntimeException(t);
 					} finally {
 						try {
 							if (inputStream != null) {
@@ -243,7 +246,7 @@ public class ApiUtil {
 		}
 
 		public CompletableFuture<String> requestString() {
-			return ApiCache.INSTANCE.cacheRequest(this, getCacheKey(), this::requestString0, cacheTimeout);
+			return ApiCache.INSTANCE.cacheRequest(this, getCacheKey(), this::requestString0, maxCacheAge);
 		}
 
 		public CompletableFuture<JsonObject> requestJson() {
