@@ -22,13 +22,13 @@ package io.github.moulberry.notenoughupdates.util.brigadier
 import com.mojang.brigadier.ParseResults
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.suggestion.Suggestions
-import com.mojang.brigadier.tree.ArgumentCommandNode
 import com.mojang.brigadier.tree.CommandNode
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting
+import net.minecraft.util.EnumChatFormatting.RED
+import net.minecraft.util.EnumChatFormatting.YELLOW
 import java.util.concurrent.CompletableFuture
 import java.util.function.Predicate
 
@@ -72,7 +72,10 @@ class NEUBrigadierHook(
         try {
             brigadierRoot.dispatcher.execute(results)
         } catch (syntax: CommandSyntaxException) {
-            sender.addChatMessage(ChatComponentText("${EnumChatFormatting.RED}${syntax.message}"))
+            sender.addChatMessage(ChatComponentText("${YELLOW}[NEU] $RED${syntax.message}"))
+            brigadierRoot.getAllUsages("/$commandName", commandNode, mutableSetOf()).forEach {
+                sender.addChatMessage(ChatComponentText("${YELLOW}[NEU] ${it.path} - ${it.help}"))
+            }
         }
     }
 
