@@ -23,9 +23,7 @@ import com.google.gson.JsonElement
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
-import io.github.moulberry.notenoughupdates.util.NotificationHandler
-import io.github.moulberry.notenoughupdates.util.Shimmy
-import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.kotlin.fromJson
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -35,19 +33,16 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 @NEUAutoSubscribe
 object EnforcedConfigValues {
 
-    class EnforcedValue {
-        // lateinit var because we use gson (instead of kotlinx.serialization which can handle data classes)
-        lateinit var path: String
-        lateinit var value: JsonElement
-    }
+    @KSerializable
+    data class EnforcedValue(val path: String, val value: JsonElement)
 
-    class EnforcedValueData {
-        var enforcedValues: List<EnforcedValue> = listOf()
-        var notificationPSA: List<String>? = null
-        var chatPSA: List<String>? = null
-        lateinit var affectedVersions: List<Int>
-    }
-
+    @KSerializable
+    data class EnforcedValueData(
+        val enforcedValues: List<EnforcedValue> = listOf(),
+        val notificationPSA: List<String> = emptyList(),
+        val chatPSA: List<String> = emptyList(),
+        val affectedVersions: List<Int>,
+    )
 
     var enforcedValues: List<EnforcedValueData> = listOf()
 

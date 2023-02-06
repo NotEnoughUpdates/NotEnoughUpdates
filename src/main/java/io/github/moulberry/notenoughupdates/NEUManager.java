@@ -39,6 +39,7 @@ import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.KotlinTypeAdapterFactory;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -155,7 +156,7 @@ public class NEUManager {
 		this.craftingOverlay = new CraftingOverlay(this);
 		this.katSitterOverlay = new KatSitterOverlay();
 
-		gson = new GsonBuilder().setPrettyPrinting().create();
+		gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(new KotlinTypeAdapterFactory()).create();
 
 		this.repoLocation = new File(configLocation, "repo");
 		repoLocation.mkdir();
