@@ -94,7 +94,9 @@ public class EssenceTaskLevel {
 				.resolveToItemListJson()
 				.get("displayname")
 				.getAsString();
-			value.max = essenceShopTask.get(key.toLowerCase() + "_shop").getAsInt();
+			String name = key.toLowerCase() + "_shop";
+			if (!essenceShopTask.has(name)) continue;
+			value.max = essenceShopTask.get(name).getAsInt();
 			lore.add(levelPage.buildLore(
 				EnumChatFormatting.getTextWithoutFormattingCodes(value.name),
 				value.current,

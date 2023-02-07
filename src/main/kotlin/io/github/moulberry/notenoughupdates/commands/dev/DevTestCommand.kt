@@ -212,6 +212,16 @@ class DevTestCommand {
                 MiscUtils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
             }.withHelp("Copy the tab list")
+            thenLiteralExecute("useragent") {
+                thenArgumentExecute("newuseragent", RestArgumentType) { userAgent ->
+                    reply("Setting your user agent to ${this[userAgent]}")
+                    NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = this[userAgent]
+                }.withHelp("Set a custom user agent for all HTTP requests")
+                thenExecute {
+                    reply("Resetting your user agent.")
+                    NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = null
+                }
+            }.withHelp("Reset the custom user agent")
         }
         hook.beforeCommand = Predicate {
             if (!canPlayerExecute(it.context.source)) {

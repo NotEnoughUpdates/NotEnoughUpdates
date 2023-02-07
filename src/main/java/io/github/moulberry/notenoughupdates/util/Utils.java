@@ -186,7 +186,7 @@ public class Utils {
 		}
 
 		int newScale = guiScales.size() > 0
-			? Math.max(0, Math.min(4, guiScales.peek()))
+			? Math.max(0, guiScales.peek())
 			: Minecraft.getMinecraft().gameSettings.guiScale;
 		if (newScale == 0) newScale = Minecraft.getMinecraft().gameSettings.guiScale;
 
@@ -1227,6 +1227,22 @@ public class Utils {
 		float fontHeight = 8 * factor;
 
 		drawStringScaled(str, fr, x - len / 2, y - fontHeight / 2, shadow, colour, factor);
+	}
+
+	public static void drawStringCenteredScaled(
+		String str,
+		FontRenderer fr,
+		float x,
+		float y,
+		boolean shadow,
+		float factor
+	) {
+		int strLen = fr.getStringWidth(str);
+
+		float x2 = x - strLen / 2f;
+		float y2 = y - fr.FONT_HEIGHT / 2f;
+
+		drawStringScaled(str, fr, x2, y2, shadow, 0, factor);
 	}
 
 	public static void drawStringCenteredYScaled(

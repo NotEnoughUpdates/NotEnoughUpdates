@@ -106,7 +106,7 @@ public class DungeonTaskLevel {
 		lore.add(levelPage.buildLore("Complete Dungeons", sbLevelGainedFloor, completeDungeon, false));
 
 		levelPage.renderLevelBar(
-			"Dungeon",
+			"Dungeon Task",
 			NotEnoughUpdates.INSTANCE.manager
 				.createItemResolutionQuery()
 				.withKnownInternalName("WITHER_RELIC")

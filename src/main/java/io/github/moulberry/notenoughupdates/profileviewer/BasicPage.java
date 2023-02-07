@@ -572,7 +572,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			);
 		}
 
-		// sb lvlL
+		// sb lvl
 
 		int sbLevelX = guiLeft + 162;
 		int sbLevelY = guiTop + 90;
@@ -585,8 +585,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.scale(1.5f, 1.5f, 1);
 		Utils.drawItemStack(skull, 0, 0);
 		GlStateManager.popMatrix();
-		Utils.drawStringScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
-			sbLevelX - 2, sbLevelY - 15, true, 0, 1.5f
+		Utils.drawStringCenteredScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
+			sbLevelX + 9, sbLevelY - 12, true, 1.5f
 		);
 
 		float progress = (float) (skyblockLevel - (long) skyblockLevel);
@@ -595,6 +595,12 @@ public class BasicPage extends GuiProfileViewerPage {
 		Utils.drawStringScaled(EnumChatFormatting.YELLOW.toString() + (int) (progress * 100) + "/100", fr,
 			sbLevelX - 30, sbLevelY + 20, true, 0, 0.9f
 		);
+
+		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
+			if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
+				if (Mouse.isButtonDown(0)) onSecondPage = true;
+			}
+		}
 
 		if (skyblockInfo != null) {
 			int position = 0;
@@ -621,12 +627,6 @@ public class BasicPage extends GuiProfileViewerPage {
 					getInstance().renderGoldBar(x, y + 6, 80);
 				} else {
 					getInstance().renderBar(x, y + 6, 80, level.level % 1);
-				}
-
-				if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
-					if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
-						if (Mouse.isButtonDown(0)) onSecondPage = true;
-					}
 				}
 
 				if (mouseX > x && mouseX < x + 80) {

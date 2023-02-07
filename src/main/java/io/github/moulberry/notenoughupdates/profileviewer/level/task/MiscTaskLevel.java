@@ -116,17 +116,18 @@ public class MiscTaskLevel {
 			JsonObject communityShopUpgradesMax = miscellaneousTask.getAsJsonObject("community_shop_upgrades_max");
 
 			int communityShopUpgradesXp = miscellaneousTask.get("community_shop_upgrades_xp").getAsInt();
-
-			for (
-				JsonElement upgradeState : upgradeStates) {
-				if (!upgradeState.isJsonObject()) continue;
-				JsonObject value = upgradeState.getAsJsonObject();
-				String upgrade = value.get("upgrade").getAsString();
-				int tier = value.get("tier").getAsInt();
-				if (communityShopUpgradesMax.has(upgrade)) {
-					int max = communityShopUpgradesMax.get(upgrade).getAsInt();
-					if (max >= tier) {
-						sbXpCommunityUpgrade += communityShopUpgradesXp;
+			if (upgradeStates != null) {
+				for (
+					JsonElement upgradeState : upgradeStates) {
+					if (!upgradeState.isJsonObject()) continue;
+					JsonObject value = upgradeState.getAsJsonObject();
+					String upgrade = value.get("upgrade").getAsString();
+					int tier = value.get("tier").getAsInt();
+					if (communityShopUpgradesMax.has(upgrade)) {
+						int max = communityShopUpgradesMax.get(upgrade).getAsInt();
+						if (max >= tier) {
+							sbXpCommunityUpgrade += communityShopUpgradesXp;
+						}
 					}
 				}
 			}
