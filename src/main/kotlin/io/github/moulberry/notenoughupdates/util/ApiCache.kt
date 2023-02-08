@@ -47,17 +47,17 @@ object ApiCache {
         val firedAt: TimeSource.Monotonic.ValueTimeMark,
     )
 
-    val cachedRequests = mutableMapOf<CacheKey, CacheResult>()
+    private val cachedRequests = mutableMapOf<CacheKey, CacheResult>()
     val histogramTotalRequests: MutableMap<String, Int> = mutableMapOf()
     val histogramNonCachedRequests: MutableMap<String, Int> = mutableMapOf()
-    val timeout = 10.seconds
-    val maxCacheAge = 1.hours
+    private val timeout = 10.seconds
+    private val maxCacheAge = 1.hours
 
-    fun log(message: String) {
+    private fun log(message: String) {
         NEUDebugFlag.API_CACHE.log(message)
     }
 
-    fun traceApiRequest(
+    private fun traceApiRequest(
         request: Request,
         failReason: String?,
     ) {
@@ -86,7 +86,7 @@ object ApiCache {
 
     }
 
-    fun evictCache() {
+    private fun evictCache() {
         synchronized(this) {
             val it = cachedRequests.iterator()
             while (it.hasNext()) {
