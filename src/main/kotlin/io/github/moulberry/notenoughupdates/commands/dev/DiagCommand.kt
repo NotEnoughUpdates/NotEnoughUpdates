@@ -41,8 +41,8 @@ class DiagCommand {
                     thenArgumentExecute("usecenter", bool()) { useCenter ->
                         CrystalMetalDetectorSolver.setDebugDoNotUseCenter(this[useCenter])
                         reply("Center coordinates-based solutions ${if (this[useCenter]) "enabled" else "disabled"}")
-                    }
-                }.withHelp("Toggle coordinate based solutions")
+                    }.withHelp("Toggle coordinate based solutions")
+                }
                 thenExecute {
                     CrystalMetalDetectorSolver.logDiagnosticData(true)
                     reply("Enabled metal detector diagnostic logging.")
