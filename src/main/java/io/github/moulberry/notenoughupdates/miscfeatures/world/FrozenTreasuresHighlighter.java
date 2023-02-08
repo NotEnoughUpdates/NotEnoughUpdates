@@ -92,22 +92,27 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 
 					// Decode and find texture url from the texture value
 					String trimmedJson = new String(Base64.getDecoder().decode(textureValue)).replace(" ", "");
-					String textureUrl = trimmedJson.substring(
-						trimmedJson.indexOf("url")+6, // Start of url
-						trimmedJson.substring( // Get the substring from the start of the url to the end of string
-							trimmedJson.indexOf("url")+6).indexOf("\"") // Get index of first " after start of url
-							+ trimmedJson.indexOf("url")+6); // Add on the length of numbers up until the start of url to get correct index from overall string
+
+
+					String textureUrl = "";
+					if (trimmedJson.contains("url")) {
+						textureUrl = trimmedJson.substring(
+							trimmedJson.indexOf("url")+6, // Start of url
+							trimmedJson.substring( // Get the substring from the start of the url to the end of string
+								trimmedJson.indexOf("url")+6).indexOf("\"") // Get index of first " after start of url
+								+ trimmedJson.indexOf("url")+6); // Add on the length of numbers up until the start of url to get correct index from overall string
+					}
+
 
 					// If the list of rideable pet texture urls doesn't include the found texture then it is a frozen treasure
 					if (!rideablePetTextureUrls.contains(textureUrl)) {
 						highlightedBlocks.add(entity.getPosition().add(0, 1, 0));
-						return;
 					}
+				} else {
+					// This is for frozen treasures which are just blocks i.e. Packed Ice, Enchanted Packed Ice etc.
+					// (Since I don't believe the blocks have NBTTagCompound data)
+					highlightedBlocks.add(entity.getPosition().add(0, 1, 0));
 				}
-
-				// This is for frozen treasures which are just blocks i.e. Packed Ice, Enchanted Packed Ice etc.
-				// (Since I don't believe the blocks have NBTTagCompound data)
-				highlightedBlocks.add(entity.getPosition().add(0, 1, 0));
 			}
 		}
 	}
