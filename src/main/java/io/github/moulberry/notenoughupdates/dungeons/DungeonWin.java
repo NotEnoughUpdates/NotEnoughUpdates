@@ -219,9 +219,9 @@ public class DungeonWin {
 				if (text.size() > 50) text.clear();
 
 				if (unformatted.contains("\u25AC")) {
+					e.setCanceled(true);
 					hideChat = false;
 					displayWin();
-					e.setCanceled(true);
 				} else {
 					if (unformatted.trim().length() > 0) {
 						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") ||
@@ -229,8 +229,8 @@ public class DungeonWin {
 							"Total Damage")
 							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains(
 							"Deaths") || unformatted.contains("Secrets Found")) {
-							text.add(e.message.getFormattedText().substring(6).trim());
 							e.setCanceled(true);
+							text.add(e.message.getFormattedText().substring(6).trim());
 						} else {
 							System.out.println(
 								"These messages would of showed on neu dungeon overlay but didnt, They are either bugged or i missed them: \"" +
