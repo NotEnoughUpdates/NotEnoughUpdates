@@ -99,6 +99,7 @@ public class MinionHelperOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
 		if (manager.isInvalidApiKey()) {
 			LinkedHashMap<String, OverviewLine> map = new LinkedHashMap<>();
+			// TODO hmmmmmm das gehört vlt verändert idk
 			map.put("§cInvalid API Key!", new OverviewText(Collections.emptyList(), () -> {}));
 			render(map);
 			return;
