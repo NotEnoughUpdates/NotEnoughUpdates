@@ -56,8 +56,7 @@ public abstract class GenericBlockHighlighter {
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent ev) {
 		if (ev.phase != TickEvent.Phase.END) return;
-		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) ||
-			!canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
+		highlightedBlocks.removeIf(it -> !isValidHighlightSpot(it) );//|| !canPlayerSeeNearBlocks(it.getX(), it.getY(), it.getZ()));
 	}
 
 	protected boolean canPlayerSeeBlock(double xCoord, double yCoord, double zCoord) {

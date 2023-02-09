@@ -329,7 +329,7 @@ public class RenderUtils {
 		GlStateManager.disableDepth();
 		GlStateManager.disableCull();
 		GlStateManager.disableTexture2D();
-		CustomItemEffects.drawFilledBoundingBox(bb, 1f, SpecialColour.special(0, 100, rgb));
+		CustomItemEffects.drawFilledBoundingBox(bb, 0.6f, SpecialColour.special(0, 60, rgb));
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableCull();
 		GlStateManager.enableDepth();

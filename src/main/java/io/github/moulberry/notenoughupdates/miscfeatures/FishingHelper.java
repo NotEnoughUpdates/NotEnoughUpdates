@@ -19,10 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
+import akka.util.BoundedBlockingQueue;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.events.SpawnParticleEvent;
+import io.github.moulberry.notenoughupdates.overlays.FishingSkillOverlay;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.state.IBlockState;
@@ -33,30 +36,49 @@ import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @NEUAutoSubscribe
 public class FishingHelper {
 	private static final FishingHelper INSTANCE = new FishingHelper();
+	public static boolean paused = false;
+	public Set<String> playerList = new HashSet<>();
+	private boolean disableRecast =false ;
+	private boolean passed30s = false;
+	public int mouseMoveOffset = 0;
+
+
+	private int fishDelay = 0;
+
+	private int mouseMoveDelay =0;
 
 	public static FishingHelper getInstance() {
 		return INSTANCE;
@@ -126,6 +148,103 @@ public class FishingHelper {
 			GL11.GL_NEAREST
 		);
 		return true;
+	}
+
+	public static int rand(int min, int max) {
+		return min + (int)(Math.random() * (max - min + 1));
+	}
+
+	public static void rightClick() {
+		try {
+			Method rightClickMouse;
+			try {
+				rightClickMouse = Minecraft.class.getDeclaredMethod("rightClickMouse");
+			} catch (NoSuchMethodException e) {
+				rightClickMouse = Minecraft.class.getDeclaredMethod("func_147121_ag");
+			}
+			rightClickMouse.setAccessible(true);
+			rightClickMouse.invoke(Minecraft.getMinecraft());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void look(final float offset, int n) {
+		final Timer timer2 = new Timer();
+		final int[] count = { 0 };
+		TimerTask task1 = new TimerTask() {
+			public void run() {
+				(Minecraft.getMinecraft()).thePlayer.rotationYaw += offset / 100.0F;
+				count[0] = count[0] + 1;
+				if (count[0] > 100)
+					timer2.cancel();
+			}
+		};
+		timer2.schedule(task1, 0L, 100L);
+	}
+	public boolean checkForPlayers() {
+		Vec3 pos = (Minecraft.getMinecraft()).thePlayer.getPositionVector();
+		int range = NotEnoughUpdates.INSTANCE.config.fishing.playerRange;
+		AxisAlignedBB ab = AxisAlignedBB.fromBounds(pos.xCoord - range, pos.yCoord - range, pos.zCoord - range, pos.xCoord + range, pos.yCoord + range, pos.zCoord + range);
+		for (EntityPlayer entity1 : (Minecraft.getMinecraft()).theWorld.getEntitiesWithinAABB(EntityPlayer.class, ab)) {
+			if (!entity1.isInvisible() && !Objects.equals(entity1.getName(), (Minecraft.getMinecraft()).thePlayer.getName())) {
+				if (!this.playerList.contains(entity1.getName()))
+					(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(
+						ChatFormatting.BLUE + "+" + entity1
+						.getName()));
+				this.playerList.add(entity1.getName());
+				return true;
+			}
+		}
+		this.playerList.clear();
+		return false;
+	}
+	public void pause() {
+		final Timer timer2 = new Timer();
+		TimerTask task1 = new TimerTask() {
+			public void run() {
+				(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 1;
+				try {
+					Thread.sleep(1000L);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				FishingHelper.rightClick();
+				try {
+					Thread.sleep(200L);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				FishingSkillOverlay.timer = 0L;
+				(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.AQUA + "Paused Fishing!"));
+				timer2.cancel();
+			}
+		};
+		timer2.schedule(task1, 800L);
+	}
+
+	public void resume() {
+		final Timer timer2 = new Timer();
+		TimerTask task1 = new TimerTask() {
+			public void run() {
+				(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 0;
+				try {
+					Thread.sleep(1000L);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				FishingHelper.rightClick();
+				try {
+					Thread.sleep(200L);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				FishingSkillOverlay.timer = System.currentTimeMillis();
+				(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.AQUA + "Resumed Fishing!"));
+				timer2.cancel();
+			}
+		};
+		timer2.schedule(task1, 800L);
 	}
 
 	public void onRenderBobber(EntityFishHook hook) {
@@ -227,10 +346,59 @@ public class FishingHelper {
 	private int tickCounter = 0;
 
 	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent event) {
+	public void onTick(TickEvent.ClientTickEvent event) throws InterruptedException {
 		if (Minecraft.getMinecraft().thePlayer != null && event.phase == TickEvent.Phase.END) {
 			if (buildupSoundDelay > 0) buildupSoundDelay--;
-
+			if (NotEnoughUpdates.INSTANCE.config.fishing.pauseOnPlayer)
+				if (!paused) {
+					if (checkForPlayers()) {
+						(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "Player in range! Pausing"));
+						paused = true;
+						pause();
+					}
+				} else if (!checkForPlayers()) {
+					(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "No players in range! Resuming"));
+					paused = false;
+					resume();
+				}
+			if (NotEnoughUpdates.INSTANCE.config.fishing.antiAFK && !paused) {
+				this.mouseMoveDelay++;
+				if (this.mouseMoveDelay > 500) {
+					this.mouseMoveDelay = 0;
+					if (this.mouseMoveOffset == 0) {
+						int x = rand(6, 15);
+						this.mouseMoveOffset = x;
+						look(this.mouseMoveOffset, 100);
+					} else {
+						look(-this.mouseMoveOffset, 100);
+						this.mouseMoveOffset = 0;
+					}
+				}
+			}
+			if (this.fishDelay > 0)
+				this.fishDelay--;
+			if (NotEnoughUpdates.INSTANCE.config.fishing.autoFishing && !paused)
+				switch (this.fishDelay) {
+					case 20:
+						if (NotEnoughUpdates.INSTANCE.config.fishing.slugFishMode) {
+							if (this.passed30s) {
+								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "Fish"));
+								rightClick();
+								this.passed30s = false;
+								this.disableRecast = false;
+								break;
+							}
+							this.disableRecast = true;
+							break;
+						}
+						(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "Fish"));
+						rightClick();
+						break;
+					case 1:
+						if (!this.disableRecast)
+							rightClick();
+						break;
+				}
 			if (NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning ||
 				NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
 				if (Minecraft.getMinecraft().thePlayer.fishEntity != null) {
@@ -498,6 +666,8 @@ public class FishingHelper {
 														float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
 														Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+														this.fishDelay = 30;
+
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
 													}
 												}
@@ -523,6 +693,8 @@ public class FishingHelper {
 														float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
 														Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+														this.fishDelay = 30;
+
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
 														buildupSoundDelay = 4;
 													}
@@ -715,7 +887,6 @@ public class FishingHelper {
 				}
 
 				event.cancel();
-				return;
 			}
 		}
 	}

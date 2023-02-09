@@ -19,19 +19,24 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 
 import java.text.NumberFormat;
@@ -39,13 +44,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Supplier;
 
 public class FishingSkillOverlay
 	extends TextOverlay { //Im sure there is a much better way to do this besides making another class ¯\_(ツ)_/¯
 
 	private long lastUpdate = -1;
-	private long timer = -1;
+	public static long timer = -1;
 	private int expertiseLast = -1;
 	private int expertise = -1;
 	private int expertiseTier = -1;
@@ -53,7 +60,7 @@ public class FishingSkillOverlay
 	private float fishedPerSecondLast = 0;
 	private float fishedPerSecond = 0;
 	private final LinkedList<Integer> expertiseQueue = new LinkedList<>();
-
+	private int killDelay = 0;
 	private XPInformation.SkillInfo skillInfo = null;
 	private XPInformation.SkillInfo skillInfoLast = null;
 
@@ -175,6 +182,7 @@ public class FishingSkillOverlay
 		skillInfo = XPInformation.getInstance().getSkillInfo(skillType);
 		if (skillInfo != null) {
 			float totalXp = skillInfo.totalXp;
+
 
 			if (lastTotalXp > 0) {
 				float delta = totalXp - lastTotalXp;
@@ -407,6 +415,50 @@ public class FishingSkillOverlay
 			}
 			if (System.currentTimeMillis() - timer > funnyCustomTimer &&
 				System.currentTimeMillis() - timer < (funnyCustomTimer + 100) && funnyCustomTimer != 0) {
+				(Minecraft.getMinecraft()).thePlayer.addChatMessage((IChatComponent)new ChatComponentText(
+					ChatFormatting.WHITE + "Killing"));
+				this.killDelay = 50;
+				final Timer timer2 = new Timer();
+				TimerTask task1 = new TimerTask() {
+					public void run() {
+						if ((Minecraft.getMinecraft()).thePlayer.getHeldItem().getItem() == Items.fishing_rod && NotEnoughUpdates.INSTANCE.config.fishing.autoFishing && NotEnoughUpdates.INSTANCE.config.fishing.autoKilling && !FishingHelper.paused) {
+							(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 1;
+							(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "weapon swap"));
+							try {
+								Thread.sleep(1000L);
+							} catch (InterruptedException e) {
+								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
+								throw new RuntimeException(e);
+							}
+							FishingHelper.rightClick();
+							try {
+								Thread.sleep(1000L);
+							} catch (InterruptedException e) {
+								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
+								throw new RuntimeException(e);
+							}
+							(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 0;
+							try {
+								Thread.sleep(800L);
+							} catch (InterruptedException e) {
+								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
+								throw new RuntimeException(e);
+							}
+							FishingHelper.rightClick();
+							FishingSkillOverlay.timer = System.currentTimeMillis();
+							try {
+								Thread.sleep(800L);
+							} catch (InterruptedException e) {
+								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
+								throw new RuntimeException(e);
+							}
+							timer2.cancel();
+						} else {
+							(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.RED + "You don't have Fishing Rod Equipped! Cancelling Auto-Kill"));
+						}
+					}
+				};
+				timer2.schedule(task1, 800L);
 				float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
 				Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
 				Minecraft.getMinecraft().getSoundHandler().playSound(sound);

@@ -106,4 +106,5 @@ public class WorldConfig {
 	@ConfigAccordionId(id = 3)
 	public String frozenTreasuresColor = "0:255:0:255:0";
 
+	public boolean lavaESP=true;
 }
