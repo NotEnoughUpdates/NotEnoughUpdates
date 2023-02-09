@@ -186,7 +186,7 @@ public class AutoUpdater {
 				int fullReleaseVersion =
 					o.has("version_id") && o.get("version_id").isJsonPrimitive() ? o.get("version_id").getAsInt() : -1;
 				int preReleaseVersion =
-					o.has("version_id") && o.get("version_id").isJsonPrimitive() ? o.get("version_id").getAsInt() : -1;
+					o.has("pre_version_id") && o.get("pre_version_id").isJsonPrimitive() ? o.get("pre_version_id").getAsInt() : -1;
 				int hotfixVersion =
 					o.has("hotfix_id") && o.get("hotfix_id").isJsonPrimitive() ? o.get("hotfix_id").getAsInt() : -1;
 
