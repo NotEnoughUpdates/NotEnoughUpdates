@@ -76,7 +76,6 @@ public class ApiUtil {
 		}
 		return "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
 	}
-
 	private static SSLContext ctx;
 	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
 
@@ -105,12 +104,13 @@ public class ApiUtil {
 	public void updateProfileData(String playerUuid, Duration maxCacheAge) {
 		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
 
+		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
 		updateTasks.put(playerUuid, newHypixelApiRequest("skyblock/profiles")
-			.queryArgument("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))
+			.queryArgument("uuid", uuid)
 			.maxCacheAge(maxCacheAge)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
-				new ProfileDataLoadedEvent(jsonObject).post();
+				new ProfileDataLoadedEvent(uuid, jsonObject).post();
 				return null;
 			}));
 

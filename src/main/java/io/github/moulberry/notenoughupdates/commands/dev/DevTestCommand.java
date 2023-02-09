@@ -274,7 +274,7 @@ public class DevTestCommand extends ClientCommandBase {
 			MiscUtils.copyToClipboard(builder.toString());
 			Utils.addChatMessage("§e[NEU] Copied tablist to clipboard!");
 		}
-		if(args.length >= 1 && args[0].equalsIgnoreCase("useragent")) {
+		if (args.length >= 1 && args[0].equalsIgnoreCase("useragent")) {
 			String newUserAgent = args.length == 1 ? null : String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 			Utils.addChatMessage("§e[NEU] Changed user agent override to: " + newUserAgent);
 			NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = newUserAgent;
