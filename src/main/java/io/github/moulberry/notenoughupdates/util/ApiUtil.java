@@ -29,6 +29,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
+import javax.annotation.Nullable;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -96,15 +97,17 @@ public class ApiUtil {
 		}
 	}
 
-	public void updateProfileData() {
-		updateProfileData(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
+	public void updateProfileData(Duration maxCacheAge) {
+		String playerUuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
+		updateProfileData(playerUuid, maxCacheAge);
 	}
 
-	public void updateProfileData(String playerUuid) {
+	public void updateProfileData(String playerUuid, Duration maxCacheAge) {
 		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
 
 		updateTasks.put(playerUuid, newHypixelApiRequest("skyblock/profiles")
 			.queryArgument("uuid", Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))
+			.maxCacheAge(maxCacheAge)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
 				new ProfileDataLoadedEvent(jsonObject).post();
@@ -132,8 +135,10 @@ public class ApiUtil {
 		 * Specify a cache timeout of {@code null} to signify an uncacheable request.
 		 * Non {@code GET} requests are always uncacheable.
 		 */
-		public Request maxCacheAge(Duration maxCacheAge) {
-			this.maxCacheAge = maxCacheAge;
+		public Request maxCacheAge(@Nullable Duration maxCacheAge) {
+			if (maxCacheAge != null) {
+				this.maxCacheAge = maxCacheAge;
+			}
 			return this;
 		}
 
@@ -212,6 +217,7 @@ public class ApiUtil {
 							try (OutputStream os = conn.getOutputStream()) {
 								os.write(this.postData.getBytes("utf-8"));
 							} catch (Throwable t) {
+								t.printStackTrace();
 								throw new RuntimeException(t);
 							}
 						}
@@ -227,6 +233,7 @@ public class ApiUtil {
 						// but in the sense that any violation of this better have a good reason.
 						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 					} catch (Throwable t) {
+						t.printStackTrace();
 						throw new RuntimeException(t);
 					} finally {
 						try {

@@ -38,6 +38,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -71,7 +72,7 @@ public class MinionHelperApiLoader {
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
-		if (dirty && "Crafted Minions".equals(Utils.getOpenChestName())) {
+		if (dirty) {
 			load();
 		} else {
 			if (System.currentTimeMillis() > lastLoaded + 60_000 * 3) {
@@ -87,7 +88,7 @@ public class MinionHelperApiLoader {
 		String uuid = getUuid();
 		if (uuid == null) return;
 
-		NotEnoughUpdates.INSTANCE.manager.apiUtils.updateProfileData(uuid);
+		NotEnoughUpdates.INSTANCE.manager.apiUtils.updateProfileData(uuid, Duration.ofHours(1));
 	}
 
 	private String getUuid() {

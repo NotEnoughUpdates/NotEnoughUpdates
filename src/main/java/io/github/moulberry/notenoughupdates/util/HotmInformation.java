@@ -136,7 +136,7 @@ public class HotmInformation {
 	public synchronized void onLobbyJoin(WorldEvent.Load event) {
 		if (shouldReloadSoon) {
 			shouldReloadSoon = false;
-			neu.manager.apiUtils.updateProfileData();
+			neu.manager.apiUtils.updateProfileData(null);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class HotmInformation {
 	@SubscribeEvent
 	public synchronized void onChat(ClientChatReceivedEvent event) {
 		if (event.message.getUnformattedText().equals("Welcome to Hypixel SkyBlock!"))
-			 neu.manager.apiUtils.updateProfileData();
+			 neu.manager.apiUtils.updateProfileData(null);
 	}
 
 	/*
