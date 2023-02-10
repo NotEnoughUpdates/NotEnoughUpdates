@@ -223,13 +223,13 @@ public class DungeonWin {
 					hideChat = false;
 					displayWin();
 				} else {
+					e.setCanceled(true);
 					if (unformatted.trim().length() > 0) {
 						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") ||
 							unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains(
 							"Total Damage")
 							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains(
 							"Deaths") || unformatted.contains("Secrets Found")) {
-							e.setCanceled(true);
 							text.add(e.message.getFormattedText().substring(6).trim());
 						} else {
 							System.out.println(
