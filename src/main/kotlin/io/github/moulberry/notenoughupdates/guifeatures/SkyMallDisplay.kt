@@ -70,12 +70,9 @@ class SkyMallDisplay {
 
         private fun update() {
             display = (currentVariant?.displayName ?: "?") + " §a(${
-                Utils.prettyTime(SkyBlockTime.now().apply {
-                    day++
-                    hour = 0
-                    minute = 0
-                    second = 0
-                }.toRealTime() - System.currentTimeMillis())
+                Utils.prettyTime(SkyBlockTime.now()
+                    .let { it.copy(day = it.day + 1, hour = 0, minute = 0, second = 0) }
+                    .toRealTime() - System.currentTimeMillis())
             })"
             lastUpdated = System.currentTimeMillis()
         }

@@ -19,13 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.util
 
-class SkyBlockTime constructor(
-    var year: Int = 1,
-    var month: Int = 1,
-    var day: Int = 1,
-    var hour: Int = 0,
-    var minute: Int = 0,
-    var second: Int = 0,
+data class SkyBlockTime(
+    val year: Int = 1,
+    val month: Int = 1,
+    val day: Int = 1,
+    val hour: Int = 0,
+    val minute: Int = 0,
+    val second: Int = 0,
 ) {
 
     fun toRealTime(): Long {
@@ -60,11 +60,8 @@ class SkyBlockTime constructor(
             val skyBlockMonth = skyBlockYear / 12
             val skyBlockDay = skyBlockMonth / 31
             val skyBlockHour = skyBlockDay / 24
-//            println("skyBlockHour: $skyBlockHour")
             val skyBlockMinute = skyBlockHour / 60
-//            println("skyBlockMinute: $skyBlockMinute")
             val skyBlockSecond = skyBlockMinute / 60
-//            println("skyBlockSecond: $skyBlockSecond")
 
             fun getUnit(factor: Int): Int {
                 val result = realMillis / factor
@@ -72,21 +69,13 @@ class SkyBlockTime constructor(
                 return result.toInt()
             }
 
-            val calendar = SkyBlockTime()
-//            println("realMillis $realMillis")
-            calendar.year = getUnit(skyBlockYear)
-//            println("realMillis $realMillis")
-            calendar.month = getUnit(skyBlockMonth) + 1
-//            println("realMillis $realMillis")
-            calendar.day = getUnit(skyBlockDay) + 1
-//            println("realMillis $realMillis")
-            calendar.hour = getUnit(skyBlockHour)
-//            println("realMillis $realMillis")
-            calendar.minute = getUnit(skyBlockMinute)
-//            println("realMillis $realMillis")
-            calendar.second = getUnit(skyBlockSecond)
-//            println("realMillis $realMillis")
-            return calendar
+            val year = getUnit(skyBlockYear)
+            val month = getUnit(skyBlockMonth) + 1
+            val day = getUnit(skyBlockDay) + 1
+            val hour = getUnit(skyBlockHour)
+            val minute = getUnit(skyBlockMinute)
+            val second = getUnit(skyBlockSecond)
+            return SkyBlockTime(year, month, day, hour, minute, second)
         }
 
         fun monthName(month: Int): String {
