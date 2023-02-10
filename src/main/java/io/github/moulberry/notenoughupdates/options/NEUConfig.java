@@ -438,6 +438,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public int compareMode = 0;
 		@Expose
+		public String customUserAgent = null;
+		@Expose
 		public int sortMode = 0;
 		@Expose
 		public ArrayList<Boolean> compareAscending = Lists.newArrayList(true, true, true);

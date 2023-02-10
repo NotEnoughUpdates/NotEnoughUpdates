@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -55,7 +55,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
@@ -390,6 +389,10 @@ public class StorageOverlay extends GuiElement {
 		} else if (displayStyle == 0) {
 			textColour = 0x909090;
 			searchTextColour = 0xa0a0a0;
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.storageGUI.useCustomTextColour) {
+			textColour = ChromaColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.storageGUI.customTextColour);
 		}
 
 		long currentTime = System.currentTimeMillis();

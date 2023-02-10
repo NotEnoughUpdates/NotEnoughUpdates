@@ -447,13 +447,14 @@ public class PetInfoOverlay extends TextOverlay {
 		if (pet.petLevel.getCurrentLevel() >= pet.petLevel.getMaxLevel()) return 0;
 
 		if (validXpTypes == null)
-			validXpTypes = Lists.newArrayList("mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy");
+			validXpTypes = Lists.newArrayList("mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy", "all");
 		if (!validXpTypes.contains(xpType.toLowerCase())) return 0;
 
 		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
 		xp = xp * tamingPercent;
 		xp = xp + (xp * config.beastMultiplier / 100f);
-		if (pet.petXpType != null && !pet.petXpType.equalsIgnoreCase(xpType)) {
+
+		if (pet.petXpType != null && !pet.petXpType.equalsIgnoreCase(xpType) && !pet.petXpType.equalsIgnoreCase("all")) {
 			xp = xp / 3f;
 
 			if (xpType.equalsIgnoreCase("alchemy") || xpType.equalsIgnoreCase("enchanting")) {
@@ -463,6 +464,7 @@ public class PetInfoOverlay extends TextOverlay {
 		if (xpType.equalsIgnoreCase("mining") || xpType.equalsIgnoreCase("fishing")) {
 			xp = xp * 1.5f;
 		}
+
 		if (pet.petItem != null) {
 			Matcher petItemMatcher = XP_BOOST_PATTERN.matcher(pet.petItem);
 			if ((petItemMatcher.matches() && petItemMatcher.group(1).equalsIgnoreCase(xpType))

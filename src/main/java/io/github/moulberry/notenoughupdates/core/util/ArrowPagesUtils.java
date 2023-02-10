@@ -173,7 +173,7 @@ public class ArrowPagesUtils {
 			BUTTON_WIDTH,
 			BUTTON_HEIGHT
 		) &&
-			currentPage < totalPages) {
+			currentPage < totalPages - 1) {
 			int newPage = currentPage + 1;
 			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
 			Utils.playPressSound();
