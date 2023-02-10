@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.CoreTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.DungeonTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EssenceTaskLevel;
+import io.github.moulberry.notenoughupdates.profileviewer.level.task.EventTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.MiscTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SkillRelatedTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SlayingTaskLevel;
@@ -61,6 +62,8 @@ public class LevelPage {
 	private final SlayingTaskLevel slayingTaskLevel;
 	private final StoryTaskLevel storyTaskLevel;
 
+	private final EventTaskLevel eventTaskLevel;
+
 	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
 
 	public LevelPage(GuiProfileViewer instance, BasicPage basicPage) {
@@ -75,6 +78,7 @@ public class LevelPage {
 		skillRelatedTaskLevel = new SkillRelatedTaskLevel(this);
 		slayingTaskLevel = new SlayingTaskLevel(this);
 		storyTaskLevel = new StoryTaskLevel(this);
+		eventTaskLevel = new EventTaskLevel(this);
 	}
 
 	public void drawPage(int mouseX, int mouseY) {
@@ -96,14 +100,21 @@ public class LevelPage {
 		double skyblockLevel = profile.getSkyblockLevel(profileId);
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 
+
+		/*
+		This is a workaround as we cannot get the museum XP.
+		We are calculating everything together and subtracting it by the given level XP by Hypixel.
+		 */
+
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
-		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		essenceTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		miscTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		skillRelatedTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		slayingTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		storyTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
+		eventTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
+		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 	}
 
 	public void renderLevelBar(

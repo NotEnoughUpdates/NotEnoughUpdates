@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
@@ -88,10 +89,15 @@ public class EssenceTaskLevel {
 		for (Map.Entry<String, EssenceShop> stringEssenceShopEntry : loreMap.entrySet()) {
 			String key = stringEssenceShopEntry.getKey();
 			EssenceShop value = stringEssenceShopEntry.getValue();
-			value.name = NotEnoughUpdates.INSTANCE.manager
+			JsonObject jsonObject = NotEnoughUpdates.INSTANCE.manager
 				.createItemResolutionQuery()
 				.withKnownInternalName(key)
-				.resolveToItemListJson()
+				.resolveToItemListJson();
+			if (jsonObject == null){
+				Utils.showOutdatedRepoNotification();
+				continue;
+			}
+			value.name = jsonObject
 				.get("displayname")
 				.getAsString();
 			String name = key.toLowerCase() + "_shop";

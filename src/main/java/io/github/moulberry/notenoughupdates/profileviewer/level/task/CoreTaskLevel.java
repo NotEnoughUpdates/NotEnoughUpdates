@@ -19,8 +19,10 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -80,11 +82,18 @@ public class CoreTaskLevel {
 		}
 
 		// mp acc
-		int sbXpGainedMp = levelPage.getProfile().getMagicalPower(levelPage.getProfileId());
+		int sbXpGainedMp = 0;
+		if (object.has("accessory_bag_storage")) {
+			sbXpGainedMp = object.getAsJsonObject("accessory_bag_storage").get("highest_magical_power").getAsInt();
+		}
 
 		// pets
 
-		int petScore = PlayerStats.getPetScore(object);
+		int petScore = 0;
+		if (object.has("leveling") && object.getAsJsonObject("leveling").has("highest_pet_score")) {
+			petScore = object.getAsJsonObject("leveling").get("highest_pet_score").getAsInt();
+
+		}
 		int sbXpPetScore = petScore * coreTask.get("pet_score_xp").getAsInt();
 
 		// museum is not possible
@@ -116,6 +125,18 @@ public class CoreTaskLevel {
 				}
 			}
 		}
+
+		int sbXpBankUpgrades = 0;
+
+		JsonArray completedTasks = object.getAsJsonObject("leveling").get("completed_tasks").getAsJsonArray();
+		JsonObject bankUpgradesXp = coreTask.getAsJsonObject("bank_upgrades_xp");
+		for (JsonElement completedTask : completedTasks) {
+			String name = completedTask.getAsString();
+			if (bankUpgradesXp.has(name)) {
+				sbXpBankUpgrades += bankUpgradesXp.get(name).getAsInt();
+			}
+		}
+
 		List<String> lore = new ArrayList<>();
 
 		lore.add(levelPage.buildLore("Skill Level Up",
@@ -141,7 +162,7 @@ public class CoreTaskLevel {
 			sbXpMinionTier, coreTask.get("craft_minions").getAsInt(), false
 		));
 		lore.add(levelPage.buildLore("Bank Upgrade",
-			0, 0, false
+			sbXpBankUpgrades, coreTask.get("bank_upgrades").getAsInt(), false
 		));
 
 		levelPage.renderLevelBar(
@@ -152,7 +173,7 @@ public class CoreTaskLevel {
 			110,
 			0,
 			sbXpGainedSkillLVL + sbXpGainedFairy +
-				sbXpCollection + sbXpMinionTier,
+				sbXpCollection + sbXpMinionTier + sbXpBankUpgrades,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("core_task").getAsInt(),
 			mouseX,
 			mouseY,

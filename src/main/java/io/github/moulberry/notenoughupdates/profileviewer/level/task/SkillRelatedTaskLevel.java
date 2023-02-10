@@ -84,8 +84,8 @@ public class SkillRelatedTaskLevel {
 			gemstone = 0;
 		}
 
-		int sbXpMithrilPowder = (int) powder(3.75, mithril, 12_500_000);
-		int sbXpGemstonePowder = (int) powder(4.25, gemstone, 20_000_000);
+		double sbXpMithrilPowder = powder(3.75, mithril, 12_500_000);
+		double sbXpGemstonePowder = powder(4.25, gemstone, 20_000_000);
 
 		double sbXpHotmTier =
 			(sbXpMithrilPowder + gainByFirstMithrilThing) + (sbXpGemstonePowder + gainByFirstGemstoneThing)
@@ -171,6 +171,14 @@ public class SkillRelatedTaskLevel {
 			}
 		}
 
+		int sbXpNucleus = 0;
+		JsonObject leveling = object.get("leveling").getAsJsonObject();
+		if (leveling.has("completions") && leveling.getAsJsonObject("completions").has("NUCLEUS_RUNS")) {
+			int nucleusRuns = leveling.getAsJsonObject("completions").get("NUCLEUS_RUNS").getAsInt();
+			int crystalNucleusXp = miningObj.get("crystal_nucleus_xp").getAsInt();
+			sbXpNucleus += nucleusRuns * crystalNucleusXp;
+		}
+
 		List<String> lore = new ArrayList<>();
 		lore.add(levelPage.buildLore("Heart of the Mountain", sbXpHotmTier, miningObj.get("hotm").getAsInt(), false));
 		lore.add(levelPage.buildLore(
@@ -179,7 +187,7 @@ public class SkillRelatedTaskLevel {
 			miningObj.get("commission_milestone").getAsInt(),
 			false
 		));
-		lore.add(levelPage.buildLore("Crystal Nucleus", 0, 0, false));
+		lore.add(levelPage.buildLore("Crystal Nucleus", sbXpNucleus, miningObj.get("crystal_nucleus").getAsInt(), false));
 		lore.add(levelPage.buildLore(
 			"Anita's Shop Upgrade",
 			sbXpGainedByAnita,
@@ -189,13 +197,11 @@ public class SkillRelatedTaskLevel {
 		lore.add(levelPage.buildLore("Peak of the Mountain", sbXpPotmTier, miningObj.get("potm").getAsInt(), false));
 		lore.add(levelPage.buildLore("Trophy Fish", sbXpTrophyFish, fishingObj.get("trophy_fish").getAsInt(), false));
 		lore.add(levelPage.buildLore("Rock Milestone", sbXpRockPet, miningObj.get("rock_milestone").getAsInt(), false));
-		lore.add(levelPage.buildLore(
-			"Dolphin Milestone",
-			sbXpDolphinPet,
-			fishingObj.get("dolphin_milestone").getAsInt(),
-			false
-		));
+		lore.add(levelPage.buildLore("Dolphin Milestone", sbXpDolphinPet, fishingObj.get("dolphin_milestone").getAsInt(), false));
 
+		int totalXp =
+			(int) (sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
+				sbXpDolphinPet+sbXpNucleus);
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
@@ -203,8 +209,7 @@ public class SkillRelatedTaskLevel {
 			guiTop + 115,
 			110,
 			0,
-			sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
-				sbXpDolphinPet,
+			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("skill_related_task").getAsInt(),
 			mouseX,
 			mouseY,
