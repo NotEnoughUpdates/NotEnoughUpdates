@@ -46,8 +46,12 @@ public class EventTaskLevel {
 
 		if (object.has("leveling")) {
 			JsonObject leveling = object.getAsJsonObject("leveling");
-			int miningFiestaOresMined = leveling.get("mining_fiesta_ores_mined").getAsInt();
-			int fishingFestivalSharksKilled = leveling.get("fishing_festival_sharks_killed").getAsInt();
+			int miningFiestaOresMined = 0;
+			int fishingFestivalSharksKilled = 0;
+			if (leveling.has("mining_fiesta_ores_mined"))
+				miningFiestaOresMined = leveling.get("mining_fiesta_ores_mined").getAsInt();
+			if (leveling.has("fishing_festival_sharks_killed")) fishingFestivalSharksKilled = leveling.get(
+				"fishing_festival_sharks_killed").getAsInt();
 
 			sbXpMiningFiesta = getCapOrAmount(miningFiestaOresMined, 1_000_000, 5_000);
 			sbXpFishingFestival = getCapOrAmount(fishingFestivalSharksKilled, 5_000, 50);
@@ -63,8 +67,18 @@ public class EventTaskLevel {
 		}
 
 		lore.add(levelPage.buildLore("Mining Fiesta", sbXpMiningFiesta, eventTask.get("mining_fiesta").getAsInt(), false));
-		lore.add(levelPage.buildLore("Fishing Festival", sbXpFishingFestival, eventTask.get("fishing_festival").getAsInt(), false));
-		lore.add(levelPage.buildLore("Spooky Festival", sbXpSpookyFestival, eventTask.get("spooky_festival").getAsInt(), false));
+		lore.add(levelPage.buildLore(
+			"Fishing Festival",
+			sbXpFishingFestival,
+			eventTask.get("fishing_festival").getAsInt(),
+			false
+		));
+		lore.add(levelPage.buildLore(
+			"Spooky Festival",
+			sbXpSpookyFestival,
+			eventTask.get("spooky_festival").getAsInt(),
+			false
+		));
 
 		int totalXp = sbXpMiningFiesta + sbXpSpookyFestival +
 			sbXpFishingFestival;
@@ -85,6 +99,7 @@ public class EventTaskLevel {
 	}
 
 	private int getCapOrAmount(int miningFiestaOresMined, int cap, int per) {
+		if (miningFiestaOresMined == 0) return 0;
 		if (miningFiestaOresMined > cap) {
 			return cap / per;
 		}

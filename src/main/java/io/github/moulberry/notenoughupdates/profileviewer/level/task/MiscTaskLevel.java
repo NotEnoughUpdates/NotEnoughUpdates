@@ -108,7 +108,6 @@ public class MiscTaskLevel {
 			for (JsonElement completedTask : completedTasks) {
 				String name = completedTask.getAsString();
 				String harpName = name.substring(0, name.lastIndexOf("_"));
-				System.out.println(harpName);
 				if(harpSongsNames.has(harpName))sbXpGainedHarp += harpSongsNames.get(harpName).getAsInt() / 4;
 			}
 		}
