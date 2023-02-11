@@ -60,7 +60,6 @@ object OldSkyBlockMenu {
     fun onStackClick(event: SlotClickEvent) {
         if (!isRightInventory()) return
 
-        if (event.clickType != 0 || event.clickedButton != 0) return
         val skyBlockButton = map[event.slotId] ?: return
         event.isCanceled = true
 
