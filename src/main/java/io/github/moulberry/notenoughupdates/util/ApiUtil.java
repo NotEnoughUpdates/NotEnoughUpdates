@@ -61,7 +61,7 @@ import java.util.zip.GZIPInputStream;
 public class ApiUtil {
 	private static final Gson gson = new Gson();
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
-	private static final String USER_AGENT = "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
+	private static final String USER_AGENT = "NotEnoughChatting/" + NotEnoughUpdates.VERSION;
 	private static SSLContext ctx;
 	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
 
