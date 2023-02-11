@@ -21,20 +21,21 @@ package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
+import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
-import io.github.moulberry.notenoughupdates.util.MuseumUtil
+import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
-import io.github.moulberry.notenoughupdates.util.Rectangle
-import io.github.moulberry.notenoughupdates.util.Utils
-import io.github.moulberry.notenoughupdates.util.stripControlCodes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiScreenEvent
@@ -52,9 +53,9 @@ object MuseumCheapestItemOverlay {
         var priceRefreshedAt: Long
     )
 
-    private const val ITEMS_PER_PAGE = 8
+    private const val ITEMS_PER_PAGE = 9
 
-    private val backgroundResource: ResourceLocation = ResourceLocation("notenoughupdates:dungeon_chest_worth.png")
+    private val backgroundResource: ResourceLocation = ResourceLocation("notenoughupdates:minion_overlay.png")
 
     val config get() = NotEnoughUpdates.INSTANCE.config.museum
 
@@ -101,6 +102,7 @@ object MuseumCheapestItemOverlay {
 
         drawBackground(guiLeft, xSize, guiTop)
         drawLines(guiLeft, guiTop)
+        drawButtons(guiLeft, xSize, guiTop)
     }
 
     /**
@@ -124,7 +126,7 @@ object MuseumCheapestItemOverlay {
                 Rectangle(
                     event.guiBaseRect.right,
                     event.guiBaseRect.top,
-                    185, 100
+                    175, 130
                 ), ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
             )
         }
@@ -188,10 +190,13 @@ object MuseumCheapestItemOverlay {
 
         lines.forEachIndexed { index, line ->
             if (!visitedAllPages() && (index == ITEMS_PER_PAGE || index == lines.size - 1)) {
-                Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
+                TextRenderUtils.drawStringScaledMaxWidth(
                     "${EnumChatFormatting.RED}Visit all pages for accurate info!",
+                    Minecraft.getMinecraft().fontRendererObj,
                     (guiLeft + 185).toFloat(),
-                    (guiTop + 85).toFloat(),
+                    (guiTop + 95).toFloat(),
+                    true,
+                    155,
                     0
                 )
             } else {
@@ -207,7 +212,7 @@ object MuseumCheapestItemOverlay {
                     }",
                     x,
                     y,
-                    165
+                    156
                 )
 
                 if (Utils.isWithinRect(mouseX, mouseY, x.toInt(), y.toInt(), 170, 10)) {
@@ -265,10 +270,13 @@ object MuseumCheapestItemOverlay {
 
         //no page has been visited yet
         if (lines.isEmpty()) {
-            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
+            TextRenderUtils.drawStringScaledMaxWidth(
                 "${EnumChatFormatting.RED}Open valid category to continue!",
+                Minecraft.getMinecraft().fontRendererObj,
                 (guiLeft + 185).toFloat(),
-                (guiTop + 85).toFloat(),
+                (guiTop + 128 / 2).toFloat(),
+                true,
+                155,
                 0
             )
         }
@@ -352,16 +360,43 @@ object MuseumCheapestItemOverlay {
         GL11.glColor4f(1F, 1F, 1F, 1F)
         GlStateManager.disableLighting()
         Utils.drawTexturedRect(
-            guiLeft.toFloat() + xSize + 4,
+            (guiLeft + xSize + 4).toFloat(),
             guiTop.toFloat(),
-            180F,
-            101F,
-            0F,
-            180 / 256F,
-            0F,
-            101 / 256F,
+            168f,
+            128f,
+            0f,
+            1f,
+            0f,
+            1f,
             GL11.GL_NEAREST
         )
+    }
+
+    /**
+     * Draw the two clickable buttons on the bottom right and display a tooltip if needed
+     */
+    private fun drawButtons(guiLeft: Int, xSize: Int, guiTop: Int) {
+        RenderHelper.enableGUIStandardItemLighting()
+        // Left button
+        val useBIN = config.museumCheapestItemOverlayValueSource == 0
+        val mouseX = Utils.getMouseX()
+        val mouseY = Utils.getMouseY()
+
+        val leftItemStack = if (useBIN) {
+            ItemUtils.getCoinItemStack(100000.0)
+        } else {
+            ItemStack(Blocks.crafting_table)
+        }
+        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
+            leftItemStack,
+            guiLeft + xSize + 131,
+            guiTop + 106
+        )
+
+//        if(Utils.isWithinRect(mouseX, mouseY, ))
+
+        // Right button
+        RenderHelper.disableStandardItemLighting()
     }
 
     /**
