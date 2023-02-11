@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -142,8 +141,15 @@ public class CoreTaskLevel {
 		lore.add(levelPage.buildLore("Skill Level Up",
 			sbXpGainedSkillLVL, coreTask.get("skill_level_up").getAsInt(), false
 		));
-		lore.add(levelPage.buildLore("Museum Progression",
-			0, 0, false
+
+		int totalXp = sbXpGainedSkillLVL + sbXpGainedFairy +
+			sbXpCollection + sbXpMinionTier + sbXpBankUpgrades;
+
+		lore.add(levelPage.buildLore(
+			"Museum Progression",
+			0,
+			0,
+			false
 		));
 		lore.add(levelPage.buildLore(
 			"Fairy Soul",
@@ -172,8 +178,7 @@ public class CoreTaskLevel {
 			guiTop + 25,
 			110,
 			0,
-			sbXpGainedSkillLVL + sbXpGainedFairy +
-				sbXpCollection + sbXpMinionTier + sbXpBankUpgrades,
+			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("core_task").getAsInt(),
 			mouseX,
 			mouseY,

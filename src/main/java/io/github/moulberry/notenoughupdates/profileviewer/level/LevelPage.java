@@ -190,7 +190,7 @@ public class LevelPage {
 			guiTop + 30,
 			110,
 			skyblockLevel,
-			(skyblockLevel - (long) skyblockLevel) * 100,
+			Math.round((skyblockLevel - (long) skyblockLevel)*100),
 			100,
 			mouseX,
 			mouseY,

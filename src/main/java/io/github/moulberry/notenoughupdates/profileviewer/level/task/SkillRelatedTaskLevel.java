@@ -43,13 +43,6 @@ public class SkillRelatedTaskLevel {
 		JsonObject skillRelatedTask = levelPage.getConstant().get("skill_related_task").getAsJsonObject();
 		JsonObject miningObj = skillRelatedTask.get("mining").getAsJsonObject();
 
-		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_mithril"), 0);
-		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_gemstone"), 0);
-		float mithril = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_mithril"), 0) +
-			mithrilPowder;
-		float gemstone = (Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_gemstone"), 0)) +
-			gemstonePowder;
-
 		float hotmXp = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.experience"), 0);
 		ProfileViewer.Level levelObjHotm =
 			ProfileViewer.getLevel(
@@ -66,29 +59,31 @@ public class SkillRelatedTaskLevel {
 			hotmXP += hotmXpArray.get(i - 1).getAsInt();
 		}
 
-		int gainByFirstMithrilThing;
-		if (mithril >= 350_000) {
-			gainByFirstMithrilThing = (int) (350000 / 2400d);
-			mithril -= 350_000;
-		} else {
-			gainByFirstMithrilThing = (int) (mithril / 2400d);
-			mithril = 0;
-		}
+		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_mithril"), 0);
+		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_gemstone"), 0);
+		float mithril = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_mithril"), 0) +
+			mithrilPowder;
+		float gemstone = (Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_gemstone"), 0)) +
+			gemstonePowder;
 
-		int gainByFirstGemstoneThing;
-		if (gemstone >= 350_000) {
-			gainByFirstGemstoneThing = (int) (350_000 / 2500d);
-			gemstone -= 350_000;
-		} else {
-			gainByFirstGemstoneThing = (int) (gemstone / 2500d);
-			gemstone = 0;
-		}
+		// PUNKT NULL
 
-		double sbXpMithrilPowder = powder(3.75, mithril, 12_500_000);
-		double sbXpGemstonePowder = powder(4.25, gemstone, 20_000_000);
+		double totalMithril = mithril + mithrilPowder;
+		double totalGemstone = gemstone + gemstonePowder;
+		double mithrilUnder = Math.min(350000.0, totalMithril); // PUNKT NULL
+		double mithrilOver = Math.max(0, Math.min(totalMithril, 12_500_000.0) - 350000.0); // PUNKT NULL
+		double gemstoneUnder = Math.min(350000.0, totalGemstone);
+		double gemstoneOver = Math.max(0, Math.min(totalGemstone, 20_000_000.0) - 350000.0); // PUNKT NULL
+
+		double mithrilXP = Math.floor(mithrilUnder / 2400.0); // PUNKT NULL
+		double gemstoneXP = Math.floor(gemstoneUnder / 2500.0); // PUNKT NULL
+		double mithrilExcess = Math.floor(
+			3.75 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 12_500_000.0) * mithrilOver + 9)) - 3)); // PUNKT NULL
+		double gemstoneExcess = Math.floor(
+			4.25 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 20_000_000.0) * gemstoneOver + 9)) - 3)); // PUNKT NULL
 
 		double sbXpHotmTier =
-			(sbXpMithrilPowder + gainByFirstMithrilThing) + (sbXpGemstonePowder + gainByFirstGemstoneThing)
+			(mithrilXP + mithrilExcess) + (gemstoneXP + gemstoneExcess)
 				+ hotmXP;
 
 		int sbXpPotmTier = 0;
@@ -201,7 +196,7 @@ public class SkillRelatedTaskLevel {
 
 		int totalXp =
 			(int) (sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
-				sbXpDolphinPet+sbXpNucleus);
+				sbXpDolphinPet + sbXpNucleus);
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
