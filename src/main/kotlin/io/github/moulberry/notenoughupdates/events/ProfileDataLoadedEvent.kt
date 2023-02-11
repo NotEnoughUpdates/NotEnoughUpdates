@@ -16,25 +16,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
+package io.github.moulberry.notenoughupdates.events
 
-package io.github.moulberry.notenoughupdates.events;
-
-import com.google.gson.JsonObject;
-
-import javax.annotation.Nullable;
+import com.google.gson.JsonObject
 
 //TODO extend the usage of this event (accessory bag and storage data)
-public class ProfileDataLoadedEvent extends NEUEvent {
+class ProfileDataLoadedEvent(val uuid: String, val data: JsonObject?) : NEUEvent() {
+    val profileInfo: JsonObject? by lazy { readProfileInfo() }
 
-	@Nullable
-	private final JsonObject data;
+    private fun readProfileInfo(): JsonObject? {
+        if (data == null) return null
 
-	public ProfileDataLoadedEvent(@Nullable JsonObject entireApiResponse) {
-		this.data = entireApiResponse;
-	}
-
-	@Nullable
-	public JsonObject getData() {
-		return data;
-	}
+        val skyblockProfiles = data["profiles"].asJsonArray
+        for (profileEle in skyblockProfiles) {
+            val profile = profileEle.asJsonObject
+            if (!profile.has("members")) continue
+            val members = profile["members"].asJsonObject
+            if (!members.has(uuid)) continue
+            if (profile.has("selected") && profile["selected"].asBoolean) {
+                return members[uuid].asJsonObject
+            }
+        }
+        return null
+    }
 }
