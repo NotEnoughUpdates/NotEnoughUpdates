@@ -20,17 +20,22 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Team;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -38,6 +43,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({GuiIngame.class})
 public class MixinGuiIngame {
+	@Shadow
+	@Final
+	protected RenderItem itemRenderer;
+	@Shadow
+	@Final
+	protected Minecraft mc;
 	private static final String TARGET = "Lnet/minecraft/scoreboard/ScorePlayerTeam;" +
 		"formatPlayerName(Lnet/minecraft/scoreboard/Team;Ljava/lang/String;)Ljava/lang/String;";
 
@@ -79,5 +90,29 @@ public class MixinGuiIngame {
 			return InventoryStorageSelector.getInstance().getNamedHeldItemOverride();
 		}
 		return inventory.getCurrentItem();
+	}
+
+	@Inject(method = "renderHotbarItem", at = @At("HEAD"), cancellable = true)
+	public void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player, CallbackInfo ci) {
+		ci.cancel();
+		if (player.inventory.mainInventory[index] == null) {
+			return;
+		}
+		ItemStack itemStack = player.inventory.mainInventory[index].copy();
+
+		itemStack.setItem(ItemCustomizeManager.getCustomItem(itemStack));
+		float f = (float)itemStack.animationsToGo - partialTicks;
+		if (f > 0.0f) {
+			GlStateManager.pushMatrix();
+			float g = 1.0f + f / 5.0f;
+			GlStateManager.translate(xPos + 8, yPos + 12, 0.0f);
+			GlStateManager.scale(1.0f / g, (g + 1.0f) / 2.0f, 1.0f);
+			GlStateManager.translate(-(xPos + 8), -(yPos + 12), 0.0f);
+		}
+		this.itemRenderer.renderItemAndEffectIntoGUI(itemStack, xPos, yPos);
+		if (f > 0.0f) {
+			GlStateManager.popMatrix();
+		}
+		this.itemRenderer.renderItemOverlays(this.mc.fontRendererObj, itemStack, xPos, yPos);
 	}
 }

@@ -22,16 +22,19 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NEUManager;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -49,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+@NEUAutoSubscribe
 public class ItemCustomizeManager {
 	public static class ReloadListener implements IResourceManagerReloadListener {
 		@Override
@@ -81,6 +85,8 @@ public class ItemCustomizeManager {
 		public String customGlintColour = DEFAULT_GLINT_COLOR;
 
 		public String customLeatherColour = null;
+
+		public String customItem = "";
 	}
 
 	public static void putItemData(String uuid, ItemData data) {
@@ -312,5 +318,20 @@ public class ItemCustomizeManager {
 			}
 		} catch (Exception ignored) {
 		}
+	}
+
+	public static Item getCustomItem(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
+		return Item.getByNameOrId(data.customItem);
+	}
+
+	@SubscribeEvent
+	public void onReplaceItem(ReplaceItemEvent event) {
+		if (event.getOriginal() == null) return;
+		ItemStack newStack = event.getOriginal().copy();
+		newStack.setItem(getCustomItem(newStack));
+
+		event.replaceWith(newStack);
 	}
 }

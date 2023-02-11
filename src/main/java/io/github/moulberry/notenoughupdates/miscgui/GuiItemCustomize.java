@@ -260,6 +260,7 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(xCenter - 48, yTop + 7, 0);
 		GlStateManager.scale(6, 6, 1);
+		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
 		Utils.drawItemStack(stack, 0, 0);
 		GlStateManager.popMatrix();
 
