@@ -86,7 +86,7 @@ public class ItemCustomizeManager {
 
 		public String customLeatherColour = null;
 
-		public String customItem = "";
+		public String customItem = null;
 	}
 
 	public static void putItemData(String uuid, ItemData data) {
@@ -323,7 +323,17 @@ public class ItemCustomizeManager {
 	public static Item getCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
 		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
-		return Item.getByNameOrId(data.customItem);
+		Item newItem = Item.getByNameOrId(data.customItem);
+		if (newItem == null) return stack.getItem();
+		return newItem;
+	}
+
+	public static Item getCustomItem(ItemStack stack, String newItemString) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
+		Item newItem = Item.getByNameOrId(newItemString);
+		if (newItem == null) return stack.getItem();
+		return newItem;
 	}
 
 	@SubscribeEvent

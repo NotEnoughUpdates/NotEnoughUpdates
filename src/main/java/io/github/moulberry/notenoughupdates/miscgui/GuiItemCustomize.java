@@ -55,6 +55,7 @@ public class GuiItemCustomize extends GuiScreen {
 	private final ItemStack stack;
 	private final String itemUUID;
 	private final GuiElementTextField textFieldRename = new GuiElementTextField("", 158, 20, GuiElementTextField.COLOUR);
+	private final GuiElementTextField textFieldCustomItem = new GuiElementTextField("", 158, 20, GuiElementTextField.COLOUR);
 	private final GuiElementBoolean enchantGlintButton;
 
 	private int renderHeight = 0;
@@ -81,6 +82,11 @@ public class GuiItemCustomize extends GuiScreen {
 			this.enchantGlint = data.overrideEnchantGlint ? data.enchantGlintValue : stackHasEffect;
 			if (data.customName != null) {
 				textFieldRename.setText(data.customName);
+			}
+			if (data.customItem != null && data.customItem.length() > 0) {
+				textFieldCustomItem.setText(data.customItem);
+			} else {
+				textFieldCustomItem.setText(stack.getItem().getRegistryName().replace("minecraft:", ""));
 			}
 			this.customGlintColour = data.customGlintColour;
 			this.customLeatherColour = data.customLeatherColour;
@@ -157,6 +163,10 @@ public class GuiItemCustomize extends GuiScreen {
 			}
 		}
 
+		if (!this.textFieldCustomItem.getText().isEmpty()) {
+			data.customItem = this.textFieldCustomItem.getText();
+		}
+
 		ItemCustomizeManager.putItemData(itemUUID, data);
 	}
 
@@ -212,6 +222,23 @@ public class GuiItemCustomize extends GuiScreen {
 
 		textFieldRename.render(xCenter - textFieldRename.getWidth() / 2 - 10, yTop);
 
+		if (!textFieldCustomItem.getFocus() && textFieldCustomItem.getText().isEmpty()) {
+			textFieldCustomItem.setOptions(GuiElementTextField.SCISSOR_TEXT);
+			textFieldCustomItem.setPrependText("\u00a77Enter Custom Item ID...");
+		} else {
+			textFieldCustomItem.setOptions(GuiElementTextField.COLOUR | GuiElementTextField.SCISSOR_TEXT);
+			textFieldCustomItem.setPrependText("");
+		}
+
+		if (!textFieldCustomItem.getFocus()) {
+			textFieldCustomItem.setSize(158, 20);
+		} else {
+			int textSize = fontRendererObj.getStringWidth(textFieldCustomItem.getTextDisplay()) + 10;
+			textFieldCustomItem.setSize(Math.max(textSize, 158), 20);
+		}
+
+		textFieldCustomItem.render(xCenter - textFieldCustomItem.getWidth() / 2 - 10, yTop + 200);
+
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.help);
 		GlStateManager.color(1, 1, 1, 1);
 		int helpX = xCenter + textFieldRename.getWidth() / 2 - 5;
@@ -260,8 +287,11 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(xCenter - 48, yTop + 7, 0);
 		GlStateManager.scale(6, 6, 1);
-		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
-		Utils.drawItemStack(stack, 0, 0);
+		ItemStack customItemStack = stack.copy();
+		if (!this.textFieldCustomItem.getText().isEmpty()) {
+			customItemStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
+		}
+		Utils.drawItemStack(customItemStack, 0, 0);
 		GlStateManager.popMatrix();
 
 		yTop += 115;
@@ -390,6 +420,15 @@ public class GuiItemCustomize extends GuiScreen {
 			}
 		}
 
+		if (textFieldCustomItem.getFocus()) {
+			if (keyCode == Keyboard.KEY_ESCAPE) {
+				textFieldCustomItem.setFocus(false);
+				return;
+			} else {
+				textFieldCustomItem.keyTyped(typedChar, keyCode);
+			}
+		}
+
 		super.keyTyped(typedChar, keyCode);
 	}
 
@@ -418,6 +457,7 @@ public class GuiItemCustomize extends GuiScreen {
 	@Override
 	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
 		textFieldRename.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+		textFieldCustomItem.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 
 	@Override
@@ -432,6 +472,14 @@ public class GuiItemCustomize extends GuiScreen {
 			textFieldRename.mouseClicked(mouseX, mouseY, mouseButton);
 		} else {
 			textFieldRename.unfocus();
+		}
+
+		if (mouseX >= xCenter - textFieldCustomItem.getWidth() / 2 - 10 &&
+			mouseX <= xCenter + textFieldCustomItem.getWidth() / 2 - 10 &&
+			mouseY >= yTop + 200 + 14 && mouseY <= yTop + 200 + 14 + textFieldCustomItem.getHeight()) {
+			textFieldCustomItem.mouseClicked(mouseX, mouseY, mouseButton);
+		} else {
+			textFieldCustomItem.unfocus();
 		}
 
 		if (enchantGlint && mouseX >= xCenter - 90 && mouseX <= xCenter + 90 &&
