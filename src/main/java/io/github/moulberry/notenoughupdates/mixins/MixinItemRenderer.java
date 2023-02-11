@@ -21,31 +21,17 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
-	@Shadow
-	@Final
-	private RenderItem itemRenderer;
-
-	@Shadow
-	protected abstract boolean isBlockTranslucent(Block blockIn);
 
 	@Redirect(method = "updateEquippedItem", at = @At(
 		value = "INVOKE",
@@ -58,31 +44,24 @@ public abstract class MixinItemRenderer {
 		return player.getCurrentItem();
 	}
 
-	@Inject(method = "renderItem", at = @At("HEAD"), cancellable = true)
-	public void renderItem(
-		EntityLivingBase entityIn,
-		ItemStack heldStack,
-		ItemCameraTransforms.TransformType transform,
-		CallbackInfo ci
-	) {
-		ci.cancel();
-		if (heldStack != null) {
-			ItemStack newStack = heldStack.copy();
-			newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-			Item item = newStack.getItem();
-			Block block = Block.getBlockFromItem(item);
-			GlStateManager.pushMatrix();
-			if (this.itemRenderer.shouldRenderItemIn3D(newStack)) {
-				GlStateManager.scale(2.0f, 2.0f, 2.0f);
-				if (this.isBlockTranslucent(block)) {
-					GlStateManager.depthMask(false);
-				}
-			}
-			this.itemRenderer.renderItemModelForEntity(newStack, entityIn, transform);
-			if (this.isBlockTranslucent(block)) {
-				GlStateManager.depthMask(true);
-			}
-			GlStateManager.popMatrix();
-		}
+	@Redirect(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;"))
+	public Item renderItem_getItem(ItemStack stack) {
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack.getItem();
+	}
+
+	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;shouldRenderItemIn3D(Lnet/minecraft/item/ItemStack;)Z"))
+	public ItemStack renderItem_shouldRenderItemIn3D(ItemStack stack) {
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack;
+	}
+
+	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemModelForEntity(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/renderer/block/model/ItemCameraTransforms$TransformType;)V", ordinal = 0))
+	public ItemStack renderItem_renderItemModelForEntity(ItemStack stack) {
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack;
 	}
 }

@@ -26,18 +26,19 @@ import io.github.moulberry.notenoughupdates.miscgui.InventoryStorageSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Team;
+import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -92,27 +93,24 @@ public class MixinGuiIngame {
 		return inventory.getCurrentItem();
 	}
 
-	@Inject(method = "renderHotbarItem", at = @At("HEAD"), cancellable = true)
-	public void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player, CallbackInfo ci) {
-		ci.cancel();
-		if (player.inventory.mainInventory[index] == null) {
-			return;
-		}
-		ItemStack itemStack = player.inventory.mainInventory[index].copy();
+	@Redirect(method = "renderHotbarItem", at = @At(value = "FIELD", target = "Lnet/minecraft/item/ItemStack;animationsToGo:I", opcode = Opcodes.GETFIELD))
+	public int renderHotbarItem_animationsToGo(ItemStack stack) {
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack.animationsToGo;
+	}
 
-		itemStack.setItem(ItemCustomizeManager.getCustomItem(itemStack));
-		float f = (float)itemStack.animationsToGo - partialTicks;
-		if (f > 0.0f) {
-			GlStateManager.pushMatrix();
-			float g = 1.0f + f / 5.0f;
-			GlStateManager.translate(xPos + 8, yPos + 12, 0.0f);
-			GlStateManager.scale(1.0f / g, (g + 1.0f) / 2.0f, 1.0f);
-			GlStateManager.translate(-(xPos + 8), -(yPos + 12), 0.0f);
-		}
-		this.itemRenderer.renderItemAndEffectIntoGUI(itemStack, xPos, yPos);
-		if (f > 0.0f) {
-			GlStateManager.popMatrix();
-		}
-		this.itemRenderer.renderItemOverlays(this.mc.fontRendererObj, itemStack, xPos, yPos);
+	@ModifyArg(method = "renderHotbarItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
+	public ItemStack renderHotbarItem_renderItemAndEffectIntoGUI(ItemStack stack) {
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack;
+	}
+
+	@ModifyArg(method = "renderHotbarItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemOverlays(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
+	public ItemStack renderHotbarItem_renderItemOverlays(ItemStack stack) {
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack;
 	}
 }
