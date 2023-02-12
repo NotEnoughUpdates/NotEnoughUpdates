@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.entity.EntityLivingBase;
@@ -77,8 +76,7 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 	)
 	public int renderItem_getColor(ItemArmor item, ItemStack stack) {
 		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-		if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack) &&
-			Minecraft.getMinecraft().thePlayer.inventory.getItemStack() != stack) {
+		if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 			return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 		}
 
