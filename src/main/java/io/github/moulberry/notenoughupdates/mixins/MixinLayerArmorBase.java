@@ -82,4 +82,20 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 
 		return item.getColor(stack);
 	}
+
+	@Redirect(method = "renderLayer",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/entity/layers/LayerArmorBase;getCurrentArmor(Lnet/minecraft/entity/EntityLivingBase;I)Lnet/minecraft/item/ItemStack;"
+		)
+	)
+	public ItemStack renderItem_getCurrentArmor(LayerArmorBase<?> instance, EntityLivingBase entitylivingbaseIn, int armorSlot) {
+		ItemStack stack = instance.getCurrentArmor(entitylivingbaseIn, armorSlot);
+		if (stack == null) return stack;
+		if (armorSlot != 4) return stack;
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		return newStack;
+	}
 }
