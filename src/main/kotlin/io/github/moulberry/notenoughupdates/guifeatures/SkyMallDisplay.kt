@@ -28,6 +28,8 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.time.Duration
+import java.time.Instant
 import java.util.regex.Pattern
 
 @NEUAutoSubscribe
@@ -72,10 +74,12 @@ class SkyMallDisplay {
         }
 
         private fun update() {
+            val nextDayBeginning = SkyBlockTime.now()
+                .let { it.copy(day = it.day + 1, hour = 0, minute = 0, second = 0) }
+                .toInstant()
+            val untilNextDay = Duration.between(Instant.now(), nextDayBeginning)
             displayText = (currentPerk?.displayName ?: "?") + " §a(${
-                Utils.prettyTime(SkyBlockTime.now()
-                    .let { it.copy(day = it.day + 1, hour = 0, minute = 0, second = 0) }
-                    .toRealTime() - System.currentTimeMillis())
+                Utils.prettyTime(untilNextDay.toMillis())
             })"
             lastUpdated = System.currentTimeMillis()
         }

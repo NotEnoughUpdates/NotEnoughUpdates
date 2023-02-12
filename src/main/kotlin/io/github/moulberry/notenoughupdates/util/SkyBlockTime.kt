@@ -19,6 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.util
 
+import java.time.Instant
+
 data class SkyBlockTime(
     val year: Int = 1,
     val month: Int = 1,
@@ -28,7 +30,15 @@ data class SkyBlockTime(
     val second: Int = 0,
 ) {
 
-    fun toRealTime(): Long {
+    val monthName get() = monthName(month)
+    val dayName get() = "$day${daySuffix(day)}"
+
+
+    fun toInstant(): Instant? {
+        return Instant.ofEpochMilli(toMillis())
+    }
+
+    fun toMillis(): Long {
         val skyBlockYear = 124 * 60 * 60.0
         val skyBlockMonth = skyBlockYear / 12
         val skyBlockDay = skyBlockMonth / 31
@@ -48,9 +58,9 @@ data class SkyBlockTime(
     }
 
     companion object {
-        fun now(): SkyBlockTime {
+        fun fromInstant(instant: Instant): SkyBlockTime {
             val skyBlockTimeZero = 1559829300000 // Day 1, Year 1
-            var realMillis = (System.currentTimeMillis() - skyBlockTimeZero)
+            var realMillis = (instant.toEpochMilli() - skyBlockTimeZero)
 
             val skyBlockYear = 124 * 60 * 60 * 1000
             val skyBlockMonth = skyBlockYear / 12
@@ -72,21 +82,26 @@ data class SkyBlockTime(
             val minute = getUnit(skyBlockMinute)
             val second = getUnit(skyBlockSecond)
             return SkyBlockTime(year, month, day, hour, minute, second)
+
+        }
+
+        fun now(): SkyBlockTime {
+            return fromInstant(Instant.now())
         }
 
         fun monthName(month: Int): String {
-            val prefix = when ((month - 1) % 3 + 1) {
-                1 -> "Early "
-                2 -> ""
-                3 -> "Late "
+            val prefix = when ((month - 1) % 3) {
+                0 -> "Early "
+                1 -> ""
+                2 -> "Late "
                 else -> "Undefined!"
             }
 
-            val name = when (month / 4 + 1) {
-                1 -> "Spring"
-                2 -> "Summer"
-                3 -> "Autumn"
-                4 -> "Winter"
+            val name = when ((month - 1) / 3) {
+                0 -> "Spring"
+                1 -> "Summer"
+                2 -> "Autumn"
+                3 -> "Winter"
                 else -> "lol"
             }
 
