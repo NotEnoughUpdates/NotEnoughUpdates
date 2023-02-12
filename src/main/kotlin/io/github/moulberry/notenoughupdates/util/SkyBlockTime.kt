@@ -82,7 +82,7 @@ data class SkyBlockTime(
                 else -> "Undefined!"
             }
 
-            val name = when (month / 4 + 1) {
+            val name = when ((month - 1) / 3) {
                 1 -> "Spring"
                 2 -> "Summer"
                 3 -> "Autumn"
