@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package io.github.moulberry.notenoughupdates.util
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
@@ -27,7 +28,6 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import java.util.regex.Pattern
 
 @NEUAutoSubscribe
@@ -40,15 +40,14 @@ class HotmInformation {
         val gui = event.gui
         if (gui !is GuiChest) return
 
-        val containerName = (gui.inventorySlots as ContainerChest)
-            .lowerChestInventory.displayName.unformattedText
+        val containerName = (gui.inventorySlots as ContainerChest).lowerChestInventory.displayName.unformattedText
         if (containerName == "Heart of the Mountain") {
             ticksTillReload = 5
         }
     }
 
     @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
+    fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
         if (ticksTillReload == 0) return
         ticksTillReload--
