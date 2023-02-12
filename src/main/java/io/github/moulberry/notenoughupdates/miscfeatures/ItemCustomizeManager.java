@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -329,11 +330,31 @@ public class ItemCustomizeManager {
 	}
 
 	public static Item getCustomItem(ItemStack stack, String newItemString) {
-		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
 		Item newItem = Item.getByNameOrId(newItemString);
 		if (newItem == null) return stack.getItem();
 		return newItem;
+	}
+
+	public static boolean shouldRenderLeatherColour(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem() instanceof ItemArmor &&
+			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+		Item item = Item.getByNameOrId(data.customItem);
+		if (item == null) return stack.getItem() instanceof ItemArmor &&
+			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+		return item instanceof ItemArmor &&
+			((ItemArmor) item).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+	}
+
+	public static boolean hasCustomItem(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return false;
+		Item item = Item.getByNameOrId(data.customItem);
+		if (item == null) {
+			data.customItem = null;
+			return false;
+		}
+		return stack.getItem() != item;
 	}
 
 	@SubscribeEvent

@@ -76,7 +76,7 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 	)
 	public int renderItem_getColor(ItemArmor item, ItemStack stack) {
 		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-		if (data != null && data.customLeatherColour != null) {
+		if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 			return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 		}
 
