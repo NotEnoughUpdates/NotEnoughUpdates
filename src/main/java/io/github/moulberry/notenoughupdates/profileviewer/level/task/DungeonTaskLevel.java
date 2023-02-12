@@ -113,14 +113,12 @@ public class DungeonTaskLevel {
 				.createItemResolutionQuery()
 				.withKnownInternalName("WITHER_RELIC")
 				.resolveToItemStack(),
-			guiLeft + 23,
-			guiTop + 55,
+			guiLeft + 23, guiTop + 55,
 			110,
 			catacombsLvl,
 			totalXp,
 			totalGainful,
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

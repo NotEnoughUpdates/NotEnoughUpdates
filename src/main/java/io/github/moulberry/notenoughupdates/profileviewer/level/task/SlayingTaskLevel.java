@@ -238,13 +238,12 @@ public class SlayingTaskLevel {
 		levelPage.renderLevelBar(
 			"Slaying Task",
 			new ItemStack(Items.golden_sword),
-			guiLeft + 23,
-			guiTop + 85,
+			guiLeft + 23, guiTop + 85,
 			110,
-			0, totalXp,
+			0,
+			totalXp,
 			slayingTaskMax,
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

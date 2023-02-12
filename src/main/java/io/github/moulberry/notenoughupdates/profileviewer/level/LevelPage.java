@@ -100,12 +100,6 @@ public class LevelPage {
 		double skyblockLevel = profile.getSkyblockLevel(profileId);
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 
-
-		/*
-		This is a workaround as we cannot get the museum XP.
-		We are calculating everything together and subtracting it by the given level XP by Hypixel.
-		 */
-
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
 		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		essenceTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
@@ -186,14 +180,12 @@ public class LevelPage {
 		renderLevelBar(
 			"Level",
 			BasicPage.skull,
-			guiLeft + 163,
-			guiTop + 30,
+			guiLeft + 163, guiTop + 30,
 			110,
 			skyblockLevel,
 			Math.round((skyblockLevel - (long) skyblockLevel) * 100),
 			100,
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			false,
 			Collections.emptyList()
 		);

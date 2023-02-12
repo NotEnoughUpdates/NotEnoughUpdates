@@ -174,14 +174,12 @@ public class CoreTaskLevel {
 		levelPage.renderLevelBar(
 			"Core Task",
 			new ItemStack(Items.nether_star),
-			guiLeft + 23,
-			guiTop + 25,
+			guiLeft + 23, guiTop + 25,
 			110,
 			0,
 			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("core_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

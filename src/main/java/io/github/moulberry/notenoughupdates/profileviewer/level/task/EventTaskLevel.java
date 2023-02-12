@@ -85,14 +85,12 @@ public class EventTaskLevel {
 		levelPage.renderLevelBar(
 			"Event Task",
 			new ItemStack(Items.clock),
-			guiLeft + 299,
-			guiTop + 115,
+			guiLeft + 299, guiTop + 115,
 			110,
 			0,
 			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("event_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

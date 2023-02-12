@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,14 +180,12 @@ public class MiscTaskLevel {
 		levelPage.renderLevelBar(
 			"Misc. Task",
 			new ItemStack(Items.map),
-			guiLeft + 299,
-			guiTop + 55,
+			guiLeft + 299, guiTop + 55,
 			110,
 			0,
 			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("miscellaneous_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

@@ -117,14 +117,12 @@ public class EssenceTaskLevel {
 			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
 																			 .withKnownInternalName("ESSENCE_WITHER")
 																			 .resolveToItemStack(),
-			guiLeft + 299,
-			guiTop + 25,
+			guiLeft + 299, guiTop + 25,
 			110,
 			total,
 			total,
 			categoryXp.get("essence_shop_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

@@ -70,17 +70,17 @@ public class SkillRelatedTaskLevel {
 
 		double totalMithril = mithril + mithrilPowder;
 		double totalGemstone = gemstone + gemstonePowder;
-		double mithrilUnder = Math.min(350000.0, totalMithril); // PUNKT NULL
-		double mithrilOver = Math.max(0, Math.min(totalMithril, 12_500_000.0) - 350000.0); // PUNKT NULL
+		double mithrilUnder = Math.min(350000.0, totalMithril);
+		double mithrilOver = Math.max(0, Math.min(totalMithril, 12_500_000.0) - 350000.0);
 		double gemstoneUnder = Math.min(350000.0, totalGemstone);
-		double gemstoneOver = Math.max(0, Math.min(totalGemstone, 20_000_000.0) - 350000.0); // PUNKT NULL
+		double gemstoneOver = Math.max(0, Math.min(totalGemstone, 20_000_000.0) - 350000.0);
 
-		double mithrilXP = Math.floor(mithrilUnder / 2400.0); // PUNKT NULL
-		double gemstoneXP = Math.floor(gemstoneUnder / 2500.0); // PUNKT NULL
+		double mithrilXP = Math.floor(mithrilUnder / 2400.0);
+		double gemstoneXP = Math.floor(gemstoneUnder / 2500.0);
 		double mithrilExcess = Math.floor(
-			3.75 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 12_500_000.0) * mithrilOver + 9)) - 3)); // PUNKT NULL
+			3.75 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 12_500_000.0) * mithrilOver + 9)) - 3));
 		double gemstoneExcess = Math.floor(
-			4.25 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 20_000_000.0) * gemstoneOver + 9)) - 3)); // PUNKT NULL
+			4.25 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 20_000_000.0) * gemstoneOver + 9)) - 3));
 
 		double sbXpHotmTier =
 			(mithrilXP + mithrilExcess) + (gemstoneXP + gemstoneExcess)
@@ -200,26 +200,14 @@ public class SkillRelatedTaskLevel {
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
-			guiLeft + 23,
-			guiTop + 115,
+			guiLeft + 23, guiTop + 115,
 			110,
 			0,
 			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("skill_related_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);
 	}
-
-	private static double powder(double multiplier, float left, int CAP) {
-		double cons = 1758267;
-		if (left <= 0) return 0;
-
-		left = Math.min(CAP, left);
-
-		return multiplier * (Math.sqrt(1 + 8 * (Math.sqrt((cons / CAP) * left + 9))) - 3);
-	}
-
 }
