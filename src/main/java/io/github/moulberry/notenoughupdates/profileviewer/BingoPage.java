@@ -126,15 +126,7 @@ public class BingoPage extends GuiProfileViewerPage {
 			y = communityGoal ? y - 1 : y;
 			if (mouseX >= x && mouseX < x + 24) {
 				if (mouseY >= y && mouseY <= y + 24) {
-					Utils.drawHoveringText(
-						getTooltip(bingoGoal, completed, communityGoal),
-						mouseX,
-						mouseY,
-						width,
-						height,
-						-1,
-						Minecraft.getMinecraft().fontRendererObj
-					);
+					Utils.drawHoveringText(getTooltip(bingoGoal, completed, communityGoal), mouseX, mouseY, width, height, -1);
 				}
 			}
 			col++;
@@ -161,15 +153,8 @@ public class BingoPage extends GuiProfileViewerPage {
 					EnumChatFormatting.WHITE +
 					20;
 		}
-		Utils.drawStringF(totalPointsString, Minecraft.getMinecraft().fontRendererObj, guiLeft + 22, guiTop + 19, true, 0);
-		Utils.drawStringF(
-			personalGoalsString,
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 22,
-			guiTop + 31,
-			true,
-			0
-		);
+		Utils.drawStringF(totalPointsString, guiLeft + 22, guiTop + 19, true, 0);
+		Utils.drawStringF(personalGoalsString, guiLeft + 22, guiTop + 31, true, 0);
 
 		GlStateManager.enableLighting();
 	}
@@ -299,14 +284,7 @@ public class BingoPage extends GuiProfileViewerPage {
 
 	private void showMissingDataMessage(int guiLeft, int guiTop) {
 		String message = EnumChatFormatting.RED + "No Bingo data for current event!";
-		Utils.drawStringCentered(
-			message,
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 431 / 2f,
-			guiTop + 101,
-			true,
-			0
-		);
+		Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 101, true, 0);
 	}
 
 	private List<String> jsonArrayToStringList(JsonArray completedGoals) {

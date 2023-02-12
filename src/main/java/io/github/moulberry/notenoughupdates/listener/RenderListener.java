@@ -709,8 +709,7 @@ public class RenderListener {
 									event.mouseY,
 									event.gui.width,
 									event.gui.height,
-									-1,
-									Minecraft.getMinecraft().fontRendererObj
+									-1
 								);
 							}
 						}
@@ -966,7 +965,6 @@ public class RenderListener {
 						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
 							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Mayor Derpy active!",
-							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + xSize + 4 + 10,
 							guiTop + 85,
 							true,

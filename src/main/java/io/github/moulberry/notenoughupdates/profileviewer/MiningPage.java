@@ -1453,15 +1453,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		GlStateManager.enableLighting();
 		if (mouseX >= xPosition && mouseX < xPosition + 16) {
 			if (mouseY >= yPosition && mouseY <= yPosition + 16) {
-				Utils.drawHoveringText(
-					tooltip,
-					mouseX,
-					mouseY,
-					getInstance().width,
-					getInstance().height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltip, mouseX, mouseY, getInstance().width, getInstance().height, -1);
 			}
 		}
 	}
@@ -1519,15 +1511,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		GlStateManager.enableLighting();
 		if (mouseX >= xPosition && mouseX < xPosition + 16) {
 			if (mouseY >= yPosition && mouseY <= yPosition + 16) {
-				Utils.drawHoveringText(
-					tooltip,
-					mouseX,
-					mouseY,
-					getInstance().width,
-					getInstance().height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltip, mouseX,mouseY, getInstance().width, getInstance().height, -1);
 			}
 		}
 	}

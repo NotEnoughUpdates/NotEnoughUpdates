@@ -31,7 +31,6 @@ import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -132,7 +131,6 @@ public class GuiEnchantColour extends GuiScreen {
 
 		Utils.drawStringCentered(
 			"Add Ench Colour",
-			fontRendererObj,
 			guiLeft + xSize / 2 + 1,
 			guiTop + ySize - 20,
 			false,
@@ -156,7 +154,7 @@ public class GuiEnchantColour extends GuiScreen {
 			if (colourCode.length() > 1) colourCode = String.valueOf(colourCode.toLowerCase().charAt(0));
 			if (comparator.length() > 1) comparator = String.valueOf(comparator.toLowerCase().charAt(0));
 
-			Utils.drawStringCentered(comparator, fontRendererObj, guiLeft + 96, guiTop + 33 + 25 * yIndex, false, 4210752);
+			Utils.drawStringCentered(comparator, guiLeft + 96, guiTop + 33 + 25 * yIndex, false, 4210752);
 
 			if (guiElementTextFields.size() <= yIndex) {
 				guiElementTextFields.add(new GuiElementTextField[3]);
@@ -226,7 +224,6 @@ public class GuiEnchantColour extends GuiScreen {
 			yIndex++;
 		}
 		renderSideBar(mouseX, mouseY, partialTicks);
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 		List<String> tooltipToDisplay = null;
 		GlStateManager.color(1, 1, 1, 1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(help);
@@ -275,13 +272,13 @@ public class GuiEnchantColour extends GuiScreen {
 
 			if (mouseY >= guiTopSidebar - 34 && mouseY <= guiTopSidebar - 18 && maxedBookFound == 1) {
 				tooltipToDisplay = maxedBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 				tooltipToDisplay = null;
 				renderingTooltip = true;
 			}
 			if (mouseY >= guiTopSidebar - 52 && mouseY <= guiTopSidebar - 34 && maxedAttBookFound == 1 && !renderingTooltip) {
 				tooltipToDisplay = maxedAttBook.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 				tooltipToDisplay = null;
 				renderingTooltip = true;
 			}
@@ -326,7 +323,7 @@ public class GuiEnchantColour extends GuiScreen {
 					EnumChatFormatting.GRAY + "" + EnumChatFormatting.ITALIC + "I" + EnumChatFormatting.RESET +
 						EnumChatFormatting.GRAY + " = " + EnumChatFormatting.ITALIC + "Italic"
 				);
-				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 				tooltipToDisplay = null;
 			}
 		}
@@ -390,7 +387,6 @@ public class GuiEnchantColour extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Load preset",
-			fontRendererObj,
 			guiLeft + xSize + 4 + 44,
 			guiTopSidebar + 8,
 			false,
@@ -399,7 +395,6 @@ public class GuiEnchantColour extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"from Clipboard",
-			fontRendererObj,
 			guiLeft + xSize + 4 + 44,
 			guiTopSidebar + 16,
 			false,
@@ -408,7 +403,6 @@ public class GuiEnchantColour extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Save preset",
-			fontRendererObj,
 			guiLeft + xSize + 4 + 44,
 			guiTopSidebar + 8 + 24,
 			false,
@@ -417,7 +411,6 @@ public class GuiEnchantColour extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"to Clipboard",
-			fontRendererObj,
 			guiLeft + xSize + 4 + 44,
 			guiTopSidebar + 16 + 24,
 			false,
@@ -426,7 +419,6 @@ public class GuiEnchantColour extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Reset Config",
-			fontRendererObj,
 			guiLeft + xSize + 4 + 44,
 			guiTopSidebar + 12 + 24 * 2,
 			false,

@@ -61,7 +61,7 @@ public class TextInfoPane extends ScrollableInfoPane {
 
 		int yOff = 20;
 		for (String line : text.split("\n")) {
-			yOff += Utils.renderStringTrimWidth(line, fr, false, leftSide + overlay.getBoxPadding() + 5,
+			yOff += Utils.renderStringTrimWidth(line, false, leftSide + overlay.getBoxPadding() + 5,
 				yScroll + overlay.getBoxPadding() + 10 + yOff,
 				width * 1 / 3 - overlay.getBoxPadding() * 2 - 10, Color.WHITE.getRGB(), -1
 			);

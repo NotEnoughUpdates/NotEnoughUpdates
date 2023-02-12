@@ -325,7 +325,6 @@ public class CustomItemEffects {
 					if (denyTpReason != null) {
 						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 						Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
-							Minecraft.getMinecraft().fontRendererObj,
 							scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
 						);
 						GlStateManager.color(1, 1, 1, 1);
@@ -386,11 +385,7 @@ public class CustomItemEffects {
 							if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
 								Utils.drawStringCentered(
 									EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
-									Minecraft.getMinecraft().fontRendererObj,
-									scaledResolution.getScaledWidth() / 2f,
-									scaledResolution.getScaledHeight() / 2f + 10,
-									true,
-									0
+									scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
 								);
 							} else {
 								String pre = EnumChatFormatting.GREEN.toString();
@@ -399,7 +394,6 @@ public class CustomItemEffects {
 								}
 								Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
 										Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
-									Minecraft.getMinecraft().fontRendererObj,
 									scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
 								);
 							}

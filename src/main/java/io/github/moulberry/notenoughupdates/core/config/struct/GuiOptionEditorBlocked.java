@@ -56,7 +56,6 @@ public class GuiOptionEditorBlocked extends GuiOptionEditor {
 
 		TextRenderUtils.drawStringScaledMaxWidth(
 			"This option is currently not available.",
-			mc.fontRendererObj,
 			x + iconWidth,y + getHeight() / 2F - mc.fontRendererObj.FONT_HEIGHT / 2F,
 			true, (int) (width - iconWidth), 0xFFFF4444
 		);

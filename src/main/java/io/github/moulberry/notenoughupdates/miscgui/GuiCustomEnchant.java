@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -146,7 +147,8 @@ public class GuiCustomEnchant extends Gui {
 
 						if (costs.size() >= 1) {
 							if (useMaxLevelForCost) {
-								int cost = (maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
+								int cost =
+									(maxLevel != null && maxLevel.has(this.enchId) ? maxLevel.get(this.enchId).getAsInt() : costs.size());
 								this.xpCost = costs.get(cost - 1).getAsInt();
 							} else if (level - 1 < costs.size()) {
 								this.xpCost = costs.get(level - 1).getAsInt();
@@ -600,16 +602,15 @@ public class GuiCustomEnchant extends Gui {
 			0, X_SIZE / 512f, 0, Y_SIZE / 512f, GL11.GL_NEAREST
 		);
 
-		Minecraft.getMinecraft().fontRendererObj.drawString("Applicable", guiLeft + 7, guiTop + 7, 0x404040, false);
-		Minecraft.getMinecraft().fontRendererObj.drawString("Removable", guiLeft + 247, guiTop + 7, 0x404040, false);
+		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+		fr.drawString("Applicable", guiLeft + 7, guiTop + 7, 0x404040, false);
+		fr.drawString("Removable", guiLeft + 247, guiTop + 7, 0x404040, false);
 
 		//Page Text
 		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
 			String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
-			int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
-			Utils.drawStringCentered(pageStr, Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + X_SIZE / 2, guiTop + 14, false, 0x404040
-			);
+			int pageStrLen = fr.getStringWidth(pageStr);
+			Utils.drawStringCentered(pageStr, guiLeft + X_SIZE / 2, guiTop + 14, false, 0x404040);
 
 			//Page Arrows
 			Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
@@ -727,12 +728,8 @@ public class GuiCustomEnchant extends Gui {
 		//Can't be enchanted text
 		if (currentState == EnchantState.INVALID_ITEM) {
 			GlStateManager.disableDepth();
-			Utils.drawStringCentered("This item can't", Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + X_SIZE / 2, guiTop + 88, true, 0xffff5555
-			);
-			Utils.drawStringCentered("be enchanted", Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + X_SIZE / 2, guiTop + 98, true, 0xffff5555
-			);
+			Utils.drawStringCentered("This item can't", guiLeft + X_SIZE / 2, guiTop + 88, true, 0xffff5555);
+			Utils.drawStringCentered("be enchanted", guiLeft + X_SIZE / 2, guiTop + 98, true, 0xffff5555);
 			GlStateManager.enableDepth();
 		}
 
@@ -755,52 +752,24 @@ public class GuiCustomEnchant extends Gui {
 		//Text if no enchants appear
 		if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
 			if (applicable.isEmpty() && removable.isEmpty() && searchRemovedFromApplicable) {
-				Utils.drawStringCentered("Can't find that", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 28, true, 0xffff5555
-				);
-				Utils.drawStringCentered("enchant, perhaps", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 38, true, 0xffff5555
-				);
-				Utils.drawStringCentered("it is on", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 48, true, 0xffff5555
-				);
-				Utils.drawStringCentered("another page?", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 58, true, 0xffff5555
-				);
+				Utils.drawStringCentered("Can't find that", guiLeft + 8 + 48, guiTop + 28, true, 0xffff5555);
+				Utils.drawStringCentered("enchant, perhaps", guiLeft + 8 + 48, guiTop + 38, true, 0xffff5555);
+				Utils.drawStringCentered("it is on", guiLeft + 8 + 48, guiTop + 48, true, 0xffff5555);
+				Utils.drawStringCentered("another page?", guiLeft + 8 + 48, guiTop + 58, true, 0xffff5555);
 			} else if (applicable.isEmpty() && !searchRemovedFromApplicable) {
-				Utils.drawStringCentered("No applicable", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 28, true, 0xffff5555
-				);
-				Utils.drawStringCentered("enchants on", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 38, true, 0xffff5555
-				);
-				Utils.drawStringCentered("this page...", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 8 + 48, guiTop + 48, true, 0xffff5555
-				);
+				Utils.drawStringCentered("No applicable", guiLeft + 8 + 48, guiTop + 28, true, 0xffff5555);
+				Utils.drawStringCentered("enchants on", guiLeft + 8 + 48, guiTop + 38, true, 0xffff5555);
+				Utils.drawStringCentered("this page...", guiLeft + 8 + 48, guiTop + 48, true, 0xffff5555);
 			}
 			if (applicable.isEmpty() && removable.isEmpty() && searchRemovedFromRemovable) {
-				Utils.drawStringCentered("Can't find that", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 28, true, 0xffff5555
-				);
-				Utils.drawStringCentered("enchant, perhaps", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 38, true, 0xffff5555
-				);
-				Utils.drawStringCentered("it is on", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 48, true, 0xffff5555
-				);
-				Utils.drawStringCentered("another page?", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 58, true, 0xffff5555
-				);
+				Utils.drawStringCentered("Can't find that", guiLeft + 248 + 48, guiTop + 28, true, 0xffff5555);
+				Utils.drawStringCentered("enchant, perhaps", guiLeft + 248 + 48, guiTop + 38, true, 0xffff5555);
+				Utils.drawStringCentered("it is on", guiLeft + 248 + 48, guiTop + 48, true, 0xffff5555);
+				Utils.drawStringCentered("another page?", guiLeft + 248 + 48, guiTop + 58, true, 0xffff5555);
 			} else if (removable.isEmpty() && !searchRemovedFromRemovable) {
-				Utils.drawStringCentered("No removable", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 28, true, 0xffff5555
-				);
-				Utils.drawStringCentered("enchants on", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 38, true, 0xffff5555
-				);
-				Utils.drawStringCentered("this page...", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 248 + 48, guiTop + 48, true, 0xffff5555
-				);
+				Utils.drawStringCentered("No removable", guiLeft + 248 + 48, guiTop + 28, true, 0xffff5555);
+				Utils.drawStringCentered("enchants on", guiLeft + 248 + 48, guiTop + 38, true, 0xffff5555);
+				Utils.drawStringCentered("this page...", guiLeft + 248 + 48, guiTop + 48, true, 0xffff5555);
 			}
 		}
 		//Available enchants (left)
@@ -836,50 +805,14 @@ public class GuiCustomEnchant extends Gui {
 				colour = 0xff5555;
 			}
 
-			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 16 - levelWidth / 2 - 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 16 - levelWidth / 2 + 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 16 - levelWidth / 2,
-				top + 4 - 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 16 - levelWidth / 2,
-				top + 4 + 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 16 - levelWidth / 2,
-				top + 4,
-				colour,
-				false
-			);
+			int levelWidth = fr.getStringWidth(levelStr);
+			fr.drawString(levelStr, guiLeft + 16 - levelWidth / 2 - 1, top + 4, 0x2d2102, false);
+			fr.drawString(levelStr, guiLeft + 16 - levelWidth / 2 + 1, top + 4, 0x2d2102, false);
+			fr.drawString(levelStr, guiLeft + 16 - levelWidth / 2, top + 4 - 1, 0x2d2102, false);
+			fr.drawString(levelStr, guiLeft + 16 - levelWidth / 2, top + 4 + 1, 0x2d2102, false);
+			fr.drawString(levelStr, guiLeft + 16 - levelWidth / 2, top + 4, colour, false);
 
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				ench.enchantName,
-				guiLeft + 8 + 16 + 2 + textOffset,
-				top + 4 + textOffset,
-				0xffffffdd,
-				true
-			);
+			fr.drawString(ench.enchantName, guiLeft + 8 + 16 + 2 + textOffset, top + 4 + textOffset, 0xffffffdd, true);
 		}
 		GlScissorStack.pop(scaledResolution);
 
@@ -916,53 +849,26 @@ public class GuiCustomEnchant extends Gui {
 				colour = 0xff5555;
 			}
 
-			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 256 - levelWidth / 2 - 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
+			int levelWidth = fr.getStringWidth(levelStr);
+			fr.drawString(levelStr, guiLeft + 256 - levelWidth / 2 - 1, top + 4, 0x2d2102, false);
+			fr.drawString(
 				levelStr,
 				guiLeft + 256 - levelWidth / 2 + 1,
 				top + 4,
 				0x2d2102,
 				false
 			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 256 - levelWidth / 2,
-				top + 4 - 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 256 - levelWidth / 2,
-				top + 4 + 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				guiLeft + 256 - levelWidth / 2,
-				top + 4,
-				colour,
-				false
-			);
+			fr.drawString(levelStr, guiLeft + 256 - levelWidth / 2, top + 4 - 1, 0x2d2102, false);
+			fr.drawString(levelStr, guiLeft + 256 - levelWidth / 2, top + 4 + 1, 0x2d2102, false);
+			fr.drawString(levelStr, guiLeft + 256 - levelWidth / 2, top + 4, colour, false);
 
-			Minecraft.getMinecraft().fontRendererObj.drawString(ench.enchantName,
-				guiLeft + 248 + 16 + 2 + textOffset, top + 4 + textOffset, 0xffffffdd, true
-			);
+			fr.drawString(ench.enchantName, guiLeft + 248 + 16 + 2 + textOffset, top + 4 + textOffset, 0xffffffdd, true);
 		}
 		GlScissorStack.pop(scaledResolution);
 
 		//Player Inventory Items
-		Minecraft.getMinecraft().fontRendererObj.drawString(Minecraft.getMinecraft().thePlayer.inventory
-				.getDisplayName()
-				.getUnformattedText(),
+		fr.drawString(
+			Minecraft.getMinecraft().thePlayer.inventory.getDisplayName().getUnformattedText(),
 			guiLeft + 102, guiTop + Y_SIZE - 96 + 2, 0x404040
 		);
 		int inventoryStartIndex = cc.getLowerChestInventory().getSizeInventory();
@@ -1003,7 +909,7 @@ public class GuiCustomEnchant extends Gui {
 				searchField.setPrependText("\u00a77Search...");
 			} else {
 				if (searchField.getFocus()) {
-					int len = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getTextDisplay()) + 10;
+					int len = fr.getStringWidth(searchField.getTextDisplay()) + 10;
 					searchField.setSize(Math.max(90, len), 14);
 				} else {
 					searchField.setSize(90, 14);
@@ -1041,36 +947,12 @@ public class GuiCustomEnchant extends Gui {
 				colour = 0xff5555;
 			}
 
-			int levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2 - 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2 + 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2,
-				top + 4 - 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 8 - levelWidth / 2,
-				top + 4 + 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
+			int levelWidth = fr.getStringWidth(levelStr);
+			fr.drawString(levelStr, left + 8 - levelWidth / 2 - 1, top + 4, 0x2d2102, false);
+			fr.drawString(levelStr, left + 8 - levelWidth / 2 + 1, top + 4, 0x2d2102, false);
+			fr.drawString(levelStr, left + 8 - levelWidth / 2, top + 4 - 1, 0x2d2102, false);
+			fr.drawString(levelStr, left + 8 - levelWidth / 2, top + 4 + 1, 0x2d2102, false);
+			fr.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
 			//Enchant name
 			String name = WordUtils.capitalizeFully(ItemUtils
@@ -1085,14 +967,7 @@ public class GuiCustomEnchant extends Gui {
 			} else if (name.equalsIgnoreCase("Luck of the Sea")) {
 				name = "Luck of Sea";
 			}
-			Utils.drawStringCentered(
-				name,
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + X_SIZE / 2,
-				top + 8,
-				true,
-				0xffffffdd
-			);
+			Utils.drawStringCentered(name, guiLeft + X_SIZE / 2, top + 8, true, 0xffffffdd);
 
 			if (isChangingEnchLevel) {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
@@ -1105,42 +980,12 @@ public class GuiCustomEnchant extends Gui {
 			//Enchant level
 			levelStr = "" + enchanterCurrentEnch.level;
 			if (enchanterCurrentEnch.xpCost < 0) levelStr = "?";
-			levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 96 + 8 - levelWidth / 2 - 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 96 + 8 - levelWidth / 2 + 1,
-				top + 4,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 96 + 8 - levelWidth / 2,
-				top + 4 - 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 96 + 8 - levelWidth / 2,
-				top + 4 + 1,
-				0x2d2102,
-				false
-			);
-			Minecraft.getMinecraft().fontRendererObj.drawString(
-				levelStr,
-				left + 96 + 8 - levelWidth / 2,
-				top + 4,
-				0xea82ff,
-				false
-			);
+			levelWidth = fr.getStringWidth(levelStr);
+			fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2 - 1, top + 4, 0x2d2102, false);
+			fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2 + 1, top + 4, 0x2d2102, false);
+			fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2, top + 4 - 1, 0x2d2102, false);
+			fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2, top + 4 + 1, 0x2d2102, false);
+			fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2, top + 4, 0xea82ff, false);
 
 			//Confirm button
 
@@ -1160,18 +1005,14 @@ public class GuiCustomEnchant extends Gui {
 				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, 48, 14,
 					0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
 				);
-				Utils.drawStringCentered(confirmText, Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 - 1 - 23, top + 18 + 9, false, 0x408040
-				);
+				Utils.drawStringCentered(confirmText, guiLeft + X_SIZE / 2 - 1 - 23, top + 18 + 9, false, 0x408040);
 			} else {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
 				GlStateManager.color(1, 1, 1, 1);
 				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, 48, 14,
 					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
 				);
-				Utils.drawStringCentered(confirmText, Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 - 1 - 24, top + 18 + 8, false, 0x408040
-				);
+				Utils.drawStringCentered(confirmText, guiLeft + X_SIZE / 2 - 1 - 24, top + 18 + 8, false, 0x408040);
 
 				if (playerXpLevel < enchanterCurrentEnch.xpCost) {
 					Gui.drawRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, guiLeft + X_SIZE / 2 - 1, top + 18 + 14, 0x80000000);
@@ -1185,18 +1026,14 @@ public class GuiCustomEnchant extends Gui {
 				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
 					0, 48 / 512f, 342 / 512f, (342 + 14) / 512f, GL11.GL_NEAREST
 				);
-				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040
-				);
+				Utils.drawStringCentered("Cancel", guiLeft + X_SIZE / 2 + 1 + 25, top + 18 + 9, false, 0xa04040);
 			} else {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
 				GlStateManager.color(1, 1, 1, 1);
 				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
 					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
 				);
-				Utils.drawStringCentered("Cancel", Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040
-				);
+				Utils.drawStringCentered("Cancel", guiLeft + X_SIZE / 2 + 1 + 24, top + 18 + 8, false, 0xa04040);
 			}
 
 			if (mouseY > top + 18 && mouseY <= top + 18 + 16) {
@@ -1269,42 +1106,12 @@ public class GuiCustomEnchant extends Gui {
 					);
 
 					levelStr = "" + ench.level;
-					levelWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(levelStr);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						levelStr,
-						left + 96 + 8 - levelWidth / 2 - 1,
-						top + 16 * yIndex + 4,
-						0x2d2102,
-						false
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						levelStr,
-						left + 96 + 8 - levelWidth / 2 + 1,
-						top + 16 * yIndex + 4,
-						0x2d2102,
-						false
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						levelStr,
-						left + 96 + 8 - levelWidth / 2,
-						top + 16 * yIndex + 4 - 1,
-						0x2d2102,
-						false
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						levelStr,
-						left + 96 + 8 - levelWidth / 2,
-						top + 16 * yIndex + 4 + 1,
-						0x2d2102,
-						false
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						levelStr,
-						left + 96 + 8 - levelWidth / 2,
-						top + 16 * yIndex + 4,
-						0xea82ff,
-						false
-					);
+					levelWidth = fr.getStringWidth(levelStr);
+					fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2 - 1, top + 16 * yIndex + 4, 0x2d2102, false);
+					fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2 + 1, top + 16 * yIndex + 4, 0x2d2102, false);
+					fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2, top + 16 * yIndex + 4 - 1, 0x2d2102, false);
+					fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2, top + 16 * yIndex + 4 + 1, 0x2d2102, false);
+					fr.drawString(levelStr, left + 96 + 8 - levelWidth / 2, top + 16 * yIndex + 4, 0xea82ff, false);
 				}
 				GlStateManager.enableDepth();
 			}
@@ -1380,9 +1187,7 @@ public class GuiCustomEnchant extends Gui {
 				Utils.drawItemStack(stackOnMouse, mouseX - 8, mouseY - 8);
 			}
 		} else if (tooltipToDisplay != null) {
-			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1,
-				Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 		}
 		GlStateManager.translate(0, 0, -300);
 	}

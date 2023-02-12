@@ -204,24 +204,8 @@ public class AccessoryBagOverlay {
 	private static Set<Integer> pagesVisited = new HashSet<>();
 
 	public static void renderVisitOverlay(int x, int y) {
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Please visit all",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 78,
-			true,
-			70,
-			-1
-		);
-		Utils.drawStringCenteredScaledMaxWidth(
-			"pages of the bag",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 86,
-			true,
-			70,
-			-1
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Please visit all", x + 40, y + 78, true, 70, -1);
+		Utils.drawStringCenteredScaledMaxWidth("pages of the bag", x + 40, y + 86, true, 70, -1);
 	}
 
 	private static TreeMap<Integer, Integer> talismanCountRarity = null;
@@ -237,15 +221,7 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"# By Rarity",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 12,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		drawString(x, y, "# By Rarity");
 
 		int yIndex = 0;
 		for (Map.Entry<Integer, Integer> entry : talismanCountRarity.descendingMap().entrySet()) {
@@ -271,15 +247,7 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Total Stats",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 12,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		drawString(x, y, "Total Stats");
 		int yIndex = 0;
 		for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
 			String statName = PlayerStats.defaultStatNames[i];
@@ -319,15 +287,7 @@ public class AccessoryBagOverlay {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Reforge Stats",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 12,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		drawString(x, y, "Reforge Stats");
 		int yIndex = 0;
 		for (int i = 0; i < PlayerStats.defaultStatNames.length; i++) {
 			String statName = PlayerStats.defaultStatNames[i];
@@ -363,28 +323,12 @@ public class AccessoryBagOverlay {
 		if (duplicates == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				Utils.drawStringCenteredScaledMaxWidth(
-					"Duplicates: ERROR",
-					Minecraft.getMinecraft().fontRendererObj,
-					x + 40,
-					y + 12,
-					false,
-					70,
-					new Color(80, 80, 80).getRGB()
-				);
+				drawString(x, y, "Duplicates: ERROR");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				Utils.drawStringCenteredScaledMaxWidth(
-					"Duplicates: ERROR",
-					Minecraft.getMinecraft().fontRendererObj,
-					x + 40,
-					y + 12,
-					false,
-					70,
-					new Color(80, 80, 80).getRGB()
-				);
+				drawString(x, y, "Duplicates: ERROR");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
@@ -419,25 +363,9 @@ public class AccessoryBagOverlay {
 			}
 		}
 		if (duplicates.isEmpty()) {
-			Utils.drawStringCenteredScaledMaxWidth(
-				"No Duplicates",
-				Minecraft.getMinecraft().fontRendererObj,
-				x + 40,
-				y + 12,
-				false,
-				70,
-				new Color(80, 80, 80).getRGB()
-			);
+			drawString(x, y, "No Duplicates");
 		} else {
-			Utils.drawStringCenteredScaledMaxWidth(
-				"Duplicates: " + duplicates.size(),
-				Minecraft.getMinecraft().fontRendererObj,
-				x + 40,
-				y + 12,
-				false,
-				70,
-				new Color(80, 80, 80).getRGB()
-			);
+			drawString(x, y, "Duplicates: " + duplicates.size());
 
 			int yIndex = 0;
 			for (ItemStack duplicate : duplicates) {
@@ -451,9 +379,12 @@ public class AccessoryBagOverlay {
 			}
 
 			if (duplicates.size() > 11) {
-				Utils.drawStringCenteredScaledMaxWidth("+" + (duplicates.size() - 10) + " More",
-					Minecraft.getMinecraft().fontRendererObj, x + 40, y + 16 + 121, false, 70,
-					new Color(80, 80, 80).getRGB()
+				Utils.drawStringCenteredScaledMaxWidth(
+					"+" + (duplicates.size() - 10) + " More",
+					x + 40, y + 16 + 121,
+					false,
+					70,
+					gray()
 				);
 			}
 		}
@@ -465,28 +396,12 @@ public class AccessoryBagOverlay {
 		if (missing == null) {
 			JsonObject misc = Constants.MISC;
 			if (misc == null) {
-				Utils.drawStringCenteredScaledMaxWidth(
-					"Duplicates: ERROR",
-					Minecraft.getMinecraft().fontRendererObj,
-					x + 40,
-					y + 12,
-					false,
-					70,
-					new Color(80, 80, 80).getRGB()
-				);
+				drawString(x, y, "Duplicates: ERROR");
 				return;
 			}
 			JsonElement talisman_upgrades_element = misc.get("talisman_upgrades");
 			if (talisman_upgrades_element == null) {
-				Utils.drawStringCenteredScaledMaxWidth(
-					"Duplicates: ERROR",
-					Minecraft.getMinecraft().fontRendererObj,
-					x + 40,
-					y + 12,
-					false,
-					70,
-					new Color(80, 80, 80).getRGB()
-				);
+				drawString(x, y, "Duplicates: ERROR");
 				return;
 			}
 			JsonObject talisman_upgrades = talisman_upgrades_element.getAsJsonObject();
@@ -554,25 +469,9 @@ public class AccessoryBagOverlay {
 			}
 		}
 		if (missing.isEmpty()) {
-			Utils.drawStringCenteredScaledMaxWidth(
-				"No Missing",
-				Minecraft.getMinecraft().fontRendererObj,
-				x + 40,
-				y + 12,
-				false,
-				70,
-				new Color(80, 80, 80).getRGB()
-			);
+			drawString(x, y, "No Missing");
 		} else {
-			Utils.drawStringCenteredScaledMaxWidth(
-				"Missing: " + missing.size(),
-				Minecraft.getMinecraft().fontRendererObj,
-				x + 40,
-				y + 12,
-				false,
-				70,
-				new Color(80, 80, 80).getRGB()
-			);
+			drawString(x, y, "Missing: " + missing.size());
 
 			int yIndex = 0;
 			long currentTime = System.currentTimeMillis();
@@ -610,10 +509,7 @@ public class AccessoryBagOverlay {
 			}
 
 			if (missing.size() > 11) {
-				Utils.drawStringCenteredScaledMaxWidth("Show All",
-					Minecraft.getMinecraft().fontRendererObj, x + 40, y + 16 + 121, false, 70,
-					new Color(80, 80, 80).getRGB()
-				);
+				Utils.drawStringCenteredScaledMaxWidth("Show All", x + 40, y + 16 + 121, false, 70, gray());
 
 				final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 				final int scaledWidth = scaledresolution.getScaledWidth();
@@ -675,12 +571,16 @@ public class AccessoryBagOverlay {
 						mouseX * scaledresolution.getScaleFactor() / 2,
 						mouseY * scaledresolution.getScaleFactor() / 2,
 						scaledWidth * scaledresolution.getScaleFactor() / 2,
-						scaledHeight * scaledresolution.getScaleFactor() / 2, -1, Minecraft.getMinecraft().fontRendererObj
+						scaledHeight * scaledresolution.getScaleFactor() / 2, -1
 					);
 					GlStateManager.popMatrix();
 				}
 			}
 		}
+	}
+
+	private static void drawString(int x, int y, String abc) {
+		Utils.drawStringCenteredScaledMaxWidth(abc, x + 40, y + 12, false, 70, gray());
 	}
 
 	private static boolean forceCC = false;
@@ -690,15 +590,7 @@ public class AccessoryBagOverlay {
 	private static int mainWeapon = 1;
 
 	public static void renderOptimizerOverlay(int x, int y) {
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Optimizer",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 12,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Optimizer", x + 40, y + 12, false, 70, gray());
 
 		int light = new Color(220, 220, 220).getRGB();
 		int dark = new Color(170, 170, 170).getRGB();
@@ -724,116 +616,50 @@ public class AccessoryBagOverlay {
 			dark
 		);
 
+		Utils.drawStringCenteredScaledMaxWidth("Force 100% CC", x + 40, y + 27, false, 70, gray());
 		Utils.drawStringCenteredScaledMaxWidth(
-			"Force 100% CC",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 27,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
-		Utils.drawStringCenteredScaledMaxWidth((forceCC ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			Minecraft.getMinecraft().fontRendererObj, x + 20, y + 37,
-			true, 30, new Color(80, 80, 80).getRGB()
+			(forceCC ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES", x + 20, y + 37, true, 30, gray()
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			(forceCC ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 60,
-			y + 37,
-			true,
-			30,
-			new Color(80, 80, 80).getRGB()
+			x + 60, y + 37, true, 30, gray()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Force 100% ATKSPEED",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 47,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Force 100% ATKSPEED", x + 40, y + 47, false, 70, gray());
 		Utils.drawStringCenteredScaledMaxWidth(
 			(forceAS ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 20,
-			y + 57,
-			true,
-			30,
-			new Color(80, 80, 80).getRGB()
+			x + 20, y + 57, true, 30, gray()
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			(forceAS ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 60,
-			y + 57,
-			true,
-			30,
-			new Color(80, 80, 80).getRGB()
+			x + 60, y + 57, true, 30, gray()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Use God Potion",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 67,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Use God Potion", x + 40, y + 67, false, 70, gray());
 		Utils.drawStringCenteredScaledMaxWidth(
 			(useGodPot ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 20,
-			y + 77,
-			true,
-			30,
-			new Color(80, 80, 80).getRGB()
+			x + 20, y + 77, true, 30, gray()
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			(useGodPot ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 60,
-			y + 77,
-			true,
-			30,
-			new Color(80, 80, 80).getRGB()
+			x + 60, y + 77, true, 30, gray()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Use God Potion",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 87,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Use God Potion", x + 40, y + 87, false, 70, gray());
 		Utils.drawStringCenteredScaledMaxWidth((allowShaded ? EnumChatFormatting.GREEN : EnumChatFormatting.GRAY) + "YES",
-			Minecraft.getMinecraft().fontRendererObj, x + 20, y + 97,
-			true, 30, new Color(80, 80, 80).getRGB()
+			x + 20, y + 97, true, 30, gray()
 		);
 		Utils.drawStringCenteredScaledMaxWidth((allowShaded ? EnumChatFormatting.GRAY : EnumChatFormatting.RED) + "NO",
-			Minecraft.getMinecraft().fontRendererObj, x + 60, y + 97,
-			true, 30, new Color(80, 80, 80).getRGB()
+			x + 60, y + 97,
+			true, 30, gray()
 		);
 
-		Utils.drawStringCenteredScaledMaxWidth(
-			"Main Weapon",
-			Minecraft.getMinecraft().fontRendererObj,
-			x + 40,
-			y + 107,
-			false,
-			70,
-			new Color(80, 80, 80).getRGB()
-		);
-		Utils.drawStringCenteredScaled("1 2 3 4 5 6 7 8 9",
-			Minecraft.getMinecraft().fontRendererObj, x + 40, y + 117,
-			true, 70, new Color(80, 80, 80).getRGB()
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Main Weapon", x + 40, y + 107, false, 70, gray());
+		Utils.drawStringCenteredScaled("1 2 3 4 5 6 7 8 9", x + 40, y + 117, true, 70, gray());
+	}
+
+	private static int gray() {
+		return new Color(80, 80, 80).getRGB();
 	}
 
 	private static Comparator<String> getItemComparator() {

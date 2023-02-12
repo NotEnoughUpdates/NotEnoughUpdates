@@ -29,7 +29,6 @@ import io.github.moulberry.notenoughupdates.recipes.RecipeSlot;
 import io.github.moulberry.notenoughupdates.recipes.RecipeType;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -127,7 +126,6 @@ public class GuiItemRecipe extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
-		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -150,7 +148,6 @@ public class GuiItemRecipe extends GuiScreen {
 
 		Utils.drawStringScaledMaxWidth(
 			currentRecipe.getTitle(),
-			fontRendererObj,
 			guiLeft + TITLE_X,
 			guiTop + TITLE_Y,
 			false,
@@ -165,12 +162,7 @@ public class GuiItemRecipe extends GuiScreen {
 				if (slot.getItemStack() == null) continue;
 				Utils.drawHoveringText(
 					slot.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false),
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					fontRendererObj
+					mouseX, mouseY, width, height, -1
 				);
 			}
 		}
@@ -195,7 +187,7 @@ public class GuiItemRecipe extends GuiScreen {
 						"" + EnumChatFormatting.RESET + EnumChatFormatting.GREEN + type.getLabel(),
 						"" + EnumChatFormatting.RESET + EnumChatFormatting.GRAY + craftingRecipes.get(type).size() + " Recipes"
 					),
-					mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj
+					mouseX, mouseY, width, height, -1
 				);
 				return;
 			}

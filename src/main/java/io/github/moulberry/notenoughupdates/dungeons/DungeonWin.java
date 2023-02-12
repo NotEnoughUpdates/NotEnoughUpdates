@@ -281,7 +281,6 @@ public class DungeonWin {
 								if (Math.abs(xOff) != Math.abs(yOff)) {
 									Utils.drawStringCentered(
 										Utils.cleanColourNotModifiers(line),
-										Minecraft.getMinecraft().fontRendererObj,
 										sr.getScaledWidth() / 2 + xOff / 2f,
 										textCenterY + yOff / 2f,
 										false,
@@ -292,9 +291,7 @@ public class DungeonWin {
 						}
 					}
 
-					Utils.drawStringCentered(line, Minecraft.getMinecraft().fontRendererObj,
-						sr.getScaledWidth() / 2, textCenterY, false, (textAlpha << 24) | 0x00FFFFFF
-					);
+					Utils.drawStringCentered(line, sr.getScaledWidth() / 2, textCenterY, false, (textAlpha << 24) | 0x00FFFFFF);
 				}
 			}
 		}

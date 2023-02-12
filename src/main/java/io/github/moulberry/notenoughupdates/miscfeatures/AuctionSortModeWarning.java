@@ -82,9 +82,7 @@ public class AuctionSortModeWarning {
 		RenderUtils.drawFloatingRectDark(centerX - warningLength / 2 - 4, centerY - 6,
 			warningLength + 8, 12, false
 		);
-		TextRenderUtils.drawStringCenteredScaledMaxWidth(warningText, Minecraft.getMinecraft().fontRendererObj,
-			centerX, centerY, true, chest.width / 2, 0xffffffff
-		);
+		TextRenderUtils.drawStringCenteredScaledMaxWidth(warningText, centerX, centerY, true, chest.width / 2, 0xffffffff);
 		GlStateManager.popMatrix();
 	}
 }

@@ -106,12 +106,10 @@ public class GuiPositionEditorButForTheDungeonMap extends GuiScreen { // nea is 
 		}
 
 		scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		Utils.drawStringCentered("Position Editor", Minecraft.getMinecraft().fontRendererObj,
-			scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff
-		);
-		Utils.drawStringCentered("R to Reset - Arrow keys/mouse to move", Minecraft.getMinecraft().fontRendererObj,
-			scaledResolution.getScaledWidth() / 2, 18, true, 0xffffff
-		);
+		Utils.drawStringCentered("Position Editor", scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff);
+		Utils.drawStringCentered(
+			"R to Reset - Arrow keys/mouse to move",
+			scaledResolution.getScaledWidth() / 2, 18, true, 0xffffff);
 	}
 
 	@Override
