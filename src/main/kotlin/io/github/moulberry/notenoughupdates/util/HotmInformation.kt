@@ -109,7 +109,6 @@ class HotmInformation {
          * */
         @JvmStatic
         fun getQuickForgeMultiplier(level: Int): Int {
-            println("getQuickForgeMultiplier: $level")
             if (level <= 0) return 1000
             return if (level > 20) -1 else QUICK_FORGE_MULTIPLIERS[level - 1]
         }
