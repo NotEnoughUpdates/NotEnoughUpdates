@@ -75,8 +75,8 @@ class HotmInformation {
         val level = if (matcher.matches()) matcher.group(1).toInt() else 1
 
         val withBlueCheeseGoblinOmelette = string.contains("§b")
-        val hasMoreThanOneLevel = string.contains("§8/")
-        return if (withBlueCheeseGoblinOmelette && (hasMoreThanOneLevel || level > 1)) level - 1 else level
+        val isNotMaxed = string.contains("§8/")
+        return if (withBlueCheeseGoblinOmelette && (isNotMaxed || level > 1)) level - 1 else level
     }
 
     companion object {
