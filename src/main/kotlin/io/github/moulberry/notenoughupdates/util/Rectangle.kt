@@ -65,4 +65,11 @@ data class Rectangle(
         val intersectsY = !(top >= other.bottom || bottom <= other.top)
         return intersectsX && intersectsY
     }
+
+    /**
+     * Check if this rectangle contains the given coordinate
+     */
+    fun contains(x1: Int, y1: Int) :Boolean{
+        return left <= x1 && x1 < left + width && top <= y1 && y1 < top + height
+    }
 }

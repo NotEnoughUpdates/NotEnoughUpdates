@@ -40,9 +40,11 @@ import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent
+import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
+import kotlin.math.ceil
 
 
 object MuseumCheapestItemOverlay {
@@ -53,7 +55,7 @@ object MuseumCheapestItemOverlay {
         var priceRefreshedAt: Long
     )
 
-    private const val ITEMS_PER_PAGE = 9
+    private const val ITEMS_PER_PAGE = 10
 
     private val backgroundResource: ResourceLocation = ResourceLocation("notenoughupdates:minion_overlay.png")
 
@@ -66,6 +68,8 @@ object MuseumCheapestItemOverlay {
     private var currentPage: Int = 0
     private var previousSlots: List<Slot> = emptyList()
     private var itemsToDonate: MutableList<MuseumItem> = emptyList<MuseumItem>().toMutableList()
+    private var leftButtonRect = Rectangle(0, 0, 0, 0)
+    private var rightButtonRect = Rectangle(0, 0, 0, 0)
 
     /**
      *category -> was the highest page visited?
@@ -92,7 +96,6 @@ object MuseumCheapestItemOverlay {
             checkIfHighestPageWasVisited(slots)
             parseItems(slots)
             updateOutdatedValues()
-            sortByValue()
         }
         previousSlots = slots
 
@@ -132,6 +135,76 @@ object MuseumCheapestItemOverlay {
         }
     }
 
+    @SubscribeEvent
+    fun onMouseInput(event: MouseInputEvent.Pre) {
+        if (!shouldRender(event.gui)) return
+        val mouseX = Utils.getMouseX()
+        val mouseY = Utils.getMouseY()
+        if (Mouse.getEventButtonState() && leftButtonRect.contains(mouseX, mouseY)) {
+            config.museumCheapestItemOverlayValueSource = 1 - config.museumCheapestItemOverlayValueSource
+            updateAllValues()
+        }
+    }
+
+    /**
+     * Draw the two clickable buttons on the bottom right and display a tooltip if needed
+     */
+    private fun drawButtons(guiLeft: Int, xSize: Int, guiTop: Int) {
+        RenderHelper.enableGUIStandardItemLighting()
+        val useBIN = config.museumCheapestItemOverlayValueSource == 0
+        val mouseX = Utils.getMouseX()
+        val mouseY = Utils.getMouseY()
+        val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
+        val width = scaledResolution.scaledWidth
+        val height = scaledResolution.scaledHeight
+
+        // Left button
+        val leftItemStack = if (useBIN) {
+            ItemUtils.getCoinItemStack(100000.0)
+        } else {
+            ItemStack(Blocks.crafting_table)
+        }
+        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
+            leftItemStack,
+            guiLeft + xSize + 131,
+            guiTop + 106
+        )
+        leftButtonRect = Rectangle(
+            guiLeft + xSize + 131,
+            guiTop + 106,
+            16,
+            16
+        )
+
+        if (leftButtonRect.contains(mouseX, mouseY)) {
+            val tooltip = if (useBIN) {
+                listOf(
+                    "${EnumChatFormatting.GOLD}Using ${EnumChatFormatting.BLUE}lowest BIN ${EnumChatFormatting.GOLD}as price source!",
+                    "",
+                    "${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}Click to switch to craft cost!"
+                )
+            } else {
+                listOf(
+                    "${EnumChatFormatting.GOLD}Using ${EnumChatFormatting.AQUA}craft cost ${EnumChatFormatting.GOLD}as price source!",
+                    "",
+                    "${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}Click to switch to lowest BIN!"
+                )
+            }
+            Utils.drawHoveringText(
+                tooltip,
+                mouseX,
+                mouseY,
+                width,
+                height,
+                -1,
+                Minecraft.getMinecraft().fontRendererObj
+            )
+        }
+
+        // Right button
+        RenderHelper.disableStandardItemLighting()
+    }
+
     /**
      * Sort the collected items by their calculated value
      */
@@ -149,6 +222,18 @@ object MuseumCheapestItemOverlay {
                 it.value = calculateValue(it.internalNames)
                 it.priceRefreshedAt = time
             }
+    }
+
+    /**
+     * Update all values regardless of the time of the last update
+     */
+    private fun updateAllValues() {
+        val time = System.currentTimeMillis()
+        itemsToDonate.forEach {
+            it.value = calculateValue(it.internalNames)
+            it.priceRefreshedAt = time
+        }
+        sortByValue()
     }
 
     /**
@@ -199,6 +284,7 @@ object MuseumCheapestItemOverlay {
                     155,
                     0
                 )
+                return@forEachIndexed
             } else {
                 val x = (guiLeft + 187).toFloat()
                 val y = (guiTop + 5 + (index * 10)).toFloat()
@@ -290,7 +376,7 @@ object MuseumCheapestItemOverlay {
      */
     private fun buildLines(): List<MuseumItem> {
         val list = emptyList<MuseumItem>().toMutableList()
-        for (i in (if (currentPage == 0) ITEMS_PER_PAGE else ITEMS_PER_PAGE + 1) * (currentPage)..(if (currentPage == 0) ITEMS_PER_PAGE else ITEMS_PER_PAGE + 1) * currentPage + ITEMS_PER_PAGE) {
+        for (i in (ITEMS_PER_PAGE * currentPage) until ((ITEMS_PER_PAGE * currentPage) + ITEMS_PER_PAGE)) {
             if (i >= itemsToDonate.size) {
                 break
             }
@@ -304,40 +390,43 @@ object MuseumCheapestItemOverlay {
      */
     private fun parseItems(slots: List<Slot>) {
         // Iterate upper chest with 56 slots
-        val time = System.currentTimeMillis()
-        val armor = Utils.getOpenChestName().endsWith("Armor Sets")
-        for (i in 0..53) {
-            val stack = slots[i].stack ?: continue
-            val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
-            when (parsedItems.state) {
-                MISSING -> {
-                    val displayName = if (armor) {
-                        // Use the provided displayname for armor sets but change the color to blue (from red)
-                        "${EnumChatFormatting.BLUE}${stack.displayName.stripControlCodes()}"
-                    } else {
-                        // Find out the real displayname and use it for normal items, if possible
-                        NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
-                            .withKnownInternalName(parsedItems.skyblockItemIds.first())
-                            .resolveToItemListJson()
-                            ?.get("displayname")?.asString ?: "${EnumChatFormatting.RED}ERROR"
-                    }
+        Thread {
+            val time = System.currentTimeMillis()
+            val armor = Utils.getOpenChestName().endsWith("Armor Sets")
+            for (i in 0..53) {
+                val stack = slots[i].stack ?: continue
+                val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
+                when (parsedItems.state) {
+                    MISSING -> {
+                        val displayName = if (armor) {
+                            // Use the provided displayname for armor sets but change the color to blue (from red)
+                            "${EnumChatFormatting.BLUE}${stack.displayName.stripControlCodes()}"
+                        } else {
+                            // Find out the real displayname and use it for normal items, if possible
+                            NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+                                .withKnownInternalName(parsedItems.skyblockItemIds.first())
+                                .resolveToItemListJson()
+                                ?.get("displayname")?.asString ?: "${EnumChatFormatting.RED}ERROR"
+                        }
 
-                    //if the list does not already contain it, insert this MuseumItem
-                    if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds }) {
-                        itemsToDonate.add(
-                            MuseumItem(
-                                displayName,
-                                parsedItems.skyblockItemIds,
-                                calculateValue(parsedItems.skyblockItemIds),
-                                time
+                        //if the list does not already contain it, insert this MuseumItem
+                        if (itemsToDonate.none { it.internalNames == parsedItems.skyblockItemIds }) {
+                            itemsToDonate.add(
+                                MuseumItem(
+                                    displayName,
+                                    parsedItems.skyblockItemIds,
+                                    calculateValue(parsedItems.skyblockItemIds),
+                                    time
+                                )
                             )
-                        )
+                        }
                     }
-                }
 
-                else -> itemsToDonate.retainAll { it.internalNames != parsedItems.skyblockItemIds }
+                    else -> itemsToDonate.retainAll { it.internalNames != parsedItems.skyblockItemIds }
+                }
             }
-        }
+            sortByValue()
+        }.start()
     }
 
     /**
@@ -373,33 +462,6 @@ object MuseumCheapestItemOverlay {
     }
 
     /**
-     * Draw the two clickable buttons on the bottom right and display a tooltip if needed
-     */
-    private fun drawButtons(guiLeft: Int, xSize: Int, guiTop: Int) {
-        RenderHelper.enableGUIStandardItemLighting()
-        // Left button
-        val useBIN = config.museumCheapestItemOverlayValueSource == 0
-        val mouseX = Utils.getMouseX()
-        val mouseY = Utils.getMouseY()
-
-        val leftItemStack = if (useBIN) {
-            ItemUtils.getCoinItemStack(100000.0)
-        } else {
-            ItemStack(Blocks.crafting_table)
-        }
-        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
-            leftItemStack,
-            guiLeft + xSize + 131,
-            guiTop + 106
-        )
-
-//        if(Utils.isWithinRect(mouseX, mouseY, ))
-
-        // Right button
-        RenderHelper.disableStandardItemLighting()
-    }
-
-    /**
      * Determine if the overlay should be active based on the config option and the currently open GuiChest, if applicable
      */
     private fun shouldRender(gui: GuiScreen): Boolean =
@@ -419,5 +481,5 @@ object MuseumCheapestItemOverlay {
     /**
      * Calculate the total amount of pages the overlay should have
      */
-    private fun totalPages(): Int = itemsToDonate.size / ITEMS_PER_PAGE
+    private fun totalPages(): Int = ceil(itemsToDonate.size.toFloat() / ITEMS_PER_PAGE.toFloat()).toInt()
 }
