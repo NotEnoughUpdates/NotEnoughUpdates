@@ -341,6 +341,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 
@@ -350,6 +351,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 }

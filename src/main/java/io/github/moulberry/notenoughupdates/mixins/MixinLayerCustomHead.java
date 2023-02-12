@@ -53,6 +53,15 @@ public class MixinLayerCustomHead {
 		}
 	}
 
+	@Redirect(method = "doRenderLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;getCurrentArmor(I)Lnet/minecraft/item/ItemStack;"))
+	public ItemStack doRenderLayer_getCurrentArmor(EntityLivingBase instance, int i) {
+		if (instance.getCurrentArmor(3) == null) return null;
+		ItemStack stack = instance.getCurrentArmor(3).copy();
+		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
+		stack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
+		return stack;
+	}
+
 	@Redirect(method = "doRenderLayer",
 		at = @At(
 			value = "INVOKE",

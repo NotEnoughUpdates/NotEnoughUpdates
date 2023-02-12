@@ -321,15 +321,25 @@ public class ItemCustomizeManager {
 	public static Item getCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
 		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
-		Item newItem = Item.getByNameOrId(data.customItem);
+		Item newItem = Item.getByNameOrId(data.customItem.split(":")[0]);
 		if (newItem == null) return stack.getItem();
 		return newItem;
 	}
 
 	public static Item getCustomItem(ItemStack stack, String newItemString) {
-		Item newItem = Item.getByNameOrId(newItemString);
+		Item newItem = Item.getByNameOrId(newItemString.split(":")[0]);
 		if (newItem == null) return stack.getItem();
 		return newItem;
+	}
+
+	public static int getCustomItemDamage(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getMetadata();
+		try {
+			return Integer.parseInt(data.customItem.split(":")[1]);
+		} catch (Exception e) {
+			return stack.getMetadata();
+		}
 	}
 
 	public static boolean shouldRenderLeatherColour(ItemStack stack) {
@@ -346,7 +356,7 @@ public class ItemCustomizeManager {
 	public static boolean hasCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
 		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem)) return false;
-		Item item = Item.getByNameOrId(data.customItem);
+		Item item = Item.getByNameOrId(data.customItem.split(":")[0]);
 		Item defaultItem = Item.getByNameOrId(data.defaultItem);
 		if (item == null) {
 			data.customItem = null;

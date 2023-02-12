@@ -78,6 +78,7 @@ public class GuiItemCustomize extends GuiScreen {
 		ItemStack customStack = stack.copy();
 		if (!this.textFieldCustomItem.getText().isEmpty()) {
 			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
+			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
 		}
 		this.customItemStack = customStack;
 
@@ -131,6 +132,7 @@ public class GuiItemCustomize extends GuiScreen {
 		ItemStack customStack = stack.copy();
 		if (!this.textFieldCustomItem.getText().isEmpty()) {
 			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
+			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
 		}
 		this.customItemStack = customStack;
 		data.defaultItem = stack.getItem().getRegistryName();
@@ -310,6 +312,7 @@ public class GuiItemCustomize extends GuiScreen {
 		ItemStack customStack = stack.copy();
 		if (!this.textFieldCustomItem.getText().isEmpty()) {
 			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
+			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
 		}
 		this.customItemStack = customStack;
 		Utils.drawItemStack(customItemStack, 0, 0);

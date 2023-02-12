@@ -55,6 +55,7 @@ public abstract class MixinItemRenderer {
 	public ItemStack renderItem_shouldRenderItemIn3D(ItemStack stack) {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 
@@ -62,6 +63,7 @@ public abstract class MixinItemRenderer {
 	public ItemStack renderItem_renderItemModelForEntity(ItemStack stack) {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 }

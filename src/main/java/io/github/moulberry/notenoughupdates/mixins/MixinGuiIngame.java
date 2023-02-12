@@ -104,6 +104,7 @@ public class MixinGuiIngame {
 	public ItemStack renderHotbarItem_renderItemAndEffectIntoGUI(ItemStack stack) {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 
@@ -111,6 +112,7 @@ public class MixinGuiIngame {
 	public ItemStack renderHotbarItem_renderItemOverlays(ItemStack stack) {
 		ItemStack newStack = stack.copy();
 		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
 		return newStack;
 	}
 }
