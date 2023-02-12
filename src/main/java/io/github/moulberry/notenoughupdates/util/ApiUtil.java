@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
@@ -210,7 +211,7 @@ public class ApiUtil {
 							conn.setDoOutput(true);
 							OutputStream os = conn.getOutputStream();
 							try {
-								os.write(this.postData.getBytes("utf-8"));
+								os.write(this.postData.getBytes(StandardCharsets.UTF_8));
 							} finally {
 								os.close();
 							}
@@ -252,7 +253,7 @@ public class ApiUtil {
 		}
 
 		public <T> CompletableFuture<T> requestJson(Class<? extends T> clazz) {
-			return requestString().thenApply(str -> gson.fromJson(str, clazz));
+			return requestString().thenApplyAsync(str -> gson.fromJson(str, clazz));
 		}
 
 	}

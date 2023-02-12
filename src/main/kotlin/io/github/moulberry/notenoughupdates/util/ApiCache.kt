@@ -23,10 +23,15 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag
 import io.github.moulberry.notenoughupdates.util.ApiUtil.Request
 import org.apache.http.NameValuePair
+import java.nio.file.Files
+import java.nio.file.Path
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -43,15 +48,74 @@ object ApiCache {
     )
 
     data class CacheResult(
-        val future: CompletableFuture<String>,
+        private var future: CompletableFuture<String>?,
         val firedAt: TimeSource.Monotonic.ValueTimeMark,
-    )
+        private var file: Path? = null,
+        private var disposed: Boolean = false,
+    ) {
+        init {
+            future!!.thenAcceptAsync { text ->
+                synchronized(this) {
+                    if (disposed) {
+                        return@synchronized
+                    }
+                    future = null
+                    val f = Files.createTempFile(cacheBaseDir, "api-cache", ".bin")
+                    log("Writing cache to disk: $f")
+                    f.toFile().deleteOnExit()
+                    f.writeText(text)
+                    file = f
+                }
+            }
+        }
 
+        val isAvailable get() = file != null && !disposed
+
+        fun getCachedFuture(): CompletableFuture<String> {
+            synchronized(this) {
+                if (disposed) {
+                    return CompletableFuture.supplyAsync {
+                        throw IllegalStateException("Attempting to read from a disposed future at $file. Most likely caused by non synchronized access to ApiCache.cachedRequests")
+                    }
+                }
+                val fut = future
+                if (fut != null) {
+                    return fut
+                } else {
+                    val text = file!!.readText()
+                    return CompletableFuture.completedFuture(text)
+                }
+            }
+        }
+
+        /**
+         * Should be called when removing / replacing a request from [cachedRequests].
+         * Should only be called while holding a lock on [ApiCache].
+         * This deletes the disk cache and smashes the internal state for it to be GCd.
+         * After calling this method no other method may be called on this object.
+         */
+        internal fun dispose() {
+            synchronized(this) {
+                if (disposed) return
+                log("Disposing cache for $file")
+                disposed = true
+                file?.deleteIfExists()
+                future = null
+            }
+        }
+    }
+
+    private val cacheBaseDir by lazy {
+        val d = Files.createTempDirectory("neu-cache")
+        d.toFile().deleteOnExit()
+        d
+    }
     private val cachedRequests = mutableMapOf<CacheKey, CacheResult>()
     val histogramTotalRequests: MutableMap<String, Int> = mutableMapOf()
     val histogramNonCachedRequests: MutableMap<String, Int> = mutableMapOf()
+
     private val timeout = 10.seconds
-    private val maxCacheAge = 1.hours
+    private val globalMaxCacheAge = 1.hours
 
     private fun log(message: String) {
         NEUDebugFlag.API_CACHE.log(message)
@@ -83,15 +147,17 @@ object ApiCache {
         } else {
             log("Cache hit for api request for url ${request.baseUrl} by $callingClassText.")
         }
-
     }
 
     private fun evictCache() {
         synchronized(this) {
             val it = cachedRequests.iterator()
             while (it.hasNext()) {
-                if (it.next().value.firedAt.elapsedNow() >= maxCacheAge)
+                val next = it.next()
+                if (next.value.firedAt.elapsedNow() >= globalMaxCacheAge) {
+                    next.value.dispose()
                     it.remove()
+                }
             }
         }
     }
@@ -113,6 +179,7 @@ object ApiCache {
         }
         fun recache(): CompletableFuture<String> {
             return futureSupplier.get().also {
+                cachedRequests[cacheKey]?.dispose() // Safe to dispose like this because this function is always called in a synchronized block
                 cachedRequests[cacheKey] = CacheResult(it, TimeSource.Monotonic.markNow())
             }
         }
@@ -122,16 +189,26 @@ object ApiCache {
                 traceApiRequest(request, "no cache found")
                 return recache()
             }
-            if (cachedRequest.future.isDone && cachedRequest.firedAt.elapsedNow() > maxAge.toKotlinDuration()) {
-                traceApiRequest(request, "outdated cache")
-                return recache()
+
+            return if (cachedRequest.isAvailable) {
+                if (cachedRequest.firedAt.elapsedNow() > maxAge.toKotlinDuration()) {
+                    traceApiRequest(request, "outdated cache")
+                    recache()
+                } else {
+                    // Using local cached request
+                    traceApiRequest(request, null)
+                    cachedRequest.getCachedFuture()
+                }
+            } else {
+                if (cachedRequest.firedAt.elapsedNow() > timeout) {
+                    traceApiRequest(request, "suspiciously slow api response")
+                    recache()
+                } else {
+                    // Joining ongoing request
+                    traceApiRequest(request, null)
+                    cachedRequest.getCachedFuture()
+                }
             }
-            if (!cachedRequest.future.isDone && cachedRequest.firedAt.elapsedNow() > timeout) {
-                traceApiRequest(request, "suspiciously slow api response")
-                return recache()
-            }
-            traceApiRequest(request, null)
-            return cachedRequest.future
         }
     }
 
