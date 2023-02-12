@@ -87,6 +87,7 @@ public class ItemCustomizeManager {
 
 		public String customLeatherColour = null;
 
+		public String defaultItem = null;
 		public String customItem = null;
 	}
 
@@ -348,13 +349,14 @@ public class ItemCustomizeManager {
 
 	public static boolean hasCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0) return false;
+		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem)) return false;
 		Item item = Item.getByNameOrId(data.customItem);
+		Item defaultItem = Item.getByNameOrId(data.defaultItem);
 		if (item == null) {
 			data.customItem = null;
 			return false;
 		}
-		return stack.getItem() != item;
+		return defaultItem != item;
 	}
 
 	@SubscribeEvent

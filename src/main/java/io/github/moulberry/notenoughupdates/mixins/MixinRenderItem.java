@@ -306,7 +306,7 @@ public abstract class MixinRenderItem {
 	public boolean renderItemOverlayIntoGUI_showDurabilityBar(
 		Item instance, ItemStack stack
 	) {
-		if (ItemCustomizeManager.hasCustomItem(stack)) return true;
+		if (ItemCustomizeManager.hasCustomItem(stack)) return false;
 		return stack.getItem().showDurabilityBar(stack);
 	}
 }

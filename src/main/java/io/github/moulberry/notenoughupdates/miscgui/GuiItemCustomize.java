@@ -133,6 +133,7 @@ public class GuiItemCustomize extends GuiScreen {
 			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
 		}
 		this.customItemStack = customStack;
+		data.defaultItem = stack.getItem().getRegistryName();
 
 		if (this.enchantGlint != stackHasEffect) {
 			data.overrideEnchantGlint = true;
