@@ -16,193 +16,103 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
+package io.github.moulberry.notenoughupdates.util
 
-package io.github.moulberry.notenoughupdates.util;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
+import io.github.moulberry.notenoughupdates.core.util.StringUtils
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import java.util.regex.Pattern
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+@NEUAutoSubscribe
+class HotmInformation {
+    private var ticksTillReload = 0
+    private val pattern = Pattern.compile("§[7b]Level (\\d*)(?:§8/.*)?")
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+    @SubscribeEvent
+    fun onGuiOpen(event: GuiOpenEvent) {
+        val gui = event.gui
+        if (gui !is GuiChest) return
 
-public class HotmInformation {
-	private final NotEnoughUpdates neu;
-	public static final int[] EXPERIENCE_FOR_HOTM_LEVEL = {
-		// Taken from the wiki: https://hypixel-skyblock.fandom.com/wiki/Heart_of_the_Mountain#Experience_for_Each_Tier
-		0,
-		3000,
-		12000,
-		37000,
-		97000,
-		197000,
-		347000
-	};
-	public static final int[] QUICK_FORGE_MULTIPLIERS = {
-		985,
-		970,
-		955,
-		940,
-		925,
-		910,
-		895,
-		880,
-		865,
-		850,
-		845,
-		840,
-		835,
-		830,
-		825,
-		820,
-		815,
-		810,
-		805,
-		700
-	};
-	private final Map<String, Tree> profiles = new ConcurrentHashMap<>();
+        val containerName = (gui.inventorySlots as ContainerChest)
+            .lowerChestInventory.displayName.unformattedText
+        if (containerName == "Heart of the Mountain") {
+            ticksTillReload = 5
+        }
+    }
 
-	public static class Tree {
-		private final Map<String, Integer> levels = new HashMap<>();
-		private int totalMithrilPowder;
-		private int totalGemstonePowder;
-		private int hotmExp;
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+        if (ticksTillReload == 0) return
+        ticksTillReload--
+        if (ticksTillReload == 0) {
+            loadDataFromInventory()
+        }
+    }
 
-		public int getHotmExp() {
-			return hotmExp;
-		}
+    private fun loadDataFromInventory() {
+        val profileSpecific = NotEnoughUpdates.INSTANCE.config.profileSpecific ?: return
 
-		public int getTotalGemstonePowder() {
-			return totalGemstonePowder;
-		}
+        for (slot in Minecraft.getMinecraft().thePlayer.openContainer.inventorySlots) {
+            val stack = slot.stack ?: continue
+            val displayName = stack.displayName
+            val lore = ItemUtils.getLore(stack)
+            if (!lore.any { it.contains("Right click to") }) continue
 
-		public int getTotalMithrilPowder() {
-			return totalMithrilPowder;
-		}
+            val perkName = StringUtils.cleanColour(displayName)
+            profileSpecific.hotmTree[perkName] = getLevel(lore[0])
+        }
+    }
 
-		public Set<String> getAllUnlockedNodes() {
-			return levels.keySet();
-		}
+    private fun getLevel(string: String): Int {
+        val matcher = pattern.matcher(string)
+        val level = if (matcher.matches()) matcher.group(1).toInt() else 1
 
-		public int getHotmLevel() {
-			for (int i = EXPERIENCE_FOR_HOTM_LEVEL.length - 1; i >= 0; i--) {
-				if (EXPERIENCE_FOR_HOTM_LEVEL[i] >= this.hotmExp)
-					return i;
-			}
-			return 0;
-		}
+        val withBlueCheeseGoblinOmelette = string.contains("§b")
+        val hasMoreThanOneLevel = string.contains("§8/")
+        return if (withBlueCheeseGoblinOmelette && hasMoreThanOneLevel) level - 1 else level
+    }
 
-		public int getLevel(String node) {
-			return levels.getOrDefault(node, 0);
-		}
+    companion object {
+        private val QUICK_FORGE_MULTIPLIERS = intArrayOf(
+            985,
+            970,
+            955,
+            940,
+            925,
+            910,
+            895,
+            880,
+            865,
+            850,
+            845,
+            840,
+            835,
+            830,
+            825,
+            820,
+            815,
+            810,
+            805,
+            700
+        )
 
-	}
-
-	private CompletableFuture<Void> updateTask = CompletableFuture.completedFuture(null);
-
-	private boolean shouldReloadSoon = false;
-
-	public HotmInformation(NotEnoughUpdates neu) {
-		this.neu = neu;
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-
-	public Optional<Tree> getInformationOn(String profile) {
-		if (profile == null) {
-			return Optional.empty();
-		}
-		return Optional.ofNullable(this.profiles.get(profile));
-	}
-
-	public Optional<Tree> getInformationOnCurrentProfile() {
-		return getInformationOn(neu.manager.getCurrentProfile());
-	}
-
-	@SubscribeEvent
-	public synchronized void onLobbyJoin(WorldEvent.Load event) {
-		if (shouldReloadSoon) {
-			shouldReloadSoon = false;
-			neu.manager.apiUtils.updateProfileData();
-		}
-	}
-
-	@SubscribeEvent
-	public synchronized void onGuiOpen(GuiOpenEvent event) {
-		if (event.gui instanceof GuiChest) {
-			String containerName = ((ContainerChest) ((GuiChest) event.gui).inventorySlots)
-				.getLowerChestInventory()
-				.getDisplayName()
-				.getUnformattedText();
-			if (containerName.equals("Heart of the Mountain"))
-				shouldReloadSoon = true;
-		}
-	}
-
-	@SubscribeEvent
-	public synchronized void onChat(ClientChatReceivedEvent event) {
-		if (event.message.getUnformattedText().equals("Welcome to Hypixel SkyBlock!"))
-			 neu.manager.apiUtils.updateProfileData();
-	}
-
-	/*
-	 * 1000 = 100% of the time left
-	 *  700 = 70% of the time left
-	 * */
-	public static int getQuickForgeMultiplier(int level) {
-		if (level <= 0) return 1000;
-		if (level > 20) return -1;
-		return QUICK_FORGE_MULTIPLIERS[level - 1];
-	}
-	@SubscribeEvent
-	public void onApiDataLoaded(ProfileDataLoadedEvent event) {
-		JsonObject data = event.getData();
-		if (data == null) return;
-
-		if (!data.has("success") || !data.get("success").getAsBoolean()) return;
-		JsonArray profiles = data.getAsJsonArray("profiles");
-		for (JsonElement element : profiles) {
-			JsonObject profile = element.getAsJsonObject();
-			String profileName = profile.get("cute_name").getAsString();
-			JsonObject player = profile.getAsJsonObject("members").getAsJsonObject(Minecraft.getMinecraft().thePlayer
-				.getUniqueID()
-				.toString()
-				.replace("-", ""));
-			if (!player.has("mining_core"))
-				continue;
-			JsonObject miningCore = player.getAsJsonObject("mining_core");
-			Tree tree = new Tree();
-			JsonObject nodes = miningCore.getAsJsonObject("nodes");
-			for (Map.Entry<String, JsonElement> node : nodes.entrySet()) {
-				String key = node.getKey();
-				if (!key.startsWith("toggle_")) {
-					tree.levels.put(key, node.getValue().getAsInt());
-				}
-			}
-			if (miningCore.has("powder_mithril_total")) {
-				tree.totalMithrilPowder = miningCore.get("powder_mithril_total").getAsInt();
-			}
-			if (miningCore.has("powder_gemstone_total")) {
-				tree.totalGemstonePowder = miningCore.get("powder_gemstone_total").getAsInt();
-			}
-			if (miningCore.has("experience")) {
-				tree.hotmExp = miningCore.get("experience").getAsInt();
-			}
-			this.profiles.put(profileName, tree);
-		}
-	}
-
+        /*
+         * 1000 = 100% of the time left
+         *  700 = 70% of the time left
+         * */
+        @JvmStatic
+        fun getQuickForgeMultiplier(level: Int): Int {
+            println("getQuickForgeMultiplier: $level")
+            if (level <= 0) return 1000
+            return if (level > 20) -1 else QUICK_FORGE_MULTIPLIERS[level - 1]
+        }
+    }
 }
