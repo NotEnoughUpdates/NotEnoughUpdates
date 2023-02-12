@@ -184,9 +184,6 @@ public class ApiUtil {
 							OutputStream os = conn.getOutputStream();
 							try {
 								os.write(this.postData.getBytes("utf-8"));
-							} catch (Throwable t) {
-								t.printStackTrace();
-								throw new Error(t);
 							} finally {
 								os.close();
 							}
@@ -202,9 +199,6 @@ public class ApiUtil {
 						// Not in the sense that this will hold in most cases (although that as well),
 						// but in the sense that any violation of this better have a good reason.
 						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-					} catch (Throwable t) {
-						t.printStackTrace();
-						throw new Error(t);
 					} finally {
 						try {
 							if (inputStream != null) {
@@ -219,7 +213,7 @@ public class ApiUtil {
 				} catch (IOException e) {
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
-			}, executorService);
+			}, executorService).handle((obj, t) ->  { if (t != null) t.printStackTrace(); return obj;});
 		}
 
 		public CompletableFuture<JsonObject> requestJson() {
