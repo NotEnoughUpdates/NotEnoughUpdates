@@ -131,7 +131,8 @@ public abstract class MixinRenderItem {
 	public int renderItem_renderByItem(Item item, ItemStack stack, int renderPass) {
 		if (renderPass == 0) {
 			ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-			if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
+			if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack) &&
+				Minecraft.getMinecraft().thePlayer.inventory.getItemStack() != stack) {
 				return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 			}
 		}

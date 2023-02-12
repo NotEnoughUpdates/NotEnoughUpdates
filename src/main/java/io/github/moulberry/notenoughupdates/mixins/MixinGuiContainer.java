@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
@@ -55,6 +56,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -331,5 +333,23 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	@Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", ordinal = 1))
 	private void drawBackground(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		AbiphoneFavourites.getInstance().onDrawBackground(this);
+	}
+
+	@ModifyArg(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
+	public ItemStack drawSlot_renderItemAndEffectIntoGUI(ItemStack stack) {
+		if (stack == null) return stack;
+		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack;
+	}
+
+	@ModifyArg(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemOverlayIntoGUI(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V"))
+	public ItemStack drawSlot_renderItemOverlays(ItemStack stack) {
+		if (stack == null) return stack;
+		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		return newStack;
 	}
 }
