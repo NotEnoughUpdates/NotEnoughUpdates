@@ -24,6 +24,8 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime
 import io.github.moulberry.notenoughupdates.util.Utils
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.regex.Pattern
@@ -41,35 +43,36 @@ class SkyMallDisplay {
         val matcher = pattern.matcher(event.message.formattedText)
         if (!matcher.matches()) return
 
-        matcher.group(1).let { message ->
-            SkyMallVariant.values().find { it.chatMessage == message }
-        }.also {
-            if (it != null) {
-                currentVariant = it
-                println("found ${it.displayName}")
-                update()
-            } else {
-                println("nothing found!")
-            }
+        val message = matcher.group(1) ?: return
+        currentPerk = SkyMallPerk.values().find { it.chatMessage == message }
+
+        currentPerk?.let {
+            val manager = NotEnoughUpdates.INSTANCE.manager
+            displayItem = manager.jsonToStack(manager.itemInformation[it.displayItemId])
         }
     }
 
     companion object {
-        private var display = ""
+        private var displayText = ""
+        private var displayItem: ItemStack? = null
         private var lastUpdated = 0L
-        private var currentVariant: SkyMallVariant? = null
+        private var currentPerk: SkyMallPerk? = null
 
-        fun getDisplay(): String {
+        fun getDisplayText(): String {
             return if (lastUpdated + 1_000 > System.currentTimeMillis()) {
-                display
+                displayText
             } else {
                 update()
-                display
+                displayText
             }
         }
 
+        fun getDisplayItem(): ItemStack {
+            return displayItem ?: ItemStack(Items.apple)
+        }
+
         private fun update() {
-            display = (currentVariant?.displayName ?: "?") + " §a(${
+            displayText = (currentPerk?.displayName ?: "?") + " §a(${
                 Utils.prettyTime(SkyBlockTime.now()
                     .let { it.copy(day = it.day + 1, hour = 0, minute = 0, second = 0) }
                     .toRealTime() - System.currentTimeMillis())
@@ -78,16 +81,19 @@ class SkyMallDisplay {
         }
     }
 
-    enum class SkyMallVariant(val displayName: String, val chatMessage: String) {
-        PICKAXE_COOLDOWN("20% Pickaxe Ability cooldown", "§r§fReduce Pickaxe Ability cooldown by §r§a20%§r§f."),
-        MORE_POWDER("+15% more Powder", "§r§fGain §r§a+15% §r§fmore Powder while mining."),
-        MINING_FORTUNE("+50 §r§6☘ Mining Fortune", "§r§fGain §r§a+50 §r§6☘ Mining Fortune§r§f."),
-        MINING_SPEED("+100 §r§6⸕ Mining Speed", "§r§fGain §r§a+100 §r§6⸕ Mining Speed§r§f."),
-        MORE_GOBLINS("10x Goblin chance", "§r§f§r§a10x §r§fchance to find Goblins while mining."),
-        TITANIUM_DROPS("5x Titanium drops", "§r§fGain §r§a5x §r§9Titanium §r§fdrops"),
+    enum class SkyMallPerk(val displayName: String, val displayItemId: String, val chatMessage: String) {
+        PICKAXE_COOLDOWN(
+            "20% §6Pickaxe Ability cooldown", "DIAMOND_PICKAXE",
+            "§r§fReduce Pickaxe Ability cooldown by §r§a20%§r§f."
+        ),
+        MORE_POWDER("+15% more §6Powder", "INK_SACK-10", "§r§fGain §r§a+15% §r§fmore Powder while mining."),
+        MINING_FORTUNE("+50 §6☘ Mining Fortune", "ENCHANTED_RABBIT_FOOT", "§r§fGain §r§a+50 §r§6☘ Mining Fortune§r§f."),
+        MINING_SPEED("+100 §6⸕ Mining Speed", "ENCHANTED_FEATHER", "§r§fGain §r§a+100 §r§6⸕ Mining Speed§r§f."),
+        MORE_GOBLINS("10x §6Goblin chance", "GOBLIN_HELMET", "§r§f§r§a10x §r§fchance to find Goblins while mining."),
+        TITANIUM_DROPS("5x §9Titanium drops", "TITANIUM_ORE", "§r§fGain §r§a5x §r§9Titanium §r§fdrops"),
 
         // In case hypixel finds some day the missing dot at the end.
-        TITANIUM_DROPS_WITH_DOT("5x Titanium drops", "§r§fGain §r§a5x §r§9Titanium §r§fdrops."),
+        TITANIUM_DROPS_WITH_DOT("5x §9Titanium drops", "TITANIUM_ORE", "§r§fGain §r§a5x §r§9Titanium §r§fdrops."),
         ;
     }
 }

@@ -441,7 +441,7 @@ public class MiningOverlay extends TextTabOverlay {
 								StarCultCalculator.getNextStarCult());
 						break;
 					case 6:
-						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplay());
+						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
 						break;
 				}
 			}
@@ -753,6 +753,8 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
+			} else if (beforeColon.contains("Sky Mall")) {
+				icon = SkyMallDisplay.Companion.getDisplayItem();
 			}
 		}
 
@@ -811,12 +813,6 @@ public class MiningOverlay extends TextTabOverlay {
 				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
 					.getItemInformation()
 					.get("FALLEN_STAR_HAT"))
-			);
-			put(
-				"Sky Mall",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("FALLEN_STAR_HAT")) // TODO better icon jani
 			);
 			put(
 				"Thyst Slayer",
