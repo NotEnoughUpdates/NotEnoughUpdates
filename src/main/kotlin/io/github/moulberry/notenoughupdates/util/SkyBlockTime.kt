@@ -47,10 +47,6 @@ data class SkyBlockTime(
         return time.toLong() * 1000
     }
 
-    fun duplicate(): SkyBlockTime {
-        return SkyBlockTime(year, month, day, hour, minute, second)
-    }
-
     companion object {
         fun now(): SkyBlockTime {
             val skyBlockTimeZero = 1559829300000 // Day 1, Year 1
