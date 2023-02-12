@@ -35,7 +35,7 @@ class SkyBlockTimeTest {
     fun isReversibleEquivalent() {
         val ts = 167623132230L
         val someTimeStamp = Instant.ofEpochSecond(ts)
-        assertEquals(someTimeStamp.toEpochMilli(), SkyBlockTime.fromInstant(someTimeStamp).toRealTime())
+        assertEquals(someTimeStamp.toEpochMilli(), SkyBlockTime.fromInstant(someTimeStamp).toMillis())
     }
 
     @Test
