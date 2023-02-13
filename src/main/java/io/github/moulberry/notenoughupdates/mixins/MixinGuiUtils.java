@@ -20,7 +20,7 @@
 package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.SomeClass;
+import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -80,6 +80,6 @@ public class MixinGuiUtils {
 		FontRenderer font,
 		CallbackInfo ci
 	) {
-		SomeClass.handleTextLineRendering(textLines);
+		TooltipTextScrolling.handleTextLineRendering(textLines);
 	}
 }

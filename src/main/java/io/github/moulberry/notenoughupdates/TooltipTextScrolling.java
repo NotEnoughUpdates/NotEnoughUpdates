@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 @NEUAutoSubscribe
-public class SomeClass {
+public class TooltipTextScrolling {
 	static List<String> lastRenderedTooltip = null;
 	static int scrollOffset = 0;
 	static boolean didRenderTooltip = false;
@@ -46,12 +46,19 @@ public class SomeClass {
 		for (int i = 0; i < scrollOffset && tooltip.size() > 1; i++) {
 			tooltip.remove(0);
 		}
+		for (int i = 0; i < -scrollOffset && tooltip.size() > 1; i++) {
+			tooltip.remove(tooltip.size() - 1);
+		}
 	}
 
 	@SubscribeEvent
 	public void onMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
+		if (!NotEnoughUpdates.INSTANCE.config.misc.scrollableTooltips) return;
 		if (Mouse.getEventDWheel() < 0) {
-			scrollOffset = Math.max(0, scrollOffset - 1);
+			scrollOffset = Math.max(
+				lastRenderedTooltip == null ? 0 : -Math.max(lastRenderedTooltip.size() - 1, 0)
+				, scrollOffset - 1
+			);
 		} else if (Mouse.getEventDWheel() > 0) {
 			scrollOffset = Math.min(
 				lastRenderedTooltip == null ? 0 : Math.max(lastRenderedTooltip.size() - 1, 0),
