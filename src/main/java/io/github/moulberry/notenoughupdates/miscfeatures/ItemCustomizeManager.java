@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -338,6 +339,7 @@ public class ItemCustomizeManager {
 		try {
 			return Integer.parseInt(data.customItem.split(":")[1]);
 		} catch (Exception e) {
+			if (Item.getByNameOrId(data.defaultItem) == Items.skull && getCustomItem(stack) != Items.skull) return 0;
 			return stack.getMetadata();
 		}
 	}
