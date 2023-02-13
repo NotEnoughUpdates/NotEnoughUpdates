@@ -213,7 +213,12 @@ public class ApiUtil {
 				} catch (IOException e) {
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
-			}, executorService).handle((obj, t) ->  { if (t != null) t.printStackTrace(); return obj;});
+			}, executorService).handle((obj, t) -> {
+				if (t != null) {
+					System.err.println(ErrorUtil.printStackTraceWithoutApiKey(t));
+				}
+				return obj;
+			});
 		}
 
 		public CompletableFuture<JsonObject> requestJson() {
