@@ -158,6 +158,14 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Custom tooltips",
+		desc = "Replace tooltips with neu's custom tooltips"
+	)
+	@ConfigEditorBoolean
+	public boolean customTooltips = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Expand Pet Exp Requirement",
 		desc = "Show which the full amount of pet xp required"
 	)

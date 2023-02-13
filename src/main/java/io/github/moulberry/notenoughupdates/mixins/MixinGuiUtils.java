@@ -36,10 +36,15 @@ import java.util.List;
 
 @Mixin(value = GuiUtils.class, remap = false)
 public class MixinGuiUtils {
-	@Inject(method = "drawHoveringText", at = @At("HEAD"))
+	@Inject(method = "drawHoveringText", at = @At("HEAD"), cancellable = true)
 	private static void drawHoveringText_head(
 		List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font, CallbackInfo ci) {
-		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
+		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.customTooltips) {
+			Utils.drawHoveringText(textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font);
+			ci.cancel();
+		} else if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
+			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
+		}
 	}
 
 	@ModifyVariable(method = "drawHoveringText", at = @At(value = "HEAD"), ordinal = 0, argsOnly = true)

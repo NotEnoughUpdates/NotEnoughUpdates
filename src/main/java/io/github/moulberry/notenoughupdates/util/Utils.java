@@ -1419,18 +1419,6 @@ public class Utils {
 		GlStateManager.enableTexture2D();
 	}
 
-	public static void drawHoveringText(
-		List<String> textLines,
-		final int mouseX,
-		final int mouseY,
-		final int screenWidth,
-		final int screenHeight,
-		final int maxTextWidth,
-		FontRenderer font
-	) {
-		drawHoveringText(textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font, true);
-	}
-
 	public static JsonObject getConstant(String constant, Gson gson) {
 		return getConstant(constant, gson, JsonObject.class);
 	}
@@ -1566,15 +1554,26 @@ public class Utils {
 
 	public static void drawHoveringText(
 		List<String> textLines,
-		final int mouseX,
-		final int mouseY,
-		final int screenWidth,
-		final int screenHeight,
+		int mouseX,
+		int mouseY,
+		int screenWidth,
+		int screenHeight,
 		final int maxTextWidth,
-		FontRenderer font,
-		boolean coloured
+		FontRenderer font
 	) {
 		if (!textLines.isEmpty()) {
+			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
+				mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
+
+				mouseY = scaledResolution.getScaledHeight() -
+					Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight;
+
+				screenWidth = scaledResolution.getScaledWidth();
+
+				screenHeight = scaledResolution.getScaledHeight();
+			}
+
 			GlStateManager.disableRescaleNormal();
 			RenderHelper.disableStandardItemLighting();
 			GlStateManager.disableLighting();
@@ -1717,7 +1716,7 @@ public class Utils {
 			);
 			//TODO: Coloured Borders
 			int borderColorStart = 0x505000FF;
-			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours && coloured) {
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
 				if (textLines.size() > 0) {
 					String first = textLines.get(0);
 					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
@@ -1778,6 +1777,7 @@ public class Utils {
 			GlStateManager.enableDepth();
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.enableRescaleNormal();
+			Utils.resetGuiScale();
 		}
 		GlStateManager.disableLighting();
 	}
