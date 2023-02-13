@@ -230,7 +230,7 @@ public class DungeonWin {
 						"Deaths") || unformatted.contains("Secrets Found")) {
 						e.setCanceled(true);
 						if (unformatted.trim().length() > 0) text.add(e.message.getFormattedText().substring(6).trim());
-					} else {
+					} else if (unformatted.trim().length() > 6) {
 						System.out.println(
 							"These messages would of showed on neu dungeon overlay but didnt, They are either bugged or i missed them: \"" +
 								e.message.getFormattedText().substring(6).trim() + "\"");
