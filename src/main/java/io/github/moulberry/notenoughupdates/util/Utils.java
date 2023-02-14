@@ -1780,7 +1780,7 @@ public class Utils {
 			GlStateManager.enableDepth();
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.enableRescaleNormal();
-			Utils.resetGuiScale();
+			Utils.pushGuiScale(0);
 		}
 		GlStateManager.disableLighting();
 	}
