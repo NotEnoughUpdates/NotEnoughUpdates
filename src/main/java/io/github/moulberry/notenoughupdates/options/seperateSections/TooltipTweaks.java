@@ -166,6 +166,15 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Scrollable Tooltips",
+		desc = "Make tooltips text scrollable, by making some text lines disappear when using the mouse while hovering over an item."
+	)
+	@ConfigEditorBoolean
+	public boolean scrollableTooltips = false;
+
+
+	@Expose
+	@ConfigOption(
 		name = "Expand Pet Exp Requirement",
 		desc = "Show which the full amount of pet xp required"
 	)

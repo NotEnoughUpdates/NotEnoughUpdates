@@ -53,7 +53,7 @@ public class TooltipTextScrolling {
 
 	@SubscribeEvent
 	public void onMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
-		if (!NotEnoughUpdates.INSTANCE.config.misc.scrollableTooltips) return;
+		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips) return;
 		if (Mouse.getEventDWheel() < 0) {
 			scrollOffset = Math.max(
 				lastRenderedTooltip == null ? 0 : -Math.max(lastRenderedTooltip.size() - 1, 0)
