@@ -1572,8 +1572,8 @@ public class Utils {
 				}
 			}
 			TooltipTextScrolling.handleTextLineRendering(textLines);
-			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
 			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
+				ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
 				mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
 
 				mouseY = scaledResolution.getScaledHeight() -
@@ -1780,7 +1780,7 @@ public class Utils {
 			GlStateManager.enableDepth();
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.enableRescaleNormal();
-			Utils.pushGuiScale(0);
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) Utils.pushGuiScale(0);
 		}
 		GlStateManager.disableLighting();
 	}
