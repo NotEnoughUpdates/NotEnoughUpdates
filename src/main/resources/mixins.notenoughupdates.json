@@ -21,6 +21,7 @@
     "MixinGuiChest",
     "MixinGuiContainer",
     "MixinGuiIngame",
+    "MixinGuiIngameForge",
     "MixinGuiInventory",
     "MixinGuiScreen",
     "MixinGuiUtils",

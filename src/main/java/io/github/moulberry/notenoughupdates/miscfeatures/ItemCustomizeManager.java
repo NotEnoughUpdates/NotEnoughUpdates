@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NEUManager;
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -30,6 +29,9 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -81,6 +83,9 @@ public class ItemCustomizeManager {
 		public String customGlintColour = DEFAULT_GLINT_COLOR;
 
 		public String customLeatherColour = null;
+
+		public String defaultItem = null;
+		public String customItem = null;
 	}
 
 	public static void putItemData(String uuid, ItemData data) {
@@ -312,5 +317,53 @@ public class ItemCustomizeManager {
 			}
 		} catch (Exception ignored) {
 		}
+	}
+
+	public static Item getCustomItem(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
+		Item newItem = Item.getByNameOrId(data.customItem.split(":")[0]);
+		if (newItem == null) return stack.getItem();
+		return newItem;
+	}
+
+	public static Item getCustomItem(ItemStack stack, String newItemString) {
+		Item newItem = Item.getByNameOrId(newItemString.split(":")[0]);
+		if (newItem == null) return stack.getItem();
+		return newItem;
+	}
+
+	public static int getCustomItemDamage(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getMetadata();
+		try {
+			return Integer.parseInt(data.customItem.split(":")[1]);
+		} catch (Exception e) {
+			if (Item.getByNameOrId(data.defaultItem) == Items.skull && getCustomItem(stack) != Items.skull) return 0;
+			return stack.getMetadata();
+		}
+	}
+
+	public static boolean shouldRenderLeatherColour(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem() instanceof ItemArmor &&
+			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+		Item item = Item.getByNameOrId(data.customItem);
+		if (item == null) return stack.getItem() instanceof ItemArmor &&
+			((ItemArmor) stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+		return item instanceof ItemArmor &&
+			((ItemArmor) item).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER;
+	}
+
+	public static boolean hasCustomItem(ItemStack stack) {
+		ItemData data = getDataForItem(stack);
+		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem)) return false;
+		Item item = Item.getByNameOrId(data.customItem.split(":")[0]);
+		Item defaultItem = Item.getByNameOrId(data.defaultItem);
+		if (item == null) {
+			data.customItem = null;
+			return false;
+		}
+		return defaultItem != item;
 	}
 }

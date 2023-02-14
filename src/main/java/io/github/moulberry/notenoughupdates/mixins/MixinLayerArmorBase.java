@@ -76,10 +76,26 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 	)
 	public int renderItem_getColor(ItemArmor item, ItemStack stack) {
 		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-		if (data != null && data.customLeatherColour != null) {
+		if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 			return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 		}
 
 		return item.getColor(stack);
+	}
+
+	@Redirect(method = "renderLayer",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/entity/layers/LayerArmorBase;getCurrentArmor(Lnet/minecraft/entity/EntityLivingBase;I)Lnet/minecraft/item/ItemStack;"
+		)
+	)
+	public ItemStack renderItem_getCurrentArmor(LayerArmorBase<?> instance, EntityLivingBase entitylivingbaseIn, int armorSlot) {
+		ItemStack stack = instance.getCurrentArmor(entitylivingbaseIn, armorSlot);
+		if (stack == null) return stack;
+		if (armorSlot != 4) return stack;
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		return newStack;
 	}
 }
