@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
+import io.github.moulberry.notenoughupdates.options.seperateSections.Museum
 import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
 import net.minecraft.client.Minecraft
@@ -39,8 +40,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiScreenEvent
-import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent
-import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
@@ -48,18 +47,39 @@ import kotlin.math.ceil
 
 
 object MuseumCheapestItemOverlay {
+
+    enum class Category {
+        WEAPONS,
+        ARMOUR_SETS,
+        RARITIES,
+        NOT_APPLICABLE; // Either not a valid category or inside the "Special Items" category, which is not useful;
+
+        /**
+         * Convert to readable String to be displayed to the user
+         */
+        override fun toString(): String {
+            return when (this) {
+                WEAPONS -> "Weapons"
+                ARMOUR_SETS -> "Armour Sets"
+                RARITIES -> "Rarities"
+                NOT_APPLICABLE -> "Everything"
+            }
+        }
+    }
+
     data class MuseumItem(
         var name: String,
         var internalNames: List<String>,
         var value: Double,
-        var priceRefreshedAt: Long
+        var priceRefreshedAt: Long,
+        var category: Category
     )
 
     private const val ITEMS_PER_PAGE = 10
 
     private val backgroundResource: ResourceLocation = ResourceLocation("notenoughupdates:minion_overlay.png")
 
-    val config get() = NotEnoughUpdates.INSTANCE.config.museum
+    val config: Museum get() = NotEnoughUpdates.INSTANCE.config.museum
 
     /**
      * The top left position of the arrows to be drawn, used by [ArrowPagesUtils]
@@ -70,23 +90,24 @@ object MuseumCheapestItemOverlay {
     private var itemsToDonate: MutableList<MuseumItem> = emptyList<MuseumItem>().toMutableList()
     private var leftButtonRect = Rectangle(0, 0, 0, 0)
     private var rightButtonRect = Rectangle(0, 0, 0, 0)
+    private var selectedCategory = Category.NOT_APPLICABLE
+    private var totalPages = 0
 
     /**
      *category -> was the highest page visited?
      */
-    private var checkedPages: HashMap<String, Boolean> = hashMapOf(
+    private var checkedPages: HashMap<Category, Boolean> = hashMapOf(
         //this page only shows items when you have already donated them -> there is no useful information to gather
-        "Special Items" to true,
-        "Weapons" to false,
-        "Armor Sets" to false,
-        "Rarities" to false
+        Category.WEAPONS to false,
+        Category.ARMOUR_SETS to false,
+        Category.RARITIES to false
     )
 
     /**
      * Draw the overlay and parse items, if applicable
      */
     @SubscribeEvent
-    fun onDrawBackground(event: BackgroundDrawnEvent) {
+    fun onDrawBackground(event: GuiScreenEvent.BackgroundDrawnEvent) {
         if (!shouldRender(event.gui)) return
         val chest = event.gui as GuiChest
 
@@ -118,7 +139,7 @@ object MuseumCheapestItemOverlay {
         val guiLeft = (event.gui as AccessorGuiContainer).guiLeft
         val guiTop = (event.gui as AccessorGuiContainer).guiTop
         ArrowPagesUtils.onPageSwitchMouse(
-            guiLeft, guiTop, topLeft, currentPage, totalPages()
+            guiLeft, guiTop, topLeft, currentPage, totalPages
         ) { pageChange: Int -> currentPage = pageChange }
     }
 
@@ -136,14 +157,24 @@ object MuseumCheapestItemOverlay {
     }
 
     @SubscribeEvent
-    fun onMouseInput(event: MouseInputEvent.Pre) {
+    fun onMouseInput(event: GuiScreenEvent.MouseInputEvent.Pre) {
         if (!shouldRender(event.gui)) return
         val mouseX = Utils.getMouseX()
         val mouseY = Utils.getMouseY()
         if (Mouse.getEventButtonState() && leftButtonRect.contains(mouseX, mouseY)) {
             config.museumCheapestItemOverlayValueSource = 1 - config.museumCheapestItemOverlayValueSource
             updateAllValues()
+        } else if (Mouse.getEventButtonState() && rightButtonRect.contains(mouseX, mouseY)) {
+            advanceSelectedCategory()
         }
+    }
+
+    /**
+     * Move the selected category one index forward, or back to the start when already at the end
+     */
+    private fun advanceSelectedCategory() {
+        val nextValueIndex = (selectedCategory.ordinal + 1) % 4
+        selectedCategory = enumValues<Category>()[nextValueIndex]
     }
 
     /**
@@ -164,16 +195,16 @@ object MuseumCheapestItemOverlay {
         } else {
             ItemStack(Blocks.crafting_table)
         }
-        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
-            leftItemStack,
-            guiLeft + xSize + 131,
-            guiTop + 106
-        )
         leftButtonRect = Rectangle(
             guiLeft + xSize + 131,
             guiTop + 106,
             16,
             16
+        )
+        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
+            leftItemStack,
+            leftButtonRect.x,
+            leftButtonRect.y
         )
 
         if (leftButtonRect.contains(mouseX, mouseY)) {
@@ -202,6 +233,39 @@ object MuseumCheapestItemOverlay {
         }
 
         // Right button
+        val rightItemStack = when (selectedCategory) {
+            Category.WEAPONS -> ItemStack(Items.diamond_sword)
+            Category.ARMOUR_SETS -> ItemStack(Items.diamond_chestplate)
+            Category.RARITIES -> ItemStack(Items.emerald)
+            Category.NOT_APPLICABLE -> ItemStack(Items.filled_map)
+        }
+        rightButtonRect = Rectangle(
+            guiLeft + xSize + 150,
+            guiTop + 106,
+            16,
+            16
+        )
+        Minecraft.getMinecraft().renderItem.renderItemIntoGUI(
+            rightItemStack,
+            rightButtonRect.x,
+            rightButtonRect.y
+        )
+        if (rightButtonRect.contains(mouseX, mouseY)) {
+            val tooltip = listOf(
+                "${EnumChatFormatting.AQUA}Currently showing: $selectedCategory",
+                "",
+                "${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}Click to advance!"
+            )
+            Utils.drawHoveringText(
+                tooltip,
+                mouseX,
+                mouseY,
+                width,
+                height,
+                -1,
+                Minecraft.getMinecraft().fontRendererObj
+            )
+        }
         RenderHelper.disableStandardItemLighting()
     }
 
@@ -266,12 +330,19 @@ object MuseumCheapestItemOverlay {
      * Draw the lines containing the displayname and value over the background
      */
     private fun drawLines(guiLeft: Int, guiTop: Int) {
-        val lines = buildLines()
         val mouseX = Utils.getMouseX()
         val mouseY = Utils.getMouseY()
         val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
         val width = scaledResolution.scaledWidth
         val height = scaledResolution.scaledHeight
+
+        val applicableItems = if (selectedCategory == Category.NOT_APPLICABLE) {
+            itemsToDonate
+        } else {
+            itemsToDonate.toList().filter { it.category == selectedCategory }
+        }
+        val lines = buildLines(applicableItems)
+        totalPages = ceil(applicableItems.size.toFloat() / ITEMS_PER_PAGE.toFloat()).toInt()
 
         lines.forEachIndexed { index, line ->
             if (!visitedAllPages() && (index == ITEMS_PER_PAGE || index == lines.size - 1)) {
@@ -357,9 +428,9 @@ object MuseumCheapestItemOverlay {
         //no page has been visited yet
         if (lines.isEmpty()) {
             TextRenderUtils.drawStringScaledMaxWidth(
-                "${EnumChatFormatting.RED}Open valid category to continue!",
+                "${EnumChatFormatting.RED}No items matching filter!",
                 Minecraft.getMinecraft().fontRendererObj,
-                (guiLeft + 185).toFloat(),
+                (guiLeft + 200).toFloat(),
                 (guiTop + 128 / 2).toFloat(),
                 true,
                 155,
@@ -367,20 +438,22 @@ object MuseumCheapestItemOverlay {
             )
         }
 
-        ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages())
+        ArrowPagesUtils.onDraw(guiLeft, guiTop, topLeft, currentPage, totalPages)
         return
     }
 
     /**
      * Create the list of [MuseumItem]s that should be displayed on the current page
      */
-    private fun buildLines(): List<MuseumItem> {
+    private fun buildLines(applicableItems: List<MuseumItem>): List<MuseumItem> {
         val list = emptyList<MuseumItem>().toMutableList()
+
         for (i in (ITEMS_PER_PAGE * currentPage) until ((ITEMS_PER_PAGE * currentPage) + ITEMS_PER_PAGE)) {
-            if (i >= itemsToDonate.size) {
+            if (i >= applicableItems.size) {
                 break
             }
-            list.add(itemsToDonate[i])
+
+            list.add(applicableItems[i])
         }
         return list
     }
@@ -389,10 +462,13 @@ object MuseumCheapestItemOverlay {
      * Parse the not already donated items present in the currently open Museum page
      */
     private fun parseItems(slots: List<Slot>) {
-        // Iterate upper chest with 56 slots
         Thread {
             val time = System.currentTimeMillis()
-            val armor = Utils.getOpenChestName().endsWith("Armor Sets")
+            val category = getCategory()
+            if (category == Category.NOT_APPLICABLE) {
+                return@Thread
+            }
+            val armor = category == Category.ARMOUR_SETS
             for (i in 0..53) {
                 val stack = slots[i].stack ?: continue
                 val parsedItems = MuseumUtil.findMuseumItem(stack, armor) ?: continue
@@ -416,7 +492,8 @@ object MuseumCheapestItemOverlay {
                                     displayName,
                                     parsedItems.skyblockItemIds,
                                     calculateValue(parsedItems.skyblockItemIds),
-                                    time
+                                    time,
+                                    category
                                 )
                             )
                         }
@@ -469,17 +546,18 @@ object MuseumCheapestItemOverlay {
             .startsWith("Museum ➜") || Utils.getOpenChestName() == "Your Museum")
 
     /**
-     * Determine the name of the currently open Museum Category. Please validate that the name does contain a category before calling
+     * Determine the currently open Museum Category
      */
-    private fun getCategory(): String = Utils.getOpenChestName().substring(9, Utils.getOpenChestName().length)
+    private fun getCategory(): Category =
+        when (Utils.getOpenChestName().substring(9, Utils.getOpenChestName().length)) {
+            "Weapons" -> Category.WEAPONS
+            "Armor Sets" -> Category.ARMOUR_SETS
+            "Rarities" -> Category.RARITIES
+            else -> Category.NOT_APPLICABLE
+        }
 
     /**
      * Determine if all useful pages have been visited
      */
     private fun visitedAllPages(): Boolean = !checkedPages.containsValue(false)
-
-    /**
-     * Calculate the total amount of pages the overlay should have
-     */
-    private fun totalPages(): Int = ceil(itemsToDonate.size.toFloat() / ITEMS_PER_PAGE.toFloat()).toInt()
 }
