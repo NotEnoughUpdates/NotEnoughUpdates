@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent
+import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.player.inventory.ContainerLocalMenu
 import net.minecraft.init.Items
@@ -30,9 +31,13 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 @NEUAutoSubscribe
 object OldSkyBlockMenu {
+    private val decimalFormat = DecimalFormat("##,##0", DecimalFormatSymbols(Locale.US))
 
     val map: Map<Int, SkyBlockButton> by lazy {
         val map = mutableMapOf<Int, SkyBlockButton>()
@@ -48,11 +53,22 @@ object OldSkyBlockMenu {
         if (event.inventory !is ContainerLocalMenu) return
 
         val skyBlockButton = map[event.slotNumber] ?: return
+        val showWarning = skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()
+        val item = if (showWarning) skyBlockButton.itemWithCookieWarning else skyBlockButton.itemWithoutCookieWarning
 
-        if (skyBlockButton.requiresBoosterCookie && !CookieWarning.hasActiveBoosterCookie()) {
-            event.replaceWith(skyBlockButton.itemWithCookieWarning)
+        if (skyBlockButton == SkyBlockButton.ACCESSORY) {
+            val magicalPower = NotEnoughUpdates.INSTANCE.config.profileSpecific?.magicalPower ?: 0
+
+            val lore = ItemUtils.getLore(item)
+            lore.add(4, "")
+            val format = decimalFormat.format(magicalPower)
+            lore.add(5, "§7Magical Power: §6$format")
+
+            val newItem = ItemStack.copyItemStack(item)
+            ItemUtils.setLore(newItem, lore)
+            event.replaceWith(newItem)
         } else {
-            event.replaceWith(skyBlockButton.itemWithoutCookieWarning)
+            event.replaceWith(item)
         }
     }
 
