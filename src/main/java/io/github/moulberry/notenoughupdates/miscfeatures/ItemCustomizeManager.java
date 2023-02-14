@@ -48,7 +48,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class ItemCustomizeManager {
@@ -333,10 +335,25 @@ public class ItemCustomizeManager {
 		return newItem;
 	}
 
+	static Random random = new Random();
+	static HashMap<Integer, Long> lastUpdate = new HashMap<>();
+	static HashMap<Integer, Integer> damageMap = new HashMap<>();
+
 	public static int getCustomItemDamage(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
 		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getMetadata();
 		try {
+			String damageString = data.customItem.split(":")[1];
+			if (damageString.equals("?")) {
+				ArrayList<ItemStack> list = new ArrayList<>();
+				getCustomItem(stack).getSubItems(getCustomItem(stack), null, list);
+				if (damageMap.get(stack.getTagCompound().hashCode()) == null || System.currentTimeMillis() - lastUpdate.get(stack.getTagCompound().hashCode()) > 250) {
+					damageMap.put(stack.getTagCompound().hashCode(), random.nextInt(list.size()));
+
+					lastUpdate.put(stack.getTagCompound().hashCode(), System.currentTimeMillis());
+				}
+				return damageMap.get(stack.getTagCompound().hashCode());
+			}
 			return Integer.parseInt(data.customItem.split(":")[1]);
 		} catch (Exception e) {
 			if (Item.getByNameOrId(data.defaultItem) == Items.skull && getCustomItem(stack) != Items.skull) return 0;
