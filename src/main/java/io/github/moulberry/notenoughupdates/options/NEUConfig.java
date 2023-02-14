@@ -73,7 +73,6 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
@@ -594,6 +593,9 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public boolean abiphoneShowOnlyFavourites = false;
+
+		@Expose
+		public Map<String, Integer> hotmTree = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {
