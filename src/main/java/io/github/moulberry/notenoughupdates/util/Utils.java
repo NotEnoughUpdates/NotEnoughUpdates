@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import net.minecraft.block.Block;
@@ -1562,6 +1563,15 @@ public class Utils {
 		FontRenderer font
 	) {
 		if (!textLines.isEmpty()) {
+			int borderColorStart = 0x505000FF;
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
+				if (textLines.size() > 0) {
+					String first = textLines.get(0);
+					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
+						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
+				}
+			}
+			TooltipTextScrolling.handleTextLineRendering(textLines);
 			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
 			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
 				mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
@@ -1649,19 +1659,21 @@ public class Utils {
 			}
 
 			//Scrollable tooltips
-			if (tooltipHeight + 6 > screenHeight) {
-				if (scrollY.getTarget() < 0) {
-					scrollY.setTarget(0);
-					scrollY.resetTimer();
-				} else if (screenHeight - tooltipHeight - 12 + (int) scrollY.getTarget() > 0) {
-					scrollY.setTarget(-screenHeight + tooltipHeight + 12);
+			if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips) {
+				if (tooltipHeight + 6 > screenHeight) {
+					if (scrollY.getTarget() < 0) {
+						scrollY.setTarget(0);
+						scrollY.resetTimer();
+					} else if (screenHeight - tooltipHeight - 12 + (int) scrollY.getTarget() > 0) {
+						scrollY.setTarget(-screenHeight + tooltipHeight + 12);
+						scrollY.resetTimer();
+					}
+				} else {
+					scrollY.setValue(0);
 					scrollY.resetTimer();
 				}
-			} else {
-				scrollY.setValue(0);
-				scrollY.resetTimer();
+				scrollY.tick();
 			}
-			scrollY.tick();
 
 			if (tooltipY + tooltipHeight + 6 > screenHeight) {
 				tooltipY = screenHeight - tooltipHeight - 6 + (int) scrollY.getValue();
@@ -1714,15 +1726,6 @@ public class Utils {
 				backgroundColor,
 				backgroundColor
 			);
-			//TODO: Coloured Borders
-			int borderColorStart = 0x505000FF;
-			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
-				if (textLines.size() > 0) {
-					String first = textLines.get(0);
-					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
-						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
-				}
-			}
 			final int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
 			drawGradientRect(
 				zLevel,
