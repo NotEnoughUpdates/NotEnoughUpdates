@@ -96,6 +96,8 @@ public class DevTestCommand extends ClientCommandBase {
 	};
 	private int devFailIndex = 0;
 
+	public static int testValue = 0;
+
 	public DevTestCommand() {
 		super("neudevtest");
 	}
@@ -278,6 +280,13 @@ public class DevTestCommand extends ClientCommandBase {
 			String newUserAgent = args.length == 1 ? null : String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 			Utils.addChatMessage("§e[NEU] Changed user agent override to: " + newUserAgent);
 			NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = newUserAgent;
+		}
+		if (args.length == 2 && args[0].equalsIgnoreCase("value")) {
+			try {
+				testValue = Integer.parseInt(args[1]);
+			} catch (NumberFormatException e) {
+				Utils.addChatMessage("NumberFormatException!");
+			}
 		}
 	}
 }
