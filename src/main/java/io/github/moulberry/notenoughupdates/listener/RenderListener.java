@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
@@ -59,6 +60,7 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -105,6 +107,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -484,96 +487,70 @@ public class RenderListener {
 		if (CalendarOverlay.isEnabled() || event.isCanceled()) return;
 		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && NotificationHandler.shouldRenderOverlay(event.gui) &&
 			event.gui instanceof GuiContainer) {
-			doInventoryButtons = true;
-
-			int zOffset = 50;
-
-			GlStateManager.translate(0, 0, zOffset);
-
-			int xSize = ((AccessorGuiContainer) event.gui).getXSize();
-			int ySize = ((AccessorGuiContainer) event.gui).getYSize();
-			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
-			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
-
-			if (!NEUApi.disableInventoryButtons) {
-				if (!EnchantingSolvers.disableButtons()) {
-					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-						if (!button.isActive()) continue;
-						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
-
-						int x = guiLeft + button.x;
-						int y = guiTop + button.y;
-						if (button.anchorRight) {
-							x += xSize;
-						}
-						if (button.anchorBottom) {
-							y += ySize;
-						}
-						if (AccessoryBagOverlay.isInAccessoryBag()) {
-							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-								x += 80 + 28;
-							}
-						}
-						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
-							int diffX = 162;
-							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
-								x += diffX;
-							}
-						}
-						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
-							int diffX = 172;
-							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
-								x += diffX;
-							}
-						}
-						if (AuctionProfit.inAuctionPage()) {
-							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-								y < guiTop + 56) {
-								x -= 68 - 200;
-							}
-						}
-						if (EquipmentOverlay.isRenderingArmorHud()) {
-							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-								x -= 25;
-							}
-						}
-						if (EquipmentOverlay.isRenderingPetHud()) {
-							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-								x -= 25;
-							}
-						}
-						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
-							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-								y < guiTop + 100) {
-								x += 185;
-							}
-						}
-
-						GlStateManager.color(1, 1, 1, 1f);
-
-						GlStateManager.enableDepth();
-						GlStateManager.enableAlpha();
-						Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
-						Utils.drawTexturedRect(
-							x,
-							y,
-							18,
-							18,
-							button.backgroundIndex * 18 / 256f,
-							(button.backgroundIndex * 18 + 18) / 256f,
-							18 / 256f,
-							36 / 256f,
-							GL11.GL_NEAREST
-						);
-
-						if (button.icon != null && !button.icon.trim().isEmpty()) {
-							GuiInvButtonEditor.renderIcon(button.icon, x + 1, y + 1);
-						}
-					}
-				}
-			}
-			GlStateManager.translate(0, 0, -zOffset);
+			renderButtons((GuiContainer) event.gui);
 		}
+	}
+
+	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
+		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons()) {
+			return;
+		}
+
+		AccessorGuiContainer accessor = (AccessorGuiContainer) gui;
+		Rectangle guiRectangle = new Rectangle(
+			accessor.getGuiLeft(),
+			accessor.getGuiTop(),
+			accessor.getXSize(),
+			accessor.getYSize()
+		);
+
+		ButtonExclusionZoneEvent buttonExclusionZoneEvent = new ButtonExclusionZoneEvent(gui, guiRectangle);
+		buttonExclusionZoneEvent.post();
+		for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
+			if (!button.isActive()) continue;
+			if (button.playerInvOnly && !(gui instanceof GuiInventory)) continue;
+
+			Rectangle buttonPosition = buttonExclusionZoneEvent.findButtonPosition(new Rectangle(
+					accessor.getGuiLeft() + button.x + (button.anchorRight ? accessor.getXSize() : 0),
+					accessor.getGuiTop() + button.y + (button.anchorBottom ? accessor.getYSize() : 0),
+					18, 18
+				)
+			);
+			acceptButton.accept(button, buttonPosition);
+		}
+	}
+
+	public void renderButtons(GuiContainer gui) {
+		doInventoryButtons = true;
+
+		int zOffset = 50;
+		GlStateManager.pushMatrix();
+		GlStateManager.pushAttrib();
+		GlStateManager.translate(0, 0, zOffset);
+		iterateButtons(gui, (button, buttonPosition) -> {
+			GlStateManager.color(1, 1, 1, 1f);
+			GlStateManager.enableDepth();
+			GlStateManager.enableAlpha();
+
+			Minecraft.getMinecraft().getTextureManager().bindTexture(EDITOR);
+			Utils.drawTexturedRect(
+				buttonPosition.getX(),
+				buttonPosition.getY(),
+				18,
+				18,
+				button.backgroundIndex * 18 / 256f,
+				(button.backgroundIndex * 18 + 18) / 256f,
+				18 / 256f,
+				36 / 256f,
+				GL11.GL_NEAREST
+			);
+
+			if (button.icon != null && !button.icon.trim().isEmpty()) {
+				GuiInvButtonEditor.renderIcon(button.icon, buttonPosition.getX() + 1, buttonPosition.getY() + 1);
+			}
+		});
+		GlStateManager.popMatrix();
+		GlStateManager.popAttrib();
 	}
 
 	/**
@@ -620,105 +597,51 @@ public class RenderListener {
 			}
 		}
 
-		boolean hoveringButton = false;
+		final boolean[] hoveringButton = {false};
 		if (!doInventoryButtons) return;
 		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && NotificationHandler.shouldRenderOverlay(event.gui) &&
 			event.gui instanceof GuiContainer) {
-			int xSize = ((AccessorGuiContainer) event.gui).getXSize();
-			int ySize = ((AccessorGuiContainer) event.gui).getYSize();
-			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
-			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
+			AccessorGuiContainer acc = (AccessorGuiContainer) event.gui;
+			Rectangle mousePosition = new Rectangle(event.mouseX, event.mouseY, 0, 0);
+			Rectangle craftingTextRectangle = new Rectangle(acc.getGuiLeft() + 85, acc.getGuiTop() + 4, 30, 21);
+			iterateButtons((GuiContainer) guiScreen, (button, buttonPosition) -> {
 
-			if (!NEUApi.disableInventoryButtons) {
-				if (!EnchantingSolvers.disableButtons()) {
-					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-						if (!button.isActive()) continue;
-						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
-
-						int x = guiLeft + button.x;
-						int y = guiTop + button.y;
-						if (button.anchorRight) {
-							x += xSize;
-						}
-						if (button.anchorBottom) {
-							y += ySize;
-						}
-						if (AccessoryBagOverlay.isInAccessoryBag()) {
-							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-								x += 80 + 28;
-							}
-						}
-						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
-							int diffX = 162;
-							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
-								x += diffX;
-							}
-						}
-						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
-							int diffX = 172;
-							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
-								x += diffX;
-							}
-						}
-						if (AuctionProfit.inAuctionPage()) {
-							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-								y < guiTop + 56) {
-								x -= 68 - 200;
-							}
-						}
-						if (EquipmentOverlay.isRenderingArmorHud()) {
-							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-								x -= 25;
-							}
-						}
-						if (EquipmentOverlay.isRenderingPetHud()) {
-							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-								x -= 25;
-							}
-						}
-
-						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
-							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-								y < guiTop + 100) {
-								x += 185;
-							}
-						}
-
-						if (x - guiLeft >= 85 && x - guiLeft <= 115 && y - guiTop >= 4 && y - guiTop <= 25) {
-							disableCraftingText = true;
-						}
-
-						if (event.mouseX >= x && event.mouseX <= x + 18 && event.mouseY >= y && event.mouseY <= y + 18) {
-							hoveringButton = true;
-							long currentTime = System.currentTimeMillis();
-
-							if (buttonHovered != button) {
-								buttonHoveredMillis = currentTime;
-								buttonHovered = button;
-							}
-
-							if (currentTime - buttonHoveredMillis > NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
-								String command = button.command.trim();
-								if (!command.startsWith("/")) {
-									command = "/" + command;
-								}
-
-								Utils.drawHoveringText(
-									Lists.newArrayList("\u00a77" + command),
-									event.mouseX,
-									event.mouseY,
-									event.gui.width,
-									event.gui.height,
-									-1,
-									Minecraft.getMinecraft().fontRendererObj
-								);
-							}
-						}
-					}
+				if (buttonPosition.intersects(craftingTextRectangle)) {
+					disableCraftingText = true;
 				}
-			}
+
+				if (!buttonPosition.intersects(mousePosition)) {
+					return;
+				}
+				hoveringButton[0] = true;
+				long currentTime = System.currentTimeMillis();
+
+				if (buttonHovered != button) {
+					buttonHoveredMillis = currentTime;
+					buttonHovered = button;
+				}
+
+				if (currentTime - buttonHoveredMillis <= NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
+					return;
+				}
+				String command = button.command.trim();
+				if (!command.startsWith("/")) {
+					command = "/" + command;
+				}
+
+				Utils.drawHoveringText(
+					Lists.newArrayList("\u00a77" + command),
+					event.mouseX,
+					event.mouseY,
+					event.gui.width,
+					event.gui.height,
+					-1,
+					Minecraft.getMinecraft().fontRendererObj
+				);
+
+			});
 		}
-		if (!hoveringButton) buttonHovered = null;
+		if (!hoveringButton[0]) buttonHovered = null;
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().render();
@@ -1107,85 +1030,28 @@ public class RenderListener {
 		if (!doInventoryButtons) return;
 		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() && NotificationHandler.shouldRenderOverlay(event.gui) &&
 			Mouse.getEventButton() >= 0 && event.gui instanceof GuiContainer) {
-			int xSize = ((AccessorGuiContainer) event.gui).getXSize();
-			int ySize = ((AccessorGuiContainer) event.gui).getYSize();
-			int guiLeft = ((AccessorGuiContainer) event.gui).getGuiLeft();
-			int guiTop = ((AccessorGuiContainer) event.gui).getGuiTop();
-			if (!NEUApi.disableInventoryButtons) {
-				if (!EnchantingSolvers.disableButtons()) {
-					for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
-						if (!button.isActive()) continue;
-						if (button.playerInvOnly && !(event.gui instanceof GuiInventory)) continue;
-
-						int x = guiLeft + button.x;
-						int y = guiTop + button.y;
-						if (button.anchorRight) {
-							x += xSize;
+			Rectangle mouseRect = new Rectangle(mouseX, mouseY, 0, 0);
+			iterateButtons((GuiContainer) event.gui, (button, buttonPositon) -> {
+				if (!buttonPositon.intersects(mouseRect)) {
+					return;
+				}
+				if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+					int clickType = NotEnoughUpdates.INSTANCE.config.inventoryButtons.clickType;
+					if ((clickType == 0 && Mouse.getEventButtonState()) ||
+						(clickType == 1 && !Mouse.getEventButtonState())) {
+						String command = button.command.trim();
+						if (!command.startsWith("/")) {
+							command = "/" + command;
 						}
-						if (button.anchorBottom) {
-							y += ySize;
-						}
-						if (AccessoryBagOverlay.isInAccessoryBag()) {
-							if (x > guiLeft + xSize && x < guiLeft + xSize + 80 + 28 + 5 && y > guiTop - 18 && y < guiTop + 150) {
-								x += 80 + 28;
-							}
-						}
-						if (TrophyRewardOverlay.inTrophyFishingInventory()) {
-							int diffX = 162;
-							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 120) {
-								x += diffX;
-							}
-						}
-						if (MinionHelperManager.getInstance().inCraftedMinionsInventory()) {
-							int diffX = 172;
-							if (x > guiLeft + xSize && x < guiLeft + xSize + diffX + 5 && y > guiTop - 18 && y < guiTop + 128) {
-								x += diffX;
-							}
-						}
-						if (AuctionProfit.inAuctionPage()) {
-							if (x + 18 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-								y < guiTop + 56) {
-								x -= 68 - 200;
-							}
-						}
-						if (EquipmentOverlay.isRenderingArmorHud()) {
-							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-								x -= 25;
-							}
-						}
-						if (EquipmentOverlay.isRenderingPetHud()) {
-							if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-								x -= 25;
-							}
-						}
-						if (inDungeonPage || DungeonNpcProfitOverlay.isRendering()) {
-							if (x + 10 > guiLeft + xSize && x + 18 < guiLeft + xSize + 4 + 28 + 20 && y > guiTop - 180 &&
-								y < guiTop + 100) {
-								x += 185;
-							}
-						}
-
-						if (mouseX >= x && mouseX <= x + 18 && mouseY >= y && mouseY <= y + 18) {
-							if (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
-								int clickType = NotEnoughUpdates.INSTANCE.config.inventoryButtons.clickType;
-								if ((clickType == 0 && Mouse.getEventButtonState()) ||
-									(clickType == 1 && !Mouse.getEventButtonState())) {
-									String command = button.command.trim();
-									if (!command.startsWith("/")) {
-										command = "/" + command;
-									}
-									if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command) == 0) {
-										NotEnoughUpdates.INSTANCE.sendChatMessage(command);
-									}
-								}
-							} else {
-								event.setCanceled(true);
-							}
-							return;
+						if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, command) == 0) {
+							NotEnoughUpdates.INSTANCE.sendChatMessage(command);
 						}
 					}
+				} else {
+					event.setCanceled(true);
 				}
-			}
+
+			});
 		}
 	}
 
