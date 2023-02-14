@@ -33,11 +33,13 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Locati
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.util.ApiCache;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.CommandException;
@@ -125,6 +127,24 @@ public class DevTestCommand extends ClientCommandBase {
 			}
 			Utils.addChatMessage(EnumChatFormatting.RED + DEV_FAIL_STRINGS[devFailIndex++]);
 			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("dumpapihistogram")) {
+			synchronized (ApiCache.INSTANCE) {
+				Utils.addChatMessage("§e[NEU] API Request Histogram");
+				Utils.addChatMessage("§e[NEU] §bClass Name§e: §aCached§e/§cNonCached§e/§dTotal");
+				ApiCache.INSTANCE.getHistogramTotalRequests().forEach((className, totalRequests) -> {
+					var nonCachedRequests = ApiCache.INSTANCE.getHistogramNonCachedRequests().getOrDefault(className, 0);
+					var cachedRequests = totalRequests - nonCachedRequests;
+					Utils.addChatMessage(
+						String.format(
+							"§e[NEU] §b%s §a%d§e/§c%d§e/§d%d",
+							className,
+							cachedRequests,
+							nonCachedRequests,
+							totalRequests
+						));
+				});
+			}
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("testprofile")) {
 			NotEnoughUpdates.INSTANCE.manager.apiUtils.newHypixelApiRequest("skyblock/profiles")
