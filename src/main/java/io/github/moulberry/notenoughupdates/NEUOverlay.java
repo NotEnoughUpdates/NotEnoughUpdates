@@ -1503,8 +1503,7 @@ public class NEUOverlay extends Gui {
 				try {
 					return searchedItems.get(actualIndex);
 				} catch (IndexOutOfBoundsException e) {
-					int size = searchedItems.size();
-					System.out.println("searchedItems size: " + size);
+					System.out.println("searchedItems size: " + searchedItems.size());
 					System.out.println("actualIndex: " + actualIndex);
 					e.printStackTrace();
 					return null;
