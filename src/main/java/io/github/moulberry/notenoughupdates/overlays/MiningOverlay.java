@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -441,7 +442,10 @@ public class MiningOverlay extends TextTabOverlay {
 								StarCultCalculator.getNextStarCult());
 						break;
 					case 6:
-						overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+
+						if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
+							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						}
 						break;
 				}
 			}
@@ -754,7 +758,9 @@ public class MiningOverlay extends TextTabOverlay {
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
 			} else if (beforeColon.contains("Sky Mall")) {
-				icon = SkyMallDisplay.Companion.getDisplayItem();
+				if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
+					icon = SkyMallDisplay.Companion.getDisplayItem();
+				}
 			}
 		}
 
