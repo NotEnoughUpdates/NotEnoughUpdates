@@ -612,7 +612,7 @@ public class CustomItemEffects {
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 		if (heldInternal != null) {
 			boolean onPrivateIsland = SBInfo.getInstance().getLocation() == null || SBInfo.getInstance().getLocation().equals(
-				"dynamic");
+				"dynamic") || SBInfo.getInstance().getLocation().equals("garden");
 			EntityPlayer player = event.player;
 			double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) event.partialTicks;
 			double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) event.partialTicks;
