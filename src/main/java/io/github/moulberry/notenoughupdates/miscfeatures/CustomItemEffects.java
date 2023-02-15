@@ -44,6 +44,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -334,7 +335,7 @@ public class CustomItemEffects {
 			}
 
 			boolean onPrivateIsland = SBInfo.getInstance().getLocation() == null || SBInfo.getInstance().getLocation().equals(
-				"dynamic");
+				"dynamic") || SBInfo.getInstance().getLocation().equals("garden");
 
 			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay &&
 				Minecraft.getMinecraft().objectMouseOver != null &&
@@ -346,7 +347,7 @@ public class CustomItemEffects {
 						Minecraft.getMinecraft().objectMouseOver.sideHit, 1));
 				if (hover.getBlock() == Blocks.air) {
 
-					if (heldInternal != null && heldInternal.equals("BUILDERS_WAND")) {
+					if (heldInternal != null && (heldInternal.equals("BUILDERS_WAND") || heldInternal.equals("BUILDERS_RULER"))) {
 						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 						HashSet<BlockPos> candidatesOld = new HashSet<>();
@@ -356,7 +357,10 @@ public class CustomItemEffects {
 							world.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
 						Item matchItem = Item.getItemFromBlock(match.getBlock());
 						if (matchItem != null) {
-							ItemStack matchStack = new ItemStack(matchItem, 1,
+							boolean ruler = heldInternal.equals("BUILDERS_RULER");
+							ItemStack matchStack;
+
+							matchStack = new ItemStack(matchItem, 1,
 								match
 									.getBlock()
 									.getDamageValue(
@@ -364,44 +368,67 @@ public class CustomItemEffects {
 										Minecraft.getMinecraft().objectMouseOver.getBlockPos()
 									)
 							);
+							if (ruler) {
+								if (!Minecraft.getMinecraft().thePlayer.isSneaking()) matchStack = getFirstItemInRuler();
+								match = Blocks.dirt.getDefaultState();
+							}
+							if (matchStack == null) return;
 
-							getBuildersWandCandidates(
-								Minecraft.getMinecraft().thePlayer,
-								Minecraft.getMinecraft().objectMouseOver,
-								event.partialTicks,
-								candidatesOld,
-								candidatesOldSorted,
-								999 - MAX_BUILDERS_BLOCKS
-							);
+							if (heldInternal.equals("BUILDERS_WAND")) {
+								getBuildersWandCandidates(
+									Minecraft.getMinecraft().thePlayer,
+									Minecraft.getMinecraft().objectMouseOver,
+									event.partialTicks,
+									candidatesOld,
+									candidatesOldSorted,
+									999 - MAX_BUILDERS_BLOCKS
+								);
+							} else {
+								getBuildersRulerCandidates(
+									Minecraft.getMinecraft().thePlayer,
+									Minecraft.getMinecraft().objectMouseOver,
+									event.partialTicks,
+									candidatesOld,
+									candidatesOldSorted,
+									199 - MAX_BUILDERS_BLOCKS
+								);
+							}
 
 							boolean usingDirtWand = false;
 							int itemCount;
-							if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+							if (Minecraft.getMinecraft().thePlayer.isSneaking() && ruler) {
 								itemCount = candidatesOld.size();
-								usingDirtWand = true;
 							} else {
-								itemCount = countItemsInInventoryAndStorage(matchStack);
-							}
-
-							if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
-								Utils.drawStringCentered(
-									EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
-									Minecraft.getMinecraft().fontRendererObj,
-									scaledResolution.getScaledWidth() / 2f,
-									scaledResolution.getScaledHeight() / 2f + 10,
-									true,
-									0
-								);
-							} else {
-								String pre = EnumChatFormatting.GREEN.toString();
-								if (itemCount < candidatesOld.size()) {
-									pre = EnumChatFormatting.RED.toString();
+								if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+									itemCount = candidatesOld.size();
+									usingDirtWand = true;
+								} else {
+									itemCount = countItemsInInventoryAndStorage(matchStack);
 								}
-								Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
-										Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
-									Minecraft.getMinecraft().fontRendererObj,
-									scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
-								);
+							}
+							if (candidatesOld.size() == 0) return;
+
+							if (!Minecraft.getMinecraft().thePlayer.isSneaking() || !ruler) {
+								if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
+									Utils.drawStringCentered(
+										EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
+										Minecraft.getMinecraft().fontRendererObj,
+										scaledResolution.getScaledWidth() / 2f,
+										scaledResolution.getScaledHeight() / 2f + 10,
+										true,
+										0
+									);
+								} else {
+									String pre = EnumChatFormatting.GREEN.toString();
+									if (itemCount < candidatesOld.size() && !ruler) {
+										pre = EnumChatFormatting.RED.toString();
+									}
+									Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
+											Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
+										Minecraft.getMinecraft().fontRendererObj,
+										scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
+									);
+								}
 							}
 
 							String itemCountS = EnumChatFormatting.DARK_GRAY + "x" + EnumChatFormatting.RESET + itemCount;
@@ -497,6 +524,7 @@ public class CustomItemEffects {
 	}
 
 	public int countItemsInInventoryAndStorage(ItemStack match) {
+		if (match == null) return 0;
 		int count = 0;
 
 		for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
@@ -508,10 +536,15 @@ public class CustomItemEffects {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
-		if (heldInternal != null && heldInternal.equals("BUILDERS_WAND")) {
+		boolean isWand = heldInternal != null && heldInternal.equals("BUILDERS_WAND");
+		if (heldInternal != null && heldInternal.equals(isWand ? "BUILDERS_WAND" : "BUILDERS_RULER")) {
 			if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
-				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("builder's_wand_data", 7)) {
-				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray("builder's_wand_data");
+				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(isWand
+					? "builder's_wand_data"
+					: "builder's_ruler_data", 7)) {
+				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray(isWand
+					? "builder's_wand_data"
+					: "builder's_ruler_data");
 				try {
 					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
 					NBTTagList items = contents_nbt.getTagList("i", 10);
@@ -533,6 +566,44 @@ public class CustomItemEffects {
 		return count;
 	}
 
+	public ItemStack getFirstItemInRuler() {
+		int count = 0;
+
+		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
+		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
+
+		if (heldInternal != null && heldInternal.equals("BUILDERS_RULER")) {
+			if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
+				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("builder's_ruler_data", 7)) {
+				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray("builder's_ruler_data");
+				try {
+					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
+					NBTTagList items = contents_nbt.getTagList("i", 10);
+					for (int j = 0; j < items.tagCount(); j++) {
+						NBTTagCompound buildersItem = items.getCompoundTagAt(j);
+						if (buildersItem.getKeySet().size() > 0) {
+							ItemStack newStack = new ItemStack(
+								Item.getItemById(buildersItem.getInteger("id")),
+								1,
+								buildersItem.getInteger("Damage")
+							);
+							return newStack;
+						}
+					}
+				} catch (Exception e) {
+					return null;
+				}
+			}
+		}
+
+		//the ruler says it uses ur inv but it doesnt
+		/*for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
+			if (stack != null && stack.getItem() instanceof ItemBlock) return stack;
+		}*/
+
+		return null;
+	}
+
 	public boolean hasDirtWand() {
 		for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
 			String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
@@ -543,11 +614,15 @@ public class CustomItemEffects {
 
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
-
-		if (heldInternal != null && heldInternal.equals("BUILDERS_WAND")) {
+		boolean isWand = heldInternal != null && heldInternal.equals("BUILDERS_WAND");
+		if (heldInternal != null && heldInternal.equals(isWand ? "BUILDERS_WAND" : "BUILDERS_RULER")) {
 			if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
-				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("builder's_wand_data", 7)) {
-				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray("builder's_wand_data");
+				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(isWand
+					? "builder's_wand_data"
+					: "builder's_ruler_data", 7)) {
+				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray(isWand
+					? "builder's_wand_data"
+					: "builder's_ruler_data");
 				try {
 					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
 					NBTTagList items = contents_nbt.getTagList("i", 10);
@@ -834,7 +909,7 @@ public class CustomItemEffects {
 					GlStateManager.disableBlend();
 				}
 			} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay) {
-				if (heldInternal.equals("BUILDERS_WAND") && onPrivateIsland) {
+				if ((heldInternal.equals("BUILDERS_WAND") || heldInternal.equals("BUILDERS_RULER")) && onPrivateIsland) {
 					int maxBlocks = MAX_BUILDERS_BLOCKS;
 					if (event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
 						IBlockState hover = Minecraft.getMinecraft().theWorld.getBlockState(event.target
@@ -852,37 +927,72 @@ public class CustomItemEffects {
 								HashSet<BlockPos> candidatesOld = new HashSet<>();
 								TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
 
-								getBuildersWandCandidates(
-									player,
-									event.target,
-									event.partialTicks,
-									candidatesOld,
-									candidatesOldSorted,
-									10
-								);
+								boolean ruler = heldInternal.equals("BUILDERS_RULER");
 
-								ItemStack matchStack = new ItemStack(matchItem, 1,
-									match.getBlock().getDamageValue(Minecraft.getMinecraft().theWorld, event.target.getBlockPos())
-								);
-								int itemCount;
-								if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
-									itemCount = candidatesOld.size();
+								if (!ruler) {
+									getBuildersWandCandidates(
+										player,
+										event.target,
+										event.partialTicks,
+										candidatesOld,
+										candidatesOldSorted,
+										10
+									);
 								} else {
-									itemCount = countItemsInInventoryAndStorage(matchStack);
+									getBuildersRulerCandidates(
+										player,
+										event.target,
+										event.partialTicks,
+										candidatesOld,
+										candidatesOldSorted,
+										10
+									);
+									if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
+										Item item = getFirstItemInRuler() == null ? null : getFirstItemInRuler().getItem();
+										if (item != null) {
+											if (item instanceof ItemBlock) match = ((ItemBlock) item).getBlock().getStateFromMeta(
+												getFirstItemInRuler().getItemDamage());
+											else match = Blocks.dirt.getDefaultState();
+										}
+									}
+								}
+
+								ItemStack matchStack;
+								if (ruler) {
+									if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
+										matchStack = new ItemStack(Minecraft.getMinecraft().theWorld
+											.getBlockState(event.target.getBlockPos())
+											.getBlock());
+									} else {
+										matchStack = getFirstItemInRuler();
+									}
+								} else {
+
+									matchStack = new ItemStack(matchItem, 1,
+										match.getBlock().getDamageValue(Minecraft.getMinecraft().theWorld, event.target.getBlockPos())
+									);
+								}
+								int itemCount;
+								if (matchStack != null) {
+									if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+										itemCount = candidatesOld.size();
+									} else {
+										itemCount = countItemsInInventoryAndStorage(matchStack);
+									}
+								} else {
+									return;
 								}
 
 								String special = (candidatesOld.size() <= itemCount)
-									? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour
-									:
-										"0:255:255:0:0";
+									? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour : "0:255:255:0:0";
 
-								if (candidatesOld.size() <= maxBlocks) {
+								if (candidatesOld.size() <= maxBlocks || ruler) {
 									for (Set<BlockPos> candidatesSorted : candidatesOldSorted.values()) {
 										for (BlockPos candidate : candidatesSorted) {
 											match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
 											AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
 																								Minecraft.getMinecraft().theWorld,
-																								candidate
+																								candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() && ruler ? -1 : 0, 0)
 																							)
 																							.offset(
 																								event.target.sideHit.getFrontOffsetX(),
@@ -898,7 +1008,7 @@ public class CustomItemEffects {
 										match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
 										AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
 																							Minecraft.getMinecraft().theWorld,
-																							candidate
+																							candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() && ruler ? -1 : 0, 0)
 																						)
 																						.expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2)
 																						.offset(
@@ -907,7 +1017,9 @@ public class CustomItemEffects {
 																							event.target.sideHit.getFrontOffsetZ()
 																						);
 
-										drawOutlineBoundingBox(bb, 1f, special);
+										drawOutlineBoundingBox(bb, 1f,
+											(ruler && Minecraft.getMinecraft().thePlayer.isSneaking())
+												? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour : special);
 									}
 								}
 
@@ -1140,6 +1252,113 @@ public class CustomItemEffects {
 						}
 					}
 				}
+			}
+		}
+	}
+
+	public enum Facing {
+		NORTH,
+		EAST,
+		SOUTH,
+		WEST;
+
+		public static Facing forDirection(float direction) {
+			double rotation = (direction - 90) % 360;
+			if (rotation < 0) {
+				rotation += 360.0;
+			}
+
+			if ((0.0D <= rotation) && (rotation < 45.0D))
+				return WEST;
+			if ((45.0D <= rotation) && (rotation < 135.0D))
+				return NORTH;
+			if ((135.0D <= rotation) && (rotation < 225.0D))
+				return EAST;
+			if ((225.0D <= rotation) && (rotation < 315.0D))
+				return SOUTH;
+			if ((315.0D <= rotation) && (rotation < 360.0D)) {
+				return WEST;
+			} else {
+				return NORTH; // it uhhh shouldnt do this tho right
+			}
+		}
+	}
+
+	public void getBuildersRulerCandidates(
+		EntityPlayer player,
+		MovingObjectPosition target,
+		float partialTicks,
+		HashSet<BlockPos> candidatesOld,
+		TreeMap<Float, Set<BlockPos>> candidatesOldSorted,
+		int extraMax
+	) {
+		if (target.sideHit != EnumFacing.UP) return;
+		boolean sneaking = Minecraft.getMinecraft().thePlayer.isSneaking();
+		candidatesOld.clear();
+		candidatesOldSorted.clear();
+		LinkedList<BlockPos> candidates = new LinkedList<>();
+		LinkedList<BlockPos> candidatesNew = new LinkedList<>();
+
+		candidatesNew.add(target.getBlockPos());
+
+		double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
+		double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
+		double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+
+		while (candidatesOld.size() <= MAX_BUILDERS_BLOCKS + extraMax) {
+			if (candidatesNew.isEmpty()) {
+				break;
+			}
+
+			candidates.addAll(candidatesNew);
+			candidatesNew.clear();
+
+			while (!candidates.isEmpty()) {
+				if (candidatesOld.size() > MAX_BUILDERS_BLOCKS + extraMax) break;
+
+				BlockPos candidate = candidates.pop();
+
+				float distSq = (float) ((candidate.getX() + 0.5f - d0) * (candidate.getX() + 0.5f - d0) +
+					(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) *
+						(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) +
+					(candidate.getZ() + 0.5f - d2) * (candidate.getZ() + 0.5f - d2));
+				candidatesOldSorted.computeIfAbsent(distSq, k -> new HashSet<>()).add(candidate);
+
+				candidatesOld.add(candidate);
+
+				float yaw = Minecraft.getMinecraft().thePlayer.getRotationYawHead();
+				Facing facing = Facing.forDirection(yaw);
+				int xOff = facing == Facing.WEST ? -1 : facing == Facing.EAST ? 1 : 0;
+				int zOff = facing == Facing.NORTH ? -1 : facing == Facing.SOUTH ? 1 : 0;
+				if (!sneaking) {
+					if (Minecraft.getMinecraft().theWorld.getBlockState(candidate.add(xOff, 1, zOff)).getBlock() == Blocks.air) {
+
+						BlockPos posNew = candidate.add(xOff, 0, zOff);
+						if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(posNew)) {
+							IBlockState blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew.add(0, 1, 0));
+							if (blockNew.getBlock() == Blocks.air) {
+								candidatesNew.add(posNew);
+							}
+						}
+					} else {
+						break;
+					}
+				} else {
+					if (Minecraft.getMinecraft().theWorld.getBlockState(candidate.add(xOff, 0, zOff)).getBlock()
+						== Minecraft.getMinecraft().theWorld.getBlockState(target.getBlockPos()).getBlock()) {
+						BlockPos posNew = candidate.add(xOff, 0, zOff);
+						if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(posNew)) {
+							IBlockState blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew.add(0, 0, 0));
+							if (blockNew.getBlock() ==
+								Minecraft.getMinecraft().theWorld.getBlockState(target.getBlockPos()).getBlock()) {
+								candidatesNew.add(posNew);
+							}
+						}
+					} else {
+						break;
+					}
+				}
+
 			}
 		}
 	}
