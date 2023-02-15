@@ -38,6 +38,7 @@ import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
+import io.github.moulberry.notenoughupdates.miscfeatures.MutingComposter;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
@@ -271,6 +272,13 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));
+		MinecraftForge.EVENT_BUS.register(EnchantStyleCustomizer.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
+		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());
+		MinecraftForge.EVENT_BUS.register(FrozenTreasuresHighlighter.getInstance());
+		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
+		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
+		MinecraftForge.EVENT_BUS.register(new MutingComposter());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
