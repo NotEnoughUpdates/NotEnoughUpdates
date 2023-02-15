@@ -82,14 +82,16 @@ public class CoreTaskLevel {
 
 		// mp acc
 		int sbXpGainedMp = 0;
-		if (object.has("accessory_bag_storage")) {
+		if (object.has("accessory_bag_storage") &&
+			object.getAsJsonObject("accessory_bag_storage").has("highest_magical_power")) {
 			sbXpGainedMp = object.getAsJsonObject("accessory_bag_storage").get("highest_magical_power").getAsInt();
 		}
 
 		// pets
 
 		int petScore = 0;
-		if (object.has("leveling") && object.getAsJsonObject("leveling").has("highest_pet_score")) {
+		if (object.has("leveling") &&
+			object.getAsJsonObject("leveling").has("highest_pet_score")) {
 			petScore = object.getAsJsonObject("leveling").get("highest_pet_score").getAsInt();
 
 		}
