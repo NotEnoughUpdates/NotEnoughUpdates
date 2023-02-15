@@ -68,6 +68,7 @@ import org.lwjgl.util.vector.Vector3f;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -672,6 +673,9 @@ public class CustomItemEffects {
 		add(Blocks.farmland);
 	}};
 
+
+	List<Block> scytheBlocks = Arrays.asList(Blocks.leaves, Blocks.leaves2, Blocks.red_flower, Blocks.yellow_flower, Blocks.tallgrass);
+
 	@SubscribeEvent
 	public void renderBlockOverlay(DrawBlockHighlightEvent event) {
 		if (aoteTeleportationCurr != null && aoteTeleportationMillis > 0) {
@@ -1175,6 +1179,43 @@ public class CustomItemEffects {
 																												.expand(0.001D, 0.001D, 0.001D)
 																												.offset(-d0, -d1, -d2);
 									drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
+								}
+							}
+						}
+
+						GlStateManager.depthMask(true);
+						GlStateManager.enableTexture2D();
+						GlStateManager.disableBlend();
+					}
+				} else if ((heldInternal.equals("SAM_SCYTHE") || heldInternal.equals("GARDEN_SCYTHE") &&
+					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableScytheOverlay && onPrivateIsland) &&
+					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+					BlockPos target = event.target.getBlockPos();
+					IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
+
+					int radius = heldInternal.equals("SAM_SCYTHE") ? 1 : 2;
+
+					if (scytheBlocks.contains(targetState.getBlock())) {
+						GlStateManager.enableDepth();
+						GlStateManager.enableBlend();
+						GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+						GlStateManager.disableTexture2D();
+						GlStateManager.depthMask(true);
+
+						for (int xOff = -radius; xOff <= radius; xOff++) {
+							for (int yOff = -radius; yOff <= radius; yOff++) {
+								for (int zOff = -radius; zOff <= radius; zOff++) {
+									BlockPos renderPos = target.add(xOff, yOff, zOff);
+									IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+									if (scytheBlocks.contains(renderState.getBlock())) {
+										AxisAlignedBB bbExpanded = renderState.getBlock().getSelectedBoundingBox(
+																											 Minecraft.getMinecraft().theWorld,
+																											 renderPos
+																										 )
+																													.expand(0.001D, 0.001D, 0.001D)
+																													.offset(-d0, -d1, -d2);
+										drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
+									}
 								}
 							}
 						}
