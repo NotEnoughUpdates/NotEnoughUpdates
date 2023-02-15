@@ -272,12 +272,6 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));
-		MinecraftForge.EVENT_BUS.register(EnchantStyleCustomizer.INSTANCE);
-		MinecraftForge.EVENT_BUS.register(TitleUtil.getInstance());
-		MinecraftForge.EVENT_BUS.register(EnderNodeHighlighter.getInstance());
-		MinecraftForge.EVENT_BUS.register(FrozenTreasuresHighlighter.getInstance());
-		MinecraftForge.EVENT_BUS.register(AbiphoneFavourites.getInstance());
-		MinecraftForge.EVENT_BUS.register(AbiphoneContactHelper.getInstance());
 		MinecraftForge.EVENT_BUS.register(new MutingComposter());
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {

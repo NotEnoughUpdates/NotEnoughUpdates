@@ -42,7 +42,7 @@ public class MutingComposter {
 
 	@SubscribeEvent
 	public void onSoundPlay(PlaySoundEvent event) {
-		if (isEnabled() && Arrays.asList(mutableSounds).contains(event.name) ) {
+		if (Arrays.asList(mutableSounds).contains(event.name) && isEnabled() ) {
 			event.result = null;
 		}
 	}
