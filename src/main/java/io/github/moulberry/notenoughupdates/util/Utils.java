@@ -1571,7 +1571,7 @@ public class Utils {
 						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
 				}
 			}
-			TooltipTextScrolling.handleTextLineRendering(textLines);
+			textLines = TooltipTextScrolling.handleTextLineRendering(textLines);
 			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
 				ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
 				mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;

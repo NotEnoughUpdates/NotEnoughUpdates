@@ -35,20 +35,22 @@ public class TooltipTextScrolling {
 	static int scrollOffset = 0;
 	static boolean didRenderTooltip = false;
 
-	public static void handleTextLineRendering(List<String> tooltip) {
+	public static List<String> handleTextLineRendering(List<String> tooltip) {
 		didRenderTooltip = true;
 		if (!Objects.equals(tooltip, lastRenderedTooltip)) {
 			lastRenderedTooltip = new ArrayList<>(tooltip);
 			scrollOffset = 0;
-			return;
+			return tooltip;
 		}
 		lastRenderedTooltip = new ArrayList<>(tooltip);
-		for (int i = 0; i < scrollOffset && tooltip.size() > 1; i++) {
-			tooltip.remove(0);
+		List<String> modifiableTooltip = new ArrayList<>(tooltip);
+		for (int i = 0; i < scrollOffset && modifiableTooltip.size() > 1; i++) {
+			modifiableTooltip.remove(0);
 		}
-		for (int i = 0; i < -scrollOffset && tooltip.size() > 1; i++) {
-			tooltip.remove(tooltip.size() - 1);
+		for (int i = 0; i < -scrollOffset && modifiableTooltip.size() > 1; i++) {
+			modifiableTooltip.remove(modifiableTooltip.size() - 1);
 		}
+		return modifiableTooltip;
 	}
 
 	@SubscribeEvent

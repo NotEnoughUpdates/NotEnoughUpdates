@@ -74,17 +74,10 @@ public class MixinGuiUtils {
 		List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font, CallbackInfo ci) {
 		Utils.resetGuiScale();
 	}
-	@Inject(at = @At("HEAD"), method = "drawHoveringText")
-	private static void onDrawHoveringText(
-		List<String> textLines,
-		int mouseX,
-		int mouseY,
-		int screenWidth,
-		int screenHeight,
-		int maxTextWidth,
-		FontRenderer font,
-		CallbackInfo ci
+	@ModifyVariable(at = @At("HEAD"), method = "drawHoveringText")
+	private static List<String> onDrawHoveringText(
+		List<String> textLines
 	) {
-		TooltipTextScrolling.handleTextLineRendering(textLines);
+		return TooltipTextScrolling.handleTextLineRendering(textLines);
 	}
 }
