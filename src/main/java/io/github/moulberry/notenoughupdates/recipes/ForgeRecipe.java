@@ -173,7 +173,7 @@ public class ForgeRecipe implements NeuRecipe {
 			EXTRA_INFO_MAX_WIDTH, 16
 		)) return;
 
-		int level = profileSpecific.hotmTree.get("Quick Forge");
+		int level = profileSpecific.hotmTree.getOrDefault("Quick Forge", 0);
 		if (level == 0) return;
 		int reducedTime = getReducedTime(level);
 
