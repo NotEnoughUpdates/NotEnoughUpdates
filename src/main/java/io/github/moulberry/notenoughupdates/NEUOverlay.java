@@ -1500,7 +1500,14 @@ public class NEUOverlay extends Gui {
 			int actualIndex = index + getSlotsXSize() * getSlotsYSize() * page;
 			List<JsonObject> searchedItems = getSearchedItems();
 			if (0 <= actualIndex && actualIndex < searchedItems.size()) {
-				return searchedItems.get(actualIndex);
+				try {
+					return searchedItems.get(actualIndex);
+				} catch (IndexOutOfBoundsException e) {
+					System.out.println("searchedItems size: " + searchedItems.size());
+					System.out.println("actualIndex: " + actualIndex);
+					e.printStackTrace();
+					return null;
+				}
 			} else {
 				return null;
 			}

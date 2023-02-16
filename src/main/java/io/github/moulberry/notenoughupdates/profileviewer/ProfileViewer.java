@@ -42,6 +42,7 @@ import net.minecraft.util.EnumChatFormatting;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -537,6 +538,7 @@ public class ProfileViewer {
 		manager.apiUtils
 			.newHypixelApiRequest("player")
 			.queryArgument("name", nameF)
+			.maxCacheAge(Duration.ofSeconds(30))
 			.requestJson()
 			.thenAccept(jsonObject -> {
 					if (

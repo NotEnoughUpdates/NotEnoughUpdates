@@ -27,12 +27,13 @@ import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class MiscTaskLevel {
 
@@ -86,24 +87,27 @@ public class MiscTaskLevel {
 			}
 
 			// abiphone
-			if (netherIslandPlayerData.has("abiphone")) {
-				JsonObject abiphone = netherIslandPlayerData.getAsJsonObject("abiphone");
-				if (abiphone.has("active_contacts")) sbXpAbiphone =
-					abiphone.getAsJsonArray("active_contacts").size() * miscellaneousTask.get("abiphone_contacts_xp").getAsInt();
+			JsonObject leveling = object.getAsJsonObject("leveling");
+			JsonArray completedTask = leveling.get("completed_tasks").getAsJsonArray();
+			Stream<JsonElement> stream = StreamSupport.stream(completedTask.spliterator(), true);
+			long activeContacts = stream.map(JsonElement::getAsString).filter(s -> s.startsWith("ABIPHONE_")).count();
+			JsonObject abiphone = netherIslandPlayerData.getAsJsonObject("abiphone");
+			if (abiphone.has("active_contacts")) {
+				sbXpAbiphone = (int) activeContacts * miscellaneousTask.get("abiphone_contacts_xp").getAsInt();
 			}
 		}
 
 		// harp
 		int sbXpGainedHarp = 0;
 		JsonObject harpSongsNames = miscellaneousTask.get("harp_songs_names").getAsJsonObject();
-		if (object.has("harp_quest")) {
-			JsonObject harpQuest = object.get("harp_quest").getAsJsonObject();
-			for (Map.Entry<String, JsonElement> stringJsonElementEntry : harpSongsNames.entrySet()) {
-				String key = stringJsonElementEntry.getKey();
-				int value = stringJsonElementEntry.getValue().getAsInt();
-				if (harpQuest.has(key)) {
-					sbXpGainedHarp += value;
-				}
+
+		JsonObject leveling = object.get("leveling").getAsJsonObject();
+		if (leveling.has("completed_tasks")) {
+			JsonArray completedTasks = leveling.get("completed_tasks").getAsJsonArray();
+			for (JsonElement completedTask : completedTasks) {
+				String name = completedTask.getAsString();
+				String harpName = name.substring(0, name.lastIndexOf("_"));
+				if(harpSongsNames.has(harpName))sbXpGainedHarp += harpSongsNames.get(harpName).getAsInt() / 4;
 			}
 		}
 
@@ -158,10 +162,10 @@ public class MiscTaskLevel {
 			sbXpDojo, miscellaneousTask.get("the_dojo").getAsInt(), false
 		));
 		lore.add(levelPage.buildLore(
-			EnumChatFormatting.ITALIC + "Harp Songs",
+			"Harp Songs",
 			sbXpGainedHarp, miscellaneousTask.get("harp_songs").getAsInt(), false
 		));
-		lore.add(levelPage.buildLore(EnumChatFormatting.ITALIC + "Abiphone Contacts",
+		lore.add(levelPage.buildLore("Abiphone Contacts",
 			sbXpAbiphone, miscellaneousTask.get("abiphone_contacts").getAsInt(), false
 		));
 		lore.add(levelPage.buildLore("Community Shop Upgrades",
@@ -171,22 +175,22 @@ public class MiscTaskLevel {
 			sbXpPersonalBank, miscellaneousTask.get("personal_bank_upgrades").getAsInt(), false
 		));
 
+		int totalXp = sbXpReaperPeppers + sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
+			sbXpCommunityUpgrade + sbXpPersonalBank;
 		levelPage.renderLevelBar(
 			"Misc. Task",
 			new ItemStack(Items.map),
-			guiLeft + 299,
-			guiTop + 55,
+			guiLeft + 299, guiTop + 55,
 			110,
 			0,
-			sbXpReaperPeppers + sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
-				sbXpCommunityUpgrade + sbXpPersonalBank,
+			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("miscellaneous_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);
 
+		totalXp += sbXpAccessoryUpgrade + sbXpUnlockedPowers;
 	}
 
 	private int getRankIndex(int pointsTotal) {

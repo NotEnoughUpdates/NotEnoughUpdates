@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,21 +17,31 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util;
+package io.github.moulberry.notenoughupdates.util
 
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.Minecraft
+import java.util.concurrent.Executor
+import java.util.concurrent.ForkJoinPool
 
-import java.util.concurrent.Executor;
+object MinecraftExecutor {
 
-public class MinecraftExecutor implements Executor {
+    @JvmField
+    val OnThread = Executor {
+        val mc = Minecraft.getMinecraft()
+        if (mc.isCallingFromMinecraftThread) {
+            it.run()
+        } else {
+            Minecraft.getMinecraft().addScheduledTask(it)
+        }
+    }
 
-	public static MinecraftExecutor INSTANCE = new MinecraftExecutor();
-
-	private MinecraftExecutor() {}
-
-	@Override
-	public void execute(@NotNull Runnable runnable) {
-		Minecraft.getMinecraft().addScheduledTask(runnable);
-	}
+    @JvmField
+    val OffThread = Executor {
+        val mc = Minecraft.getMinecraft()
+        if (mc.isCallingFromMinecraftThread) {
+            ForkJoinPool.commonPool().execute(it)
+        } else {
+            it.run()
+        }
+    }
 }

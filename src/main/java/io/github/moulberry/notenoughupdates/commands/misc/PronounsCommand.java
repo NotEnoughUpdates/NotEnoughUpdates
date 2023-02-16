@@ -88,7 +88,7 @@ public class PronounsCommand extends ClientCommandBase {
 				"§e[NEU] Pronouns for §b" + user + " §eon §b" + platform + "§e:"), id);
 			betterPronounChoice.render().forEach(it -> nc.printChatMessage(new ChatComponentText("§e[NEU] §a" + it)));
 			return null;
-		}, MinecraftExecutor.INSTANCE);
+		}, MinecraftExecutor.OnThread);
 
 	}
 }

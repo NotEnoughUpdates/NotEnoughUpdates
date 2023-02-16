@@ -313,16 +313,19 @@ public class BasicPage extends GuiProfileViewerPage {
 		} else if (networth == -1) {
 			networth = profile.getNetWorth(profileId);
 		}
-
+		int fontWidth = fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth));
+		int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
 		if (networth > 0) {
-			Utils.drawStringCentered(
-				EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-					GuiProfileViewer.numberFormat.format(networth),
-				guiLeft + 165,
-				guiTop + 38,
-				true,
-				0
-			);
+			if (fontWidth >= 117) {
+				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
+					GuiProfileViewer.numberFormat.format(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
+			} else {
+				Utils.drawStringCentered(
+					EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
+						GuiProfileViewer.numberFormat.format(networth),
+					guiLeft + 68, guiTop + 38, true, 0
+				);
+			}
 			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE") != null &&
 				NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE").has("avg_buy")) {
 				double networthInCookies =
@@ -336,8 +339,8 @@ public class BasicPage extends GuiProfileViewerPage {
 				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
 
-				int fontWidth = fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth));
-				if (mouseX > guiLeft + 165 - fontWidth / 2 && mouseX < guiLeft + 165 + fontWidth / 2) {
+
+				if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2) {
 					if (mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
 						getInstance().tooltipToDisplay = new ArrayList<>();
 						getInstance()
@@ -383,13 +386,17 @@ public class BasicPage extends GuiProfileViewerPage {
 				}
 			}
 		} else {
-			Utils.drawStringCentered(
-				EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
-				guiLeft + 165,
-				guiTop + 38,
-				true,
-				0
-			);
+			int errFontWidth = fr.getStringWidth("Net Worth: " + stateStr);
+			if (errFontWidth >= 117) {
+				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
+					guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true
+				);
+			} else {
+				Utils.drawStringCentered(
+					EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
+					guiLeft + 63, guiTop + 38, true, 0
+				);
+			}
 		}
 
 		if (status != null) {
@@ -787,14 +794,14 @@ public class BasicPage extends GuiProfileViewerPage {
 				"Senither Weight: " +
 				EnumChatFormatting.GOLD +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
-			guiLeft + 165, guiTop + 18, true, 0
+			guiLeft + 63, guiTop + 18, true, 0
 		);
 
 		int textWidth = fr.getStringWidth(
 			"Senither Weight: " +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
 		);
-		if (mouseX > guiLeft + 165 - textWidth / 2 && mouseX < guiLeft + 165 + textWidth / 2) {
+		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
 			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
 				getInstance().tooltipToDisplay = new ArrayList<>();
 				getInstance()
@@ -850,13 +857,13 @@ public class BasicPage extends GuiProfileViewerPage {
 			EnumChatFormatting.GREEN +
 				"Lily Weight: " + EnumChatFormatting.GOLD +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
-			guiLeft + 165, guiTop + 28, true, 0
+			guiLeft + 63, guiTop + 28, true, 0
 		);
 
 		int fontWidth = fr.getStringWidth(
 			"Lily Weight: " + GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
 		);
-		if (mouseX > guiLeft + 165 - fontWidth / 2 && mouseX < guiLeft + 165 + fontWidth / 2) {
+		if (mouseX > guiLeft + 63 - fontWidth / 2 && mouseX < guiLeft + 63 + fontWidth / 2) {
 			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fr.FONT_HEIGHT) {
 				getInstance().tooltipToDisplay = new ArrayList<>();
 				getInstance()

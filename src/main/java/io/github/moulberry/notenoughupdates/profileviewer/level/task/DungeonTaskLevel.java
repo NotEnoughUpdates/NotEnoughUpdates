@@ -44,9 +44,9 @@ public class DungeonTaskLevel {
 		Map<String, ProfileViewer.Level> skyblockInfo =
 			levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
 
-		double sbLevelGainedFloor = 0;
-		double sbXpGainedClass = 0;
-		double sbXpGainedLvl = 0;
+		int sbLevelGainedFloor = 0;
+		int sbXpGainedClass = 0;
+		int sbXpGainedLvl = 0;
 		int catacombsLvl = 0;
 		if (skyblockInfo != null && skyblockInfo.containsKey("catacombs")) {
 			ProfileViewer.Level catacombs = skyblockInfo.get("catacombs");
@@ -105,20 +105,20 @@ public class DungeonTaskLevel {
 		lore.add(levelPage.buildLore("Class Level Up", sbXpGainedClass, classLevelUp, false));
 		lore.add(levelPage.buildLore("Complete Dungeons", sbLevelGainedFloor, completeDungeon, false));
 
+		int totalSbXpGain = sbXpGainedLvl + sbXpGainedClass + sbLevelGainedFloor;
+
 		levelPage.renderLevelBar(
 			"Dungeon Task",
 			NotEnoughUpdates.INSTANCE.manager
 				.createItemResolutionQuery()
 				.withKnownInternalName("WITHER_RELIC")
 				.resolveToItemStack(),
-			guiLeft + 23,
-			guiTop + 55,
+			guiLeft + 23, guiTop + 55,
 			110,
 			catacombsLvl,
 			totalXp,
 			totalGainful,
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

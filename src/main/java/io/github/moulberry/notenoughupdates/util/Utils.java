@@ -925,6 +925,10 @@ public class Utils {
 		return createItemStack(item, displayName, 0, lore);
 	}
 
+	public static ItemStack createItemStackArray(Item item, String displayName, String[] lore) {
+		return createItemStack(item, displayName, 0, lore);
+	}
+
 	public static ItemStack createItemStack(Block item, String displayName, String... lore) {
 		return createItemStack(Item.getItemFromBlock(item), displayName, lore);
 	}
@@ -932,22 +936,28 @@ public class Utils {
 	public static ItemStack createItemStack(Item item, String displayName, int damage, String... lore) {
 		ItemStack stack = new ItemStack(item, 1, damage);
 		NBTTagCompound tag = new NBTTagCompound();
-		NBTTagCompound display = new NBTTagCompound();
-		NBTTagList Lore = new NBTTagList();
-
-		for (String line : lore) {
-			Lore.appendTag(new NBTTagString(line));
-		}
-
-		display.setString("Name", displayName);
-		display.setTag("Lore", Lore);
-
-		tag.setTag("display", display);
+		addNameAndLore(tag, displayName, lore);
 		tag.setInteger("HideFlags", 254);
 
 		stack.setTagCompound(tag);
 
 		return stack;
+	}
+
+	private static void addNameAndLore(NBTTagCompound tag, String displayName, String[] lore) {
+		NBTTagCompound display = new NBTTagCompound();
+
+		display.setString("Name", displayName);
+
+		if (lore != null) {
+			NBTTagList tagLore = new NBTTagList();
+			for (String line : lore) {
+				tagLore.appendTag(new NBTTagString(line));
+			}
+			display.setTag("Lore", tagLore);
+		}
+
+		tag.setTag("display", display);
 	}
 
 	public static ItemStack editItemStackInfo(
@@ -979,15 +989,17 @@ public class Utils {
 
 		return itemStack;
 	}
-
 	public static ItemStack createSkull(String displayName, String uuid, String value) {
+		return createSkull(displayName, uuid, value, null);
+	}
+
+	public static ItemStack createSkull(String displayName, String uuid, String value, String[] lore) {
 		ItemStack render = new ItemStack(Items.skull, 1, 3);
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagCompound skullOwner = new NBTTagCompound();
 		NBTTagCompound properties = new NBTTagCompound();
 		NBTTagList textures = new NBTTagList();
 		NBTTagCompound textures_0 = new NBTTagCompound();
-		NBTTagCompound display = new NBTTagCompound();
 
 		skullOwner.setString("Id", uuid);
 		skullOwner.setString("Name", uuid);
@@ -995,8 +1007,7 @@ public class Utils {
 		textures_0.setString("Value", value);
 		textures.appendTag(textures_0);
 
-		display.setString("Name", displayName);
-		tag.setTag("display", display);
+		addNameAndLore(tag, displayName, lore);
 
 		properties.setTag("textures", textures);
 		skullOwner.setTag("Properties", properties);
