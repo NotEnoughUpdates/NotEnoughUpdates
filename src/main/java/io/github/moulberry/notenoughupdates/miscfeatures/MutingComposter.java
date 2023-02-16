@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -20,16 +20,24 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Arrays;
+import java.util.List;
 
+@NEUAutoSubscribe
 public class MutingComposter {
 
 	private static final MutingComposter INSTANCE = new MutingComposter();
-	private final String[] mutableSounds = {"mob.wolf.growl", "tile.piston.out", "liquid.water", "mob.chicken.plop"};
+	private final List<String> mutableSounds = Arrays.asList(
+		"mob.wolf.growl",
+		"tile.piston.out",
+		"liquid.water",
+		"mob.chicken.plop"
+	);
 
 	public static MutingComposter getInstance() {
 		return INSTANCE;
@@ -42,7 +50,7 @@ public class MutingComposter {
 
 	@SubscribeEvent
 	public void onSoundPlay(PlaySoundEvent event) {
-		if (Arrays.asList(mutableSounds).contains(event.name) && isEnabled() ) {
+		if (mutableSounds.contains(event.name) && isEnabled()) {
 			event.result = null;
 		}
 	}
