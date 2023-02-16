@@ -674,7 +674,8 @@ public class CustomItemEffects {
 	}};
 
 
-	List<Block> scytheBlocks = Arrays.asList(Blocks.leaves, Blocks.leaves2, Blocks.red_flower, Blocks.yellow_flower, Blocks.tallgrass);
+	List<Block> scytheBlocks = Arrays.asList(
+		Blocks.leaves, Blocks.leaves2, Blocks.red_flower, Blocks.yellow_flower, Blocks.tallgrass, Blocks.double_plant);
 
 	@SubscribeEvent
 	public void renderBlockOverlay(DrawBlockHighlightEvent event) {
