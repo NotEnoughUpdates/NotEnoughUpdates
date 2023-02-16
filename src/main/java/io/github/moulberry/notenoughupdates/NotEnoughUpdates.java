@@ -38,7 +38,6 @@ import io.github.moulberry.notenoughupdates.listener.WorldListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CustomSkulls;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
-import io.github.moulberry.notenoughupdates.miscfeatures.MutingComposter;
 import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscfeatures.Navigation;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
