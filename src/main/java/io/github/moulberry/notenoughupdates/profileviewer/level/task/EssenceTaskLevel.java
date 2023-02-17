@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
@@ -88,13 +89,20 @@ public class EssenceTaskLevel {
 		for (Map.Entry<String, EssenceShop> stringEssenceShopEntry : loreMap.entrySet()) {
 			String key = stringEssenceShopEntry.getKey();
 			EssenceShop value = stringEssenceShopEntry.getValue();
-			value.name = NotEnoughUpdates.INSTANCE.manager
+			JsonObject jsonObject = NotEnoughUpdates.INSTANCE.manager
 				.createItemResolutionQuery()
 				.withKnownInternalName(key)
-				.resolveToItemListJson()
+				.resolveToItemListJson();
+			if (jsonObject == null){
+				Utils.showOutdatedRepoNotification();
+				continue;
+			}
+			value.name = jsonObject
 				.get("displayname")
 				.getAsString();
-			value.max = essenceShopTask.get(key.toLowerCase() + "_shop").getAsInt();
+			String name = key.toLowerCase() + "_shop";
+			if (!essenceShopTask.has(name)) continue;
+			value.max = essenceShopTask.get(name).getAsInt();
 			lore.add(levelPage.buildLore(
 				EnumChatFormatting.getTextWithoutFormattingCodes(value.name),
 				value.current,
@@ -109,14 +117,12 @@ public class EssenceTaskLevel {
 			NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
 																			 .withKnownInternalName("ESSENCE_WITHER")
 																			 .resolveToItemStack(),
-			guiLeft + 299,
-			guiTop + 25,
+			guiLeft + 299, guiTop + 25,
 			110,
 			total,
 			total,
 			categoryXp.get("essence_shop_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

@@ -292,7 +292,7 @@ public class APIManager {
 			.newMoulberryRequest("lowestbin.json.gz")
 			.gunzip()
 			.requestJson()
-			.thenAccept(jsonObject -> {
+			.thenAcceptAsync(jsonObject -> {
 				if (lowestBins == null) {
 					lowestBins = new JsonObject();
 				}
@@ -465,12 +465,12 @@ public class APIManager {
 		};
 
 		manager.apiUtils.newMoulberryRequest("auctionLast.json.gz")
-										.gunzip().requestJson().thenAccept(process);
+										.gunzip().requestJson().thenAcceptAsync(process);
 
 		manager.apiUtils
 			.newMoulberryRequest("auction.json.gz")
 			.gunzip().requestJson()
-			.thenAccept(jsonObject -> {
+			.thenAcceptAsync(jsonObject -> {
 				if (jsonObject.get("success").getAsBoolean()) {
 					long apiUpdate = (long) jsonObject.get("time").getAsFloat();
 					if (lastApiUpdate == apiUpdate) {
@@ -683,7 +683,7 @@ public class APIManager {
 		manager.apiUtils
 			.newAnonymousHypixelApiRequest("skyblock/auctions")
 			.requestJson()
-			.thenAccept(jsonObject -> {
+			.thenAcceptAsync(jsonObject -> {
 				if (jsonObject == null) return;
 
 				if (jsonObject.get("success").getAsBoolean()) {
@@ -733,7 +733,7 @@ public class APIManager {
 		manager.apiUtils
 			.newAnonymousHypixelApiRequest("skyblock/bazaar")
 			.requestJson()
-			.thenAccept(jsonObject -> {
+			.thenAcceptAsync(jsonObject -> {
 				if (!jsonObject.get("success").getAsBoolean()) return;
 
 				craftCost.clear();
@@ -789,7 +789,7 @@ public class APIManager {
 	public void updateAvgPrices() {
 		manager.apiUtils
 			.newMoulberryRequest("auction_averages/3day.json.gz")
-			.gunzip().requestJson().thenAccept((jsonObject) -> {
+			.gunzip().requestJson().thenAcceptAsync((jsonObject) -> {
 						 craftCost.clear();
 						 auctionPricesJson = jsonObject;
 						 lastAuctionAvgUpdate = System.currentTimeMillis();
@@ -797,7 +797,7 @@ public class APIManager {
 		manager.apiUtils
 			.newMoulberryRequest("auction_averages_lbin/1day.json.gz")
 			.gunzip().requestJson()
-			.thenAccept((jsonObject) -> {
+			.thenAcceptAsync((jsonObject) -> {
 				auctionPricesAvgLowestBinJson = jsonObject;
 			});
 	}

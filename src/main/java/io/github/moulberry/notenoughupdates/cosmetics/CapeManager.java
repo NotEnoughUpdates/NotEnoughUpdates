@@ -150,7 +150,7 @@ public class CapeManager {
 		NotEnoughUpdates.INSTANCE.manager.apiUtils
 			.newMoulberryRequest("activecapes.json")
 			.requestJson()
-			.thenAccept(jsonObject -> {
+			.thenAcceptAsync(jsonObject -> {
 				if (jsonObject.get("success").getAsBoolean()) {
 					lastJsonSync = jsonObject;
 
@@ -171,7 +171,7 @@ public class CapeManager {
 			NotEnoughUpdates.INSTANCE.manager.apiUtils
 				.newMoulberryRequest("permscapes.json")
 				.requestJson()
-				.thenAccept(jsonObject -> {
+				.thenAcceptAsync(jsonObject -> {
 					if (!jsonObject.get("success").getAsBoolean()) return;
 
 					permSyncTries = 0;

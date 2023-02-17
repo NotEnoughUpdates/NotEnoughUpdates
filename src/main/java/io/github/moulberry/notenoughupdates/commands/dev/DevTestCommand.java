@@ -33,11 +33,13 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Locati
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.SpecialBlockZone;
 import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
+import io.github.moulberry.notenoughupdates.util.ApiCache;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.CommandException;
@@ -94,6 +96,8 @@ public class DevTestCommand extends ClientCommandBase {
 	};
 	private int devFailIndex = 0;
 
+	public static int testValue = 0;
+
 	public DevTestCommand() {
 		super("neudevtest");
 	}
@@ -125,6 +129,24 @@ public class DevTestCommand extends ClientCommandBase {
 			}
 			Utils.addChatMessage(EnumChatFormatting.RED + DEV_FAIL_STRINGS[devFailIndex++]);
 			return;
+		}
+		if (args.length == 1 && args[0].equalsIgnoreCase("dumpapihistogram")) {
+			synchronized (ApiCache.INSTANCE) {
+				Utils.addChatMessage("§e[NEU] API Request Histogram");
+				Utils.addChatMessage("§e[NEU] §bClass Name§e: §aCached§e/§cNonCached§e/§dTotal");
+				ApiCache.INSTANCE.getHistogramTotalRequests().forEach((className, totalRequests) -> {
+					var nonCachedRequests = ApiCache.INSTANCE.getHistogramNonCachedRequests().getOrDefault(className, 0);
+					var cachedRequests = totalRequests - nonCachedRequests;
+					Utils.addChatMessage(
+						String.format(
+							"§e[NEU] §b%s §a%d§e/§c%d§e/§d%d",
+							className,
+							cachedRequests,
+							nonCachedRequests,
+							totalRequests
+						));
+				});
+			}
 		}
 		if (args.length == 1 && args[0].equalsIgnoreCase("testprofile")) {
 			NotEnoughUpdates.INSTANCE.manager.apiUtils.newHypixelApiRequest("skyblock/profiles")
@@ -253,6 +275,18 @@ public class DevTestCommand extends ClientCommandBase {
 			}
 			MiscUtils.copyToClipboard(builder.toString());
 			Utils.addChatMessage("§e[NEU] Copied tablist to clipboard!");
+		}
+		if (args.length >= 1 && args[0].equalsIgnoreCase("useragent")) {
+			String newUserAgent = args.length == 1 ? null : String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+			Utils.addChatMessage("§e[NEU] Changed user agent override to: " + newUserAgent);
+			NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = newUserAgent;
+		}
+		if (args.length == 2 && args[0].equalsIgnoreCase("value")) {
+			try {
+				testValue = Integer.parseInt(args[1]);
+			} catch (NumberFormatException e) {
+				Utils.addChatMessage("NumberFormatException!");
+			}
 		}
 	}
 }
