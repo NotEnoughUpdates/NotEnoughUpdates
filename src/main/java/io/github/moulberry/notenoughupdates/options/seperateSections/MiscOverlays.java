@@ -439,5 +439,4 @@ public class MiscOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean todoIcons = true;
-
 }

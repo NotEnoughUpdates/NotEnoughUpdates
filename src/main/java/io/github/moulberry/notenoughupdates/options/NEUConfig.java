@@ -247,8 +247,8 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Todo Overlays",
-		desc = "Todo Overlays"
+		name = "Todo Overlay",
+		desc = "Todo Overlay"
 	)
 	public MiscOverlays miscOverlays = new MiscOverlays();
 

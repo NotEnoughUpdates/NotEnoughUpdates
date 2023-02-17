@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
@@ -331,6 +330,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
 	@Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", ordinal = 1))
 	private void drawBackground(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		new GuiContainerBackgroundDrawnEvent(((GuiContainer) (Object) this), partialTicks).post();
+		AbiphoneFavourites.getInstance().onDrawBackground(this);
 	}
 }

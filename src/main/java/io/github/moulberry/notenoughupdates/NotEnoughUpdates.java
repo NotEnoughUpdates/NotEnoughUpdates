@@ -169,13 +169,6 @@ public class NotEnoughUpdates {
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
-	}
-
 	public File getConfigFile() {
 		return this.configFile;
 	}
@@ -186,6 +179,13 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
+	}
+
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**

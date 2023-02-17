@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
-import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
@@ -203,11 +202,10 @@ public class AbiphoneFavourites {
 		return isAbiphoneShowOnlyFavourites() && !getFavouriteContacts().contains(name);
 	}
 
-	@SubscribeEvent
-	public void onDrawBackground(GuiContainerBackgroundDrawnEvent event) {
+	public void onDrawBackground(GuiScreen screen) {
 		if (isWrongInventory()) return;
 
-		GuiContainer container = event.getContainer();
+		GuiContainer container = (GuiContainer) screen;
 
 		for (Slot slot : container.inventorySlots.inventorySlots) {
 			if (slot == null) continue;
