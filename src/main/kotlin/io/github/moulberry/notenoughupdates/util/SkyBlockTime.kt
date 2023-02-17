@@ -108,11 +108,15 @@ data class SkyBlockTime(
             return prefix + name
         }
 
-        fun daySuffix(day: Int) = when (day % 10) {
-            1 -> "st"
-            2 -> "nd"
-            3 -> "rd"
-            else -> "th"
+        fun daySuffix(n: Int): String {
+            return if (n in 11..13) {
+                "th"
+            } else when (n % 10) {
+                1 -> "st"
+                2 -> "nd"
+                3 -> "rd"
+                else -> "th"
+            }
         }
     }
 }
