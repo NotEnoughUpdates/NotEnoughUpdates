@@ -555,11 +555,11 @@ public class CalendarOverlay {
 				if (mouseX >= guiLeft + 151 && mouseX <= guiLeft + 151 + 14) {
 					if (mouseY <= guiTop + 26 + 70) {
 						Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
-							50, 2, 3, Minecraft.getMinecraft().thePlayer
+							41, 2, 3, Minecraft.getMinecraft().thePlayer
 						);
 					} else {
 						Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
-							45, 2, 3, Minecraft.getMinecraft().thePlayer
+							36, 2, 3, Minecraft.getMinecraft().thePlayer
 						);
 					}
 				}
@@ -653,7 +653,7 @@ public class CalendarOverlay {
 					}
 
 					//Special Events
-					for (int i = 0; i < 21; i++) {
+					for (int i = 0; i < 14; i++) {
 						int itemIndex = 10 + i + (i / 7) * 2;
 						ItemStack item = cc.getLowerChestInventory().getStackInSlot(itemIndex);
 						if (item == null) continue;
@@ -1117,7 +1117,7 @@ public class CalendarOverlay {
 		int specialLen = fr.getStringWidth("Special");
 		fr.drawString("Special", guiLeft + 139 - specialLen, guiTop + 30, 0xffffaa00);
 
-		ItemStack mayorStack = cc.getLowerChestInventory().getStackInSlot(46);
+		ItemStack mayorStack = cc.getLowerChestInventory().getStackInSlot(37);
 		if (mayorStack != null) {
 			String mayor = mayorStack.getDisplayName();
 			float verticalHeight = Utils.getVerticalHeight(mayor);
@@ -1144,11 +1144,11 @@ public class CalendarOverlay {
 					tooltipToDisplay = mayorStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			} else if (mouseX >= guiLeft + 151 && mouseX <= guiLeft + 151 + 14) {
 				if (mouseY <= guiTop + 26 + 70) {
-					ItemStack calendarStack = cc.getLowerChestInventory().getStackInSlot(50);
+					ItemStack calendarStack = cc.getLowerChestInventory().getStackInSlot(41);
 					if (calendarStack != null)
 						tooltipToDisplay = calendarStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				} else {
-					ItemStack rewardsStack = cc.getLowerChestInventory().getStackInSlot(45);
+					ItemStack rewardsStack = cc.getLowerChestInventory().getStackInSlot(36);
 					if (rewardsStack != null)
 						tooltipToDisplay = rewardsStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
@@ -1244,7 +1244,7 @@ public class CalendarOverlay {
 		}
 
 		//Special Events
-		for (int i = 0; i < 21; i++) {
+		for (int i = 0; i < 14; i++) {
 			int itemIndex = 10 + i + (i / 7) * 2;
 			ItemStack item = cc.getLowerChestInventory().getStackInSlot(itemIndex);
 			if (item == null) continue;
