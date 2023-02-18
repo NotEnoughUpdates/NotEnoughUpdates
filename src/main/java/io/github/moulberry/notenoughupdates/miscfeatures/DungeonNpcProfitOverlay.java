@@ -172,6 +172,11 @@ public class DungeonNpcProfitOverlay {
 						}
 						dungeonChest.items = items;
 						if (dungeonChest.costToOpen != -1) {
+							// Check if there is already a chest that has more items
+							if (chestProfits.stream().anyMatch(c -> c.name.equals(dungeonChest.name) &&
+								c.items.size() > dungeonChest.items.size())) {
+								return;
+							}
 							chestProfits.removeIf(c -> c.name.equals(dungeonChest.name));
 							dungeonChest.calculateProfitAndBuildLore();
 							chestProfits.add(dungeonChest);
