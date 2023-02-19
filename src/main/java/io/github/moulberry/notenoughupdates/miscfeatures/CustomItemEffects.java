@@ -1188,6 +1188,77 @@ public class CustomItemEffects {
 						GlStateManager.enableTexture2D();
 						GlStateManager.disableBlend();
 					}
+				} else if ((heldInternal.equals("HOE_OF_GREATEST_TILLING") &&
+					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableHoeOverlay && onPrivateIsland) &&
+					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+					BlockPos target = event.target.getBlockPos();
+					IBlockState targetState = Minecraft.getMinecraft().theWorld.getBlockState(target);
+
+					if (targetState.getBlock() == Blocks.dirt || targetState.getBlock() == Blocks.grass) {
+						GlStateManager.enableDepth();
+						GlStateManager.enableBlend();
+						GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+						GlStateManager.disableTexture2D();
+						GlStateManager.depthMask(true);
+
+						LinkedList<BlockPos> candidates = new LinkedList<>();
+						LinkedList<BlockPos> candidatesOld = new LinkedList<>();
+						LinkedList<BlockPos> candidatesNew = new LinkedList<>();
+						candidatesNew.add(target);
+
+						while (candidatesOld.size() <= 100) {
+							if (candidatesNew.isEmpty()) {
+								break;
+							}
+
+							candidates.addAll(candidatesNew);
+							candidatesNew.clear();
+
+							while (!candidates.isEmpty()) {
+
+								BlockPos candidate = candidates.pop();
+								candidatesOld.add(candidate);
+
+								float yaw = Minecraft.getMinecraft().thePlayer.getRotationYawHead();
+								Facing facing = Facing.forDirection(yaw);
+								int xOff = facing == Facing.WEST ? -1 : facing == Facing.EAST ? 1 : 0;
+								int zOff = facing == Facing.NORTH ? -1 : facing == Facing.SOUTH ? 1 : 0;
+
+								BlockPos renderPos = candidate.add(xOff, 0, zOff);
+								IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+								if (!candidatesOld.contains(renderPos) && !candidates.contains(renderPos) && !candidatesNew.contains(
+									renderPos)) {
+									if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass) {
+										candidatesNew.add(renderPos);
+									} else {
+										break;
+									}
+								}
+							}
+
+							for (BlockPos renderPos : candidatesNew) {
+								AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
+																									 Minecraft.getMinecraft().theWorld,
+																									 renderPos
+																								 )
+																											.expand(0.001D, 0.001D, 0.001D)
+																											.offset(-d0, -d1, -d2);
+								drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
+							}
+						}
+
+						AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
+																							 Minecraft.getMinecraft().theWorld,
+																							 target
+																						 )
+																									.expand(0.001D, 0.001D, 0.001D)
+																									.offset(-d0, -d1, -d2);
+						drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
+
+							GlStateManager.depthMask(true);
+							GlStateManager.enableTexture2D();
+							GlStateManager.disableBlend();
+					}
 				} else if ((heldInternal.equals("SAM_SCYTHE") || heldInternal.equals("GARDEN_SCYTHE") &&
 					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableScytheOverlay && onPrivateIsland) &&
 					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
