@@ -4,7 +4,7 @@
 <div align="center">
     <!-- release -->
     <a href="https://github.com/Moulberry/NotEnoughUpdates/releases/latest" target="_blank">
-        <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates-REPO?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
+        <img src="https://img.shields.io/github/v/release/Moulberry/NotEnoughUpdates?color=informational&include_prereleases&label=release&logo=github&logoColor=white" alt="release">
     </a>
     <!-- lines -->
     <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">

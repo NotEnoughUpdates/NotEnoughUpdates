@@ -162,7 +162,7 @@ class MiscCommands {
                 nc.printChatMessage(ChatComponentText("§e[NEU] §a$it"))
             }
             null
-        }, MinecraftExecutor.INSTANCE)
+        }, MinecraftExecutor.OnThread)
 
     }
 

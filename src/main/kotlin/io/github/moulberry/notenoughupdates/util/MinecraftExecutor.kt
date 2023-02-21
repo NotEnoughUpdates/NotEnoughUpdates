@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,21 +17,31 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.core.config.annotations;
+package io.github.moulberry.notenoughupdates.util
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import net.minecraft.client.Minecraft
+import java.util.concurrent.Executor
+import java.util.concurrent.ForkJoinPool
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ConfigOption {
-	String name();
+object MinecraftExecutor {
 
-	String desc();
+    @JvmField
+    val OnThread = Executor {
+        val mc = Minecraft.getMinecraft()
+        if (mc.isCallingFromMinecraftThread) {
+            it.run()
+        } else {
+            Minecraft.getMinecraft().addScheduledTask(it)
+        }
+    }
 
-	String[] searchTags() default "";
-
-	int subcategoryId() default -1;
+    @JvmField
+    val OffThread = Executor {
+        val mc = Minecraft.getMinecraft()
+        if (mc.isCallingFromMinecraftThread) {
+            ForkJoinPool.commonPool().execute(it)
+        } else {
+            it.run()
+        }
+    }
 }

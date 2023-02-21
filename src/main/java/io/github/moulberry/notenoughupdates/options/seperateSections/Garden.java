@@ -17,21 +17,18 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util;
+package io.github.moulberry.notenoughupdates.options.seperateSections;
 
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.NotNull;
+import com.google.gson.annotations.Expose;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
-import java.util.concurrent.Executor;
-
-public class MinecraftExecutor implements Executor {
-
-	public static MinecraftExecutor INSTANCE = new MinecraftExecutor();
-
-	private MinecraftExecutor() {}
-
-	@Override
-	public void execute(@NotNull Runnable runnable) {
-		Minecraft.getMinecraft().addScheduledTask(runnable);
-	}
+public class Garden {
+	@Expose
+	@ConfigOption(
+		name = "Mute Composter",
+		desc = "Mute sounds of composting"
+	)
+	@ConfigEditorBoolean
+	public boolean muteComposterSounds = false;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,21 +17,17 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.core.config.annotations;
+package io.github.moulberry.notenoughupdates.util.kotlin
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.concurrent.CompletableFuture
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ConfigOption {
-	String name();
-
-	String desc();
-
-	String[] searchTags() default "";
-
-	int subcategoryId() default -1;
+inline fun <R> supplyImmediate(block: () -> R): CompletableFuture<R> {
+    val cf = CompletableFuture<R>()
+    try {
+        cf.complete(block())
+    } catch (t: Throwable) {
+        cf.completeExceptionally(t)
+    }
+    return cf
 }
+
