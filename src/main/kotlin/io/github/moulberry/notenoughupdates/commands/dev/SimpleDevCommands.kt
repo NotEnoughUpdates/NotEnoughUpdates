@@ -42,7 +42,7 @@ class SimpleDevCommands {
         event.command("neureloadrepo") {
             thenExecute {
                 NotEnoughUpdates.INSTANCE.manager.reloadRepository()
-                reply("§e[NEU] Reloaded repository.")
+                reply("Reloaded repository.")
             }
         }.withHelp("Reload the NEU data repository from disk (not from network)")
         event.command("neudungeonwintest") {

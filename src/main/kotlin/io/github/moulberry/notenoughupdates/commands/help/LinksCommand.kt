@@ -42,9 +42,7 @@ class LinksCommand {
                 }
                 try {
                     val updateJson = manager.getJsonFromFile(updateJsonFile)
-                    reply("")
                     NotEnoughUpdates.INSTANCE.displayLinks(updateJson, 0)
-                    reply("")
                 } catch (_: Exception) {
                     Utils.showOutdatedRepoNotification()
                 }

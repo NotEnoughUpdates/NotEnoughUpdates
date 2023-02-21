@@ -106,14 +106,14 @@ class MiscCommands {
             }
         }.withHelp("Customize your items")
         event.command("neupronouns", "neuliberals") {
-            thenArgument("platform", string()) { platform ->
-                suggestsList(listOf("minecraft", "discord", "twitch", "twitter", "github"))
-                thenArgumentExecute("user", string()) { user ->
+            thenArgument("user", string()) {user->
+                suggestsList { Minecraft.getMinecraft().theWorld.playerEntities.map { it.name } }
+                thenArgumentExecute("platform", string()) { platform ->
                     fetchPronouns(this[platform], this[user])
                 }.withHelp("Look up someones pronouns using their username on a platform")
-            }
-            thenArgumentExecute("user", string()) { user ->
-                fetchPronouns("minecraft", this[user])
+                thenExecute {
+                    fetchPronouns("minecraft", this[user])
+                }
             }.withHelp("Look up someones pronouns using their minecraft username")
         }
         event.command("neuupdate", "neuupdates", "enoughupdates") {
