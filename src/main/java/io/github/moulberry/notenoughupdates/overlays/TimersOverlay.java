@@ -61,7 +61,7 @@ public class TimersOverlay extends TextTabOverlay {
 		super(position, dummyStrings, styleSupplier);
 	}
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7a\u00a7lGULP! \u00a7r\u00a7eThe \u00a7r\u00a7cGod Potion \u00a7r\u00a7egrants you powers for \u00a7r\u00a79.+ hours\u00a7r\u00a7e!\u00a7r");
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
 		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
 	private static final Pattern PUZZLER_PATTERN =
@@ -310,7 +310,6 @@ public class TimersOverlay extends TextTabOverlay {
 				ItemStack stack = lower.getStackInSlot(51);
 				if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Booster Cookie")&&
 					stack.getTagCompound() != null) {
-					//calculate cookie buff timer
 					String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
 					for (String line : lore) {
 						if (line.contains("Duration: ")) {
