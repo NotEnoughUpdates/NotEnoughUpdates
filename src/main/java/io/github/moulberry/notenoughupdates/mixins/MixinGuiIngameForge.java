@@ -31,10 +31,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinGuiIngameForge {
 
 	@Redirect(method = "renderHelmet", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;", ordinal = 1))
-	public Item renderHelmet(ItemStack instance) {
-		ItemStack stack = instance.copy();
-		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
-		stack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
-		return stack.getItem();
+	public Item renderHelmet(ItemStack stack) {
+		return ItemCustomizeManager.useCustomItem(stack).getItem();
 	}
 }

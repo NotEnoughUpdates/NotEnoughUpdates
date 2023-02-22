@@ -399,4 +399,21 @@ public class ItemCustomizeManager {
 		return newStack;
 	}
 
+	public static ItemStack useCustomItem(ItemStack stack) {
+		if (stack == null) return stack;
+		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		return newStack;
+	}
+
+	public static ItemStack setHeadArmour(EntityLivingBase instance, int i) {
+		if (instance.getCurrentArmor(3) == null) return null;
+		ItemStack stack = instance.getCurrentArmor(3).copy();
+		stack.setItem(ItemCustomizeManager.getCustomItem(stack));
+		stack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
+		return stack;
+	}
+
 }

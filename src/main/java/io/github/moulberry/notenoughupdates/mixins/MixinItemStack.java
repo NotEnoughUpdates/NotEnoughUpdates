@@ -92,10 +92,10 @@ public class MixinItemStack {
 			Color c = new Color(currentColour, false);
 			String hex = Integer.toHexString(c.getRGB() & 0xFFFFFF);
 			if (hex.length() < 6) {
-				hex =  hex + "000000".substring(0, 6 - hex.length());
+				hex = hex + "000000".substring(0, 6 - hex.length());
 			}
 			return hex.length() < 6 ? "0" + hex : hex;
 		}
 		return Integer.toHexString(colour);
 	}
-	}
+}

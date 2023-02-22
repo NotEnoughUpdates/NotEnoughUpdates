@@ -337,21 +337,11 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
 	@ModifyArg(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
 	public ItemStack drawSlot_renderItemAndEffectIntoGUI(ItemStack stack) {
-		if (stack == null) return stack;
-		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		return newStack;
+		return ItemCustomizeManager.useCustomItem(stack);
 	}
 
 	@ModifyArg(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemOverlayIntoGUI(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V"))
 	public ItemStack drawSlot_renderItemOverlays(ItemStack stack) {
-		if (stack == null) return stack;
-		if (!ItemCustomizeManager.hasCustomItem(stack)) return stack;
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		return newStack;
+		return ItemCustomizeManager.useCustomItem(stack);
 	}
 }

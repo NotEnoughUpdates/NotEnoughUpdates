@@ -46,24 +46,16 @@ public abstract class MixinItemRenderer {
 
 	@Redirect(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;"))
 	public Item renderItem_getItem(ItemStack stack) {
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		return newStack.getItem();
+		return ItemCustomizeManager.useCustomItem(stack).getItem();
 	}
 
 	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;shouldRenderItemIn3D(Lnet/minecraft/item/ItemStack;)Z"))
 	public ItemStack renderItem_shouldRenderItemIn3D(ItemStack stack) {
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		return newStack;
+		return ItemCustomizeManager.useCustomItem(stack);
 	}
 
 	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemModelForEntity(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/client/renderer/block/model/ItemCameraTransforms$TransformType;)V", ordinal = 0))
 	public ItemStack renderItem_renderItemModelForEntity(ItemStack stack) {
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		return newStack;
+		return ItemCustomizeManager.useCustomItem(stack);
 	}
 }

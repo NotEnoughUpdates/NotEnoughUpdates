@@ -95,24 +95,16 @@ public class MixinGuiIngame {
 
 	@Redirect(method = "renderHotbarItem", at = @At(value = "FIELD", target = "Lnet/minecraft/item/ItemStack;animationsToGo:I", opcode = Opcodes.GETFIELD))
 	public int renderHotbarItem_animationsToGo(ItemStack stack) {
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		return newStack.animationsToGo;
+		return ItemCustomizeManager.useCustomItem(stack).animationsToGo;
 	}
 
 	@ModifyArg(method = "renderHotbarItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
 	public ItemStack renderHotbarItem_renderItemAndEffectIntoGUI(ItemStack stack) {
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		return newStack;
+		return ItemCustomizeManager.useCustomItem(stack);
 	}
 
 	@ModifyArg(method = "renderHotbarItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemOverlays(Lnet/minecraft/client/gui/FontRenderer;Lnet/minecraft/item/ItemStack;II)V", ordinal = 0))
 	public ItemStack renderHotbarItem_renderItemOverlays(ItemStack stack) {
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		return newStack;
+		return ItemCustomizeManager.useCustomItem(stack);
 	}
 }
