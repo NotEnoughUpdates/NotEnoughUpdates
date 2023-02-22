@@ -683,43 +683,43 @@ public class TimersOverlay extends TextTabOverlay {
 		}
 
 		//Experiment Display
-		if (hidden.experimentsCompleted < midnightReset) {
+		if (hidden.experimentsCompleted < catacombsReset) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
-			(hidden.experimentsCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+			(hidden.experimentsCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.SOON.ordinal() &&
-			(hidden.experimentsCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+			(hidden.experimentsCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
-				(hidden.experimentsCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+				(hidden.experimentsCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 
