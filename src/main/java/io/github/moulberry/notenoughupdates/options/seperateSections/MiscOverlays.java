@@ -78,6 +78,7 @@ public class MiscOverlays {
 			"\u00a73Gemstone Powder: \u00a7e3h38m",
 			"\u00a73Heavy Pearls: \u00a7e3h38m",
 			"\u00a73Crimson Isle Quests: \u00a7e3h38m",
+			"\u00a73NPC Buy Daily Limit: \u00a7e3h38m",
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -223,6 +224,18 @@ public class MiscOverlays {
 		values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
 	)
 	public int questBoardDisplay = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "NPC Buy Daily Limit Display",
+		desc = "Change the way the NPC shop limit displays\n" +
+			"Only when ready, When very Soon, When soon, When kinda soon or always."
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorDropdown(
+		values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
+	)
+	public int shopLimitDisplay = 0;
 
 	@ConfigOption(
 		name = "Colours",

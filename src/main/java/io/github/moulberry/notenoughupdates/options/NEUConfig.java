@@ -571,6 +571,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public long questBoardCompleted = 0L;
 		@Expose
+		public long dailyShopLimitCompleted = 0L;
+		@Expose
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose
 		public int magicalPower = 0;

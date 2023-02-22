@@ -31,6 +31,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -51,9 +52,6 @@ import java.util.regex.Pattern;
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
-	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?\u00a7r");
-
 	public TimersOverlay(
 		Position position,
 		Supplier<List<String>> dummyStrings,
@@ -61,7 +59,8 @@ public class TimersOverlay extends TextTabOverlay {
 	) {
 		super(position, dummyStrings, styleSupplier);
 	}
-
+	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
 		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
 	private static final Pattern PUZZLER_PATTERN =
@@ -74,6 +73,8 @@ public class TimersOverlay extends TextTabOverlay {
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a72.+ Mithril Powder \u00a7r\u00a7ffrom mining your first Mithril Ore of the day!\u00a7r");
 	private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile(
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
+	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
+		"\u00a7r\u00a7cYou may only buy up to (640|6400) of this item each day!\u00a7r");
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatMessageReceived(ClientChatReceivedEvent event) {
@@ -112,6 +113,11 @@ public class TimersOverlay extends TextTabOverlay {
 			Matcher dailyMithrilPowder = DAILY_MITHRIL_POWDER.matcher(event.message.getFormattedText());
 			if (dailyMithrilPowder.matches()) {
 				hidden.dailyMithrilPowerCompleted = currentTime;
+				return;
+			}
+			Matcher dailyShopLimit = DAILY_SHOP_LIMIT.matcher(event.message.getFormattedText());
+			if (dailyShopLimit.matches()) {
+				hidden.dailyShopLimitCompleted = currentTime;
 			}
 		}
 	}
@@ -130,6 +136,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
 	private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
 	private static final ItemStack QUEST_ICON = new ItemStack(Items.sign);
+	private static final ItemStack SHOP_ICON = new ItemStack(Blocks.hopper);
 
 	@Override
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -215,6 +222,9 @@ public class TimersOverlay extends TextTabOverlay {
 			case "Crimson Isle Quests":
 				icon = QUEST_ICON;
 				break;
+			case "NPC Buy Daily Limit":
+				icon = SHOP_ICON;
+				break;
 		}
 
 		if (icon != null) {
@@ -251,7 +261,6 @@ public class TimersOverlay extends TextTabOverlay {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
-
 			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 18) {
 				if (hidden.commissionsCompleted == 0) {
 					hidden.commissionsCompleted = currentTime;
@@ -724,8 +733,6 @@ public class TimersOverlay extends TextTabOverlay {
 		}
 
 		// Daily Mithril Powder display
-		long mithrilPowderCompleted = hidden.dailyMithrilPowerCompleted + 1000 * 60 * 60 * 24 - currentTime;
-
 		if (hidden.dailyMithrilPowerCompleted < catacombsReset) {
 			map.put(
 				7,
@@ -853,7 +860,7 @@ public class TimersOverlay extends TextTabOverlay {
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
 		}
-
+		//Daily Crimson Isle Quests
 		if (hidden.questBoardCompleted < midnightReset) {
 			map.put(
 				10,
@@ -892,6 +899,48 @@ public class TimersOverlay extends TextTabOverlay {
 				DARK_AQUA + "Crimson Isle Quests: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
+			);
+		}
+
+		//Daily Shop Limit
+		if (hidden.dailyShopLimitCompleted < catacombsReset) {
+			map.put(
+				10,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+				(hidden.dailyShopLimitCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
+			map.put(
+				10,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
+					Utils.prettyTime(catacombsDiffNow)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+			(hidden.dailyShopLimitCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
+			map.put(
+				10,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
+					Utils.prettyTime(catacombsDiffNow)
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+				(hidden.dailyShopLimitCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
+			map.put(
+				10,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
+					Utils.prettyTime(catacombsDiffNow)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
+			map.put(
+				10,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 
