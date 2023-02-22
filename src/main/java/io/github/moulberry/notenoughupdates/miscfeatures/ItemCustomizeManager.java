@@ -25,10 +25,12 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -383,4 +385,18 @@ public class ItemCustomizeManager {
 		}
 		return defaultItem != item;
 	}
+
+	public static ItemStack useCustomArmour(LayerArmorBase<?> instance, EntityLivingBase entitylivingbaseIn, int armorSlot) {
+		ItemStack stack = instance.getCurrentArmor(entitylivingbaseIn, armorSlot);
+		if (stack == null) return stack;
+		ItemStack newStack = stack.copy();
+		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
+		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
+		if (armorSlot != 4) {
+			if (newStack.getItem() instanceof ItemArmor) return newStack;
+			else return stack;
+		}
+		return newStack;
+	}
+
 }

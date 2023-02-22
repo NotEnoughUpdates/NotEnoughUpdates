@@ -90,15 +90,6 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> {
 		)
 	)
 	public ItemStack renderItem_getCurrentArmor(LayerArmorBase<?> instance, EntityLivingBase entitylivingbaseIn, int armorSlot) {
-		ItemStack stack = instance.getCurrentArmor(entitylivingbaseIn, armorSlot);
-		if (stack == null) return stack;
-		ItemStack newStack = stack.copy();
-		newStack.setItem(ItemCustomizeManager.getCustomItem(newStack));
-		newStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(newStack));
-		if (armorSlot != 4) {
-			if (newStack.getItem() instanceof ItemArmor) return newStack;
-			else return stack;
-		};
-		return newStack;
+		return ItemCustomizeManager.useCustomArmour(instance, entitylivingbaseIn, armorSlot);
 	}
 }
