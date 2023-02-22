@@ -32,10 +32,8 @@ import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
-import io.github.moulberry.notenoughupdates.miscfeatures.AuctionProfit;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
-import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
@@ -46,14 +44,11 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.TradeWindow;
-import io.github.moulberry.notenoughupdates.miscgui.TrophyRewardOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
-import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
-import io.github.moulberry.notenoughupdates.overlays.EquipmentOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
@@ -525,7 +520,6 @@ public class RenderListener {
 
 		int zOffset = 50;
 		GlStateManager.pushMatrix();
-		GlStateManager.pushAttrib();
 		GlStateManager.translate(0, 0, zOffset);
 		iterateButtons(gui, (button, buttonPosition) -> {
 			GlStateManager.color(1, 1, 1, 1f);
@@ -550,7 +544,6 @@ public class RenderListener {
 			}
 		});
 		GlStateManager.popMatrix();
-		GlStateManager.popAttrib();
 	}
 
 	/**
