@@ -93,6 +93,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 		}
 		return 0;
 	}
+	//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
+	//Needed due to farming fortune causing inconsistent amounts of crops each block break
+	private static ArrayList<Float> cropsOverLastXSeconds = new ArrayList<>();
 
 	@Override
 	public void update() {
@@ -213,11 +216,11 @@ public class FarmingSkillOverlay extends TextOverlay {
 					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE))/2) : 4;
 
 				//PUMPKIN
-			} else if (internalname.equals("PUMPKIN_DICER")) {
+			} else if (internalname.startsWith("PUMPKIN_DICER")) {
 				Coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 4;
 
 				//MELON
-			} else if (internalname.equals("MELON_DICER")) {
+			} else if (internalname.startsWith("MELON_DICER")) {
 				Coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 0.5;
 
 				//WHEAT
@@ -286,7 +289,30 @@ public class FarmingSkillOverlay extends TextOverlay {
 			int last = counterQueue.getLast();
 			int first = counterQueue.getFirst();
 
-			cropsPerSecond = (first - last) / 3f;
+			//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
+			//Needed due to farming fortune causing inconsistent amounts of crops each block break
+			//Making this while in case somehow it goes over X+1
+			while(cropsOverLastXSeconds.size() > 5) {
+				cropsOverLastXSeconds.remove(0);
+			}
+			if((first - last) / 3f != 0) {
+				cropsOverLastXSeconds.add((first - last) / 3f);
+			} else {
+				if(cropsOverLastXSeconds.size() > 0) {
+					cropsOverLastXSeconds.remove(0); //This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
+				}
+			}
+			float cropsOverLastXSecondsTotal = 0;
+			for(Float crops : cropsOverLastXSeconds) {
+				cropsOverLastXSecondsTotal+=crops;
+			}
+			int cropsOverLastXSecondsSize = cropsOverLastXSeconds.size() == 0 ? 0 : cropsOverLastXSeconds.size();
+			if(cropsOverLastXSecondsTotal == 0 && cropsOverLastXSecondsSize == 0) { //This is to prevent 0/0 from happening
+				cropsPerSecond = 0;
+			} else {
+				cropsPerSecond = cropsOverLastXSecondsTotal/cropsOverLastXSecondsSize;
+			}
+
 		}
 
 		if (counter != -1) {
@@ -310,6 +336,16 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			NumberFormat format = NumberFormat.getIntegerInstance();
 
+			//Stands for 'Crops Per Hour Or Per Minute'
+			String crphopm = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? "h" : "m";
+			int cropMultiplier = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? 60 : 1;
+			int cropDecimals = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? 0 : 2;
+
+			//Stands for 'Coins Per Hour Or Per Minute'
+			String cophopm = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? "h" : "m";
+			int coinMultiplier = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? 60 : 1;
+			int coinDecimals = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? 0 : 2;
+
 			if (counter >= 0 && cultivating != counter) {
 				int counterInterp = (int) interp(counter, counterLast);
 
@@ -323,27 +359,26 @@ public class FarmingSkillOverlay extends TextOverlay {
 				if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
 					lineMap.put(
 						1,
-						EnumChatFormatting.AQUA + (Foraging == 1 ? "Logs/m: " : "Crops/m: ") + EnumChatFormatting.YELLOW + "N/A"
+						EnumChatFormatting.AQUA + (Foraging == 1 ? "Logs/"+crphopm+": " : "Crops/"+crphopm+": ") + EnumChatFormatting.YELLOW + "N/A"
 					);
 				} else {
 					float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
 
 					lineMap.put(
 						1,
-						EnumChatFormatting.AQUA + (Foraging == 1 ? "Logs/m: " : "Crops/m: ") + EnumChatFormatting.YELLOW +
-							String.format("%,.2f", cpsInterp * 60)
+						EnumChatFormatting.AQUA + (Foraging == 1 ? "Logs/"+crphopm+": " : "Crops/"+crphopm+": ") + EnumChatFormatting.YELLOW +
+							String.format("%,."+cropDecimals+"f", cpsInterp * 60 * cropMultiplier)
 					);
 				}
 			}
 
 			if (counter >= 0 && Coins > 0) {
 				if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
-					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/m: " + EnumChatFormatting.YELLOW + "N/A");
+					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/"+cophopm+": " + EnumChatFormatting.YELLOW + "N/A");
 				} else {
 					float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
-
-					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/m: " + EnumChatFormatting.YELLOW +
-						String.format("%,.2f", (cpsInterp * 60) * Coins));
+					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/"+cophopm+": " + EnumChatFormatting.YELLOW +
+						String.format("%,."+coinDecimals+"f", (cpsInterp * 60) * Coins * coinMultiplier));
 				}
 			}
 
