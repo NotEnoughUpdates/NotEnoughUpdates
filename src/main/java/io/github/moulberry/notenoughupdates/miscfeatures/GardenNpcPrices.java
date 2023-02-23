@@ -27,7 +27,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +39,6 @@ public class GardenNpcPrices {
 	//§5§o §aEnchanted Hay Bale §8x62
 	//§5§o §9Enchanted Cookie §8x4
 	//§5§o §9Tightly-Tied Hay Bale
-	private final NumberFormat format = NumberFormat.getNumberInstance();
 
 	@SubscribeEvent
 	public void onGardenNpcPrices(ItemTooltipEvent event) {
@@ -56,14 +54,13 @@ public class GardenNpcPrices {
 
 			double cost = calculateCost(matcher.group(1).trim().replace(" ", "_").toUpperCase(Locale.ROOT), amount);
 			event.toolTip.set(i, event.toolTip.get(i) + " §e(" + Utils.shortNumberFormat(cost, 0) + " coins)");
-
 		} else {
 			break;
 		}
 		}
 	}
 	public double calculateCost(String internalName, int amount) {
-		double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, true);
+		double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, false);
 		if (price != -1) {
 			return price * amount;
 		}
