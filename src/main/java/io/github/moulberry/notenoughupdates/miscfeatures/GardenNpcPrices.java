@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -28,26 +29,37 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NEUAutoSubscribe
 public class GardenNpcPrices {
 
-	private final String itemRegex = "§5§o §.(.*) §8x(\\d+)";
+	private final Pattern itemRegex = Pattern.compile("§5§o §.([a-zA-Z \\-]+)(?:§8x(\\d+))?");
+	//§5§o §aEnchanted Cactus Green §8x421
+	//§5§o §aEnchanted Hay Bale §8x62
+	//§5§o §9Enchanted Cookie §8x4
+	//§5§o §9Tightly-Tied Hay Bale
 	private final NumberFormat format = NumberFormat.getNumberInstance();
 
 	@SubscribeEvent
 	public void onGardenNpcPrices(ItemTooltipEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.gardenNpcPrice) return;
-		if (event.toolTip.size() <= 1) return;
-		//§5§o §aEnchanted Cactus Green §8x421
-		//§5§o §aEnchanted Hay Bale §8x62
-		//§5§o §9Enchanted Cookie §8x4
-		if (event.itemStack.getItem() == Item.getItemFromBlock(Blocks.stained_hardened_clay) && event.toolTip.get(2).matches(itemRegex)) {
-			String productLine = event.toolTip.get(2);
-			double cost = calculateCost(productLine.replaceAll(itemRegex, "$1").replace(" ", "_").toUpperCase(Locale.ROOT), Integer.parseInt(productLine.replaceAll(itemRegex, "$2")));
+		if (event.toolTip.size() <= 2 || event.itemStack.getItem() != Item.getItemFromBlock(Blocks.stained_hardened_clay)) return;
 
-			event.toolTip.set(2, productLine + " §e(" + format.format(cost) + " coins)");
+		for (int i = 2; i < event.toolTip.size(); i++) {
+		Matcher matcher = itemRegex.matcher(event.toolTip.get(i));
 
+		if (matcher.matches()) {
+			int amount = 1;
+			if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
+
+			double cost = calculateCost(matcher.group(1).trim().replace(" ", "_").toUpperCase(Locale.ROOT), amount);
+			event.toolTip.set(i, event.toolTip.get(i) + " §e(" + Utils.shortNumberFormat(cost, 0) + " coins)");
+
+		} else {
+			break;
+		}
 		}
 	}
 	public double calculateCost(String internalName, int amount) {
