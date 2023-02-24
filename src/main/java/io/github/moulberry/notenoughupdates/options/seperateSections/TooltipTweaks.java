@@ -267,4 +267,12 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean essencePriceInEssenceShop = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Item Cost in Garden NPC",
+		desc = "Show the item cost in garden NPC shop"
+	)
+	@ConfigEditorBoolean
+	public boolean gardenNpcPrice = true;
 }
