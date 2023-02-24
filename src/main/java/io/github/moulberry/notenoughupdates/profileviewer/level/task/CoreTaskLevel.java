@@ -128,13 +128,14 @@ public class CoreTaskLevel {
 		}
 
 		int sbXpBankUpgrades = 0;
-
-		JsonArray completedTasks = object.getAsJsonObject("leveling").get("completed_tasks").getAsJsonArray();
-		JsonObject bankUpgradesXp = coreTask.getAsJsonObject("bank_upgrades_xp");
-		for (JsonElement completedTask : completedTasks) {
-			String name = completedTask.getAsString();
-			if (bankUpgradesXp.has(name)) {
-				sbXpBankUpgrades += bankUpgradesXp.get(name).getAsInt();
+		if (object.has("leveling") && object.getAsJsonObject("leveling").has("completed_tasks")) {
+			JsonArray completedTasks = object.getAsJsonObject("leveling").get("completed_tasks").getAsJsonArray();
+			JsonObject bankUpgradesXp = coreTask.getAsJsonObject("bank_upgrades_xp");
+			for (JsonElement completedTask : completedTasks) {
+				String name = completedTask.getAsString();
+				if (bankUpgradesXp.has(name)) {
+					sbXpBankUpgrades += bankUpgradesXp.get(name).getAsInt();
+				}
 			}
 		}
 
