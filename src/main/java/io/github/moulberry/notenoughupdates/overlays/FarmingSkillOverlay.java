@@ -32,6 +32,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -296,21 +297,39 @@ public class FarmingSkillOverlay extends TextOverlay {
 			if ((first - last) / 3f != 0) {
 				cropsOverLastXSeconds.add((first - last) / 3f);
 			} else {
-				if (cropsOverLastXSeconds.size() > 0) {
-					cropsOverLastXSeconds.remove(0); //This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
+				if (cropsOverLastXSeconds.size() > 0 && cropsPerSecondLast == 0) {
+					//This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
+					//It removes 12 per tick because otherwise it would take 60s to go to N/A (now it only takes 5s)
+					int i = 12;
+					while (i > 0) {
+						i--;
+						if (cropsOverLastXSeconds.size() > 0) {
+							cropsOverLastXSeconds.remove(0);
+						} else {
+							break;
+						}
+					}
 				}
 			}
-			float cropsOverLastXSecondsTotal = 0;
-			for (Float crops : cropsOverLastXSeconds) {
-				cropsOverLastXSecondsTotal += crops;
+
+			ArrayList<Float> temp = new ArrayList<>(cropsOverLastXSeconds);
+			if (cropsOverLastXSeconds.size() >= 3) {
+				temp.remove(Collections.min(temp));
 			}
-			int cropsOverLastXSecondsSize = cropsOverLastXSeconds.size() == 0 ? 0 : cropsOverLastXSeconds.size();
-			if (cropsOverLastXSecondsTotal == 0 && cropsOverLastXSecondsSize == 0) { //This is to prevent 0/0 from happening
-				cropsPerSecond = 0;
-			} else {
-				cropsPerSecond = cropsOverLastXSecondsTotal / cropsOverLastXSecondsSize;
+			if (cropsOverLastXSeconds.size() >= 6) {
+				temp.remove(Collections.min(temp));
+				temp.remove(Collections.max(temp));
+			}
+			if (cropsOverLastXSeconds.size() >= 10) {
+				temp.remove(Collections.max(temp));
 			}
 
+			float cropsOverLastXSecondsTotal = 0;
+			for (Float crops : temp) {
+				cropsOverLastXSecondsTotal += crops;
+			}
+			//To prevent 0/0
+			cropsPerSecond = temp.size() != 0 && cropsOverLastXSecondsTotal != 0 ? cropsOverLastXSecondsTotal/temp.size() : 0;
 		}
 
 		if (counter != -1) {
