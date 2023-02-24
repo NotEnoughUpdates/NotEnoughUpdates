@@ -48,7 +48,6 @@ public class HelpCommand extends ClientCommandBase {
 			"\u00a76/cata \u00a7b?{name} \u00a72\u2D35 \u00a7r\u00a77- Opens the profile viewer's Catacombs page.",
 			"\u00a76/neulinks \u00a7r\u00a77- Shows links to NEU/Moulberry.",
 			"\u00a76/neuoverlay \u00a7r\u00a77- Opens GUI Editor for quickcommands and searchbar.",
-			"\u00a76/neuah \u00a7r\u00a77- Opens NEU's custom auction house GUI.",
 			"\u00a76/neucalendar \u00a7r\u00a77- Opens NEU's custom calendar GUI.",
 			"\u00a76/neucalc \u00a7r\u00a77- Run calculations.",
 			"",

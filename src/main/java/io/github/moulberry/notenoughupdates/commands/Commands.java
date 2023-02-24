@@ -38,7 +38,6 @@ import io.github.moulberry.notenoughupdates.commands.help.HelpCommand;
 import io.github.moulberry.notenoughupdates.commands.help.LinksCommand;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.commands.help.StorageViewerWhyCommand;
-import io.github.moulberry.notenoughupdates.commands.misc.AhCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalculatorCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CalendarCommand;
 import io.github.moulberry.notenoughupdates.commands.misc.CosmeticsCommand;
@@ -95,7 +94,6 @@ public class Commands {
 		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neubuttons", GuiInvButtonEditor::new));
 		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuec", GuiEnchantColour::new));
 		ClientCommandHandler.instance.registerCommand(new ScreenCommand("neuoverlay", NEUOverlayPlacements::new));
-		ClientCommandHandler.instance.registerCommand(new AhCommand());
 		ClientCommandHandler.instance.registerCommand(new CalculatorCommand());
 		ClientCommandHandler.instance.registerCommand(new CalendarCommand());
 		ClientCommandHandler.instance.registerCommand(new UpdateCommand(NotEnoughUpdates.INSTANCE));

@@ -19,8 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.mbgui;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -57,9 +55,7 @@ public class MBGuiGroupFloating extends MBGuiGroup {
 	public Map<MBGuiElement, Vector2f> getChildrenPosition() {
 		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 
-		if (currentScreen instanceof GuiContainer || currentScreen instanceof GuiItemRecipe
-			|| currentScreen instanceof CustomAHGui ||
-			NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.isRenderOverAuctionView()) {
+		if (currentScreen instanceof GuiContainer || currentScreen instanceof GuiItemRecipe) {
 
 			if (lastScreen != currentScreen) {
 				lastScreen = currentScreen;
@@ -83,17 +79,11 @@ public class MBGuiGroupFloating extends MBGuiGroup {
 						guiTop = (int) Utils.getField(GuiContainer.class, currentContainer, "guiTop", "field_147009_r");
 					} catch (Exception ignored) {
 					}
-				} else if (currentScreen instanceof GuiItemRecipe) {
+				} else {
 					xSize = ((GuiItemRecipe) currentScreen).xSize;
 					ySize = ((GuiItemRecipe) currentScreen).ySize;
 					guiLeft = ((GuiItemRecipe) currentScreen).guiLeft;
 					guiTop = ((GuiItemRecipe) currentScreen).guiTop;
-				} else if (currentScreen instanceof CustomAHGui ||
-					NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.isRenderOverAuctionView()) {
-					xSize = NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.getXSize();
-					ySize = NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.getYSize();
-					guiLeft = NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.guiLeft;
-					guiTop = NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.guiTop;
 				}
 
 				if (xSize <= 0 && ySize <= 0 && guiLeft <= 0 && guiTop <= 0) {
