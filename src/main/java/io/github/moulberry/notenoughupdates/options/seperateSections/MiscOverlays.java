@@ -24,7 +24,6 @@ import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
@@ -440,5 +439,4 @@ public class MiscOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean todoIcons = true;
-
 }
