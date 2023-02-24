@@ -56,6 +56,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MinionHelper;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Museum;
 import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Notifications;
 import io.github.moulberry.notenoughupdates.options.seperateSections.PetOverlay;
@@ -247,8 +248,8 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Todo Overlay",
-		desc = "Todo Overlay"
+		name = "Todo Overlays",
+		desc = "Todo Overlays"
 	)
 	public MiscOverlays miscOverlays = new MiscOverlays();
 
@@ -384,6 +385,13 @@ public class NEUConfig extends Config {
 		desc = "Accessory Bag Overlay"
 	)
 	public AccessoryBag accessoryBag = new AccessoryBag();
+
+	@Expose
+	@Category(
+		name = "Museum",
+		desc = "Museum overlays"
+	)
+	public Museum museum = new Museum();
 
 	@Expose
 	@Category(
