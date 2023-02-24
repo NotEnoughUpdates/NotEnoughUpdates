@@ -210,15 +210,15 @@ object MuseumCheapestItemOverlay {
         if (leftButtonRect.contains(mouseX, mouseY)) {
             val tooltip = if (useBIN) {
                 listOf(
-                    "${EnumChatFormatting.GOLD}Using ${EnumChatFormatting.BLUE}lowest BIN ${EnumChatFormatting.GOLD}as price source!",
+                    "${EnumChatFormatting.GREEN}Using ${EnumChatFormatting.BLUE}lowest BIN ${EnumChatFormatting.GREEN}as price source!",
                     "",
-                    "${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}Click to switch to craft cost!"
+                    "${EnumChatFormatting.YELLOW}Click to switch to craft cost!"
                 )
             } else {
                 listOf(
-                    "${EnumChatFormatting.GOLD}Using ${EnumChatFormatting.AQUA}craft cost ${EnumChatFormatting.GOLD}as price source!",
+                    "${EnumChatFormatting.GREEN}Using ${EnumChatFormatting.AQUA}craft cost ${EnumChatFormatting.GREEN}as price source!",
                     "",
-                    "${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}Click to switch to lowest BIN!"
+                    "${EnumChatFormatting.YELLOW}Click to switch to lowest BIN!"
                 )
             }
             Utils.drawHoveringText(
@@ -251,11 +251,22 @@ object MuseumCheapestItemOverlay {
             rightButtonRect.y
         )
         if (rightButtonRect.contains(mouseX, mouseY)) {
-            val tooltip = listOf(
-                "${EnumChatFormatting.AQUA}Currently showing: $selectedCategory",
+            val tooltip = mutableListOf(
+                "${EnumChatFormatting.GREEN}Category Filter",
                 "",
-                "${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}Click to advance!"
             )
+            for (category in Category.values()) {
+                tooltip.add(
+                    if (category == selectedCategory) {
+                        "${EnumChatFormatting.BLUE}>$category"
+                    } else {
+                        category.toString()
+                    }
+                )
+            }
+
+            tooltip.add("")
+            tooltip.add("${EnumChatFormatting.YELLOW}Click to advance!")
             Utils.drawHoveringText(
                 tooltip,
                 mouseX,
