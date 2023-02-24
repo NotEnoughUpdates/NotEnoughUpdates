@@ -99,6 +99,24 @@ public class SkillOverlays {
 
 	@Expose
 	@ConfigOption(
+		name = "Use coins per hour",
+		desc = "Uses coins/h instead of coins/m"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean coinsPerHour = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Use crops per hour",
+		desc = "Uses crops/h instead of crops/m"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean cropsPerHour = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Pause Timer",
 		desc = "How many seconds does it wait before pausing"
 	)
