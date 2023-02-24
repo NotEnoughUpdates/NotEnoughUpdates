@@ -42,6 +42,7 @@ import org.lwjgl.util.vector.Vector2f;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
@@ -51,9 +52,6 @@ import java.util.regex.Pattern;
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
 
 public class TimersOverlay extends TextTabOverlay {
-	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?(m|s)?\u00a7r");
-
 	public TimersOverlay(
 		Position position,
 		Supplier<List<String>> dummyStrings,
@@ -61,7 +59,8 @@ public class TimersOverlay extends TextTabOverlay {
 	) {
 		super(position, dummyStrings, styleSupplier);
 	}
-
+	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
 		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
 	private static final Pattern PUZZLER_PATTERN =
@@ -74,6 +73,8 @@ public class TimersOverlay extends TextTabOverlay {
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a72.+ Mithril Powder \u00a7r\u00a7ffrom mining your first Mithril Ore of the day!\u00a7r");
 	private static final Pattern DAILY_GEMSTONE_POWDER = Pattern.compile(
 		"\u00a7r\u00a79\u1805 \u00a7r\u00a7fYou've earned \u00a7r\u00a7d.+ Gemstone Powder \u00a7r\u00a7ffrom mining your first Gemstone of the day!\u00a7r");
+	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
+		"\u00a7r\u00a7cYou may only buy up to (640|6400) of this item each day!\u00a7r");
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatMessageReceived(ClientChatReceivedEvent event) {
@@ -112,6 +113,11 @@ public class TimersOverlay extends TextTabOverlay {
 			Matcher dailyMithrilPowder = DAILY_MITHRIL_POWDER.matcher(event.message.getFormattedText());
 			if (dailyMithrilPowder.matches()) {
 				hidden.dailyMithrilPowerCompleted = currentTime;
+				return;
+			}
+			Matcher dailyShopLimit = DAILY_SHOP_LIMIT.matcher(event.message.getFormattedText());
+			if (dailyShopLimit.matches()) {
+				hidden.dailyShopLimitCompleted = currentTime;
 			}
 		}
 	}
@@ -130,6 +136,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final ItemStack EXPERIMENTS_ICON = new ItemStack(Items.enchanted_book);
 	private static final ItemStack COOKIE_ICON = new ItemStack(Items.cookie);
 	private static final ItemStack QUEST_ICON = new ItemStack(Items.sign);
+	private static final ItemStack SHOP_ICON = new ItemStack(Blocks.hopper);
 
 	@Override
 	protected void renderLine(String line, Vector2f position, boolean dummy) {
@@ -215,6 +222,9 @@ public class TimersOverlay extends TextTabOverlay {
 			case "Crimson Isle Quests":
 				icon = QUEST_ICON;
 				break;
+			case "NPC Buy Daily Limit":
+				icon = SHOP_ICON;
+				break;
 		}
 
 		if (icon != null) {
@@ -251,7 +261,6 @@ public class TimersOverlay extends TextTabOverlay {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
-
 			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 18) {
 				if (hidden.commissionsCompleted == 0) {
 					hidden.commissionsCompleted = currentTime;
@@ -296,10 +305,72 @@ public class TimersOverlay extends TextTabOverlay {
 				if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Superpairs")) {
 					hidden.experimentsCompleted = currentTime;
 				}
+			} else if (containerName.equals("SkyBlock Menu") && lower.getSizeInventory() >= 54){
+				ItemStack stack = lower.getStackInSlot(51);
+				if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Booster Cookie")&&
+					stack.getTagCompound() != null) {
+					String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
+					for (String line : lore) {
+						if (line.contains("Duration: ")) {
+							String clean = line.replaceAll("(\u00a7.)", "");
+							clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
+							String[] cleanSplit = clean.split(" ");
+							String[] removeDuration = Arrays.copyOfRange(cleanSplit, 1, cleanSplit.length);
+							hidden.cookieBuffRemaining = 0;
+							for (int i = 0; i + 1 < removeDuration.length; i++) {
+								if (i % 2 == 1) continue;
+
+								String number = removeDuration[i];
+								String unit = removeDuration[i + 1];
+								try {
+									long val = Integer.parseInt(number);
+									switch (unit) {
+										case "Years":
+										case "Year":
+											hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
+											break;
+										case "Months":
+										case "Month":
+											hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
+											break;
+										case "Days":
+										case "Day":
+										case "d":
+											hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
+											break;
+										case "Hours":
+										case "Hour":
+										case "h":
+											hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
+											break;
+										case "Minutes":
+										case "Minute":
+										case "m":
+											hidden.cookieBuffRemaining += val * 60 * 1000;
+											break;
+										case "Seconds":
+										case "Second":
+										case "s":
+											hidden.cookieBuffRemaining += val * 1000;
+											break;
+									}
+								} catch (NumberFormatException e) {
+									e.printStackTrace();
+									hidden.cookieBuffRemaining = 0;
+									if (!hasErrorMessage) {
+										Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
+										hasErrorMessage = true;
+									}
+									break;
+								}
+							}
+							break;
+						}
+					}
+				}
 			}
 		}
 
-		boolean foundCookieBuffText = false;
 		boolean foundGodPotText = false;
 		boolean foundEffectsText = false;
 		if (SBInfo.getInstance().getLocation() != null && !SBInfo.getInstance().getLocation().equals("dungeon") &&
@@ -354,63 +425,6 @@ public class TimersOverlay extends TextTabOverlay {
 
 					hidden.godPotionDuration = godPotDuration;
 
-				} else if (line.contains("\u00a7d\u00a7lCookie Buff")) {
-					foundCookieBuffText = true;
-				} else if (foundCookieBuffText) {
-					String clean = line.replaceAll("(\u00a7.)", "");
-					clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
-					String[] cleanSplit = clean.split(" ");
-					hidden.cookieBuffRemaining = 0;
-					if (line.contains("Not")) break;
-
-					for (int i = 0; i + 1 < cleanSplit.length; i++) {
-						if (i % 2 == 1) continue;
-
-						String number = cleanSplit[i];
-						String unit = cleanSplit[i + 1];
-						try {
-							long val = Integer.parseInt(number);
-							switch (unit) {
-								case "Years":
-								case "Year":
-									hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
-									break;
-								case "Months":
-								case "Month":
-									hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
-									break;
-								case "Days":
-								case "Day":
-									hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
-									break;
-								case "Hours":
-								case "Hour":
-								case "h":
-									hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
-									break;
-								case "Minutes":
-								case "Minute":
-								case "m":
-									hidden.cookieBuffRemaining += val * 60 * 1000;
-									break;
-								case "Seconds":
-								case "Second":
-								case "s":
-									hidden.cookieBuffRemaining += val * 1000;
-									break;
-							}
-						} catch (NumberFormatException e) {
-							e.printStackTrace();
-							hidden.cookieBuffRemaining = 0;
-							if (!hasErrorMessage) {
-								Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
-								hasErrorMessage = true;
-							}
-							break;
-						}
-					}
-
-					break;
 				}
 			}
 		}
@@ -683,49 +697,47 @@ public class TimersOverlay extends TextTabOverlay {
 		}
 
 		//Experiment Display
-		if (hidden.experimentsCompleted < midnightReset) {
+		if (hidden.experimentsCompleted < catacombsReset) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
-			(hidden.experimentsCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
+			(hidden.experimentsCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.SOON.ordinal() &&
-			(hidden.experimentsCompleted < (midnightReset - TimeEnums.HOUR.time))) {
+			(hidden.experimentsCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
-				(hidden.experimentsCompleted < (midnightReset - (TimeEnums.HOUR.time * 3)))) {
+				(hidden.experimentsCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.experimentationDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
 			map.put(
 				6,
 				DARK_AQUA + "Experiments: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(catacombsReset + 86400000 - currentTime)
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 
 		// Daily Mithril Powder display
-		long mithrilPowderCompleted = hidden.dailyMithrilPowerCompleted + 1000 * 60 * 60 * 24 - currentTime;
-
 		if (hidden.dailyMithrilPowerCompleted < catacombsReset) {
 			map.put(
 				7,
@@ -853,7 +865,7 @@ public class TimersOverlay extends TextTabOverlay {
 					Utils.prettyTime(pearlsReset + 86400000 - currentTime)
 			);
 		}
-
+		//Daily Crimson Isle Quests
 		if (hidden.questBoardCompleted < midnightReset) {
 			map.put(
 				10,
@@ -892,6 +904,48 @@ public class TimersOverlay extends TextTabOverlay {
 				DARK_AQUA + "Crimson Isle Quests: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
 					Utils.prettyTime(timeDiffMidnightNow)
+			);
+		}
+
+		//Daily Shop Limit
+		if (hidden.dailyShopLimitCompleted < catacombsReset) {
+			map.put(
+				11,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
+				(hidden.dailyShopLimitCompleted < (catacombsReset - TimeEnums.HALFANHOUR.time))) {
+			map.put(
+				11,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
+					Utils.prettyTime(catacombsDiffNow)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.SOON.ordinal() &&
+			(hidden.dailyShopLimitCompleted < (catacombsReset - TimeEnums.HOUR.time))) {
+			map.put(
+				11,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
+					Utils.prettyTime(catacombsDiffNow)
+			);
+		} else if (
+			NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
+				(hidden.dailyShopLimitCompleted < (catacombsReset - (TimeEnums.HOUR.time * 3)))) {
+			map.put(
+				11,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
+					Utils.prettyTime(catacombsDiffNow)
+			);
+		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.shopLimitDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
+			map.put(
+				11,
+				DARK_AQUA + "NPC Buy Daily Limit: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
+					Utils.prettyTime(catacombsDiffNow)
 			);
 		}
 
