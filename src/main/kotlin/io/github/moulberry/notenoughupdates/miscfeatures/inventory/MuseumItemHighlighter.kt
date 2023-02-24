@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022 Linnea Gräf
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -20,11 +20,13 @@
 package io.github.moulberry.notenoughupdates.miscfeatures.inventory
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.ChromaColour
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.LRUCache
 import io.github.moulberry.notenoughupdates.util.MuseumUtil
@@ -36,6 +38,7 @@ import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+@NEUAutoSubscribe
 object MuseumItemHighlighter {
 
     private val manager get() = NotEnoughUpdates.INSTANCE.manager
