@@ -31,4 +31,12 @@ public class Garden {
 	)
 	@ConfigEditorBoolean
 	public boolean muteComposterSounds = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Enable Preset Delete Warning",
+		desc = "Asks for confirmation when deleting a preset"
+	)
+	@ConfigEditorBoolean
+	public boolean presetDeleteWarning = true;
 }

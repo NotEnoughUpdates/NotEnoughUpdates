@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
@@ -201,6 +202,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		GuiCustomHex.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AuctionBINWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AbiphoneWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
+		PresetWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 	}
 
 	@Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGradientRect(IIIIII)V"))

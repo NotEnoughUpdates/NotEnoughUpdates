@@ -36,6 +36,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
@@ -727,6 +728,10 @@ public class RenderListener {
 		if (AbiphoneWarning.getInstance().shouldShow()) {
 			AbiphoneWarning.getInstance().render();
 		}
+
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().render();
+		}
 	}
 
 	private void renderDungKuudraChestOverlay(GuiScreen gui) {
@@ -1012,6 +1017,11 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().mouseInput(mouseX, mouseY);
+			event.setCanceled(true);
+			return;
+		}
 
 		if (!event.isCanceled()) {
 			Utils.scrollTooltip(Mouse.getEventDWheel());
@@ -1243,6 +1253,11 @@ public class RenderListener {
 		}
 		if (AbiphoneWarning.getInstance().shouldShow()) {
 			AbiphoneWarning.getInstance().keyboardInput();
+			event.setCanceled(true);
+			return;
+		}
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}
