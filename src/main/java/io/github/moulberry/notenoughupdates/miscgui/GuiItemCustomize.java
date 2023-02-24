@@ -75,12 +75,7 @@ public class GuiItemCustomize extends GuiScreen {
 	public GuiItemCustomize(ItemStack stack, String itemUUID) {
 		this.stack = stack;
 		this.itemUUID = itemUUID;
-		ItemStack customStack = stack.copy();
-		if (!this.textFieldCustomItem.getText().isEmpty()) {
-			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
-			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
-		}
-		this.customItemStack = customStack;
+		this.customItemStack = copy(stack);
 
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
 		boolean stackHasEffect = stack.hasEffect() && !model.isBuiltInRenderer();
@@ -129,12 +124,7 @@ public class GuiItemCustomize extends GuiScreen {
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
 		boolean stackHasEffect = stack.hasEffect() && !model.isBuiltInRenderer();
 
-		ItemStack customStack = stack.copy();
-		if (!this.textFieldCustomItem.getText().isEmpty()) {
-			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
-			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
-		}
-		this.customItemStack = customStack;
+		this.customItemStack = copy(stack);
 		data.defaultItem = stack.getItem().getRegistryName();
 
 		if (this.enchantGlint != stackHasEffect) {
@@ -185,6 +175,15 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		ItemCustomizeManager.putItemData(itemUUID, data);
+	}
+
+	private ItemStack copy(ItemStack stack) {
+		ItemStack customStack = stack.copy();
+		if (!this.textFieldCustomItem.getText().isEmpty()) {
+			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
+			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
+		}
+		return customStack;
 	}
 
 	private int getGlintColour() {
@@ -288,12 +287,7 @@ public class GuiItemCustomize extends GuiScreen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(xCenter - 48, yTop + 7, 0);
 		GlStateManager.scale(6, 6, 1);
-		ItemStack customStack = stack.copy();
-		if (!this.textFieldCustomItem.getText().isEmpty()) {
-			customStack.setItem(ItemCustomizeManager.getCustomItem(stack, this.textFieldCustomItem.getText().trim()));
-			customStack.setItemDamage(ItemCustomizeManager.getCustomItemDamage(stack));
-		}
-		this.customItemStack = customStack;
+		this.customItemStack = copy(stack);
 		Utils.drawItemStack(customItemStack, 0, 0);
 		GlStateManager.popMatrix();
 
