@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.util
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag
 import io.github.moulberry.notenoughupdates.util.ApiUtil.Request
+import io.github.moulberry.notenoughupdates.util.kotlin.supplyImmediate
 import org.apache.http.NameValuePair
 import java.nio.file.Files
 import java.nio.file.Path
@@ -47,43 +48,45 @@ object ApiCache {
         val shouldGunzip: Boolean,
     )
 
-    data class CacheResult(
-        private var future: CompletableFuture<String>?,
+    data class CacheResult internal constructor(
+        var cacheState: CacheState,
         val firedAt: TimeSource.Monotonic.ValueTimeMark,
-        private var file: Path? = null,
-        private var disposed: Boolean = false,
     ) {
-        init {
-            future!!.thenAcceptAsync { text ->
+        constructor(future: CompletableFuture<String>, firedAt: TimeSource.Monotonic.ValueTimeMark) : this(
+            CacheState.WaitingForFuture(future),
+            firedAt
+        ) {
+            future.thenAccept { text ->
                 synchronized(this) {
-                    if (disposed) {
-                        return@synchronized
-                    }
-                    future = null
                     val f = Files.createTempFile(cacheBaseDir, "api-cache", ".bin")
                     log("Writing cache to disk: $f")
                     f.toFile().deleteOnExit()
                     f.writeText(text)
-                    file = f
+                    cacheState = CacheState.FileCached(f)
                 }
             }
         }
 
-        val isAvailable get() = file != null && !disposed
+        sealed interface CacheState {
+            object Disposed : CacheState
+            data class WaitingForFuture(val future: CompletableFuture<String>) : CacheState
+            data class FileCached(val file: Path) : CacheState
+        }
+
+        val isAvailable get() = cacheState is CacheState.FileCached
 
         fun getCachedFuture(): CompletableFuture<String> {
             synchronized(this) {
-                if (disposed) {
-                    return CompletableFuture.supplyAsync {
-                        throw IllegalStateException("Attempting to read from a disposed future at $file. Most likely caused by non synchronized access to ApiCache.cachedRequests")
+                return when (val cs = cacheState) {
+                    CacheState.Disposed -> supplyImmediate {
+                        throw IllegalStateException("Attempting to read from a disposed future. Most likely caused by non synchronized access to ApiCache.cachedRequests")
                     }
-                }
-                val fut = future
-                if (fut != null) {
-                    return fut
-                } else {
-                    val text = file!!.readText()
-                    return CompletableFuture.completedFuture(text)
+
+                    is CacheState.FileCached -> supplyImmediate {
+                        cs.file.readText()
+                    }
+
+                    is CacheState.WaitingForFuture -> cs.future
                 }
             }
         }
@@ -96,11 +99,10 @@ object ApiCache {
          */
         internal fun dispose() {
             synchronized(this) {
-                if (disposed) return
+                val file = (cacheState as? CacheState.FileCached)?.file
                 log("Disposing cache for $file")
-                disposed = true
+                cacheState = CacheState.Disposed
                 file?.deleteIfExists()
-                future = null
             }
         }
     }

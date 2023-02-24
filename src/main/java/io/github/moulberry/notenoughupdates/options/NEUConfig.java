@@ -34,6 +34,8 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Garden;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
@@ -73,7 +75,6 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
@@ -292,6 +293,13 @@ public class NEUConfig extends Config {
 		desc = "Fishing"
 	)
 	public Fishing fishing = new Fishing();
+
+	@Expose
+	@Category(
+		name = "Garden",
+		desc = "Garden"
+	)
+	public Garden garden = new Garden();
 
 	@Expose
 	@Category(
@@ -594,6 +602,9 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public boolean abiphoneShowOnlyFavourites = false;
+
+		@Expose
+		public Map<String, Integer> hotmTree = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

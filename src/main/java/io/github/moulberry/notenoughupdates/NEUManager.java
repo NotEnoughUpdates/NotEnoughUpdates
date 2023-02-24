@@ -37,7 +37,6 @@ import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -144,7 +143,6 @@ public class NEUManager {
 	public File configLocation;
 	public File repoLocation;
 	public File configFile;
-	public HotmInformation hotm;
 
 	public KatSitterOverlay katSitterOverlay;
 
@@ -154,7 +152,6 @@ public class NEUManager {
 		this.neu = neu;
 		this.configLocation = configLocation;
 		this.auctionManager = new APIManager(this);
-		this.hotm = new HotmInformation(neu);
 		this.craftingOverlay = new CraftingOverlay(this);
 		this.katSitterOverlay = new KatSitterOverlay();
 
