@@ -21,13 +21,13 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,8 +52,8 @@ public class GardenNpcPrices {
 			int amount = 1;
 			if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
 
-			double cost = calculateCost(matcher.group(1).trim().replace(" ", "_").toUpperCase(Locale.ROOT), amount);
-			event.toolTip.set(i, event.toolTip.get(i) + " §e(" + Utils.shortNumberFormat(cost, 0) + " coins)");
+			double cost = calculateCost(ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false), amount);
+			event.toolTip.set(i, event.toolTip.get(i) + " §e(" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + " coins)");
 		} else {
 			break;
 		}
