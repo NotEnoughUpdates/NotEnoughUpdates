@@ -293,7 +293,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
 			//Needed due to farming fortune causing inconsistent amounts of crops each block break
 			//Making this while in case somehow it goes over X+1
-			while (cropsOverLastXSeconds.size() > 5) {
+			while (cropsOverLastXSeconds.size() > 60) {
 				cropsOverLastXSeconds.remove(0);
 			}
 			if ((first - last) / 3f != 0) {
