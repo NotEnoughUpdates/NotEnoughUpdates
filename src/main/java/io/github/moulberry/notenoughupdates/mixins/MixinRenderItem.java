@@ -131,7 +131,7 @@ public abstract class MixinRenderItem {
 	public int renderItem_renderByItem(Item item, ItemStack stack, int renderPass) {
 		if (renderPass == 0) {
 			ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-			if (data != null && data.customLeatherColour != null) {
+			if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 				return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 			}
 		}
@@ -255,5 +255,13 @@ public abstract class MixinRenderItem {
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepth();
 		}
+	}
+
+	@Redirect(method = "renderItemOverlayIntoGUI", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/Item;showDurabilityBar(Lnet/minecraft/item/ItemStack;)Z"))
+	public boolean renderItemOverlayIntoGUI_showDurabilityBar(
+		Item instance, ItemStack stack
+	) {
+		if (ItemCustomizeManager.hasCustomItem(stack)) return false;
+		return stack.getItem().showDurabilityBar(stack);
 	}
 }
