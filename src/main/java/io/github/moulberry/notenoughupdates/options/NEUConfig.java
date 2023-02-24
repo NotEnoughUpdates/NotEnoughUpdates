@@ -56,6 +56,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MinionHelper;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Museum;
 import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Notifications;
 import io.github.moulberry.notenoughupdates.options.seperateSections.PetOverlay;
@@ -75,7 +76,6 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
@@ -388,6 +388,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Museum",
+		desc = "Museum overlays"
+	)
+	public Museum museum = new Museum();
+
+	@Expose
+	@Category(
 		name = "Profile Viewer",
 		desc = "Profile Viewer"
 	)
@@ -603,6 +610,9 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public boolean abiphoneShowOnlyFavourites = false;
+
+		@Expose
+		public Map<String, Integer> hotmTree = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {
