@@ -263,7 +263,7 @@ public class TimersOverlay extends TextTabOverlay {
 			String containerName = lower.getDisplayName().getUnformattedText();
 			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 18) {
 				if (hidden.commissionsCompleted == 0) {
-					hidden.commissionsCompleted = currentTime;
+					hidden.commissionsCompleted = currentTime + TimeEnums.DAY.time;
 				}
 				for (int i = 9; i < 18; i++) {
 					ItemStack stack = lower.getStackInSlot(i);
@@ -609,11 +609,11 @@ public class TimersOverlay extends TextTabOverlay {
 			);
 		}
 
-		long midnightReset = (currentTime - 18000000) / 86400000 * 86400000 + 18000000; // 12am est
+		long midnightReset = (currentTime - 18000000) / TimeEnums.DAY.time * TimeEnums.DAY.time + 18000000; // 12am est
 		long pearlsReset = midnightReset - 18000000; //8pm est
-		long catacombsReset = currentTime / 86400000 * 86400000; // 7pm est
-		long timeDiffMidnightNow = midnightReset + 86400000 - currentTime;
-		long catacombsDiffNow = catacombsReset + 86400000 - currentTime;
+		long catacombsReset = currentTime / TimeEnums.DAY.time * TimeEnums.DAY.time; // 7pm est
+		long timeDiffMidnightNow = midnightReset + TimeEnums.DAY.time - currentTime;
+		long catacombsDiffNow = catacombsReset + TimeEnums.DAY.time - currentTime;
 		long fetchurComplete = hidden.fetchurCompleted;
 
 		//Fetchur Display
@@ -661,7 +661,8 @@ public class TimersOverlay extends TextTabOverlay {
 			map.put(
 				5,
 				DARK_AQUA + "Commissions: " +
-					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready! "
+				+ hidden.commissionsCompleted
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.commissionDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
 			(hidden.commissionsCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
