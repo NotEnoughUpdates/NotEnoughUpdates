@@ -28,6 +28,9 @@ import net.minecraft.item.Item;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,23 +43,32 @@ public class GardenNpcPrices {
 	//§5§o §9Enchanted Cookie §8x4
 	//§5§o §9Tightly-Tied Hay Bale
 
+	private HashMap<Integer, List<String>> prices = new HashMap<>();
+
 	@SubscribeEvent
 	public void onGardenNpcPrices(ItemTooltipEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.gardenNpcPrice) return;
 		if (event.toolTip.size() <= 2 || event.itemStack.getItem() != Item.getItemFromBlock(Blocks.stained_hardened_clay)) return;
 
-		for (int i = 2; i < event.toolTip.size(); i++) {
-		Matcher matcher = itemRegex.matcher(event.toolTip.get(i));
+		List<String> tooltip = new ArrayList<>(event.toolTip);
+		if (prices.get(event.toolTip.hashCode()) == null) {
+			for (int i = 2; i < event.toolTip.size(); i++) {
+				Matcher matcher = itemRegex.matcher(event.toolTip.get(i));
 
-		if (matcher.matches()) {
-			int amount = 1;
-			if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
+				if (matcher.matches()) {
+					int amount = 1;
+					if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
 
-			double cost = calculateCost(ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false), amount);
-			event.toolTip.set(i, event.toolTip.get(i) + " §e(" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + " coins)");
+					double cost = calculateCost(ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false), amount);
+					tooltip.set(i, event.toolTip.get(i) + " §e(" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + " coins)");
+				} else {
+					prices.put(event.toolTip.hashCode(), tooltip);
+				}
+			}
 		} else {
-			break;
-		}
+			int hashCode = event.toolTip.hashCode();
+			event.toolTip.clear();
+			event.toolTip.addAll(prices.get(hashCode));
 		}
 	}
 	public double calculateCost(String internalName, int amount) {
