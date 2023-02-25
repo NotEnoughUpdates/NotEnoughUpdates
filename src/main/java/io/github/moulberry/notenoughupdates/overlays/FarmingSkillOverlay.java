@@ -28,6 +28,10 @@ import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.text.NumberFormat;
@@ -53,6 +57,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private float cropsPerSecondLast = 0;
 	private float cropsPerSecond = 0;
 	private final LinkedList<Integer> counterQueue = new LinkedList<>();
+	private int jacobPredictionLast = -1;
+	private int jacobPrediction = -1;
 
 	private XPInformation.SkillInfo skillInfo = null;
 	private XPInformation.SkillInfo skillInfoLast = null;
@@ -93,6 +99,38 @@ public class FarmingSkillOverlay extends TextOverlay {
 			return crop.get("curr_sell").getAsFloat() / numItemsForEnch;
 		}
 		return 0;
+	}
+
+	private void gatherJacobData() {
+		if (System.currentTimeMillis() % 3600000 >= 900000 &&
+			System.currentTimeMillis() % 3600000 <= 2100000) { //Check to see if there is an active Jacob's contest
+			int timeLeftInContest = (20 * 60) - ((int) ((System.currentTimeMillis() % 3600000 - 900000) / 1000));
+			try {
+				Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
+				ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
+				List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
+				String currentCrop = "N/A";
+				int cropsFarmed = -1;
+				for (int i = scores.size() - 1; i >= 0; i--) {
+					Score score = scores.get(i);
+					ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
+					String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
+					line = Utils.cleanColour(line);
+					if (line.contains("Collected") || line.contains("BRONZE") || line.contains("SILVER") ||
+						line.contains("GOLD")) {
+						String l = line.replaceAll("[^A-Za-z0-9() ]", "");
+						cropsFarmed = Integer.parseInt(l.substring(l.lastIndexOf(" ") + 1).replace(",", ""));
+					}
+				}
+				jacobPrediction = (int) (cropsFarmed + (cropsPerSecond * timeLeftInContest));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			jacobPrediction = -1;
+			jacobPredictionLast = -1;
+		}
 	}
 
 	//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
@@ -300,7 +338,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			if ((first - last) / 3f != 0) {
 				cropsOverLastXSeconds.add((first - last) / 3f);
 			} else {
-				if (cropsOverLastXSeconds.size() > 0 && cropsPerSecondLast == 0) {
+				if (cropsPerSecondLast == 0) {
 					//This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
 					//It removes 12 per tick because otherwise it would take 60s to go to N/A (now it only takes 5s)
 					int i = 12;
@@ -332,7 +370,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 				cropsOverLastXSecondsTotal += crops;
 			}
 			//To prevent 0/0
-			cropsPerSecond = temp.size() != 0 && cropsOverLastXSecondsTotal != 0 ? cropsOverLastXSecondsTotal/temp.size() : 0;
+			cropsPerSecond =
+				temp.size() != 0 && cropsOverLastXSecondsTotal != 0 ? cropsOverLastXSecondsTotal / temp.size() : 0;
 		}
 
 		if (counter != -1) {
@@ -340,7 +379,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		} else {
 			overlayStrings = null;
 		}
-
+		gatherJacobData();
 	}
 
 	@Override
@@ -418,6 +457,20 @@ public class FarmingSkillOverlay extends TextOverlay {
 					9,
 					EnumChatFormatting.AQUA + "Cultivating: " + EnumChatFormatting.YELLOW + format.format(counterInterp)
 				);
+			}
+
+			if (System.currentTimeMillis() % 3600000 >= 900000 &&
+				System.currentTimeMillis() % 3600000 <= 2100000) { //Check to see if there is an active Jacob's contest
+				if (jacobPredictionLast == jacobPrediction && jacobPrediction <= 0) {
+					lineMap.put(11, EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW + "N/A");
+				} else {
+					float predInterp = interp(jacobPrediction, jacobPredictionLast);
+					lineMap.put(
+						11,
+						EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW +
+							String.format("%,.0f", predInterp)
+					);
+				}
 			}
 
 			float xpInterp = xpGainHour;
