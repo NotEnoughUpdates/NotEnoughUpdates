@@ -316,7 +316,7 @@ public class TimersOverlay extends TextTabOverlay {
 							clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
 							String[] cleanSplit = clean.split(" ");
 							String[] removeDuration = Arrays.copyOfRange(cleanSplit, 1, cleanSplit.length);
-							hidden.cookieBuffRemaining = 0;
+							hidden.cookieBuffRemaining = currentTime;
 							for (int i = 0; i + 1 < removeDuration.length; i++) {
 								if (i % 2 == 1) continue;
 
@@ -498,7 +498,7 @@ public class TimersOverlay extends TextTabOverlay {
 				1,
 				DARK_AQUA + "Cookie Buff: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.verySoonColour] +
-					Utils.prettyTime(hidden.cookieBuffRemaining)
+					Utils.prettyTime(hidden.cookieBuffRemaining - currentTime)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.cookieBuffDisplay >= DISPLAYTYPE.SOON.ordinal() &&
 			hidden.cookieBuffRemaining < TimeEnums.HALFDAY.time) {
@@ -506,7 +506,7 @@ public class TimersOverlay extends TextTabOverlay {
 				1,
 				DARK_AQUA + "Cookie Buff: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.soonColour] +
-					Utils.prettyTime(hidden.cookieBuffRemaining)
+					Utils.prettyTime(hidden.cookieBuffRemaining - currentTime)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.cookieBuffDisplay >= DISPLAYTYPE.KINDASOON.ordinal() &&
 			hidden.cookieBuffRemaining < TimeEnums.DAY.time) {
@@ -514,14 +514,14 @@ public class TimersOverlay extends TextTabOverlay {
 				1,
 				DARK_AQUA + "Cookie Buff: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.kindaSoonColour] +
-					Utils.prettyTime(hidden.cookieBuffRemaining)
+					Utils.prettyTime(hidden.cookieBuffRemaining - currentTime)
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.cookieBuffDisplay >= DISPLAYTYPE.ALWAYS.ordinal()) {
 			map.put(
 				1,
 				DARK_AQUA + "Cookie Buff: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.defaultColour] +
-					Utils.prettyTime(hidden.cookieBuffRemaining)
+					Utils.prettyTime(hidden.cookieBuffRemaining - currentTime)
 			);
 		}
 
