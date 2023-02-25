@@ -391,7 +391,7 @@ public class CustomItemEffects {
 									event.partialTicks,
 									candidatesOld,
 									candidatesOldSorted,
-									199 - MAX_BUILDERS_BLOCKS
+									499 - MAX_BUILDERS_BLOCKS
 								);
 							}
 
