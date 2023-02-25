@@ -60,7 +60,7 @@ public class GardenNpcPrices {
 					if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
 
 					double cost = calculateCost(ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false), amount);
-					tooltip.set(i, event.toolTip.get(i) + " §e(" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + " coins)");
+					tooltip.set(i, event.toolTip.get(i) + " §7(§6" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + "§7 coins)");
 				} else {
 					prices.put(event.toolTip.hashCode(), tooltip);
 				}
