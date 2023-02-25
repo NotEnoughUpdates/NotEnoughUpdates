@@ -1171,8 +1171,10 @@ public class CustomItemEffects {
 						for (int xOff = -radius; xOff <= radius; xOff++) {
 							for (int zOff = -radius; zOff <= radius; zOff++) {
 								BlockPos renderPos = target.add(xOff, 0, zOff);
+								BlockPos airPos = renderPos.add(0, 1, 0);
 								IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
-								if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass) {
+								IBlockState airState = Minecraft.getMinecraft().theWorld.getBlockState(airPos);
+								if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass && airState.getBlock() == Blocks.air) {
 									AxisAlignedBB bbExpanded = Blocks.dirt.getSelectedBoundingBox(
 																										 Minecraft.getMinecraft().theWorld,
 																										 renderPos
@@ -1225,10 +1227,12 @@ public class CustomItemEffects {
 								int zOff = facing == Facing.NORTH ? -1 : facing == Facing.SOUTH ? 1 : 0;
 
 								BlockPos renderPos = candidate.add(xOff, 0, zOff);
+								BlockPos airPos = renderPos.add(0, 1, 0);
 								IBlockState renderState = Minecraft.getMinecraft().theWorld.getBlockState(renderPos);
+								IBlockState airState = Minecraft.getMinecraft().theWorld.getBlockState(airPos);
 								if (!candidatesOld.contains(renderPos) && !candidates.contains(renderPos) && !candidatesNew.contains(
 									renderPos)) {
-									if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass) {
+									if (renderState.getBlock() == Blocks.dirt || renderState.getBlock() == Blocks.grass && airState.getBlock() == Blocks.air) {
 										candidatesNew.add(renderPos);
 									} else {
 										break;
