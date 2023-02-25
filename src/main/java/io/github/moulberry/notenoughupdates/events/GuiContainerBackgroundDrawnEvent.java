@@ -17,26 +17,13 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.options.seperateSections;
+package io.github.moulberry.notenoughupdates.events;
 
-import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import lombok.Value;
+import net.minecraft.client.gui.inventory.GuiContainer;
 
-public class Garden {
-	@Expose
-	@ConfigOption(
-		name = "Mute Composter",
-		desc = "Mute sounds of composting"
-	)
-	@ConfigEditorBoolean
-	public boolean muteComposterSounds = false;
-
-	@Expose
-	@ConfigOption(
-		name = "Enable Preset Delete Warning",
-		desc = "Asks for confirmation when deleting a preset"
-	)
-	@ConfigEditorBoolean
-	public boolean presetDeleteWarning = true;
+@Value
+public class GuiContainerBackgroundDrawnEvent extends NEUEvent {
+	public GuiContainer container;
+	public float partialTicks;
 }

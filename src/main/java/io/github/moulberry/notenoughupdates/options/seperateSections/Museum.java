@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,22 +21,25 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
-public class Garden {
-	@Expose
-	@ConfigOption(
-		name = "Mute Composter",
-		desc = "Mute sounds of composting"
-	)
-	@ConfigEditorBoolean
-	public boolean muteComposterSounds = false;
+public class Museum {
 
 	@Expose
 	@ConfigOption(
-		name = "Enable Preset Delete Warning",
-		desc = "Asks for confirmation when deleting a preset"
+		name = "Show Museum Items",
+		desc = "Show real items instead of green dye in the museum"
 	)
 	@ConfigEditorBoolean
-	public boolean presetDeleteWarning = true;
+	public boolean museumItemShow = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Highlight virtual museum items",
+		desc = "Highlight virtual museum items with a background color"
+	)
+	@ConfigEditorColour
+	public String museumItemColor = "0:255:0:255:0";
+
 }

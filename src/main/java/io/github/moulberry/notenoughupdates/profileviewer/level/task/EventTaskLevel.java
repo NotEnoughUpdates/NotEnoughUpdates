@@ -56,12 +56,14 @@ public class EventTaskLevel {
 			sbXpMiningFiesta = getCapOrAmount(miningFiestaOresMined, 1_000_000, 5_000);
 			sbXpFishingFestival = getCapOrAmount(fishingFestivalSharksKilled, 5_000, 50);
 
-			JsonArray completedTasks = leveling.get("completed_tasks").getAsJsonArray();
-			JsonObject spookyFestivalXp = eventTask.getAsJsonObject("spooky_festival_xp");
-			for (JsonElement completedTask : completedTasks) {
-				String name = completedTask.getAsString();
-				if (spookyFestivalXp.has(name)) {
-					sbXpSpookyFestival += spookyFestivalXp.get(name).getAsInt();
+			if (leveling.has("completed_tasks")) {
+				JsonArray completedTasks = leveling.get("completed_tasks").getAsJsonArray();
+				JsonObject spookyFestivalXp = eventTask.getAsJsonObject("spooky_festival_xp");
+				for (JsonElement completedTask : completedTasks) {
+					String name = completedTask.getAsString();
+					if (spookyFestivalXp.has(name)) {
+						sbXpSpookyFestival += spookyFestivalXp.get(name).getAsInt();
+					}
 				}
 			}
 		}

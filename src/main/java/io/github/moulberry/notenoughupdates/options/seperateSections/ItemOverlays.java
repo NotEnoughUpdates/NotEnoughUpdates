@@ -377,6 +377,15 @@ public class ItemOverlays {
 	@ConfigAccordionId(id = 7)
 	public boolean enableDirtWandOverlay = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable Scythe Overlay",
+		desc = "Show a block overlay for the effected blocks of scythe's ability."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 7)
+	public boolean enableScytheOverlay = true;
+
 	@ConfigOption(
 		name="Custom Wither Cloak",
 		desc = ""

@@ -218,8 +218,8 @@ public class DungeonWin {
 			if (hideChat) {
 				if (text.size() > 50) text.clear();
 
-				e.setCanceled(true);
 				if (unformatted.contains("\u25AC")) {
+					e.setCanceled(true);
 					hideChat = false;
 					displayWin();
 				} else {
@@ -229,12 +229,15 @@ public class DungeonWin {
 							"Total Damage")
 							|| unformatted.contains("Ally Healing") || unformatted.contains("Enemies Killed") || unformatted.contains(
 							"Deaths") || unformatted.contains("Secrets Found")) {
+							e.setCanceled(true);
 							text.add(e.message.getFormattedText().substring(6).trim());
-						} else {
+						} else if (unformatted.trim().length() > 6) {
 							System.out.println(
 								"These messages would of showed on neu dungeon overlay but didnt, They are either bugged or i missed them: \"" +
 									e.message.getFormattedText().substring(6).trim() + "\"");
 						}
+					} else {
+						e.setCanceled(true);
 					}
 				}
 			} else {
