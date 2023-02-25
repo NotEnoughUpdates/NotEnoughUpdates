@@ -44,7 +44,7 @@ public class MutingComposter {
 	}
 
 	protected boolean isEnabled() {
-		return SBInfo.getInstance().getLocation().equals("garden")
+		return "garden".equals(SBInfo.getInstance().getLocation())
 			&& NotEnoughUpdates.INSTANCE.config.garden.muteComposterSounds;
 	}
 
