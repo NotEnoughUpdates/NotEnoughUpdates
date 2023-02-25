@@ -662,7 +662,6 @@ public class TimersOverlay extends TextTabOverlay {
 				5,
 				DARK_AQUA + "Commissions: " +
 					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready! "
-				+ hidden.commissionsCompleted
 			);
 		} else if (NotEnoughUpdates.INSTANCE.config.miscOverlays.commissionDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
 			(hidden.commissionsCompleted < (midnightReset - TimeEnums.HALFANHOUR.time))) {
@@ -871,7 +870,7 @@ public class TimersOverlay extends TextTabOverlay {
 			map.put(
 				10,
 				DARK_AQUA + "Crimson Isle Quests: " +
-					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] +  (5 - SBInfo.getInstance().completedQuests.size()) + " left!"
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.questBoardDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
