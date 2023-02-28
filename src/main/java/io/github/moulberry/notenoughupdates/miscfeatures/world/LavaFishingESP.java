@@ -57,7 +57,7 @@ public class LavaFishingESP {
 		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.fishing.lavaColor);
 	}
 	protected boolean isEnabled() {
-		return (NotEnoughUpdates.INSTANCE.config.fishing.lavaESP ) || !disabledInSession;
+		return (NotEnoughUpdates.INSTANCE.config.fishing.lavaESP ) && !disabledInSession;
 	}
 	protected  boolean inPrecursor(){
 		return (SBInfo.getInstance().getLocation() != null && SBInfo.getInstance().getLocation().equals("crystal_hollows") &&

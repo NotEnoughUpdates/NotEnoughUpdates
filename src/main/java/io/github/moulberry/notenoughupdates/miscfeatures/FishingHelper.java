@@ -36,6 +36,7 @@ import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Blocks;
@@ -48,6 +49,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -74,7 +76,7 @@ public class FishingHelper {
 	private boolean disableRecast =false ;
 	private boolean passed30s = false;
 	public int mouseMoveOffset = 0;
-
+	public Set<EntityFishHook> tempSet = new HashSet<EntityFishHook>();
 
 	private int fishDelay = 0;
 
@@ -325,6 +327,14 @@ public class FishingHelper {
 	public void onWorldUnload(WorldEvent.Unload event) {
 		hookEntities.clear();
 		chains.clear();
+	}
+	@SubscribeEvent
+	public void onEvent(LivingHurtEvent event)
+	{
+		Entity entitysource = event.source.getSourceOfDamage();
+		System.out.println(event.entityLiving.getName());
+		//System.out.println(event.entityLiving.getName());
+
 	}
 
 	@SubscribeEvent
@@ -667,7 +677,6 @@ public class FishingHelper {
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
 														Minecraft.getMinecraft().getSoundHandler().playSound(sound);
 														this.fishDelay = 30;
-
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
 													}
 												}
@@ -694,7 +703,6 @@ public class FishingHelper {
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
 														Minecraft.getMinecraft().getSoundHandler().playSound(sound);
 														this.fishDelay = 30;
-
 														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
 														buildupSoundDelay = 4;
 													}

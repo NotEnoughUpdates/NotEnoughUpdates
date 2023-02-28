@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
+import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -415,50 +416,41 @@ public class FishingSkillOverlay
 			}
 			if (System.currentTimeMillis() - timer > funnyCustomTimer &&
 				System.currentTimeMillis() - timer < (funnyCustomTimer + 100) && funnyCustomTimer != 0) {
-				(Minecraft.getMinecraft()).thePlayer.addChatMessage((IChatComponent)new ChatComponentText(
-					ChatFormatting.WHITE + "Killing"));
-				this.killDelay = 50;
-				final Timer timer2 = new Timer();
-				TimerTask task1 = new TimerTask() {
-					public void run() {
-						if ((Minecraft.getMinecraft()).thePlayer.getHeldItem().getItem() == Items.fishing_rod && NotEnoughUpdates.INSTANCE.config.fishing.autoFishing && NotEnoughUpdates.INSTANCE.config.fishing.autoKilling && !FishingHelper.paused) {
-							(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 1;
-							(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "weapon swap"));
-							try {
-								Thread.sleep(1000L);
-							} catch (InterruptedException e) {
-								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
-								throw new RuntimeException(e);
+				if(SBInfo.getInstance().getLocation().equals("crystal_hollows")) {
+					Utils.addChatMessage(ChatFormatting.WHITE + "Killing");
+					this.killDelay = 50;
+					final Timer killTimer = new Timer();
+					TimerTask task1 = new TimerTask() {
+						public void run() {
+							if ((Minecraft.getMinecraft()).thePlayer.getHeldItem().getItem() == Items.fishing_rod &&
+								NotEnoughUpdates.INSTANCE.config.fishing.autoFishing &&
+								NotEnoughUpdates.INSTANCE.config.fishing.autoKilling && !FishingHelper.paused) {
+								(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 1;
+								try {
+									Thread.sleep(1000L);
+								} catch (InterruptedException e) {}
+								FishingHelper.rightClick();
+								try {
+									Thread.sleep(1000L);
+								} catch (InterruptedException e) {
+								}
+								(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 0;
+								try {
+									Thread.sleep(800L);
+								} catch (InterruptedException e) {
+								}
+								FishingHelper.rightClick();
+								FishingSkillOverlay.timer = System.currentTimeMillis();
+								try {
+									Thread.sleep(800L);
+								} catch (InterruptedException e) {
+								}
+								killTimer.cancel();
 							}
-							FishingHelper.rightClick();
-							try {
-								Thread.sleep(1000L);
-							} catch (InterruptedException e) {
-								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
-								throw new RuntimeException(e);
-							}
-							(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 0;
-							try {
-								Thread.sleep(800L);
-							} catch (InterruptedException e) {
-								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
-								throw new RuntimeException(e);
-							}
-							FishingHelper.rightClick();
-							FishingSkillOverlay.timer = System.currentTimeMillis();
-							try {
-								Thread.sleep(800L);
-							} catch (InterruptedException e) {
-								(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.WHITE + "err sleeping"));
-								throw new RuntimeException(e);
-							}
-							timer2.cancel();
-						} else {
-							(Minecraft.getMinecraft()).thePlayer.addChatMessage(new ChatComponentText(ChatFormatting.RED + "You don't have Fishing Rod Equipped! Cancelling Auto-Kill"));
 						}
-					}
-				};
-				timer2.schedule(task1, 800L);
+					};
+					killTimer.schedule(task1, 800L);
+				}
 				float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
 				Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);
 				Minecraft.getMinecraft().getSoundHandler().playSound(sound);
