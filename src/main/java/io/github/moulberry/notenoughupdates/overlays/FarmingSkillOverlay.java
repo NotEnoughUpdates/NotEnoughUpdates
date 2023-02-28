@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.overlays;
 
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
@@ -56,6 +57,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private float cropsPerSecondLast = 0;
 	private float cropsPerSecond = 0;
 	private final LinkedList<Integer> counterQueue = new LinkedList<>();
+	private String lastItemHeld = "null";
 	private int jacobPredictionLast = -1;
 	private int jacobPrediction = -1;
 
@@ -108,7 +110,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 				Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
 				ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
 				List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
-				String currentCrop = "N/A";
 				int cropsFarmed = -1;
 				for (int i = scores.size() - 1; i >= 0; i--) {
 					Score score = scores.get(i);
@@ -348,6 +349,11 @@ public class FarmingSkillOverlay extends TextOverlay {
 						}
 					}
 				}
+			}
+
+			if(!lastItemHeld.equals(NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null ? "null" : NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()))) {
+				lastItemHeld = NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null ? "null" : NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem());
+				cropsOverLastXSeconds.clear();
 			}
 
 			ArrayList<Float> temp = new ArrayList<>(cropsOverLastXSeconds);
