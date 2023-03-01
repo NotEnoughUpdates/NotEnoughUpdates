@@ -351,8 +351,12 @@ public class FarmingSkillOverlay extends TextOverlay {
 				}
 			}
 
-			if(!lastItemHeld.equals(NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null ? "null" : NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()))) {
-				lastItemHeld = NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null ? "null" : NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem());
+			if (!lastItemHeld.equals(NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
+				? "null"
+				: NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()))) {
+				lastItemHeld = NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
+					? "null"
+					: NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem());
 				cropsOverLastXSeconds.clear();
 			}
 
