@@ -59,6 +59,7 @@ public class TimersOverlay extends TextTabOverlay {
 	) {
 		super(position, dummyStrings, styleSupplier);
 	}
+
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
 		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
@@ -264,7 +265,7 @@ public class TimersOverlay extends TextTabOverlay {
 			ItemStack stack = lower.getStackInSlot(0);
 			switch (containerName.intern()) {
 				case "Commissions":
-					if(lower.getSizeInventory() < 18){
+					if (lower.getSizeInventory() < 18) {
 						break;
 					}
 					if (hidden.commissionsCompleted == 0) {
@@ -284,7 +285,7 @@ public class TimersOverlay extends TextTabOverlay {
 					}
 					break;
 				case "Experimentation Table":
-					if(lower.getSizeInventory() < 36){
+					if (lower.getSizeInventory() < 36) {
 						break;
 					}
 					stack = lower.getStackInSlot(31);
@@ -310,7 +311,7 @@ public class TimersOverlay extends TextTabOverlay {
 					hidden.experimentsCompleted = 0;
 					break;
 				case "Superpairs Rewards":
-					if(lower.getSizeInventory() < 27){
+					if (lower.getSizeInventory() < 27) {
 						break;
 					}
 					stack = lower.getStackInSlot(13);
@@ -318,15 +319,15 @@ public class TimersOverlay extends TextTabOverlay {
 						hidden.experimentsCompleted = currentTime;
 					}
 				case "SkyBlock Menu":
-					if(lower.getSizeInventory() < 54){
+					if (lower.getSizeInventory() < 54) {
 						break;
 					}
 					stack = lower.getStackInSlot(51);
 				case "Booster Cookie":
-					if(lower.getSizeInventory() < 54){
+					if (lower.getSizeInventory() < 54) {
 						break;
 					}
-					if (stack != lower.getStackInSlot(51)){//if we didn't go into this case from the skyblock menu
+					if (stack != lower.getStackInSlot(51)) {//if we didn't go into this case from the skyblock menu
 						stack = lower.getStackInSlot(13);
 					}
 
@@ -381,7 +382,8 @@ public class TimersOverlay extends TextTabOverlay {
 										e.printStackTrace();
 										hidden.cookieBuffRemaining = 0;
 										if (!hasErrorMessage) {
-											Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
+											Utils.addChatMessage(
+												EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
 											hasErrorMessage = true;
 										}
 										break;
@@ -894,7 +896,8 @@ public class TimersOverlay extends TextTabOverlay {
 			map.put(
 				10,
 				DARK_AQUA + "Crimson Isle Quests: " +
-					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] +  (5 - SBInfo.getInstance().completedQuests.size()) + " left!"
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] +
+					(5 - SBInfo.getInstance().completedQuests.size()) + " left!"
 			);
 		} else if (
 			NotEnoughUpdates.INSTANCE.config.miscOverlays.questBoardDisplay >= DISPLAYTYPE.VERYSOON.ordinal() &&
