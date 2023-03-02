@@ -262,7 +262,7 @@ public class TimersOverlay extends TextTabOverlay {
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
 			ItemStack stack = lower.getStackInSlot(0);
-			switch (containerName){
+			switch (containerName.intern()) {
 				case "Commissions":
 					if(lower.getSizeInventory() < 18){
 						break;
