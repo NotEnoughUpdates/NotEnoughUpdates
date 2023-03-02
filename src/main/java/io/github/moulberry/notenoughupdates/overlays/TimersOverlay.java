@@ -261,113 +261,137 @@ public class TimersOverlay extends TextTabOverlay {
 			ContainerChest container = (ContainerChest) chest.inventorySlots;
 			IInventory lower = container.getLowerChestInventory();
 			String containerName = lower.getDisplayName().getUnformattedText();
-			if (containerName.equals("Commissions") && lower.getSizeInventory() >= 18) {
-				if (hidden.commissionsCompleted == 0) {
-					hidden.commissionsCompleted = currentTime + TimeEnums.DAY.time;
-				}
-				for (int i = 9; i < 18; i++) {
-					ItemStack stack = lower.getStackInSlot(i);
-					if (stack != null && stack.hasTagCompound()) {
-						String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-						for (String line : lore) {
-							if (line.contains("(Daily")) {
-								hidden.commissionsCompleted = 0;
-								break;
+			ItemStack stack = lower.getStackInSlot(0);
+			switch (containerName){
+				case "Commissions":
+					if(lower.getSizeInventory() < 18){
+						break;
+					}
+					if (hidden.commissionsCompleted == 0) {
+						hidden.commissionsCompleted = currentTime + TimeEnums.DAY.time;
+					}
+					for (int i = 9; i < 18; i++) {
+						stack = lower.getStackInSlot(i);
+						if (stack != null && stack.hasTagCompound()) {
+							String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
+							for (String line : lore) {
+								if (line.contains("(Daily")) {
+									hidden.commissionsCompleted = 0;
+									break;
+								}
 							}
 						}
 					}
-				}
-			} else if (containerName.equals("Experimentation Table") && lower.getSizeInventory() >= 36) {
-				ItemStack stack = lower.getStackInSlot(31);
-				if (stack != null) {
-					if (stack.getItem() == Items.blaze_powder) {
-						if (hidden.experimentsCompleted == 0) {
+					break;
+				case "Experimentation Table":
+					if(lower.getSizeInventory() < 36){
+						break;
+					}
+					stack = lower.getStackInSlot(31);
+					if (stack != null) {
+						if (stack.getItem() == Items.blaze_powder) {
+							if (hidden.experimentsCompleted == 0) {
+								hidden.experimentsCompleted = currentTime;
+								return;
+							}
+						}
+					}
+					ItemStack stackSuperPairs = lower.getStackInSlot(22);
+					if (stackSuperPairs != null && stackSuperPairs.getItem() == Items.skull &&
+						stackSuperPairs.getTagCompound() != null) {
+						String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stackSuperPairs.getTagCompound());
+						String text = lore[lore.length - 1];
+						String cleanText = Utils.cleanColour(text);
+						if (cleanText.equals("Experiments on cooldown!")) {
 							hidden.experimentsCompleted = currentTime;
 							return;
 						}
 					}
-				}
-				ItemStack stackSuperPairs = lower.getStackInSlot(22);
-				if (stackSuperPairs != null && stackSuperPairs.getItem() == Items.skull &&
-					stackSuperPairs.getTagCompound() != null) {
-					String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stackSuperPairs.getTagCompound());
-					String text = lore[lore.length - 1];
-					String cleanText = Utils.cleanColour(text);
-					if (cleanText.equals("Experiments on cooldown!")) {
-						hidden.experimentsCompleted = currentTime;
-						return;
+					hidden.experimentsCompleted = 0;
+					break;
+				case "Superpairs Rewards":
+					if(lower.getSizeInventory() < 27){
+						break;
 					}
-				}
-				hidden.experimentsCompleted = 0;
-				return;
-			} else if (containerName.equals("Superpairs Rewards") && lower.getSizeInventory() >= 27) {
-				ItemStack stack = lower.getStackInSlot(13);
-				if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Superpairs")) {
-					hidden.experimentsCompleted = currentTime;
-				}
-			} else if (containerName.equals("SkyBlock Menu") && lower.getSizeInventory() >= 54){
-				ItemStack stack = lower.getStackInSlot(51);
-				if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Booster Cookie")&&
-					stack.getTagCompound() != null) {
-					String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
-					for (String line : lore) {
-						if (line.contains("Duration: ")) {
-							String clean = line.replaceAll("(\u00a7.)", "");
-							clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
-							String[] cleanSplit = clean.split(" ");
-							String[] removeDuration = Arrays.copyOfRange(cleanSplit, 1, cleanSplit.length);
-							hidden.cookieBuffRemaining = currentTime;
-							for (int i = 0; i + 1 < removeDuration.length; i++) {
-								if (i % 2 == 1) continue;
+					stack = lower.getStackInSlot(13);
+					if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Superpairs")) {
+						hidden.experimentsCompleted = currentTime;
+					}
+				case "SkyBlock Menu":
+					if(lower.getSizeInventory() < 54){
+						break;
+					}
+					stack = lower.getStackInSlot(51);
+				case "Booster Cookie":
+					if(lower.getSizeInventory() < 54){
+						break;
+					}
+					if (stack != lower.getStackInSlot(51)){//if we didn't go into this case from the skyblock menu
+						stack = lower.getStackInSlot(13);
+					}
 
-								String number = removeDuration[i];
-								String unit = removeDuration[i + 1];
-								try {
-									long val = Integer.parseInt(number);
-									switch (unit) {
-										case "Years":
-										case "Year":
-											hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
-											break;
-										case "Months":
-										case "Month":
-											hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
-											break;
-										case "Days":
-										case "Day":
-										case "d":
-											hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
-											break;
-										case "Hours":
-										case "Hour":
-										case "h":
-											hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
-											break;
-										case "Minutes":
-										case "Minute":
-										case "m":
-											hidden.cookieBuffRemaining += val * 60 * 1000;
-											break;
-										case "Seconds":
-										case "Second":
-										case "s":
-											hidden.cookieBuffRemaining += val * 1000;
-											break;
+					if (stack != null && Utils.cleanColour(stack.getDisplayName()).equals("Booster Cookie") &&
+						stack.getTagCompound() != null) {
+						String[] lore = NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound());
+						for (String line : lore) {
+							if (line.contains("Duration: ")) {
+								String clean = line.replaceAll("(\u00a7.)", "");
+								clean = clean.replaceAll("(\\d)([smhdy])", "$1 $2");
+								String[] cleanSplit = clean.split(" ");
+								String[] removeDuration = Arrays.copyOfRange(cleanSplit, 1, cleanSplit.length);
+								hidden.cookieBuffRemaining = currentTime;
+								for (int i = 0; i + 1 < removeDuration.length; i++) {
+									if (i % 2 == 1) continue;
+
+									String number = removeDuration[i];
+									String unit = removeDuration[i + 1];
+									try {
+										long val = Integer.parseInt(number);
+										switch (unit) {
+											case "Years":
+											case "Year":
+												hidden.cookieBuffRemaining += val * 365 * 24 * 60 * 60 * 1000;
+												break;
+											case "Months":
+											case "Month":
+												hidden.cookieBuffRemaining += val * 30 * 24 * 60 * 60 * 1000;
+												break;
+											case "Days":
+											case "Day":
+											case "d":
+												hidden.cookieBuffRemaining += val * 24 * 60 * 60 * 1000;
+												break;
+											case "Hours":
+											case "Hour":
+											case "h":
+												hidden.cookieBuffRemaining += val * 60 * 60 * 1000;
+												break;
+											case "Minutes":
+											case "Minute":
+											case "m":
+												hidden.cookieBuffRemaining += val * 60 * 1000;
+												break;
+											case "Seconds":
+											case "Second":
+											case "s":
+												hidden.cookieBuffRemaining += val * 1000;
+												break;
+										}
+									} catch (NumberFormatException e) {
+										e.printStackTrace();
+										hidden.cookieBuffRemaining = 0;
+										if (!hasErrorMessage) {
+											Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
+											hasErrorMessage = true;
+										}
+										break;
 									}
-								} catch (NumberFormatException e) {
-									e.printStackTrace();
-									hidden.cookieBuffRemaining = 0;
-									if (!hasErrorMessage) {
-										Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] Unable to work out your cookie buff timer");
-										hasErrorMessage = true;
-									}
-									break;
 								}
+								break;
 							}
-							break;
 						}
 					}
-				}
+					break;
 			}
 		}
 
