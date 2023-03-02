@@ -351,7 +351,7 @@ public class SBInfo {
 						} catch (Exception ignored) {
 						}
 					}
-				} else if (name.startsWith(completedFactionQuests)) {
+				} else if (name.startsWith(completedFactionQuests) && mode.equals("crimson_isle")) {
 					if (completedQuests.isEmpty()) {
 						completedQuests.add(name);
 					} else if (!completedQuests.contains(name)) {
