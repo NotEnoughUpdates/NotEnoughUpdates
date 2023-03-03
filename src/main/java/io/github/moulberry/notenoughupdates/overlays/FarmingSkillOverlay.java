@@ -286,7 +286,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 			int last = counterQueue.getLast();
 			int first = counterQueue.getFirst();
 
-			cropsPerSecond = (first - last) / 3f;
+			// correct once counterQueue.size() == 3
+			cropsPerSecond = (first - last) / 2f;
 		}
 
 		if (counter != -1) {
