@@ -45,15 +45,15 @@ public class GardenNpcPrices {
 	//§5§o §9Enchanted Cookie §8x4
 	//§5§o §9Tightly-Tied Hay Bale
 
-	private Map<Integer, List<String>> prices = new HashMap<>();
+	private Map<List<String>, List<String>> prices = new HashMap<>();
 
 	@SubscribeEvent
 	public void onGardenNpcPrices(ItemTooltipEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.gardenNpcPrice) return;
 		if (event.toolTip.size() <= 2 || event.itemStack.getItem() != Item.getItemFromBlock(Blocks.stained_hardened_clay)) return;
 
-		List<String> tooltip = new ArrayList<>(event.toolTip);
-		if (prices.get(event.toolTip.hashCode()) == null) {
+		List<String> tooltipCopy = new ArrayList<>(event.toolTip);
+		if (prices.get(tooltipCopy) == null) {
 			for (int i = 2; i < event.toolTip.size(); i++) {
 				Matcher matcher = itemRegex.matcher(event.toolTip.get(i));
 
@@ -62,15 +62,14 @@ public class GardenNpcPrices {
 					if (matcher.group(2) != null) amount = Integer.parseInt(matcher.group(2));
 
 					double cost = calculateCost(ItemResolutionQuery.findInternalNameByDisplayName(matcher.group(1).trim(), false), amount);
-					tooltip.set(i, event.toolTip.get(i) + " §7(§6" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + "§7 coins)");
+					event.toolTip.set(i, event.toolTip.get(i) + " §7(§6" + (cost == 0 ? "?" : Utils.shortNumberFormat(cost, 0)) + "§7 coins)");
 				} else {
-					prices.put(event.toolTip.hashCode(), tooltip);
+					prices.put(tooltipCopy, event.toolTip);
 				}
 			}
 		} else {
-			int hashCode = event.toolTip.hashCode();
 			event.toolTip.clear();
-			event.toolTip.addAll(prices.get(hashCode));
+			event.toolTip.addAll(prices.get(tooltipCopy));
 		}
 	}
 	public double calculateCost(String internalName, int amount) {
