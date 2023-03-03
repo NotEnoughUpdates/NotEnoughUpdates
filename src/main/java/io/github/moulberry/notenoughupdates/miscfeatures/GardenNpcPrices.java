@@ -26,11 +26,13 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +45,7 @@ public class GardenNpcPrices {
 	//§5§o §9Enchanted Cookie §8x4
 	//§5§o §9Tightly-Tied Hay Bale
 
-	private HashMap<Integer, List<String>> prices = new HashMap<>();
+	private Map<Integer, List<String>> prices = new HashMap<>();
 
 	@SubscribeEvent
 	public void onGardenNpcPrices(ItemTooltipEvent event) {
@@ -77,5 +79,10 @@ public class GardenNpcPrices {
 			return price * amount;
 		}
 		return 0d;
+	}
+
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		prices.clear();
 	}
 }
