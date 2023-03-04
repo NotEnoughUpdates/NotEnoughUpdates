@@ -347,15 +347,15 @@ public class CustomItemEffects {
 						Minecraft.getMinecraft().objectMouseOver.sideHit, 1));
 				if (hover.getBlock() == Blocks.air) {
 
-					if (heldInternal != null && (heldInternal.equals("BUILDERS_WAND"))) buildersWandOverlay(event, world);
-					else if (heldInternal != null && (heldInternal.equals("BUILDERS_RULER"))) buildersRulerOverlay(event, world);
+					if (heldInternal != null && (heldInternal.equals("BUILDERS_WAND"))) buildersWandText(event, world);
+					else if (heldInternal != null && (heldInternal.equals("BUILDERS_RULER"))) buildersRulerText(event, world);
 
 				}
 			}
 		}
 	}
 
-	public void buildersWandOverlay(RenderGameOverlayEvent.Post event, WorldClient world) {
+	public void buildersWandText(RenderGameOverlayEvent.Post event, WorldClient world) {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 		HashSet<BlockPos> candidatesOld = new HashSet<>();
@@ -451,7 +451,7 @@ public class CustomItemEffects {
 		GlStateManager.color(1, 1, 1, 1);
 	}
 
-	public void buildersRulerOverlay(RenderGameOverlayEvent.Post event, WorldClient world) {
+	public void buildersRulerText(RenderGameOverlayEvent.Post event, WorldClient world) {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
 		HashSet<BlockPos> candidatesOld = new HashSet<>();
@@ -995,127 +995,11 @@ public class CustomItemEffects {
 					GlStateManager.disableBlend();
 				}
 			} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay) {
-				if ((heldInternal.equals("BUILDERS_WAND") || heldInternal.equals("BUILDERS_RULER")) && onPrivateIsland) {
-					int maxBlocks = MAX_BUILDERS_BLOCKS;
-					if (event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-						IBlockState hover = Minecraft.getMinecraft().theWorld.getBlockState(event.target
-							.getBlockPos()
-							.offset(event.target.sideHit, 1));
-						if (hover.getBlock() == Blocks.air) {
-							IBlockState match = Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos());
-							Item matchItem = Item.getItemFromBlock(match.getBlock());
-							if (matchItem != null) {
-								GlStateManager.enableBlend();
-								GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-								GlStateManager.disableTexture2D();
-								GlStateManager.depthMask(false);
-
-								HashSet<BlockPos> candidatesOld = new HashSet<>();
-								TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
-
-								boolean ruler = heldInternal.equals("BUILDERS_RULER");
-
-								if (!ruler) {
-									getBuildersWandCandidates(
-										player,
-										event.target,
-										event.partialTicks,
-										candidatesOld,
-										candidatesOldSorted,
-										10
-									);
-								} else {
-									getBuildersRulerCandidates(
-										player,
-										event.target,
-										event.partialTicks,
-										candidatesOld,
-										candidatesOldSorted,
-										10
-									);
-									if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
-										Item item = getFirstItemInRuler() == null ? null : getFirstItemInRuler().getItem();
-										if (item != null) {
-											if (item instanceof ItemBlock) match = ((ItemBlock) item).getBlock().getStateFromMeta(
-												getFirstItemInRuler().getItemDamage());
-											else match = Blocks.dirt.getDefaultState();
-										}
-									}
-								}
-
-								ItemStack matchStack;
-								if (ruler) {
-									if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
-										matchStack = new ItemStack(Minecraft.getMinecraft().theWorld
-											.getBlockState(event.target.getBlockPos())
-											.getBlock());
-									} else {
-										matchStack = getFirstItemInRuler();
-									}
-								} else {
-
-									matchStack = new ItemStack(matchItem, 1,
-										match.getBlock().getDamageValue(Minecraft.getMinecraft().theWorld, event.target.getBlockPos())
-									);
-								}
-								int itemCount;
-								if (matchStack != null) {
-									if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
-										itemCount = candidatesOld.size();
-									} else {
-										itemCount = countItemsInInventoryAndStorage(matchStack);
-									}
-								} else {
-									return;
-								}
-
-								String special = (candidatesOld.size() <= itemCount)
-									? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour : "0:255:255:0:0";
-
-								if (candidatesOld.size() <= maxBlocks || ruler) {
-									for (Set<BlockPos> candidatesSorted : candidatesOldSorted.values()) {
-										for (BlockPos candidate : candidatesSorted) {
-											match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
-											AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
-																								Minecraft.getMinecraft().theWorld,
-																								candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() && ruler ? -1 : 0, 0)
-																							)
-																							.offset(
-																								event.target.sideHit.getFrontOffsetX(),
-																								event.target.sideHit.getFrontOffsetY(),
-																								event.target.sideHit.getFrontOffsetZ()
-																							);
-
-											drawBlock((int) bb.minX, (int) bb.minY, (int) bb.minZ + 1, match, event.partialTicks, 0.75f);
-										}
-									}
-
-									for (BlockPos candidate : candidatesOld) {
-										match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
-										AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(
-																							Minecraft.getMinecraft().theWorld,
-																							candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() && ruler ? -1 : 0, 0)
-																						)
-																						.expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2)
-																						.offset(
-																							event.target.sideHit.getFrontOffsetX(),
-																							event.target.sideHit.getFrontOffsetY(),
-																							event.target.sideHit.getFrontOffsetZ()
-																						);
-
-										drawOutlineBoundingBox(bb, 1f,
-											(ruler && Minecraft.getMinecraft().thePlayer.isSneaking())
-												? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour : special);
-									}
-								}
-
-								GlStateManager.depthMask(true);
-								GlStateManager.enableTexture2D();
-								GlStateManager.disableBlend();
-							}
-						}
-					}
-				} else if (heldInternal.equals("INFINIDIRT_WAND") &&
+				if (heldInternal.equals("BUILDERS_WAND") && onPrivateIsland) {
+					buildersWandOverlay(event, d0, d1, d2);
+				} else if (heldInternal.equals("BUILDERS_RULER") && onPrivateIsland) {
+					buildersRulerOverlay(event, d0, d1, d2);
+				}else if (heldInternal.equals("INFINIDIRT_WAND") &&
 					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
 					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableDirtWandOverlay) {
 					BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
@@ -1379,6 +1263,180 @@ public class CustomItemEffects {
 					}
 				}
 			}
+		}
+	}
+
+	public void buildersWandOverlay(DrawBlockHighlightEvent event, double d0, double d1, double d2) {
+		if (event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			IBlockState hover = Minecraft.getMinecraft().theWorld.getBlockState(event.target
+				.getBlockPos()
+				.offset(event.target.sideHit, 1));
+			if (hover.getBlock() != Blocks.air) return;
+			IBlockState match = Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos());
+			Item matchItem = Item.getItemFromBlock(match.getBlock());
+			if (matchItem == null) return;
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+			GlStateManager.disableTexture2D();
+			GlStateManager.depthMask(false);
+
+			HashSet<BlockPos> candidatesOld = new HashSet<>();
+			TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
+
+			getBuildersWandCandidates(Minecraft.getMinecraft().thePlayer,
+				event.target,
+				event.partialTicks,
+				candidatesOld,
+				candidatesOldSorted,
+				10
+			);
+
+			ItemStack matchStack;
+
+			matchStack = new ItemStack(matchItem,
+				1,
+				match.getBlock().getDamageValue(Minecraft.getMinecraft().theWorld, event.target.getBlockPos())
+			);
+
+			int itemCount;
+			if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+				itemCount = candidatesOld.size();
+			} else {
+				itemCount = countItemsInInventoryAndStorage(matchStack);
+			}
+
+			String special = (candidatesOld.size() <= itemCount)
+				? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour
+				: "0:255:255:0:0";
+
+			if (candidatesOld.size() <= MAX_BUILDERS_BLOCKS) {
+				for (Set<BlockPos> candidatesSorted : candidatesOldSorted.values()) {
+					for (BlockPos candidate : candidatesSorted) {
+						match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
+						Minecraft.getMinecraft().thePlayer.isSneaking();
+						AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+							candidate.add(0, 0, 0)
+						).offset(event.target.sideHit.getFrontOffsetX(),
+							event.target.sideHit.getFrontOffsetY(),
+							event.target.sideHit.getFrontOffsetZ()
+						);
+
+						drawBlock((int) bb.minX, (int) bb.minY, (int) bb.minZ + 1, match, event.partialTicks, 0.75f);
+					}
+				}
+
+				for (BlockPos candidate : candidatesOld) {
+					match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
+					Minecraft.getMinecraft().thePlayer.isSneaking();
+					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+						candidate.add(0, 0, 0)
+					).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(event.target.sideHit.getFrontOffsetX(),
+						event.target.sideHit.getFrontOffsetY(),
+						event.target.sideHit.getFrontOffsetZ()
+					);
+
+					drawOutlineBoundingBox(bb, 1f, special);
+				}
+			}
+
+			GlStateManager.depthMask(true);
+			GlStateManager.enableTexture2D();
+			GlStateManager.disableBlend();
+		}
+	}
+
+	public void buildersRulerOverlay(DrawBlockHighlightEvent event, double d0, double d1, double d2) {
+		if (event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+			IBlockState hover = Minecraft.getMinecraft().theWorld.getBlockState(event.target
+				.getBlockPos()
+				.offset(event.target.sideHit, 1));
+
+			if (hover.getBlock() != Blocks.air) return;
+
+			IBlockState match = Minecraft.getMinecraft().theWorld.getBlockState(event.target.getBlockPos());
+			Item matchItem = Item.getItemFromBlock(match.getBlock());
+			if (matchItem == null) return;
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+			GlStateManager.disableTexture2D();
+			GlStateManager.depthMask(false);
+
+			HashSet<BlockPos> candidatesOld = new HashSet<>();
+			TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
+
+			getBuildersRulerCandidates(Minecraft.getMinecraft().thePlayer,
+				event.target,
+				event.partialTicks,
+				candidatesOld,
+				candidatesOldSorted,
+				10
+			);
+			if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
+				Item item = getFirstItemInRuler() == null ? null : getFirstItemInRuler().getItem();
+				if (item != null) {
+					if (item instanceof ItemBlock)
+						match = ((ItemBlock) item).getBlock().getStateFromMeta(getFirstItemInRuler().getItemDamage());
+					else match = Blocks.dirt.getDefaultState();
+				}
+			}
+
+			ItemStack matchStack;
+			if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
+				matchStack = new ItemStack(Minecraft.getMinecraft().theWorld
+					.getBlockState(event.target.getBlockPos())
+					.getBlock());
+			} else {
+				matchStack = getFirstItemInRuler();
+			}
+			int itemCount;
+			if (matchStack != null) {
+				if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+					itemCount = candidatesOld.size();
+				} else {
+					itemCount = countItemsInInventoryAndStorage(matchStack);
+				}
+			} else {
+				return;
+			}
+
+			String special = (candidatesOld.size() <= itemCount)
+				? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour
+				: "0:255:255:0:0";
+
+			for (Set<BlockPos> candidatesSorted : candidatesOldSorted.values()) {
+				for (BlockPos candidate : candidatesSorted) {
+					match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
+					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+						candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() ? -1 : 0, 0)
+					).offset(event.target.sideHit.getFrontOffsetX(),
+						event.target.sideHit.getFrontOffsetY(),
+						event.target.sideHit.getFrontOffsetZ()
+					);
+
+					drawBlock((int) bb.minX, (int) bb.minY, (int) bb.minZ + 1, match, event.partialTicks, 0.75f);
+				}
+			}
+
+			for (BlockPos candidate : candidatesOld) {
+				match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
+				AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
+					candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() ? -1 : 0, 0)
+				).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(event.target.sideHit.getFrontOffsetX(),
+					event.target.sideHit.getFrontOffsetY(),
+					event.target.sideHit.getFrontOffsetZ()
+				);
+
+				drawOutlineBoundingBox(bb,
+					1f,
+					(Minecraft.getMinecraft().thePlayer.isSneaking())
+						? NotEnoughUpdates.INSTANCE.config.itemOverlays.wandOverlayColour
+						: special
+				);
+			}
+
+			GlStateManager.depthMask(true);
+			GlStateManager.enableTexture2D();
+			GlStateManager.disableBlend();
 		}
 	}
 
