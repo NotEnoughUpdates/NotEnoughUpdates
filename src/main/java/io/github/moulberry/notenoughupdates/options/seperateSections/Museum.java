@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class Museum {
@@ -41,5 +42,23 @@ public class Museum {
 	)
 	@ConfigEditorColour
 	public String museumItemColor = "0:255:0:255:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Show Items to donate",
+		desc = "Show the cheapest items you have not yet donated to the Museum"
+	)
+	@ConfigEditorBoolean
+	public boolean museumCheapestItemOverlay = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Value calculation",
+		desc = "Choose the source for the value calculation"
+	)
+	@ConfigEditorDropdown(
+		values = {"Lowest BIN", "Craft cost"}
+	)
+	public int museumCheapestItemOverlayValueSource = 0;
 
 }

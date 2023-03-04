@@ -319,5 +319,4 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean oldSkyBlockMenu = false;
-
 }
