@@ -604,6 +604,26 @@ public class CustomItemEffects {
 		return null;
 	}
 
+	public NBTTagCompound getBuildersNbt(boolean isWand) {
+		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
+		if (held == null) return null;
+
+		if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
+			held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(isWand
+				? "builder's_wand_data"
+				: "builder's_ruler_data", 7)) {
+			byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray(isWand
+				? "builder's_wand_data"
+				: "builder's_ruler_data");
+			try {
+				return CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
+	}
+
 	public int countItemsInInventoryAndStorage(ItemStack match) {
 		if (match == null) return 0;
 		int count = 0;
@@ -618,28 +638,18 @@ public class CustomItemEffects {
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
 		boolean isWand = heldInternal != null && heldInternal.equals("BUILDERS_WAND");
-		if (heldInternal != null && heldInternal.equals(isWand ? "BUILDERS_WAND" : "BUILDERS_RULER")) {
-			if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
-				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(isWand
-					? "builder's_wand_data"
-					: "builder's_ruler_data", 7)) {
-				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray(isWand
-					? "builder's_wand_data"
-					: "builder's_ruler_data");
-				try {
-					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
-					NBTTagList items = contents_nbt.getTagList("i", 10);
-					for (int j = 0; j < items.tagCount(); j++) {
-						NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-						if (buildersItem.getKeySet().size() > 0) {
-							if (buildersItem.getInteger("id") == Item.getIdFromItem(match.getItem()) &&
-								buildersItem.getInteger("Damage") == match.getItemDamage()) {
-								count += items.getCompoundTagAt(j).getByte("Count");
-							}
-						}
-					}
-				} catch (Exception e) {
-					return count;
+		if (heldInternal == null || !heldInternal.equals(isWand ? "BUILDERS_WAND" : "BUILDERS_RULER")) return count;
+
+		NBTTagCompound contents_nbt = getBuildersNbt(isWand);
+		if (contents_nbt == null) return count;
+
+		NBTTagList items = contents_nbt.getTagList("i", 10);
+		for (int j = 0; j < items.tagCount(); j++) {
+			NBTTagCompound buildersItem = items.getCompoundTagAt(j);
+			if (buildersItem.getKeySet().size() > 0) {
+				if (buildersItem.getInteger("id") == Item.getIdFromItem(match.getItem()) &&
+					buildersItem.getInteger("Damage") == match.getItemDamage()) {
+					count += items.getCompoundTagAt(j).getByte("Count");
 				}
 			}
 		}
@@ -648,32 +658,25 @@ public class CustomItemEffects {
 	}
 
 	public ItemStack getFirstItemInRuler() {
-		int count = 0;
 
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
-		if (heldInternal != null && heldInternal.equals("BUILDERS_RULER")) {
-			if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
-				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey("builder's_ruler_data", 7)) {
-				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray("builder's_ruler_data");
-				try {
-					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
-					NBTTagList items = contents_nbt.getTagList("i", 10);
-					for (int j = 0; j < items.tagCount(); j++) {
-						NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-						if (buildersItem.getKeySet().size() > 0) {
-							ItemStack newStack = new ItemStack(
-								Item.getItemById(buildersItem.getInteger("id")),
-								1,
-								buildersItem.getInteger("Damage")
-							);
-							return newStack;
-						}
-					}
-				} catch (Exception e) {
-					return null;
-				}
+		if (heldInternal == null || !heldInternal.equals("BUILDERS_RULER")) return null;
+
+		NBTTagCompound contents_nbt = getBuildersNbt(false);
+		if (contents_nbt == null) return null;
+
+		NBTTagList items = contents_nbt.getTagList("i", 10);
+		for (int j = 0; j < items.tagCount(); j++) {
+			NBTTagCompound buildersItem = items.getCompoundTagAt(j);
+			if (buildersItem.getKeySet().size() > 0) {
+				ItemStack newStack = new ItemStack(
+					Item.getItemById(buildersItem.getInteger("id")),
+					1,
+					buildersItem.getInteger("Damage")
+				);
+				return newStack;
 			}
 		}
 
@@ -681,7 +684,6 @@ public class CustomItemEffects {
 		/*for (ItemStack stack : Minecraft.getMinecraft().thePlayer.inventory.mainInventory) {
 			if (stack != null && stack.getItem() instanceof ItemBlock) return stack;
 		}*/
-
 		return null;
 	}
 
