@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
-import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
@@ -36,6 +35,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
@@ -727,6 +727,10 @@ public class RenderListener {
 		if (AbiphoneWarning.getInstance().shouldShow()) {
 			AbiphoneWarning.getInstance().render();
 		}
+
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().render();
+		}
 	}
 
 	private void renderDungKuudraChestOverlay(GuiScreen gui) {
@@ -1012,6 +1016,11 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().mouseInput(mouseX, mouseY);
+			event.setCanceled(true);
+			return;
+		}
 
 		if (!event.isCanceled()) {
 			Utils.scrollTooltip(Mouse.getEventDWheel());
@@ -1052,7 +1061,14 @@ public class RenderListener {
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String username = tag.getCompoundTag("SkullOwner").getString("Name");
 						Utils.playPressSound();
-						ViewProfileCommand.RUNNABLE.accept(new String[]{username});
+						NotEnoughUpdates.profileViewer.getProfileByName(username, profile -> {
+							if (profile == null) {
+								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
+							} else {
+								profile.resetCache();
+								NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+							}
+						});
 					}
 				}
 			}
@@ -1243,6 +1259,11 @@ public class RenderListener {
 		}
 		if (AbiphoneWarning.getInstance().shouldShow()) {
 			AbiphoneWarning.getInstance().keyboardInput();
+			event.setCanceled(true);
+			return;
+		}
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}

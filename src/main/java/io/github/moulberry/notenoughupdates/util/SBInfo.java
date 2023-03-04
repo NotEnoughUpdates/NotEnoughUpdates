@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
@@ -477,7 +478,6 @@ public class SBInfo {
 			.thenAccept(newJson -> mayorJson = newJson);
 	}
 
-
 	public JsonObject getMayorJson() {
 		return mayorJson;
 	}
@@ -486,6 +486,7 @@ public class SBInfo {
 		if (!newProfile.equals(currentProfile)) {
 			currentProfile = newProfile;
 			MinionHelperManager.getInstance().onProfileSwitch();
+			CookieWarning.onProfileSwitch();
 		}
 	}
 }

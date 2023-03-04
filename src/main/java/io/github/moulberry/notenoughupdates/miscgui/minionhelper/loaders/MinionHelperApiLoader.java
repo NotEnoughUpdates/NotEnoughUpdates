@@ -47,7 +47,6 @@ import java.util.Map;
 public class MinionHelperApiLoader {
 	private final MinionHelperManager manager;
 	private boolean dirty = true;
-	private int ticks = 0;
 	private boolean collectionApiEnabled = true;
 	private boolean ignoreWorldSwitches = false;
 	private boolean readyToUse = false;
@@ -72,11 +71,7 @@ public class MinionHelperApiLoader {
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 		if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return;
 		if (!NotEnoughUpdates.INSTANCE.config.minionHelper.gui) return;
-		ticks++;
-
-		if (ticks % 20 != 0) return;
-
-		if (dirty) {
+		if (dirty && "Crafted Minions".equals(Utils.getOpenChestName())) {
 			load();
 		} else {
 			if (System.currentTimeMillis() > lastLoaded + 60_000 * 3) {

@@ -5,6 +5,7 @@
   "plugin": "io.github.moulberry.notenoughupdates.envcheck.NEUMixinConfigPlugin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AccessorCommandHandler",
     "AccessorEntityAgeable",
     "AccessorEntityArmorStand",
     "AccessorGuiPlayerTabOverlay",

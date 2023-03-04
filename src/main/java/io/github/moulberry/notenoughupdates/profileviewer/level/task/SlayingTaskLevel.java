@@ -233,20 +233,21 @@ public class SlayingTaskLevel {
 
 		int slayingTaskMax = levelPage.getConstant().getAsJsonObject("category_xp").get("slaying_task").getAsInt();
 
+		int totalXp = sbXpGainedSlayer + bossCollectionXp + mythologicalKillsXp +
+			sbXpFromDragonKills + sbXpFromSlayerDefeat + sbXpDefeatKuudra + sbXpGainedArachne;
 		levelPage.renderLevelBar(
 			"Slaying Task",
 			new ItemStack(Items.golden_sword),
-			guiLeft + 23,
-			guiTop + 85,
+			guiLeft + 23, guiTop + 85,
 			110,
-			0, sbXpGainedSlayer + bossCollectionXp + mythologicalKillsXp +
-				sbXpFromDragonKills + sbXpFromSlayerDefeat + sbXpDefeatKuudra + sbXpGainedArachne,
+			0,
+			totalXp,
 			slayingTaskMax,
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);
+		totalXp += sbXpBestiary;
 	}
 
 	private int loopThroughCollection(int[] array, double value, JsonArray jsonArray) {
