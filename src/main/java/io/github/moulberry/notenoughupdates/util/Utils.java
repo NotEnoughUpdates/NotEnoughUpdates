@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.TooltipTextScrolling;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import net.minecraft.block.Block;
@@ -1692,15 +1693,35 @@ public class Utils {
 	@Deprecated
 	public static void drawHoveringText(
 		List<String> textLines,
-		final int mouseX,
-		final int mouseY,
-		final int screenWidth,
-		final int screenHeight,
+		int mouseX,
+		int mouseY,
+		int screenWidth,
+		int screenHeight,
 		final int maxTextWidth,
-		FontRenderer font,
-		boolean coloured
+		FontRenderer font
 	) {
 		if (!textLines.isEmpty()) {
+			int borderColorStart = 0x505000FF;
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
+				if (textLines.size() > 0) {
+					String first = textLines.get(0);
+					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
+						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
+				}
+			}
+			textLines = TooltipTextScrolling.handleTextLineRendering(textLines);
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
+				ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale);
+				mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
+
+				mouseY = scaledResolution.getScaledHeight() -
+					Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight;
+
+				screenWidth = scaledResolution.getScaledWidth();
+
+				screenHeight = scaledResolution.getScaledHeight();
+			}
+
 			GlStateManager.disableRescaleNormal();
 			RenderHelper.disableStandardItemLighting();
 			GlStateManager.disableLighting();
@@ -1776,19 +1797,21 @@ public class Utils {
 			}
 
 			//Scrollable tooltips
-			if (tooltipHeight + 6 > screenHeight) {
-				if (scrollY.getTarget() < 0) {
-					scrollY.setTarget(0);
-					scrollY.resetTimer();
-				} else if (screenHeight - tooltipHeight - 12 + (int) scrollY.getTarget() > 0) {
-					scrollY.setTarget(-screenHeight + tooltipHeight + 12);
+			if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips) {
+				if (tooltipHeight + 6 > screenHeight) {
+					if (scrollY.getTarget() < 0) {
+						scrollY.setTarget(0);
+						scrollY.resetTimer();
+					} else if (screenHeight - tooltipHeight - 12 + (int) scrollY.getTarget() > 0) {
+						scrollY.setTarget(-screenHeight + tooltipHeight + 12);
+						scrollY.resetTimer();
+					}
+				} else {
+					scrollY.setValue(0);
 					scrollY.resetTimer();
 				}
-			} else {
-				scrollY.setValue(0);
-				scrollY.resetTimer();
+				scrollY.tick();
 			}
-			scrollY.tick();
 
 			if (tooltipY + tooltipHeight + 6 > screenHeight) {
 				tooltipY = screenHeight - tooltipHeight - 6 + (int) scrollY.getValue();
@@ -1841,15 +1864,6 @@ public class Utils {
 				backgroundColor,
 				backgroundColor
 			);
-			//TODO: Coloured Borders
-			int borderColorStart = 0x505000FF;
-			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours && coloured) {
-				if (textLines.size() > 0) {
-					String first = textLines.get(0);
-					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
-						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
-				}
-			}
 			final int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
 			drawGradientRect(
 				zLevel,
@@ -1904,6 +1918,7 @@ public class Utils {
 			GlStateManager.enableDepth();
 			RenderHelper.enableStandardItemLighting();
 			GlStateManager.enableRescaleNormal();
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) Utils.pushGuiScale(0);
 		}
 		GlStateManager.disableLighting();
 	}
