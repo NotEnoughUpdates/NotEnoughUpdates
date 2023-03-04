@@ -335,8 +335,7 @@ public class CustomItemEffects {
 				}
 			}
 
-			boolean onPrivateIsland = SBInfo.getInstance().getLocation() == null || SBInfo.getInstance().getLocation().equals(
-				"dynamic") || SBInfo.getInstance().getLocation().equals("garden");
+			boolean onPrivateIsland = Arrays.asList("dynamic","garden").contains(SBInfo.getInstance().getLocation());
 
 			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay &&
 				Minecraft.getMinecraft().objectMouseOver != null &&
@@ -691,8 +690,7 @@ public class CustomItemEffects {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 		if (heldInternal != null) {
-			boolean onPrivateIsland = SBInfo.getInstance().getLocation() == null || SBInfo.getInstance().getLocation().equals(
-				"dynamic") || SBInfo.getInstance().getLocation().equals("garden");
+			boolean onPrivateIsland = Arrays.asList("dynamic","garden").contains(SBInfo.getInstance().getLocation());
 			EntityPlayer player = event.player;
 			double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) event.partialTicks;
 			double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) event.partialTicks;
