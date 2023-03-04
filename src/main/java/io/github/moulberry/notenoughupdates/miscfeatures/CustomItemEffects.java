@@ -1220,9 +1220,9 @@ public class CustomItemEffects {
 																									.offset(-d0, -d1, -d2);
 						drawFilledBoundingBox(bbExpanded, 1f, "0:100:178:34:34");
 
-							GlStateManager.depthMask(true);
-							GlStateManager.enableTexture2D();
-							GlStateManager.disableBlend();
+						GlStateManager.depthMask(true);
+						GlStateManager.enableTexture2D();
+						GlStateManager.disableBlend();
 					}
 				} else if ((heldInternal.equals("SAM_SCYTHE") || heldInternal.equals("GARDEN_SCYTHE") &&
 					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableScytheOverlay && onPrivateIsland) &&
@@ -1371,11 +1371,12 @@ public class CustomItemEffects {
 				candidatesOldSorted,
 				10
 			);
+			ItemStack firstItemInRuler = getFirstItemInRuler();
 			if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
-				Item item = getFirstItemInRuler() == null ? null : getFirstItemInRuler().getItem();
+				Item item = firstItemInRuler == null ? null : firstItemInRuler.getItem();
 				if (item != null) {
 					if (item instanceof ItemBlock)
-						match = ((ItemBlock) item).getBlock().getStateFromMeta(getFirstItemInRuler().getItemDamage());
+						match = ((ItemBlock) item).getBlock().getStateFromMeta(firstItemInRuler.getItemDamage());
 					else match = Blocks.dirt.getDefaultState();
 				}
 			}
@@ -1386,7 +1387,7 @@ public class CustomItemEffects {
 					.getBlockState(event.target.getBlockPos())
 					.getBlock());
 			} else {
-				matchStack = getFirstItemInRuler();
+				matchStack = firstItemInRuler;
 			}
 			int itemCount;
 			if (matchStack != null) {
