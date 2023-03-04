@@ -364,92 +364,91 @@ public class CustomItemEffects {
 		IBlockState match =
 			world.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
 		Item matchItem = Item.getItemFromBlock(match.getBlock());
-		if (matchItem != null) {
-			ItemStack matchStack;
+		if (matchItem == null) return;
+		ItemStack matchStack;
 
-			matchStack = new ItemStack(matchItem, 1,
-				match
-					.getBlock()
-					.getDamageValue(
-						world,
-						Minecraft.getMinecraft().objectMouseOver.getBlockPos()
-					)
-			);
+		matchStack = new ItemStack(matchItem, 1,
+			match
+				.getBlock()
+				.getDamageValue(
+					world,
+					Minecraft.getMinecraft().objectMouseOver.getBlockPos()
+				)
+		);
 
-			getBuildersWandCandidates(
-				Minecraft.getMinecraft().thePlayer,
-				Minecraft.getMinecraft().objectMouseOver,
-				event.partialTicks,
-				candidatesOld,
-				candidatesOldSorted,
-				999 - MAX_BUILDERS_BLOCKS
-			);
+		getBuildersWandCandidates(
+			Minecraft.getMinecraft().thePlayer,
+			Minecraft.getMinecraft().objectMouseOver,
+			event.partialTicks,
+			candidatesOld,
+			candidatesOldSorted,
+			999 - MAX_BUILDERS_BLOCKS
+		);
 
-			boolean usingDirtWand = false;
-			int itemCount;
-			if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
-				itemCount = candidatesOld.size();
-				usingDirtWand = true;
-			} else {
-				itemCount = countItemsInInventoryAndStorage(matchStack);
-			}
-			if (candidatesOld.size() == 0) return;
-
-			if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
-				Utils.drawStringCentered(
-					EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
-					Minecraft.getMinecraft().fontRendererObj,
-					scaledResolution.getScaledWidth() / 2f,
-					scaledResolution.getScaledHeight() / 2f + 10,
-					true,
-					0
-				);
-			} else {
-				String pre = EnumChatFormatting.GREEN.toString();
-				if (itemCount < candidatesOld.size()) {
-					pre = EnumChatFormatting.RED.toString();
-				}
-				Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
-						Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
-					Minecraft.getMinecraft().fontRendererObj,
-					scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
-				);
-			}
-
-			String itemCountS = EnumChatFormatting.DARK_GRAY + "x" + EnumChatFormatting.RESET + itemCount;
-			int itemCountLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(itemCountS);
-
-			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.wandBlockCount) {
-				if (usingDirtWand) {
-					Utils.drawItemStack(
-						new ItemStack(Items.gold_nugget),
-						scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
-						scaledResolution.getScaledHeight() / 2 + 10 + 4
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						itemCountS,
-						scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 11,
-						scaledResolution.getScaledHeight() / 2f + 10 + 8,
-						-1,
-						true
-					);
-				} else {
-					Utils.drawItemStack(matchStack, scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
-						scaledResolution.getScaledHeight() / 2 + 10 + 4
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						itemCountS,
-						scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 16,
-						scaledResolution.getScaledHeight() / 2f + 10 + 8,
-						-1,
-						true
-					);
-				}
-
-			}
-
-			GlStateManager.color(1, 1, 1, 1);
+		boolean usingDirtWand = false;
+		int itemCount;
+		if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
+			itemCount = candidatesOld.size();
+			usingDirtWand = true;
+		} else {
+			itemCount = countItemsInInventoryAndStorage(matchStack);
 		}
+		if (candidatesOld.size() == 0) return;
+
+		if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
+			Utils.drawStringCentered(
+				EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
+				Minecraft.getMinecraft().fontRendererObj,
+				scaledResolution.getScaledWidth() / 2f,
+				scaledResolution.getScaledHeight() / 2f + 10,
+				true,
+				0
+			);
+		} else {
+			String pre = EnumChatFormatting.GREEN.toString();
+			if (itemCount < candidatesOld.size()) {
+				pre = EnumChatFormatting.RED.toString();
+			}
+			Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
+					Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
+				Minecraft.getMinecraft().fontRendererObj,
+				scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
+			);
+		}
+
+		String itemCountS = EnumChatFormatting.DARK_GRAY + "x" + EnumChatFormatting.RESET + itemCount;
+		int itemCountLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(itemCountS);
+
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.wandBlockCount) {
+			if (usingDirtWand) {
+				Utils.drawItemStack(
+					new ItemStack(Items.gold_nugget),
+					scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
+					scaledResolution.getScaledHeight() / 2 + 10 + 4
+				);
+				Minecraft.getMinecraft().fontRendererObj.drawString(
+					itemCountS,
+					scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 11,
+					scaledResolution.getScaledHeight() / 2f + 10 + 8,
+					-1,
+					true
+				);
+			} else {
+				Utils.drawItemStack(matchStack, scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
+					scaledResolution.getScaledHeight() / 2 + 10 + 4
+				);
+				Minecraft.getMinecraft().fontRendererObj.drawString(
+					itemCountS,
+					scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 16,
+					scaledResolution.getScaledHeight() / 2f + 10 + 8,
+					-1,
+					true
+				);
+			}
+
+		}
+
+		GlStateManager.color(1, 1, 1, 1);
 	}
 
 	public void buildersRulerOverlay(RenderGameOverlayEvent.Post event, WorldClient world) {
@@ -461,98 +460,97 @@ public class CustomItemEffects {
 		IBlockState match =
 			world.getBlockState(Minecraft.getMinecraft().objectMouseOver.getBlockPos());
 		Item matchItem = Item.getItemFromBlock(match.getBlock());
-		if (matchItem != null) {
-			ItemStack matchStack;
+		if (matchItem == null) return;
+		ItemStack matchStack;
 
-			matchStack = new ItemStack(matchItem, 1,
-				match
-					.getBlock()
-					.getDamageValue(
-						world,
-						Minecraft.getMinecraft().objectMouseOver.getBlockPos()
-					)
-			);
-			if (!Minecraft.getMinecraft().thePlayer.isSneaking()) matchStack = getFirstItemInRuler();
-			match = Blocks.dirt.getDefaultState();
-			if (matchStack == null) return;
+		matchStack = new ItemStack(matchItem, 1,
+			match
+				.getBlock()
+				.getDamageValue(
+					world,
+					Minecraft.getMinecraft().objectMouseOver.getBlockPos()
+				)
+		);
+		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) matchStack = getFirstItemInRuler();
+		match = Blocks.dirt.getDefaultState();
+		if (matchStack == null) return;
 
-			getBuildersRulerCandidates(
-				Minecraft.getMinecraft().thePlayer,
-				Minecraft.getMinecraft().objectMouseOver,
-				event.partialTicks,
-				candidatesOld,
-				candidatesOldSorted,
-				199 - MAX_BUILDERS_BLOCKS
-			);
+		getBuildersRulerCandidates(
+			Minecraft.getMinecraft().thePlayer,
+			Minecraft.getMinecraft().objectMouseOver,
+			event.partialTicks,
+			candidatesOld,
+			candidatesOldSorted,
+			199 - MAX_BUILDERS_BLOCKS
+		);
 
-			boolean usingDirtWand = false;
-			int itemCount;
-			if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
+		boolean usingDirtWand = false;
+		int itemCount;
+		if (Minecraft.getMinecraft().thePlayer.isSneaking()) {
+			itemCount = candidatesOld.size();
+		} else {
+			if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
 				itemCount = candidatesOld.size();
+				usingDirtWand = true;
 			} else {
-				if (match.getBlock() == Blocks.dirt && matchStack.getItemDamage() == 0 && hasDirtWand()) {
-					itemCount = candidatesOld.size();
-					usingDirtWand = true;
-				} else {
-					itemCount = countItemsInInventoryAndStorage(matchStack);
-				}
+				itemCount = countItemsInInventoryAndStorage(matchStack);
 			}
-			if (candidatesOld.size() == 0) return;
-
-			if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
-				if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
-					Utils.drawStringCentered(
-						EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
-						Minecraft.getMinecraft().fontRendererObj,
-						scaledResolution.getScaledWidth() / 2f,
-						scaledResolution.getScaledHeight() / 2f + 10,
-						true,
-						0
-					);
-				} else {
-					String pre = EnumChatFormatting.GREEN.toString();
-					Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
-							Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
-						Minecraft.getMinecraft().fontRendererObj,
-						scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
-					);
-				}
-			}
-
-			String itemCountS = EnumChatFormatting.DARK_GRAY + "x" + EnumChatFormatting.RESET + itemCount;
-			int itemCountLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(itemCountS);
-
-			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.wandBlockCount) {
-				if (usingDirtWand) {
-					Utils.drawItemStack(
-						new ItemStack(Items.gold_nugget),
-						scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
-						scaledResolution.getScaledHeight() / 2 + 10 + 4
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						itemCountS,
-						scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 11,
-						scaledResolution.getScaledHeight() / 2f + 10 + 8,
-						-1,
-						true
-					);
-				} else {
-					Utils.drawItemStack(matchStack, scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
-						scaledResolution.getScaledHeight() / 2 + 10 + 4
-					);
-					Minecraft.getMinecraft().fontRendererObj.drawString(
-						itemCountS,
-						scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 16,
-						scaledResolution.getScaledHeight() / 2f + 10 + 8,
-						-1,
-						true
-					);
-				}
-
-			}
-
-			GlStateManager.color(1, 1, 1, 1);
 		}
+		if (candidatesOld.size() == 0) return;
+
+		if (!Minecraft.getMinecraft().thePlayer.isSneaking()) {
+			if (candidatesOld.size() > MAX_BUILDERS_BLOCKS) {
+				Utils.drawStringCentered(
+					EnumChatFormatting.RED.toString() + candidatesOld.size() + "/" + MAX_BUILDERS_BLOCKS,
+					Minecraft.getMinecraft().fontRendererObj,
+					scaledResolution.getScaledWidth() / 2f,
+					scaledResolution.getScaledHeight() / 2f + 10,
+					true,
+					0
+				);
+			} else {
+				String pre = EnumChatFormatting.GREEN.toString();
+				Utils.drawStringCentered(pre + Math.min(candidatesOld.size(), itemCount) + "/" +
+						Math.min(candidatesOld.size(), MAX_BUILDERS_BLOCKS),
+					Minecraft.getMinecraft().fontRendererObj,
+					scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
+				);
+			}
+		}
+
+		String itemCountS = EnumChatFormatting.DARK_GRAY + "x" + EnumChatFormatting.RESET + itemCount;
+		int itemCountLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(itemCountS);
+
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.wandBlockCount) {
+			if (usingDirtWand) {
+				Utils.drawItemStack(
+					new ItemStack(Items.gold_nugget),
+					scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
+					scaledResolution.getScaledHeight() / 2 + 10 + 4
+				);
+				Minecraft.getMinecraft().fontRendererObj.drawString(
+					itemCountS,
+					scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 11,
+					scaledResolution.getScaledHeight() / 2f + 10 + 8,
+					-1,
+					true
+				);
+			} else {
+				Utils.drawItemStack(matchStack, scaledResolution.getScaledWidth() / 2 - (itemCountLen + 16) / 2,
+					scaledResolution.getScaledHeight() / 2 + 10 + 4
+				);
+				Minecraft.getMinecraft().fontRendererObj.drawString(
+					itemCountS,
+					scaledResolution.getScaledWidth() / 2f - (itemCountLen + 16) / 2f + 16,
+					scaledResolution.getScaledHeight() / 2f + 10 + 8,
+					-1,
+					true
+				);
+			}
+
+		}
+
+		GlStateManager.color(1, 1, 1, 1);
 	}
 	//ethermerge
 
