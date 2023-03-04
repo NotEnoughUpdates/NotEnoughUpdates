@@ -1406,7 +1406,6 @@ public class CustomItemEffects {
 
 			for (Set<BlockPos> candidatesSorted : candidatesOldSorted.values()) {
 				for (BlockPos candidate : candidatesSorted) {
-					match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
 					AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
 						candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() ? -1 : 0, 0)
 					).offset(event.target.sideHit.getFrontOffsetX(),
@@ -1419,7 +1418,6 @@ public class CustomItemEffects {
 			}
 
 			for (BlockPos candidate : candidatesOld) {
-				match.getBlock().setBlockBoundsBasedOnState(Minecraft.getMinecraft().theWorld, candidate);
 				AxisAlignedBB bb = match.getBlock().getSelectedBoundingBox(Minecraft.getMinecraft().theWorld,
 					candidate.add(0, Minecraft.getMinecraft().thePlayer.isSneaking() ? -1 : 0, 0)
 				).expand(0.001D, 0.001D, 0.001D).offset(-d0, -d1, -d2).offset(event.target.sideHit.getFrontOffsetX(),
