@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,6 +37,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
@@ -55,6 +58,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.function.Consumer;
 
+@NEUAutoSubscribe
 public class ItemCustomizeManager {
 	public static class ReloadListener implements IResourceManagerReloadListener {
 		@Override
@@ -361,6 +365,12 @@ public class ItemCustomizeManager {
 			if (Item.getByNameOrId(data.defaultItem) == Items.skull && getCustomItem(stack) != Items.skull) return 0;
 			return stack.getMetadata();
 		}
+	}
+
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload event) {
+		damageMap.clear();
+		lastUpdate.clear();
 	}
 
 	public static boolean shouldRenderLeatherColour(ItemStack stack) {
