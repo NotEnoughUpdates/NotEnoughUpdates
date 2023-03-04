@@ -159,7 +159,7 @@ public class RenderListener {
 	}
 
 	@SubscribeEvent
-	public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
+	public void onRenderGameOverlayPost(RenderGameOverlayEvent.Pre event) {
 		if (neu.hasSkyblockScoreboard() && event.type.equals(RenderGameOverlayEvent.ElementType.ALL)) {
 			DungeonWin.render(event.partialTicks);
 			GlStateManager.pushMatrix();
