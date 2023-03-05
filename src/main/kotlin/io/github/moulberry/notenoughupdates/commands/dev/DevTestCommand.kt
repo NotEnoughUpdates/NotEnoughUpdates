@@ -171,7 +171,7 @@ class DevTestCommand {
             }
             thenLiteralExecute("dev") {
                 NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev
-                reply("§e[NEU] Dev mode " + if (NotEnoughUpdates.INSTANCE.config.hidden.dev) "§aenabled" else "§cdisabled")
+                reply("Dev mode " + if (NotEnoughUpdates.INSTANCE.config.hidden.dev) "§aenabled" else "§cdisabled")
             }.withHelp("Toggle developer mode")
             thenLiteralExecute("saveconfig") {
                 NotEnoughUpdates.INSTANCE.saveConfig()
