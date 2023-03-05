@@ -175,7 +175,6 @@ class DynamicLightItemsEditor() : GuiScreen() {
                 return
             }
             NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.add(internalName)
-            // DynamicLightItems.dynamicLightItems.add(internalName)
         }
 
         // Remove Item button
@@ -185,7 +184,6 @@ class DynamicLightItemsEditor() : GuiScreen() {
             mouseY <= guiTop + ySize - 12 &&
             itemSelected != null) {
             NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.remove(itemSelected)
-            // DynamicLightItems.dynamicLightItems.remove(itemSelected)
             itemSelected = null
         }
 
