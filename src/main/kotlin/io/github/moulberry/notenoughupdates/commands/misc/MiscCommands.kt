@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.cosmetics.GuiCosmetics
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay
+import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemCustomize
 import io.github.moulberry.notenoughupdates.util.Calculator
 import io.github.moulberry.notenoughupdates.util.Calculator.CalculatorException
@@ -127,6 +128,11 @@ class MiscCommands {
                 reply("§bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files")
             }.withHelp("Display an explanation why you cannot auto update")
         }
+        event.command("neudynamiclights", "neudli", "neudynlights", "neudynamicitems") {
+            thenExecute {
+                NotEnoughUpdates.INSTANCE.openGui = DynamicLightItemsEditor()
+            }
+        }.withHelp("Add items to dynamically emit light")
     }
 
     fun fetchPronouns(platform: String, user: String) {
