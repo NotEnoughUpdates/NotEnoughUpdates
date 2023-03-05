@@ -19,7 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.miscfeatures.DynamicLightItems;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +37,7 @@ public class MixinOFDynamicLights {
 		String internalName = DynamicLightItemsEditor.Companion.resolveInternalName(itemStack);
 		if (internalName == null) return 0;
 
-		if (DynamicLightItems.getDynamicLightItems().contains(internalName)) {
+		if (NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.contains(internalName)) {
 			return 15;
 		}
 		return 0;

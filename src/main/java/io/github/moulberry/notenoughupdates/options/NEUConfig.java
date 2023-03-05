@@ -82,9 +82,11 @@ import net.minecraftforge.client.ClientCommandHandler;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class NEUConfig extends Config {
 	public void editOverlay() {
@@ -471,6 +473,8 @@ public class NEUConfig extends Config {
 		public ArrayList<String> quickCommands = createDefaultQuickCommands();
 		@Expose
 		public ArrayList<String> enchantColours = createDefaultEnchantColours();
+		@Expose
+		public Set<String> dynamicLightItems = new HashSet<>();
 
 		@Expose
 		public boolean firstTimeSearchFocus = true;

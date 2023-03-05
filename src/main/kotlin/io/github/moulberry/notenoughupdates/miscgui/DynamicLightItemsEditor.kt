@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.miscgui
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
-import io.github.moulberry.notenoughupdates.miscfeatures.DynamicLightItems
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -51,7 +50,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
 
-        val numOfItems = DynamicLightItems.dynamicLightItems.size
+        val numOfItems = NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.size
         val numOfRows = ceil(numOfItems / 9f).toInt()
         ySize = 70 + 18 * numOfRows
         guiLeft = (width - xSize) / 2
@@ -93,7 +92,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
         // Draw a slot for each item and the ItemStack
         var i = 0
         var j = 0
-        for (item: String in DynamicLightItems.dynamicLightItems) {
+        for (item: String in NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems) {
             GlStateManager.color(1f, 1f, 1f, 1f)
 
             Minecraft.getMinecraft().textureManager.bindTexture(chestGui)
@@ -175,7 +174,8 @@ class DynamicLightItemsEditor() : GuiScreen() {
                 Utils.addChatMessage("§c[NEU] Couldn't resolve an internal name for this item!")
                 return
             }
-            DynamicLightItems.dynamicLightItems.add(internalName)
+            NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.add(internalName)
+            // DynamicLightItems.dynamicLightItems.add(internalName)
         }
 
         // Remove Item button
@@ -184,7 +184,8 @@ class DynamicLightItemsEditor() : GuiScreen() {
             mouseY >= guiTop + ySize - 32 &&
             mouseY <= guiTop + ySize - 12 &&
             itemSelected != null) {
-            DynamicLightItems.dynamicLightItems.remove(itemSelected)
+            NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.remove(itemSelected)
+            // DynamicLightItems.dynamicLightItems.remove(itemSelected)
             itemSelected = null
         }
 
