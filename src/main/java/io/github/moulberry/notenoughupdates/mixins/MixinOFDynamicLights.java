@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,15 +31,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(targets = "net.optifine.DynamicLights", remap = false)
 public class MixinOFDynamicLights {
 
-	@Inject(method = "getLightLevel(Lnet/minecraft/item/ItemStack;)I", at = @At("TAIL"))
-	private static int getLightLevel(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
-		String internalName = DynamicLightItemsEditor.Companion.resolveInternalName(itemStack);
-		if (internalName == null) return 0;
-
-		if (NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.contains(internalName)) {
-			return 15;
-		}
-		return 0;
+	@Inject(method = "getLightLevel(Lnet/minecraft/item/ItemStack;)I", at = @At("TAIL"), cancellable = true)
+	private static void getLightLevel(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+		cir.setReturnValue(DynamicLightItemsEditor.findDynamicLightItems(itemStack));
 	}
 
 }

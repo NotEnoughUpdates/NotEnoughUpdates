@@ -28,6 +28,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.registry.GameRegistry
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import kotlin.math.ceil
 
 class DynamicLightItemsEditor() : GuiScreen() {
@@ -51,7 +52,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
         drawDefaultBackground()
 
         val numOfItems = NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.size
-        val numOfRows = ceil(numOfItems / 9f).toInt()
+        val numOfRows = if (didApplyMixin) ceil(numOfItems / 9f).toInt() else 0
         ySize = 70 + 18 * numOfRows
         guiLeft = (width - xSize) / 2
         guiTop = (height - ySize) / 2
@@ -64,9 +65,14 @@ class DynamicLightItemsEditor() : GuiScreen() {
             0F, 1F, 42 / 88f, 1F, GL11.GL_NEAREST)
 
         // Buttons
-        Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
+        if (didApplyMixin) {
+            Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
+        } else {
+            Minecraft.getMinecraft().textureManager.bindTexture(disabledButton)
+        }
         Utils.drawTexturedRect(guiLeft.toFloat() + 15, (guiTop + ySize - 32).toFloat(), 88F, 20F,
             0F, 1F, 0F, 1F, GL11.GL_NEAREST)
+
         if (itemSelected != null) {
             Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
         } else {
@@ -76,6 +82,40 @@ class DynamicLightItemsEditor() : GuiScreen() {
             0F, 1F, 0F, 1F, GL11.GL_NEAREST)
 
         fontRendererObj.drawString("Dynamic Light Items Editor", guiLeft + 10, guiTop + 7, 4210752)
+
+        fontRendererObj.drawString("Add Held Item", guiLeft + 27, guiTop + ySize - 26, 4210752)
+        fontRendererObj.drawString("Remove Item", guiLeft + 130, guiTop + ySize - 26, 4210752)
+
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        Minecraft.getMinecraft().textureManager.bindTexture(help)
+        Utils.drawTexturedRect((guiLeft + xSize + 3).toFloat(), guiTop.toFloat(), 16F, 16F, GL11.GL_NEAREST)
+        if (mouseX >= guiLeft + xSize + 3 &&
+            mouseX <= guiLeft + xSize + 19 &&
+            mouseY >= guiTop &&
+            mouseY <= guiTop + 16) {
+            val tooltip = listOf(
+                "§bDynamic Light Item Editor",
+                "§eWhat is this?",
+                "§eNEU makes use of OptiFine's feature of certain items",
+                "§eemitting dynamic light. By default OptiFine only implements",
+                "§ethis feature for a select few minecraft items.",
+                "",
+                "§eThis editor however, allows you to add specific skyblock",
+                "§eitems that will emit dynamic light when held. Simply hold the",
+                "§eitem you wish to add, then open this menu again and click",
+                "§e'Add Held Item', now if you have OptiFine installed and the",
+                "§edynamic lights option enabled, the added items will emit light!",
+                "",
+                "§eTo remove an item, click the item in this menu and click",
+                "§ethe 'Remove Item' button in the bottom right.",
+            )
+            Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1)
+        }
+
+        if (!didApplyMixin) {
+            fontRendererObj.drawString("Could not apply OptiFine mixin!", guiLeft + 30, guiTop + 22, Color.RED.rgb)
+            return
+        }
 
         GlStateManager.color(1f, 1f, 1f, 1f)
 
@@ -90,9 +130,9 @@ class DynamicLightItemsEditor() : GuiScreen() {
         var selectedPosition: Pair<Int, Int> = Pair(-999, -999)
 
         // Draw a slot for each item and the ItemStack
-        var i = 0
-        var j = 0
-        for (item: String in NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems) {
+        for ((index, item) in NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.withIndex()) {
+            val i = index % 9
+            val j = index / 9
             GlStateManager.color(1f, 1f, 1f, 1f)
 
             Minecraft.getMinecraft().textureManager.bindTexture(chestGui)
@@ -113,9 +153,6 @@ class DynamicLightItemsEditor() : GuiScreen() {
                 // Save the position, so when we render the selected box its renders on top of everything
                 selectedPosition = Pair(guiLeft + 24 + i % 9 * 18, guiTop + 21 + j * 18)
             }
-
-            i++
-            j += if (i % 9 == 0) 1 else 0
         }
 
         stackToRender = hoveredItem
@@ -124,77 +161,54 @@ class DynamicLightItemsEditor() : GuiScreen() {
         Minecraft.getMinecraft().textureManager.bindTexture(widgets)
         drawTexturedModalRect(selectedPosition.first, selectedPosition.second, 0, 22, 24, 24)
 
-        fontRendererObj.drawString("Add Held Item", guiLeft + 27, guiTop + ySize - 26, 4210752)
-        fontRendererObj.drawString("Remove Item", guiLeft + 130, guiTop + ySize - 26, 4210752)
-
-        GlStateManager.color(1f, 1f, 1f, 1f)
-        Minecraft.getMinecraft().textureManager.bindTexture(help)
-        Utils.drawTexturedRect((guiLeft + xSize + 3).toFloat(), guiTop.toFloat(), 16F, 16F, GL11.GL_NEAREST)
-        if (mouseX >= guiLeft + xSize + 3 &&
-            mouseX <= guiLeft + xSize + 19 &&
-            mouseY >= guiTop &&
-            mouseY <= guiTop + 16) {
-            var tooltip: MutableList<String> = mutableListOf()
-            tooltip.add("§bDynamic Light Item Editor")
-            tooltip.add("§eWhat is this?")
-            tooltip.add("§eNEU makes use of OptiFine's feature of certain items")
-            tooltip.add("§eemitting dynamic light. By default OptiFine only implements")
-            tooltip.add("§ethis feature for a select few minecraft items.")
-            tooltip.add("")
-            tooltip.add("§eThis editor however, allows you to add specific skyblock")
-            tooltip.add("§eitems that will emit dynamic light when held. Simply hold the")
-            tooltip.add("§eitem you wish to add, then open this menu again and click")
-            tooltip.add("§e'Add Held Item', now if you have OptiFine installed and the")
-            tooltip.add("§edynamic lights option enabled, the added items will emit light!")
-            tooltip.add("")
-            tooltip.add("§eTo remove an item, click the item in this menu and click")
-            tooltip.add("§ethe 'Remove Item' button in the bottom right.")
-            Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1)
-        }
-
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        // Add Held Item button
-        if (mouseX >= guiLeft + 15 &&
-            mouseX <= guiLeft + 103 &&
-            mouseY >= (guiTop + ySize - 32) &&
-            mouseY <= (guiTop + ySize - 12)) {
+        if (didApplyMixin) {
+            // Add Held Item button
+            if (mouseX >= guiLeft + 15 &&
+                mouseX <= guiLeft + 103 &&
+                mouseY >= (guiTop + ySize - 32) &&
+                mouseY <= (guiTop + ySize - 12)) {
 
-            val heldItem = Minecraft.getMinecraft().thePlayer.heldItem
+                val heldItem = Minecraft.getMinecraft().thePlayer.heldItem
 
-            if (heldItem == null) {
-                Utils.addChatMessage("§c[NEU] You can't add your hand to the list of dynamic light items.")
-                return
+                if (heldItem == null) {
+                    Utils.addChatMessage("§c[NEU] You can't add your hand to the list of dynamic light items.")
+                    return
+                }
+
+                val internalName = resolveInternalName(heldItem)
+                if (internalName == null) {
+                    Utils.addChatMessage("§c[NEU] Couldn't resolve an internal name for this item!")
+                    return
+                }
+                NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.add(internalName)
             }
 
-            val internalName = resolveInternalName(heldItem)
-            if (internalName == null) {
-                Utils.addChatMessage("§c[NEU] Couldn't resolve an internal name for this item!")
-                return
+            // Remove Item button
+            if (mouseX >= guiLeft + 114 &&
+                mouseX <= guiLeft + 202 &&
+                mouseY >= guiTop + ySize - 32 &&
+                mouseY <= guiTop + ySize - 12 &&
+                itemSelected != null) {
+                NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.remove(itemSelected)
+                itemSelected = null
             }
-            NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.add(internalName)
-        }
 
-        // Remove Item button
-        if (mouseX >= guiLeft + 114 &&
-            mouseX <= guiLeft + 202 &&
-            mouseY >= guiTop + ySize - 32 &&
-            mouseY <= guiTop + ySize - 12 &&
-            itemSelected != null) {
-            NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.remove(itemSelected)
-            itemSelected = null
-        }
-
-        if (stackToRender != null) {
-            itemSelected = stackToRender
+            if (stackToRender != null) {
+                itemSelected = stackToRender
+            }
         }
 
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     companion object {
+        @JvmStatic
+        var didApplyMixin = false
+
         fun resolveItemStack(internalName: String): ItemStack? {
             var itemStack = NotEnoughUpdates.INSTANCE.manager
                 .createItemResolutionQuery()
@@ -212,6 +226,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
             return itemStack
         }
 
+        @JvmStatic
         fun resolveInternalName(itemStack: ItemStack): String? {
             var internalName =
                 NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(itemStack).resolveInternalName()
@@ -227,6 +242,15 @@ class DynamicLightItemsEditor() : GuiScreen() {
             }
 
             return internalName
+        }
+
+        @JvmStatic
+        fun findDynamicLightItems(itemStack: ItemStack): Int {
+            val internalName: String = resolveInternalName(itemStack) ?: return 0
+            if (NotEnoughUpdates.INSTANCE.config.hidden.dynamicLightItems.contains(internalName)) {
+                return 15
+            }
+            return 0
         }
     }
 }
