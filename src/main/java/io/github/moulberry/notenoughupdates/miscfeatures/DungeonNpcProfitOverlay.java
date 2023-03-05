@@ -84,9 +84,9 @@ public class DungeonNpcProfitOverlay {
 	 */
 	public static void onDrawSlot(Slot slot) {
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && isRendering()) {
-			for (DungeonChest chestProfit : chestProfits) {
-				if (chestProfit.shouldHighlight) {
-					if (slot.slotNumber == chestProfit.slot) {
+			synchronized (chestProfits) {
+				for (DungeonChest chestProfit : chestProfits) {
+					if (chestProfit.shouldHighlight && slot.slotNumber == chestProfit.slot) {
 						Gui.drawRect(
 							slot.xDisplayPosition,
 							slot.yDisplayPosition,
