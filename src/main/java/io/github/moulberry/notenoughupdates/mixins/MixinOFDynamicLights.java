@@ -33,7 +33,8 @@ public class MixinOFDynamicLights {
 
 	@Inject(method = "getLightLevel(Lnet/minecraft/item/ItemStack;)I", at = @At("TAIL"), cancellable = true)
 	private static void getLightLevel(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
-		cir.setReturnValue(DynamicLightItemsEditor.findDynamicLightItems(itemStack));
+		int lightLevel = DynamicLightItemsEditor.findDynamicLightItems(itemStack);
+		if (lightLevel != 0) cir.setReturnValue(lightLevel);
 	}
 
 }

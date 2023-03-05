@@ -39,12 +39,12 @@ public class NEUMixinConfigPlugin implements IMixinConfigPlugin {
 
 		@Override
 		public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-			if ("io.github.moulberry.notenoughupdates.mixins.MixinOFDynamicLights".equals(mixinClassName)) {
-				DynamicLightItemsEditor.setDidApplyMixin(true);
-			}
 		}
 
 		@Override
 		public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+			if ("io.github.moulberry.notenoughupdates.mixins.MixinOFDynamicLights".equals(mixinClassName)) {
+				DynamicLightItemsEditor.setDidApplyMixin(true);
+			}
 		}
 }

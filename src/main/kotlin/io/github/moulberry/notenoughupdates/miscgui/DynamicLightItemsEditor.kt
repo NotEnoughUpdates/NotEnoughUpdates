@@ -64,27 +64,7 @@ class DynamicLightItemsEditor() : GuiScreen() {
         Utils.drawTexturedRect(guiLeft.toFloat(), (guiTop + ySize - 46).toFloat(), xSize.toFloat(), 46F,
             0F, 1F, 42 / 88f, 1F, GL11.GL_NEAREST)
 
-        // Buttons
-        if (didApplyMixin) {
-            Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
-        } else {
-            Minecraft.getMinecraft().textureManager.bindTexture(disabledButton)
-        }
-        Utils.drawTexturedRect(guiLeft.toFloat() + 15, (guiTop + ySize - 32).toFloat(), 88F, 20F,
-            0F, 1F, 0F, 1F, GL11.GL_NEAREST)
-
-        if (itemSelected != null) {
-            Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
-        } else {
-            Minecraft.getMinecraft().textureManager.bindTexture(disabledButton)
-        }
-        Utils.drawTexturedRect(guiLeft.toFloat() + 114, (guiTop + ySize - 32).toFloat(), 88F, 20F,
-            0F, 1F, 0F, 1F, GL11.GL_NEAREST)
-
         fontRendererObj.drawString("Dynamic Light Items Editor", guiLeft + 10, guiTop + 7, 4210752)
-
-        fontRendererObj.drawString("Add Held Item", guiLeft + 27, guiTop + ySize - 26, 4210752)
-        fontRendererObj.drawString("Remove Item", guiLeft + 130, guiTop + ySize - 26, 4210752)
 
         GlStateManager.color(1f, 1f, 1f, 1f)
         Minecraft.getMinecraft().textureManager.bindTexture(help)
@@ -113,9 +93,28 @@ class DynamicLightItemsEditor() : GuiScreen() {
         }
 
         if (!didApplyMixin) {
-            fontRendererObj.drawString("Could not apply OptiFine mixin!", guiLeft + 30, guiTop + 22, Color.RED.rgb)
+            fontRendererObj.drawString("Could not find OptiFine!", guiLeft + 50, guiTop + 22, Color.RED.rgb)
+            fontRendererObj.drawString("Go to #neu-support in", guiLeft + 50, guiTop + 32, Color.RED.rgb)
+            fontRendererObj.drawString("the discord for help", guiLeft + 52, guiTop + 42, Color.RED.rgb)
             return
         }
+
+        // Buttons
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
+        Utils.drawTexturedRect(guiLeft.toFloat() + 15, (guiTop + ySize - 32).toFloat(), 88F, 20F,
+            0F, 1F, 0F, 1F, GL11.GL_NEAREST)
+
+        if (itemSelected != null) {
+            Minecraft.getMinecraft().textureManager.bindTexture(enabledButton)
+        } else {
+            Minecraft.getMinecraft().textureManager.bindTexture(disabledButton)
+        }
+        Utils.drawTexturedRect(guiLeft.toFloat() + 114, (guiTop + ySize - 32).toFloat(), 88F, 20F,
+            0F, 1F, 0F, 1F, GL11.GL_NEAREST)
+
+        fontRendererObj.drawString("Add Held Item", guiLeft + 27, guiTop + ySize - 26, 4210752)
+        fontRendererObj.drawString("Remove Item", guiLeft + 130, guiTop + ySize - 26, 4210752)
 
         GlStateManager.color(1f, 1f, 1f, 1f)
 
