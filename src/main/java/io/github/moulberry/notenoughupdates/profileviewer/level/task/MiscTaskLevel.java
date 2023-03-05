@@ -88,7 +88,7 @@ public class MiscTaskLevel {
 
 			// abiphone
 			JsonObject leveling = object.getAsJsonObject("leveling");
-			if (leveling.has("completed_tasks")) {
+			if (leveling != null && leveling.has("completed_tasks")) {
 				JsonArray completedTask = leveling.get("completed_tasks").getAsJsonArray();
 				Stream<JsonElement> stream = StreamSupport.stream(completedTask.spliterator(), true);
 				long activeContacts = stream.map(JsonElement::getAsString).filter(s -> s.startsWith("ABIPHONE_")).count();
