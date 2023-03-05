@@ -212,7 +212,7 @@ class DevTestCommand {
                 MiscUtils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
             }.withHelp("Copy the tab list")
-            thenLiteralExecute("useragent") {
+            thenLiteral("useragent") {
                 thenArgumentExecute("newuseragent", RestArgumentType) { userAgent ->
                     reply("Setting your user agent to ${this[userAgent]}")
                     NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = this[userAgent]
