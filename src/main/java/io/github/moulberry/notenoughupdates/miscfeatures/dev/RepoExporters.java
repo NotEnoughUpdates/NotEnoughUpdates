@@ -25,11 +25,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.itemeditor.NEUItemEditor;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
+import io.github.moulberry.notenoughupdates.recipes.Ingredient;
+import io.github.moulberry.notenoughupdates.recipes.ItemShopRecipe;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -304,140 +308,137 @@ public class RepoExporters {
 		}
 	}
 
-	private HashMap<String, String> cachedDefinitions;
+	private HashMap<String, String> itemIdByName;
 	private String correctingItem;
 
 	public boolean npcExporter() {
 		if (RenderListener.typing) {
 			RenderListener.typing = false;
-			cachedDefinitions.put(correctingItem, NEUOverlay.getTextField().getText());
+			itemIdByName.put(correctingItem, NEUOverlay.getTextField().getText());
 			NEUOverlay.getTextField().setText("");
 		}
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-			Minecraft mc = Minecraft.getMinecraft();
-			GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
-			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-			IInventory lower = cc.getLowerChestInventory();
-
-			try {
-				JsonObject newNPC = new JsonObject();
-				String displayName = lower.getDisplayName().getUnformattedText();
-				File file = new File(
-					Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
-					"config" + File.separator + "notenoughupdates" +
-						File.separator + "repo" + File.separator + "npc" + File.separator +
-						displayName.toUpperCase().replace(" ", "_") + ".json"
-				);
-				newNPC.add("itemid", new JsonPrimitive("minecraft:skull"));
-				newNPC.add("displayname", new JsonPrimitive("§9" + displayName + " (NPC)"));
-				newNPC.add("nbttag", new JsonPrimitive("TODO"));
-				newNPC.add("damage", new JsonPrimitive(3));
-
-				JsonArray newArray = new JsonArray();
-				newArray.add(new JsonPrimitive(""));
-				newNPC.add("lore", newArray);
-				newNPC.add("internalname", new JsonPrimitive(displayName.toUpperCase().replace(" ", "_") + "_NPC"));
-				newNPC.add("clickcommand", new JsonPrimitive("viewrecipe"));
-				newNPC.add("modver", new JsonPrimitive(NotEnoughUpdates.VERSION));
-				newNPC.add("infoType", new JsonPrimitive("WIKI_URL"));
-				JsonArray emptyInfoArray = new JsonArray();
-				emptyInfoArray.add(new JsonPrimitive("TODO"));
-				newNPC.add("info", emptyInfoArray);
-				newNPC.add("x", new JsonPrimitive((int) mc.thePlayer.posX));
-				newNPC.add("y", new JsonPrimitive((int) mc.thePlayer.posY + 2));
-				newNPC.add("z", new JsonPrimitive((int) mc.thePlayer.posZ));
-				newNPC.add("island", new JsonPrimitive(SBInfo.getInstance().getLocation()));
-
-				JsonArray recipesArray = new JsonArray();
-
-				TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
-				for (int i = 0; i < 45; i++) {
-					ItemStack stack = lower.getStackInSlot(i);
-					if (stack == null) continue;
-					if (stack.getDisplayName().isEmpty() || stack.getDisplayName().equals(" ")) continue;
-
-					String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(stack.getTagCompound());
-					if (internalname == null) continue;
-					JsonObject currentRecipe = new JsonObject();
-					currentRecipe.add("type", new JsonPrimitive("npc_shop"));
-					JsonArray costArray = new JsonArray();
-					boolean inCost = false;
-					for (String s : NotEnoughUpdates.INSTANCE.manager.getLoreFromNBT(stack.getTagCompound())) {
-						if (s.equals("§7Cost")) {
-							inCost = true;
-							continue;
-						} else if (s.equals("§eClick to trade!")) {
-							inCost = false;
-						}
-						if (!inCost) continue;
-						String entry = StringUtils.stripControlCodes(s);
-						if (entry.isEmpty()) continue;
-						int coinIndex = entry.indexOf(" Coins");
-						if (coinIndex != -1) {
-							String amountString = entry.substring(0, coinIndex).replace(",", "");
-							costArray.add(new JsonPrimitive("SKYBLOCK_COIN:" + amountString));
-						} else {
-							if (cachedDefinitions == null) {
-								cachedDefinitions = new HashMap<>();
-							}
-
-							String item;
-							int amountIndex = entry.lastIndexOf(" x");
-							String amountString;
-							if (amountIndex == -1) {
-								amountString = "1";
-								item = entry.replace(" ", "_").toUpperCase();
-							} else {
-								amountString = entry.substring(amountIndex);
-								item = entry.substring(0, amountIndex).replace(" ", "_").toUpperCase();
-							}
-							amountString = amountString.replace(",", "").replace("x", "").trim();
-							if (itemInformation.containsKey(item)) {
-								costArray.add(new JsonPrimitive(item + ":" + amountString));
-							} else if (cachedDefinitions.containsKey(item)) {
-								costArray.add(new JsonPrimitive(cachedDefinitions.get(item) + ":" + amountString));
-							} else {
-								Utils.addChatMessage("Change the item ID of " + item + " to the correct one and press Enter.");
-								NEUOverlay.getTextField().setText(item);
-								RenderListener.typing = true;
-								correctingItem = item;
-								if (cachedDefinitions == null) {
-									cachedDefinitions = new HashMap<>();
-								}
-								return true;
-							}
-						}
-					}
-					currentRecipe.add("cost", costArray);
-					currentRecipe.add("result", new JsonPrimitive(internalname));
-					recipesArray.add(currentRecipe);
-					newNPC.add("recipes", recipesArray);
-				}
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
-				System.out.println(gson.toJson(newNPC));
-				try {
-					//noinspection ResultOfMethodCallIgnored
-					file.createNewFile();
-					try (
-						BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-							Files.newOutputStream(file.toPath()),
-							StandardCharsets.UTF_8
-						))
-					) {
-						writer.write(gson.toJson(newNPC));
-						Utils.addChatMessage(
-							EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayName);
-					}
-				} catch (IOException ignored) {
-					Utils.addChatMessage(EnumChatFormatting.RED + "Error while writing file.");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				Utils.addChatMessage(
-					EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details");
-			}
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+			return false;
 		}
-		return false;
+		Minecraft mc = Minecraft.getMinecraft();
+		GuiChest eventGui = (GuiChest) Minecraft.getMinecraft().currentScreen;
+		ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+		IInventory lower = cc.getLowerChestInventory();
+		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
+
+		try {
+			JsonObject newNPC = new JsonObject();
+			String displayName = lower.getDisplayName().getUnformattedText();
+			String npcInternalName = displayName.toUpperCase().replace(" ", "_") + "_NPC";
+			File file = new File(
+				manager.repoLocation,
+				"items" + File.separator + npcInternalName + ".json"
+			);
+			newNPC.addProperty("itemid", "minecraft:skull");
+			newNPC.addProperty("displayname", "§9" + displayName + " (NPC)");
+			newNPC.addProperty("nbttag", "TODO");
+			newNPC.addProperty("damage", 3);
+
+			JsonArray newArray = new JsonArray();
+			newArray.add(new JsonPrimitive(""));
+			newNPC.add("lore", newArray);
+			newNPC.addProperty("internalname", npcInternalName);
+			newNPC.addProperty("clickcommand", "viewrecipe");
+			newNPC.addProperty("modver", NotEnoughUpdates.VERSION);
+			newNPC.addProperty("infoType", "WIKI_URL");
+			JsonArray emptyInfoArray = new JsonArray();
+			emptyInfoArray.add(new JsonPrimitive("TODO"));
+			newNPC.add("info", emptyInfoArray);
+			newNPC.addProperty("x", (int) mc.thePlayer.posX);
+			newNPC.addProperty("y", (int) mc.thePlayer.posY + 2);
+			newNPC.addProperty("z", (int) mc.thePlayer.posZ);
+			newNPC.addProperty("island", SBInfo.getInstance().getLocation());
+
+			TreeMap<String, JsonObject> itemInformation = manager.getItemInformation();
+			List<ItemShopRecipe> recipes = new ArrayList<>();
+			for (int i = 0; i < 45; i++) {
+				ItemStack stack = lower.getStackInSlot(i);
+				if (stack == null) continue;
+				if (stack.getDisplayName().isEmpty() || stack.getDisplayName().equals(" ")) continue;
+
+				String resultInternalname = manager.getInternalnameFromNBT(stack.getTagCompound());
+				if (resultInternalname == null) continue;
+				boolean inCost = false;
+				List<Ingredient> costArray = new ArrayList<>();
+				for (String s : manager.getLoreFromNBT(stack.getTagCompound())) {
+					if (s.equals("§7Cost")) {
+						inCost = true;
+						continue;
+					} else if (s.equals("§eClick to trade!")) {
+						inCost = false;
+					}
+					if (!inCost) continue;
+					String entry = StringUtils.stripControlCodes(s);
+					if (entry.isEmpty()) continue;
+					int coinIndex = entry.indexOf(" Coins");
+					if (coinIndex != -1) {
+						String amountString = entry.substring(0, coinIndex).replace(",", "");
+						costArray.add(Ingredient.coinIngredient(
+							manager,
+							Integer.parseInt(amountString)
+						));
+					} else {
+						if (itemIdByName == null) {
+							itemIdByName = new HashMap<>();
+						}
+
+						String item;
+						int amountIndex = entry.lastIndexOf(" x");
+						String amountString;
+						if (amountIndex == -1) {
+							amountString = "1";
+							item = entry.replace(" ", "_").toUpperCase();
+						} else {
+							amountString = entry.substring(amountIndex);
+							item = entry.substring(0, amountIndex).replace(" ", "_").toUpperCase();
+						}
+						amountString = amountString.replace(",", "").replace("x", "").trim();
+						int amountCount = Integer.parseInt(amountString);
+						if (itemInformation.containsKey(item)) {
+							costArray.add(new Ingredient(manager, item, amountCount));
+						} else if (itemIdByName.containsKey(item)) {
+							costArray.add(new Ingredient(
+								manager,
+								itemIdByName.get(item),
+								amountCount
+							));
+						} else {
+							Utils.addChatMessage("Change the item ID of " + item + " to the correct one and press Enter.");
+							NEUOverlay.getTextField().setText(item);
+							RenderListener.typing = true;
+							correctingItem = item;
+							return true;
+						}
+					}
+				}
+
+				recipes.add(new ItemShopRecipe(
+					new Ingredient(manager, npcInternalName),
+					costArray, new Ingredient(manager, resultInternalname),
+					null
+				));
+			}
+			newNPC.add("recipes", JsonUtils.transformListToJsonArray(recipes, ItemShopRecipe::serialize));
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			System.out.println(gson.toJson(newNPC));
+			try {
+				manager.writeJson(newNPC, file);
+				Utils.addChatMessage(
+					EnumChatFormatting.AQUA + "Parsed and saved: " + EnumChatFormatting.WHITE + displayName);
+			} catch (IOException ignored) {
+				Utils.addChatMessage(EnumChatFormatting.RED + "Error while writing file.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Utils.addChatMessage(
+				EnumChatFormatting.RED + "Error while parsing inventory. Try again or check logs for details");
+		}
+		return true;
 	}
 
 	public void essenceExporter2() {

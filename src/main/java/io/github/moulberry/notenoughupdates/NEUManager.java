@@ -1265,6 +1265,7 @@ public class NEUManager {
 	}
 
 	public void writeJson(JsonObject json, File file) throws IOException {
+		file.getParentFile().mkdirs();
 		file.createNewFile();
 
 		try (
