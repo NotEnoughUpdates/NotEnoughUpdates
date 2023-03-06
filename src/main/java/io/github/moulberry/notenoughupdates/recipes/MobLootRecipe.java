@@ -31,7 +31,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.Panorama;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -276,15 +275,7 @@ public class MobLootRecipe implements NeuRecipe {
 			if (combatXp > 0)
 				stuff.add("§r§bCombat Experience: " + combatXp);
 			stuff.addAll(extra);
-			Utils.drawHoveringText(
-				stuff,
-				mouseX,
-				mouseY,
-				gui.width,
-				gui.height,
-				-1,
-				Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(stuff, mouseX, mouseY, gui.width, gui.height, -1);
 		}
 	}
 

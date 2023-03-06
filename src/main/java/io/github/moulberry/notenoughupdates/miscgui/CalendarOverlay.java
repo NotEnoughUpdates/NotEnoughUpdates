@@ -129,11 +129,11 @@ public class CalendarOverlay {
 	private static final long HOUR = MINUTE * 60;
 	private static final long DAY = HOUR * 24;
 
-	private static final long DA_OFFSET = 1000 * 60 * 55;
-	private static final long JF_OFFSET = 1000 * 60 * 15;
+	private static final long DA_OFFSET = 1000 * 60 * 55; // Dark Auction
+	private static final long JF_OFFSET = 1000 * 60 * 15; // Jacob's Farming Contest
 
-	private static final ItemStack DA_STACK;
-	private static final ItemStack JF_STACK;
+	private static final ItemStack DA_STACK; // Dark Auction
+	private static final ItemStack JF_STACK; // Jacob's Farming Contest
 
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -555,11 +555,11 @@ public class CalendarOverlay {
 				if (mouseX >= guiLeft + 151 && mouseX <= guiLeft + 151 + 14) {
 					if (mouseY <= guiTop + 26 + 70) {
 						Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
-							50, 2, 3, Minecraft.getMinecraft().thePlayer
+							41, 2, 3, Minecraft.getMinecraft().thePlayer
 						);
 					} else {
 						Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
-							45, 2, 3, Minecraft.getMinecraft().thePlayer
+							36, 2, 3, Minecraft.getMinecraft().thePlayer
 						);
 					}
 				}
@@ -653,7 +653,7 @@ public class CalendarOverlay {
 					}
 
 					//Special Events
-					for (int i = 0; i < 21; i++) {
+					for (int i = 0; i < 14; i++) {
 						int itemIndex = 10 + i + (i / 7) * 2;
 						ItemStack item = cc.getLowerChestInventory().getStackInSlot(itemIndex);
 						if (item == null) continue;
@@ -822,7 +822,7 @@ public class CalendarOverlay {
 				int startingWidth = fr.getStringWidth(starting);
 				fr.drawString(starting, Math.max(guiLeft + 23, width / 2f - startingWidth / 2f), y + 7, -1, false);
 			} else {
-				Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Event Starting Now!", fr, width / 2, y + 11, false, -1);
+				Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Event Starting Now!", width / 2, y + 11, false, -1);
 			}
 
 			int displayWidth = fr.getStringWidth(event.display);
@@ -981,7 +981,7 @@ public class CalendarOverlay {
 						GL11.glDisable(GL11.GL_SCISSOR_TEST);
 					} else {
 						if (guiLeft + xSize - 8 - untilLen > (width + displayWidth) / 2) {
-							Utils.drawStringCentered(nextEvent.display, fr, width / 2f, guiTop + 10, false, -1);
+							Utils.drawStringCentered(nextEvent.display, width / 2f, guiTop + 10, false, -1);
 						} else {
 							fr.drawString(nextEvent.display, guiLeft + 8 + nextSLen, guiTop + 6, -1, false);
 						}
@@ -1026,7 +1026,7 @@ public class CalendarOverlay {
 					if (tooltipToDisplay != null) {
 						drawTimerForeground = true;
 						GlStateManager.translate(0, 0, 100);
-						Utils.drawHoveringText(tooltipToDisplay, mouseX, Math.max(17, mouseY), width, height, -1, fr);
+						Utils.drawHoveringText(tooltipToDisplay, mouseX, Math.max(17, mouseY), width, height, -1);
 						GlStateManager.translate(0, 0, -100);
 					}
 				}
@@ -1117,24 +1117,24 @@ public class CalendarOverlay {
 		int specialLen = fr.getStringWidth("Special");
 		fr.drawString("Special", guiLeft + 139 - specialLen, guiTop + 30, 0xffffaa00);
 
-		ItemStack mayorStack = cc.getLowerChestInventory().getStackInSlot(46);
+		ItemStack mayorStack = cc.getLowerChestInventory().getStackInSlot(37);
 		if (mayorStack != null) {
 			String mayor = mayorStack.getDisplayName();
 			float verticalHeight = Utils.getVerticalHeight(mayor);
-			Utils.drawStringVertical(mayor, fr, guiLeft + 8, guiTop + 96 - verticalHeight / 2,
+			Utils.drawStringVertical(mayor, guiLeft + 8, guiTop + 96 - verticalHeight / 2,
 				false, -1
 			);
 		}
 
 		String calendar = EnumChatFormatting.GREEN + "Calendar";
 		float calendarHeight = Utils.getVerticalHeight(calendar);
-		Utils.drawStringVertical(calendar, fr, guiLeft + xSize - 12, guiTop + 60 - calendarHeight / 2,
+		Utils.drawStringVertical(calendar, guiLeft + xSize - 12, guiTop + 60 - calendarHeight / 2,
 			false, -1
 		);
 
 		String rewards = EnumChatFormatting.GOLD + "Rewards";
 		float rewardsHeight = Utils.getVerticalHeight(rewards);
-		Utils.drawStringVertical(rewards, fr, guiLeft + xSize - 12, guiTop + 132 - rewardsHeight / 2,
+		Utils.drawStringVertical(rewards, guiLeft + xSize - 12, guiTop + 132 - rewardsHeight / 2,
 			false, -1
 		);
 
@@ -1144,11 +1144,11 @@ public class CalendarOverlay {
 					tooltipToDisplay = mayorStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			} else if (mouseX >= guiLeft + 151 && mouseX <= guiLeft + 151 + 14) {
 				if (mouseY <= guiTop + 26 + 70) {
-					ItemStack calendarStack = cc.getLowerChestInventory().getStackInSlot(50);
+					ItemStack calendarStack = cc.getLowerChestInventory().getStackInSlot(41);
 					if (calendarStack != null)
 						tooltipToDisplay = calendarStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				} else {
-					ItemStack rewardsStack = cc.getLowerChestInventory().getStackInSlot(45);
+					ItemStack rewardsStack = cc.getLowerChestInventory().getStackInSlot(36);
 					if (rewardsStack != null)
 						tooltipToDisplay = rewardsStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
@@ -1244,7 +1244,7 @@ public class CalendarOverlay {
 		}
 
 		//Special Events
-		for (int i = 0; i < 21; i++) {
+		for (int i = 0; i < 14; i++) {
 			int itemIndex = 10 + i + (i / 7) * 2;
 			ItemStack item = cc.getLowerChestInventory().getStackInSlot(itemIndex);
 			if (item == null) continue;
@@ -1349,7 +1349,7 @@ public class CalendarOverlay {
 				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "In order to show crop types for Jacob's Farming");
 				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "contest, visit the full SkyBlock calendar and go all");
 				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "the way to the end of the SkyBlock year");
-				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 				tooltipToDisplay = null;
 			}
 		}
@@ -1415,7 +1415,7 @@ public class CalendarOverlay {
 			}
 			GlStateManager.translate(0, 0, -20);
 		} else if (tooltipToDisplay != null) {
-			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 		}
 
 		GlStateManager.translate(0, 0, -10);

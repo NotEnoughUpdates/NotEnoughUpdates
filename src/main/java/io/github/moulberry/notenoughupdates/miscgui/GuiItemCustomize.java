@@ -355,7 +355,7 @@ public class GuiItemCustomize extends GuiScreen {
 		}
 
 		if (tooltipToDisplay != null) {
-			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fontRendererObj);
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 		}
 
 		super.drawScreen(mouseX, mouseY, partialTicks);

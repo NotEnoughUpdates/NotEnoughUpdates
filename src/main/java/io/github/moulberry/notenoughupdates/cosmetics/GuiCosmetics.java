@@ -134,17 +134,7 @@ public class GuiCosmetics extends GuiScreen {
 				for (String line : cosmeticsInfoTooltip) {
 					grayTooltip.add(EnumChatFormatting.GRAY + line);
 				}
-				Utils.drawHoveringText(
-					grayTooltip,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
-
-			}
+				Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1);}
 		}
 
 		StringBuilder statusMsg = new StringBuilder("Last Sync: ");
@@ -193,9 +183,7 @@ public class GuiCosmetics extends GuiScreen {
 				equipMsg += " - " + (20 - (System.currentTimeMillis() - lastCapeEquip) / 1000) + "s";
 			}
 
-			Utils.drawStringCenteredScaledMaxWidth(equipMsg, Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + sizeX / 2f, guiTop + sizeY + 5 + 10, false, 90, 0
-			);
+			Utils.drawStringCenteredScaledMaxWidth(equipMsg, guiLeft + sizeX / 2f, guiTop + sizeY + 5 + 10, false, 90, 0);
 		}
 
 		if (unlockTextField.getFocus() || !unlockTextField.getText().isEmpty()) {
@@ -529,7 +517,6 @@ public class GuiCosmetics extends GuiScreen {
 
 			Utils.drawStringCenteredScaledMaxWidth(
 				"Try it out",
-				Minecraft.getMinecraft().fontRendererObj,
 				guiLeft + 20 + 91 * displayIndex + 81 / 2f - xOffset,
 				guiTop + 123 + 10,
 				false,
@@ -539,7 +526,6 @@ public class GuiCosmetics extends GuiScreen {
 			if (equipable) {
 				Utils.drawStringCenteredScaledMaxWidth(
 					"Equip",
-					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 20 + 91 * displayIndex + 81 / 2f - xOffset,
 					guiTop + 149 + 10,
 					false,
@@ -549,7 +535,6 @@ public class GuiCosmetics extends GuiScreen {
 			} else {
 				Utils.drawStringCenteredScaledMaxWidth(
 					"Not Unlocked",
-					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 20 + 91 * displayIndex + 81 / 2f - xOffset,
 					guiTop + 149 + 10,
 					false,

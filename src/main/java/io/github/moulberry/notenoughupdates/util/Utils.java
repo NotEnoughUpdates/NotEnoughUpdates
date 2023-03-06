@@ -293,9 +293,9 @@ public class Utils {
 			while (matcher.find()) {
 				matcher.appendReplacement(
 					sb,
-					Utils.chromaString(matcher.group(1))
-							 .replace("\\", "\\\\")
-							 .replace("$", "\\$")
+					chromaString(matcher.group(1))
+						.replace("\\", "\\\\")
+						.replace("$", "\\$")
 				);
 			}
 			matcher.appendTail(sb);
@@ -628,10 +628,10 @@ public class Utils {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 
-		Utils.drawTexturedRect(x, y, pressed ? 32 : 28, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+		drawTexturedRect(x, y, pressed ? 32 : 28, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
 
 		GlStateManager.enableDepth();
-		Utils.drawItemStack(itemStack, x + 8, y + 7);
+		drawItemStack(itemStack, x + 8, y + 7);
 	}
 
 	public static void drawTexturedRect(float x, float y, float width, float height, int filter) {
@@ -676,7 +676,7 @@ public class Utils {
 
 	public static int checkItemTypePet(List<String> lore) {
 		for (int i = lore.size() - 1; i >= 0; i--) {
-			String line = Utils.cleanColour(lore.get(i));
+			String line = cleanColour(lore.get(i));
 			for (int i1 = 0; i1 < rarityArr.length; i1++) {
 				if (line.equals(rarityArr[i1])) {
 					return i1;
@@ -925,6 +925,10 @@ public class Utils {
 		return createItemStack(item, displayName, 0, lore);
 	}
 
+	public static ItemStack createItemStackArray(Item item, String displayName, String[] lore) {
+		return createItemStack(item, displayName, 0, lore);
+	}
+
 	public static ItemStack createItemStack(Block item, String displayName, String... lore) {
 		return createItemStack(Item.getItemFromBlock(item), displayName, lore);
 	}
@@ -932,22 +936,28 @@ public class Utils {
 	public static ItemStack createItemStack(Item item, String displayName, int damage, String... lore) {
 		ItemStack stack = new ItemStack(item, 1, damage);
 		NBTTagCompound tag = new NBTTagCompound();
-		NBTTagCompound display = new NBTTagCompound();
-		NBTTagList Lore = new NBTTagList();
-
-		for (String line : lore) {
-			Lore.appendTag(new NBTTagString(line));
-		}
-
-		display.setString("Name", displayName);
-		display.setTag("Lore", Lore);
-
-		tag.setTag("display", display);
+		addNameAndLore(tag, displayName, lore);
 		tag.setInteger("HideFlags", 254);
 
 		stack.setTagCompound(tag);
 
 		return stack;
+	}
+
+	private static void addNameAndLore(NBTTagCompound tag, String displayName, String[] lore) {
+		NBTTagCompound display = new NBTTagCompound();
+
+		display.setString("Name", displayName);
+
+		if (lore != null) {
+			NBTTagList tagLore = new NBTTagList();
+			for (String line : lore) {
+				tagLore.appendTag(new NBTTagString(line));
+			}
+			display.setTag("Lore", tagLore);
+		}
+
+		tag.setTag("display", display);
 	}
 
 	public static ItemStack editItemStackInfo(
@@ -979,15 +989,17 @@ public class Utils {
 
 		return itemStack;
 	}
-
 	public static ItemStack createSkull(String displayName, String uuid, String value) {
+		return createSkull(displayName, uuid, value, null);
+	}
+
+	public static ItemStack createSkull(String displayName, String uuid, String value, String[] lore) {
 		ItemStack render = new ItemStack(Items.skull, 1, 3);
 		NBTTagCompound tag = new NBTTagCompound();
 		NBTTagCompound skullOwner = new NBTTagCompound();
 		NBTTagCompound properties = new NBTTagCompound();
 		NBTTagList textures = new NBTTagList();
 		NBTTagCompound textures_0 = new NBTTagCompound();
-		NBTTagCompound display = new NBTTagCompound();
 
 		skullOwner.setString("Id", uuid);
 		skullOwner.setString("Name", uuid);
@@ -995,8 +1007,7 @@ public class Utils {
 		textures_0.setString("Value", value);
 		textures.appendTag(textures_0);
 
-		display.setString("Name", displayName);
-		tag.setTag("display", display);
+		addNameAndLore(tag, displayName, lore);
 
 		properties.setTag("textures", textures);
 		skullOwner.setTag("Properties", properties);
@@ -1005,6 +1016,11 @@ public class Utils {
 		return render;
 	}
 
+	public static void drawStringF(String str, float x, float y, boolean shadow, int colour) {
+		drawStringF(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
+	}
+
+	@Deprecated
 	public static void drawStringF(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
 		fr.drawString(str, x, y, colour, shadow);
 	}
@@ -1028,6 +1044,11 @@ public class Utils {
 		return height;
 	}
 
+	public static void drawStringVertical(String str, float x, float y, boolean shadow, int colour) {
+		drawStringVertical(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
+	}
+
+	@Deprecated
 	public static void drawStringVertical(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
 		String format = FontRenderer.getFormatFromString(str);
 		str = cleanColour(str);
@@ -1055,9 +1076,8 @@ public class Utils {
 		for (int xOff = -2; xOff <= 2; xOff++) {
 			for (int yOff = -2; yOff <= 2; yOff++) {
 				if (Math.abs(xOff) != Math.abs(yOff)) {
-					Utils.drawStringCenteredScaledMaxWidth(
-						Utils.cleanColourNotModifiers(str),
-						Minecraft.getMinecraft().fontRendererObj,
+					drawStringCenteredScaledMaxWidth(
+						cleanColourNotModifiers(str),
 						x + xOff / 2f * factor,
 						y + 4 + yOff / 2f * factor,
 						false,
@@ -1069,9 +1089,7 @@ public class Utils {
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
-		Utils.drawStringCenteredScaledMaxWidth(str, Minecraft.getMinecraft().fontRendererObj,
-			x, y + 4, false, maxLength, 4210752
-		);
+		drawStringCenteredScaledMaxWidth(str, x, y + 4, false, maxLength, 421075);
 	}
 
 	public static void renderAlignedString(String first, String second, float x, float y, int length) {
@@ -1082,7 +1100,7 @@ public class Utils {
 			for (int xOff = -2; xOff <= 2; xOff++) {
 				for (int yOff = -2; yOff <= 2; yOff++) {
 					if (Math.abs(xOff) != Math.abs(yOff)) {
-						fontRendererObj.drawString(Utils.cleanColourNotModifiers(first),
+						fontRendererObj.drawString(cleanColourNotModifiers(first),
 							x + xOff / 2f, y + yOff / 2f,
 							new Color(0, 0, 0, 200 / Math.max(Math.abs(xOff), Math.abs(yOff))).getRGB(), false
 						);
@@ -1096,7 +1114,7 @@ public class Utils {
 			for (int xOff = -2; xOff <= 2; xOff++) {
 				for (int yOff = -2; yOff <= 2; yOff++) {
 					if (Math.abs(xOff) != Math.abs(yOff)) {
-						fontRendererObj.drawString(Utils.cleanColourNotModifiers(second),
+						fontRendererObj.drawString(cleanColourNotModifiers(second),
 							x + length - secondLen + xOff / 2f, y + yOff / 2f,
 							new Color(0, 0, 0, 200 / Math.max(Math.abs(xOff), Math.abs(yOff))).getRGB(), false
 						);
@@ -1111,6 +1129,18 @@ public class Utils {
 
 	public static void drawStringScaledMaxWidth(
 		String str,
+		float x,
+		float y,
+		boolean shadow,
+		int len,
+		int colour
+	) {
+		drawStringScaledMaxWidth(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, len, colour);
+	}
+
+	@Deprecated
+	public static void drawStringScaledMaxWidth(
+		String str,
 		FontRenderer fr,
 		float x,
 		float y,
@@ -1122,9 +1152,14 @@ public class Utils {
 		float factor = len / (float) strLen;
 		factor = Math.min(1, factor);
 
-		drawStringScaled(str, fr, x, y, shadow, colour, factor);
+		drawStringScaled(str, x, y, shadow, colour, factor);
 	}
 
+	public static void drawStringCentered(String str, float x, float y, boolean shadow, int colour) {
+		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
+	}
+
+	@Deprecated
 	public static void drawStringCentered(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
 		int strLen = fr.getStringWidth(str);
 
@@ -1136,6 +1171,18 @@ public class Utils {
 		GL11.glTranslatef(-x2, -y2, 0);
 	}
 
+	public static void drawStringScaled(
+		String str,
+		float x,
+		float y,
+		boolean shadow,
+		int colour,
+		float factor
+	) {
+		drawStringScaled(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour, factor);
+	}
+
+	@Deprecated
 	public static void drawStringScaled(
 		String str,
 		FontRenderer fr,
@@ -1159,9 +1206,22 @@ public class Utils {
 		int colour,
 		float factor
 	) {
-		drawStringScaled(str, fr, x - fr.getStringWidth(str) * factor, y, shadow, colour, factor);
+		drawStringScaled(str, x - fr.getStringWidth(str) * factor, y, shadow, colour, factor);
 	}
 
+	public static void drawStringScaledMax(
+		String str,
+		float x,
+		float y,
+		boolean shadow,
+		int colour,
+		float factor,
+		int len
+	) {
+		drawStringScaledMax(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour, factor, len);
+	}
+
+	@Deprecated
 	public static void drawStringScaledMax(
 		String str,
 		FontRenderer fr,
@@ -1183,6 +1243,18 @@ public class Utils {
 
 	public static void drawStringCenteredScaledMaxWidth(
 		String str,
+		float x,
+		float y,
+		boolean shadow,
+		int len,
+		int colour
+	) {
+		drawStringCenteredScaledMaxWidth(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, len, colour);
+	}
+
+	@Deprecated
+	public static void drawStringCenteredScaledMaxWidth(
+		String str,
 		FontRenderer fr,
 		float x,
 		float y,
@@ -1197,7 +1269,7 @@ public class Utils {
 
 		float fontHeight = 8 * factor;
 
-		drawStringScaled(str, fr, x - newLen / 2, y - fontHeight / 2, shadow, colour, factor);
+		drawStringScaled(str, x - newLen / 2, y - fontHeight / 2, shadow, colour, factor);
 	}
 
 	public static Matrix4f createProjectionMatrix(int width, int height) {
@@ -1215,20 +1287,34 @@ public class Utils {
 
 	public static void drawStringCenteredScaled(
 		String str,
-		FontRenderer fr,
-		float x,
-		float y,
+		float x, float y,
 		boolean shadow,
 		int len,
 		int colour
 	) {
-		int strLen = fr.getStringWidth(str);
+		int strLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(str);
 		float factor = len / (float) strLen;
 		float fontHeight = 8 * factor;
 
-		drawStringScaled(str, fr, x - len / 2, y - fontHeight / 2, shadow, colour, factor);
+		drawStringScaled(
+			str,
+			x - len / 2, y - fontHeight / 2,
+			shadow,
+			colour,
+			factor
+		);
 	}
 
+	public static void drawStringCenteredScaled(
+		String str,
+		float x, float y,
+		boolean shadow,
+		float factor
+	) {
+		drawStringCenteredScaled(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, factor);
+	}
+
+	@Deprecated
 	public static void drawStringCenteredScaled(
 		String str,
 		FontRenderer fr,
@@ -1242,7 +1328,7 @@ public class Utils {
 		float x2 = x - strLen / 2f;
 		float y2 = y - fr.FONT_HEIGHT / 2f;
 
-		drawStringScaled(str, fr, x2, y2, shadow, 0, factor);
+		drawStringScaled(str, x2, y2, shadow, 0, factor);
 	}
 
 	public static void drawStringCenteredYScaled(
@@ -1258,7 +1344,7 @@ public class Utils {
 		float factor = len / (float) strLen;
 		float fontHeight = 8 * factor;
 
-		drawStringScaled(str, fr, x, y - fontHeight / 2, shadow, colour, factor);
+		drawStringScaled(str, x, y - fontHeight / 2, shadow, colour, factor);
 	}
 
 	public static void drawStringCenteredYScaledMaxWidth(
@@ -1275,12 +1361,11 @@ public class Utils {
 		factor = Math.min(1, factor);
 		float fontHeight = 8 * factor;
 
-		drawStringScaled(str, fr, x, y - fontHeight / 2, shadow, colour, factor);
+		drawStringScaled(str, x, y - fontHeight / 2, shadow, colour, factor);
 	}
 
 	public static int renderStringTrimWidth(
 		String str,
-		FontRenderer fr,
 		boolean shadow,
 		int x,
 		int y,
@@ -1288,12 +1373,11 @@ public class Utils {
 		int colour,
 		int maxLines
 	) {
-		return renderStringTrimWidth(str, fr, shadow, x, y, len, colour, maxLines, 1);
+		return renderStringTrimWidth(str, shadow, x, y, len, colour, maxLines, 1);
 	}
 
 	public static int renderStringTrimWidth(
 		String str,
-		FontRenderer fr,
 		boolean shadow,
 		int x,
 		int y,
@@ -1320,20 +1404,20 @@ public class Utils {
 		int lines = 0;
 		while ((lines++ < maxLines) || maxLines < 0) {
 			if (trimmed.length() == str.length()) {
-				drawStringScaled(trimmed, fr, x, y + yOff, shadow, colour, scale);
+				drawStringScaled(trimmed, x, y + yOff, shadow, colour, scale);
 				break;
 			} else if (trimmed.isEmpty()) {
 				yOff -= 12 * scale;
 				break;
 			} else {
 				if (firstLine) {
-					drawStringScaled(trimmed, fr, x, y + yOff, shadow, colour, scale);
+					drawStringScaled(trimmed, x, y + yOff, shadow, colour, scale);
 					firstLine = false;
 				} else {
 					if (trimmed.startsWith(" ")) {
 						trimmed = trimmed.substring(1);
 					}
-					drawStringScaled(colourCodes + trimmed, fr, x, y + yOff, shadow, colour, scale);
+					drawStringScaled(colourCodes + trimmed, x, y + yOff, shadow, colour, scale);
 				}
 
 				excess = str.substring(trimmedCharacters);
@@ -1419,6 +1503,26 @@ public class Utils {
 		GlStateManager.enableTexture2D();
 	}
 
+	public static void drawHoveringText(
+		List<String> textLines,
+		final int mouseX,
+		final int mouseY,
+		final int screenWidth,
+		final int screenHeight,
+		final int maxTextWidth
+	) {
+		drawHoveringText(
+			textLines,
+			mouseX,
+			mouseY,
+			screenWidth,
+			screenHeight,
+			maxTextWidth,
+			Minecraft.getMinecraft().fontRendererObj
+		);
+	}
+
+	@Deprecated
 	public static void drawHoveringText(
 		List<String> textLines,
 		final int mouseX,
@@ -1564,6 +1668,28 @@ public class Utils {
 		scrollY.resetTimer();
 	}
 
+	public static void drawHoveringText(
+		List<String> textLines,
+		final int mouseX,
+		final int mouseY,
+		final int screenWidth,
+		final int screenHeight,
+		final int maxTextWidth,
+		boolean coloured
+	) {
+		drawHoveringText(
+			textLines,
+			mouseX,
+			mouseY,
+			screenWidth,
+			screenHeight,
+			maxTextWidth,
+			Minecraft.getMinecraft().fontRendererObj,
+			coloured
+		);
+	}
+
+	@Deprecated
 	public static void drawHoveringText(
 		List<String> textLines,
 		final int mouseX,
@@ -2133,7 +2259,7 @@ public class Utils {
 				runtime.exec("xdg-open " + url);
 				return true;
 			} catch (IOException e) {
-				Utils.playSound(new ResourceLocation("game.player.hurt"), true);
+				playSound(new ResourceLocation("game.player.hurt"), true);
 				return false;
 			}
 		}

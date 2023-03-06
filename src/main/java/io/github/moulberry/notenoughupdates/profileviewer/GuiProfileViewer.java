@@ -329,7 +329,6 @@ public class GuiProfileViewer extends GuiScreen {
 				Utils.drawTexturedRect(guiLeft, guiTop + sizeY + 3, 100, 20, 0, 100 / 200f, 0, 20 / 185f, GL11.GL_NEAREST);
 				Utils.drawStringCenteredScaledMaxWidth(
 					profileId,
-					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 50,
 					guiTop + sizeY + 3 + 10,
 					true,
@@ -394,7 +393,6 @@ public class GuiProfileViewer extends GuiScreen {
 				);
 				Utils.drawStringCenteredScaledMaxWidth(
 					"Open in SkyCrypt",
-					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + 50 + 100 + 6,
 					guiTop + sizeY + 3 + 10,
 					true,
@@ -437,7 +435,6 @@ public class GuiProfileViewer extends GuiScreen {
 						String otherProfileId = profile.getProfileNames().get(yIndex);
 						Utils.drawStringCenteredScaledMaxWidth(
 							otherProfileId,
-							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + 50,
 							guiTop + sizeY + 23 + dropdownOptionSize / 2f + dropdownOptionSize * yIndex,
 							true,
@@ -529,14 +526,7 @@ public class GuiProfileViewer extends GuiScreen {
 						}
 					}
 
-					Utils.drawStringCentered(
-						str,
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + sizeX / 2f,
-						guiTop + 101,
-						true,
-						0
-					);
+					Utils.drawStringCentered(str, guiLeft + sizeX / 2f, guiTop + 101, true, 0);
 
 					//This is just here to inform the player what to do
 					//like typing /api new or telling them to go find a psychotherapist
@@ -545,37 +535,21 @@ public class GuiProfileViewer extends GuiScreen {
 					if (timeDiff > 20000) {
 						Utils.drawStringCentered(
 							EnumChatFormatting.YELLOW + "Its taking a while...",
-							Minecraft.getMinecraft().fontRendererObj,
-							guiLeft + sizeX / 2f,
-							guiTop + 111,
-							true,
-							0
+							guiLeft + sizeX / 2f, guiTop + 111, true, 0
 						);
 						Utils.drawStringCentered(
 							EnumChatFormatting.YELLOW + "Try \"/api new\".",
-							Minecraft.getMinecraft().fontRendererObj,
-							guiLeft + sizeX / 2f,
-							guiTop + 121,
-							true,
-							0
+							guiLeft + sizeX / 2f, guiTop + 121, true, 0
 						);
 						if (timeDiff > 60000) {
 							Utils.drawStringCentered(
 								EnumChatFormatting.YELLOW + "Might be hypixel's fault.",
-								Minecraft.getMinecraft().fontRendererObj,
-								guiLeft + sizeX / 2f,
-								guiTop + 131,
-								true,
-								0
+								guiLeft + sizeX / 2f, guiTop + 131, true, 0
 							);
 							if (timeDiff > 180000) {
 								Utils.drawStringCentered(
 									EnumChatFormatting.YELLOW + "Wow you're still here?",
-									Minecraft.getMinecraft().fontRendererObj,
-									guiLeft + sizeX / 2f,
-									guiTop + 141,
-									true,
-									0
+									guiLeft + sizeX / 2f, guiTop + 141, true, 0
 								);
 								if (timeDiff > 360000) {
 									long second = (timeDiff / 1000) % 60;
@@ -585,58 +559,32 @@ public class GuiProfileViewer extends GuiScreen {
 									String time = String.format("%02d:%02d:%02d", hour, minute, second);
 									Utils.drawStringCentered(
 										EnumChatFormatting.YELLOW + "You've wasted your time here for: " + time,
-										Minecraft.getMinecraft().fontRendererObj,
-										guiLeft + sizeX / 2f,
-										guiTop + 151,
-										true,
-										0
+										guiLeft + sizeX / 2f, guiTop + 151, true, 0
 									);
 									Utils.drawStringCentered(
 										EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "What are you doing with your life?",
-										Minecraft.getMinecraft().fontRendererObj,
-										guiLeft + sizeX / 2f,
-										guiTop + 161,
-										true,
-										0
+										guiLeft + sizeX / 2f, guiTop + 161, true, 0
 									);
 									if (timeDiff > 600000) {
 										Utils.drawStringCentered(
 											EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "Maniac",
-											Minecraft.getMinecraft().fontRendererObj,
-											guiLeft + sizeX / 2f,
-											guiTop + 171,
-											true,
-											0
+											guiLeft + sizeX / 2f, guiTop + 171, true, 0
 										);
 										if (timeDiff > 1200000) {
 											Utils.drawStringCentered(
 												EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You're a menace to society",
-												Minecraft.getMinecraft().fontRendererObj,
-												guiLeft + sizeX / 2f,
-												guiTop + 181,
-												true,
-												0
+												guiLeft + sizeX / 2f, guiTop + 181, true, 0
 											);
 											if (timeDiff > 1800000) {
 												Utils.drawStringCentered(
-													EnumChatFormatting.RED +
-														"" +
-														EnumChatFormatting.BOLD +
+													EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD +
 														"You don't know what's gonna happen to you",
-													Minecraft.getMinecraft().fontRendererObj,
-													guiLeft + sizeX / 2f,
-													guiTop + 191,
-													true,
-													0
+													guiLeft + sizeX / 2f, guiTop + 191, true, 0
 												);
 												if (timeDiff > 3000000) {
 													Utils.drawStringCentered(
 														EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You really want this?",
-														Minecraft.getMinecraft().fontRendererObj,
-														guiLeft + sizeX / 2f,
-														guiTop + 91,
-														true,
-														0
+														guiLeft + sizeX / 2f, guiTop + 91, true, 0
 													);
 													if (timeDiff > 3300000) {
 														Utils.drawStringCentered(
@@ -644,11 +592,7 @@ public class GuiProfileViewer extends GuiScreen {
 																"" +
 																EnumChatFormatting.BOLD +
 																"OW LORD FORGIVE ME FOR THIS",
-															Minecraft.getMinecraft().fontRendererObj,
-															guiLeft + sizeX / 2f,
-															guiTop + 71,
-															true,
-															0
+															guiLeft + sizeX / 2f, guiTop + 71, true, 0
 														);
 														if (timeDiff > 3600000) {
 															throw new Error("Go do something productive") {
@@ -672,21 +616,13 @@ public class GuiProfileViewer extends GuiScreen {
 				case INVALID_NAME:
 					Utils.drawStringCentered(
 						EnumChatFormatting.RED + "Invalid name or API is down!",
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + sizeX / 2f,
-						guiTop + 101,
-						true,
-						0
+						guiLeft + sizeX / 2f, guiTop + 101, true, 0
 					);
 					break;
 				case NO_SKYBLOCK:
 					Utils.drawStringCentered(
 						EnumChatFormatting.RED + "No SkyBlock data found!",
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + sizeX / 2f,
-						guiTop + 101,
-						true,
-						0
+						guiLeft + sizeX / 2f, guiTop + 101, true, 0
 					);
 					break;
 			}
@@ -727,7 +663,7 @@ public class GuiProfileViewer extends GuiScreen {
 			for (String line : tooltipToDisplay) {
 				grayTooltip.add(EnumChatFormatting.GRAY + line);
 			}
-			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
+			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1);
 			tooltipToDisplay = null;
 		}
 	}

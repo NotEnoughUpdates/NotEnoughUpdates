@@ -48,18 +48,26 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 
 public class ApiUtil {
 	private static final Gson gson = new Gson();
+
+	private static final Comparator<NameValuePair> nameValuePairComparator = Comparator
+		.comparing(NameValuePair::getName)
+		.thenComparing(NameValuePair::getValue);
+
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 	private static String getUserAgent() {
 		if (NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
@@ -110,12 +118,22 @@ public class ApiUtil {
 		private final List<NameValuePair> queryArguments = new ArrayList<>();
 		private String baseUrl = null;
 		private boolean shouldGunzip = false;
+		private Duration maxCacheAge = Duration.ofSeconds(500);
 		private String method = "GET";
 		private String postData = null;
 		private String postContentType = null;
 
 		public Request method(String method) {
 			this.method = method;
+			return this;
+		}
+
+		/**
+		 * Specify a cache timeout of {@code null} to signify an uncacheable request.
+		 * Non {@code GET} requests are always uncacheable.
+		 */
+		public Request maxCacheAge(Duration maxCacheAge) {
+			this.maxCacheAge = maxCacheAge;
 			return this;
 		}
 
@@ -160,7 +178,17 @@ public class ApiUtil {
 			return fut;
 		}
 
-		public CompletableFuture<String> requestString() {
+		public String getBaseUrl() {
+			return baseUrl;
+		}
+
+		private ApiCache.CacheKey getCacheKey() {
+			if (!"GET".equals(method)) return null;
+			queryArguments.sort(nameValuePairComparator);
+			return new ApiCache.CacheKey(baseUrl, queryArguments, shouldGunzip);
+		}
+
+		private CompletableFuture<String> requestString0() {
 			return buildUrl().thenApplyAsync(url -> {
 				try {
 					InputStream inputStream = null;
@@ -183,7 +211,7 @@ public class ApiUtil {
 							conn.setDoOutput(true);
 							OutputStream os = conn.getOutputStream();
 							try {
-								os.write(this.postData.getBytes("utf-8"));
+								os.write(this.postData.getBytes(StandardCharsets.UTF_8));
 							} finally {
 								os.close();
 							}
@@ -213,7 +241,16 @@ public class ApiUtil {
 				} catch (IOException e) {
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
-			}, executorService);
+			}, executorService).handle((obj, t) -> {
+				if (t != null) {
+					System.err.println(ErrorUtil.printStackTraceWithoutApiKey(t));
+				}
+				return obj;
+			});
+		}
+
+		public CompletableFuture<String> requestString() {
+			return ApiCache.INSTANCE.cacheRequest(this, getCacheKey(), this::requestString0, maxCacheAge);
 		}
 
 		public CompletableFuture<JsonObject> requestJson() {
@@ -221,7 +258,7 @@ public class ApiUtil {
 		}
 
 		public <T> CompletableFuture<T> requestJson(Class<? extends T> clazz) {
-			return requestString().thenApply(str -> gson.fromJson(str, clazz));
+			return requestString().thenApplyAsync(str -> gson.fromJson(str, clazz));
 		}
 
 	}

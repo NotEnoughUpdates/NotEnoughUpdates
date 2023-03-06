@@ -295,11 +295,7 @@ public class FishingHelper {
 
 		Utils.drawStringCentered(
 			String.format("%.02fs", seconds),
-			Minecraft.getMinecraft().fontRendererObj,
-			0,
-			-baseHeight - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT,
-			false,
-			color
+			0, -baseHeight - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, false, color
 		);
 
 	}

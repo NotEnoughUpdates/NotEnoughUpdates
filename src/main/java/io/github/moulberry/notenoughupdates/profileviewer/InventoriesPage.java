@@ -350,21 +350,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				strToRender = "Inventory API not enabled";
 				Utils.drawStringCentered(
 					EnumChatFormatting.RED + "Or has no backpacks!",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 317,
-					guiTop + 112,
-					true,
-					0
+					guiLeft + 317, guiTop + 112, true, 0
 				);
 			}
-			Utils.drawStringCentered(
-				EnumChatFormatting.RED + strToRender,
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 317,
-				guiTop + 101,
-				true,
-				0
-			);
+			Utils.drawStringCentered(EnumChatFormatting.RED + strToRender, guiLeft + 317, guiTop + 101, true, 0);
 			return;
 		}
 

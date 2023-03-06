@@ -274,15 +274,7 @@ public class AuctionSearchOverlay {
 			}
 
 			if (tooltipToDisplay != null) {
-				Utils.drawHoveringText(
-					tooltipToDisplay,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 			}
 		}
 
