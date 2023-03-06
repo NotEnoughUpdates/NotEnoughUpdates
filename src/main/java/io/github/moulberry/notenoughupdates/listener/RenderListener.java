@@ -130,8 +130,6 @@ public class RenderListener {
 	private String loadedInvName = "";
 	//NPC parsing
 
-	public static boolean typing;
-
 	private boolean inDungeonPage = false;
 
 	public RenderListener(NotEnoughUpdates neu) {
@@ -1216,9 +1214,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-		if (typing) {
-			event.setCanceled(true);
-		}
 		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest
 		) {
@@ -1232,11 +1227,6 @@ public class RenderListener {
 				RepoExporters.getInstance().essenceExporter();
 			} else if (lower.getName().contains("Draconic Altar Guide")) {
 				RepoExporters.getInstance().draconicAlterExporter();
-			}
-		} else if (Keyboard.isKeyDown(Keyboard.KEY_RETURN) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			if (RepoExporters.getInstance().npcExporter()) {
-				event.setCanceled(true);
-				return;
 			}
 		} else if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest &&
