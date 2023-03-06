@@ -26,7 +26,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.commands.ClientCommandBase;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -34,8 +33,6 @@ import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -56,7 +53,6 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,6 +81,14 @@ public class FairySouls {
 			instance = new FairySouls();
 		}
 		return instance;
+	}
+
+	public boolean isTrackSouls() {
+		return trackSouls;
+	}
+
+	public boolean isShowSouls() {
+		return showSouls;
 	}
 
 	@SubscribeEvent
@@ -379,25 +383,6 @@ public class FairySouls {
 		Utils.addChatMessage(s);
 	}
 
-	private static void printHelp() {
-		print("");
-		print(EnumChatFormatting.DARK_PURPLE.toString() + EnumChatFormatting.BOLD + "     NEU Fairy Soul Waypoint Guide");
-		print(EnumChatFormatting.LIGHT_PURPLE + "Shows waypoints for every fairy soul in your world");
-		print(EnumChatFormatting.LIGHT_PURPLE + "Clicking a fairy soul automatically removes it from the list");
-		if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			print(EnumChatFormatting.DARK_RED + "" + EnumChatFormatting.OBFUSCATED + "Ab" + EnumChatFormatting.RESET +
-				EnumChatFormatting.DARK_RED + "!" + EnumChatFormatting.RESET + EnumChatFormatting.RED +
-				" This feature cannot and will not work in Dungeons. " + EnumChatFormatting.DARK_RED + "!" +
-				EnumChatFormatting.OBFUSCATED + "Ab");
-		}
-		print(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "     Commands:");
-		print(EnumChatFormatting.YELLOW + "/neusouls help          - Display this message");
-		print(EnumChatFormatting.YELLOW + "/neusouls on/off        - Enable/disable showing waypoint markers");
-		print(EnumChatFormatting.YELLOW +
-			"/neusouls clear/unclear - Marks every waypoint in your current world as completed/uncompleted");
-		print("");
-	}
-
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatReceived(ClientChatReceivedEvent event) {
 		if (!trackSouls || event.type == 2) return;
@@ -405,55 +390,6 @@ public class FairySouls {
 		var cleanString = StringUtils.cleanColour(event.message.getUnformattedText());
  		if (cleanString.equals("You have already found that Fairy Soul!") || cleanString.equals("SOUL! You found a Fairy Soul!")) {
 			markClosestSoulFound();
-		}
-	}
-
-	public static class FairySoulsCommand extends ClientCommandBase {
-		public FairySoulsCommand() {
-			super("neusouls");
-		}
-
-		@Override
-		public List<String> getCommandAliases() {
-			return Collections.singletonList("fairysouls");
-		}
-
-		@Override
-		public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-			if (args.length != 1) {
-				printHelp();
-				return;
-			}
-
-			String subcommand = args[0].toLowerCase();
-			switch (subcommand) {
-				case "help":
-					printHelp();
-					break;
-				case "on":
-				case "enable":
-					if (!FairySouls.instance.trackSouls) {
-						print(
-							EnumChatFormatting.RED + "Fairy soul tracking is off, enable it using /neu before using this command");
-						return;
-					}
-					print(EnumChatFormatting.DARK_PURPLE + "Enabled fairy soul waypoints");
-					FairySouls.getInstance().setShowFairySouls(true);
-					break;
-				case "off":
-				case "disable":
-					FairySouls.getInstance().setShowFairySouls(false);
-					print(EnumChatFormatting.DARK_PURPLE + "Disabled fairy soul waypoints");
-					break;
-				case "clear":
-					FairySouls.getInstance().markAllAsFound();
-					break;
-				case "unclear":
-					FairySouls.getInstance().markAllAsMissing();
-					break;
-				default:
-					print(EnumChatFormatting.RED + "Unknown subcommand: " + subcommand);
-			}
 		}
 	}
 }

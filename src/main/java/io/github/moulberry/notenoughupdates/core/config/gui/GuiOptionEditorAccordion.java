@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.core.config.gui;
 import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -76,9 +75,7 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableBlend();
 
-		TextRenderUtils.drawStringScaledMaxWidth(option.name, Minecraft.getMinecraft().fontRendererObj,
-			x + 18, y + 6, false, width - 10, 0xc0c0c0
-		);
+		TextRenderUtils.drawStringScaledMaxWidth(option.name, x + 18, y + 6, false, width - 10, 0xc0c0c0);
 	}
 
 	@Override

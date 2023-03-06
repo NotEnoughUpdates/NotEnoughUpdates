@@ -148,14 +148,7 @@ public class PetsPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_pets);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		Utils.drawStringCentered(
-			EnumChatFormatting.DARK_PURPLE + "Pets",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 100,
-			guiTop + 14,
-			true,
-			4210752
-		);
+		Utils.drawStringCentered(EnumChatFormatting.DARK_PURPLE + "Pets", guiLeft + 100, guiTop + 14, true, 4210752);
 		GlStateManager.color(1, 1, 1, 1);
 
 		JsonElement activePetElement = petsInfo.get("active_pet");

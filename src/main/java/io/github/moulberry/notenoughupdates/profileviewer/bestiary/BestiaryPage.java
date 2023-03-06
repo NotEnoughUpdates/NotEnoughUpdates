@@ -219,18 +219,14 @@ public class BestiaryPage extends GuiProfileViewerPage {
 
 						GlStateManager.color(1, 1, 1, 1);
 						//						if (tier >= 0) {
-						//							Utils.drawStringCentered(tierString, Minecraft.getMinecraft().fontRendererObj,
+						//							Utils.drawStringCentered(tierString,
 						//								guiLeft + x + 10, guiTop + y - 4, true,
 						//								tierStringColour
 						//							);
 						//						}
 						Utils.drawStringCentered(
 							(int) Math.floor(levelNum) + "",
-							Minecraft.getMinecraft().fontRendererObj,
-							guiLeft + x + 10,
-							guiTop + y + 26,
-							true,
-							color.getRGB()
+							guiLeft + x + 10, guiTop + y + 26, true, color.getRGB()
 						);
 					}
 				}
@@ -241,7 +237,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 			for (String line : tooltipToDisplay) {
 				grayTooltip.add(EnumChatFormatting.GRAY + line);
 			}
-			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1, Minecraft.getMinecraft().fontRendererObj);
+			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1);
 			tooltipToDisplay = null;
 		}
 	}

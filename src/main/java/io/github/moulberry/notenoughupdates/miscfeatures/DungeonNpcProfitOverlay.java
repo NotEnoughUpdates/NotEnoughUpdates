@@ -236,15 +236,7 @@ public class DungeonNpcProfitOverlay {
 			int mouseY = Utils.getMouseY();
 
 			if (Utils.isWithinRect(mouseX, mouseY, x, y, 160, 10))
-				Utils.drawHoveringText(
-					chestProfit.lore,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(chestProfit.lore, mouseX, mouseY, width, height, -1);
 		}
 
 	}

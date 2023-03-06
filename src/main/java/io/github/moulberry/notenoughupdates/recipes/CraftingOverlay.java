@@ -141,8 +141,7 @@ public class CraftingOverlay {
 				Utils.drawHoveringText(
 					recipeIngredient.getItemStack().getTooltip(Minecraft.getMinecraft().thePlayer, false),
 					mouseX, mouseY,
-					Utils.peekGuiScale().getScaledWidth(), Utils.peekGuiScale().getScaledHeight(), -1,
-					Minecraft.getMinecraft().fontRendererObj
+					Utils.peekGuiScale().getScaledWidth(), Utils.peekGuiScale().getScaledHeight(), -1
 				);
 			}
 		});

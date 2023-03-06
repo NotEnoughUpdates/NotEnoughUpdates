@@ -96,7 +96,6 @@ public class SunTzu {
 
 			int height = Utils.renderStringTrimWidth(
 				EnumChatFormatting.YELLOW + getQuote(),
-				Minecraft.getMinecraft().fontRendererObj,
 				true,
 				sr.getScaledWidth() / 2 - 100,
 				5,

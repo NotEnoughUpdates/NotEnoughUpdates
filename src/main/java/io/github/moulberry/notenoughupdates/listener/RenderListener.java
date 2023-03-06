@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
-import io.github.moulberry.notenoughupdates.commands.profile.ViewProfileCommand;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
@@ -35,6 +34,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
+import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.dev.RepoExporters;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
@@ -628,8 +628,7 @@ public class RenderListener {
 					event.mouseY,
 					event.gui.width,
 					event.gui.height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
+					-1
 				);
 
 			});
@@ -642,6 +641,10 @@ public class RenderListener {
 
 		if (AbiphoneWarning.getInstance().shouldShow()) {
 			AbiphoneWarning.getInstance().render();
+		}
+
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().render();
 		}
 	}
 
@@ -882,7 +885,6 @@ public class RenderListener {
 						&& NotEnoughUpdates.INSTANCE.config.dungeons.shouldWarningDerpy) {
 						Utils.drawStringScaled(
 							EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Mayor Derpy active!",
-							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + xSize + 4 + 10,
 							guiTop + 85,
 							true,
@@ -928,6 +930,11 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().mouseInput(mouseX, mouseY);
+			event.setCanceled(true);
+			return;
+		}
 
 		if (!event.isCanceled()) {
 			Utils.scrollTooltip(Mouse.getEventDWheel());
@@ -968,7 +975,14 @@ public class RenderListener {
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String username = tag.getCompoundTag("SkullOwner").getString("Name");
 						Utils.playPressSound();
-						ViewProfileCommand.RUNNABLE.accept(new String[]{username});
+						NotEnoughUpdates.profileViewer.getProfileByName(username, profile -> {
+							if (profile == null) {
+								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
+							} else {
+								profile.resetCache();
+								NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+							}
+						});
 					}
 				}
 			}
@@ -1102,6 +1116,11 @@ public class RenderListener {
 		}
 		if (AbiphoneWarning.getInstance().shouldShow()) {
 			AbiphoneWarning.getInstance().keyboardInput();
+			event.setCanceled(true);
+			return;
+		}
+		if (PresetWarning.getInstance().shouldShow()) {
+			PresetWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}

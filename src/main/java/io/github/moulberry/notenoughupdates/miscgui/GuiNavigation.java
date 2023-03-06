@@ -104,7 +104,6 @@ public class GuiNavigation extends GuiScreen {
 				);
 				Utils.drawStringF(
 					json.get("displayname").getAsString(),
-					Minecraft.getMinecraft().fontRendererObj,
 					baseX + TEXT_OFFSET_X,
 					baseY + LIST_OFFSET_Y / 2F - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2F,
 					false,

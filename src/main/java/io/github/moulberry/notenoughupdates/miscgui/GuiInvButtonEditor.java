@@ -411,7 +411,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Load preset",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 8,
 			false,
@@ -420,7 +419,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"from Clipboard",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16,
 			false,
@@ -429,7 +427,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Save preset",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 8 + 24,
 			false,
@@ -438,7 +435,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"to Clipboard",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16 + 24,
 			false,
@@ -459,7 +455,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 			);
 			Utils.drawStringCenteredScaledMaxWidth(
 				"\u00a7nPresets",
-				fontRendererObj,
 				guiLeft + xSize + 22 + 40,
 				guiTop + 10,
 				false,
@@ -471,7 +466,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 			for (String presetName : presets.keySet()) {
 				Utils.drawStringCenteredScaledMaxWidth(
 					presetName,
-					fontRendererObj,
 					guiLeft + xSize + 22 + 40,
 					guiTop + 25 + 10 * (index++),
 					false,

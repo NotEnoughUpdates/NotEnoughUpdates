@@ -98,7 +98,6 @@ data class KatRecipe(
         )
         Utils.drawStringCentered(
             Utils.prettyTime(time),
-            Minecraft.getMinecraft().fontRendererObj,
             gui.guiLeft + textPosition.first.toFloat(), gui.guiTop + textPosition.second.toFloat(),
             false, 0xff00ff
         )
