@@ -134,6 +134,9 @@ dependencies {
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 		kotlinDependencies(kotlin("stdlib"))
 
+		ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
+		implementation("com.google.auto.service:auto-service-annotations:1.0.1")
+
 		compileOnly(ksp(project(":annotations"))!!)
 		compileOnly("org.projectlombok:lombok:1.18.24")
 		annotationProcessor("org.projectlombok:lombok:1.18.24")
