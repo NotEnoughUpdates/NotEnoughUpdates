@@ -69,7 +69,7 @@ class ItemShopExporter : RepoExporter {
             recipes.add(findRecipe(context, slot) ?: continue)
         }
         baseNPCJson["recipes"] = JsonUtils.transformListToJsonArray(recipes, ItemShopRecipe::serialize)
-        context.manager.writeJson(baseNPCJson, file)
+        context.writeFile(file, baseNPCJson)
     }
 
     val coinRegex = "^([0-9,]+) Coins$".toRegex()

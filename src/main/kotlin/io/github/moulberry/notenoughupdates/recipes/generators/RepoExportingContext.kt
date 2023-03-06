@@ -19,11 +19,15 @@
 
 package io.github.moulberry.notenoughupdates.recipes.generators
 
+import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.NEUManager
+import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
+import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.continueOn
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.waitTicks
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiYesNo
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -33,8 +37,18 @@ class RepoExportingContext(
 ) {
     val mc = Minecraft.getMinecraft()
     val nameToItemCache = mutableMapOf<String, String>()
+
+    suspend fun writeFile(file: File, json: JsonObject) {
+        if (file.exists()) {
+            if (!askYesNo("Overwrite file?", "The file $file already exists."))
+                return
+        }
+        manager.writeJson(json, file)
+    }
+
     suspend fun askYesNo(title: String, subtitle: String): Boolean {
         var wasResolved = false
+        continueOn(MinecraftExecutor.OnThread)
         val result = suspendCoroutine {
             mc.displayGuiScreen(object : GuiYesNo({ result, id ->
                 if (!wasResolved) {
@@ -61,6 +75,7 @@ class RepoExportingContext(
         val c = nameToItemCache[name]
         if (c != null) return c
         var wasResolved = false
+        continueOn(MinecraftExecutor.OnThread)
         val result = suspendCoroutine { cont ->
             mc.displayGuiScreen(ItemSearchGui(name) {
                 if (!wasResolved) {

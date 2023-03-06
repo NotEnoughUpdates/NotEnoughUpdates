@@ -26,7 +26,9 @@ import net.minecraft.client.gui.GuiScreen
 @AutoService(RepoExporter::class)
 class TestExporter : RepoExporter {
     override suspend fun export(context: RepoExportingContext) {
-        if (context.askYesNo("Do Vaccines cause Autism?", "(Specifically the CoViD-19 Vaccine)")) {
+        val itemId = context.findItemByName("aspect of the")
+        if (context.askYesNo("Do Vaccines cause Autism?",
+                "(Specifically the CoViD-19 Vaccine)")) {
             Utils.addChatMessage("Stupid")
         } else {
             Utils.addChatMessage("Also Stupid")
