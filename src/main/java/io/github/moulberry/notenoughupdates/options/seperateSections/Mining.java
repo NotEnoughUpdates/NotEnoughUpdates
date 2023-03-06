@@ -152,16 +152,17 @@ public class Mining {
 	)
 	@ConfigEditorDraggableList(
 		exampleText = {
-			"\u00a73Goblin Slayer: \u00a7626.5%\n\u00a73Lucky Raffle: \u00a7c0.0%",
-			"\u00a73Mithril Powder: \u00a726,243",
-			"\u00a73Gemstone Powder: \u00a7d6,243",
-			"\u00a73Forge 1) \u00a79Diamonite\u00a77: \u00a7aReady!",
-			"\u00a73Pickaxe CD: \u00a7a78s",
-			"\u00a73Star Cult: \u00a7a78s"
+			"§3Goblin Slayer: §626.5%\n§3Lucky Raffle: §c0.0%",
+			"§3Mithril Powder: §26,243",
+			"§3Gemstone Powder: §d6,243",
+			"§3Forge 1) §9Diamonite§7: §aReady!",
+			"§3Pickaxe CD: §a78s",
+			"§3Star Cult: §a78s",
+			"§3Sky Mall: §a5x Titanium (78s)"
 		}
 	)
 	@ConfigAccordionId(id = 2)
-	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5));
+	public List<Integer> dwarvenText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
 
 	@Expose
 	public Position overlayPosition = new Position(10, 100);

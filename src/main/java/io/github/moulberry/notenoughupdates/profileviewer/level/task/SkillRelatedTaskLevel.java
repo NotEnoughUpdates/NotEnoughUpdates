@@ -43,13 +43,6 @@ public class SkillRelatedTaskLevel {
 		JsonObject skillRelatedTask = levelPage.getConstant().get("skill_related_task").getAsJsonObject();
 		JsonObject miningObj = skillRelatedTask.get("mining").getAsJsonObject();
 
-		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_mithril"), 0);
-		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_gemstone"), 0);
-		float mithril = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_mithril"), 0) +
-			mithrilPowder;
-		float gemstone = (Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_gemstone"), 0)) +
-			gemstonePowder;
-
 		float hotmXp = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.experience"), 0);
 		ProfileViewer.Level levelObjHotm =
 			ProfileViewer.getLevel(
@@ -66,29 +59,31 @@ public class SkillRelatedTaskLevel {
 			hotmXP += hotmXpArray.get(i - 1).getAsInt();
 		}
 
-		int gainByFirstMithrilThing;
-		if (mithril >= 350_000) {
-			gainByFirstMithrilThing = (int) (350000 / 2400d);
-			mithril -= 350_000;
-		} else {
-			gainByFirstMithrilThing = (int) (mithril / 2400d);
-			mithril = 0;
-		}
+		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_mithril"), 0);
+		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_gemstone"), 0);
+		float mithril = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_mithril"), 0) +
+			mithrilPowder;
+		float gemstone = (Utils.getElementAsFloat(Utils.getElement(object, "mining_core.powder_spent_gemstone"), 0)) +
+			gemstonePowder;
 
-		int gainByFirstGemstoneThing;
-		if (gemstone >= 350_000) {
-			gainByFirstGemstoneThing = (int) (350_000 / 2500d);
-			gemstone -= 350_000;
-		} else {
-			gainByFirstGemstoneThing = (int) (gemstone / 2500d);
-			gemstone = 0;
-		}
+		// PUNKT NULL
 
-		int sbXpMithrilPowder = (int) powder(3.75, mithril, 12_500_000);
-		int sbXpGemstonePowder = (int) powder(4.25, gemstone, 20_000_000);
+		double totalMithril = mithril + mithrilPowder;
+		double totalGemstone = gemstone + gemstonePowder;
+		double mithrilUnder = Math.min(350000.0, totalMithril);
+		double mithrilOver = Math.max(0, Math.min(totalMithril, 12_500_000.0) - 350000.0);
+		double gemstoneUnder = Math.min(350000.0, totalGemstone);
+		double gemstoneOver = Math.max(0, Math.min(totalGemstone, 20_000_000.0) - 350000.0);
+
+		double mithrilXP = Math.floor(mithrilUnder / 2400.0);
+		double gemstoneXP = Math.floor(gemstoneUnder / 2500.0);
+		double mithrilExcess = Math.floor(
+			3.75 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 12_500_000.0) * mithrilOver + 9)) - 3));
+		double gemstoneExcess = Math.floor(
+			4.25 * (Math.sqrt(1 + 8 * Math.sqrt((1758267.0 / 20_000_000.0) * gemstoneOver + 9)) - 3));
 
 		double sbXpHotmTier =
-			(sbXpMithrilPowder + gainByFirstMithrilThing) + (sbXpGemstonePowder + gainByFirstGemstoneThing)
+			(mithrilXP + mithrilExcess) + (gemstoneXP + gemstoneExcess)
 				+ hotmXP;
 
 		int sbXpPotmTier = 0;
@@ -171,6 +166,18 @@ public class SkillRelatedTaskLevel {
 			}
 		}
 
+		int sbXpNucleus = 0;
+		JsonObject leveling = object.getAsJsonObject("leveling");
+		if (leveling != null && leveling.has("completions") && leveling.getAsJsonObject("completions").has("NUCLEUS_RUNS")) {
+			int nucleusRuns = leveling.getAsJsonObject("completions").get("NUCLEUS_RUNS").getAsInt();
+			JsonElement nucleusXp = miningObj.get("crystal_nucleus_xp");
+			if (nucleusXp == null) {
+				Utils.showOutdatedRepoNotification();
+			} else {
+				sbXpNucleus += nucleusRuns * nucleusXp.getAsInt();
+			}
+		}
+
 		List<String> lore = new ArrayList<>();
 		lore.add(levelPage.buildLore("Heart of the Mountain", sbXpHotmTier, miningObj.get("hotm").getAsInt(), false));
 		lore.add(levelPage.buildLore(
@@ -179,7 +186,7 @@ public class SkillRelatedTaskLevel {
 			miningObj.get("commission_milestone").getAsInt(),
 			false
 		));
-		lore.add(levelPage.buildLore("Crystal Nucleus", 0, 0, false));
+		lore.add(levelPage.buildLore("Crystal Nucleus", sbXpNucleus, miningObj.get("crystal_nucleus").getAsInt(), false));
 		lore.add(levelPage.buildLore(
 			"Anita's Shop Upgrade",
 			sbXpGainedByAnita,
@@ -189,37 +196,22 @@ public class SkillRelatedTaskLevel {
 		lore.add(levelPage.buildLore("Peak of the Mountain", sbXpPotmTier, miningObj.get("potm").getAsInt(), false));
 		lore.add(levelPage.buildLore("Trophy Fish", sbXpTrophyFish, fishingObj.get("trophy_fish").getAsInt(), false));
 		lore.add(levelPage.buildLore("Rock Milestone", sbXpRockPet, miningObj.get("rock_milestone").getAsInt(), false));
-		lore.add(levelPage.buildLore(
-			"Dolphin Milestone",
-			sbXpDolphinPet,
-			fishingObj.get("dolphin_milestone").getAsInt(),
-			false
-		));
+		lore.add(levelPage.buildLore("Dolphin Milestone", sbXpDolphinPet, fishingObj.get("dolphin_milestone").getAsInt(), false));
 
+		int totalXp =
+			(int) (sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
+				sbXpDolphinPet + sbXpNucleus);
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
-			guiLeft + 23,
-			guiTop + 115,
+			guiLeft + 23, guiTop + 115,
 			110,
 			0,
-			sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
-				sbXpDolphinPet,
+			totalXp,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("skill_related_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);
 	}
-
-	private static double powder(double multiplier, float left, int CAP) {
-		double cons = 1758267;
-		if (left <= 0) return 0;
-
-		left = Math.min(CAP, left);
-
-		return multiplier * (Math.sqrt(1 + 8 * (Math.sqrt((cons / CAP) * left + 9))) - 3);
-	}
-
 }

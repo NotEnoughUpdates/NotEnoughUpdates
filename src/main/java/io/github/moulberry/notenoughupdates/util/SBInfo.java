@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
+import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
@@ -86,6 +87,7 @@ public class SBInfo {
 	public String objective = "";
 	public String slayer = "";
 	public boolean stranded = false;
+	public boolean bingo = false;
 
 	public String mode = null;
 
@@ -389,6 +391,7 @@ public class SBInfo {
 			isInDungeon = tempIsInDungeon;
 
 			boolean containsStranded = false;
+			boolean containsBingo = false;
 			for (String line : lines) { //Slayer stuff
 				if (line.contains("Tarantula Broodfather")) {
 					slayer = "Tarantula";
@@ -423,8 +426,10 @@ public class SBInfo {
 					}
 				}
 				if (line.contains("☀ Stranded")) containsStranded = true;
+				if (line.contains("Ⓑ Bingo")) containsBingo = true;
 			}
 			stranded = containsStranded;
+			bingo = containsBingo;
 
 			if (lines.size() >= 5) {
 				date = Utils.cleanColour(lines.get(1)).trim();
@@ -482,6 +487,7 @@ public class SBInfo {
 		if (!newProfile.equals(currentProfile)) {
 			currentProfile = newProfile;
 			MinionHelperManager.getInstance().onProfileSwitch();
+			CookieWarning.onProfileSwitch();
 		}
 	}
 }

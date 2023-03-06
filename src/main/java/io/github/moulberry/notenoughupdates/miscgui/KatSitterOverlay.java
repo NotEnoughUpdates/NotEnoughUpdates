@@ -95,11 +95,10 @@ public class KatSitterOverlay {
 		) : currentWidth);
 		GlStateManager.disableLighting();
 		GlStateManager.color(1F, 1F, 1F, 1F);
-		Utils.drawStringScaled(currentText, font, left, ((AccessorGuiContainer) gui).getGuiTop() + 25, false, 0xFFD700, 1F);
+		Utils.drawStringScaled(currentText, left, ((AccessorGuiContainer) gui).getGuiTop() + 25, false, 0xFFD700, 1F);
 		if (upgradedLevel != null)
 			Utils.drawStringScaled(
 				upgradedText,
-				font,
 				left,
 				((AccessorGuiContainer) gui).getGuiTop() + 45,
 				false,

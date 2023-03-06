@@ -277,7 +277,7 @@ public class EnchantingSolvers {
 										GlStateManager.disableDepth();
 										GlStateManager.enableBlend();
 										GlStateManager.disableLighting();
-										Utils.drawStringScaled((solveIndex + 1) + "", Minecraft.getMinecraft().fontRendererObj,
+										Utils.drawStringScaled((solveIndex + 1) + "",
 											x + 8.5f - w / 2f, y + 8.5f - 4, true, 0xffc0c0c0, 1f
 										);
 										return true;

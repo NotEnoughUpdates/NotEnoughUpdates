@@ -83,10 +83,7 @@ public class NotificationHandler {
 			int xLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth("[X] Close");
 			Minecraft.getMinecraft().fontRendererObj.drawString(
 				"[X] Close",
-				midX + width / 2f - 3 - xLen,
-				topY + 3,
-				0xFFFF5555,
-				false
+				midX + width / 2f - 3 - xLen, topY + 3, 0xFFFF5555, false
 			);
 
 			if (notificationDisplayMillis > 0) {
@@ -99,24 +96,10 @@ public class NotificationHandler {
 				);
 			}
 
-			Utils.drawStringCentered(
-				notificationLines.get(0),
-				Minecraft.getMinecraft().fontRendererObj,
-				midX,
-				topY + 4 + 5,
-				false,
-				-1
-			);
+			Utils.drawStringCentered(notificationLines.get(0), midX, topY + 4 + 5, false, -1);
 			for (int i = 1; i < notificationLines.size(); i++) {
 				String line = notificationLines.get(i);
-				Utils.drawStringCentered(
-					line,
-					Minecraft.getMinecraft().fontRendererObj,
-					midX,
-					topY + 4 + 5 + 2 + i * 10,
-					false,
-					-1
-				);
+				Utils.drawStringCentered(line, midX, topY + 4 + 5 + 2 + i * 10, false, -1);
 			}
 
 			Utils.pushGuiScale(-1);

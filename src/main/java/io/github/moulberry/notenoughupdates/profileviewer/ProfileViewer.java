@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import net.minecraft.init.Blocks;
@@ -36,7 +35,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
@@ -44,25 +42,21 @@ import net.minecraft.util.EnumChatFormatting;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class ProfileViewer {
 
@@ -544,6 +538,7 @@ public class ProfileViewer {
 		manager.apiUtils
 			.newHypixelApiRequest("player")
 			.queryArgument("name", nameF)
+			.maxCacheAge(Duration.ofSeconds(30))
 			.requestJson()
 			.thenAccept(jsonObject -> {
 					if (
@@ -703,98 +698,7 @@ public class ProfileViewer {
 				return -1;
 			}
 
-			Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(inventoryInfo
-				.get("talisman_bag")
-				.getAsJsonArray()).map(o -> {
-				try {
-					return JsonToNBT.getTagFromJson(o
-						.getAsJsonObject()
-						.get("nbttag")
-						.getAsString());
-				} catch (Exception ignored) {
-					return null;
-				}
-			}).filter(Objects::nonNull).map(tag -> {
-				NBTTagList loreTagList = tag.getCompoundTag("display").getTagList("Lore", 8);
-				String lastElement = loreTagList.getStringTagAt(loreTagList.tagCount() - 1);
-				if (lastElement.contains(EnumChatFormatting.OBFUSCATED.toString())) {
-					lastElement = lastElement.substring(lastElement.indexOf(' ')).trim().substring(4);
-				}
-				JsonArray lastElementJsonArray = new JsonArray();
-				lastElementJsonArray.add(new JsonPrimitive(lastElement));
-				return new AbstractMap.SimpleEntry<>(
-					tag.getCompoundTag("ExtraAttributes").getString("id"),
-					Utils.getRarityFromLore(lastElementJsonArray)
-				);
-			}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(
-				Map.Entry::getKey,
-				Map.Entry::getValue,
-				(v1, v2) -> v1,
-				LinkedHashMap::new
-			));
-
-			Set<String> ignoredTalismans = new HashSet<>();
-			int powerAmount = 0;
-			for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
-				if (ignoredTalismans.contains(entry.getKey())) {
-					continue;
-				}
-
-				JsonArray children = Utils
-					.getElementOrDefault(Constants.PARENTS, entry.getKey(), new JsonArray())
-					.getAsJsonArray();
-				for (JsonElement child : children) {
-					ignoredTalismans.add(child.getAsString());
-				}
-
-				if (entry.getKey().equals("HEGEMONY_ARTIFACT")) {
-					switch (entry.getValue()) {
-						case 4:
-							powerAmount += 16;
-							break;
-						case 5:
-							powerAmount += 22;
-							break;
-					}
-				}
-				if (entry.getKey().equals("ABICASE")) {
-					if (profileInfo != null && profileInfo.has("nether_island_player_data") &&
-						profileInfo.get("nether_island_player_data").getAsJsonObject().has("abiphone") && profileInfo
-						.get(
-							"nether_island_player_data")
-						.getAsJsonObject()
-						.get("abiphone")
-						.getAsJsonObject()
-						.has("active_contacts")) { // BatChest
-						int contact =
-							profileInfo.get("nether_island_player_data").getAsJsonObject().get("abiphone").getAsJsonObject().get(
-								"active_contacts").getAsJsonArray().size();
-						powerAmount += Math.floor(contact / 2);
-					}
-				}
-				switch (entry.getValue()) {
-					case 0:
-					case 6:
-						powerAmount += 3;
-						break;
-					case 1:
-					case 7:
-						powerAmount += 5;
-						break;
-					case 2:
-						powerAmount += 8;
-						break;
-					case 3:
-						powerAmount += 12;
-						break;
-					case 4:
-						powerAmount += 16;
-						break;
-					case 5:
-						powerAmount += 22;
-						break;
-				}
-			}
+			int powerAmount = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
 			magicalPower.put(profileId, powerAmount);
 			return powerAmount;
 		}
@@ -1059,30 +963,29 @@ public class ProfileViewer {
 			}
 
 			double skyblockLevel = getSkyblockLevel(profileName);
+			EnumChatFormatting levelColour = EnumChatFormatting.WHITE;
 
-			EnumChatFormatting previousColor = EnumChatFormatting.WHITE;
 			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
 				Utils.showOutdatedRepoNotification();
 				return EnumChatFormatting.WHITE;
 			}
+
 			JsonObject sblevelColours = Constants.SBLEVELS.getAsJsonObject("sblevel_colours");
 			try {
 				for (Map.Entry<String, JsonElement> stringJsonElementEntry : sblevelColours.entrySet()) {
-					int key = Integer.parseInt(stringJsonElementEntry.getKey());
+					int nextLevelBracket = Integer.parseInt(stringJsonElementEntry.getKey());
 					EnumChatFormatting valueByName = EnumChatFormatting.getValueByName(stringJsonElementEntry
 						.getValue()
 						.getAsString());
-					if (skyblockLevel <= key) {
-						skyBlockExperienceColour.put(profileName, previousColor);
-						return previousColor;
+					if (skyblockLevel >= nextLevelBracket) {
+						levelColour = valueByName;
 					}
-					previousColor = valueByName;
 				}
 			} catch (RuntimeException ignored) {
 				// catch both numberformat and getValueByName being wrong
 			}
-			skyBlockExperienceColour.put(profileName, EnumChatFormatting.WHITE);
-			return EnumChatFormatting.WHITE;
+			skyBlockExperienceColour.put(profileName, levelColour);
+			return levelColour;
 		}
 
 		public double getSkyblockLevel(String profileName) {

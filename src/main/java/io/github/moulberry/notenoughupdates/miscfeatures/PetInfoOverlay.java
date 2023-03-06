@@ -473,12 +473,18 @@ public class PetInfoOverlay extends TextOverlay {
 			}
 		}
 		JsonObject pets = Constants.PETS;
-		if (pets != null && pets.has("custom_pet_leveling") && pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase()) &&
-			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().has("xp_multiplier")) {
-			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().get("xp_multiplier").getAsFloat();
+		if (pets != null && pets.has("custom_pet_leveling") &&
+			pets.get("custom_pet_leveling").getAsJsonObject().has(pet.petType.toUpperCase()) &&
+			pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().has(
+				"xp_multiplier")) {
+			xp *= pets.get("custom_pet_leveling").getAsJsonObject().get(pet.petType.toUpperCase()).getAsJsonObject().get(
+				"xp_multiplier").getAsFloat();
 		}
 		return xp;
 	}
+
+	private int firstPetLines = 0;
+	private int secondPetLines = 0;
 
 	@Override
 	public void updateFrequent() {
@@ -486,16 +492,25 @@ public class PetInfoOverlay extends TextOverlay {
 		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo || currentPet == null) {
 			overlayStrings = null;
 		} else {
+			firstPetLines = 0;
+			secondPetLines = 0;
 			overlayStrings = new ArrayList<>();
 
 			overlayStrings.addAll(createStringsForPet(currentPet, false));
+			firstPetLines = overlayStrings.size();
 
 			Pet currentPet2 = getCurrentPet2();
 			if (currentPet2 != null) {
 				overlayStrings.add("");
+				if (firstPetLines == 1) {
+					overlayStrings.add("");
+				}
 				overlayStrings.addAll(createStringsForPet(currentPet2, true));
+				secondPetLines = overlayStrings.size() - firstPetLines - 1;
+				if (firstPetLines == 1) {
+					secondPetLines--;
+				}
 			}
-
 		}
 	}
 
@@ -519,14 +534,20 @@ public class PetInfoOverlay extends TextOverlay {
 				currentPet.rarity.chatFormatting +
 				WordUtils.capitalizeFully(currentPet.petType.replace("_", " "));
 
-		String lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(levelXp) + "/" +
-			roundFloat(currentPet.petLevel.getExpRequiredForNextLevel())
-			+ EnumChatFormatting.YELLOW + " (" + getLevelPercent(currentPet) + "%)";
+		float levelPercent = getLevelPercent(currentPet);
+		String lvlStringShort = null;
+		String lvlString = null;
 
-		String lvlString = EnumChatFormatting.AQUA + "" +
-			Utils.shortNumberFormat(Math.min(levelXp, currentPet.petLevel.getExpRequiredForNextLevel()), 0) + "/" +
-			Utils.shortNumberFormat(currentPet.petLevel.getExpRequiredForNextLevel(), 0)
-			+ EnumChatFormatting.YELLOW + " (" + getLevelPercent(currentPet) + "%)";
+		if (levelPercent != 100 || !NotEnoughUpdates.INSTANCE.config.petOverlay.hidePetLevelProgress) {
+			lvlStringShort = EnumChatFormatting.AQUA + "" + roundFloat(levelXp) + "/" +
+				roundFloat(currentPet.petLevel.getExpRequiredForNextLevel())
+				+ EnumChatFormatting.YELLOW + " (" + levelPercent + "%)";
+
+			lvlString = EnumChatFormatting.AQUA + "" +
+				Utils.shortNumberFormat(Math.min(levelXp, currentPet.petLevel.getExpRequiredForNextLevel()), 0) + "/" +
+				Utils.shortNumberFormat(currentPet.petLevel.getExpRequiredForNextLevel(), 0)
+				+ EnumChatFormatting.YELLOW + " (" + levelPercent + "%)";
+		}
 
 		float xpGain;
 		if (!secondPet) {
@@ -593,6 +614,8 @@ public class PetInfoOverlay extends TextOverlay {
 		String finalEtaMaxStr = etaMaxStr;
 		String finalXpGainString = xpGainString;
 		String finalPetItemStr = petItemStr;
+		String finalLvlString = lvlString;
+		String finalLvlStringShort = lvlStringShort;
 		return new ArrayList<String>() {{
 			for (int index : NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText) {
 				switch (index) {
@@ -600,10 +623,10 @@ public class PetInfoOverlay extends TextOverlay {
 						add(petName);
 						break;
 					case 1:
-						add(lvlStringShort);
+						if (finalLvlStringShort != null) add(finalLvlStringShort);
 						break;
 					case 2:
-						add(lvlString);
+						if (finalLvlString != null) add(finalLvlString);
 						break;
 					case 3:
 						add(finalXpGainString);
@@ -716,6 +739,10 @@ public class PetInfoOverlay extends TextOverlay {
 			GlStateManager.enableDepth();
 			GlStateManager.pushMatrix();
 			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+			if (firstPetLines == 1) y -= 9;
+			if (firstPetLines == 2) y -= 3;
+
 			GlStateManager.translate(x - 2, y - 2, 0);
 			GlStateManager.scale(2, 2, 1);
 			Utils.drawItemStack(stack, 0, 0);
@@ -730,12 +757,16 @@ public class PetInfoOverlay extends TextOverlay {
 			if (petItem2 != null) {
 				Vector2f position = getPosition(overlayWidth, overlayHeight, true);
 				int x = (int) position.x;
-				int y = (int) position.y + NotEnoughUpdates.INSTANCE.config.petOverlay.petOverlayText.size() * 10;
+				int y = (int) position.y + (overlayStrings.size() - secondPetLines) * 10;
 
 				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(petItem2);
 				GlStateManager.enableDepth();
 				GlStateManager.pushMatrix();
 				Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+				if (secondPetLines == 1) y -= 9;
+				if (secondPetLines == 2) y -= 3;
+
 				GlStateManager.translate(x - 2, y - 2, 0);
 				GlStateManager.scale(2, 2, 1);
 				Utils.drawItemStack(stack, 0, 0);
@@ -1114,7 +1145,7 @@ public class PetInfoOverlay extends TextOverlay {
 							PetInfoOverlay.config.selectedPet = -1;
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
-								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
 						}
 					}
 				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(

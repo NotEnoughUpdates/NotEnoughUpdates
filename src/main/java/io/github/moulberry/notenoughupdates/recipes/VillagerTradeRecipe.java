@@ -27,9 +27,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.EntityLivingBase;
@@ -135,10 +133,8 @@ public class VillagerTradeRecipe implements NeuRecipe {
 	@Override
 	public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
 		if (hasVariableCost()) {
-			FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 			Utils.drawStringCenteredScaledMaxWidth(
-				minCost + " - " + maxCost, fontRenderer,
-				gui.guiLeft + 50, gui.guiTop + 90, false, 75, 0xff00ff
+				minCost + " - " + maxCost, gui.guiLeft + 50, gui.guiTop + 90, false, 75, 0xff00ff
 			);
 
 		}

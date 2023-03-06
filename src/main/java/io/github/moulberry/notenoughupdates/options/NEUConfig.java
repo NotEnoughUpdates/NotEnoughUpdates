@@ -34,6 +34,8 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Garden;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
@@ -54,6 +56,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MinionHelper;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Museum;
 import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Notifications;
 import io.github.moulberry.notenoughupdates.options.seperateSections.PetOverlay;
@@ -73,7 +76,6 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
@@ -295,6 +297,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Garden",
+		desc = "Garden"
+	)
+	public Garden garden = new Garden();
+
+	@Expose
+	@Category(
 		name = "NEU Auction House",
 		desc = "NEU Auction House"
 	)
@@ -379,6 +388,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Museum",
+		desc = "Museum overlays"
+	)
+	public Museum museum = new Museum();
+
+	@Expose
+	@Category(
 		name = "Profile Viewer",
 		desc = "Profile Viewer"
 	)
@@ -437,6 +453,8 @@ public class NEUConfig extends Config {
 		public String selectedCape = null;
 		@Expose
 		public int compareMode = 0;
+		@Expose
+		public String customUserAgent = null;
 		@Expose
 		public int sortMode = 0;
 		@Expose
@@ -594,6 +612,9 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public boolean abiphoneShowOnlyFavourites = false;
+
+		@Expose
+		public Map<String, Integer> hotmTree = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {

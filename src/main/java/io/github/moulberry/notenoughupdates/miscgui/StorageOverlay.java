@@ -862,11 +862,11 @@ public class StorageOverlay extends GuiElement {
 				Gui.drawRect(storageX, storageY, storageX + 162, storageY + h, 0x80000000);
 
 				if (storageId < 9) {
-					Utils.drawStringCenteredScaledMaxWidth("Locked Page", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Locked Page",
 						storageX + 81, storageY + h / 2, true, 150, 0xd94c00
 					);
 				} else {
-					Utils.drawStringCenteredScaledMaxWidth("Empty Backpack Slot", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Empty Backpack Slot",
 						storageX + 81, storageY + h / 2, true, 150, 0xd94c00
 					);
 				}
@@ -889,7 +889,7 @@ public class StorageOverlay extends GuiElement {
 
 				Gui.drawRect(storageX, storageY, storageX + 162, storageY + h, 0x80000000);
 
-				Utils.drawStringCenteredScaledMaxWidth("Click to load items", fontRendererObj,
+				Utils.drawStringCenteredScaledMaxWidth("Click to load items",
 					storageX + 81, storageY + h / 2, true, 150, 0xffdf00
 				);
 			} else {
@@ -1233,35 +1233,35 @@ public class StorageOverlay extends GuiElement {
 
 				if (StorageManager.getInstance().desiredStoragePage == storageId &&
 					StorageManager.getInstance().onStorageMenu) {
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81 - 1, storageY + storageH / 2 - 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81 + 1, storageY + storageH / 2 - 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81, storageY + storageH / 2 - 5 - 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81, storageY + storageH / 2 - 5 + 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81, storageY + storageH / 2 - 5, false, 150, 0xffdf00
 					);
 
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81 - 1, storageY + storageH / 2 + 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81 + 1, storageY + storageH / 2 + 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81, storageY + storageH / 2 + 5 - 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81, storageY + storageH / 2 + 5 + 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81, storageY + storageH / 2 + 5, false, 150, 0xffdf00
 					);
 				}
@@ -1685,26 +1685,10 @@ public class StorageOverlay extends GuiElement {
 				}
 				GlStateManager.translate(0, 0, -100);
 			} else {
-				Utils.drawHoveringText(
-					tooltipToDisplay,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 			}
 		} else if (tooltipToDisplay != null) {
-			Utils.drawHoveringText(
-				tooltipToDisplay,
-				mouseX,
-				mouseY,
-				width,
-				height,
-				-1,
-				Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 		} else {
 			allowTypingInSearchBar = true;
 		}

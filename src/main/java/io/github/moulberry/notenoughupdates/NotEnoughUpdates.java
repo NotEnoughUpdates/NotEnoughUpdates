@@ -25,7 +25,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
@@ -52,6 +51,7 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -97,7 +97,7 @@ import java.util.Set;
 	guiFactory = "io.github.moulberry.notenoughupdates.core.config.MoulConfigGuiForgeInterop")
 public class NotEnoughUpdates {
 	public static final String MODID = "notenoughupdates";
-	public static final String VERSION = "2.1.0-REL";
+	public static final String VERSION = "2.1.1-PRE";
 	public static final int VERSION_ID = 20101; //2.1.1 only so update notif works
 	public static final int PRE_VERSION_ID = 0;
 	public static final int HOTFIX_VERSION_ID = 0;
@@ -158,7 +158,6 @@ public class NotEnoughUpdates {
 	public Navigation navigation = new Navigation(this);
 	public GuiScreen openGui = null;
 	public long lastOpenedGui = 0;
-	public Commands commands;
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
 	public AutoUpdater autoUpdater = new AutoUpdater(this);
@@ -281,7 +280,7 @@ public class NotEnoughUpdates {
 			manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
 		}
 
-		this.commands = new Commands();
+		BrigadierRoot.INSTANCE.updateHooks();
 
 		BackgroundBlur.registerListener();
 
