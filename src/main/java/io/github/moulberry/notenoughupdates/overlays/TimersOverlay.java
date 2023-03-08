@@ -944,7 +944,7 @@ public class TimersOverlay extends TextTabOverlay {
 	}
 
 	public static void processActionBar(String msg) {
-		if (SBInfo.getInstance().location.equals("Belly of the Beast")) {
+		if (SBInfo.getInstance().location.equals("Belly of the Beast") && msg.contains("Pearls Collected")) {
 			try {
 				msg = Utils.cleanColour(msg);
 				msg = msg.substring(msg.indexOf("Pearls Collected: ") + 18);
