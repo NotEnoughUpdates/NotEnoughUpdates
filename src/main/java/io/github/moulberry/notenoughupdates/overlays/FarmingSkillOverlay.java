@@ -333,8 +333,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 			while (cropsOverLastXSeconds.size() > 60) {
 				cropsOverLastXSeconds.remove(0);
 			}
-			if ((first - last) / 3f != 0) {
-				cropsOverLastXSeconds.add((first - last) / 3f);
+			if ((first - last) / 2f != 0) {
+				cropsOverLastXSeconds.add((first - last) / 2f);
 			} else {
 				if (cropsPerSecondLast == 0) {
 					//This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
