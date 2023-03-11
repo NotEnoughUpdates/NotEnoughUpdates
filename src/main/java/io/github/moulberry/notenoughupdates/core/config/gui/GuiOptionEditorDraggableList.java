@@ -25,7 +25,6 @@ import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -93,10 +92,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(button_tex);
 		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
 
-		TextRenderUtils.drawStringCenteredScaledMaxWidth("Add", Minecraft.getMinecraft().fontRendererObj,
-			x + width / 6, y + 45 - 7 - 6,
-			false, 44, 0xFF303030
-		);
+		TextRenderUtils.drawStringCenteredScaledMaxWidth("Add", x + width / 6, y + 45 - 7 - 6, false, 44, 0xFF303030);
 
 		long currentTime = System.currentTimeMillis();
 		if (trashHoverTime < 0) {
@@ -128,7 +124,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			if (i++ != dragStartIndex) {
 				for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
 					String line = multilines[multilineIndex];
-					Utils.drawStringScaledMaxWidth(line + EnumChatFormatting.RESET, Minecraft.getMinecraft().fontRendererObj,
+					Utils.drawStringScaledMaxWidth(
+						line + EnumChatFormatting.RESET,
 						x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
 					);
 				}
@@ -156,7 +153,6 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			}
 			remaining.removeAll(activeText);
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 			int dropdownWidth = Math.min(width / 2 - 10, 150);
 			int left = dragOffsetX;
 			int top = dragOffsetY;
@@ -184,7 +180,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 					str = "<NONE>";
 				}
 				TextRenderUtils.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
-					fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
+					left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
 				);
 				dropdownY += 12;
 			}
@@ -215,7 +211,6 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 				String line = multilines[multilineIndex];
 				Utils.drawStringScaledMaxWidth(
 					line + EnumChatFormatting.RESET,
-					Minecraft.getMinecraft().fontRendererObj,
 					dragOffsetX + mouseX + 10,
 					dragOffsetY + mouseY + multilineIndex * 10,
 					true,

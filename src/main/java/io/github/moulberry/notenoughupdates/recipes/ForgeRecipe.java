@@ -31,7 +31,6 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -148,11 +147,9 @@ public class ForgeRecipe implements NeuRecipe {
 
 	@Override
 	public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		if (timeInSeconds > 0)
 			Utils.drawStringCenteredScaledMaxWidth(
 				formatDuration(timeInSeconds),
-				fontRenderer,
 				gui.guiLeft + EXTRA_INFO_X,
 				gui.guiTop + EXTRA_INFO_Y,
 				false,
@@ -180,11 +177,7 @@ public class ForgeRecipe implements NeuRecipe {
 		Utils.drawHoveringText(
 			Collections.singletonList(
 				EnumChatFormatting.YELLOW + formatDuration(reducedTime) + " with Quick Forge (Level " + level + ")"),
-			mouseX, mouseY,
-			gui.width, gui.height,
-			500,
-			Minecraft.getMinecraft().fontRendererObj
-		);
+			mouseX, mouseY, gui.width, gui.height, 500);
 	}
 
 	public int getReducedTime(int quickForgeUpgradeLevel) {

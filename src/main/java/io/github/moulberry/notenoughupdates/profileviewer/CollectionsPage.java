@@ -36,9 +36,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -96,11 +94,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		if (collectionInfo == null) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "Collection API not enabled!",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 134,
-				guiTop + 101,
-				true,
-				0
+				guiLeft + 134, guiTop + 101, true, 0
 			);
 			return;
 		}
@@ -195,11 +189,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 
 		Utils.drawStringCentered(
 			selectedCollectionCategory.getDisplayName() + " Collections",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 134,
-			guiTop + 14,
-			true,
-			4210752
+			guiLeft + 134, guiTop + 14, true, 4210752
 		);
 
 		if (collections != null) {
@@ -292,35 +282,16 @@ public class CollectionsPage extends GuiProfileViewerPage {
 
 				GlStateManager.color(1, 1, 1, 1);
 				if (tier >= 0) {
-					Utils.drawStringCentered(
-						tierString,
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + x + 10,
-						guiTop + y - 4,
-						true,
-						tierStringColour
-					);
+					Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
 				}
 
 				Utils.drawStringCentered(
-					StringUtils.shortNumberFormat(amount) + "",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + x + 10,
-					guiTop + y + 26,
-					true,
-					color.getRGB()
-				);
+					StringUtils.shortNumberFormat(amount) + "", guiLeft + x + 10, guiTop + y + 26, true, color.getRGB());
 			}
 		}
 
 		Utils.drawStringCentered(
-			selectedCollectionCategory.getDisplayName() + " Minions",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 326,
-			guiTop + 14,
-			true,
-			4210752
-		);
+			selectedCollectionCategory.getDisplayName() + " Minions", guiLeft + 326, guiTop + 14, true, 4210752);
 
 		if (minions != null) {
 			for (int i = page * 20, j = 0; i < Math.min((page + 1) * 20, minions.size()); i++, j++) {
@@ -409,14 +380,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 
 				GlStateManager.color(1, 1, 1, 1);
 				if (tier >= 0) {
-					Utils.drawStringCentered(
-						tierString,
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + x + 10,
-						guiTop + y - 4,
-						true,
-						tierStringColour
-					);
+					Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
 				}
 			}
 		}
@@ -426,15 +390,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			for (String line : tooltipToDisplay) {
 				grayTooltip.add(EnumChatFormatting.GRAY + line);
 			}
-			Utils.drawHoveringText(
-				grayTooltip,
-				mouseX,
-				mouseY,
-				getInstance().width,
-				getInstance().height,
-				-1,
-				Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, getInstance().width, getInstance().height, -1);
 			tooltipToDisplay = null;
 		}
 	}

@@ -92,14 +92,7 @@ public class RancherBootOverlay {
 				selectedIndex == i ? 0xff0000ff : 0xff808080
 			);
 			Utils.drawItemStack(new ItemStack(Items.carrot), iconsLeft + i * 25 + 2, topY + 25 + 2);
-			Utils.drawStringCentered(
-				"" + currentSpeeds.get(i),
-				Minecraft.getMinecraft().fontRendererObj,
-				iconsLeft + i * 25 + 10,
-				topY + 52,
-				true,
-				0xffffffff
-			);
+			Utils.drawStringCentered("" + currentSpeeds.get(i), iconsLeft + i * 25 + 10, topY + 52, true, 0xffffffff);
 			//Minecraft.getMinecraft().fontRendererObj.drawString("\u2710", iconsLeft+i*25+15, topY+40, 0xffffff, false);
 		}
 

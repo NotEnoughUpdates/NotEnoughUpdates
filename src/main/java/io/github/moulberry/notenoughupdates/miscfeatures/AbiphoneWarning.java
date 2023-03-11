@@ -120,29 +120,24 @@ public class AbiphoneWarning extends GuiElement {
 		int neuLength = Minecraft.getMinecraft().fontRendererObj.getStringWidth("\u00a7lNEU");
 		Minecraft.getMinecraft().fontRendererObj.drawString(
 			"\u00a7lNEU",
-			width / 2 + 90 - neuLength - 3,
-			height / 2 - 45 + 4,
-			0xff000000
+			width / 2 + 90 - neuLength - 3, height / 2 - 45 + 4, 0xff000000
 		);
 
-		TextRenderUtils.drawStringCenteredScaledMaxWidth("Are you SURE?", Minecraft.getMinecraft().fontRendererObj,
+		TextRenderUtils.drawStringCenteredScaledMaxWidth(
+			"Are you SURE?",
 			width / 2, height / 2 - 45 + 10, false, 170, 0xffff4040
 		);
 
 		String sellLine = "\u00a77[ \u00a7r" + contactName + "\u00a77 ]";
 
-		TextRenderUtils.drawStringCenteredScaledMaxWidth(sellLine, Minecraft.getMinecraft().fontRendererObj,
+		TextRenderUtils.drawStringCenteredScaledMaxWidth(
+			sellLine,
 			width / 2, height / 2 - 45 + 25, false, 170, 0xffffffff
 		);
 
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			"Continue removing this contact?",
-			Minecraft.getMinecraft().fontRendererObj,
-			width / 2,
-			height / 2 - 45 + 50,
-			false,
-			170,
-			0xffa0a0a0
+			width / 2, height / 2 - 45 + 50, false, 170, 0xffa0a0a0
 		);
 
 		RenderUtils.drawFloatingRectDark(width / 2 - 43, height / 2 + 23, 40, 16, false);
@@ -150,21 +145,11 @@ public class AbiphoneWarning extends GuiElement {
 
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			EnumChatFormatting.GREEN + "[Y]es",
-			Minecraft.getMinecraft().fontRendererObj,
-			width / 2 - 23,
-			height / 2 + 31,
-			true,
-			36,
-			0xff00ff00
+			width / 2 - 23, height / 2 + 31, true, 36, 0xff00ff00
 		);
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			EnumChatFormatting.RED + "[N]o",
-			Minecraft.getMinecraft().fontRendererObj,
-			width / 2 + 23,
-			height / 2 + 31,
-			true,
-			36,
-			0xffff0000
+			width / 2 + 23, height / 2 + 31, true, 36, 0xffff0000
 		);
 
 		GlStateManager.popMatrix();

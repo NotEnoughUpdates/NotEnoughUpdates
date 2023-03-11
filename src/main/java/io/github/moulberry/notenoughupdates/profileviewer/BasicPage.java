@@ -317,19 +317,13 @@ public class BasicPage extends GuiProfileViewerPage {
 		int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
 		if (networth > 0) {
 			if (fontWidth >= 117) {
-
 				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
 					GuiProfileViewer.numberFormat.format(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
-
 			} else {
 				Utils.drawStringCentered(
 					EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
 						GuiProfileViewer.numberFormat.format(networth),
-					fr,
-					guiLeft + 68,
-					guiTop + 38,
-					true,
-					0
+					guiLeft + 68, guiTop + 38, true, 0
 				);
 			}
 			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo("BOOSTER_COOKIE") != null &&
@@ -400,11 +394,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			} else {
 				Utils.drawStringCentered(
 					EnumChatFormatting.GREEN + "Net Worth: " + stateStr,
-					fr,
-					guiLeft + 63,
-					guiTop + 38,
-					true,
-					0
+					guiLeft + 63, guiTop + 38, true, 0
 				);
 			}
 		}
@@ -440,7 +430,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				statusStr += EnumChatFormatting.GRAY + " - " + EnumChatFormatting.GREEN + locationStr;
 			}
 
-			Utils.drawStringCentered(statusStr, fr, guiLeft + 63, guiTop + 160, true, 0);
+			Utils.drawStringCentered(statusStr, guiLeft + 63, guiTop + 160, true, 0);
 		}
 
 		if (entityPlayer == null) {
@@ -600,14 +590,14 @@ public class BasicPage extends GuiProfileViewerPage {
 		GlStateManager.scale(1.5f, 1.5f, 1);
 		Utils.drawItemStack(skull, 0, 0);
 		GlStateManager.popMatrix();
-		Utils.drawStringCenteredScaled(skyblockLevelColour.toString() + (int) skyblockLevel, fr,
+		Utils.drawStringCenteredScaled(skyblockLevelColour.toString() + (int) skyblockLevel,
 			sbLevelX + 9, sbLevelY - 12, true, 1.5f
 		);
 
 		float progress = (float) (skyblockLevel - (long) skyblockLevel);
 		getInstance().renderBar(sbLevelX - 30, sbLevelY + 30, 80, progress);
 
-		Utils.drawStringScaled(EnumChatFormatting.YELLOW.toString() + (int) (progress * 100) + "/100", fr,
+		Utils.drawStringScaled(EnumChatFormatting.YELLOW.toString() + (int) (progress * 100) + "/100",
 			sbLevelX - 30, sbLevelY + 20, true, 0, 0.9f
 		);
 
@@ -723,11 +713,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		} else {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "Skills API not enabled!",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 322,
-				guiTop + 101,
-				true,
-				0
+				guiLeft + 322, guiTop + 101, true, 0
 			);
 		}
 
@@ -808,11 +794,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				"Senither Weight: " +
 				EnumChatFormatting.GOLD +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
-			fr,
-			guiLeft + 63,
-			guiTop + 18,
-			true,
-			0
+			guiLeft + 63, guiTop + 18, true, 0
 		);
 
 		int textWidth = fr.getStringWidth(
@@ -873,14 +855,9 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
-				"Lily Weight: " +
-				EnumChatFormatting.GOLD +
+				"Lily Weight: " + EnumChatFormatting.GOLD +
 				GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
-			fr,
-			guiLeft + 63,
-			guiTop + 28,
-			true,
-			0
+			guiLeft + 63, guiTop + 28, true, 0
 		);
 
 		int fontWidth = fr.getStringWidth(
