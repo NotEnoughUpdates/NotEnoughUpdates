@@ -171,7 +171,7 @@ class DevTestCommand {
             }
             thenLiteralExecute("dev") {
                 NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev
-                reply("§e[NEU] Dev mode " + if (NotEnoughUpdates.INSTANCE.config.hidden.dev) "§aenabled" else "§cdisabled")
+                reply("Dev mode " + if (NotEnoughUpdates.INSTANCE.config.hidden.dev) "§aenabled" else "§cdisabled")
             }.withHelp("Toggle developer mode")
             thenLiteralExecute("saveconfig") {
                 NotEnoughUpdates.INSTANCE.saveConfig()
@@ -212,7 +212,7 @@ class DevTestCommand {
                 MiscUtils.copyToClipboard(tabList)
                 reply("Copied tablist to clipboard!")
             }.withHelp("Copy the tab list")
-            thenLiteralExecute("useragent") {
+            thenLiteral("useragent") {
                 thenArgumentExecute("newuseragent", RestArgumentType) { userAgent ->
                     reply("Setting your user agent to ${this[userAgent]}")
                     NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = this[userAgent]
