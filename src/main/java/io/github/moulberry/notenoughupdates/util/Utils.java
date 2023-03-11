@@ -27,7 +27,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.miscfeatures.DiscordWebhook;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Discord;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -232,7 +234,20 @@ public class Utils {
 	public static boolean getHasEffectOverride() {
 		return hasEffectOverride;
 	}
-
+	public static void sendWebhook(DiscordWebhook.EmbedObject embed){
+		Thread t = new Thread(() -> {
+			try {
+				DiscordWebhook webhook = new DiscordWebhook(
+					NotEnoughUpdates.INSTANCE.config.discord.webhookUrl);
+				webhook.setAvatarUrl("https://mc-heads.net/avatar/"+Minecraft.getMinecraft().thePlayer.getName());
+				webhook.setUsername(Minecraft.getMinecraft().thePlayer.getName()+"'s slave");
+				webhook.addEmbed(embed);
+				webhook.execute();
+			}catch (Exception e){
+				Utils.addChatMessage("Webhook failed!");
+			}});
+		t.start();
+	}
 	public static void drawItemStackWithoutGlint(ItemStack stack, int x, int y) {
 		RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
 

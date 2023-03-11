@@ -262,18 +262,7 @@ public class SkillOverlays {
 	@ConfigAccordionId(id = 3)
 	public int fishKey = Keyboard.KEY_END;
 
-	@Expose
-	@ConfigOption(
-		name = "Fishing Timer Alert",
-		desc = "Change the amount of time (seconds) until the timer dings"
-	)
-	@ConfigEditorSlider(
-		minValue = 0,
-		maxValue = 600,
-		minStep = 20
-	)
-	@ConfigAccordionId(id = 3)
-	public int customFishTimer = 300;
+
 
 	@ConfigOption(
 		name = "Combat",

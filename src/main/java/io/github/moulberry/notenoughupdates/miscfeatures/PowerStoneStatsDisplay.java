@@ -106,84 +106,84 @@ public class PowerStoneStatsDisplay {
 		}
 	}
 
-	@SubscribeEvent
-	public void onItemTooltipLow(ItemTooltipEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.powerStoneStats) return;
-
-		ItemStack itemStack = event.itemStack;
-		if (itemStack == null) return;
-		List<String> lore = ItemUtils.getLore(itemStack);
-
-		boolean isPowerStone = false;
-		for (String line : lore) {
-			if (line.equals("§8Power Stone")) {
-				isPowerStone = true;
-				break;
-			}
-		}
-
-		if (!isPowerStone) return;
-
-		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
-		if (configProfileSpecific == null) return;
-
-		int magicalPower = configProfileSpecific.magicalPower;
-		if (magicalPower < 1) return;
-
-		double scaledMagicalPower = scalePower(magicalPower);
-		double scaledCurrentPower = 0.0;
-
-		int index = 0;
-		boolean foundMagicalPower = false;
-		for (String line : new LinkedList<>(lore)) {
-			index++;
-			line = line.replace("§k", "");
-
-			if (line.startsWith("§7At ")) {
-
-				String rawNumber = StringUtils.substringBetween(StringUtils.cleanColour(line), "At ", " Magical");
-				if (rawNumber == null) return;
-
-				//This ignores old repo entries in the item browser from neu
-				if (rawNumber.equals("mmm")) return;
-
-				try {
-					scaledCurrentPower = scalePower(StringUtils.cleanAndParseInt(rawNumber));
-				} catch (NumberFormatException ignored) {
-					return;
-				}
-
-				event.toolTip.set(index, "§7At §6" + format.format((double) magicalPower) + " Magical Power§7:");
-				foundMagicalPower = true;
-				continue;
-			}
-
-			if (!foundMagicalPower) continue;
-
-			String cleanLine = StringUtils.cleanColour(line);
-			if (cleanLine.equals("")) {
-				break;
-			}
-
-			for (String operator : new String[]{"+", "-"}) {
-				if (!cleanLine.startsWith(operator)) continue;
-				String rawStat = StringUtils.cleanColour(StringUtils.substringBetween(line, operator, " "));
-
-				double currentStat;
-				try {
-					currentStat = 0.0 + StringUtils.cleanAndParseInt(rawStat.substring(0, rawStat.length() - 1));
-				} catch (NumberFormatException ignored) {
-					continue;
-				}
-				double realStat = (currentStat / scaledCurrentPower) * scaledMagicalPower;
-
-				String format = this.format.format((double) Math.round(realStat));
-				format += rawStat.substring(rawStat.length() - 1);
-
-				event.toolTip.set(index, line.replace(rawStat, format));
-			}
-		}
-	}
+//	@SubscribeEvent
+//	public void onItemTooltipLow(ItemTooltipEvent event) {
+//		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.powerStoneStats) return;
+//
+//		ItemStack itemStack = event.itemStack;
+//		if (itemStack == null) return;
+//		List<String> lore = ItemUtils.getLore(itemStack);
+//
+//		boolean isPowerStone = false;
+//		for (String line : lore) {
+//			if (line.equals("§8Power Stone")) {
+//				isPowerStone = true;
+//				break;
+//			}
+//		}
+//
+//		if (!isPowerStone) return;
+//
+//		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+//		if (configProfileSpecific == null) return;
+//
+//		int magicalPower = configProfileSpecific.magicalPower;
+//		if (magicalPower < 1) return;
+//
+//		double scaledMagicalPower = scalePower(magicalPower);
+//		double scaledCurrentPower = 0.0;
+//
+//		int index = 0;
+//		boolean foundMagicalPower = false;
+//		for (String line : new LinkedList<>(lore)) {
+//			index++;
+//			line = line.replace("§k", "");
+//
+//			if (line.startsWith("§7At ")) {
+//
+//				String rawNumber = StringUtils.substringBetween(StringUtils.cleanColour(line), "At ", " Magical");
+//				if (rawNumber == null) return;
+//
+//				//This ignores old repo entries in the item browser from neu
+//				if (rawNumber.equals("mmm")) return;
+//
+//				try {
+//					scaledCurrentPower = scalePower(StringUtils.cleanAndParseInt(rawNumber));
+//				} catch (NumberFormatException ignored) {
+//					return;
+//				}
+//
+//				event.toolTip.set(index, "§7At §6" + format.format((double) magicalPower) + " Magical Power§7:");
+//				foundMagicalPower = true;
+//				continue;
+//			}
+//
+//			if (!foundMagicalPower) continue;
+//
+//			String cleanLine = StringUtils.cleanColour(line);
+//			if (cleanLine.equals("")) {
+//				break;
+//			}
+//
+//			for (String operator : new String[]{"+", "-"}) {
+//				if (!cleanLine.startsWith(operator)) continue;
+//				String rawStat = StringUtils.cleanColour(StringUtils.substringBetween(line, operator, " "));
+//
+//				double currentStat;
+//				try {
+//					currentStat = 0.0 + StringUtils.cleanAndParseInt(rawStat.substring(0, rawStat.length() - 1));
+//				} catch (NumberFormatException ignored) {
+//					continue;
+//				}
+//				double realStat = (currentStat / scaledCurrentPower) * scaledMagicalPower;
+//
+//				String format = this.format.format((double) Math.round(realStat));
+//				format += rawStat.substring(rawStat.length() - 1);
+//
+//				event.toolTip.set(index, line.replace(rawStat, format));
+//			}
+//		}
+//	}
 
 	private double scalePower(int magicalPower) {
 		return Math.pow(29.97 * (Math.log(0.0019 * magicalPower + 1)), 1.2);

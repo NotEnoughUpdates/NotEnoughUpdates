@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.DiscordWebhook;
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -40,6 +41,8 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
 
+import java.awt.*;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -398,7 +401,7 @@ public class FishingSkillOverlay
 				attenuationType = ISound.AttenuationType.NONE;
 			}};
 
-			int funnyCustomTimer = 1000 * NotEnoughUpdates.INSTANCE.config.skillOverlays.customFishTimer;
+			int funnyCustomTimer = 1000 * NotEnoughUpdates.INSTANCE.config.fishing.customFishTimer ;
 			if (KeybindHelper.isKeyPressed(key) && timer != 0 && System.currentTimeMillis() - timer > 1000) {
 				timer = 0;
 			} else if (KeybindHelper.isKeyPressed(key) && timer == 0) {
@@ -426,9 +429,6 @@ public class FishingSkillOverlay
 								NotEnoughUpdates.INSTANCE.config.fishing.autoFishing &&
 								NotEnoughUpdates.INSTANCE.config.fishing.autoKilling && !FishingHelper.paused) {
 								(Minecraft.getMinecraft()).thePlayer.inventory.currentItem = 1;
-								try {
-									Thread.sleep(1000L);
-								} catch (InterruptedException e) {}
 								FishingHelper.rightClick();
 								try {
 									Thread.sleep(1000L);
@@ -450,6 +450,24 @@ public class FishingSkillOverlay
 						}
 					};
 					killTimer.schedule(task1, 800L);
+					int count = 0;
+					for (int slot = 0; slot < Minecraft.getMinecraft().thePlayer.inventory.getSizeInventory(); slot++) {
+						ItemStack Stack = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot);
+
+						if (Stack != null && Stack.getItem().equals(Items.rotten_flesh)) {
+							count += Stack.stackSize;
+						}
+
+					}
+					if (NotEnoughUpdates.INSTANCE.config.discord.wormWebhook) {
+						DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
+							.setTitle("Fishing helper")
+							.setDescription("Auto-Kill")
+							.setColor(Color.CYAN)
+							.setThumbnail("https://static.wikia.nocookie.net/minecraft_gamepedia/images/a/ac/Rotten_Flesh_JE3_BE2.png")
+							.addField("Worm Membranes", String.valueOf(count), true);
+						Utils.sendWebhook(embed);
+					}
 				}
 				float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.PLAYERS);
 				Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.PLAYERS, 1);

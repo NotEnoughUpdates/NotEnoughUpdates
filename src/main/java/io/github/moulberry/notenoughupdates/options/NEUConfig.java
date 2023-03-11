@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Discord;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Garden;
 import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
@@ -301,7 +302,12 @@ public class NEUConfig extends Config {
 		desc = "Garden"
 	)
 	public Garden garden = new Garden();
-
+	@Expose
+	@Category(
+		name = "Discord",
+		desc = "Discord"
+	)
+	public Discord discord = new Discord();
 	@Expose
 	@Category(
 		name = "NEU Auction House",

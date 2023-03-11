@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class Fishing {
@@ -53,14 +54,26 @@ public class Fishing {
 	@ConfigOption(name = "Auto Kill ", desc = "Automatically uses the ability of the weapon in hotbar slot 2 to kill mobs")
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 8)
-	public boolean autoKilling = true;
+	public boolean autoKilling = false;
+	@Expose
+	@ConfigOption(
+		name = "Auto kill delay",
+		desc = "Change the amount of time (minutes) until auto kill"
+	)
+	@ConfigEditorSlider(
+		minValue = 30,
+		maxValue = 900,
+		minStep = 10
+	)
+	@ConfigAccordionId(id = 8)
+	public int customFishTimer = 300;
 
 
 	@Expose
 	@ConfigOption(name = "Anti AFK", desc = "")
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 8)
-	public boolean antiAFK = true;
+	public boolean antiAFK = false;
 
 	@Expose
 	@ConfigOption(name = "Pause on Player detection", desc = "")
@@ -68,6 +81,22 @@ public class Fishing {
 	@ConfigAccordionId(id = 8)
 	public boolean pauseOnPlayer = false;
 
+	@Expose
+	@ConfigOption(
+		name = "Player detection whitelist",
+		desc = "USe comma(,) to separate names ",
+		searchTags = "whitelist"
+	)
+	@ConfigEditorText
+	@ConfigAccordionId(id = 8)
+	public String whitelist = "";
+
+
+	@Expose
+	@ConfigOption(name = "Auto kill on Player detection", desc = "")
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 8)
+	public boolean autoKillonPlayer=false;
 	@Expose
 	@ConfigOption(name = "Player Detection Range", desc = "")
 	@ConfigEditorSlider(minValue = 0.0F, maxValue = 69.0F, minStep = 1.0F)
@@ -86,7 +115,7 @@ public class Fishing {
 	public boolean lavaEsp = false;
 
 	@Expose
-	@ConfigOption(name = "Lava Fishing ESP", desc = "Highlights lava")
+	@ConfigOption(name = "Lava ESP", desc = "Warning! unstable asf. use with crashpatch ( unless u wanna crash )")
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 18)
 	public boolean lavaESP = false;
