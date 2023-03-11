@@ -2199,8 +2199,9 @@ public class StorageOverlay extends GuiElement {
 			return false;
 		}
 		
-		if (Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
-				Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode()) {
+		if (!searchBar.getFocus() && !renameStorageField.getFocus() &&
+				(Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
+				Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode())) {
 			for (Slot slot : container.inventorySlots.inventorySlots) {
 				if (slot != null && ((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
 					String internalName = manager.createItemResolutionQuery().withItemStack(slot.getStack()).resolveInternalName();
