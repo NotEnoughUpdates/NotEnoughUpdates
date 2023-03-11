@@ -36,6 +36,7 @@
     "MixinMinecraft",
     "MixinMouseHelper",
     "MixinNetHandlerPlayClient",
+    "MixinOptifineCustomItems",
     "MixinPlayerControllerMP",
     "MixinRender",
     "MixinRendererLivingEntity",

@@ -56,7 +56,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -1613,9 +1612,10 @@ public class StorageOverlay extends GuiElement {
 						break;
 					case 9:
 						tooltipToDisplay = createTooltip(
-							"Open Full Settings",
-							0,
-							"Click To Open"
+							"Disable optifine CIT",
+							!NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT ? 0 : 1,
+							"CIT Enabled",
+							"CIT Disabled"
 						);
 						break;
 				}
@@ -2029,7 +2029,8 @@ public class StorageOverlay extends GuiElement {
 						!NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint;
 					break;
 				case 9:
-					ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neu storage gui");
+					NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT =
+						!NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT;
 					break;
 			}
 			dirty = true;

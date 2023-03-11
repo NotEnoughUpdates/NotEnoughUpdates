@@ -183,6 +183,15 @@ public class StorageGUI {
 	@ConfigAccordionId(id = 1)
 	public int cancelScrollKey = 0;
 
+	@Expose
+	@ConfigOption(
+		name = "Disable Optifine CIT",
+		desc = "Disables Optifine custom items to improve performance"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 1)
+	public boolean disableCIT = false;
+
 	@ConfigOption(
 		name = "Inventory Backpacks",
 		desc = "",

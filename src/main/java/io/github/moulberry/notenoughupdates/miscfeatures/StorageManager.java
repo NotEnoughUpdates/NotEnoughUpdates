@@ -345,7 +345,10 @@ public class StorageManager {
 		return stack;
 	}
 
+	public boolean isStorageOpen = false;
+
 	public boolean shouldRenderStorageOverlay(String containerName) {
+		isStorageOpen = false;
 		if (!NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3) {
 			shouldRenderStorageOverlayCached = false;
 			return false;
@@ -363,10 +366,12 @@ public class StorageManager {
 
 		if (getCurrentWindowId() != -1 && getCurrentPageId() != -1) {
 			shouldRenderStorageOverlayCached = true;
+			isStorageOpen = true;
 			return true;
 		}
 
 		shouldRenderStorageOverlayCached = containerName != null && containerName.trim().startsWith("Storage");
+		isStorageOpen = shouldRenderStorageOverlayCached;
 		return shouldRenderStorageOverlayCached;
 	}
 
