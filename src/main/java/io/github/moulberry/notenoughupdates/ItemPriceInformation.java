@@ -112,7 +112,7 @@ public class ItemPriceInformation {
 		boolean bazaarItem = bazaarInfo != null;
 
 		boolean auctionItem = !bazaarItem;
-		boolean auctionInfoErrored = auctionInfo == null;
+		boolean auctionInfoErrored = auctionInfo == null && lowestBin < 0;
 		if (auctionItem) {
 			long currentTime = System.currentTimeMillis();
 			long lastUpdate = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLastLowestBinUpdateTime();
