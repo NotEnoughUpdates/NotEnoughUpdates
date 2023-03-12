@@ -85,7 +85,8 @@ public class StringUtils {
 	}
 
 	public static String shortNumberFormat(double n, int iteration) {
-		if (n < 1000 && n > -1000) {
+		if (n < 0) return "-" + shortNumberFormat(-n, iteration);
+		if (n < 1000) {
 			if (n % 1 == 0) {
 				return Integer.toString((int) n);
 			} else {
@@ -95,7 +96,7 @@ public class StringUtils {
 
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return (d < 1000 && d > -1000) ? (isRound || (d > 9.99 || d < -9.99) ? (int) d * 10 / 10 : d + "") + "" + sizeSuffix[iteration] : shortNumberFormat(d, iteration + 1);
+		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + sizeSuffix[iteration] : shortNumberFormat(d, iteration + 1);
 	}
 
 	public static String urlEncode(String something) {

@@ -346,8 +346,9 @@ public class ItemTooltipRngListener {
 			Matcher amountMatcher = TIER_AMOUNT.matcher(line);
 			if (amountMatcher.matches()) {
 				try {
-					// group(2) will get the lower bound of number of drops that is dropped from each of the tiers (i.e. if "2 to 4" we get 2)
-					tierToAmount.put(Utils.parseRomanNumeral(amountMatcher.group(1)), Integer.valueOf(amountMatcher.group(2)));
+					int tier = Utils.parseRomanNumeral(amountMatcher.group(1));
+					int lowerBoundDrop = Integer.parseInt(amountMatcher.group(2));
+					tierToAmount.put(tier, lowerBoundDrop);
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}
