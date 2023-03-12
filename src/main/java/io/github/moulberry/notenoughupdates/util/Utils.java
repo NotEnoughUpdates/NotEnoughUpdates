@@ -1522,20 +1522,6 @@ public class Utils {
 			Minecraft.getMinecraft().fontRendererObj
 		);
 	}
-
-	@Deprecated
-	public static void drawHoveringText(
-		List<String> textLines,
-		final int mouseX,
-		final int mouseY,
-		final int screenWidth,
-		final int screenHeight,
-		final int maxTextWidth,
-		FontRenderer font
-	) {
-		drawHoveringText(textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font, true);
-	}
-
 	public static JsonObject getConstant(String constant, Gson gson) {
 		return getConstant(constant, gson, JsonObject.class);
 	}
@@ -1667,27 +1653,6 @@ public class Utils {
 	public static void scrollTooltip(int dY) {
 		scrollY.setTarget(scrollY.getTarget() + dY / 10f);
 		scrollY.resetTimer();
-	}
-
-	public static void drawHoveringText(
-		List<String> textLines,
-		final int mouseX,
-		final int mouseY,
-		final int screenWidth,
-		final int screenHeight,
-		final int maxTextWidth,
-		boolean coloured
-	) {
-		drawHoveringText(
-			textLines,
-			mouseX,
-			mouseY,
-			screenWidth,
-			screenHeight,
-			maxTextWidth,
-			Minecraft.getMinecraft().fontRendererObj,
-			coloured
-		);
 	}
 
 	@Deprecated
