@@ -37,7 +37,6 @@ import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
-import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -103,7 +102,7 @@ public class NEUManager {
 	private final TreeMap<String, JsonObject> itemMap = new TreeMap<>();
 	private boolean hasBeenLoadedBefore = false;
 
-	private final TreeMap<String, HashMap<String, List<Integer>>> titleWordMap = new TreeMap<>();
+	public final TreeMap<String, HashMap<String, List<Integer>>> titleWordMap = new TreeMap<>();
 	private final TreeMap<String, HashMap<String, List<Integer>>> loreWordMap = new TreeMap<>();
 
 	public final KeyBinding keybindGive =
@@ -144,7 +143,6 @@ public class NEUManager {
 	public File configLocation;
 	public File repoLocation;
 	public File configFile;
-	public HotmInformation hotm;
 
 	public KatSitterOverlay katSitterOverlay;
 
@@ -154,7 +152,6 @@ public class NEUManager {
 		this.neu = neu;
 		this.configLocation = configLocation;
 		this.auctionManager = new APIManager(this);
-		this.hotm = new HotmInformation(neu);
 		this.craftingOverlay = new CraftingOverlay(this);
 		this.katSitterOverlay = new KatSitterOverlay();
 
@@ -323,7 +320,7 @@ public class NEUManager {
 				synchronized (titleWordMap) {
 					int wordIndex = 0;
 					for (String str : json.get("displayname").getAsString().split(" ")) {
-						str = clean(str);
+						str = cleanForTitleMapSearch(str);
 						if (!titleWordMap.containsKey(str)) {
 							titleWordMap.put(str, new HashMap<>());
 						}
@@ -341,7 +338,7 @@ public class NEUManager {
 					int wordIndex = 0;
 					for (JsonElement element : json.get("lore").getAsJsonArray()) {
 						for (String str : element.getAsString().split(" ")) {
-							str = clean(str);
+							str = cleanForTitleMapSearch(str);
 							if (!loreWordMap.containsKey(str)) {
 								loreWordMap.put(str, new HashMap<>());
 							}
@@ -469,8 +466,8 @@ public class NEUManager {
 		int lastStringMatch = -1;
 		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
-		toSearch = clean(toSearch).toLowerCase();
-		query = clean(query).toLowerCase();
+		toSearch = cleanForTitleMapSearch(toSearch).toLowerCase();
+		query = cleanForTitleMapSearch(query).toLowerCase();
 		String[] splitToSearch = toSearch.split(" ");
 		String[] queryArray = query.split(" ");
 
@@ -687,7 +684,7 @@ public class NEUManager {
 	public Set<String> search(String query, TreeMap<String, HashMap<String, List<Integer>>> wordMap) {
 		HashMap<String, List<Integer>> matches = null;
 
-		query = clean(query).toLowerCase();
+		query = cleanForTitleMapSearch(query).toLowerCase();
 		for (String queryWord : query.split(" ")) {
 			HashMap<String, List<Integer>> matchesToKeep = new HashMap<>();
 			for (HashMap<String, List<Integer>> wordMatches : subMapWithKeysThatAreSuffixes(queryWord, wordMap).values()) {
@@ -862,7 +859,7 @@ public class NEUManager {
 		return item;
 	}
 
-	private String clean(String str) {
+	public static String cleanForTitleMapSearch(String str) {
 		return str.replaceAll("(\u00a7.)|[^0-9a-zA-Z ]", "").toLowerCase().trim();
 	}
 

@@ -31,6 +31,7 @@ public enum NEUDebugFlag {
 	WISHING("Wishing Compass Solver"),
 	MAP("Dungeon Map Player Information"),
 	SEARCH("SearchString Matches"),
+	API_CACHE("Api Cache"),
 	;
 
 	private final String description;
@@ -41,6 +42,10 @@ public enum NEUDebugFlag {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void log(String message) {
+		NEUDebugLogger.log(this, message);
 	}
 
 	public boolean isSet() {

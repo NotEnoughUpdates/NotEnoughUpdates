@@ -22,8 +22,6 @@ package io.github.moulberry.notenoughupdates.core.config.gui;
 import io.github.moulberry.notenoughupdates.core.config.struct.ConfigProcessor;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
@@ -54,7 +52,6 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 		if (!open) {
 			int height = getHeight();
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 			int dropdownWidth = Math.min(width / 3 - 10, 80);
 			int left = x + width / 6 - dropdownWidth / 2;
 			int top = y + height - 7 - 14;
@@ -67,7 +64,6 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 			RenderUtils.drawFloatingRectDark(left, top, dropdownWidth, 14, false);
 			TextRenderUtils.drawStringScaled(
 				"\u25BC",
-				fr,
 				left + dropdownWidth - 10,
 				y + height - 7 - 15,
 				false,
@@ -75,9 +71,9 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 				2
 			);
 
-			TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
-				dropdownWidth - 16, 0xffa0a0a0
-			);
+			TextRenderUtils.drawStringScaledMaxWidth(
+				selectedString,
+				left + 3, top + 3, false, dropdownWidth - 16, 0xffa0a0a0);
 		}
 	}
 
@@ -91,7 +87,6 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 
 			int height = getHeight();
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 			int dropdownWidth = Math.min(width / 3 - 10, 80);
 			int left = x + width / 6 - dropdownWidth / 2;
 			int top = y + height - 7 - 14;
@@ -117,28 +112,16 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 				}
 				TextRenderUtils.drawStringScaledMaxWidth(
 					option,
-					fr,
-					left + 3,
-					top + 3 + dropdownY,
-					false,
-					dropdownWidth - 6,
-					0xffa0a0a0
+					left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
 				);
 				dropdownY += 12;
 			}
 
-			TextRenderUtils.drawStringScaled(
-				"\u25B2",
-				fr,
-				left + dropdownWidth - 10,
-				y + height - 7 - 15,
-				false,
-				0xffa0a0a0,
-				2
-			);
+			TextRenderUtils.drawStringScaled("\u25B2", left + dropdownWidth - 10, y + height - 7 - 15, false, 0xffa0a0a0, 2);
 
-			TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
-				dropdownWidth - 16, 0xffa0a0a0
+			TextRenderUtils.drawStringScaledMaxWidth(
+				selectedString,
+				left + 3, top + 3, false, dropdownWidth - 16, 0xffa0a0a0
 			);
 			GlStateManager.popMatrix();
 		}

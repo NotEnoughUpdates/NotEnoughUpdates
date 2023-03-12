@@ -42,6 +42,7 @@ import net.minecraft.util.EnumChatFormatting;
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -537,6 +538,7 @@ public class ProfileViewer {
 		manager.apiUtils
 			.newHypixelApiRequest("player")
 			.queryArgument("name", nameF)
+			.maxCacheAge(Duration.ofSeconds(30))
 			.requestJson()
 			.thenAccept(jsonObject -> {
 					if (
@@ -961,30 +963,29 @@ public class ProfileViewer {
 			}
 
 			double skyblockLevel = getSkyblockLevel(profileName);
+			EnumChatFormatting levelColour = EnumChatFormatting.WHITE;
 
-			EnumChatFormatting previousColor = EnumChatFormatting.WHITE;
 			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
 				Utils.showOutdatedRepoNotification();
 				return EnumChatFormatting.WHITE;
 			}
+
 			JsonObject sblevelColours = Constants.SBLEVELS.getAsJsonObject("sblevel_colours");
 			try {
 				for (Map.Entry<String, JsonElement> stringJsonElementEntry : sblevelColours.entrySet()) {
-					int key = Integer.parseInt(stringJsonElementEntry.getKey());
+					int nextLevelBracket = Integer.parseInt(stringJsonElementEntry.getKey());
 					EnumChatFormatting valueByName = EnumChatFormatting.getValueByName(stringJsonElementEntry
 						.getValue()
 						.getAsString());
-					if (skyblockLevel <= key) {
-						skyBlockExperienceColour.put(profileName, previousColor);
-						return previousColor;
+					if (skyblockLevel >= nextLevelBracket) {
+						levelColour = valueByName;
 					}
-					previousColor = valueByName;
 				}
 			} catch (RuntimeException ignored) {
 				// catch both numberformat and getValueByName being wrong
 			}
-			skyBlockExperienceColour.put(profileName, EnumChatFormatting.WHITE);
-			return EnumChatFormatting.WHITE;
+			skyBlockExperienceColour.put(profileName, levelColour);
+			return levelColour;
 		}
 
 		public double getSkyblockLevel(String profileName) {

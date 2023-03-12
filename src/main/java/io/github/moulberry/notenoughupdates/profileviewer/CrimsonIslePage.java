@@ -109,11 +109,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "No data found for the Crimson Isles",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 431 / 2f,
-				guiTop + 101,
-				true,
-				0
+				guiLeft + 431 / 2f, guiTop + 101, true, 0
 			);
 			return;
 		}
@@ -137,14 +133,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	}
 
 	public void drawKuudraStats(JsonObject data, int guiLeft, int guiTop, int mouseX, int mouseY) {
-		Utils.drawStringCentered(
-			EnumChatFormatting.RED + "Kuudra Stats",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + (431 * 0.18f),
-			guiTop + 14,
-			true,
-			0
-		);
+		Utils.drawStringCentered(EnumChatFormatting.RED + "Kuudra Stats", guiLeft + (431 * 0.18f), guiTop + 14, true, 0);
 
 		JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
 
@@ -213,14 +202,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	}
 
 	public void drawDojoStats(JsonObject data, int guiLeft, int guiTop) {
-		Utils.drawStringCentered(
-			EnumChatFormatting.YELLOW + "Dojo Stats",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + (431 * 0.49f),
-			guiTop + 14,
-			true,
-			0
-		);
+		Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Dojo Stats", guiLeft + (431 * 0.49f), guiTop + 14, true, 0);
 
 		JsonObject dojoStats = data.getAsJsonObject("dojo");
 		int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
@@ -298,11 +280,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	public void drawLastMatriarchAttempt(JsonObject data, int guiLeft, int guiTop) {
 		Utils.drawStringCentered(
 			EnumChatFormatting.GOLD + "Last Matriarch Attempt",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + (431 * 0.82f),
-			guiTop + 104,
-			true,
-			0
+			guiLeft + (431 * 0.82f), guiTop + 104, true, 0
 		);
 
 		JsonObject lastMatriarchAttempt = data.getAsJsonObject("matriarch");
@@ -351,11 +329,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	public void drawFactionReputation(JsonObject data, int guiLeft, int guiTop) {
 		Utils.drawStringCentered(
 			EnumChatFormatting.DARK_PURPLE + "Faction Reputation",
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + (431 * 0.82f),
-			guiTop + 14,
-			true,
-			0
+			guiLeft + (431 * 0.82f), guiTop + 14, true, 0
 		);
 
 		String selectedFaction = data.has("selected_faction") ? data.get("selected_faction").getAsString() : "N/A";

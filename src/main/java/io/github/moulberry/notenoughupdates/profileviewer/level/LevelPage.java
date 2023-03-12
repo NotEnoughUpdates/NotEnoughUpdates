@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.CoreTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.DungeonTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EssenceTaskLevel;
+import io.github.moulberry.notenoughupdates.profileviewer.level.task.EventTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.MiscTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SkillRelatedTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SlayingTaskLevel;
@@ -61,6 +62,8 @@ public class LevelPage {
 	private final SlayingTaskLevel slayingTaskLevel;
 	private final StoryTaskLevel storyTaskLevel;
 
+	private final EventTaskLevel eventTaskLevel;
+
 	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
 
 	public LevelPage(GuiProfileViewer instance, BasicPage basicPage) {
@@ -75,6 +78,7 @@ public class LevelPage {
 		skillRelatedTaskLevel = new SkillRelatedTaskLevel(this);
 		slayingTaskLevel = new SlayingTaskLevel(this);
 		storyTaskLevel = new StoryTaskLevel(this);
+		eventTaskLevel = new EventTaskLevel(this);
 	}
 
 	public void drawPage(int mouseX, int mouseY) {
@@ -97,13 +101,14 @@ public class LevelPage {
 		JsonObject profileInfo = profile.getProfileInformation(profileId);
 
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
-		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		essenceTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		miscTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		skillRelatedTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		slayingTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 		storyTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
+		eventTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
+		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
 	}
 
 	public void renderLevelBar(
@@ -175,14 +180,12 @@ public class LevelPage {
 		renderLevelBar(
 			"Level",
 			BasicPage.skull,
-			guiLeft + 163,
-			guiTop + 30,
+			guiLeft + 163, guiTop + 30,
 			110,
 			skyblockLevel,
-			(skyblockLevel - (long) skyblockLevel) * 100,
+			Math.round((skyblockLevel - (long) skyblockLevel) * 100),
 			100,
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			false,
 			Collections.emptyList()
 		);

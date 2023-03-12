@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -439,6 +441,12 @@ public class MiningOverlay extends TextTabOverlay {
 							DARK_AQUA + "Star Cult: " + GREEN +
 								StarCultCalculator.getNextStarCult());
 						break;
+					case 6:
+
+						if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
+							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
+						}
+						break;
 				}
 			}
 		} else {
@@ -714,17 +722,17 @@ public class MiningOverlay extends TextTabOverlay {
 		String cleaned = Utils.cleanColour(line);
 		String beforeColon = cleaned.split(":")[0];
 
-		if (miningOverlayCommisionItems == null) {
-			setupMiningOverlayCommisionItems();
+		if (miningOverlayCommissionItems == null) {
+			setupMiningOverlayCommissionItems();
 		}
 
-		if (miningOverlayCommisionItems.containsKey(beforeColon)) {
-			icon = miningOverlayCommisionItems.get(beforeColon);
+		if (miningOverlayCommissionItems.containsKey(beforeColon)) {
+			icon = miningOverlayCommissionItems.get(beforeColon);
 		} else {
 			if (beforeColon.startsWith("Forge")) {
-				icon = miningOverlayCommisionItems.get("Forge");
+				icon = miningOverlayCommissionItems.get("Forge");
 			} else if (beforeColon.contains("Mithril")) {
-				icon = miningOverlayCommisionItems.get("Mithril");
+				icon = miningOverlayCommissionItems.get("Mithril");
 			} else if (beforeColon.endsWith(" Gemstone Collector")) {
 				String gemName = "ROUGH_"
 					+ beforeColon.replace(" Gemstone Collector", "").toUpperCase() + "_GEM";
@@ -748,7 +756,11 @@ public class MiningOverlay extends TextTabOverlay {
 					miningOverlayPerfectGems.put(gemName, icon);
 				}
 			} else if (beforeColon.contains("Titanium")) {
-				icon = miningOverlayCommisionItems.get("Titanium");
+				icon = miningOverlayCommissionItems.get("Titanium");
+			} else if (beforeColon.contains("Sky Mall")) {
+				if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
+					icon = SkyMallDisplay.Companion.getDisplayItem();
+				}
 			}
 		}
 
@@ -768,10 +780,10 @@ public class MiningOverlay extends TextTabOverlay {
 	private static final HashMap<String, ItemStack> miningOverlayRoughGems = new HashMap<String, ItemStack>() {};
 	private static final HashMap<String, ItemStack> miningOverlayPerfectGems = new HashMap<String, ItemStack>() {};
 
-	private static HashMap<String, ItemStack> miningOverlayCommisionItems;
+	private static HashMap<String, ItemStack> miningOverlayCommissionItems;
 
-	private static void setupMiningOverlayCommisionItems() {
-		miningOverlayCommisionItems = new HashMap<String, ItemStack>() {{
+	private static void setupMiningOverlayCommissionItems() {
+		miningOverlayCommissionItems = new HashMap<String, ItemStack>() {{
 			put(
 				"Mithril Powder",
 				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager

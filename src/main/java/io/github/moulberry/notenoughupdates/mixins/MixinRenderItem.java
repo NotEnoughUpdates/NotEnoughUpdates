@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -131,7 +131,7 @@ public abstract class MixinRenderItem {
 	public int renderItem_renderByItem(Item item, ItemStack stack, int renderPass) {
 		if (renderPass == 0) {
 			ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-			if (data != null && data.customLeatherColour != null) {
+			if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
 				return ChromaColour.specialToChromaRGB(data.customLeatherColour);
 			}
 		}
@@ -148,51 +148,6 @@ public abstract class MixinRenderItem {
 
 	@Shadow
 	abstract void renderModel(IBakedModel model, int color);
-    /*@Redirect(method="renderEffect",
-            at=@At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderModel(Lnet/minecraft/client/resources/model/IBakedModel;I)V"
-            )
-    )
-    public void renderEffect_renderModel(RenderItem renderItem, IBakedModel model, int colour) {
-        if(customEnchGlint != null) {
-            renderModel(model, ChromaColour.specialToChromaRGB(customEnchGlint));
-        } else {
-            renderModel(model, colour);
-        }
-    }
-
-    @Redirect(method="renderEffect",
-            at=@At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/texture/TextureManager;bindTexture(Lnet/minecraft/util/ResourceLocation;)V"
-            )
-    )
-    public void renderEffect_bindTexture(TextureManager textureManager, ResourceLocation location) {
-        if(customEnchGlint != null) {
-            textureManager.bindTexture(GlintManager.getCustomGlintTexture());
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-        } else {
-            textureManager.bindTexture(location);
-        }
-    }
-
-    @Redirect(method="renderEffect",
-            at=@At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/GlStateManager;blendFunc(II)V"
-            )
-    )
-    public void renderEffect_blendFunc(int src, int dst) {
-        if(dst != 1) {
-            GlStateManager.blendFunc(src, dst);
-        } else if(customEnchGlint != null) {
-            GlintManager.setCustomBlendFunc(customEnchGlint);
-        } else {
-            GlStateManager.blendFunc(GL11.GL_SRC_COLOR, 1);
-        }
-    }*/
 
 	@Inject(method = "renderItemIntoGUI", at = @At("HEAD"))
 	public void renderItemHead(ItemStack stack, int x, int y, CallbackInfo ci) {
@@ -300,5 +255,13 @@ public abstract class MixinRenderItem {
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepth();
 		}
+	}
+
+	@Redirect(method = "renderItemOverlayIntoGUI", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/Item;showDurabilityBar(Lnet/minecraft/item/ItemStack;)Z"))
+	public boolean renderItemOverlayIntoGUI_showDurabilityBar(
+		Item instance, ItemStack stack
+	) {
+		if (ItemCustomizeManager.hasCustomItem(stack)) return false;
+		return stack.getItem().showDurabilityBar(stack);
 	}
 }

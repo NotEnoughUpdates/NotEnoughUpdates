@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -208,7 +207,6 @@ public class EntityViewer extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 
 		this.guiLeft = (width - this.xSize) / 2;
 		this.guiTop = (height - this.ySize) / 2;
@@ -216,7 +214,7 @@ public class EntityViewer extends GuiScreen {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
-		Utils.drawStringScaledMaxWidth(label, fontRenderer, guiLeft + 10, guiTop + 10, false, 100, 0xFF00FF);
+		Utils.drawStringScaledMaxWidth(label, guiLeft + 10, guiTop + 10, false, 100, 0xFF00FF);
 		renderEntity(entity, guiLeft + 90, guiTop + 75, mouseX, mouseY);
 	}
 

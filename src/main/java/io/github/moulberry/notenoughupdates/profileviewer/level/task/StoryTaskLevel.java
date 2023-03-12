@@ -61,14 +61,12 @@ public class StoryTaskLevel {
 		levelPage.renderLevelBar(
 			"Story Task",
 			new ItemStack(Items.map),
-			guiLeft + 299,
-			guiTop + 85,
+			guiLeft + 299, guiTop + 85,
 			110,
 			0,
 			sbXpStory,
 			levelPage.getConstant().getAsJsonObject("category_xp").get("story_task").getAsInt(),
-			mouseX,
-			mouseY,
+			mouseX, mouseY,
 			true,
 			lore
 		);

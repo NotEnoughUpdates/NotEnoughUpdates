@@ -370,9 +370,7 @@ public class NEUItemEditor extends GuiScreen {
 		text.add(displayName.get());
 		text.addAll(Arrays.asList(lore.get().split("\n")));
 
-		Utils.drawHoveringText(text, itemX - 20, itemY + itemSize + 28, width, height, -1,
-			Minecraft.getMinecraft().fontRendererObj
-		);
+		Utils.drawHoveringText(text, itemX - 20, itemY + itemSize + 28, width, height, -1);
 
 		GlStateManager.disableLighting();
 	}

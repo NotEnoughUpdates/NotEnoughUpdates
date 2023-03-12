@@ -34,6 +34,8 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Garden;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AHTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.AccessoryBag;
@@ -54,6 +56,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.Mining;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MinionHelper;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Misc;
 import io.github.moulberry.notenoughupdates.options.seperateSections.MiscOverlays;
+import io.github.moulberry.notenoughupdates.options.seperateSections.Museum;
 import io.github.moulberry.notenoughupdates.options.seperateSections.NeuAuctionHouse;
 import io.github.moulberry.notenoughupdates.options.seperateSections.Notifications;
 import io.github.moulberry.notenoughupdates.options.seperateSections.PetOverlay;
@@ -73,16 +76,17 @@ import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class NEUConfig extends Config {
 	public void editOverlay() {
@@ -246,8 +250,8 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Todo Overlay",
-		desc = "Todo Overlay"
+		name = "Todo Overlays",
+		desc = "Todo Overlays"
 	)
 	public MiscOverlays miscOverlays = new MiscOverlays();
 
@@ -292,6 +296,13 @@ public class NEUConfig extends Config {
 		desc = "Fishing"
 	)
 	public Fishing fishing = new Fishing();
+
+	@Expose
+	@Category(
+		name = "Garden",
+		desc = "Garden"
+	)
+	public Garden garden = new Garden();
 
 	@Expose
 	@Category(
@@ -379,6 +390,13 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
+		name = "Museum",
+		desc = "Museum overlays"
+	)
+	public Museum museum = new Museum();
+
+	@Expose
+	@Category(
 		name = "Profile Viewer",
 		desc = "Profile Viewer"
 	)
@@ -455,6 +473,8 @@ public class NEUConfig extends Config {
 		public ArrayList<String> quickCommands = createDefaultQuickCommands();
 		@Expose
 		public ArrayList<String> enchantColours = createDefaultEnchantColours();
+		@Expose
+		public Set<String> dynamicLightItems = new HashSet<>();
 
 		@Expose
 		public boolean firstTimeSearchFocus = true;
@@ -573,6 +593,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public long questBoardCompleted = 0L;
 		@Expose
+		public long dailyShopLimitCompleted = 0L;
+		@Expose
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose
 		public int magicalPower = 0;
@@ -594,6 +616,9 @@ public class NEUConfig extends Config {
 
 		@Expose
 		public boolean abiphoneShowOnlyFavourites = false;
+
+		@Expose
+		public Map<String, Integer> hotmTree = new HashMap<>();
 	}
 
 	public HiddenLocationSpecific getLocationSpecific() {
