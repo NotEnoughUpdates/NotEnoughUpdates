@@ -1,5 +1,6 @@
 package io.github.moulberry.notenoughupdates.envcheck;
 
+import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor;
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -42,5 +43,8 @@ public class NEUMixinConfigPlugin implements IMixinConfigPlugin {
 
 		@Override
 		public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+			if ("io.github.moulberry.notenoughupdates.mixins.MixinOFDynamicLights".equals(mixinClassName)) {
+				DynamicLightItemsEditor.setDidApplyMixin(true);
+			}
 		}
 }

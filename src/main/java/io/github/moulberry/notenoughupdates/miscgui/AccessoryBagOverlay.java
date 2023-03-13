@@ -25,9 +25,11 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.profileviewer.PlayerStats;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -45,6 +47,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -72,6 +75,22 @@ public class AccessoryBagOverlay {
 	private static final int TAB_DUP = 3;
 	private static final int TAB_MISSING = 4;
 	private static final int TAB_OPTIMIZER = 5;
+
+	public static final AccessoryBagOverlay INSTANCE = new AccessoryBagOverlay();
+
+	@SubscribeEvent
+	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
+		if (isInAccessoryBag()) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight(),
+					event.getGuiBaseRect().getTop(),
+					80 /*pane*/ + 24 /*tabs*/ + 4 /*space*/, 150
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
+			);
+		}
+	}
 
 	private static final ItemStack[] TAB_STACKS = new ItemStack[]{
 		Utils.createItemStack(Items.dye, EnumChatFormatting.DARK_AQUA + "Basic Information",
@@ -475,14 +494,8 @@ public class AccessoryBagOverlay {
 
 			int yIndex = 0;
 			long currentTime = System.currentTimeMillis();
-			int marqueeOffset = (int) (currentTime / 500 % 100);
 			for (ItemStack missingStack : missing) {
 				String s = missingStack.getDisplayName();
-
-				//int marueeOffset
-				//if(s.length()) {
-
-				//}
 
 				s = Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(s, 70);
 
@@ -844,51 +857,8 @@ public class AccessoryBagOverlay {
 		}
 	}
 
-    /*private static void renderAlignedString(String first, String second, float x, float y, int length) {
-        FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
-        if(fontRendererObj.getStringWidth(first + " " + second) >= length) {
-            for(int xOff=-2; xOff<=2; xOff++) {
-                for(int yOff=-2; yOff<=2; yOff++) {
-                    if(Math.abs(xOff) != Math.abs(yOff)) {
-                        Utils.drawStringCenteredScaledMaxWidth(Utils.cleanColourNotModifiers(first + " " + second), Minecraft.getMinecraft().fontRendererObj,
-                                x+length/2f+xOff/2f, y+4+yOff/2f, false, length,
-                                new Color(0, 0, 0, 200/Math.max(Math.abs(xOff), Math.abs(yOff))).getRGB());
-                    }
-                }
-            }
 
-            GlStateManager.color(1, 1, 1, 1);
-            Utils.drawStringCenteredScaledMaxWidth(first + " " + second, Minecraft.getMinecraft().fontRendererObj,
-                    x+length/2f, y+4, false, length, 4210752);
-        } else {
-            for(int xOff=-2; xOff<=2; xOff++) {
-                for(int yOff=-2; yOff<=2; yOff++) {
-                    if(Math.abs(xOff) != Math.abs(yOff)) {
-                        fontRendererObj.drawString(Utils.cleanColourNotModifiers(first),
-                                x+xOff/2f, y+yOff/2f,
-                                new Color(0, 0, 0, 200/Math.max(Math.abs(xOff), Math.abs(yOff))).getRGB(), false);
-                    }
-                }
-            }
-
-            int secondLen = fontRendererObj.getStringWidth(second);
-            GlStateManager.color(1, 1, 1, 1);
-            fontRendererObj.drawString(first, x, y, 4210752, false);
-            for(int xOff=-2; xOff<=2; xOff++) {
-                for(int yOff=-2; yOff<=2; yOff++) {
-                    if(Math.abs(xOff) != Math.abs(yOff)) {
-                        fontRendererObj.drawString(Utils.cleanColourNotModifiers(second),
-                                x+length-secondLen+xOff/2f, y+yOff/2f,
-                                new Color(0, 0, 0, 200/Math.max(Math.abs(xOff), Math.abs(yOff))).getRGB(), false);
-                    }
-                }
-            }
-
-            GlStateManager.color(1, 1, 1, 1);
-            fontRendererObj.drawString(second, x+length-secondLen, y, 4210752, false);
-        }
-    }*/
 
 	private static final HashMap<String, Pattern> STAT_PATTERN_MAP_BONUS = new HashMap<String, Pattern>() {{
 		String STAT_PATTERN_BONUS_END = ": (?:\\+|-)[0-9]+(?:\\.[0-9]+)?\\%? \\(((?:\\+|-)[0-9]+)%?";

@@ -82,9 +82,11 @@ import net.minecraftforge.client.ClientCommandHandler;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class NEUConfig extends Config {
 	public void editOverlay() {
@@ -248,8 +250,8 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "Todo Overlay",
-		desc = "Todo Overlay"
+		name = "Todo Overlays",
+		desc = "Todo Overlays"
 	)
 	public MiscOverlays miscOverlays = new MiscOverlays();
 
@@ -471,6 +473,8 @@ public class NEUConfig extends Config {
 		public ArrayList<String> quickCommands = createDefaultQuickCommands();
 		@Expose
 		public ArrayList<String> enchantColours = createDefaultEnchantColours();
+		@Expose
+		public Set<String> dynamicLightItems = new HashSet<>();
 
 		@Expose
 		public boolean firstTimeSearchFocus = true;
@@ -588,6 +592,8 @@ public class NEUConfig extends Config {
 		public long dailyHeavyPearlCompleted = 0L;
 		@Expose
 		public long questBoardCompleted = 0L;
+		@Expose
+		public long dailyShopLimitCompleted = 0L;
 		@Expose
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose

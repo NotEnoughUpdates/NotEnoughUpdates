@@ -43,6 +43,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
@@ -168,6 +170,13 @@ public class NotEnoughUpdates {
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
 
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
+	}
+
 	public File getConfigFile() {
 		return this.configFile;
 	}
@@ -178,13 +187,6 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
-	}
-
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**
@@ -270,6 +272,8 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));
+		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
