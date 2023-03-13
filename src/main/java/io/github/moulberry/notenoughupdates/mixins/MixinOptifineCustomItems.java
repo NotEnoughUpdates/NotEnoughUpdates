@@ -36,6 +36,6 @@ public class MixinOptifineCustomItems {
 	@Inject(method = "getCustomItemProperties", at = @At(value = "HEAD"), cancellable = true)
 	private static void getCustomItemProperties(ItemStack itemStack, int type, CallbackInfoReturnable<?> cir) {
 		if (NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT &&	StorageManager.getInstance().isStorageOpen &&
-			Minecraft.getMinecraft().currentScreen instanceof GuiChest) cir.cancel();
+			Minecraft.getMinecraft().currentScreen instanceof GuiChest) cir.setReturnValue(null);
 	}
 }
