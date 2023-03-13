@@ -24,9 +24,11 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.MinecraftExecutor;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -98,6 +100,19 @@ public class DungeonNpcProfitOverlay {
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
+		if (isRendering())
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight(),
+					event.getGuiBaseRect().getTop(),
+					180 /*width*/ + 4 /*space*/, 101
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_RIGHT
+			);
 	}
 
 	@SubscribeEvent
@@ -235,15 +250,7 @@ public class DungeonNpcProfitOverlay {
 			int mouseY = Utils.getMouseY();
 
 			if (Utils.isWithinRect(mouseX, mouseY, x, y, 160, 10))
-				Utils.drawHoveringText(
-					chestProfit.lore,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(chestProfit.lore, mouseX, mouseY, width, height, -1);
 		}
 
 	}

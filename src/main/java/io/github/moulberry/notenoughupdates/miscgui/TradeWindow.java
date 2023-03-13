@@ -107,7 +107,6 @@ public class TradeWindow {
 			for (int yOff = -2; yOff <= 2; yOff++) {
 				if (Math.abs(xOff) != Math.abs(yOff)) {
 					Utils.drawStringCenteredScaledMaxWidth(Utils.cleanColourNotModifiers(str),
-						Minecraft.getMinecraft().fontRendererObj,
 						x + xOff / 2f, y + yOff / 2f, false, len,
 						new Color(20, 20, 20, 100 / Math.max(Math.abs(xOff), Math.abs(yOff))).getRGB()
 					);
@@ -115,11 +114,7 @@ public class TradeWindow {
 			}
 		}
 
-		Utils.drawStringCenteredScaledMaxWidth(str,
-			Minecraft.getMinecraft().fontRendererObj,
-			x, y, false, len,
-			new Color(64, 64, 64, 255).getRGB()
-		);
+		Utils.drawStringCenteredScaledMaxWidth(str, x, y, false, len, new Color(64, 64, 64, 255).getRGB());
 	}
 
 	private static long getPrice(String internalName) {
@@ -567,14 +562,12 @@ public class TradeWindow {
 		Utils.drawTexturedRect(guiLeft, guiTop, xSize, ySize, 0, 176 / 256f, 0, 204 / 256f, GL11.GL_NEAREST);
 
 		Utils.drawStringF(new ChatComponentTranslation("container.inventory").getUnformattedText(),
-			Minecraft.getMinecraft().fontRendererObj, guiLeft + 8, guiTop + 111, false, 4210752
+			guiLeft + 8, guiTop + 111, false, 4210752
 		);
-		Utils.drawStringF("You", Minecraft.getMinecraft().fontRendererObj, guiLeft + 8,
-			guiTop + 5, false, 4210752
-		);
+		Utils.drawStringF("You", guiLeft + 8, guiTop + 5, false, 421752);
 		String[] split = containerName.split(" ");
 		if (split.length >= 1) {
-			Utils.drawStringF(split[split.length - 1], Minecraft.getMinecraft().fontRendererObj,
+			Utils.drawStringF(split[split.length - 1],
 				guiLeft + 167 - Minecraft.getMinecraft().fontRendererObj.getStringWidth(split[split.length - 1]),
 				guiTop + 5, false, 4210752
 			);
@@ -692,31 +685,19 @@ public class TradeWindow {
 
 					Utils.drawStringCentered(
 						EnumChatFormatting.DARK_RED + "Check " + EnumChatFormatting.BOLD + (char) (9311 + num),
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + 56,
-						guiTop + 99,
+						guiLeft + 56, guiTop + 99,
 						false,
 						4210752
 					);
 				} else if (confirmDisplay.equals(EnumChatFormatting.AQUA + "Gift!")) {
-					Utils.drawStringCentered(
-						EnumChatFormatting.GREEN + "Accept",
-						Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + 56,
-						guiTop + 99,
-						true,
-						4210752
-					);
+					Utils.drawStringCentered(EnumChatFormatting.GREEN + "Accept", guiLeft + 56, guiTop + 99, true, 4210752);
 				} else if (confirmDisplay.equals(EnumChatFormatting.GREEN + "Deal accepted!")) {
-					Utils.drawStringCentered(EnumChatFormatting.GREEN + "Accepted", Minecraft.getMinecraft().fontRendererObj,
-						guiLeft + 56, guiTop + 99, true, 4210752
-					);
+					Utils.drawStringCentered(EnumChatFormatting.GREEN + "Accepted", guiLeft + 56, guiTop + 99, true, 4210752);
 				} else if (lastTradeMillis > 0) {
 					long delta = System.currentTimeMillis() - lastTradeMillis;
 					if (delta > 2000) {
 						Utils.drawStringCentered(
 							EnumChatFormatting.GREEN + "Accept",
-							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + 56,
 							guiTop + 99,
 							true,
@@ -725,7 +706,6 @@ public class TradeWindow {
 					} else {
 						Utils.drawStringCentered(
 							EnumChatFormatting.YELLOW + "Trade " + EnumChatFormatting.BOLD + (char) (9312 + (2000 - delta) / 1000),
-							Minecraft.getMinecraft().fontRendererObj,
 							guiLeft + 56,
 							guiTop + 99,
 							true,
@@ -735,7 +715,6 @@ public class TradeWindow {
 				} else {
 					Utils.drawStringCentered(
 						EnumChatFormatting.YELLOW + "Trade " + EnumChatFormatting.BOLD + (char) (9314),
-						Minecraft.getMinecraft().fontRendererObj,
 						guiLeft + 56,
 						guiTop + 99,
 						true,
@@ -764,32 +743,11 @@ public class TradeWindow {
 			);
 
 			if (confirmDisplay.equals(EnumChatFormatting.YELLOW + "Pending their confirm")) {
-				Utils.drawStringCentered(
-					EnumChatFormatting.YELLOW + "Pending",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 120,
-					guiTop + 99,
-					true,
-					4210752
-				);
+				Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Pending", guiLeft + 120, guiTop + 99, true, 4210752);
 			} else if (confirmDisplay.equals(EnumChatFormatting.YELLOW + "Deal timer...")) {
-				Utils.drawStringCentered(
-					EnumChatFormatting.YELLOW + "Pending",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 120,
-					guiTop + 99,
-					true,
-					4210752
-				);
+				Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Pending", guiLeft + 120, guiTop + 99, true, 4210752);
 			} else if (confirmDisplay.equals(EnumChatFormatting.GREEN + "Other player confirmed!")) {
-				Utils.drawStringCentered(
-					EnumChatFormatting.GREEN + "Accepted",
-					Minecraft.getMinecraft().fontRendererObj,
-					guiLeft + 120,
-					guiTop + 99,
-					true,
-					4210752
-				);
+				Utils.drawStringCentered(EnumChatFormatting.GREEN + "Accepted", guiLeft + 120, guiTop + 99, true, 4210752);
 			}
 		}
 
@@ -1041,8 +999,7 @@ public class TradeWindow {
 				mouseY,
 				scaledResolution.getScaledWidth(),
 				scaledResolution.getScaledHeight(),
-				tooltipLen,
-				Minecraft.getMinecraft().fontRendererObj
+				tooltipLen
 			);
 		}
 	}

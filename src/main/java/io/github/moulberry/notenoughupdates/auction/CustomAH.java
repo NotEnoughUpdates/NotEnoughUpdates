@@ -580,6 +580,7 @@ public class CustomAH extends Gui {
 		}
 
 		List<String> tooltipToRender = null;
+		int black = Color.BLACK.getRGB();
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
 			resetCurrAucIdTimer = System.currentTimeMillis();
 			GuiChest auctionView = (GuiChest) Minecraft.getMinecraft().currentScreen;
@@ -620,9 +621,7 @@ public class CustomAH extends Gui {
 								endsInStr = EnumChatFormatting.DARK_PURPLE + prettyTime(
 									auctionViewEndsIn + lastGuiScreenSwitch - System.currentTimeMillis());
 							}
-							Utils.drawStringCenteredScaledMaxWidth(endsInStr, Minecraft.getMinecraft().fontRendererObj,
-								auctionViewLeft + 39, guiTop + 20, false, 70, 4210752
-							);
+							Utils.drawStringCenteredScaledMaxWidth(endsInStr, auctionViewLeft + 39, guiTop + 20, false, 70, 4210752);
 						}
 
 						Utils.drawItemStack(leftStack, auctionViewLeft + 31, guiTop + 100);
@@ -790,9 +789,7 @@ public class CustomAH extends Gui {
 				}
 			}
 
-			Utils.drawStringCenteredScaledMaxWidth(containerName, Minecraft.getMinecraft().fontRendererObj,
-				auctionViewLeft + 39, guiTop + 10, false, 70, 4210752
-			);
+			Utils.drawStringCenteredScaledMaxWidth(containerName, auctionViewLeft + 39, guiTop + 10, false, 70, 4210752);
 		} else if (isEditingPrice()) {
 			hasPopup = true;
 			resetCurrAucIdTimer = System.currentTimeMillis();
@@ -810,9 +807,7 @@ public class CustomAH extends Gui {
 			this.drawTexturedModalRect(auctionViewLeft, guiTop, 0, 0, 96, 99);
 			priceField.drawTextBox();
 
-			Utils.drawStringCenteredScaledMaxWidth("Bid Amount", Minecraft.getMinecraft().fontRendererObj,
-				auctionViewLeft + 39, guiTop + 10, false, 70, 4210752
-			);
+			Utils.drawStringCenteredScaledMaxWidth("Bid Amount", auctionViewLeft + 39, guiTop + 10, false, 70, 4210752);
 
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			Minecraft.getMinecraft().getTextureManager().bindTexture(auction_view_buttons);
@@ -822,22 +817,11 @@ public class CustomAH extends Gui {
 			this.drawTexturedModalRect(auctionViewLeft + 16 + 34, guiTop + 50, 0, 16, 30, 16);
 			this.drawTexturedModalRect(auctionViewLeft + 16, guiTop + 68, 0, 32, 64, 16);
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-			Utils.drawStringCentered("x2", fr, auctionViewLeft + 16 + 15, guiTop + 32 + 8, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered("+50%", fr, auctionViewLeft + 16 + 34 + 15, guiTop + 32 + 8, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered("+25%", fr, auctionViewLeft + 16 + 15, guiTop + 50 + 8, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered("+10%", fr, auctionViewLeft + 16 + 34 + 15, guiTop + 50 + 8, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered("Set Amount", fr, auctionViewLeft + 16 + 32, guiTop + 68 + 8, false,
-				Color.BLACK.getRGB()
-			);
+			Utils.drawStringCentered("x2", auctionViewLeft + 16 + 15, guiTop + 32 + 8, false, black);
+			Utils.drawStringCentered("+50%", auctionViewLeft + 16 + 34 + 15, guiTop + 32 + 8, false, black);
+			Utils.drawStringCentered("+25%", auctionViewLeft + 16 + 15, guiTop + 50 + 8, false, black);
+			Utils.drawStringCentered("+10%", auctionViewLeft + 16 + 34 + 15, guiTop + 50 + 8, false, black);
+			Utils.drawStringCentered("Set Amount", auctionViewLeft + 16 + 32, guiTop + 68 + 8, false, black);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 			GuiEditSign editSign = (GuiEditSign) Minecraft.getMinecraft().currentScreen;
@@ -907,7 +891,7 @@ public class CustomAH extends Gui {
 		this.drawTexturedModalRect(guiLeft, y, 0, ySplit, getXSize(), 136 - ySplit);
 
 		//GUI Name
-		Utils.drawStringCenteredScaledMaxWidth("Auction House", Minecraft.getMinecraft().fontRendererObj, guiLeft + 42,
+		Utils.drawStringCenteredScaledMaxWidth("Auction House", guiLeft + 42,
 			guiTop + 10, false, 68, 4210752
 		);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1000,7 +984,7 @@ public class CustomAH extends Gui {
 
 		if (!NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.enableNeuAuctionHouse) {
 			Utils.drawStringCentered(EnumChatFormatting.RED + "NEUAH is DISABLED! Enable in /neu.",
-				Minecraft.getMinecraft().fontRendererObj, guiLeft + getXSize() / 2, guiTop + getYSize() / 2 - 5, true, 0
+				guiLeft + getXSize() / 2, guiTop + getYSize() / 2 - 5, true, 0
 			);
 		}
 
@@ -1009,9 +993,7 @@ public class CustomAH extends Gui {
 			for (String line : tooltipToRender) {
 				tooltipGray.add(EnumChatFormatting.GRAY + line);
 			}
-			Utils.drawHoveringText(tooltipGray, mouseX, mouseY, width,
-				height, -1, Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(tooltipGray, mouseX, mouseY, width, height, -1);
 		}
 		float slideAmount = 1 - Math.max(0, Math.min(1, (System.currentTimeMillis() - lastGuiScreenSwitch) / 200f));
 		int auctionViewLeft = guiLeft + getXSize() + 4 - (int) (slideAmount * (78 + 4));
@@ -1032,9 +1014,7 @@ public class CustomAH extends Gui {
 			}
 			priceFilterField.drawTextBox();
 
-			Utils.drawStringCenteredScaledMaxWidth("Price Filter", Minecraft.getMinecraft().fontRendererObj,
-				auctionViewLeft + 39, guiTop + 10, false, 70, 4210752
-			);
+			Utils.drawStringCenteredScaledMaxWidth("Price Filter", auctionViewLeft + 39, guiTop + 10, false, 70, 421052);
 
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			Minecraft.getMinecraft().getTextureManager().bindTexture(auction_view_buttons);
@@ -1054,16 +1034,9 @@ public class CustomAH extends Gui {
 				this.drawTexturedModalRect(auctionViewLeft + 16, guiTop + 50, 0, 32, 64, 16);
 			}
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-			Utils.drawStringCentered("<=", fr, auctionViewLeft + 16 + 15, guiTop + 32 + 8, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered(">=", fr, auctionViewLeft + 16 + 34 + 15, guiTop + 32 + 8, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered("==", fr, auctionViewLeft + 16 + 32, guiTop + 50 + 8, false,
-				Color.BLACK.getRGB()
-			);
+			Utils.drawStringCentered("<=", auctionViewLeft + 16 + 15, guiTop + 32 + 8, false, black);
+			Utils.drawStringCentered(">=", auctionViewLeft + 16 + 34 + 15, guiTop + 32 + 8, false, black);
+			Utils.drawStringCentered("==", auctionViewLeft + 16 + 32, guiTop + 50 + 8, false, black);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 			// Bin average price filter
@@ -1079,9 +1052,7 @@ public class CustomAH extends Gui {
 			}
 			binPriceFilterField.drawTextBox();
 
-			Utils.drawStringCenteredScaledMaxWidth("BIN Average Filter", Minecraft.getMinecraft().fontRendererObj,
-				auctionViewLeft + 39, guiTop + 10 + binPriceFilterYOffset, false, 70, 4210752
-			);
+			Utils.drawStringCenteredScaledMaxWidth("BIN Average Filter", auctionViewLeft + 39, guiTop + 10 + binPriceFilterYOffset, false, 70, 4210752);
 
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			Minecraft.getMinecraft().getTextureManager().bindTexture(auction_view_buttons);
@@ -1101,15 +1072,9 @@ public class CustomAH extends Gui {
 				this.drawTexturedModalRect(auctionViewLeft + 16, guiTop + 50 + binPriceFilterYOffset, 0, 32, 64, 16);
 			}
 
-			Utils.drawStringCentered("<=", fr, auctionViewLeft + 16 + 15, guiTop + 32 + 8 + binPriceFilterYOffset, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered(">=", fr, auctionViewLeft + 16 + 34 + 15, guiTop + 32 + 8 + binPriceFilterYOffset, false,
-				Color.BLACK.getRGB()
-			);
-			Utils.drawStringCentered("==", fr, auctionViewLeft + 16 + 32, guiTop + 50 + 8 + binPriceFilterYOffset, false,
-				Color.BLACK.getRGB()
-			);
+			Utils.drawStringCentered("<=", auctionViewLeft + 16 + 15, guiTop + 32 + 8 + binPriceFilterYOffset, false, black);
+			Utils.drawStringCentered(">=", auctionViewLeft + 16 + 34 + 15, guiTop + 32 + 8 + binPriceFilterYOffset, false, black);
+			Utils.drawStringCentered("==", auctionViewLeft + 16 + 32, guiTop + 50 + 8 + binPriceFilterYOffset, false, black);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}

@@ -145,7 +145,6 @@ public class GuiDungeonMapEditor extends GuiScreen {
 			if (text.length() > 0) {
 				Utils.drawStringCenteredScaledMaxWidth(
 					text,
-					Minecraft.getMinecraft().fontRendererObj,
 					guiLeft + x + 24,
 					guiTop + y + 8,
 					false,
@@ -379,64 +378,30 @@ public class GuiDungeonMapEditor extends GuiScreen {
 
 		Minecraft.getMinecraft().fontRendererObj.drawString("NEU Dungeon Map Editor", guiLeft + 8, guiTop + 6, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Border Size", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 76, guiTop + 30, false, 137, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Rooms Size", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 76, guiTop + 60, false, 137, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Icon Scale", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 76, guiTop + 90, false, 137, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Border Style", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 76, guiTop + 120, false, 137, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Border Size", guiLeft + 76, guiTop + 30, false, 137, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Rooms Size", guiLeft + 76, guiTop + 60, false, 137, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Icon Scale", guiLeft + 76, guiTop + 90, false, 137, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Border Style", guiLeft + 76, guiTop + 120, false, 137, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Dungeon Map", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 44 + 139, guiTop + 30, false, 60, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Center", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 108 + 139, guiTop + 30, false, 60, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Dungeon Map", guiLeft + 44 + 139, guiTop + 30, false, 60, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Center", guiLeft + 108 + 139, guiTop + 30, false, 60, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Rotate", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 44 + 139, guiTop + 59, false, 60, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Icon Style", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 108 + 139, guiTop + 59, false, 60, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Rotate", guiLeft + 44 + 139, guiTop + 59, false, 60, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Icon Style", guiLeft + 108 + 139, guiTop + 59, false, 60, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Check Orient", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 44 + 139, guiTop + 88, false, 60, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Check Center", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 108 + 139, guiTop + 88, false, 60, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Check Orient", guiLeft + 44 + 139, guiTop + 88, false, 60, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Check Center", guiLeft + 108 + 139, guiTop + 88, false, 60, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Interpolation", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 44 + 139, guiTop + 117, false, 60, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Compatibility", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 108 + 139, guiTop + 117, false, 60, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Interpolation", guiLeft + 44 + 139, guiTop + 117, false, 60, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Compatibility", guiLeft + 108 + 139, guiTop + 117, false, 60, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Background", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 44 + 139, guiTop + 146, false, 60, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Border", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 108 + 139, guiTop + 146, false, 60, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Background", guiLeft + 44 + 139, guiTop + 146, false, 60, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Border", guiLeft + 108 + 139, guiTop + 146, false, 60, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("BG Blur", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 44 + 139, guiTop + 175, false, 60, 0xFFB4B4B4
-		);
-		Utils.drawStringCenteredScaledMaxWidth("Chroma Type", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 108 + 139, guiTop + 175, false, 60, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("BG Blur", guiLeft + 44 + 139, guiTop + 175, false, 60, 0xFFB4B4B4);
+		Utils.drawStringCenteredScaledMaxWidth("Chroma Type", guiLeft + 108 + 139, guiTop + 175, false, 60, 0xFFB4B4B4);
 
-		Utils.drawStringCenteredScaledMaxWidth("Edit Map Position", Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 76, guiTop + 209, false, 200, 0xFFB4B4B4
-		);
+		Utils.drawStringCenteredScaledMaxWidth("Edit Map Position", guiLeft + 76, guiTop + 209, false, 200, 0xFFB4B4B4);
 
 		try {
 			drawSlider(DungeonMapConfig.class.getDeclaredField("dmBorderSize"), guiLeft + 76, guiTop + 45);
@@ -468,9 +433,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 		GlStateManager.color(1, 1, 1, 1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(button_tex);
 		RenderUtils.drawTexturedRect(guiLeft + 52, guiTop + 215, 48, 16);
-		TextRenderUtils.drawStringCenteredScaledMaxWidth("Edit", fontRendererObj, guiLeft + 76, guiTop + 223,
-			false, 48, 0xFF303030
-		);
+		TextRenderUtils.drawStringCenteredScaledMaxWidth("Edit", guiLeft + 76, guiTop + 223, false, 48, 0xFF303030);
 
 		Map<String, Vec4b> decorations = new HashMap<>();
 		Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
@@ -495,8 +458,7 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				mouseY,
 				width,
 				height,
-				200,
-				Minecraft.getMinecraft().fontRendererObj
+				200
 			);
 		}
 

@@ -67,6 +67,18 @@ public class TextRenderUtils {
 
 	public static void drawStringScaledMaxWidth(
 		String str,
+		float x,
+		float y,
+		boolean shadow,
+		int len,
+		int colour
+	) {
+		drawStringScaledMaxWidth(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, len, colour);
+	}
+
+	@Deprecated
+	public static void drawStringScaledMaxWidth(
+		String str,
 		FontRenderer fr,
 		float x,
 		float y,
@@ -78,7 +90,7 @@ public class TextRenderUtils {
 		float factor = len / (float) strLen;
 		factor = Math.min(1, factor);
 
-		drawStringScaled(str, fr, x, y, shadow, colour, factor);
+		drawStringScaled(str, x, y, shadow, colour, factor);
 	}
 
 	public static void drawStringCentered(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
@@ -94,7 +106,19 @@ public class TextRenderUtils {
 
 	public static void drawStringScaled(
 		String str,
-		FontRenderer fr,
+		float x,
+		float y,
+		boolean shadow,
+		int colour,
+		float factor
+	) {
+		drawStringScaled(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour, factor);
+	}
+
+	@Deprecated
+		public static void drawStringScaled(
+			String str,
+			FontRenderer fr,
 		float x,
 		float y,
 		boolean shadow,
@@ -106,6 +130,18 @@ public class TextRenderUtils {
 		GlStateManager.scale(1 / factor, 1 / factor, 1);
 	}
 
+	public static void drawStringCenteredScaledMaxWidth(
+		String str,
+		float x,
+		float y,
+		boolean shadow,
+		int len,
+		int colour
+	) {
+		drawStringCenteredScaledMaxWidth(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, len, colour);
+	}
+
+	@Deprecated
 	public static void drawStringCenteredScaledMaxWidth(
 		String str,
 		FontRenderer fr,
@@ -122,7 +158,7 @@ public class TextRenderUtils {
 
 		float fontHeight = 8 * factor;
 
-		drawStringScaled(str, fr, x - newLen / 2, y - fontHeight / 2, shadow, colour, factor);
+		drawStringScaled(str, x - newLen / 2, y - fontHeight / 2, shadow, colour, factor);
 	}
 
 	public static void renderToolTip(

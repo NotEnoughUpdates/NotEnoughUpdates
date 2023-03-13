@@ -88,12 +88,14 @@ public class MiscTaskLevel {
 
 			// abiphone
 			JsonObject leveling = object.getAsJsonObject("leveling");
-			JsonArray completedTask = leveling.get("completed_tasks").getAsJsonArray();
-			Stream<JsonElement> stream = StreamSupport.stream(completedTask.spliterator(), true);
-			long activeContacts = stream.map(JsonElement::getAsString).filter(s -> s.startsWith("ABIPHONE_")).count();
-			JsonObject abiphone = netherIslandPlayerData.getAsJsonObject("abiphone");
-			if (abiphone.has("active_contacts")) {
-				sbXpAbiphone = (int) activeContacts * miscellaneousTask.get("abiphone_contacts_xp").getAsInt();
+			if (leveling != null && leveling.has("completed_tasks")) {
+				JsonArray completedTask = leveling.get("completed_tasks").getAsJsonArray();
+				Stream<JsonElement> stream = StreamSupport.stream(completedTask.spliterator(), true);
+				long activeContacts = stream.map(JsonElement::getAsString).filter(s -> s.startsWith("ABIPHONE_")).count();
+				JsonObject abiphone = netherIslandPlayerData.getAsJsonObject("abiphone");
+				if (abiphone.has("active_contacts")) {
+					sbXpAbiphone = (int) activeContacts * miscellaneousTask.get("abiphone_contacts_xp").getAsInt();
+				}
 			}
 		}
 
@@ -101,8 +103,8 @@ public class MiscTaskLevel {
 		int sbXpGainedHarp = 0;
 		JsonObject harpSongsNames = miscellaneousTask.get("harp_songs_names").getAsJsonObject();
 
-		JsonObject leveling = object.get("leveling").getAsJsonObject();
-		if (leveling.has("completed_tasks")) {
+		JsonObject leveling = object.getAsJsonObject("leveling");
+		if (leveling != null && leveling.has("completed_tasks")) {
 			JsonArray completedTasks = leveling.get("completed_tasks").getAsJsonArray();
 			for (JsonElement completedTask : completedTasks) {
 				String name = completedTask.getAsString();

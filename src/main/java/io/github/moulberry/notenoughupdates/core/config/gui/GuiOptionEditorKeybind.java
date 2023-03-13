@@ -59,11 +59,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
 
 		String keyName = KeybindHelper.getKeyName(getKeyCode());
 		String text = editingKeycode ? "> " + keyName + " <" : keyName;
-		TextRenderUtils.drawStringCenteredScaledMaxWidth(text,
-			Minecraft.getMinecraft().fontRendererObj,
-			x + width / 6, y + height - 7 - 6,
-			false, 40, 0xFF303030
-		);
+		TextRenderUtils.drawStringCenteredScaledMaxWidth(text, x + width / 6, y + height - 7 - 6, false, 40, 0xFF303030);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(RESET);
 		GlStateManager.color(1, 1, 1, 1);

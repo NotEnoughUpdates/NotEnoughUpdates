@@ -68,9 +68,7 @@ public class MinionHelperOverlayHover {
 
 		OverviewLine mouseObject = overlay.getObjectOverMouse(renderMap);
 		if (mouseObject != null) {
-			Utils.drawHoveringText(getTooltip(mouseObject), mouseX, mouseY,
-				scaledWidth, scaledHeight, -1, Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(getTooltip(mouseObject), mouseX, mouseY, scaledWidth, scaledHeight, -1);
 		}
 
 		renderButtons();
@@ -89,7 +87,6 @@ public class MinionHelperOverlayHover {
 		final int scaledHeight = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaledWidth / Minecraft.getMinecraft().displayWidth;
 		int mouseY = scaledHeight - Mouse.getY() * scaledHeight / Minecraft.getMinecraft().displayHeight - 1;
-
 
 		int x = guiLeft + xSize + 4 + 149 - 3;
 		int y = guiTop + 109 - 3;
@@ -122,9 +119,7 @@ public class MinionHelperOverlayHover {
 		list.add("");
 		list.add("§eClick to toggle!");
 
-		Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1,
-			Minecraft.getMinecraft().fontRendererObj
-		);
+		Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1);
 	}
 
 	private void renderBuyPriceButton(int scaledWidth, int scaledHeight, int mouseX, int mouseY) {
@@ -145,9 +140,7 @@ public class MinionHelperOverlayHover {
 		list.add("");
 		list.add("§eClick to toggle!");
 
-		Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1,
-			Minecraft.getMinecraft().fontRendererObj
-		);
+		Utils.drawHoveringText(list, mouseX, mouseY, scaledWidth, scaledHeight, -1);
 	}
 
 	private List<String> getTooltip(OverviewLine overviewLine) {

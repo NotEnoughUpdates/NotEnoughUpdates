@@ -167,8 +167,8 @@ public class SkillRelatedTaskLevel {
 		}
 
 		int sbXpNucleus = 0;
-		JsonObject leveling = object.get("leveling").getAsJsonObject();
-		if (leveling.has("completions") && leveling.getAsJsonObject("completions").has("NUCLEUS_RUNS")) {
+		JsonObject leveling = object.getAsJsonObject("leveling");
+		if (leveling != null && leveling.has("completions") && leveling.getAsJsonObject("completions").has("NUCLEUS_RUNS")) {
 			int nucleusRuns = leveling.getAsJsonObject("completions").get("NUCLEUS_RUNS").getAsInt();
 			JsonElement nucleusXp = miningObj.get("crystal_nucleus_xp");
 			if (nucleusXp == null) {

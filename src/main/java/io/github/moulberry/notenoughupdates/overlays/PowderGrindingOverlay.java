@@ -19,12 +19,13 @@
 
 package io.github.moulberry.notenoughupdates.overlays;
 
-import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.entity.boss.BossStatus;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -35,10 +36,9 @@ import java.util.regex.Pattern;
 
 public class PowderGrindingOverlay extends TextTabOverlay {
 
-	private final static JsonParser PARSER = new JsonParser();
-
-	private final static Pattern pattern =
+	private final static Pattern POWDER_PATTERN =
 		Pattern.compile("You received \\+([0-9]+(?:,\\d+)*) (Mithril|Gemstone) Powder\\.");
+	private final static Pattern EVENT_PATTERN = Pattern.compile("PASSIVE EVENT (.+) RUNNING FOR \\d{2}:\\d{2}");
 
 	public int chestCount = 0;
 	public int openedChestCount = 0;
@@ -48,6 +48,7 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	public int gemstonePowderFound = 0;
 	public float lastGemstonePowderFound = 0;
 	public float lastGemstonePowderAverage = 0;
+	public MiningEvent miningEvent = MiningEvent.UNKNOWN;
 	private long lastUpdate = -1;
 
 	public PowderGrindingOverlay(
@@ -56,6 +57,13 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 		Supplier<TextOverlayStyle> styleSupplier
 	) {
 		super(position, dummyStrings, styleSupplier);
+	}
+
+	public enum MiningEvent {
+		UNKNOWN,
+		DOUBLE_POWDER,
+		BETTER_TOGETHER,
+		GONE_WITH_THE_WIND;
 	}
 
 	private float interp(float now, float last) {
@@ -80,6 +88,23 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 			lastGemstonePowderAverage = this.openedChestCount > 0 ?
 				1f * this.gemstonePowderFound / this.openedChestCount :
 				0;
+
+			Matcher matcher = EVENT_PATTERN.matcher(BossStatus.bossName == null ? "" : Utils.cleanColour(BossStatus.bossName));
+			if (matcher.matches()) {
+				switch (matcher.group(1)) {
+					case "2X POWDER":
+						miningEvent = MiningEvent.DOUBLE_POWDER;
+						break;
+					case "BETTER TOGETHER":
+						miningEvent = MiningEvent.BETTER_TOGETHER;
+						break;
+					case "GONE WITH THE WIND":
+						miningEvent = MiningEvent.GONE_WITH_THE_WIND;
+						break;
+					default:
+						miningEvent = MiningEvent.UNKNOWN;
+				}
+			}
 		} else overlayStrings = null;
 	}
 
@@ -139,16 +164,16 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 		} else if (message.equals("You have successfully picked the lock on this chest!")) {
 			this.openedChestCount++;
 		} else {
-			Matcher matcher = pattern.matcher(message);
+			Matcher matcher = POWDER_PATTERN.matcher(message);
 			if (matcher.matches()) {
 				String rawNumber = matcher.group(1).replace(",", "");
 				try {
 					int amount = Integer.parseInt(rawNumber);
 					String type = matcher.group(2);
 					if (type.equals("Mithril")) {
-							this.mithrilPowderFound += amount;
+						this.mithrilPowderFound += miningEvent == MiningEvent.DOUBLE_POWDER ? amount * 2 : amount;
 					} else if (type.equals("Gemstone")) {
-						this.gemstonePowderFound += amount;
+						this.gemstonePowderFound += miningEvent == MiningEvent.DOUBLE_POWDER ? amount * 2 : amount;
 					}
 				} catch (NumberFormatException e) {
 					e.printStackTrace();

@@ -550,7 +550,6 @@ public class GuiElementTextField {
 
 				TextRenderUtils.drawStringCenteredScaledMaxWidth(
 					Utils.chromaStringByColourCode(texts[yOffI]),
-					Minecraft.getMinecraft().fontRendererObj,
 					x + searchBarXSize / 2f,
 					y + searchBarYSize / 2f + yOff,
 					false,
@@ -665,12 +664,12 @@ public class GuiElementTextField {
 						y + (searchBarYSize - 8) / 2 + 9 + texY, Color.LIGHT_GRAY.getRGB()
 					);
 
-					TextRenderUtils.drawStringScaled(String.valueOf(c), Minecraft.getMinecraft().fontRendererObj,
+					TextRenderUtils.drawStringScaled(String.valueOf(c),
 						x + xStartOffset + texX,
 						y + searchBarYSize / 2f - scale * 8 / 2f + texY, false, Color.BLACK.getRGB(), scale
 					);
 					if (bold) {
-						TextRenderUtils.drawStringScaled(String.valueOf(c), Minecraft.getMinecraft().fontRendererObj,
+						TextRenderUtils.drawStringScaled(String.valueOf(c),
 							x + xStartOffset + texX + 1,
 							y + searchBarYSize / 2f - scale * 8 / 2f + texY, false, Color.BLACK.getRGB(), scale
 						);

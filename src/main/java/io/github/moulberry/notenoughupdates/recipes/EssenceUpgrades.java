@@ -350,14 +350,7 @@ public class EssenceUpgrades implements NeuRecipe {
 			Minecraft.getMinecraft().getTextureManager().bindTexture(BACKGROUND);
 			GlStateManager.color(1, 1, 1, 1);
 			drawButton(x, y, i + 1 == selectedTier);
-			Utils.drawStringCentered(
-				String.valueOf(i + 1),
-				Minecraft.getMinecraft().fontRendererObj,
-				x + 8,
-				y + 9,
-				false,
-				0x2d4ffc
-			);
+			Utils.drawStringCentered(String.valueOf(i + 1), x + 8, y + 9, false, 0x2d4ffc);
 		}
 	}
 

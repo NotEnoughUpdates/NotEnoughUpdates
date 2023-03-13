@@ -139,20 +139,16 @@ public class GuiPriceGraph extends GuiScreen {
 
 		if (itemName != null && itemStack != null) {
 			Utils.drawItemStack(itemStack, guiLeft + 16, guiTop + 11);
-			Utils.drawStringScaledMax(itemName, Minecraft.getMinecraft().fontRendererObj, guiLeft + 35, guiTop + 13, false,
+			Utils.drawStringScaledMax(itemName, guiLeft + 35, guiTop + 13, false,
 				0xffffff, 1.77f, 208
 			);
 		}
 
 		if (!loaded)
-			Utils.drawStringCentered("Loading...", Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 166, guiTop + 116, false, 0xffffff00
-			);
+			Utils.drawStringCentered("Loading...", guiLeft + 166, guiTop + 116, false, 0xffffff00);
 		else if (
 			itemData == null || itemData.get() == null || itemData.get().size() <= 1)
-			Utils.drawStringCentered("No data found.", Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 166, guiTop + 116, false, 0xffff0000
-			);
+			Utils.drawStringCentered("No data found.", guiLeft + 166, guiTop + 116, false, 0xffff0000);
 		else {
 			int graphColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor);
 			int graphColor2 = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor2);
@@ -226,9 +222,7 @@ public class GuiPriceGraph extends GuiScreen {
 				if (num != prevNum) {
 					int xPos = (int) map(time, firstTime, lastTime, guiLeft + 17, guiLeft + 315);
 					if (Math.abs(prevXPos - xPos) > 30) {
-						Utils.drawStringCentered(String.valueOf(num), Minecraft.getMinecraft().fontRendererObj,
-							xPos, guiTop + 206, false, 0x8b8b8b
-						);
+						Utils.drawStringCentered(String.valueOf(num), xPos, guiTop + 206, false, 0x8b8b8b);
 						prevXPos = xPos;
 					}
 					prevNum = num;
@@ -237,10 +231,9 @@ public class GuiPriceGraph extends GuiScreen {
 			for (int i = 0; i <= 6; i++) {
 				long price = (long) map(i, 0, 6, highestValue, lowestValue);
 				String formattedPrice = formatPrice(price);
-				Utils.drawStringF(formattedPrice, Minecraft.getMinecraft().fontRendererObj, guiLeft + 320,
+				Utils.drawStringF(formattedPrice, guiLeft + 320,
 					(float) map(i, 0, 6, guiTop + 35, guiTop + 198)
-						- Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2f,
-					false, 0x8b8b8b
+						- Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2f, false, 0x8b8b8b
 				);
 			}
 			if (customSelecting) {

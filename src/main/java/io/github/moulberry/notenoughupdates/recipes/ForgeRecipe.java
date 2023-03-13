@@ -25,17 +25,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.HotmInformation;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -86,10 +86,6 @@ public class ForgeRecipe implements NeuRecipe {
 
 	public Ingredient getOutput() {
 		return output;
-	}
-
-	public int getHotmLevel() {
-		return hotmLevel;
 	}
 
 	public int getTimeInSeconds() {
@@ -151,11 +147,9 @@ public class ForgeRecipe implements NeuRecipe {
 
 	@Override
 	public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		if (timeInSeconds > 0)
 			Utils.drawStringCenteredScaledMaxWidth(
 				formatDuration(timeInSeconds),
-				fontRenderer,
 				gui.guiLeft + EXTRA_INFO_X,
 				gui.guiTop + EXTRA_INFO_Y,
 				false,
@@ -166,30 +160,24 @@ public class ForgeRecipe implements NeuRecipe {
 
 	@Override
 	public void drawHoverInformation(GuiItemRecipe gui, int mouseX, int mouseY) {
-		manager.hotm.getInformationOnCurrentProfile().ifPresent(hotmTree -> {
-			if (timeInSeconds > 0 && gui.isWithinRect(
-				mouseX, mouseY,
-				gui.guiLeft + EXTRA_INFO_X - EXTRA_INFO_MAX_WIDTH / 2,
-				gui.guiTop + EXTRA_INFO_Y - 8,
-				EXTRA_INFO_MAX_WIDTH, 16
-			)) {
-				int qf = hotmTree.getLevel("forge_time");
-				int reducedTime = getReducedTime(qf);
-				if (qf > 0) {
+		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (profileSpecific == null) return;
 
-					Utils.drawHoveringText(
-						Arrays.asList(
-							EnumChatFormatting.YELLOW + formatDuration(reducedTime) + " with Quick Forge (Level " + qf + ")"),
-						mouseX,
-						mouseY,
-						gui.width,
-						gui.height,
-						500,
-						Minecraft.getMinecraft().fontRendererObj
-					);
-				}
-			}
-		});
+		if (timeInSeconds <= 0 || !gui.isWithinRect(
+			mouseX, mouseY,
+			gui.guiLeft + EXTRA_INFO_X - EXTRA_INFO_MAX_WIDTH / 2,
+			gui.guiTop + EXTRA_INFO_Y - 8,
+			EXTRA_INFO_MAX_WIDTH, 16
+		)) return;
+
+		int level = profileSpecific.hotmTree.getOrDefault("Quick Forge", 0);
+		if (level == 0) return;
+		int reducedTime = getReducedTime(level);
+
+		Utils.drawHoveringText(
+			Collections.singletonList(
+				EnumChatFormatting.YELLOW + formatDuration(reducedTime) + " with Quick Forge (Level " + level + ")"),
+			mouseX, mouseY, gui.width, gui.height, 500);
 	}
 
 	public int getReducedTime(int quickForgeUpgradeLevel) {
