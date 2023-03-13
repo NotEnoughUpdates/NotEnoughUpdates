@@ -188,7 +188,7 @@ class NEUStatsCommand {
     private fun appendModList(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
         builder.category("Mods Loaded")
         Loader.instance().activeModList.forEach {
-            builder.append(it.name, "${it.source} (${it.displayVersion})")
+            builder.append(it.name, "${it.source.name} (${it.displayVersion})")
         }
         return builder
     }
