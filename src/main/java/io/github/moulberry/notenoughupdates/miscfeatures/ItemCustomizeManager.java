@@ -329,13 +329,14 @@ public class ItemCustomizeManager {
 
 	public static Item getCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0) return stack.getItem();
+		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.customItem.split(":").length == 0) return stack.getItem();
 		Item newItem = Item.getByNameOrId(data.customItem.split(":")[0]);
 		if (newItem == null) return stack.getItem();
 		return newItem;
 	}
 
 	public static Item getCustomItem(ItemStack stack, String newItemString) {
+		if (newItemString.split(":").length == 0) return stack.getItem();
 		Item newItem = Item.getByNameOrId(newItemString.split(":")[0]);
 		if (newItem == null) return stack.getItem();
 		return newItem;
@@ -386,7 +387,7 @@ public class ItemCustomizeManager {
 
 	public static boolean hasCustomItem(ItemStack stack) {
 		ItemData data = getDataForItem(stack);
-		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem)) return false;
+		if (data == null || data.customItem == null || data.customItem.length() == 0 || data.defaultItem == null || data.customItem.equals(data.defaultItem) || data.customItem.split(":").length == 0) return false;
 		Item item = Item.getByNameOrId(data.customItem.split(":")[0]);
 		Item defaultItem = Item.getByNameOrId(data.defaultItem);
 		if (item == null) {
