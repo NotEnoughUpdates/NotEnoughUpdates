@@ -23,7 +23,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -198,22 +197,21 @@ public class ItemResolutionQuery {
 	 * @return the internal neu item id of that item, or null
 	 */
 	public static String findInternalNameByDisplayName(String displayName, boolean mayBeMangled) {
-		var cleanDisplayName = StringUtils.cleanColour(displayName);
 		var manager = NotEnoughUpdates.INSTANCE.manager;
 		String bestMatch = null;
 		int bestMatchLength = -1;
-		for (String internalName : findInternalNameCandidatesForDisplayName(cleanDisplayName)) {
+		for (String internalName : findInternalNameCandidatesForDisplayName(displayName)) {
 			var item = manager.createItem(internalName);
 			if (item.getDisplayName() == null) continue;
-			var cleanItemDisplayName = StringUtils.cleanColour(item.getDisplayName());
-			if (cleanItemDisplayName.length() == 0) continue;
+			var itemDisplayName = item.getDisplayName();
+			if (itemDisplayName.length() == 0) continue;
 			if (mayBeMangled
-				? !cleanDisplayName.contains(cleanItemDisplayName)
-				: !cleanItemDisplayName.equals(cleanDisplayName)) {
+				? !displayName.contains(itemDisplayName)
+				: !itemDisplayName.equals(displayName)) {
 				continue;
 			}
-			if (cleanItemDisplayName.length() > bestMatchLength) {
-				bestMatchLength = cleanItemDisplayName.length();
+			if (itemDisplayName.length() > bestMatchLength) {
+				bestMatchLength = itemDisplayName.length();
 				bestMatch = internalName;
 			}
 		}
