@@ -595,41 +595,45 @@ public class RenderListener {
 			AccessorGuiContainer acc = (AccessorGuiContainer) event.gui;
 			Rectangle mousePosition = new Rectangle(event.mouseX, event.mouseY, 0, 0);
 			Rectangle craftingTextRectangle = new Rectangle(acc.getGuiLeft() + 85, acc.getGuiTop() + 4, 30, 21);
-			iterateButtons((GuiContainer) guiScreen, (button, buttonPosition) -> {
+			try {
+				iterateButtons((GuiContainer) guiScreen, (button, buttonPosition) -> {
 
-				if (buttonPosition.intersects(craftingTextRectangle)) {
-					disableCraftingText = true;
-				}
+					if (buttonPosition.intersects(craftingTextRectangle)) {
+						disableCraftingText = true;
+					}
 
-				if (!buttonPosition.intersects(mousePosition)) {
-					return;
-				}
-				hoveringButton[0] = true;
-				long currentTime = System.currentTimeMillis();
+					if (!buttonPosition.intersects(mousePosition)) {
+						return;
+					}
+					hoveringButton[0] = true;
+					long currentTime = System.currentTimeMillis();
 
-				if (buttonHovered != button) {
-					buttonHoveredMillis = currentTime;
-					buttonHovered = button;
-				}
+					if (buttonHovered != button) {
+						buttonHoveredMillis = currentTime;
+						buttonHovered = button;
+					}
 
-				if (currentTime - buttonHoveredMillis <= NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
-					return;
-				}
-				String command = button.command.trim();
-				if (!command.startsWith("/")) {
-					command = "/" + command;
-				}
+					if (currentTime - buttonHoveredMillis <= NotEnoughUpdates.INSTANCE.config.inventoryButtons.tooltipDelay) {
+						return;
+					}
+					String command = button.command.trim();
+					if (!command.startsWith("/")) {
+						command = "/" + command;
+					}
 
-				Utils.drawHoveringText(
-					Lists.newArrayList("\u00a77" + command),
-					event.mouseX,
-					event.mouseY,
-					event.gui.width,
-					event.gui.height,
-					-1
-				);
+					Utils.drawHoveringText(
+						Lists.newArrayList("\u00a77" + command),
+						event.mouseX,
+						event.mouseY,
+						event.gui.width,
+						event.gui.height,
+						-1
+					);
 
-			});
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		if (!hoveringButton[0]) buttonHovered = null;
 
