@@ -37,10 +37,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -314,7 +310,6 @@ public class SBInfo {
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
 	public void tick() {
-		boolean tempIsInDungeon = false;
 
 		long currentTime = System.currentTimeMillis();
 
@@ -366,26 +361,13 @@ public class SBInfo {
 		}
 
 		try {
-			Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
-
-			ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
-
-			List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
-
-			List<String> lines = new ArrayList<>();
-			for (int i = scores.size() - 1; i >= 0; i--) {
-				Score score = scores.get(i);
-				ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
-				String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
-				line = Utils.cleanDuplicateColourCodes(line);
-
-				String cleanLine = Utils.cleanColour(line);
-
-				if (cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
+			List<String> lines = SidebarUtil.readSidebarLines();
+			boolean tempIsInDungeon = false;
+			for (String line : lines) {
+				if (line.contains("Cleared:") && line.contains("%")) {
 					tempIsInDungeon = true;
+					break;
 				}
-
-				lines.add(line);
 			}
 			isInDungeon = tempIsInDungeon;
 

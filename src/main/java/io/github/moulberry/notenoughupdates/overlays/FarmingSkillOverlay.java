@@ -24,15 +24,12 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.text.NumberFormat;
@@ -60,6 +57,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private String lastItemHeld = "null";
 	private int jacobPredictionLast = -1;
 	private int jacobPrediction = -1;
+	private boolean inJacobContest = false;
 
 	private XPInformation.SkillInfo skillInfo = null;
 	private XPInformation.SkillInfo skillInfoLast = null;
@@ -103,34 +101,31 @@ public class FarmingSkillOverlay extends TextOverlay {
 	}
 
 	private void gatherJacobData() {
-		if (System.currentTimeMillis() % 3600000 >= 900000 &&
-			System.currentTimeMillis() % 3600000 <= 2100000) { //Check to see if there is an active Jacob's contest
+		inJacobContest = false;
+		if (isJacobTime()) {
 			int timeLeftInContest = (20 * 60) - ((int) ((System.currentTimeMillis() % 3600000 - 900000) / 1000));
-			try {
-				Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
-				ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
-				List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
-				int cropsFarmed = -1;
-				for (int i = scores.size() - 1; i >= 0; i--) {
-					Score score = scores.get(i);
-					ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
-					String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
-					line = Utils.cleanColour(line);
-					if (line.contains("Collected") || line.contains("BRONZE") || line.contains("SILVER") ||
-						line.contains("GOLD")) {
-						String l = line.replaceAll("[^A-Za-z0-9() ]", "");
-						cropsFarmed = Integer.parseInt(l.substring(l.lastIndexOf(" ") + 1).replace(",", ""));
-					}
+
+			int cropsFarmed = -1;
+			for (String line : SidebarUtil.readSidebarLines()) {
+				if (line.contains("Collected") || line.contains("BRONZE") || line.contains("SILVER") ||
+					line.contains("GOLD")) {
+					inJacobContest = true;
+					String l = line.replaceAll("[^A-Za-z0-9() ]", "");
+					cropsFarmed = Integer.parseInt(l.substring(l.lastIndexOf(" ") + 1).replace(",", ""));
 				}
 				jacobPrediction = (int) (cropsFarmed + (cropsPerSecond * timeLeftInContest));
-
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+
 		} else {
 			jacobPrediction = -1;
 			jacobPredictionLast = -1;
 		}
+	}
+
+	// Check if there is an active Jacob's contest
+	private static boolean isJacobTime() {
+		long now = System.currentTimeMillis();
+		return now % 3600000 >= 900000 && now % 3600000 <= 2100000;
 	}
 
 	//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
@@ -423,7 +418,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 				if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
 					lineMap.put(
 						1,
-						EnumChatFormatting.AQUA + (foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
+						EnumChatFormatting.AQUA +
+							(foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
 							EnumChatFormatting.YELLOW + "N/A"
 					);
 				} else {
@@ -431,7 +427,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 					lineMap.put(
 						1,
-						EnumChatFormatting.AQUA + (foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
+						EnumChatFormatting.AQUA +
+							(foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
 							EnumChatFormatting.YELLOW +
 							String.format("%,." + cropDecimals + "f", cpsInterp * 60 * cropMultiplier)
 					);
@@ -440,7 +437,10 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			if (counter >= 0 && coins > 0) {
 				if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
-					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW + "N/A");
+					lineMap.put(
+						10,
+						EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW + "N/A"
+					);
 				} else {
 					float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
 					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW +
@@ -464,8 +464,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 				);
 			}
 
-			if (System.currentTimeMillis() % 3600000 >= 900000 &&
-				System.currentTimeMillis() % 3600000 <= 2100000) { //Check to see if there is an active Jacob's contest
+			if (isJacobTime() && inJacobContest) {
 				if (jacobPredictionLast == jacobPrediction && jacobPrediction <= 0) {
 					lineMap.put(11, EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW + "N/A");
 				} else {
