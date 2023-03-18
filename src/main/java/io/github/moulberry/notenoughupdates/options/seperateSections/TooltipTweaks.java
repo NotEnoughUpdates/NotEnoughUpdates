@@ -75,6 +75,15 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Show raw craft on items that can't be sold",
+		desc = "Raw craft cost will be shown on items that can't be sold on the ah or bz"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean rawCraft = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Use Short Number Format",
 		desc = "Use Short Numbers (5.1m) instead of 5,130,302"
 	)

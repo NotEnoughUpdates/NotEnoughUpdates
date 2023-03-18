@@ -365,7 +365,7 @@ public class ItemPriceInformation {
 				}
 			}
 
-		} else if (craftCost != null && craftCost.fromRecipe) {
+		} else if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rawCraft && craftCost != null && craftCost.fromRecipe) {
 
 			if (craftCost.craftCost == 0) return;
 			double cost = craftCost.craftCost;
