@@ -58,7 +58,7 @@ public class NEUDelegatingTweaker implements ITweaker {
 
 	private void discoverTweakers() {
 		if (BuildFlags.ENABLE_ONECONFIG_COMPAT_LAYER) {
-			delegates.add("cc.polyfrost.oneconfigwrapper.OneConfigWrapper");
+			delegates.add("cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker");
 		}
 		delegates.add(MixinTweaker.class.getName());
 		delegates.add(ModLoadingTweaker.class.getName());
