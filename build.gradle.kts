@@ -122,8 +122,8 @@ dependencies {
 
 
 		if (project.findProperty("neu.buildflags.oneconfig") == "true") {
-				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
-				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
+				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
 		}
 
 		"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
