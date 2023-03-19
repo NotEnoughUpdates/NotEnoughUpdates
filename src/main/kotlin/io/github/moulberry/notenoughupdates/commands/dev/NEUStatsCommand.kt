@@ -58,6 +58,9 @@ class NEUStatsCommand {
             thenLiteralExecute("modlist") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
+                        .also {
+                            if (Loader.instance().activeModList.size < 15) appendStats(it)
+                        }
                         .also(::appendModList)
                         .toString()
                 )
