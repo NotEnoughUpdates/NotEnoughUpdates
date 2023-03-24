@@ -251,6 +251,10 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "prerelease";
 			}
 
+			if (config.apiData.moulberryCodesApi.isEmpty()) {
+				config.apiData.moulberryCodesApi = "moulberry.codes";
+			}
+
 			saveConfig();
 		}
 
