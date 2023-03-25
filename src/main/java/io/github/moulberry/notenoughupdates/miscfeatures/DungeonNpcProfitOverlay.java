@@ -53,6 +53,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -135,7 +136,25 @@ public class DungeonNpcProfitOverlay {
 
 		if (chestProfits.isEmpty() || !slots.equals(previousSlots)) {
 			chestProfits.clear();
-			updateDungeonChests(slots);
+			updateDungeonChests(slots).thenAccept(chests -> {
+				for (DungeonChest chest : chests) {
+					chest.calculateProfitAndBuildLore();
+					chestProfits.removeIf(c -> c.name.equals(chest.name) && c.items.size() <= chest.items.size());
+					chestProfits.add(chest);
+
+				}
+
+				if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
+					chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+				}
+
+				if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
+					List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
+					copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+
+					copiedList.get(0).shouldHighlight = true;
+				}
+			});
 		}
 		previousSlots = guiChest.inventorySlots.inventorySlots;
 
@@ -147,8 +166,10 @@ public class DungeonNpcProfitOverlay {
 	 *
 	 * @param inventorySlots list of Slots from the GUI containing the dungeon chest previews
 	 */
-	private void updateDungeonChests(List<Slot> inventorySlots) {
+	private CompletableFuture<List<DungeonChest>> updateDungeonChests(List<Slot> inventorySlots) {
+		CompletableFuture<List<DungeonChest>> completableFuture = new CompletableFuture<>();
 		MinecraftExecutor.OffThread.execute(() -> {
+			List<DungeonChest> dungeonChests = new ArrayList<>();
 			//loop through the upper chest
 			for (int i = 0; i < 27; i++) {
 				Slot inventorySlot = inventorySlots.get(i);
@@ -188,32 +209,25 @@ public class DungeonNpcProfitOverlay {
 						}
 						dungeonChest.items = items;
 						if (dungeonChest.costToOpen != -1) {
-							synchronized (chestProfits) {
-								// Check if there is already a chest that has more items
-								if (chestProfits.stream().anyMatch(c -> c.name.equals(dungeonChest.name) &&
-									c.items.size() > dungeonChest.items.size())) {
-									return;
-								}
-								chestProfits.removeIf(c -> c.name.equals(dungeonChest.name));
-								dungeonChest.calculateProfitAndBuildLore();
-								chestProfits.add(dungeonChest);
-							}
+							dungeonChests.add(dungeonChest);
 						}
 					}
 				}
 			}
+			completableFuture.complete(dungeonChests);
 
-			if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
-				chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-			}
-
-			if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
-				List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
-				copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-
-				copiedList.get(0).shouldHighlight = true;
-			}
+//			if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
+//				chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+//			}
+//
+//			if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
+//				List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
+//				copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+//
+//				copiedList.get(0).shouldHighlight = true;
+//			}
 		});
+		return completableFuture;
 	}
 
 	public void render(GuiChest guiChest) {
