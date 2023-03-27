@@ -167,8 +167,7 @@ public class DungeonNpcProfitOverlay {
 	 * @param inventorySlots list of Slots from the GUI containing the dungeon chest previews
 	 */
 	private CompletableFuture<List<DungeonChest>> updateDungeonChests(List<Slot> inventorySlots) {
-		CompletableFuture<List<DungeonChest>> completableFuture = new CompletableFuture<>();
-		MinecraftExecutor.OffThread.execute(() -> {
+		return CompletableFuture.supplyAsync(() -> {
 			List<DungeonChest> dungeonChests = new ArrayList<>();
 			//loop through the upper chest
 			for (int i = 0; i < 27; i++) {
@@ -214,20 +213,8 @@ public class DungeonNpcProfitOverlay {
 					}
 				}
 			}
-			completableFuture.complete(dungeonChests);
-
-//			if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
-//				chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-//			}
-//
-//			if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
-//				List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
-//				copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-//
-//				copiedList.get(0).shouldHighlight = true;
-//			}
-		});
-		return completableFuture;
+			return dungeonChests;
+		}, MinecraftExecutor.OffThread);
 	}
 
 	public void render(GuiChest guiChest) {
