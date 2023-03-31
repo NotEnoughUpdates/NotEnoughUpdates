@@ -485,7 +485,7 @@ public class RenderListener {
 	}
 
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
-		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons()) {
+		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null) {
 			return;
 		}
 
