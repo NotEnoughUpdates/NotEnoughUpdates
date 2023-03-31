@@ -141,7 +141,8 @@ public class NotEnoughUpdates {
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
-		Sets.newHashSet("SKYBLOCK", "\u7A7A\u5C9B\u751F\u5B58", "\u7A7A\u5CF6\u751F\u5B58");
+		Sets.newHashSet("SKYBLOCK", "\u7A7A\u5C9B\u751F\u5B58", "\u7A7A\u5CF6\u751F\u5B58",
+			"SKIBLOCK"); // april fools language
 	public static NotEnoughUpdates INSTANCE = null;
 	public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
 		put("UNKNOWN", EnumChatFormatting.RED.toString());
