@@ -220,7 +220,7 @@ public class ApiUtil {
 
 						inputStream = conn.getInputStream();
 
-						if (shouldGunzip || conn.getContentEncoding().equals("gzip")) {
+						if (shouldGunzip || "gzip".equals(conn.getContentEncoding())) {
 							inputStream = new GZIPInputStream(inputStream);
 						}
 
