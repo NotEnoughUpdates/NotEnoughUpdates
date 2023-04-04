@@ -93,7 +93,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         guiTop = (height - Y_SIZE) / 2
 
         if (customSelecting) customSelectionEnd =
-            if (mouseX < guiLeft + 18) guiLeft + 18 else mouseX.coerceAtMost(guiLeft + 314)
+            if (mouseX < guiLeft + 17) guiLeft + 17 else mouseX.coerceAtMost(guiLeft + 315)
 
         Minecraft.getMinecraft().textureManager.bindTexture(TEXTURE)
         GlStateManager.color(1f, 1f, 1f, 1f)
@@ -350,7 +350,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         if (customSelecting) {
             customSelecting = false
             customSelectionEnd =
-                if (mouseX < guiLeft + 18) guiLeft + 18 else mouseX.coerceAtMost(guiLeft + 314)
+                if (mouseX < guiLeft + 17) guiLeft + 17 else mouseX.coerceAtMost(guiLeft + 315)
             if (customSelectionStart > customSelectionEnd) {
                 val temp = customSelectionStart
                 customSelectionStart = customSelectionEnd
