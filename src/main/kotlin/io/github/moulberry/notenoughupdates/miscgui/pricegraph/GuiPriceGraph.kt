@@ -205,6 +205,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                             - Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2f, false, 0x8b8b8b
                 )
             }
+            // X-axis with hour or date
             val showDays = lastTime.epochSecond - firstTime.epochSecond > 86400
             val amountOfTime = (lastTime.epochSecond - firstTime.epochSecond) / (if (showDays) 86400.0 else 3600.0)
             val pixelsPerTime = 298.0 / amountOfTime
@@ -226,44 +227,6 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                 time = time.plusSeconds(if (showDays) 86400L else 3600L)
                 xPos += pixelsPerTime
             }
-            /*if (showDays) {
-                val days = (lastTime.epochSecond - firstTime.epochSecond) / 86400.0
-                val pixelsPerDay = 298.0 / days
-                var time = firstTime.plusSeconds((24 - Date.from(firstTime).hours) * 3600L)
-                var xPos = getX(time)
-                var lastX = -100.0
-                while (xPos < guiLeft + 315) {
-                    if (abs(xPos - lastX) > 30) {
-                        Utils.drawStringCentered(
-                            Date.from(time).date.toString(),
-                            xPos.toFloat(), (guiTop + 206).toFloat(),
-                            false, 0x8b8b8b
-                        )
-                        lastX = xPos
-                    }
-                    time = time.plusSeconds(86400L)
-                    xPos += pixelsPerDay
-                }
-            } else {
-                val hours = (lastTime.epochSecond - firstTime.epochSecond) / 3600.0
-                val pixelsPerHour = 298.0 / hours
-                var time = firstTime.plusSeconds((60 - Date.from(firstTime).minutes) * 60L)
-                var xPos = getX(time)
-                var lastX = -100.0
-                while (xPos < guiLeft + 315) {
-                    if (abs(xPos - lastX) > 30) {
-                        Utils.drawStringCentered(
-                            Date.from(time).hours.toString(),
-                            xPos.toFloat(), (guiTop + 206).toFloat(),
-                            false, 0x8b8b8b
-                        )
-                        lastX = xPos
-                    }
-                    time = time.plusSeconds(3600L)
-                    xPos += pixelsPerHour
-                }
-            }*/
-
 
             if (
                 mouseX >= guiLeft + 17 && mouseX <= guiLeft + 315 &&
@@ -467,6 +430,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             }
         }
         data = trimmedData
+        if (data.isEmpty()) return
 
         // Populate variables required for graphs
         firstTime = data.minOf { it.key }
