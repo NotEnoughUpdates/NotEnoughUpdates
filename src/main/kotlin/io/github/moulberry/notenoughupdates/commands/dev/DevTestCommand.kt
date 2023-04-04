@@ -29,8 +29,9 @@ import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent
-import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraphOld
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager
+import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph
 import io.github.moulberry.notenoughupdates.util.PronounDB
 import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.TabListUtils
@@ -131,7 +132,8 @@ class DevTestCommand {
             thenLiteral("pricetest") {
                 thenArgument("item", StringArgumentType.string()) { item ->
                     thenExecute {
-                        NotEnoughUpdates.INSTANCE.openGui = GuiPriceGraph(this[item])
+                        NotEnoughUpdates.INSTANCE.openGui =
+                            GuiPriceGraph(this[item])
                     }
                 }.withHelp("Display the price graph for an item by id")
                 thenExecute {

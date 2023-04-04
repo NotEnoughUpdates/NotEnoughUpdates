@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class GuiPriceGraph extends GuiScreen {
+public class GuiPriceGraphOld extends GuiScreen {
 
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -90,7 +90,7 @@ public class GuiPriceGraph extends GuiScreen {
 	private long customEnd = 0;
 	private boolean customSelecting = false;
 
-	public GuiPriceGraph(String itemId) {
+	public GuiPriceGraphOld(String itemId) {
 		switch (NotEnoughUpdates.INSTANCE.config.ahGraph.graphStyle) {
 			case 1:
 				TEXTURE = new ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_dark.png");

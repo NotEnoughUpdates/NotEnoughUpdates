@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraphOld;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.ItemShopRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
@@ -306,7 +306,7 @@ public class APIManager {
 					ItemPriceInformation.updateAuctionableItemsList();
 					didFirstUpdate = true;
 				}
-				GuiPriceGraph.addToCache(lowestBins, false);
+				GuiPriceGraphOld.addToCache(lowestBins, false);
 			});
 	}
 
@@ -769,7 +769,7 @@ public class APIManager {
 						bazaarJson.add(transformHypixelBazaarToNEUItemId(entry.getKey()), productInfo);
 					}
 				}
-				GuiPriceGraph.addToCache(bazaarJson, true);
+				GuiPriceGraphOld.addToCache(bazaarJson, true);
 			});
 	}
 
