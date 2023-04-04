@@ -207,6 +207,7 @@ public class ApiUtil {
 						if (this.postContentType != null) {
 							conn.setRequestProperty("Content-Type", this.postContentType);
 						}
+						conn.setRequestProperty("Accept-Encoding", "gzip"); // Tell the server we can accept gzip
 						if (this.postData != null) {
 							conn.setDoOutput(true);
 							OutputStream os = conn.getOutputStream();
@@ -219,7 +220,7 @@ public class ApiUtil {
 
 						inputStream = conn.getInputStream();
 
-						if (shouldGunzip) {
+						if (shouldGunzip || conn.getContentEncoding().equals("gzip")) {
 							inputStream = new GZIPInputStream(inputStream);
 						}
 
