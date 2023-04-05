@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscgui.pricegraph
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.util.SpecialColour
 import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.roundToDecimals
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -423,9 +424,9 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                 continue
             } else {
                 val averageTime = Instant.ofEpochSecond(dataInZone.keys.sumOf { it.epochSecond } / dataInZone.size)
-                val averageBuyPrice = dataInZone.values.sumOf { it.buyPrice } / dataInZone.size
+                val averageBuyPrice = (dataInZone.values.sumOf { it.buyPrice } / dataInZone.size).roundToDecimals(1)
                 val averageSellPrice = if (dataInZone.values.first().sellPrice == null) null
-                else dataInZone.values.sumOf { it.sellPrice ?: 0.0 } / dataInZone.size
+                else (dataInZone.values.sumOf { it.sellPrice ?: 0.0 } / dataInZone.size).roundToDecimals(1)
                 trimmedData[averageTime] = PriceObject(averageBuyPrice, averageSellPrice)
             }
         }
