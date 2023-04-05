@@ -33,7 +33,7 @@ object ServerDataProvider : DataProvider {
     override fun loadData(itemId: String): CompletableFuture<Map<Instant, PriceObject>?> {
         return CompletableFuture.supplyAsync {
             val request = NotEnoughUpdates.INSTANCE.manager.apiUtils.request()
-                .url("https://neu.dediamondpro.dev/historical-prices?item=${URLEncoder.encode(itemId, "utf-8")}")
+                .url("https://neu.dediamondpro.dev/historical-prices").queryArgument("item", itemId)
                 .gunzip().requestJson().get()?.asJsonObject ?: return@supplyAsync null
 
             val response = mutableMapOf<Instant, PriceObject>()
