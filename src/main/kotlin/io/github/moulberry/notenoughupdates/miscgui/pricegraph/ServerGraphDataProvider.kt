@@ -21,13 +21,10 @@ package io.github.moulberry.notenoughupdates.miscgui.pricegraph
 
 import com.google.gson.GsonBuilder
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
-import java.net.URLEncoder
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
-object ServerDataProvider : DataProvider {
+object ServerGraphDataProvider : GraphDataProvider {
     private val gson = GsonBuilder().create()
 
     override fun loadData(itemId: String): CompletableFuture<Map<Instant, PriceObject>?> {

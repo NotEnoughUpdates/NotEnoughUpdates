@@ -29,7 +29,6 @@ import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBiomes
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent
-import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraphOld
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph
 import io.github.moulberry.notenoughupdates.util.PronounDB

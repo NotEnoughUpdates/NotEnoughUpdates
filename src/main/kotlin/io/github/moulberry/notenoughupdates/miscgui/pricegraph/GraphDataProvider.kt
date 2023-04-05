@@ -22,6 +22,6 @@ package io.github.moulberry.notenoughupdates.miscgui.pricegraph
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 
-interface DataProvider {
+interface GraphDataProvider {
     fun loadData(itemId: String,): CompletableFuture<Map<Instant, PriceObject>?>
 }

@@ -37,7 +37,6 @@ import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
-import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraphOld;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;

@@ -369,7 +369,7 @@ public class NEUConfig extends Config {
 
 	@Expose
 	@Category(
-		name = "AH/BZ Graph",
+		name = "Price Graph",
 		desc = "Graph of auction and bazaar prices"
 	)
 	public AHGraph ahGraph = new AHGraph();

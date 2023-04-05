@@ -35,26 +35,27 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
-import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.math.abs
-
 
 private const val X_SIZE = 364
 private const val Y_SIZE = 215
 private val dateFormat = SimpleDateFormat("'§b'd MMMMM yyyy '§eat§b' HH:mm")
 private val numberFormat = NumberFormat.getInstance()
+private val config = NotEnoughUpdates.INSTANCE.config
 
 class GuiPriceGraph(itemId: String) : GuiScreen() {
-    private val TEXTURE: ResourceLocation = when (NotEnoughUpdates.INSTANCE.config.ahGraph.graphStyle) {
+    private val TEXTURE: ResourceLocation = when (config.ahGraph.graphStyle) {
         1 -> ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_dark.png")
         2 -> ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_phqdark.png")
         3 -> ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_fsr.png")
         else -> ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui.png")
     }
-    private val dataProvider: DataProvider = ServerDataProvider
+    private val dataProvider: GraphDataProvider = when (config.ahGraph.dataSource) {
+        0 -> ServerGraphDataProvider
+        else -> LocalGraphDataProvider
+    }
     private val rawData: CompletableFuture<Map<Instant, PriceObject>?> = dataProvider.loadData(itemId)
     private var data: Map<Instant, PriceObject> = mapOf()
     private var processedData = false
@@ -72,7 +73,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
      * 3 = all
      * 4 = custom
      */
-    private var mode = NotEnoughUpdates.INSTANCE.config.ahGraph.defaultMode
+    private var mode = config.ahGraph.defaultMode
 
     private var itemName: String? = null
     private var itemStack: ItemStack? = null
@@ -134,8 +135,8 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         } else if (data.isEmpty()) {
             processData() // Process the data if needed, done here so no race conditions of any kind can occur
         } else {
-            val buyColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor)
-            val sellColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor2)
+            val buyColor = SpecialColour.specialToChromaRGB(config.ahGraph.graphColor)
+            val sellColor = SpecialColour.specialToChromaRGB(config.ahGraph.graphColor2)
             val buyPoints = mutableMapOf<Double, Pair<Double, Double>>()
             val sellPoints = mutableMapOf<Double, Pair<Double, Double>>()
             var prevX: Double? = null
@@ -407,7 +408,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         if (cutData.isEmpty()) return
 
         // Smooth data
-        val zones = NotEnoughUpdates.INSTANCE.config.ahGraph.graphZones
+        val zones = config.ahGraph.graphZones
         val first = cutData.minOf { it.key }
         val last = cutData.maxOf { it.key }
         val trimmedData = mutableMapOf<Instant, PriceObject>()

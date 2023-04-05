@@ -86,6 +86,16 @@ public class AHGraph {
 
 	@Expose
 	@ConfigOption(
+		name = "Data Source",
+		desc = "Where NEU should get the data for the graph."
+	)
+	@ConfigEditorDropdown(
+		values = {"Server", "Local"}
+	)
+	public int dataSource = 0;
+
+	@Expose
+	@ConfigOption(
 		name = "Data Retention",
 		desc = "Change the time (in days) that data is kept for.\nLonger retention require more storage."
 	)
