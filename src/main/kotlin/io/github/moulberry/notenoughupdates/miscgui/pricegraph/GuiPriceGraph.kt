@@ -93,7 +93,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         guiLeft = (width - X_SIZE) / 2
         guiTop = (height - Y_SIZE) / 2
 
-        if (customSelecting) customSelectionEnd =
+        if (customSelecting) customSelectionEnd = // Update custom selecting box
             if (mouseX < guiLeft + 17) guiLeft + 17 else mouseX.coerceAtMost(guiLeft + 315)
 
         Minecraft.getMinecraft().textureManager.bindTexture(TEXTURE)
@@ -132,62 +132,48 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                 -0x10000
             )
         } else if (data.isEmpty()) {
-            processData()
+            processData() // Process the data if needed, done here so no race conditions of any kind can occur
         } else {
-            // Draw Graph
             val buyColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor)
             val sellColor = SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.ahGraph.graphColor2)
-
+            val buyPoints = mutableMapOf<Double, Pair<Double, Double>>()
+            val sellPoints = mutableMapOf<Double, Pair<Double, Double>>()
             var prevX: Double? = null
             var prevY: Double? = null
-            val sellPoints = mutableMapOf<Double, Double>()
-            if (data.values.first().sellPrice != null) {
+
+            if (data.values.first().sellPrice != null) { // Draw sell gradient
                 drawGradient(sellColor)
                 for (point in data) {
                     if (point.value.sellPrice == null) continue
                     val x = getX(point.key)
                     val y = getY(point.value.sellPrice!!)
-                    sellPoints[x] = y
 
-                    if (prevX != null && prevY != null) drawCoveringQuad(x, y, prevX, prevY)
+                    if (prevX != null && prevY != null) {
+                        drawCoveringQuad(x, y, prevX, prevY)
+                        sellPoints[x] = prevY to y
+                    }
 
                     prevX = x
                     prevY = y
                 }
             }
 
-            drawGradient(buyColor)
-
             prevX = null
             prevY = null
-            var prevSellY: Double? = null
-
             var closestPoint = data.entries.first()
             var closestDistance = Double.MAX_VALUE
 
+            drawGradient(buyColor) // Draw buy gradient
             for (point in data) {
                 val x = getX(point.key)
                 val y = getY(point.value.buyPrice)
 
                 if (prevX != null && prevY != null) {
                     drawCoveringQuad(x, y, prevX, prevY)
-                    Utils.drawLine(
-                        prevX.toFloat(), prevY.toFloat() + 0.5f,
-                        x.toFloat(), y.toFloat() + 0.5f,
-                        2, buyColor
-                    )
-                }
-                if (sellPoints.isNotEmpty()) {
-                    val sellY = sellPoints[x]
-                    if (sellY != null && prevSellY != null && prevX != null) Utils.drawLine(
-                        prevX.toFloat(), prevSellY.toFloat() + 0.5f,
-                        x.toFloat(), sellY.toFloat() + 0.5f,
-                        2, sellColor
-                    )
-                    if (sellY != null) prevSellY = sellY
+                    buyPoints[x] = prevY to y
                 }
 
-                val distance = abs(mouseX - x)
+                val distance = abs(mouseX - x) // Find the closest point to show tooltip
                 if (closestDistance > distance) {
                     closestPoint = point
                     closestDistance = distance
@@ -195,6 +181,25 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
 
                 prevX = x
                 prevY = y
+            }
+            prevX = null
+
+            // Draw lines last to make sure nothing cuts into it
+            for (point in data) {
+                val x = getX(point.key)
+                val buyLine = buyPoints[x]
+                val sellLine = sellPoints[x]
+                if (prevX != null && buyLine != null) Utils.drawLine(
+                    prevX.toFloat(), buyLine.first.toFloat() + 0.5f,
+                    x.toFloat(), buyLine.second.toFloat() + 0.5f,
+                    2, buyColor
+                )
+                if (prevX != null && sellLine != null) Utils.drawLine(
+                    prevX.toFloat(), sellLine.first.toFloat() + 0.5f,
+                    x.toFloat(), sellLine.second.toFloat() + 0.5f,
+                    2, sellColor
+                )
+                prevX = x
             }
 
             // Draw axis
@@ -272,7 +277,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                 drawHoveringText(text, x.toInt(), y.toInt())
             }
 
-            if (customSelecting) {
+            if (customSelecting) { // Draw selecting box
                 Utils.drawDottedLine(
                     customSelectionStart.toFloat(), guiTop + 36f,
                     customSelectionStart.toFloat(), guiTop + 197f,
