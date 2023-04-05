@@ -316,7 +316,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                         0 -> "Show 1 Hour"
                         1 -> "Show 1 Day"
                         2 -> "Show 1 Week"
-                        else -> "Show All"
+                        else -> if (dataProvider is LocalGraphDataProvider) "Show All" else "Show 1 Month"
                     }
                 ), mouseX, mouseY
             )
