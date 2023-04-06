@@ -207,20 +207,17 @@ public class FarmingSkillOverlay extends TextOverlay {
 			alchemy = 0;
 			foraging = 0;
 
-			//WARTS
+			//WOOD
 			boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
-			if (internalName.startsWith("THEORETICAL_HOE_WARTS")) {
-				skillType = "Alchemy";
-				alchemy = 1;
-				foraging = 0;
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 2;
-
-				//WOOD
-			} else if (internalName.equals("TREECAPITATOR_AXE") || internalName.equalsIgnoreCase("JUNGLE_AXE")) {
+			if (internalName.equals("TREECAPITATOR_AXE") || internalName.equalsIgnoreCase("JUNGLE_AXE")) {
 				skillType = "Foraging";
 				alchemy = 0;
 				foraging = 1;
 				coins = 2;
+
+				//WARTS
+			} else  if (internalName.startsWith("THEORETICAL_HOE_WARTS")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 2;
 
 				//COCOA
 			} else if (internalName.equals("COCO_CHOPPER")) {
