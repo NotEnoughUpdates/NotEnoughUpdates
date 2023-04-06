@@ -48,7 +48,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private int cultivating = -1;
 	private int cultivatingTier = -1;
 	private String cultivatingTierAmount = "1";
-	private int alchemy = 0;
 	private int foraging = 0;
 	private double coins = -1;
 	private float cropsPerSecondLast = 0;
@@ -204,14 +203,12 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			//Set default skillType to Farming and get BZ price config value
 			skillType = "Farming";
-			alchemy = 0;
 			foraging = 0;
 
 			//WOOD
 			boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
 			if (internalName.equals("TREECAPITATOR_AXE") || internalName.equalsIgnoreCase("JUNGLE_AXE")) {
 				skillType = "Foraging";
-				alchemy = 0;
 				foraging = 1;
 				coins = 2;
 
@@ -546,28 +543,23 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			}
 
-			if (skillInfo != null && skillInfo.level == 60 || alchemy == 1 && skillInfo != null && skillInfo.level == 50) {
+			if (skillInfo != null && skillInfo.level == 60) {
 				int current = (int) skillInfo.currentXp;
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
 					current = (int) interp(current, skillInfoLast.currentXp);
 				}
 
-				if (alchemy == 0) {
+				if (foraging == 0) {
 					lineMap.put(
 						2,
 						EnumChatFormatting.AQUA + "Farming: " + EnumChatFormatting.YELLOW + "60 " + EnumChatFormatting.RED +
 							"(Maxed)"
 					);
-				} else if (foraging == 1) {
+				} else {
 					lineMap.put(
 						2,
 						EnumChatFormatting.AQUA + "Foraging: " + EnumChatFormatting.YELLOW + "50 " + EnumChatFormatting.RED +
 							"(Maxed)"
-					);
-				} else {
-					lineMap.put(
-						2,
-						EnumChatFormatting.AQUA + "Alch: " + EnumChatFormatting.YELLOW + "50 " + EnumChatFormatting.RED + "(Maxed)"
 					);
 				}
 				lineMap.put(3, EnumChatFormatting.AQUA + "Current XP: " + EnumChatFormatting.YELLOW + format.format(current));
