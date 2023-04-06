@@ -25,9 +25,7 @@ import net.minecraft.scoreboard.ScorePlayerTeam
 
 object SidebarUtil {
     @JvmStatic
-    fun readSidebarLines(): List<String> = readSidebarLines(cleanColor = true, cleanSpecialCharacters = true)
-
-    @JvmStatic
+    @JvmOverloads
     fun readSidebarLines(cleanColor: Boolean = true, cleanSpecialCharacters: Boolean = true): List<String> {
         var result = readRawSidebarLines()
         if (cleanColor) result = result.map { Utils.cleanColour(it) }
