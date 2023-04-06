@@ -59,6 +59,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
     private val rawData: CompletableFuture<Map<Instant, PriceObject>?> = dataProvider.loadData(itemId)
     private var data: Map<Instant, PriceObject> = mapOf()
     private var processedData = false
+    private var hasSellData = false
     private var firstTime: Instant = Instant.now()
     private var lastTime: Instant = Instant.now()
     private var lowestPrice: Double = 0.0
@@ -142,7 +143,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             var prevX: Double? = null
             var prevY: Double? = null
 
-            if (data.values.first().sellPrice != null) { // Draw sell gradient
+            if (hasSellData) { // Draw sell gradient
                 drawGradient(sellColor)
                 for (point in data) {
                     if (point.value.sellPrice == null) continue
@@ -376,7 +377,8 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             0 -> now.minus(Duration.ofHours(1))
             1 -> now.minus(Duration.ofDays(1))
             2 -> now.minus(Duration.ofDays(7))
-            3 -> null
+            // The server only deletes old data every hour, so you could get 30 days and 1 hour, this is just for consistency
+            3 -> if (dataProvider is ServerGraphDataProvider) now.minus(Duration.ofDays(30)) else null
             4 -> Instant.ofEpochSecond(
                 map(
                     customSelectionStart.toDouble(),
@@ -431,8 +433,9 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             } else {
                 val averageTime = Instant.ofEpochSecond(dataInZone.keys.sumOf { it.epochSecond } / dataInZone.size)
                 val averageBuyPrice = (dataInZone.values.sumOf { it.buyPrice } / dataInZone.size).roundToDecimals(1)
-                val averageSellPrice = if (dataInZone.values.first().sellPrice == null) null
-                else (dataInZone.values.sumOf { it.sellPrice ?: 0.0 } / dataInZone.size).roundToDecimals(1)
+                val sellPoints = dataInZone.values.filter { it.sellPrice != null }
+                val averageSellPrice = if (sellPoints.isEmpty()) null
+                else (sellPoints.sumOf { it.sellPrice ?: 0.0 } / sellPoints.size).roundToDecimals(1)
                 trimmedData[averageTime] = PriceObject(averageBuyPrice, averageSellPrice)
             }
         }
@@ -440,6 +443,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         if (data.isEmpty()) return
 
         // Populate variables required for graphs
+        hasSellData = data.values.any { it.sellPrice != null }
         firstTime = data.minOf { it.key }
         lastTime = data.maxOf { it.key }
         lowestPrice = data.minOf {
