@@ -214,7 +214,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 				//WARTS
 			} else  if (internalName.startsWith("THEORETICAL_HOE_WARTS")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 2;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 5;
 
 				//COCOA
 			} else if (internalName.equals("COCO_CHOPPER")) {
@@ -222,37 +222,37 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 				//CACTUS
 			} else if (internalName.equals("CACTUS_KNIFE")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_CACTUS_GREEN", ENCH_SIZE) : 2;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_CACTUS_GREEN", ENCH_SIZE) : 3;
 
 				//CANE
 			} else if (internalName.startsWith("THEORETICAL_HOE_CANE")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_SUGAR", ENCH_SIZE) : 2;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_SUGAR", ENCH_SIZE) : 5;
 
 				//CARROT
 			} else if (internalName.startsWith("THEORETICAL_HOE_CARROT")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_CARROT", ENCH_SIZE) : 1;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_CARROT", ENCH_SIZE) : 4;
 
 				//POTATO
 			} else if (internalName.startsWith("THEORETICAL_HOE_POTATO")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_POTATO", ENCH_SIZE) : 1;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_POTATO", ENCH_SIZE) : 4;
 
 				//MUSHROOM
 			} else if (internalName.equals("FUNGI_CUTTER")) {
 				coins = useBZPrice ? ((getCoinsBz("ENCHANTED_RED_MUSHROOM", ENCH_SIZE) +
-					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE)) / 2) : 4;
+					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE)) / 2) : 10;
 
 				//PUMPKIN
 			} else if (internalName.startsWith("PUMPKIN_DICER")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 4;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 10;
 
 				//MELON
 			} else if (internalName.startsWith("MELON_DICER")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 0.5;
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 2;
 
 				//WHEAT
 			} else if (internalName.startsWith("THEORETICAL_HOE_WHEAT")) {
 				coins = useBZPrice
-					? getCoinsBz("ENCHANTED_HAY_BLOCK", ENCH_BLOCK_SIZE) : 1;
+					? getCoinsBz("ENCHANTED_HAY_BLOCK", ENCH_BLOCK_SIZE) : 6;
 
 			} else {
 				coins = 0;
