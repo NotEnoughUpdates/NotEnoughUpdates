@@ -111,7 +111,8 @@ public class Navigation {
 	private Teleporter nextTeleporter = null;
 
 	public boolean isValidWaypoint(JsonObject object) {
-		return object.has("x")
+		return object != null
+			&& object.has("x")
 			&& object.has("y")
 			&& object.has("z")
 			&& object.has("island")

@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.util.NEUResourceManager;
+import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.block.material.MapColor;
@@ -48,10 +49,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.Matrix4f;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec4b;
@@ -1154,18 +1152,8 @@ public class DungeonMap {
 			lastClearCache = System.currentTimeMillis();
 
 			isFloorOne = false;
-			Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
 
-			ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
-
-			List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
-
-			for (int i = scores.size() - 1; i >= 0; i--) {
-				Score score = scores.get(i);
-				ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
-				String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
-				line = Utils.cleanColour(line);
-
+			for (String line : SidebarUtil.readSidebarLines()) {
 				if (line.contains("(F1)") || line.contains("(E)") || line.contains("(M1)")) {
 					isFloorOne = true;
 					if (line.contains("(E)")) {

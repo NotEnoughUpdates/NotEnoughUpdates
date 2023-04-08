@@ -142,10 +142,7 @@ public abstract class TextOverlay {
 
 	private void render(List<String> strings, boolean dummy) {
 		if (strings == null) return;
-		if (!dummy) {
-			GlStateManager.pushMatrix();
-			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
-		}
+
 		Vector2f size = getSize(strings);
 		overlayHeight = (int) size.y;
 		overlayWidth = (int) size.x;
@@ -209,10 +206,6 @@ public abstract class TextOverlay {
 					yOff += 10;
 				}
 			}
-		}
-		if (!dummy) {
-			Utils.pushGuiScale(0);
-			GlStateManager.popMatrix();
 		}
 	}
 }

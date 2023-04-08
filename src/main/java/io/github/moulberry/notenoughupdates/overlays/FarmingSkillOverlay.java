@@ -20,9 +20,11 @@
 package io.github.moulberry.notenoughupdates.overlays;
 
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -32,6 +34,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,13 +48,15 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private int cultivating = -1;
 	private int cultivatingTier = -1;
 	private String cultivatingTierAmount = "1";
-	private int Farming = 1;
-	private int Alch = 0;
-	private int Foraging = 0;
-	private double Coins = -1;
+	private int foraging = 0;
+	private double coins = -1;
 	private float cropsPerSecondLast = 0;
 	private float cropsPerSecond = 0;
 	private final LinkedList<Integer> counterQueue = new LinkedList<>();
+	private String lastItemHeld = "null";
+	private int jacobPredictionLast = -1;
+	private int jacobPrediction = -1;
+	private boolean inJacobContest = false;
 
 	private XPInformation.SkillInfo skillInfo = null;
 	private XPInformation.SkillInfo skillInfoLast = null;
@@ -93,6 +98,38 @@ public class FarmingSkillOverlay extends TextOverlay {
 		}
 		return 0;
 	}
+
+	private void gatherJacobData() {
+		inJacobContest = false;
+		if (isJacobTime()) {
+			int timeLeftInContest = (20 * 60) - ((int) ((System.currentTimeMillis() % 3600000 - 900000) / 1000));
+
+			int cropsFarmed = -1;
+			for (String line : SidebarUtil.readSidebarLines()) {
+				if (line.contains("Collected") || line.contains("BRONZE") || line.contains("SILVER") ||
+					line.contains("GOLD")) {
+					inJacobContest = true;
+					String l = line.replaceAll("[^A-Za-z0-9() ]", "");
+					cropsFarmed = Integer.parseInt(l.substring(l.lastIndexOf(" ") + 1).replace(",", ""));
+				}
+				jacobPrediction = (int) (cropsFarmed + (cropsPerSecond * timeLeftInContest));
+			}
+
+		} else {
+			jacobPrediction = -1;
+			jacobPredictionLast = -1;
+		}
+	}
+
+	// Check if there is an active Jacob's contest
+	private static boolean isJacobTime() {
+		long now = System.currentTimeMillis();
+		return now % 3600000 >= 900000 && now % 3600000 <= 2100000;
+	}
+
+	//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
+	//Needed due to farming fortune causing inconsistent amounts of crops each block break
+	private static ArrayList<Float> cropsOverLastXSeconds = new ArrayList<>();
 
 	@Override
 	public void update() {
@@ -161,71 +198,64 @@ public class FarmingSkillOverlay extends TextOverlay {
 			cultivatingTierAmount = "Maxed";
 		}
 
-		String internalname = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
-		if (internalname != null) {
+		String internalName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+		if (internalName != null) {
 
-			//Set default skilltype to Farming and get BZprice config value
-			boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
+			//Set default skillType to Farming and get BZ price config value
 			skillType = "Farming";
-			Farming = 1;
-			Alch = 0;
-			Foraging = 0;
+			foraging = 0;
 
-			//WARTS
-			if (internalname.startsWith("THEORETICAL_HOE_WARTS")) {
-				skillType = "Alchemy";
-				Farming = 0;
-				Alch = 1;
-				Foraging = 0;
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 2;
-
-				//WOOD
-			} else if (internalname.equals("TREECAPITATOR_AXE") || internalname.equalsIgnoreCase("JUNGLE_AXE")) {
+			//WOOD
+			boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
+			if (internalName.equals("TREECAPITATOR_AXE") || internalName.equalsIgnoreCase("JUNGLE_AXE")) {
 				skillType = "Foraging";
-				Farming = 0;
-				Alch = 0;
-				Foraging = 1;
-				Coins = 2;
+				foraging = 1;
+				coins = 2;
+
+				//WARTS
+			} else  if (internalName.startsWith("THEORETICAL_HOE_WARTS")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 2;
 
 				//COCOA
-			} else if (internalname.equals("COCO_CHOPPER")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_COCOA", ENCH_SIZE) : 3;
+			} else if (internalName.equals("COCO_CHOPPER")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_COCOA", ENCH_SIZE) : 3;
 
 				//CACTUS
-			} else if (internalname.equals("CACTUS_KNIFE")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_CACTUS_GREEN", ENCH_SIZE) : 2;
+			} else if (internalName.equals("CACTUS_KNIFE")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_CACTUS_GREEN", ENCH_SIZE) : 2;
 
 				//CANE
-			} else if (internalname.startsWith("THEORETICAL_HOE_CANE")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_SUGAR", ENCH_SIZE) : 2;
+			} else if (internalName.startsWith("THEORETICAL_HOE_CANE")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_SUGAR", ENCH_SIZE) : 2;
 
 				//CARROT
-			} else if (internalname.startsWith("THEORETICAL_HOE_CARROT")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_CARROT", ENCH_SIZE) : 1;
+			} else if (internalName.startsWith("THEORETICAL_HOE_CARROT")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_CARROT", ENCH_SIZE) : 1;
 
 				//POTATO
-			} else if (internalname.startsWith("THEORETICAL_HOE_POTATO")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_POTATO", ENCH_SIZE) : 1;
+			} else if (internalName.startsWith("THEORETICAL_HOE_POTATO")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_POTATO", ENCH_SIZE) : 1;
 
 				//MUSHROOM
-			} else if (internalname.equals("FUNGI_CUTTER")) {
-				Coins = useBZPrice ? ((getCoinsBz("ENCHANTED_RED_MUSHROOM", ENCH_SIZE) +
-					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE))/2) : 4;
+			} else if (internalName.equals("FUNGI_CUTTER")) {
+				coins = useBZPrice ? ((getCoinsBz("ENCHANTED_RED_MUSHROOM", ENCH_SIZE) +
+					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE)) / 2) : 4;
 
 				//PUMPKIN
-			} else if (internalname.equals("PUMPKIN_DICER")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 4;
+			} else if (internalName.startsWith("PUMPKIN_DICER")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 4;
 
 				//MELON
-			} else if (internalname.equals("MELON_DICER")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 0.5;
+			} else if (internalName.startsWith("MELON_DICER")) {
+				coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 0.5;
 
 				//WHEAT
-			} else if (internalname.startsWith("THEORETICAL_HOE_WHEAT")) {
-				Coins = useBZPrice ? getCoinsBz("ENCHANTED_HAY_BLOCK", ENCH_BLOCK_SIZE) : 1;
+			} else if (internalName.startsWith("THEORETICAL_HOE_WHEAT")) {
+				coins = useBZPrice
+					? getCoinsBz("ENCHANTED_HAY_BLOCK", ENCH_BLOCK_SIZE) : 1;
 
 			} else {
-				Coins = 0;
+				coins = 0;
 			}
 		}
 
@@ -286,7 +316,58 @@ public class FarmingSkillOverlay extends TextOverlay {
 			int last = counterQueue.getLast();
 			int first = counterQueue.getFirst();
 
-			cropsPerSecond = (first - last) / 3f;
+			//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
+			//Needed due to farming fortune causing inconsistent amounts of crops each block break
+			//Making this while in case somehow it goes over X+1
+			while (cropsOverLastXSeconds.size() > 60) {
+				cropsOverLastXSeconds.remove(0);
+			}
+			if ((first - last) / 2f != 0) {
+				cropsOverLastXSeconds.add((first - last) / 2f);
+			} else {
+				if (cropsPerSecondLast == 0) {
+					//This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
+					//It removes 12 per tick because otherwise it would take 60s to go to N/A (now it only takes 5s)
+					int i = 12;
+					while (i > 0) {
+						i--;
+						if (cropsOverLastXSeconds.size() > 0) {
+							cropsOverLastXSeconds.remove(0);
+						} else {
+							break;
+						}
+					}
+				}
+			}
+
+			if (!lastItemHeld.equals(NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
+				? "null"
+				: NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()))) {
+				lastItemHeld = NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
+					? "null"
+					: NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem());
+				cropsOverLastXSeconds.clear();
+			}
+
+			ArrayList<Float> temp = new ArrayList<>(cropsOverLastXSeconds);
+			if (cropsOverLastXSeconds.size() >= 3) {
+				temp.remove(Collections.min(temp));
+			}
+			if (cropsOverLastXSeconds.size() >= 6) {
+				temp.remove(Collections.min(temp));
+				temp.remove(Collections.max(temp));
+			}
+			if (cropsOverLastXSeconds.size() >= 10) {
+				temp.remove(Collections.max(temp));
+			}
+
+			float cropsOverLastXSecondsTotal = 0;
+			for (Float crops : temp) {
+				cropsOverLastXSecondsTotal += crops;
+			}
+			//To prevent 0/0
+			cropsPerSecond =
+				temp.size() != 0 && cropsOverLastXSecondsTotal != 0 ? cropsOverLastXSecondsTotal / temp.size() : 0;
 		}
 
 		if (counter != -1) {
@@ -294,7 +375,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		} else {
 			overlayStrings = null;
 		}
-
+		gatherJacobData();
 	}
 
 	@Override
@@ -310,6 +391,14 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			NumberFormat format = NumberFormat.getIntegerInstance();
 
+			String cropsTimeSuffix = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? "h" : "m";
+			int cropMultiplier = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? 60 : 1;
+			int cropDecimals = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? 0 : 2;
+
+			String coinsTimeSuffix = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? "h" : "m";
+			int coinMultiplier = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? 60 : 1;
+			int coinDecimals = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? 0 : 2;
+
 			if (counter >= 0 && cultivating != counter) {
 				int counterInterp = (int) interp(counter, counterLast);
 
@@ -323,27 +412,33 @@ public class FarmingSkillOverlay extends TextOverlay {
 				if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
 					lineMap.put(
 						1,
-						EnumChatFormatting.AQUA + (Foraging == 1 ? "Logs/m: " : "Crops/m: ") + EnumChatFormatting.YELLOW + "N/A"
+						EnumChatFormatting.AQUA +
+							(foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
+							EnumChatFormatting.YELLOW + "N/A"
 					);
 				} else {
 					float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
 
 					lineMap.put(
 						1,
-						EnumChatFormatting.AQUA + (Foraging == 1 ? "Logs/m: " : "Crops/m: ") + EnumChatFormatting.YELLOW +
-							String.format("%,.2f", cpsInterp * 60)
+						EnumChatFormatting.AQUA +
+							(foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
+							EnumChatFormatting.YELLOW +
+							String.format("%,." + cropDecimals + "f", cpsInterp * 60 * cropMultiplier)
 					);
 				}
 			}
 
-			if (counter >= 0 && Coins > 0) {
+			if (counter >= 0 && coins > 0) {
 				if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
-					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/m: " + EnumChatFormatting.YELLOW + "N/A");
+					lineMap.put(
+						10,
+						EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW + "N/A"
+					);
 				} else {
 					float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
-
-					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/m: " + EnumChatFormatting.YELLOW +
-						String.format("%,.2f", (cpsInterp * 60) * Coins));
+					lineMap.put(10, EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW +
+						String.format("%,." + coinDecimals + "f", (cpsInterp * 60) * coins * coinMultiplier));
 				}
 			}
 
@@ -361,6 +456,19 @@ public class FarmingSkillOverlay extends TextOverlay {
 					9,
 					EnumChatFormatting.AQUA + "Cultivating: " + EnumChatFormatting.YELLOW + format.format(counterInterp)
 				);
+			}
+
+			if (isJacobTime() && inJacobContest) {
+				if (jacobPredictionLast == jacobPrediction && jacobPrediction <= 0) {
+					lineMap.put(11, EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW + "N/A");
+				} else {
+					float predInterp = interp(jacobPrediction, jacobPredictionLast);
+					lineMap.put(
+						11,
+						EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW +
+							String.format("%,.0f", predInterp)
+					);
+				}
 			}
 
 			float xpInterp = xpGainHour;
@@ -435,28 +543,23 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			}
 
-			if (skillInfo != null && skillInfo.level == 60 || Alch == 1 && skillInfo != null && skillInfo.level == 50) {
+			if (skillInfo != null && skillInfo.level == 60) {
 				int current = (int) skillInfo.currentXp;
 				if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
 					current = (int) interp(current, skillInfoLast.currentXp);
 				}
 
-				if (Alch == 0) {
+				if (foraging == 0) {
 					lineMap.put(
 						2,
 						EnumChatFormatting.AQUA + "Farming: " + EnumChatFormatting.YELLOW + "60 " + EnumChatFormatting.RED +
 							"(Maxed)"
 					);
-				} else if (Foraging == 1) {
+				} else {
 					lineMap.put(
 						2,
 						EnumChatFormatting.AQUA + "Foraging: " + EnumChatFormatting.YELLOW + "50 " + EnumChatFormatting.RED +
 							"(Maxed)"
-					);
-				} else {
-					lineMap.put(
-						2,
-						EnumChatFormatting.AQUA + "Alch: " + EnumChatFormatting.YELLOW + "50 " + EnumChatFormatting.RED + "(Maxed)"
 					);
 				}
 				lineMap.put(3, EnumChatFormatting.AQUA + "Current XP: " + EnumChatFormatting.YELLOW + format.format(current));

@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.util.kotlin
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
@@ -30,4 +32,24 @@ inline fun <reified T : Any> typeToken(): Type {
 
 inline fun <reified T : Any> Gson.fromJson(string: String): T {
     return fromJson(string, typeToken<T>())
+}
+
+operator fun JsonObject.set(name: String, value: Number) {
+    this.addProperty(name, value)
+}
+
+operator fun JsonObject.set(name: String, value: String) {
+    this.addProperty(name, value)
+}
+
+operator fun JsonObject.set(name: String, value: Boolean) {
+    this.addProperty(name, value)
+}
+
+operator fun JsonObject.set(name: String, value: Char) {
+    this.addProperty(name, value)
+}
+
+operator fun JsonObject.set(name: String, value: JsonElement) {
+    this.add(name, value)
 }

@@ -128,8 +128,6 @@ public class RenderListener {
 	private String loadedInvName = "";
 	//NPC parsing
 
-	public static boolean typing;
-
 	private boolean inDungeonPage = false;
 
 	public RenderListener(NotEnoughUpdates neu) {
@@ -161,6 +159,7 @@ public class RenderListener {
 		if (neu.hasSkyblockScoreboard() && event.type.equals(RenderGameOverlayEvent.ElementType.ALL)) {
 			DungeonWin.render(event.partialTicks);
 			GlStateManager.pushMatrix();
+			Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 			GlStateManager.translate(0, 0, -200);
 			label:
 			for (TextOverlay overlay : OverlayManager.textOverlays) {
@@ -175,6 +174,7 @@ public class RenderListener {
 				GlStateManager.enableDepth();
 				overlay.render();
 			}
+			Utils.pushGuiScale(0);
 			GlStateManager.popMatrix();
 			OverlayManager.dontRenderOverlay = new ArrayList<>();
 		}
@@ -487,7 +487,7 @@ public class RenderListener {
 	}
 
 	public void iterateButtons(GuiContainer gui, BiConsumer<NEUConfig.InventoryButton, Rectangle> acceptButton) {
-		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons()) {
+		if (NEUApi.disableInventoryButtons || EnchantingSolvers.disableButtons() || gui == null) {
 			return;
 		}
 
@@ -1075,9 +1075,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-		if (typing) {
-			event.setCanceled(true);
-		}
 		if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest
 		) {
@@ -1091,11 +1088,6 @@ public class RenderListener {
 				RepoExporters.getInstance().essenceExporter();
 			} else if (lower.getName().contains("Draconic Altar Guide")) {
 				RepoExporters.getInstance().draconicAlterExporter();
-			}
-		} else if (Keyboard.isKeyDown(Keyboard.KEY_RETURN) && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			if (RepoExporters.getInstance().npcExporter()) {
-				event.setCanceled(true);
-				return;
 			}
 		} else if (NotEnoughUpdates.INSTANCE.config.hidden.dev && Keyboard.isKeyDown(Keyboard.KEY_B) &&
 			Minecraft.getMinecraft().currentScreen instanceof GuiChest &&

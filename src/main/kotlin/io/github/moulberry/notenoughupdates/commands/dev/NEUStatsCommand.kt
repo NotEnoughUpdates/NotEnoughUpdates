@@ -26,12 +26,12 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.DiscordMarkdownBuilder
-import io.github.moulberry.notenoughupdates.util.HastebinUploader
 import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
 import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.thenLiteralExecute
 import io.github.moulberry.notenoughupdates.util.brigadier.withHelp
+import io.github.moulberry.notenoughupdates.util.copyToClipboard
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.command.ICommandSender
@@ -46,7 +46,6 @@ import org.lwjgl.opengl.GL11
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.lang.management.ManagementFactory
-import java.util.concurrent.CompletableFuture
 import javax.management.JMX
 import javax.management.ObjectName
 
@@ -71,10 +70,8 @@ class NEUStatsCommand {
                 )
             }.withHelp("Copy the full list of all NEU stats and your mod list to your clipboard")
             thenLiteralExecute("dump") {
-                reply("${GREEN}This will upload a dump of the java classes your game has loaded how big they are and how many there are. This can take a few seconds as it is uploading to HasteBin.")
-                uploadDataUsageDump().thenAccept {
-                    clipboardAndSendMessage(it)
-                }
+                reply("${GREEN}This will copy a summary of the loaded Java classes to your clipboard. Please paste this into your discord support ticket by pressing CTRL+V.")
+                generateDataUsage().copyToClipboard()
             }.withHelp("Dump all loaded classes and their memory usage and copy that to your clipboard.")
             thenExecute {
                 clipboardAndSendMessage(
@@ -88,31 +85,20 @@ class NEUStatsCommand {
             }
         }.withHelp("Copy a list of NEU relevant stats to your clipboard for debugging purposes")
     }
+
     interface DiagnosticCommandMXBean {
         fun gcClassHistogram(array: Array<String>): String
     }
 
-    private fun uploadDataUsageDump(): CompletableFuture<String?> {
-        return CompletableFuture.supplyAsync {
-            try {
-                val server =
-                    ManagementFactory.getPlatformMBeanServer()
-                val objectName =
-                    ObjectName.getInstance("com.sun.management:type=DiagnosticCommand")
-                val proxy = JMX.newMXBeanProxy(
-                    server,
-                    objectName,
-                    DiagnosticCommandMXBean::class.java
-                )
-                HastebinUploader.upload(
-                    proxy.gcClassHistogram(emptyArray()).replace("[", "[]"),
-                    HastebinUploader.Mode.NORMAL
-                )
-            } catch (e: Exception) {
-                null
-            }
-        }
-
+    private fun generateDataUsage(): String {
+        val server = ManagementFactory.getPlatformMBeanServer()
+        val objectName = ObjectName.getInstance("com.sun.management:type=DiagnosticCommand")
+        val proxy = JMX.newMXBeanProxy(
+            server,
+            objectName,
+            DiagnosticCommandMXBean::class.java
+        )
+        return proxy.gcClassHistogram(emptyArray()).replace("[", "[]")
     }
 
 
@@ -188,7 +174,7 @@ class NEUStatsCommand {
     private fun appendModList(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
         builder.category("Mods Loaded")
         Loader.instance().activeModList.forEach {
-            builder.append(it.name, "${it.source} (${it.displayVersion})")
+            builder.append(it.name, "${it.source.name} (${it.displayVersion})")
         }
         return builder
     }

@@ -128,6 +128,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 	private final Map<String, Integer> total = new HashMap<>();
 	private final Map<String, TrophyFish> trophyFishList = new HashMap<>();
 	private long totalCount = 0;
+	private static List<String> tooltipToDisplay = null;
 
 	public TrophyFishPage(GuiProfileViewer instance) {
 		super(instance);
@@ -226,10 +227,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 			if (mouseX >= x && mouseX < x + 24) {
 				if (mouseY >= y && mouseY <= y + 24) {
-					Utils.drawHoveringText(
-						getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()),
-						mouseX, mouseY, width, height, -1
-					);
+					tooltipToDisplay = new ArrayList<>();
+					tooltipToDisplay.addAll(getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()));
 				}
 			}
 		}
@@ -246,7 +245,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
 				if (mouseX >= x && mouseX < x + 24) {
 					if (mouseY >= y && mouseY <= y + 24) {
-						Utils.drawHoveringText(getTooltip(difference, null), mouseX, mouseY, width, height, -1);
+						tooltipToDisplay = new ArrayList<>();
+						tooltipToDisplay.addAll(getTooltip(difference, null));
 						GlStateManager.color(1, 1, 1, 1);
 					}
 				}
@@ -284,6 +284,19 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 				Utils.drawStringF(neededText, x + 100, y + 4, true, 0);
 			}
 			i += 10;
+		}
+
+		if (tooltipToDisplay != null) {
+			Utils.drawHoveringText(
+				tooltipToDisplay,
+				mouseX,
+				mouseY,
+				getInstance().width,
+				getInstance().height,
+				-1,
+				Minecraft.getMinecraft().fontRendererObj
+			);
+			tooltipToDisplay = null;
 		}
 
 		GlStateManager.enableLighting();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,12 +17,12 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.util
+package io.github.moulberry.notenoughupdates.recipes.generators
 
-import net.minecraft.util.StringUtils
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
+import net.minecraft.client.gui.GuiScreen
 
-fun String.stripControlCodes(): String = StringUtils.stripControlCodes(this)
-
-fun String.copyToClipboard() = Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(this), null)
+interface RepoExporter {
+    suspend fun export(context: RepoExportingContext)
+    fun canExport(gui: GuiScreen): Boolean
+    val name: String
+}

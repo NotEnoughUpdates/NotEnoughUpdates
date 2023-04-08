@@ -122,8 +122,8 @@ dependencies {
 
 
 		if (project.findProperty("neu.buildflags.oneconfig") == "true") {
-				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
-				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
+				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
 		}
 
 		"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
@@ -133,6 +133,9 @@ dependencies {
 		// Please keep this version in sync with KotlinLoadingTweaker
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 		kotlinDependencies(kotlin("stdlib"))
+
+		ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
+		implementation("com.google.auto.service:auto-service-annotations:1.0.1")
 
 		compileOnly(ksp(project(":annotations"))!!)
 		compileOnly("org.projectlombok:lombok:1.18.24")

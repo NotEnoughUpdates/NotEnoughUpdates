@@ -1193,6 +1193,19 @@ public class NEUManager {
 		json.addProperty("crafttext", crafttext);
 		json.addProperty("clickcommand", clickcommand);
 		json.addProperty("damage", damage);
+		nbttag.setInteger("HideFlags", 254);
+		NBTTagCompound display = nbttag.getCompoundTag("display");
+		nbttag.setTag("display", display);
+		display.setString("Name", displayName);
+		NBTTagList loreList = new NBTTagList();
+		for (String loreLine : lore) {
+			loreList.appendTag(new NBTTagString(loreLine));
+		}
+		display.setTag("Lore", loreList);
+		NBTTagCompound extraAttributes = nbttag.getCompoundTag("ExtraAttributes");
+		nbttag.setTag("ExtraAttributes", extraAttributes);
+		extraAttributes.setString("id", internalname);
+
 		json.addProperty("nbttag", nbttag.toString());
 		json.addProperty("modver", NotEnoughUpdates.VERSION);
 		json.addProperty("infoType", infoType);
@@ -1265,6 +1278,7 @@ public class NEUManager {
 	}
 
 	public void writeJson(JsonObject json, File file) throws IOException {
+		file.getParentFile().mkdirs();
 		file.createNewFile();
 
 		try (

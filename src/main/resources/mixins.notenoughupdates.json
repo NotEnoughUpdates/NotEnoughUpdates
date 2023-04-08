@@ -37,6 +37,7 @@
     "MixinMinecraft",
     "MixinMouseHelper",
     "MixinNetHandlerPlayClient",
+    "MixinOptifineCustomItems",
     "MixinOFDynamicLights",
     "MixinPlayerControllerMP",
     "MixinRender",
