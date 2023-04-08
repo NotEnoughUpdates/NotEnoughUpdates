@@ -76,7 +76,9 @@ public class DungeonNpcProfitOverlay {
 	 * @return if the overlay is rendering right now
 	 */
 	public static boolean isRendering() {
-		return NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay && !chestProfits.isEmpty();
+		synchronized (chestProfits) {
+			return NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay && !chestProfits.isEmpty();
+		}
 	}
 
 	/**
@@ -118,47 +120,49 @@ public class DungeonNpcProfitOverlay {
 
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
-		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest)) {
-			chestProfits.clear();
-			previousSlots = null;
-			return;
+		synchronized (chestProfits) {
+			if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest)) {
+				chestProfits.clear();
+				previousSlots = null;
+				return;
+			}
+
+			String lastOpenChestName = SBInfo.getInstance().lastOpenChestName;
+			Matcher matcher = chestNamePattern.matcher(lastOpenChestName);
+			if (!matcher.matches()) {
+				chestProfits.clear();
+				previousSlots = null;
+				return;
+			}
+			GuiChest guiChest = (GuiChest) event.gui;
+			List<Slot> slots = guiChest.inventorySlots.inventorySlots;
+
+			if (chestProfits.isEmpty() || !slots.equals(previousSlots)) {
+				chestProfits.clear();
+				updateDungeonChests(slots).thenAccept(chests -> {
+					for (DungeonChest chest : chests) {
+						chest.calculateProfitAndBuildLore();
+						chestProfits.removeIf(c -> c.name.equals(chest.name) && c.items.size() <= chest.items.size());
+						chestProfits.add(chest);
+
+					}
+
+					if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
+						chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+					}
+
+					if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
+						List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
+						copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+
+						copiedList.get(0).shouldHighlight = true;
+					}
+				});
+			}
+			previousSlots = guiChest.inventorySlots.inventorySlots;
+
+			render(guiChest);
 		}
-
-		String lastOpenChestName = SBInfo.getInstance().lastOpenChestName;
-		Matcher matcher = chestNamePattern.matcher(lastOpenChestName);
-		if (!matcher.matches()) {
-			chestProfits.clear();
-			previousSlots = null;
-			return;
-		}
-		GuiChest guiChest = (GuiChest) event.gui;
-		List<Slot> slots = guiChest.inventorySlots.inventorySlots;
-
-		if (chestProfits.isEmpty() || !slots.equals(previousSlots)) {
-			chestProfits.clear();
-			updateDungeonChests(slots).thenAccept(chests -> {
-				for (DungeonChest chest : chests) {
-					chest.calculateProfitAndBuildLore();
-					chestProfits.removeIf(c -> c.name.equals(chest.name) && c.items.size() <= chest.items.size());
-					chestProfits.add(chest);
-
-				}
-
-				if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
-					chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-				}
-
-				if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
-					List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
-					copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-
-					copiedList.get(0).shouldHighlight = true;
-				}
-			});
-		}
-		previousSlots = guiChest.inventorySlots.inventorySlots;
-
-		render(guiChest);
 	}
 
 	/**
