@@ -31,7 +31,7 @@ object ServerGraphDataProvider : GraphDataProvider {
         return CompletableFuture.supplyAsync {
             val request = NotEnoughUpdates.INSTANCE.manager.apiUtils.request()
                 .url("https://neu.dediamondpro.dev/historical-prices").queryArgument("item", itemId)
-                .gunzip().requestJson().get()?.asJsonObject ?: return@supplyAsync null
+                .requestJson().get()?.asJsonObject ?: return@supplyAsync null
 
             val response = mutableMapOf<Instant, PriceObject>()
             for (element in request.entrySet()) response[Instant.parse(element.key)] =

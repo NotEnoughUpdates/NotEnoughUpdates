@@ -30,9 +30,11 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -82,6 +84,11 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
     private var customSelecting = false
     private var customSelectionStart = 0
     private var customSelectionEnd = 0
+
+    private val buyPoints = mutableMapOf<Double, Pair<Double, Double>>()
+    private val sellPoints = mutableMapOf<Double, Pair<Double, Double>>()
+    private val buyMovingAverage = mutableMapOf<Double, Pair<Double, Double>>()
+    private val sellMovingAverage = mutableMapOf<Double, Pair<Double, Double>>()
 
     init {
         if (NotEnoughUpdates.INSTANCE.manager.itemInformation.containsKey(itemId)) {
@@ -138,8 +145,8 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         } else {
             val buyColor = SpecialColour.specialToChromaRGB(config.ahGraph.graphColor)
             val sellColor = SpecialColour.specialToChromaRGB(config.ahGraph.graphColor2)
-            val buyPoints = mutableMapOf<Double, Pair<Double, Double>>()
-            val sellPoints = mutableMapOf<Double, Pair<Double, Double>>()
+            val buyMovingAverageColor = SpecialColour.specialToChromaRGB(config.ahGraph.movingAverageColor)
+            val sellMovingAverageColor = SpecialColour.specialToChromaRGB(config.ahGraph.movingAverageColor2)
             var prevX: Double? = null
             var prevY: Double? = null
 
@@ -150,10 +157,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                     val x = getX(point.key)
                     val y = getY(point.value.sellPrice!!)
 
-                    if (prevX != null && prevY != null) {
-                        drawCoveringQuad(x, y, prevX, prevY)
-                        sellPoints[x] = prevY to y
-                    }
+                    if (prevX != null && prevY != null) drawCoveringQuad(x, y, prevX, prevY)
 
                     prevX = x
                     prevY = y
@@ -170,10 +174,7 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                 val x = getX(point.key)
                 val y = getY(point.value.buyPrice)
 
-                if (prevX != null && prevY != null) {
-                    drawCoveringQuad(x, y, prevX, prevY)
-                    buyPoints[x] = prevY to y
-                }
+                if (prevX != null && prevY != null) drawCoveringQuad(x, y, prevX, prevY)
 
                 val distance = abs(mouseX - x) // Find the closest point to show tooltip
                 if (closestDistance > distance) {
@@ -189,18 +190,14 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             // Draw lines last to make sure nothing cuts into it
             for (point in data) {
                 val x = getX(point.key)
-                val buyLine = buyPoints[x]
-                val sellLine = sellPoints[x]
-                if (prevX != null && buyLine != null) Utils.drawLine(
-                    prevX.toFloat(), buyLine.first.toFloat() + 0.5f,
-                    x.toFloat(), buyLine.second.toFloat() + 0.5f,
-                    2, buyColor
-                )
-                if (prevX != null && sellLine != null) Utils.drawLine(
-                    prevX.toFloat(), sellLine.first.toFloat() + 0.5f,
-                    x.toFloat(), sellLine.second.toFloat() + 0.5f,
-                    2, sellColor
-                )
+                if (prevX != null) {
+                    if (config.ahGraph.movingAverages) drawLine(
+                        x, prevX,
+                        buyMovingAverage[x], sellMovingAverage[x],
+                        buyMovingAverageColor, sellMovingAverageColor
+                    )
+                    drawLine(x, prevX, buyPoints[x], sellPoints[x], buyColor, sellColor)
+                }
                 prevX = x
             }
 
@@ -242,11 +239,18 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             ) {
                 // Draw tooltip with price info
                 val text = ArrayList<String>()
+                val x = getX(closestPoint.key)
+                val y = getY(closestPoint.value.buyPrice)
                 text.add(dateFormat.format(Date.from(closestPoint.key)))
                 if (closestPoint.value.sellPrice == null) {
                     text.add(
                         "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Lowest BIN: ${EnumChatFormatting.GOLD}" +
                                 "${EnumChatFormatting.BOLD}${numberFormat.format(closestPoint.value.buyPrice)}"
+                    )
+                    val buyAverageY = buyMovingAverage[x]?.second
+                    if (config.ahGraph.movingAverages && buyAverageY != null) text.add(
+                        "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Lowest BIN Moving Average: ${EnumChatFormatting.GOLD}" +
+                                "${EnumChatFormatting.BOLD}${numberFormat.format(getPrice(buyAverageY).roundToDecimals(1))}"
                     )
                 } else {
                     text.add(
@@ -257,9 +261,19 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                         "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Sell: ${EnumChatFormatting.GOLD}" +
                                 "${EnumChatFormatting.BOLD}${numberFormat.format(closestPoint.value.sellPrice)}"
                     )
+                    if (config.ahGraph.movingAverages) {
+                        val buyAverageY = buyMovingAverage[x]?.second
+                        val sellAverageY = sellMovingAverage[x]?.second
+                        if (buyAverageY != null) text.add(
+                            "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Buy Moving Average: ${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}" +
+                                    numberFormat.format(getPrice(buyAverageY).roundToDecimals(1))
+                        )
+                        if (sellAverageY != null) text.add(
+                            "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Sell Moving Average: ${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}" +
+                                    numberFormat.format(getPrice(sellAverageY).roundToDecimals(1))
+                        )
+                    }
                 }
-                val x = getX(closestPoint.key)
-                val y = getY(closestPoint.value.buyPrice)
                 Utils.drawLine(
                     x.toFloat(), (guiTop + 35).toFloat(),
                     x.toFloat(), (guiTop + 198).toFloat(),
@@ -275,6 +289,18 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                     x.toFloat() - 2.5f, getY(closestPoint.value.sellPrice!!).toFloat() - 2.5f, 5f, 5f,
                     0f, 5 / 512f, 247 / 512f, 252 / 512f, GL11.GL_NEAREST
                 )
+                if (config.ahGraph.movingAverages) {
+                    val buyAverageY = buyMovingAverage[x]?.second
+                    if (buyAverageY != null) Utils.drawTexturedRect(
+                        x.toFloat() - 2.5f, buyAverageY.toFloat() - 2.5f, 5f, 5f,
+                        0f, 5 / 512f, 247 / 512f, 252 / 512f, GL11.GL_NEAREST
+                    )
+                    val sellAverageY = sellMovingAverage[x]?.second
+                    if (sellAverageY != null) Utils.drawTexturedRect(
+                        x.toFloat() - 2.5f, sellAverageY.toFloat() - 2.5f, 5f, 5f,
+                        0f, 5 / 512f, 247 / 512f, 252 / 512f, GL11.GL_NEAREST
+                    )
+                }
 
                 drawHoveringText(text, x.toInt(), y.toInt())
             }
@@ -338,6 +364,14 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         lowestPrice - 1,
         guiTop + 45.0,
         guiTop + 188.0
+    )
+
+    private fun getPrice(y: Double) = map(
+        y,
+        guiTop + 45.0,
+        guiTop + 188.0,
+        highestPrice + 1,
+        lowestPrice - 1
     )
 
 
@@ -443,7 +477,6 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
         if (data.isEmpty()) return
 
         // Populate variables required for graphs
-        hasSellData = data.values.any { it.sellPrice != null }
         firstTime = data.minOf { it.key }
         lastTime = data.maxOf { it.key }
         lowestPrice = data.minOf {
@@ -454,6 +487,46 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             if (it.value.sellPrice != null) it.value.buyPrice.coerceAtLeast(it.value.sellPrice!!)
             else it.value.buyPrice
         }
+
+        // Populate line variables
+        buyPoints.clear()
+        sellPoints.clear()
+        buyMovingAverage.clear()
+        sellMovingAverage.clear()
+        val movingAveragePeriod = (lastTime.epochSecond - firstTime.epochSecond) * config.ahGraph.movingAveragePercent
+        var prevBuyY: Double? = null
+        var prevSellY: Double? = null
+        var prevBuyAverageY: Double? = null
+        var prevSellAverageY: Double? = null
+        for (point in data) {
+            val x = getX(point.key)
+            val buyY = getY(point.value.buyPrice)
+            if (prevBuyY != null) buyPoints[x] = prevBuyY to buyY
+            prevBuyY = buyY
+            if (point.value.sellPrice != null) {
+                val sellY = getY(point.value.sellPrice!!)
+                if (prevSellY != null) sellPoints[x] = prevSellY to sellY
+                prevSellY = sellY
+            }
+            // Moving average stuff
+            val dataInPeriod = rawData.get()?.filterKeys {
+                it >= point.key.minusSeconds(movingAveragePeriod.toLong()) && it <= point.key
+            }
+            if (dataInPeriod.isNullOrEmpty()) continue
+            val buyAverageY =
+                getY((dataInPeriod.values.sumOf { it.buyPrice } / dataInPeriod.size).coerceAtLeast(lowestPrice)
+                    .coerceAtMost(highestPrice))
+            if (prevBuyAverageY != null) buyMovingAverage[x] = prevBuyAverageY to buyAverageY
+            prevBuyAverageY = buyAverageY
+            val sellData = dataInPeriod.filterValues { it.sellPrice != null }
+            if (sellData.isEmpty()) continue
+            val sellAverageY =
+                getY((sellData.values.sumOf { it.sellPrice!! } / sellData.size).coerceAtLeast(lowestPrice)
+                    .coerceAtMost(highestPrice))
+            if (prevSellAverageY != null) sellMovingAverage[x] = prevSellAverageY to sellAverageY
+            prevSellAverageY = sellAverageY
+        }
+        hasSellData = sellPoints.isNotEmpty()
     }
 
     private fun selectMode(mode: Int) {
@@ -485,6 +558,26 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
             18 / 512f, 19 / 512f,
             36 / 512f, 37 / 512f,
             GL11.GL_NEAREST
+        )
+    }
+
+    private fun drawLine(
+        x: Double,
+        prevX: Double,
+        buyLine: Pair<Double, Double>?,
+        sellLine: Pair<Double, Double>?,
+        buyColor: Int,
+        sellColor: Int
+    ) {
+        if (buyLine != null) Utils.drawLine(
+            prevX.toFloat(), buyLine.first.toFloat() + 0.5f,
+            x.toFloat(), buyLine.second.toFloat() + 0.5f,
+            2, buyColor
+        )
+        if (sellLine != null) Utils.drawLine(
+            prevX.toFloat(), sellLine.first.toFloat() + 0.5f,
+            x.toFloat(), sellLine.second.toFloat() + 0.5f,
+            2, sellColor
         )
     }
 
