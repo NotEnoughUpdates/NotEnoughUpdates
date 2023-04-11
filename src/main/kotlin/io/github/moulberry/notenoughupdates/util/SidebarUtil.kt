@@ -38,7 +38,7 @@ object SidebarUtil {
     }
 
     private fun cleanSB(scoreboard: String) =
-        scoreboard.toCharArray().filter { it.code in 21..126 || it.code == 167 }.joinToString(separator = "")
+        scoreboard.toCharArray().filter { it.code in 21..126 || it.code == 167 || it.code == 9187 }.joinToString(separator = "")
 
     private fun fetchScoreboardLines(): List<String> {
         val scoreboard = Minecraft.getMinecraft().theWorld?.scoreboard ?: return emptyList()
