@@ -244,7 +244,7 @@ public class ApiUtil {
 					if (conn instanceof HttpURLConnection) {
 						try {
 							int code = ((HttpURLConnection) conn).getResponseCode();
-							if (code == 403) {
+							if (code == 403 && baseUrl.startsWith("https://api.hypixel.net/")) {
 								if (!notifiedOfInvalidApiKey) {
 									NotificationHandler.displayNotification(Arrays.asList(
 										"API request failed",
