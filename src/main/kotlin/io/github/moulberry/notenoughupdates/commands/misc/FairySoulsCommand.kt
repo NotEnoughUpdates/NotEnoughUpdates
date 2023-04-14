@@ -41,22 +41,22 @@ class FairySoulsCommand {
                 reply("${DARK_PURPLE}Enabled fairy soul waypoints")
                 FairySouls.getInstance().setShowFairySouls(true)
             }.withHelp("Show fairy soul waypoints")
-            thenLiteral("on") { redirect(enable) }
+            thenLiteral("on") { thenRedirect(enable) }
             val disable = thenLiteralExecute("disable") {
                 FairySouls.getInstance().setShowFairySouls(false)
                 reply("${DARK_PURPLE}Disabled fairy soul waypoints")
             }.withHelp("Hide fairy soul waypoints")
-            thenLiteral("off") { redirect(disable) }
+            thenLiteral("off") { thenRedirect(disable) }
             val clear = thenLiteralExecute("clear") {
                 FairySouls.getInstance().markAllAsFound()
                 // Reply handled by mark all as found
             }.withHelp("Mark all fairy souls in your current world as found")
-            thenLiteral("markfound") { redirect(clear) }
+            thenLiteral("markfound") { thenRedirect(clear) }
             val unclear = thenLiteralExecute("unclear") {
                 FairySouls.getInstance().markAllAsMissing()
                 // Reply handled by mark all as missing
             }.withHelp("Mark all fairy souls in your current world as not found")
-            thenLiteral("marknotfound") { redirect(unclear) }
+            thenLiteral("marknotfound") { thenRedirect(unclear) }
         }
     }
 }
