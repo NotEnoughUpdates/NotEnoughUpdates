@@ -32,6 +32,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.passive.EntityVillager
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -85,7 +86,7 @@ class NPCLocationExporter {
             json["clickcommand"] = ""
             json["modver"] = NotEnoughUpdates.VERSION
             json["x"] = position.x
-            json["y"] = position.y
+            json["y"] = position.y + 1
             json["z"] = position.z
             json["island"] = island
             NotEnoughUpdates.INSTANCE.manager.writeJsonDefaultDir(json, "$id.json")
@@ -121,6 +122,18 @@ class NPCLocationExporter {
         val pointedEntity = Minecraft.getMinecraft().pointedEntity
         if (pointedEntity == null) {
             Utils.addChatMessage("Could not find entity under cursor")
+            return
+        }
+        if (pointedEntity is EntityVillager) {
+            Minecraft.getMinecraft().displayGuiScreen(
+                NPCNamePrompt(
+                    // Just use jerry pet skin, idk, this will probably cause texture packs to overwrite us, but uhhhhh uhhhhhhh
+                    UUID.fromString("c9540683-51e4-3942-ad17-4f2c3f3ae4b7"),
+                    pointedEntity.position,
+                    SBInfo.getInstance().getLocation(),
+                    "822d8e751c8f2fd4c8942c44bdb2f5ca4d8ae8e575ed3eb34c18a86e93b"
+                )
+            )
             return
         }
         if (pointedEntity !is AbstractClientPlayer) {
