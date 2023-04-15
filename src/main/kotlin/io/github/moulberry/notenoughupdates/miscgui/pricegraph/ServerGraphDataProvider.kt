@@ -30,8 +30,8 @@ object ServerGraphDataProvider : GraphDataProvider {
     override fun loadData(itemId: String): CompletableFuture<Map<Instant, PriceObject>?> {
         return CompletableFuture.supplyAsync {
             val request = NotEnoughUpdates.INSTANCE.manager.apiUtils.request()
-                .url("https://neu.dediamondpro.dev/historical-prices").queryArgument("item", itemId)
-                .requestJson().get()?.asJsonObject ?: return@supplyAsync null
+                .url("https://${NotEnoughUpdates.INSTANCE.config.ahGraph.serverUrl}")
+                .queryArgument("item", itemId).requestJson().get()?.asJsonObject ?: return@supplyAsync null
 
             val response = mutableMapOf<Instant, PriceObject>()
             for (element in request.entrySet()) response[Instant.parse(element.key)] =

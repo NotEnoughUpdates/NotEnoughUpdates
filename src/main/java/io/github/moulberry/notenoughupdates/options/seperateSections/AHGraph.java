@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 import org.lwjgl.input.Keyboard;
 
@@ -90,7 +91,8 @@ public class AHGraph {
 		desc = "Whether the graph should have a moving average line or not."
 	)
 	@ConfigEditorBoolean
-	public boolean movingAverages = false; // Disabled by default because it looks weird to people who don't know what it is
+	public boolean movingAverages = false;
+		// Disabled by default because it looks weird to people who don't know what it is
 
 	@Expose
 	@ConfigOption(
@@ -131,6 +133,14 @@ public class AHGraph {
 		values = {"Server", "Local"}
 	)
 	public int dataSource = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Price History API",
+		desc = "§4Do §lNOT §r§4change this, unless you know exactly what you are doing\n§fDefault: §apricehistory.notenoughupdates.org"
+	)
+	@ConfigEditorText
+	public String serverUrl = "pricehistory.notenoughupdates.org";
 
 	@Expose
 	@ConfigOption(
