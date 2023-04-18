@@ -66,7 +66,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Set;
 
-@Mixin(GuiContainer.class, priority=500)
+@Mixin(GuiContainer.class)
 public abstract class MixinGuiContainer extends GuiScreen {
 	private static boolean hasProfileViewerStack = false;
 	private static final ItemStack profileViewerStack = Utils.createItemStack(
