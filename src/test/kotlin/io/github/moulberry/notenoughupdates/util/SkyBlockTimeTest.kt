@@ -58,6 +58,13 @@ class SkyBlockTimeTest {
     }
 
     @Test
+    fun monthInverse() {
+        (1..12).forEach {
+            assertEquals(it, SkyBlockTime.monthNameToInt(SkyBlockTime.monthName(it)))
+        }
+    }
+
+    @Test
     fun theOriginOfTime() {
         assertEquals(SkyBlockTime(year = 0), SkyBlockTime.fromInstant(Instant.ofEpochMilli(1559829300000L)))
     }
