@@ -235,6 +235,9 @@ public class DungeonNpcProfitOverlay {
 
 		for (int i = 0; i < chestProfits.size(); i++) {
 			DungeonChest chestProfit = chestProfits.get(i);
+			if (chestProfit == null) {
+				continue;
+			}
 			int x = guiLeft + xSize + 14;
 			int y = guiTop + 6 + (i * 10);
 			Utils.renderAlignedString(
