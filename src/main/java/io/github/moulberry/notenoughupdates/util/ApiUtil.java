@@ -247,12 +247,14 @@ public class ApiUtil {
 							if (code == 403 && baseUrl != null && baseUrl.startsWith("https://api.hypixel.net/")) {
 								if (!notifiedOfInvalidApiKey) {
 									NotificationHandler.displayNotification(Arrays.asList(
-										"API request failed",
-										"A Request failed because your API key is invalid/not present",
-										"Please run " + EnumChatFormatting.BOLD + EnumChatFormatting.GOLD + "/api new " +
-											EnumChatFormatting.RESET + "to fix this.",
-										"If you don't do this, several API related features, such as the profile viewer, will not work.",
-										"Press X on your keyboard to close this notification."
+										EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "API request failed",
+										EnumChatFormatting.RED + "A Request failed because your API key is invalid/not present",
+										EnumChatFormatting.RED + "Please run " + EnumChatFormatting.BOLD + EnumChatFormatting.GOLD +
+											"/api new " +
+											EnumChatFormatting.RESET + EnumChatFormatting.RED + "to fix this.",
+										EnumChatFormatting.RED +
+											"If you don't do this, several API related features, such as the profile viewer, will not work.",
+										EnumChatFormatting.GRAY+"Press X on your keyboard to close this notification."
 									), true, false);
 									notifiedOfInvalidApiKey = true;
 								}
