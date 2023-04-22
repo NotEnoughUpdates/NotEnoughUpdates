@@ -61,7 +61,7 @@ public class TimersOverlay extends TextTabOverlay {
 	}
 
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
-		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
+		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-9][0-9]|[0-9])[\s|\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
 		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
 	private static final Pattern PUZZLER_PATTERN =
