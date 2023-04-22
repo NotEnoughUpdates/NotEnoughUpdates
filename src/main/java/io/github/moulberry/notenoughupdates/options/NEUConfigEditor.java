@@ -225,13 +225,19 @@ public class NEUConfigEditor extends GuiElement {
 			if (searchedOptions == null) {
 				searchedOptions = new HashSet<>();
 			} else {
+				Set<ConfigProcessor.ProcessedOption> searchedOptions2 = new HashSet<>();
 				for (ConfigProcessor.ProcessedOption option : searchedOptions) {
 					ConfigProcessor.ProcessedCategory cat = categoryForOption.get(option);
 					if (cat == null) continue;
 
 					searchedCategories.add(cat);
+					for (ConfigProcessor.ProcessedOption catOption : cat.options.values()) {
+						if (catOption.accordionId == -1 || option.accordionId == -1) continue;
+						if (catOption.accordionId == option.accordionId) searchedOptions2.add(catOption);
+					}
 					searchedAccordions.computeIfAbsent(cat, k -> new HashSet<>()).add(option.accordionId);
 				}
+				searchedOptions.addAll(searchedOptions2);
 			}
 		}
 	}
