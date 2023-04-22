@@ -85,6 +85,7 @@ public class StringUtils {
 	}
 
 	public static String shortNumberFormat(double n, int iteration) {
+		if (n < 0) return "-" + shortNumberFormat(-n, iteration);
 		if (n < 1000) {
 			if (n % 1 == 0) {
 				return Integer.toString((int) n);

@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.recipes.generators
 
 import com.google.auto.service.AutoService
+import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag
 import io.github.moulberry.notenoughupdates.recipes.Ingredient
 import io.github.moulberry.notenoughupdates.recipes.ItemShopRecipe
 import io.github.moulberry.notenoughupdates.util.ItemUtils
@@ -131,7 +132,14 @@ class ItemShopExporter : RepoExporter {
     }
 
     override fun canExport(gui: GuiScreen): Boolean {
-        return gui is GuiChest
+        if (NEUDebugFlag.ALWAYS_EXPORT_SHOPS.isSet) return true
+        if (gui !is GuiChest) return false
+        val buyBackSlot = 4 + 9 * 5
+        val stacks = gui.inventorySlots.inventory
+        if (buyBackSlot !in stacks.indices) return false
+        val buyBackStack = stacks[buyBackSlot] ?: return false
+        return Utils.cleanColour(buyBackStack.displayName) == "Sell Item" ||
+                ItemUtils.getLore(buyBackStack).any { Utils.cleanColour(it) == "Click to buyback!" }
     }
 
     override val name: String

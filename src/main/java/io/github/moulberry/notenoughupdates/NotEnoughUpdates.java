@@ -253,6 +253,9 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "prerelease";
 			}
 
+			if (config.apiData.moulberryCodesApi.isEmpty()) {
+				config.apiData.moulberryCodesApi = "moulberry.codes";
+			}
 			if (config.ahGraph.serverUrl.trim().isEmpty()) {
 				config.ahGraph.serverUrl = "pricehistory.notenoughupdates.org";
 			}

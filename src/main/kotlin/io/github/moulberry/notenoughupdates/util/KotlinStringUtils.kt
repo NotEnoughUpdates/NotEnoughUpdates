@@ -20,5 +20,9 @@
 package io.github.moulberry.notenoughupdates.util
 
 import net.minecraft.util.StringUtils
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 fun String.stripControlCodes(): String = StringUtils.stripControlCodes(this)
+
+fun String.copyToClipboard() = Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(this), null)

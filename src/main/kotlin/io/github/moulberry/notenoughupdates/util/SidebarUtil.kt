@@ -24,18 +24,17 @@ import net.minecraft.scoreboard.Score
 import net.minecraft.scoreboard.ScorePlayerTeam
 
 object SidebarUtil {
-
     @JvmStatic
-    fun readSidebarLines() = readRawSidebarLines(true)
-
-    @JvmStatic
-    fun readRawSidebarLines(cleanColor: Boolean = false): List<String> {
-        val list = fetchScoreboardLines().reversed()
-        val result = list.map { cleanSB(it) }
-        return if (cleanColor) {
-            result.map { Utils.cleanColour(it) }
-        } else result
+    @JvmOverloads
+    fun readSidebarLines(cleanColor: Boolean = true, cleanSpecialCharacters: Boolean = true): List<String> {
+        var result = readRawSidebarLines()
+        if (cleanColor) result = result.map { Utils.cleanColour(it) }
+        if (cleanSpecialCharacters) result.map { cleanSB(it) }
+        return result
     }
+
+    @JvmStatic
+    fun readRawSidebarLines() = fetchScoreboardLines().reversed()
 
     private fun cleanSB(scoreboard: String) =
         scoreboard.toCharArray().filter { it.code in 21..126 || it.code == 167 }.joinToString(separator = "")
