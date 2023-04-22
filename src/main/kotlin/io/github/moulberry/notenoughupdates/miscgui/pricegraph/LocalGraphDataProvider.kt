@@ -30,18 +30,23 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 object LocalGraphDataProvider : GraphDataProvider {
     private val priceDir = File("config/notenoughupdates/prices")
     private val GSON = GsonBuilder().create()
-    private val format: SimpleDateFormat = SimpleDateFormat("dd-MM-yyyy")
+    private val format = SimpleDateFormat("dd-MM-yyyy")
     private val config = NotEnoughUpdates.INSTANCE.config
+    private val fileLocked = AtomicBoolean(false)
 
     override fun loadData(itemId: String): CompletableFuture<Map<Instant, PriceObject>?> {
         return CompletableFuture.supplyAsync {
             if (!priceDir.exists() || !priceDir.isDirectory) return@supplyAsync null
+            if (fileLocked.get()) while (fileLocked.get()) { // Wait for file to become unlocked
+                Thread.sleep(100)
+            }
             val response = mutableMapOf<Instant, PriceObject>()
             val futures = mutableListOf<CompletableFuture<Map<Instant, PriceObject>?>>()
             for (file in priceDir.listFiles { file -> file.extension == "gz" }!!) {
@@ -96,6 +101,10 @@ object LocalGraphDataProvider : GraphDataProvider {
             files?.filter { it.extension == "gz" && it.lastModified() < dataRetentionTime }?.forEach { it.delete() }
 
             if (!config.ahGraph.graphEnabled || config.ahGraph.dataSource != 1) return
+            if (fileLocked.get()) while (fileLocked.get()) { // Wait for file to become unlocked
+                Thread.sleep(100)
+            }
+            fileLocked.set(true)
 
             val date = Date()
             val epochSecond = date.toInstant().epochSecond
@@ -115,8 +124,10 @@ object LocalGraphDataProvider : GraphDataProvider {
                     StandardCharsets.UTF_8
                 )
             ).use { writer -> writer.write(GSON.toJson(prices)) }
+            fileLocked.set(false)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            fileLocked.set(false)
         }
     }
 
