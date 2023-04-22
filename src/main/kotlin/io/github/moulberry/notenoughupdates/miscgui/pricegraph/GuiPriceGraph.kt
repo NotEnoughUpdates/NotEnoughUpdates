@@ -100,6 +100,8 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        drawDefaultBackground()
+
         guiLeft = (width - X_SIZE) / 2
         guiTop = (height - Y_SIZE) / 2
 
