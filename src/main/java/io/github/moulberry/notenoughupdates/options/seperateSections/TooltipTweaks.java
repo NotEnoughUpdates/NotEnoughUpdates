@@ -68,7 +68,18 @@ public class TooltipTweaks {
 			"\u00a7eDrag text to rearrange"
 	)
 	@ConfigEditorDraggableList(
-		exampleText = {"\u00a7eBuy", "\u00a7eSell", "\u00a7eBuy (Insta)", "\u00a7eSell (Insta)", "\u00a7eRaw Craft Cost"}
+		exampleText = {
+			"\u00a7eBuy",
+			"\u00a7eSell",
+			"\u00a7eBuy (Insta)",
+			"\u00a7eSell (Insta)",
+			"\u00a7eRaw Craft Cost",
+			"\u00a7eInstabuys (Hourly)",
+			"\u00a7eInstasells (Hourly)",
+			"\u00a7eInstabuys (Daily)",
+			"\u00a7eInstasells (Daily)",
+			"\u00a7eInstabuys (Weekly)",
+			"\u00a7eInstasells (Weekly)"}
 	)
 	@ConfigAccordionId(id = 0)
 	public List<Integer> priceInfoBaz = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));

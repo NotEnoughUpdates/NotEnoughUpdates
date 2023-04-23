@@ -139,7 +139,7 @@ public class ItemPriceInformation {
 				stackMultiplier = shiftStackMultiplier;
 			}
 
-			//values = {"", "Buy", "Sell", "Buy (Insta)", "Sell (Insta)", "Raw Craft Cost"}
+			//values = {"", "Buy", "Sell", "Buy (Insta)", "Sell (Insta)", "Raw Craft Cost", "Instabuys (Hourly)", "Instasells (Hourly)", "Instabuys (Daily)", "Instasells (Daily)", "Instabuys (Weekly)", "Instasells (Weekly)"}
 			for (int lineId : lines) {
 				switch (lineId) {
 					case 0:
@@ -202,6 +202,84 @@ public class ItemPriceInformation {
 							double cost = craftCost.craftCost;
 							if (shiftPressed) cost = cost * shiftStackMultiplier;
 							tooltip.add(formatPrice("Raw Craft Cost: ", cost));
+						}
+						break;
+					case 5:
+						if (bazaarInfo.has("instabuys_hourly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Instabuys (Hourly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instabuys_hourly").getAsFloat()));
+						}
+						break;
+					case 6:
+						if (bazaarInfo.has("instasells_hourly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Instabuys (Hourly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instasells_hourly").getAsFloat()));
+						}
+						break;
+					case 7:
+						if (bazaarInfo.has("instabuys_daily")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Instabuys (Daily): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instabuys_daily").getAsFloat()));
+						}
+						break;
+					case 8:
+						if (bazaarInfo.has("instasells_daily")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Instasells (Daily): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instasells_daily").getAsFloat()));
+						}
+						break;
+					case 9:
+						if (bazaarInfo.has("instabuys_weekly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Instabuys (Weekly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instabuys_weekly").getAsFloat()));
+						}
+						break;
+					case 10:
+						if (bazaarInfo.has("instasells_weekly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Instasells (Weekly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instasells_weekly").getAsFloat()));
 						}
 						break;
 				}

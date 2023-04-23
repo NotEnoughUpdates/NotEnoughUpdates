@@ -750,6 +750,15 @@ public class APIManager {
 						productInfo.addProperty("avg_buy", quickStatus.get("buyPrice").getAsFloat());
 						productInfo.addProperty("avg_sell", quickStatus.get("sellPrice").getAsFloat());
 
+						float instasellsWeekly = quickStatus.get("sellMovingWeek").getAsFloat();
+						float instabuysWeekly = quickStatus.get("buyMovingWeek").getAsFloat();
+						productInfo.addProperty("instasells_weekly", instasellsWeekly);
+						productInfo.addProperty("instabuys_weekly", instabuysWeekly);
+						productInfo.addProperty("instasells_daily", instasellsWeekly / 7);
+						productInfo.addProperty("instabuys_daily", instabuysWeekly / 7);
+						productInfo.addProperty("instasells_hourly", instasellsWeekly / 7 / 24);
+						productInfo.addProperty("instabuys_hourly", instabuysWeekly / 7 / 24);
+
 						for (JsonElement element : product.get("sell_summary").getAsJsonArray()) {
 							if (element.isJsonObject()) {
 								JsonObject sellSummaryFirst = element.getAsJsonObject();
