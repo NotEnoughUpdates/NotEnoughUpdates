@@ -225,7 +225,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instabuys (Hourly): " +
+								"Instasells (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_hourly").getAsFloat()));
 						}
