@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -50,13 +51,13 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
@@ -69,14 +70,17 @@ public class ApiUtil {
 		.thenComparing(NameValuePair::getValue);
 
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
+
 	private static String getUserAgent() {
 		if (NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent != null) {
 			return NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent;
 		}
 		return "NotEnoughUpdates/" + NotEnoughUpdates.VERSION;
 	}
+
 	private static SSLContext ctx;
 	private final Map<String, CompletableFuture<Void>> updateTasks = new HashMap<>();
+	private static boolean notifiedOfInvalidApiKey;
 
 	static {
 		try {
@@ -190,9 +194,9 @@ public class ApiUtil {
 
 		private CompletableFuture<String> requestString0() {
 			return buildUrl().thenApplyAsync(url -> {
+				InputStream inputStream = null;
+				URLConnection conn = null;
 				try {
-					InputStream inputStream = null;
-					URLConnection conn = null;
 					try {
 						conn = url.openConnection();
 						if (conn instanceof HttpsURLConnection && ctx != null) {
@@ -207,6 +211,9 @@ public class ApiUtil {
 						if (this.postContentType != null) {
 							conn.setRequestProperty("Content-Type", this.postContentType);
 						}
+						if (!shouldGunzip) {
+							conn.setRequestProperty("Accept-Encoding", "gzip"); // Tell the server we can accept gzip
+						}
 						if (this.postData != null) {
 							conn.setDoOutput(true);
 							OutputStream os = conn.getOutputStream();
@@ -219,7 +226,7 @@ public class ApiUtil {
 
 						inputStream = conn.getInputStream();
 
-						if (shouldGunzip) {
+						if (shouldGunzip || "gzip".equals(conn.getContentEncoding())) {
 							inputStream = new GZIPInputStream(inputStream);
 						}
 
@@ -239,6 +246,29 @@ public class ApiUtil {
 						}
 					}
 				} catch (IOException e) {
+					if (conn instanceof HttpURLConnection) {
+						try {
+							int code = ((HttpURLConnection) conn).getResponseCode();
+							if (code == 403 && baseUrl != null && baseUrl.startsWith("https://api.hypixel.net/")) {
+								if (!notifiedOfInvalidApiKey) {
+									NotificationHandler.displayNotification(Arrays.asList(
+										EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "API request failed",
+										EnumChatFormatting.RED + "A Request failed because your API key is invalid/not present",
+										EnumChatFormatting.RED + "Please run " + EnumChatFormatting.BOLD + EnumChatFormatting.GOLD +
+											"/api new " +
+											EnumChatFormatting.RESET + EnumChatFormatting.RED + "to fix this.",
+										EnumChatFormatting.RED +
+											"If you don't do this, several API related features, such as the profile viewer, will not work.",
+										EnumChatFormatting.GRAY+"Press X on your keyboard to close this notification."
+									), true, false);
+									notifiedOfInvalidApiKey = true;
+								}
+								return "";
+							}
+						} catch (IOException ex) {
+							throw new RuntimeException(ex);
+						}
+					}
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
 			}, executorService).handle((obj, t) -> {

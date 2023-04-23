@@ -86,6 +86,15 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Show raw craft on items that can't be sold",
+		desc = "Raw craft cost will be shown on items that can't be sold on the ah or bz"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean rawCraft = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Use Short Number Format",
 		desc = "Use Short Numbers (5.1m) instead of 5,130,302"
 	)
@@ -166,6 +175,23 @@ public class TooltipTweaks {
 		values = {"Default", "Small", "Normal", "Large", "Auto"}
 	)
 	public int guiScale = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Custom tooltips",
+		desc = "Replace tooltips with neu's custom tooltips"
+	)
+	@ConfigEditorBoolean
+	public boolean customTooltips = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Scrollable Tooltips",
+		desc = "Make tooltips text scrollable, by making some text lines disappear when using the mouse while hovering over an item."
+	)
+	@ConfigEditorBoolean
+	public boolean scrollableTooltips = false;
+
 
 	@Expose
 	@ConfigOption(

@@ -32,6 +32,7 @@ public enum NEUDebugFlag {
 	MAP("Dungeon Map Player Information"),
 	SEARCH("SearchString Matches"),
 	API_CACHE("Api Cache"),
+	ALWAYS_EXPORT_SHOPS("Always export shops even without buy back slot"),
 	;
 
 	private final String description;

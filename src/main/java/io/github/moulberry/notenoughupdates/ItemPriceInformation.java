@@ -443,6 +443,15 @@ public class ItemPriceInformation {
 				}
 			}
 
+		} else if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rawCraft && craftCost != null && craftCost.fromRecipe) {
+
+			if (craftCost.craftCost == 0) return;
+			double cost = craftCost.craftCost;
+			int shiftStackMultiplier = useStackSize && stack.stackSize > 1 ? stack.stackSize : 64;
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) cost = cost * shiftStackMultiplier;
+			tooltip.add("");
+			tooltip.add(formatPrice("Raw Craft Cost: ", cost));
+
 		} else if (auctionInfoErrored && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			String message = EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] API is down";
 			if (auctionableItems != null && !auctionableItems.isEmpty()) {
