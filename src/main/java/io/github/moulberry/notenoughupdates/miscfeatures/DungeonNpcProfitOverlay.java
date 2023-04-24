@@ -49,6 +49,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -89,8 +90,7 @@ public class DungeonNpcProfitOverlay {
 	 */
 	public static void onDrawSlot(Slot slot) {
 		if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && isRendering()) {
-			synchronized (chestProfits) {
-				for (DungeonChest chestProfit : chestProfits) {
+				for (DungeonChest chestProfit : Collections.synchronizedList(chestProfits)) {
 					if (chestProfit.shouldHighlight && slot.slotNumber == chestProfit.slot) {
 						Gui.drawRect(
 							slot.xDisplayPosition,
@@ -101,7 +101,6 @@ public class DungeonNpcProfitOverlay {
 						);
 					}
 				}
-			}
 		}
 	}
 
