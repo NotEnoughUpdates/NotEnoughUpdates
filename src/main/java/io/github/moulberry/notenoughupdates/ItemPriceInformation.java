@@ -212,7 +212,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instabuys (Hourly): " +
+								"Insta-Buys (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instabuys_hourly").getAsFloat()));
 						}
@@ -225,7 +225,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instasells (Hourly): " +
+								"Insta-Sells (Hourly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_hourly").getAsFloat()));
 						}
@@ -238,7 +238,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instabuys (Daily): " +
+								"Insta-Buys (Daily): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instabuys_daily").getAsFloat()));
 						}
@@ -251,7 +251,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instasells (Daily): " +
+								"Insta-Sells (Daily): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_daily").getAsFloat()));
 						}
@@ -264,7 +264,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instabuys (Weekly): " +
+								"Insta-Buys (Weekly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instabuys_weekly").getAsFloat()));
 						}
@@ -277,7 +277,7 @@ public class ItemPriceInformation {
 							}
 							
 							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
-								"Instasells (Weekly): " +
+								"Insta-Sells (Weekly): " +
 								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
 								format.format(bazaarInfo.get("instasells_weekly").getAsFloat()));
 						}
