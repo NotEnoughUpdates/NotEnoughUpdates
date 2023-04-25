@@ -1005,6 +1005,11 @@ public class CustomItemEffects {
 					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
 					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableDirtWandOverlay) {
 					BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
+					if ("garden".equals(SBInfo.getInstance().getLocation()) &&
+						(hover.getX() > 239 || hover.getX() < -240 || hover.getZ() > 239 || hover.getZ() < -240 ||
+							hover.getY() <= 66 || hover.getY() > 76)) {
+						return;
+					}
 					IBlockState hoverState = Minecraft.getMinecraft().theWorld.getBlockState(event.target
 						.getBlockPos()
 						.offset(event.target.sideHit, 1));
@@ -1579,6 +1584,9 @@ public class CustomItemEffects {
 					(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) *
 						(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) +
 					(candidate.getZ() + 0.5f - d2) * (candidate.getZ() + 0.5f - d2));
+				if (candidate.getY() < 66 || candidate.getY() >= 76) {
+					continue;
+				}
 				candidatesOldSorted.computeIfAbsent(distSq, k -> new HashSet<>()).add(candidate);
 
 				candidatesOld.add(candidate);
@@ -1596,6 +1604,9 @@ public class CustomItemEffects {
 					var plotZ = MathHelper.floor_float((candidate.getZ() + 48) / 96F);
 					var plotZNew = MathHelper.floor_float((posNew.getZ() + 48) / 96F);
 					if (plotX != plotXNew || plotZ != plotZNew) {
+						continue;
+					}
+					if (2 < plotXNew || plotXNew < -2 || 2 < plotZNew || plotZNew < -2) {
 						continue;
 					}
 				}
