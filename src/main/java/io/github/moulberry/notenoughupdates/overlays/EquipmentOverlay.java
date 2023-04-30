@@ -53,7 +53,9 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @NEUAutoSubscribe
@@ -149,6 +151,8 @@ public class EquipmentOverlay {
 	public boolean shouldRenderArmorHud;
 
 	public ItemStack petStack;
+
+	private Map<String, Map<Integer, ItemStack>> profileCache = new HashMap<>();
 
 	//<editor-fold desc="events">
 	@SubscribeEvent
@@ -364,6 +368,8 @@ public class EquipmentOverlay {
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return null;
 
+		profileCache.putIfAbsent(lastProfile, new HashMap<>());
+		Map<Integer, ItemStack> cache = profileCache.get(lastProfile);
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
@@ -373,15 +379,21 @@ public class EquipmentOverlay {
 					itemToSave.add("internalname", new JsonPrimitive("_"));
 				}
 				profileSpecific.savedEquipment.put(armourSlot, itemToSave);
+				cache.put(armourSlot, itemStack);
 				return itemStack;
 			}
 		} else {
 			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
+				if (cache.containsKey(armourSlot)) {
+					return cache.get(armourSlot);
+				}
 				//don't use cache since the internalName is identical in most cases
-				JsonObject jsonObject = profileSpecific.savedEquipment
-					.get(armourSlot);
-				if (jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject
-					.getAsJsonObject(), false);
+				JsonObject jsonObject = profileSpecific.savedEquipment.get(armourSlot);
+				if (jsonObject != null) {
+					ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
+					cache.put(armourSlot, result);
+					return result;
+				}
 			}
 		}
 		return null;
