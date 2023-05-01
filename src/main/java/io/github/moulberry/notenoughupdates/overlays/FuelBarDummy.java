@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
@@ -33,13 +34,19 @@ public class FuelBarDummy extends TextOverlay {
 		Supplier<TextOverlayStyle> styleSupplier
 	) {
 		super(position, dummyStrings, styleSupplier);
-		super.shouldRenderInGuiEditor = false;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		GuiPositionEditor.renderDrill = NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar;
+		return NotEnoughUpdates.INSTANCE.config.mining.drillFuelBar;
 	}
 
 	@Override
 	public void update() {
 
 	}
+
 	@Override
 	public Vector2f getDummySize() {
 		return new Vector2f(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -231,6 +231,11 @@ public class MiningOverlay extends TextTabOverlay {
 		".*[1-5]\\) (?<ItemName>.*): ((?<Ready>Ready!)|(((?<days>[0-9]+)d)? ?((?<hours>[0-9]+)h)? ?((?<minutes>[0-9]+)m)? ?((?<seconds>[0-9]+)s)?))");
 	private static final Pattern forgesHeaderPattern = Pattern.compile(
 		"\\xa7r\\xa79\\xa7lForges \\xa7r(?:\\xa7f\\(\\+1 more\\)\\xa7r)?");
+
+	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.mining.dwarvenOverlay;
+	}
 
 	@Override
 	public void update() {

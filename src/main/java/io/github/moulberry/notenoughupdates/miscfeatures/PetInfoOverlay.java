@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -646,6 +646,11 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}};
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.petOverlay.enablePetInfo;
 	}
 
 	public void update() {

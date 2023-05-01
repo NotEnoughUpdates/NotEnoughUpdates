@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -44,8 +44,6 @@ public abstract class TextOverlay {
 
 	public boolean shouldUpdateFrequent = false;
 
-	public boolean shouldRenderInGuiEditor = true;
-
 	private static final int PADDING_X = 5;
 	private static final int PADDING_Y = 5;
 
@@ -66,6 +64,10 @@ public abstract class TextOverlay {
 			return getSize(dummyStrings);
 		}
 		return new Vector2f(100, 50);
+	}
+
+	public boolean isEnabled() {
+		return true;
 	}
 
 	public void tick() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -106,9 +106,14 @@ public class SlayerOverlay extends TextOverlay {
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerOverlay;
+	}
+
+	@Override
 	public void update() {
 		shouldUpdate = shouldUpdate();
-		if (!NotEnoughUpdates.INSTANCE.config.slayerOverlay.slayerOverlay || !shouldUpdate) {
+		if (!isEnabled() || !shouldUpdate) {
 			overlayStrings = null;
 			return;
 		}

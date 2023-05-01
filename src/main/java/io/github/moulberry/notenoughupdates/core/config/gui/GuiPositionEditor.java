@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -35,13 +35,14 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.function.Supplier;
 
 public class GuiPositionEditor extends GuiScreen {
 	private final ArrayList<Position> positions;
 	private final ArrayList<Position> originalPositions;
 	private final ArrayList<Integer> elementWidths;
 	private final ArrayList<Integer> elementHeights;
-	private final ArrayList<Runnable> renderCallback;
+	private final ArrayList<Supplier<Boolean>> shouldRenderSupplier;
 	private final Runnable positionChangedCallback;
 	private final Runnable closedCallback;
 	private int grabbedX = 0;
@@ -53,13 +54,12 @@ public class GuiPositionEditor extends GuiScreen {
 
 	public GuiPositionEditor(
 		LinkedHashMap<TextOverlay, Position> overlayPositions,
-		Runnable renderCallback,
 		Runnable positionChangedCallback,
 		Runnable closedCallback
 	) {
+		shouldRenderSupplier = new ArrayList<>();
 		ArrayList<Position> pos = new ArrayList<>();
 		ArrayList<Position> ogPos = new ArrayList<>();
-		ArrayList<Runnable> renderCallbac = new ArrayList<>();
 		ArrayList<Integer> width = new ArrayList<>();
 		ArrayList<Integer> height = new ArrayList<>();
 		for (int i = 0; i < overlayPositions.size(); i++) {
@@ -68,18 +68,19 @@ public class GuiPositionEditor extends GuiScreen {
 			ogPos.add(pos.get(i).clone());
 			width.add((int) overlay.getDummySize().x);
 			height.add((int) overlay.getDummySize().y);
-			renderCallbac.add(() -> {
-				if (overlay.shouldRenderInGuiEditor) {
+			shouldRenderSupplier.add(() -> {
+				if (overlay.isEnabled()) {
 					overlay.renderDummy();
 					OverlayManager.dontRenderOverlay.add(overlay.getClass());
+					return true;
 				}
+				return false;
 			});
 		}
 
 
 		this.positions = pos;
 		this.originalPositions = ogPos;
-		this.renderCallback = renderCallbac;
 		this.elementWidths = width;
 		this.elementHeights = height;
 		this.positionChangedCallback = positionChangedCallback;
@@ -119,6 +120,9 @@ public class GuiPositionEditor extends GuiScreen {
 		drawDefaultBackground();
 		renderDrill = true;
 		for (Position position : positions) {
+			if (!shouldRenderSupplier.get(positions.indexOf(position)).get()) {
+				continue;
+			}
 			int elementHeight = elementHeights.get(positions.indexOf(position));
 			int elementWidth = elementWidths.get(positions.indexOf(position));
 			if (position.getClicked()) {
@@ -126,21 +130,18 @@ public class GuiPositionEditor extends GuiScreen {
 				grabbedY += position.moveY(mouseY - grabbedY, elementHeight, scaledResolution);
 			}
 
-			renderCallback.get(positions.indexOf(position)).run();
-
 			int x = position.getAbsX(scaledResolution, elementWidth);
 			int y = position.getAbsY(scaledResolution, elementHeight);
 
 			if (position.isCenterX()) x -= elementWidth / 2;
 			if (position.isCenterY()) y -= elementHeight / 2;
 			Gui.drawRect(x, y, x + elementWidth, y + elementHeight, 0x80404040);
-
-			Utils.drawStringCentered("Position Editor", scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff);
-			Utils.drawStringCentered(
-				"R to Reset - Arrow keys/mouse to move",
-				scaledResolution.getScaledWidth() / 2, 18, true, 0xffffff
-			);
 		}
+		Utils.drawStringCentered("Position Editor", scaledResolution.getScaledWidth() / 2, 8, true, 0xffffff);
+		Utils.drawStringCentered(
+			"R to Reset - Arrow keys/mouse to move",
+			scaledResolution.getScaledWidth() / 2, 18, true, 0xffffff
+		);
 		GlStateManager.popMatrix();
 	}
 
