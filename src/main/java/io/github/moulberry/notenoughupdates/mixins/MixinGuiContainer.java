@@ -66,7 +66,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Set;
 
-@Mixin(GuiContainer.class, priority=500)
+@Mixin(value = GuiContainer.class, priority = 500)
 public abstract class MixinGuiContainer extends GuiScreen {
 	private static boolean hasProfileViewerStack = false;
 	private static final ItemStack profileViewerStack = Utils.createItemStack(
@@ -299,7 +299,8 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	public boolean drawScreen_canBeHovered(Slot slot) {
 		if ((NotEnoughUpdates.INSTANCE.config.improvedSBMenu.hideEmptyPanes &&
 			BetterContainers.isOverriding() && BetterContainers.isBlankStack(slot.slotNumber, slot.getStack())) ||
-			slot.getStack() != null && slot.getStack().hasTagCompound() && slot.getStack().getTagCompound().getBoolean("NEUHIDETOOLIP")) {
+			slot.getStack() != null &&
+				slot.getStack().hasTagCompound() && slot.getStack().getTagCompound().getBoolean("NEUHIDETOOLIP")) {
 			return false;
 		}
 		return slot.canBeHovered();
