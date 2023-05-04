@@ -47,6 +47,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
@@ -550,6 +551,9 @@ public class NEUManager {
 			result = result || multiSearchString(stack.getDisplayName(), query);
 
 			String lore = "";
+			if (stack.getItem() instanceof ItemArmor && ((ItemArmor)stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
+				lore = String.format("#%06x",((ItemArmor)stack.getItem()).getColor(stack));
+			}
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag != null) {
 				NBTTagCompound display = tag.getCompoundTag("display");
