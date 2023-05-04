@@ -50,7 +50,7 @@ public class MutingComposter {
 
 	@SubscribeEvent
 	public void onSoundPlay(PlaySoundEvent event) {
-		if (mutableSounds.contains(event.name) && isEnabled() && event.sound.getXPosF() == -11.5 && event.sound.getYPosF() == 72.5 && event.sound.getZPosF() == -26.5) {
+		if (mutableSounds.contains(event.name) && isEnabled()) {
 			event.result = null;
 		}
 	}
