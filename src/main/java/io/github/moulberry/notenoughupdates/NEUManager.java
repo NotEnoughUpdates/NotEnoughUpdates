@@ -552,7 +552,7 @@ public class NEUManager {
 
 			String lore = "";
 			if (stack.getItem() instanceof ItemArmor && ((ItemArmor)stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
-				lore = String.format("#%06x",((ItemArmor)stack.getItem()).getColor(stack));
+				lore = String.format("#%06x ",((ItemArmor)stack.getItem()).getColor(stack));
 			}
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag != null) {
