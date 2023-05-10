@@ -261,9 +261,16 @@ public class ItemResolutionQuery {
 		String romanLevel = matcher.group(3);
 		boolean ultimate = (format.contains("§l"));
 
-		return (ultimate ? "ULTIMATE_" : "")
-			+ enchantmentName.replace(" ", "_").toUpperCase(Locale.ROOT)
+		return ((ultimate && !name.equals("Ultimate Wise")) ? "ULTIMATE_" : "")
+			+ turboCheck(enchantmentName).replace(" ", "_").replace("-", "_").toUpperCase(Locale.ROOT)
 			+ ";" + Utils.parseRomanNumeral(romanLevel);
+	}
+
+	private String turboCheck(String text) {
+		if (text.equals("Turbo-Cocoa")) return "Turbo-Coco";
+		if (text.equals("Turbo-Cacti")) return "Turbo-Cactus";
+
+		return text;
 	}
 
 	private String resolveCrabHatName() {
