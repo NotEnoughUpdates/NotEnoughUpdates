@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.DrawSlotReturnEvent;
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
@@ -78,7 +79,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	@Inject(method = "drawSlot", at = @At("RETURN"))
 	public void drawSlotRet(Slot slotIn, CallbackInfo ci) {
 		SlotLocking.getInstance().drawSlot(slotIn);
-		DungeonNpcProfitOverlay.onDrawSlot(slotIn);
+		new DrawSlotReturnEvent(slotIn).post();
 	}
 
 	@Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)

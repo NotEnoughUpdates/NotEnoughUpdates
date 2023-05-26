@@ -19,24 +19,29 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
+import io.github.moulberry.notenoughupdates.events.DrawSlotReturnEvent;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Items;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -49,11 +54,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @NEUAutoSubscribe
 public class DungeonNpcProfitOverlay {
@@ -64,41 +71,54 @@ public class DungeonNpcProfitOverlay {
 	private static final Pattern chestNamePattern = Pattern.compile(".+ Catacombs - Floor .+");
 	private static final Pattern essencePattern = Pattern.compile(
 		"^§.(?<essenceType>\\w+) Essence §.x(?<essenceAmount>\\d+)$");
-	private static final Pattern enchantedBookPattern = Pattern.compile("^§.Enchanted Book \\((?<enchantName>.*)\\)");
-	private static List<DungeonChest> chestProfits;
-	private static List<Slot> previousSlots;
+	private static final Pattern enchantedBookPattern = Pattern.compile("^§.Enchanted Book \\((?<enchantName>.*)§.\\)");
+	private static final Map<Integer, DungeonChest> chestProfits = new HashMap<>();
+	private static List<DungeonChest> orderedChestProfits = new ArrayList<>();
 
 	/**
 	 * Check the current status for the overlay
 	 *
 	 * @return if the overlay is rendering right now
 	 */
-	public static boolean isRendering() {
-		return NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay && chestProfits != null;
+	public boolean isRendering() {
+		return NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay && !chestProfits.isEmpty();
+	}
+
+	private boolean isChestOverview(IInventory inventory) {
+		return chestNamePattern.matcher(StringUtils.cleanColour(
+			inventory.getDisplayName()
+							 .getUnformattedText())).matches();
+	}
+
+	private boolean isChestOverview(GuiChest chest) {
+		ContainerChest inventorySlots = (ContainerChest) chest.inventorySlots;
+		return isChestOverview(inventorySlots.getLowerChestInventory());
 	}
 
 	/**
 	 * Highlight the slot that is being drawn if applicable. Called by MixinGuiContainer
 	 *
-	 * @param slot the slot to be checked
 	 * @see io.github.moulberry.notenoughupdates.mixins.MixinGuiContainer#drawSlotRet(Slot, CallbackInfo)
 	 */
-	public static void onDrawSlot(Slot slot) {
-		if (isRendering() && NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit) {
-			for (DungeonChest chestProfit : chestProfits) {
-				if (chestProfit.shouldHighlight) {
-					if (slot.slotNumber == chestProfit.slot) {
-						Gui.drawRect(
-							slot.xDisplayPosition,
-							slot.yDisplayPosition,
-							slot.xDisplayPosition + 16,
-							slot.yDisplayPosition + 16,
-							Color.GREEN.getRGB()
-						);
-					}
-				}
-			}
+	@SubscribeEvent
+	public void onDrawSlot(DrawSlotReturnEvent event) {
+		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay
+			|| !NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit
+			|| !isChestOverview(event.getSlot().inventory)) {
+			return;
 		}
+		var slot = event.getSlot();
+		var chestProfit = getPotentialChest(slot);
+		if (chestProfit == null || !chestProfit.shouldHighlight || slot.slotNumber != chestProfit.slot) {
+			return;
+		}
+		Gui.drawRect(
+			slot.xDisplayPosition,
+			slot.yDisplayPosition,
+			slot.xDisplayPosition + 16,
+			slot.yDisplayPosition + 16,
+			Color.GREEN.getRGB()
+		);
 	}
 
 	@SubscribeEvent
@@ -117,92 +137,83 @@ public class DungeonNpcProfitOverlay {
 	@SubscribeEvent
 	public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (!NotEnoughUpdates.INSTANCE.config.dungeons.croesusProfitOverlay || !(event.gui instanceof GuiChest)) {
-			chestProfits = null;
-			previousSlots = null;
-			return;
-		}
-
-		String lastOpenChestName = SBInfo.getInstance().lastOpenChestName;
-		Matcher matcher = chestNamePattern.matcher(lastOpenChestName);
-		if (!matcher.matches()) {
-			chestProfits = null;
-			previousSlots = null;
+			chestProfits.clear();
 			return;
 		}
 		GuiChest guiChest = (GuiChest) event.gui;
-		List<Slot> slots = guiChest.inventorySlots.inventorySlots;
-
-		if (chestProfits == null || chestProfits.isEmpty() || !slots.equals(previousSlots)) {
-			updateDungeonChests(slots);
+		if (!isChestOverview(guiChest)) {
+			chestProfits.clear();
+			return;
 		}
-		previousSlots = guiChest.inventorySlots.inventorySlots;
-
 		render(guiChest);
 	}
 
-	/**
-	 * Update the profit applicable for the chests currently visible
-	 *
-	 * @param inventorySlots list of Slots from the GUI containing the dungeon chest previews
-	 */
-	private void updateDungeonChests(List<Slot> inventorySlots) {
-		chestProfits = new ArrayList<>();
-		//loop through the upper chest
-		for (int i = 0; i < 27; i++) {
-			Slot inventorySlot = inventorySlots.get(i);
-			if (inventorySlot == null) {
+	private @Nullable DungeonChest getPotentialChest(@Nullable Slot slot) {
+		if (slot == null) return null;
+		DungeonChest chestProfit = chestProfits.get(slot.slotNumber);
+		if (chestProfit == null) {
+			long s = System.currentTimeMillis();
+			updatePotentialChest(slot.getStack(), slot);
+			long d = System.currentTimeMillis() - s;
+			if (d > 10) {
+				System.out.println("Finished analyzing slow croesus slot. Took " + d + " ms");
+				ItemUtils.getLore(slot.getStack()).forEach(System.out::println);
+			}
+		}
+		return chestProfits.get(slot.slotNumber);
+	}
+
+	private void updatePotentialChest(ItemStack stack, Slot slot) {
+		if (stack == null || stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) return;
+		DungeonChest dungeonChest = new DungeonChest();
+		dungeonChest.slot = slot.slotNumber;
+
+		List<String> lore = ItemUtils.getLore(stack);
+		if (lore.size() == 0 || !"§7Contents".equals(lore.get(0))) {
+			return;
+		}
+		dungeonChest.name = stack.getDisplayName();
+		List<SkyblockItem> items = new ArrayList<>();
+		for (String s : lore) {
+
+			if ("§7Contents".equals(s) || "".equals(s) || "§7Cost".equals(s) || "§cCan't open another chest!".equals(s) ||
+				"§aAlready opened!".equals(s) ||
+				"§eClick to open!".equals(s)) continue;
+
+			//check if this line is showing the cost of opening the Chest
+			if (s.endsWith(" Coins")) {
+				String coinString = StringUtils.cleanColour(s);
+				int whitespace = coinString.indexOf(' ');
+				if (whitespace != -1) {
+					String amountString = coinString.substring(0, whitespace).replace(",", "");
+					dungeonChest.costToOpen = Integer.parseInt(amountString);
+					continue;
+				}
+			} else if (s.equals("§aFREE")) {
+				dungeonChest.costToOpen = 0;
 				continue;
 			}
 
-			ItemStack stack = inventorySlot.getStack();
-			if (stack != null && stack.getItem() != null && stack.getItem() == Items.skull) {
-				//each item is a DungeonChest
-				DungeonChest dungeonChest = new DungeonChest();
-				dungeonChest.slot = i;
-
-				List<String> lore = ItemUtils.getLore(stack);
-				if ("§7Contents".equals(lore.get(0))) {
-					dungeonChest.name = stack.getDisplayName();
-					List<SkyblockItem> items = new ArrayList<>();
-					for (String s : lore) {
-						//check if this line is showing the cost of opening the Chest
-						if (s.endsWith(" Coins")) {
-							String coinString = StringUtils.cleanColour(s);
-							int whitespace = coinString.indexOf(' ');
-							if (whitespace != -1) {
-								String amountString = coinString.substring(0, whitespace).replace(",", "");
-								dungeonChest.costToOpen = Integer.parseInt(amountString);
-								continue;
-							}
-						} else if (s.equals("§aFREE")) {
-							dungeonChest.costToOpen = 0;
-						}
-
-						//check if the line can be converted to a SkyblockItem
-						SkyblockItem skyblockItem = SkyblockItem.createFromLoreEntry(s);
-						if (skyblockItem != null) {
-							items.add(skyblockItem);
-						}
-					}
-					dungeonChest.items = items;
-					if (dungeonChest.costToOpen != -1) {
-						dungeonChest.calculateProfitAndBuildLore();
-						chestProfits.add(dungeonChest);
-					}
-				}
-			}
+			//check if the line can be converted to a SkyblockItem
+			SkyblockItem skyblockItem = SkyblockItem.createFromLoreEntry(s);
+			if (skyblockItem != null) {
+				items.add(skyblockItem);
+			} else
+				System.out.println("Unexpected line " + s + " while analyzing croesus lore");
 		}
-
-		if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit) {
-			chestProfits.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
+		dungeonChest.items = items;
+		if (dungeonChest.costToOpen != -1) {
+			dungeonChest.calculateProfitAndBuildLore();
+			chestProfits.put(slot.slotNumber, dungeonChest);
 		}
-
-		if (NotEnoughUpdates.INSTANCE.config.dungeons.croesusHighlightHighestProfit && chestProfits.size() >= 1) {
-			List<DungeonChest> copiedList = new ArrayList<>(chestProfits);
-			copiedList.sort(Comparator.comparing(DungeonChest::getProfit).reversed());
-
-			copiedList.get(0).shouldHighlight = true;
-		}
+		orderedChestProfits = chestProfits.values().stream()
+																			.sorted(NotEnoughUpdates.INSTANCE.config.dungeons.croesusSortByProfit
+																				? Comparator.comparing(DungeonChest::getProfit).reversed()
+																				: Comparator.comparing(DungeonChest::getSlot))
+																			.collect(Collectors.toList());
+		chestProfits.values().forEach(it -> it.shouldHighlight = false);
+		chestProfits.values().stream().max(Comparator.comparing(DungeonChest::getProfit)).ifPresent(it ->
+			it.shouldHighlight = true);
 	}
 
 	public void render(GuiChest guiChest) {
@@ -214,8 +225,8 @@ public class DungeonNpcProfitOverlay {
 		GlStateManager.disableLighting();
 		Utils.drawTexturedRect(guiLeft + xSize + 4, guiTop, 180, 101, 0, 180 / 256f, 0, 101 / 256f, GL11.GL_NEAREST);
 
-		for (int i = 0; i < chestProfits.size(); i++) {
-			DungeonChest chestProfit = chestProfits.get(i);
+		for (int i = 0; i < orderedChestProfits.size(); i++) {
+			DungeonChest chestProfit = orderedChestProfits.get(i);
 			int x = guiLeft + xSize + 14;
 			int y = guiTop + 6 + (i * 10);
 			Utils.renderAlignedString(
@@ -257,6 +268,7 @@ public class DungeonNpcProfitOverlay {
 		private List<String> lore;
 		private int costToOpen = -1;
 		private String name;
+		@Getter
 		private int slot;
 		private boolean shouldHighlight;
 		private double profit;
@@ -329,20 +341,9 @@ public class DungeonNpcProfitOverlay {
 			Matcher enchantedBookMatcher = enchantedBookPattern.matcher(line);
 
 			if (enchantedBookMatcher.matches()) {
-				String enchant = StringUtils.cleanColour(enchantedBookMatcher.group("enchantName"));
-
-				for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.entrySet()) {
-					String displayName = StringUtils.cleanColour(entry.getValue().get("displayname").getAsString());
-					if (displayName.equals("Enchanted Book")) {
-						JsonArray lore = entry.getValue().get("lore").getAsJsonArray();
-						String enchantName = StringUtils.cleanColour(lore.get(0).getAsString());
-						if (enchant.equals(enchantName)) {
-							return new SkyblockItem(entry.getKey(), 1);
-						}
-					}
-				}
+				String enchantName = ItemResolutionQuery.resolveEnchantmentByName(enchantedBookMatcher.group("enchantName"));
+				if (enchantName == null) return null;
+				return new SkyblockItem(enchantName, 1);
 			} else if (essenceMatcher.matches() && NotEnoughUpdates.INSTANCE.config.dungeons.useEssenceCostFromBazaar) {
 				String essenceType = essenceMatcher.group("essenceType");
 				String essenceAmount = essenceMatcher.group("essenceAmount");
@@ -359,18 +360,12 @@ public class DungeonNpcProfitOverlay {
 				int amount = Integer.parseInt(essenceAmount);
 				return new SkyblockItem(internalName, amount);
 			} else {
-				String s = StringUtils.cleanColour(line.trim());
-				for (Map.Entry<String, JsonObject> entries : NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.entrySet()) {
-					String displayName = entries.getValue().get("displayname").getAsString();
-					String cleanDisplayName = StringUtils.cleanColour(displayName);
-					if (s.equals(cleanDisplayName)) {
-						return new SkyblockItem(entries.getKey(), 1);
-					}
-				}
+				// Remove Book (from hot potato book), as a perf optimization since "book" is a very common phrase
+				String id = ItemResolutionQuery.findInternalNameByDisplayName(
+					line.trim().replace("Book", ""), true);
+				if (id == null) return null;
+				return new SkyblockItem(id, 1);
 			}
-			return null;
 		}
 
 		/**
