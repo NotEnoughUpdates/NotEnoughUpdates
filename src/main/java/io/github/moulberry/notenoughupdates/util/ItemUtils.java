@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -36,16 +37,34 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
 public class ItemUtils {
+	private static final Gson smallPrintingGson = new Gson();
+
+	public static ItemStack createSkullItemStack(String displayName, String uuid, String skinAbsoluteUrl) {
+		JsonObject object = new JsonObject();
+		JsonObject textures = new JsonObject();
+		JsonObject skin = new JsonObject();
+		skin.addProperty("url", skinAbsoluteUrl);
+		textures.add("SKIN", skin);
+		object.add("textures", textures);
+		String json = smallPrintingGson.toJson(object);
+		return Utils.createSkull(
+			displayName,
+			uuid,
+			Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8))
+		);
+	}
 
 	public static ItemStack getCoinItemStack(double coinAmount) {
 		String uuid = "2070f6cb-f5db-367a-acd0-64d39a7e5d1b";
@@ -186,6 +205,13 @@ public class ItemUtils {
 			text = text.replace(search, replacement.getValue());
 		}
 		return text;
+	}
+
+	public static NBTTagCompound getExtraAttributes(ItemStack itemStack) {
+		NBTTagCompound tag = getOrCreateTag(itemStack);
+		NBTTagCompound extraAttributes = tag.getCompoundTag("ExtraAttributes");
+		tag.setTag("ExtraAttributes", extraAttributes);
+		return extraAttributes;
 	}
 
 	public static ItemStack createPetItemstackFromPetInfo(PetInfoOverlay.Pet currentPet) {

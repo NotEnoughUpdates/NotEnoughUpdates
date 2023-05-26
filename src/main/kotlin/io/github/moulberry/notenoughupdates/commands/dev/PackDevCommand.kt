@@ -67,7 +67,7 @@ class PackDevCommand {
                     reply("No $name found within $dist blocks")
                     return@thenArgumentExecute
                 }
-                MiscUtils.copyToClipboard(StringBuilder().appendEntityData(entity).toString().trim())
+                MiscUtils.copyToClipboard(StringBuilder().also { it.appendEntityData(entity) }.toString().trim())
                 reply("Copied data to clipboard")
             }.withHelp("Find the nearest $name and copy data about them to your clipboard")
         }
