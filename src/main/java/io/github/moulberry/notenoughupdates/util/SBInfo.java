@@ -375,6 +375,7 @@ public class SBInfo {
 			boolean containsStranded = false;
 			boolean containsBingo = false;
 			for (String line : lines) { //Slayer stuff
+				line = SidebarUtil.cleanTeamName(line);
 				if (line.contains("Tarantula Broodfather")) {
 					slayer = "Tarantula";
 				} else if (line.contains("Revenant Horror")) {
@@ -386,8 +387,8 @@ public class SBInfo {
 				} else if (line.contains("Inferno Demonlord")) {
 					slayer = "Blaze";
 				}
-				if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
-					lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
+				if (line.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
+					line.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
 					SlayerOverlay.slayerQuest = true;
 				}
 				if (SlayerOverlay.slayerQuest) {
