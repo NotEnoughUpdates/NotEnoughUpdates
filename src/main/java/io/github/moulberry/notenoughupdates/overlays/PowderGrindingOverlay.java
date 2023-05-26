@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -77,8 +77,13 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerEnabled;
+	}
+
+	@Override
 	public void update() {
-		if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerEnabled) {
+		if (isEnabled()) {
 			lastUpdate = System.currentTimeMillis();
 			lastMithrilPowderFound = this.mithrilPowderFound;
 			lastMithrilPowderAverage = this.openedChestCount > 0 ?

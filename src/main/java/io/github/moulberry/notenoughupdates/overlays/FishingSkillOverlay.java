@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -86,8 +86,14 @@ public class FishingSkillOverlay
 	}
 
 	@Override
+	public boolean isEnabled() {
+		// NopoTheGamer named this variable
+		return NotEnoughUpdates.INSTANCE.config.skillOverlays.FishingSkillOverlay;
+	}
+
+	@Override
 	public void update() {
-		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.FishingSkillOverlay) {
+		if (!isEnabled()) {
 			expertise = -1;
 			overlayStrings = null;
 			return;

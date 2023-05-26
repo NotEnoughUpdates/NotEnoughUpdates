@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -55,6 +55,11 @@ public class BonemerangOverlay extends TextOverlay {
 	public final Set<EntityLivingBase> bonemeragedEntities = new HashSet<>();
 
 	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.itemOverlays.enableBonemerangOverlay;
+	}
+
+	@Override
 	public void updateFrequent() {
 		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.bonemerangFastUpdate) {
 			updateOverlay();
@@ -69,7 +74,7 @@ public class BonemerangOverlay extends TextOverlay {
 	}
 
 	private void updateOverlay() {
-		if (!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableBonemerangOverlay &&
+		if (!isEnabled() &&
 			NotEnoughUpdates.INSTANCE.config.itemOverlays.highlightTargeted) {
 			overlayStrings = null;
 			return;

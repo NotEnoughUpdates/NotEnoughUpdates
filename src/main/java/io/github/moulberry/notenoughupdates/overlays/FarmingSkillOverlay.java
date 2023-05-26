@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -132,8 +132,13 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private static ArrayList<Float> cropsOverLastXSeconds = new ArrayList<>();
 
 	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingOverlay;
+	}
+
+	@Override
 	public void update() {
-		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingOverlay) {
+		if (!isEnabled()) {
 			counter = -1;
 			overlayStrings = null;
 			return;
