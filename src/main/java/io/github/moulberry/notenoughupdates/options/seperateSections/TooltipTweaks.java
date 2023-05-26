@@ -95,6 +95,15 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
+		name = "Show NPC Sell price on Items",
+		desc = "Display for how much items can be sold to NPC Shops"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean npcSellPrice = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Use Short Number Format",
 		desc = "Use Short Numbers (5.1m) instead of 5,130,302"
 	)

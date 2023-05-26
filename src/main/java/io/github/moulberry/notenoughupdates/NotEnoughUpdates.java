@@ -54,6 +54,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
+import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -301,6 +302,7 @@ public class NotEnoughUpdates {
 		manager.loadItemInformation();
 		overlay = new NEUOverlay(manager);
 		profileViewer = new ProfileViewer(manager);
+		HypixelItemAPI.INSTANCE.loadItemData();
 
 		for (KeyBinding kb : manager.keybinds) {
 			ClientRegistry.registerKeyBinding(kb);

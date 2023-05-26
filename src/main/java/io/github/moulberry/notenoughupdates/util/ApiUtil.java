@@ -20,9 +20,11 @@
 package io.github.moulberry.notenoughupdates.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
+import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.io.IOUtils;
@@ -63,7 +65,9 @@ import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 
 public class ApiUtil {
-	private static final Gson gson = new Gson();
+	private static final Gson gson = new GsonBuilder()
+		.registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE)
+		.create();
 
 	private static final Comparator<NameValuePair> nameValuePairComparator = Comparator
 		.comparing(NameValuePair::getName)

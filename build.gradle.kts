@@ -30,8 +30,8 @@ plugins {
 		id("com.github.johnrengelman.shadow") version "7.1.2"
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
-		kotlin("jvm") version "1.8.0"
-		id("com.google.devtools.ksp") version "1.8.0-1.0.8"
+		kotlin("jvm") version "1.8.21"
+		id("com.google.devtools.ksp") version "1.8.21-1.0.11"
 }
 
 
@@ -133,6 +133,7 @@ dependencies {
 		// Please keep this version in sync with KotlinLoadingTweaker
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 		kotlinDependencies(kotlin("stdlib"))
+		kotlinDependencies(kotlin("reflect"))
 
 		ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
 		implementation("com.google.auto.service:auto-service-annotations:1.0.1")
