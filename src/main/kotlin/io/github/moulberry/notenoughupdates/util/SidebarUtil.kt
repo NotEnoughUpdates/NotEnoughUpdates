@@ -29,14 +29,15 @@ object SidebarUtil {
     fun readSidebarLines(cleanColor: Boolean = true, cleanSpecialCharacters: Boolean = true): List<String> {
         var result = readRawSidebarLines()
         if (cleanColor) result = result.map { Utils.cleanColour(it) }
-        if (cleanSpecialCharacters) result.map { cleanSB(it) }
+        if (cleanSpecialCharacters) result.map { cleanTeamName(it) }
         return result
     }
 
     @JvmStatic
     fun readRawSidebarLines() = fetchScoreboardLines().reversed()
 
-    private fun cleanSB(scoreboard: String) =
+    @JvmStatic
+    fun cleanTeamName(scoreboard: String) =
         scoreboard.toCharArray().filter { it.code in 21..126 || it.code == 167 }.joinToString(separator = "")
 
     private fun fetchScoreboardLines(): List<String> {
