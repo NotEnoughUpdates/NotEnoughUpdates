@@ -47,6 +47,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.function.Predicate
 import kotlin.math.floor
+import kotlin.math.nextDown
 
 @NEUAutoSubscribe
 class DevTestCommand {
@@ -107,6 +108,13 @@ class DevTestCommand {
             requires {
                 canPlayerExecute(it)
             }
+            thenLiteralExecute("garden") {
+                val player = Minecraft.getMinecraft().thePlayer
+                reply("Is in Garden: ${SBInfo.getInstance().getLocation() == "garden"}")
+                val pp = player.position
+                reply("Plot X: ${floor((pp.getX() + 48) / 96F)}")
+                reply("Plot Z: ${floor((pp.getZ() + 48) / 96F)}")
+            }.withHelp("Show diagnostics information about the garden")
             thenLiteralExecute("profileinfo") {
                 val currentProfile = SBInfo.getInstance().currentProfile
                 val gamemode = SBInfo.getInstance().getGamemodeForProfile(currentProfile)

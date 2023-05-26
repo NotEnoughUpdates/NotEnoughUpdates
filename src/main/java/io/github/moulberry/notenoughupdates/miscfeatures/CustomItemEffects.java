@@ -24,6 +24,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -53,6 +54,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
@@ -1003,6 +1005,11 @@ public class CustomItemEffects {
 					event.target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
 					NotEnoughUpdates.INSTANCE.config.itemOverlays.enableDirtWandOverlay) {
 					BlockPos hover = event.target.getBlockPos().offset(event.target.sideHit, 1);
+					if ("garden".equals(SBInfo.getInstance().getLocation()) &&
+						(hover.getX() > 239 || hover.getX() < -240 || hover.getZ() > 239 || hover.getZ() < -240 ||
+							hover.getY() <= 66 || hover.getY() > 76)) {
+						return;
+					}
 					IBlockState hoverState = Minecraft.getMinecraft().theWorld.getBlockState(event.target
 						.getBlockPos()
 						.offset(event.target.sideHit, 1));
@@ -1577,6 +1584,9 @@ public class CustomItemEffects {
 					(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) *
 						(candidate.getY() + 0.5f - d1 - player.getEyeHeight()) +
 					(candidate.getZ() + 0.5f - d2) * (candidate.getZ() + 0.5f - d2));
+				if (candidate.getY() < 66 || candidate.getY() >= 76) {
+					continue;
+				}
 				candidatesOldSorted.computeIfAbsent(distSq, k -> new HashSet<>()).add(candidate);
 
 				candidatesOld.add(candidate);
@@ -1585,10 +1595,24 @@ public class CustomItemEffects {
 				Facing facing = Facing.forDirection(yaw);
 				int xOff = facing == Facing.WEST ? -1 : facing == Facing.EAST ? 1 : 0;
 				int zOff = facing == Facing.NORTH ? -1 : facing == Facing.SOUTH ? 1 : 0;
+				BlockPos posNew = candidate.add(xOff, 0, zOff);
+				if (
+					"garden".equals(SBInfo.getInstance().getLocation())
+				) {
+					var plotX = MathHelper.floor_float((candidate.getX() + 48) / 96F);
+					var plotXNew = MathHelper.floor_float((posNew.getX() + 48) / 96F);
+					var plotZ = MathHelper.floor_float((candidate.getZ() + 48) / 96F);
+					var plotZNew = MathHelper.floor_float((posNew.getZ() + 48) / 96F);
+					if (plotX != plotXNew || plotZ != plotZNew) {
+						continue;
+					}
+					if (2 < plotXNew || plotXNew < -2 || 2 < plotZNew || plotZNew < -2) {
+						continue;
+					}
+				}
 				if (!sneaking) {
 					if (Minecraft.getMinecraft().theWorld.getBlockState(candidate.add(xOff, 1, zOff)).getBlock() == Blocks.air) {
 
-						BlockPos posNew = candidate.add(xOff, 0, zOff);
 						if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(posNew)) {
 							IBlockState blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew.add(0, 1, 0));
 							if (blockNew.getBlock() == Blocks.air) {
@@ -1601,7 +1625,6 @@ public class CustomItemEffects {
 				} else {
 					if (Minecraft.getMinecraft().theWorld.getBlockState(candidate.add(xOff, 0, zOff)).getBlock()
 						== Minecraft.getMinecraft().theWorld.getBlockState(target.getBlockPos()).getBlock()) {
-						BlockPos posNew = candidate.add(xOff, 0, zOff);
 						if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(posNew)) {
 							IBlockState blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew.add(0, 0, 0));
 							if (blockNew.getBlock() ==
