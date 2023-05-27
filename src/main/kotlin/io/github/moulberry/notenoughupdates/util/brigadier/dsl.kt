@@ -83,6 +83,7 @@ fun <T : ICommandSender, C : CommandContext<T>> C.reply(component: IChatComponen
     source.addChatMessage(ChatComponentText("§e[NEU] ").appendSibling(component))
 }
 
+@JvmOverloads
 fun <T : ICommandSender, C : CommandContext<T>> C.reply(text: String, block: ChatComponentText.() -> Unit = {}) {
     source.addChatMessage(ChatComponentText(text.split("\n").joinToString("\n") { "§e[NEU] $it" }).also(block))
 }

@@ -22,24 +22,25 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
+import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
-import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiNavigation;
-import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.brigadier.DslKt;
+import kotlin.Unit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3i;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -47,6 +48,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,7 +107,8 @@ public class Navigation {
 	private String displayName = null;
 	private String internalname = null;
 	private String warpAgainTo = null;
-	private int lastInvHashcode = 0;
+	private Instant lastWarpAttemptedTime = null;
+	private String lastWarpAttempted;
 	private Instant warpAgainTiming = null;
 
 	private Teleporter nextTeleporter = null;
@@ -203,46 +206,51 @@ public class Navigation {
 		}
 	}
 
-	@SubscribeEvent
-	public void onGuiTick(TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.START) return;
-		if (Minecraft.getMinecraft().theWorld == null) return;
-		if (Minecraft.getMinecraft().thePlayer == null) return;
-		if (neu.config.getProfileSpecific() == null) return;
-
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiChest && RenderListener.inventoryLoaded) {
-			GuiChest currentScreen = (GuiChest) Minecraft.getMinecraft().currentScreen;
-			ContainerChest container = (ContainerChest) currentScreen.inventorySlots;
-			if (container.getLowerChestInventory().getDisplayName().getUnformattedText().equals("Fast Travel")) {
-				int hashCode = container.getInventory().hashCode();
-				if (hashCode == lastInvHashcode) return;
-				lastInvHashcode = hashCode;
-				for (ItemStack stackInSlot : container.getInventory()) {
-					if (stackInSlot == null) continue;
-					List<String> lore = ItemUtils.getLore(stackInSlot);
-					if (lore.isEmpty())
-						continue;
-					String warpLine = Utils.cleanColour(lore.get(0));
-					if (!warpLine.startsWith("/warp ")) continue;
-					String warpName = warpLine.substring(6);
-					boolean isUnlocked = !lore.contains("§cWarp not unlocked!");
-					neu.config.getProfileSpecific().unlockedWarpScrolls.put(warpName, isUnlocked);
-				}
-			}
-		}
-	}
-
 	public Map<String, WarpPoint> getWarps() {
 		return warps;
 	}
 
+	@SubscribeEvent
+	public void onChatMessage(ClientChatReceivedEvent event) {
+		if (event.type == 2) return;
+		if (StringUtils.cleanColour(event.message.getUnformattedText()).startsWith("§r§eYou may now fast travel to")) {
+			getNonUnlockedWarpScrolls().clear();
+			return;
+		}
+		if (!"§r§cYou haven't unlocked this fast travel destination!§r".equals(event.message.getFormattedText())) return;
+		Instant lwa = lastWarpAttemptedTime;
+		if (lwa == null) return;
+		if (Duration.between(lwa, Instant.now()).compareTo(Duration.ofSeconds(1)) > 0) return;
+		lastWarpAttemptedTime = null;
+		getNonUnlockedWarpScrolls().add(lastWarpAttempted);
+		Utils.addChatMessage("§e[NEU] This warp has been marked as non available.");
+		Utils.addChatMessage(
+			"§e[NEU] Try navigating to that same position again to check if you have another warp available on that island.");
+		Utils.addChatMessage("§e[NEU] To reset, type /neuclearwarps");
+	}
+
+	@SubscribeEvent
+	public void onCommands(RegisterBrigadierCommandEvent event) {
+		event.command("neuclearwarps", builder -> DslKt.thenExecute(builder, context -> {
+			getNonUnlockedWarpScrolls().clear();
+			DslKt.reply(context, "Reset all blocked warps.");
+			return Unit.INSTANCE;
+		}));
+	}
+
+	private Set<String> getNonUnlockedWarpScrolls() {
+		NEUConfig.HiddenProfileSpecific profileSpecific = neu.config.getProfileSpecific();
+		if (profileSpecific == null) return new HashSet<>();
+		return profileSpecific.nonUnlockedWarpScrolls;
+	}
+
 	public WarpPoint getClosestWarp(String mode, Vec3i position, boolean checkAvailable) {
 		double minDistance = -1;
-		HashMap<String, Boolean> unlockedWarpScrolls = neu.config.getProfileSpecific().unlockedWarpScrolls;
+		Set<String> nonUnlockedWarpScrolls = getNonUnlockedWarpScrolls();
 		WarpPoint minWarp = null;
 		for (WarpPoint value : warps.values()) {
 			if (value.modeName.equals(mode)) {
-				if (checkAvailable && !unlockedWarpScrolls.getOrDefault(value.warpName, false))
+				if (checkAvailable && nonUnlockedWarpScrolls.contains(value.warpName))
 					continue;
 				double distance = value.blockPos.distanceSq(position);
 				if (distance < minDistance || minWarp == null) {
@@ -270,6 +278,8 @@ public class Navigation {
 			showError("You are already on the same island and nearer than the closest unlocked warp scroll.", false);
 			return;
 		}
+		lastWarpAttemptedTime = Instant.now();
+		lastWarpAttempted = closestWarp.warpName;
 		thePlayer.sendChatMessage("/warp " + closestWarp.warpName);
 	}
 

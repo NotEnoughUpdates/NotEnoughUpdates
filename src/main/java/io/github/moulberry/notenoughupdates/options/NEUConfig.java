@@ -587,7 +587,7 @@ public class NEUConfig extends Config {
 		@Expose
 		public long dailyMithrilPowerCompleted = 0L;
 		@Expose
-		public HashMap<String, Boolean> unlockedWarpScrolls = new HashMap<>();
+		public Set<String> nonUnlockedWarpScrolls = new HashSet<>();
 		@Expose
 		public long dailyHeavyPearlCompleted = 0L;
 		@Expose
