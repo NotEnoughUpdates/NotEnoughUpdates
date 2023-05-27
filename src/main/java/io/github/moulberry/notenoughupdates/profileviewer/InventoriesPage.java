@@ -124,9 +124,8 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 		getInstance().inventoryTextField.setSize(88, 20);
 
-		SkyblockProfiles profile = GuiProfileViewer.getProfile();
-		String profileName = GuiProfileViewer.getProfileName();
-		Map<String, JsonArray> inventoryInfo = profile.getProfile(profileName).getInventoryInfo();
+		SkyblockProfiles.SkyblockProfile profile = GuiProfileViewer.getSelectedProfile();
+		Map<String, JsonArray> inventoryInfo = profile.getInventoryInfo();
 		if (inventoryInfo == null) return;
 
 		int invNameIndex = 0;
@@ -153,7 +152,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					if (Objects.equals(entry.getKey(), "talisman_bag")) {
 						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
-						int magicalPower = profile.getProfile(profileName).getMagicalPower();
+						int magicalPower = profile.getMagicalPower();
 						getInstance()
 							.tooltipToDisplay.add(
 								magicalPower == -1
@@ -165,7 +164,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 							);
 
 						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
-						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfile(profileName).getProfileJson());
+						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfileJson());
 						getInstance()
 							.tooltipToDisplay.add(
 								selectedPower == null
@@ -322,7 +321,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16) {
 			if (mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
 				if (mouseY < guiTop + 101 + 17) {
-					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, profile.getProfile(profileName).getProfileJson());
+					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, profile.getProfileJson());
 					if (quiverInfo == null) {
 						getInstance().tooltipToDisplay = Utils.createList(EnumChatFormatting.RED + "Error checking Quiver");
 					} else {

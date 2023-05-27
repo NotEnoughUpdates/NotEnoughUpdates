@@ -185,7 +185,6 @@ public class GuiProfileViewer extends GuiScreen {
 	Shader blurShaderVert = null;
 	Framebuffer blurOutputVert = null;
 	private boolean profileDropdownSelected = false;
-
 	private double lastBgBlurFactor = -1;
 	private boolean showBingoPage;
 

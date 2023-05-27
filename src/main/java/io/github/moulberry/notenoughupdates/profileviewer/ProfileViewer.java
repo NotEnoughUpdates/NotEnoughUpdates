@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -31,17 +32,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class ProfileViewer {
 
+	@Getter
 	private static final LinkedHashMap<String, ItemStack> skillToSkillDisplayMap =
 		new LinkedHashMap<String, ItemStack>() {
 			{
@@ -93,6 +92,7 @@ public class ProfileViewer {
 		Items.fishing_rod,
 		EnumChatFormatting.AQUA + "Fishing"
 	);
+	@Getter
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToCollectionMap =
 		new LinkedHashMap<ItemStack, List<String>>() {
 			{
@@ -185,6 +185,7 @@ public class ProfileViewer {
 				);
 			}
 		};
+	@Getter
 	private static final LinkedHashMap<ItemStack, List<String>> collectionCatToMinionMap =
 		new LinkedHashMap<ItemStack, List<String>>() {
 			{
@@ -261,6 +262,7 @@ public class ProfileViewer {
 				put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
 			}
 		};
+	@Getter
 	private static final LinkedHashMap<String, ItemStack> collectionToCollectionDisplayMap =
 		new LinkedHashMap<String, ItemStack>() {
 			{
@@ -420,13 +422,12 @@ public class ProfileViewer {
 				);
 			}
 		};
-
-	public static final List<String> SLAYERS = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
-
 	private static final AtomicBoolean updatingResourceCollection = new AtomicBoolean(false);
 	private static JsonObject resourceCollection = null;
-	public final NEUManager manager;
-	public final HashMap<String, JsonObject> uuidToHypixelProfile = new HashMap<>();
+	@Getter
+	private final HashMap<String, JsonObject> uuidToHypixelProfile = new HashMap<>();
+	@Getter
+	private final NEUManager manager;
 	private final HashMap<String, SkyblockProfiles> uuidToSkyblockProfiles = new HashMap<>();
 	private final HashMap<String, String> nameToUuid = new HashMap<>();
 
@@ -434,20 +435,22 @@ public class ProfileViewer {
 		this.manager = manager;
 	}
 
-	public static LinkedHashMap<ItemStack, List<String>> getCollectionCatToMinionMap() {
-		return collectionCatToMinionMap;
-	}
+	public static JsonObject getResourceCollectionInformation() {
+		if (resourceCollection != null) return resourceCollection;
+		if (updatingResourceCollection.get()) return null;
 
-	public static LinkedHashMap<String, ItemStack> getCollectionToCollectionDisplayMap() {
-		return collectionToCollectionDisplayMap;
-	}
+		updatingResourceCollection.set(true);
 
-	public static LinkedHashMap<ItemStack, List<String>> getCollectionCatToCollectionMap() {
-		return collectionCatToCollectionMap;
-	}
-
-	public static Map<String, ItemStack> getSkillToSkillDisplayMap() {
-		return Collections.unmodifiableMap(skillToSkillDisplayMap);
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("resources/skyblock/collections")
+			.requestJson()
+			.thenAccept(jsonObject -> {
+				updatingResourceCollection.set(false);
+				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					resourceCollection = jsonObject.get("collections").getAsJsonObject();
+				}
+			});
+		return null;
 	}
 
 	public static Level getLevel(JsonArray levelingArray, float xp, int levelCap, boolean cumulative) {
@@ -484,24 +487,6 @@ public class ProfileViewer {
 		levelObj.level = Math.min(levelingArray.size(), levelCap);
 		levelObj.maxed = true;
 		return levelObj;
-	}
-
-	public static JsonObject getResourceCollectionInformation() {
-		if (resourceCollection != null) return resourceCollection;
-		if (updatingResourceCollection.get()) return null;
-
-		updatingResourceCollection.set(true);
-
-		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("resources/skyblock/collections")
-			.requestJson()
-			.thenAccept(jsonObject -> {
-				updatingResourceCollection.set(false);
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					resourceCollection = jsonObject.get("collections").getAsJsonObject();
-				}
-			});
-		return null;
 	}
 
 	public void putNameUuid(String name, String uuid) {
@@ -577,7 +562,7 @@ public class ProfileViewer {
 		}
 
 		SkyblockProfiles profile = uuidToSkyblockProfiles.computeIfAbsent(uuid, key -> new SkyblockProfiles(this, uuid));
-		if (profile.nameToProfile != null) {
+		if (profile.getNameToProfile() != null) {
 			callback.accept(profile);
 		} else {
 			profile.getOrLoadSkyblockProfiles(() -> callback.accept(profile));

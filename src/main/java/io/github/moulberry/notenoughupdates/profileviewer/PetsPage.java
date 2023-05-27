@@ -66,8 +66,7 @@ public class PetsPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		SkyblockProfiles profile = GuiProfileViewer.getProfile();
-		String profileName = GuiProfileViewer.getProfileName();
-		JsonObject petsInfo = profile.getProfile(profileName).getPetsInfo();
+		JsonObject petsInfo = GuiProfileViewer.getSelectedProfile().getPetsInfo();
 		if (petsInfo == null) return;
 		JsonObject petsJson = Constants.PETS;
 		if (petsJson == null) return;

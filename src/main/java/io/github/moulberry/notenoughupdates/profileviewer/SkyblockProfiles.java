@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.Senith
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
+import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,6 +49,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SkyblockProfiles {
+	public static final List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
 	private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {
 		{
 			put("COMMON", "0");
@@ -87,10 +89,6 @@ public class SkyblockProfiles {
 		"social"
 	);
 	private final ProfileViewer profileViewer;
-	public Map<String, SkyblockProfile> nameToProfile = null;
-	private JsonArray profilesArray;
-	private List<String> profileNames = new ArrayList<>();
-	private String selectedProfileName;
 	private final String uuid;
 	private final HashMap<String, SoopyNetworthData> soopyNetworth = new HashMap<>();
 	private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
@@ -98,6 +96,11 @@ public class SkyblockProfiles {
 	private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingSoopyNetworth = new AtomicBoolean(false);
 	private final AtomicBoolean updatingBingoInfo = new AtomicBoolean(false);
+	@Getter
+	private Map<String, SkyblockProfile> nameToProfile = null;
+	private JsonArray profilesArray;
+	private List<String> profileNames = new ArrayList<>();
+	private String selectedProfileName;
 	private long soopyNetworthLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 	private long soopyWeightLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 	private JsonObject guildInformation = null;
@@ -107,6 +110,406 @@ public class SkyblockProfiles {
 	private long lastStatusInfoState = 0;
 	private long lastGuildInfoState = 0;
 	private long lastBingoInfoState = 0;
+
+	public SkyblockProfiles(ProfileViewer profileViewer, String uuid) {
+		this.profileViewer = profileViewer;
+		this.uuid = uuid;
+	}
+
+	public JsonObject getPlayerStatus() {
+		if (playerStatus != null) return playerStatus;
+		if (updatingPlayerStatusState.get()) return null;
+
+		long currentTime = System.currentTimeMillis();
+		if (currentTime - lastStatusInfoState < 15 * 1000) return null;
+		lastStatusInfoState = currentTime;
+		updatingPlayerStatusState.set(true);
+
+		profileViewer.getManager().apiUtils
+			.newHypixelApiRequest("status")
+			.queryArgument("uuid", uuid)
+			.requestJson()
+			.handle((jsonObject, ex) -> {
+				updatingPlayerStatusState.set(false);
+
+				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					playerStatus = jsonObject.get("session").getAsJsonObject();
+				}
+				return null;
+			});
+		return null;
+	}
+
+	public JsonObject getBingoInformation() {
+		long currentTime = System.currentTimeMillis();
+		if (bingoInformation != null && currentTime - lastBingoInfoState < 15 * 1000) return bingoInformation;
+		if (updatingBingoInfo.get() && bingoInformation != null) return bingoInformation;
+		if (updatingBingoInfo.get() && bingoInformation == null) return null;
+
+		lastBingoInfoState = currentTime;
+		updatingBingoInfo.set(true);
+
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("skyblock/bingo")
+			.queryArgument("uuid", uuid)
+			.requestJson()
+			.handle(((jsonObject, throwable) -> {
+				updatingBingoInfo.set(false);
+
+				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					bingoInformation = jsonObject;
+				} else {
+					bingoInformation = null;
+				}
+				return null;
+			}));
+		return bingoInformation != null ? bingoInformation : null;
+	}
+
+	/**
+	 * -1 = default, -2 = loading, -3 = error
+	 * >= 0 = actual position
+	 */
+	public long getSoopyNetworthLeaderboardPosition() {
+		return "d0e05de76067454dbeaec6d19d886191".equals(uuid) ? 1 : soopyNetworthLeaderboardPosition;
+	}
+
+	public long getSoopyWeightLeaderboardPosition() {
+		return "d0e05de76067454dbeaec6d19d886191".equals(uuid) ? 1 : soopyWeightLeaderboardPosition;
+	}
+
+	public boolean isProfileMaxSoopyWeight(String profileName) {
+		String highestProfileName = "";
+		double largestProfileWeight = 0;
+
+		for (Map.Entry<String, SkyblockProfile> profileEntry : nameToProfile.entrySet()) {
+			Map<String, ProfileViewer.Level> levelingInfo = profileEntry.getValue().getLevelingInfo();
+			if (levelingInfo == null) {
+				continue;
+			}
+			SenitherWeight senitherWeight = new SenitherWeight(levelingInfo);
+			double weightValue = senitherWeight.getTotalWeight().getRaw();
+
+			if (weightValue > largestProfileWeight) {
+				largestProfileWeight = weightValue;
+				highestProfileName = profileEntry.getKey();
+			}
+		}
+
+		return highestProfileName.equals(profileName);
+	}
+
+	/**
+	 * Returns SoopyNetworthData with total = -1 if error
+	 * Returns null if still loading
+	 */
+	public SoopyNetworthData getSoopyNetworth(String profileName, Runnable callback) {
+		if (profileName == null) profileName = selectedProfileName;
+		if (soopyNetworth.get(profileName) != null) {
+			callback.run();
+			return soopyNetworth.get(profileName);
+		}
+
+		getOrLoadSkyblockProfiles(() -> {});
+		if (nameToProfile == null)
+			return null;                                              //Not sure how to support the callback in these cases
+		if (updatingSoopyNetworth.get())
+			return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
+		updatingSoopyNetworth.set(true);
+
+		soopyNetworthLeaderboardPosition = -2; //loading
+		profileViewer.getManager().apiUtils
+			.request()
+			.url("https://soopy.dev/api/v2/leaderboard/networth/user/" + this.uuid)
+			.requestJson()
+			.handle((jsonObject, throwable) -> {
+				if (throwable != null) throwable.printStackTrace();
+				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
+					|| !jsonObject.has("data")
+					|| !jsonObject.get("data").getAsJsonObject().has("data")
+					|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+					//Something went wrong
+					//Set profile lb position to -3 to indicate that
+					soopyNetworthLeaderboardPosition = -3; //error
+					return null;
+				}
+				soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+					"position").getAsLong();
+				return null;
+			});
+
+		soopyWeightLeaderboardPosition = -2; //loading
+		profileViewer.getManager().apiUtils
+			.request()
+			.url("https://soopy.dev/api/v2/leaderboard/weight/user/" + this.uuid)
+			.requestJson()
+			.handle((jsonObject, throwable) -> {
+				if (throwable != null) throwable.printStackTrace();
+				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
+					|| !jsonObject.has("data")
+					|| !jsonObject.get("data").getAsJsonObject().has("data")
+					|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+					//Something went wrong
+					//Set profile lb position to -3 to indicate that
+					soopyWeightLeaderboardPosition = -3; //error
+					return null;
+				}
+				soopyWeightLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+					"position").getAsLong();
+				return null;
+			});
+
+		profileViewer.getManager().apiUtils
+			.request()
+			.url("https://soopy.dev/api/v2/player_networth/" + this.uuid)
+			.method("POST")
+			.postData("application/json", profilesArray.toString())
+			.requestJson()
+			.handle((jsonObject, throwable) -> {
+				if (throwable != null) throwable.printStackTrace();
+				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
+					//Something went wrong
+					//Set profile networths to null to indicate that
+					for (int i = 0; i < profilesArray.size(); i++) {
+						if (!profilesArray.get(i).isJsonObject()) {
+							return null;
+						}
+						JsonObject profile = profilesArray.get(i).getAsJsonObject();
+
+						String cuteName = profile.get("cute_name").getAsString();
+
+						soopyNetworth.put(cuteName, new SoopyNetworthData(null));
+					}
+					updatingSoopyNetworth.set(false);
+					callback.run();
+					return null;
+				}
+
+				//Success, update networth data
+				for (int i = 0; i < profilesArray.size(); i++) {
+					if (!profilesArray.get(i).isJsonObject()) {
+						return null;
+					}
+					JsonObject profile = profilesArray.get(i).getAsJsonObject();
+
+					String cuteName = profile.get("cute_name").getAsString();
+					String profileId = profile.get("profile_id").getAsString();
+
+					SoopyNetworthData networth;
+					if (jsonObject.getAsJsonObject("data").get(profileId).isJsonNull()) {
+						networth = new SoopyNetworthData(null);
+					} else {
+						networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
+					}
+
+					soopyNetworth.put(cuteName, networth);
+				}
+
+				updatingSoopyNetworth.set(false);
+				callback.run();
+				return null;
+			});
+		return null;
+	}
+
+	public SkyblockProfile getProfile(String profileName) {
+		return nameToProfile.get(profileName);
+	}
+
+	public SkyblockProfile getSelectedProfile() {
+		return nameToProfile.get(getSelectedProfileName());
+	}
+
+	public String getSelectedProfileName() {
+		return selectedProfileName;
+	}
+
+	public Map<String, SkyblockProfile> getOrLoadSkyblockProfiles(Runnable runnable) {
+		if (nameToProfile != null) {
+			return nameToProfile;
+		}
+
+		long currentTime = System.currentTimeMillis();
+		if (currentTime - lastPlayerInfoState < 15 * 1000 && updatingSkyblockProfilesState.get()) {
+			return null;
+		}
+		lastPlayerInfoState = currentTime;
+		updatingSkyblockProfilesState.set(true);
+
+		profileViewer.getManager().apiUtils
+			.newHypixelApiRequest("skyblock/profiles")
+			.queryArgument("uuid", uuid)
+			.requestJson()
+			.handle((profilesJson, throwable) -> {
+				updatingSkyblockProfilesState.set(false);
+
+				if (profilesJson != null && profilesJson.has("success")
+					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
+					profilesArray = profilesJson.getAsJsonArray("profiles");
+					nameToProfile = new HashMap<>();
+
+					for (JsonElement profileEle : profilesJson.getAsJsonArray("profiles")) {
+						JsonObject profile = profileEle.getAsJsonObject();
+
+						if (!profile.has("members")) {
+							continue;
+						}
+
+						JsonObject members = profile.getAsJsonObject("members");
+						if (members.has(uuid)) {
+							JsonObject member = members.getAsJsonObject(uuid);
+
+							if (member.has("coop_invitation")) {
+								if (!member.getAsJsonObject("coop_invitation").get("confirmed").getAsBoolean()) {
+									continue;
+								}
+							}
+
+							String profileName = profile.get("cute_name").getAsString();
+							if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
+								selectedProfileName = profileName;
+							}
+							nameToProfile.put(profileName, new SkyblockProfile(profile));
+							profileNames.add(profileName);
+						}
+					}
+
+					if (runnable != null) {
+						runnable.run();
+					}
+				}
+				return null;
+			});
+
+		return null;
+	}
+
+	public JsonObject getOrLoadGuildInformation(Runnable runnable) {
+		if (guildInformation != null) {
+			return guildInformation;
+		}
+
+		long currentTime = System.currentTimeMillis();
+		if (currentTime - lastGuildInfoState < 15 * 1000 && updatingGuildInfoState.get()) {
+			return null;
+		}
+		lastGuildInfoState = currentTime;
+		updatingGuildInfoState.set(true);
+
+		profileViewer.getManager().apiUtils
+			.newHypixelApiRequest("guild")
+			.queryArgument("player", uuid)
+			.requestJson()
+			.handle((jsonObject, ex) -> {
+				updatingGuildInfoState.set(false);
+
+				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
+					if (!jsonObject.has("guild")) {
+						return null;
+					}
+
+					guildInformation = jsonObject.getAsJsonObject("guild");
+
+					if (runnable != null) {
+						runnable.run();
+					}
+				}
+				return null;
+			});
+
+		return null;
+	}
+
+	public List<String> getProfileNames() {
+		return profileNames;
+	}
+
+	public void resetCache() {
+		profilesArray = null;
+		profileNames = new ArrayList<>();
+		guildInformation = null;
+		playerStatus = null;
+		nameToProfile = null;
+	}
+
+	public int getLevelingCap(JsonObject leveling, String skillName) {
+		JsonElement capsElement = Utils.getElement(leveling, "leveling_caps");
+		return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
+			? capsElement.getAsJsonObject().get(skillName).getAsInt()
+			: 50;
+	}
+
+	public String[] growArray(String bytes, int index, String[] oldArray) {
+		int newSize = Math.max(index + 1, oldArray.length);
+
+		String[] newArray = new String[newSize];
+		System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
+		newArray[index] = bytes;
+
+		return newArray;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public @Nullable JsonObject getHypixelProfile() {
+		return profileViewer.getUuidToHypixelProfile().getOrDefault(uuid, null);
+	}
+
+	public static class SoopyNetworthData {
+		private final HashMap<String, Long> categoryWorth;
+		private final String[] keys;
+		private Long totalWorth;
+
+		SoopyNetworthData(JsonObject nwData) {
+			categoryWorth = new HashMap<>();
+
+			if (nwData == null || nwData.isJsonNull()) {
+				totalWorth = -1L;
+				keys = new String[0];
+				return;
+			}
+			if (nwData.get("total").isJsonNull()) {
+				totalWorth = -1L;
+				keys = new String[0];
+				return;
+			}
+
+			totalWorth = nwData.get("total").getAsLong();
+			for (Map.Entry<String, JsonElement> entry : nwData.get("categories").getAsJsonObject().entrySet()) {
+				if (entry.getValue().isJsonNull()) {
+					continue;
+				}
+				categoryWorth.put(entry.getKey(), entry.getValue().getAsLong());
+			}
+
+			//Sort keys based on category value
+			keys = categoryWorth
+				.keySet()
+				.stream()
+				.sorted(Comparator.comparingLong(k -> getCategory((String) k)).reversed())
+				.toArray(String[]::new);
+		}
+
+		private SoopyNetworthData setLoading() {
+			totalWorth = -2L;
+			return this;
+		}
+
+		public long getTotal() {
+			return totalWorth;
+		}
+
+		public long getCategory(String name) {
+			if (categoryWorth.containsKey(name)) return categoryWorth.get(name);
+			return 0;
+		}
+
+		public String[] getCategories() {
+			return keys;
+		}
+	}
 
 	public class SkyblockProfile {
 
@@ -188,7 +591,7 @@ public class SkyblockProfiles {
 							new ByteArrayInputStream(Base64.getDecoder().decode(contentBytes))
 						).getTagList("i", 10);
 						for (int j = 0; j < items.tagCount(); j++) {
-							JsonObject item = profileViewer.manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
+							JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
 							contents.add(item);
 						}
 					} catch (IOException ignored) {
@@ -249,7 +652,7 @@ public class SkyblockProfiles {
 
 					backpackSizes.add(new JsonPrimitive(items.tagCount()));
 					for (int j = 0; j < items.tagCount(); j++) {
-						JsonObject item = profileViewer.manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
+						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
 						contents.add(item);
 					}
 				} catch (IOException ignored) {
@@ -396,7 +799,7 @@ public class SkyblockProfiles {
 					)
 				);
 			}
-			for (String slayerName : ProfileViewer.SLAYERS) {
+			for (String slayerName : slayers) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
 					profileJson,
 					"slayer_bosses." + slayerName + ".xp"
@@ -516,19 +919,19 @@ public class SkyblockProfiles {
 						JsonObject item = element.getAsJsonObject();
 						String internalName = item.get("internalname").getAsString();
 
-						if (profileViewer.manager.auctionManager.isVanillaItem(internalName)) {
+						if (profileViewer.getManager().auctionManager.isVanillaItem(internalName)) {
 							continue;
 						}
 
-						JsonObject bzInfo = profileViewer.manager.auctionManager.getBazaarInfo(internalName);
+						JsonObject bzInfo = profileViewer.getManager().auctionManager.getBazaarInfo(internalName);
 
 						long auctionPrice;
 						if (bzInfo != null && bzInfo.has("curr_sell")) {
 							auctionPrice = (int) bzInfo.get("curr_sell").getAsFloat();
 						} else {
-							auctionPrice = (long) profileViewer.manager.auctionManager.getItemAvgBin(internalName);
+							auctionPrice = (long) profileViewer.getManager().auctionManager.getItemAvgBin(internalName);
 							if (auctionPrice <= 0) {
-								auctionPrice = profileViewer.manager.auctionManager.getLowestBin(internalName);
+								auctionPrice = profileViewer.getManager().auctionManager.getLowestBin(internalName);
 							}
 						}
 
@@ -546,19 +949,19 @@ public class SkyblockProfiles {
 									if (items.getCompoundTagAt(j).getKeySet().size() > 0) {
 										NBTTagCompound nbt = items.getCompoundTagAt(j).getCompoundTag("tag");
 										String internalname2 =
-											profileViewer.manager.createItemResolutionQuery().withItemNBT(nbt).resolveInternalName();
+											profileViewer.getManager().createItemResolutionQuery().withItemNBT(nbt).resolveInternalName();
 										if (internalname2 != null) {
-											if (profileViewer.manager.auctionManager.isVanillaItem(internalname2)) continue;
+											if (profileViewer.getManager().auctionManager.isVanillaItem(internalname2)) continue;
 
-											JsonObject bzInfo2 = profileViewer.manager.auctionManager.getBazaarInfo(internalname2);
+											JsonObject bzInfo2 = profileViewer.getManager().auctionManager.getBazaarInfo(internalname2);
 
 											long auctionPrice2;
 											if (bzInfo2 != null && bzInfo2.has("curr_sell")) {
 												auctionPrice2 = (int) bzInfo2.get("curr_sell").getAsFloat();
 											} else {
-												auctionPrice2 = (long) profileViewer.manager.auctionManager.getItemAvgBin(internalname2);
+												auctionPrice2 = (long) profileViewer.getManager().auctionManager.getItemAvgBin(internalname2);
 												if (auctionPrice2 <= 0) {
-													auctionPrice2 = profileViewer.manager.auctionManager.getLowestBin(internalname2);
+													auctionPrice2 = profileViewer.getManager().auctionManager.getLowestBin(internalname2);
 												}
 											}
 
@@ -605,7 +1008,7 @@ public class SkyblockProfiles {
 							String tierNum = petRarityToNumMap.get(tier);
 							if (tierNum != null) {
 								String internalname2 = petname + ";" + tierNum;
-								JsonObject info2 = profileViewer.manager.auctionManager.getItemAuctionInfo(internalname2);
+								JsonObject info2 = profileViewer.getManager().auctionManager.getItemAuctionInfo(internalname2);
 								if (info2 == null || !info2.has("price") || !info2.has("count")) continue;
 								int auctionPrice2 = (int) (info2.get("price").getAsFloat() / info2.get("count").getAsFloat());
 
@@ -622,405 +1025,5 @@ public class SkyblockProfiles {
 
 			return this.networth = networth;
 		}
-	}
-
-	public SkyblockProfiles(ProfileViewer profileViewer, String uuid) {
-		this.profileViewer = profileViewer;
-		this.uuid = uuid;
-	}
-
-	public JsonObject getPlayerStatus() {
-		if (playerStatus != null) return playerStatus;
-		if (updatingPlayerStatusState.get()) return null;
-
-		long currentTime = System.currentTimeMillis();
-		if (currentTime - lastStatusInfoState < 15 * 1000) return null;
-		lastStatusInfoState = currentTime;
-		updatingPlayerStatusState.set(true);
-
-		profileViewer.manager.apiUtils
-			.newHypixelApiRequest("status")
-			.queryArgument("uuid", uuid)
-			.requestJson()
-			.handle((jsonObject, ex) -> {
-				updatingPlayerStatusState.set(false);
-
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					playerStatus = jsonObject.get("session").getAsJsonObject();
-				}
-				return null;
-			});
-		return null;
-	}
-
-	public JsonObject getBingoInformation() {
-		long currentTime = System.currentTimeMillis();
-		if (bingoInformation != null && currentTime - lastBingoInfoState < 15 * 1000) return bingoInformation;
-		if (updatingBingoInfo.get() && bingoInformation != null) return bingoInformation;
-		if (updatingBingoInfo.get() && bingoInformation == null) return null;
-
-		lastBingoInfoState = currentTime;
-		updatingBingoInfo.set(true);
-
-		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("skyblock/bingo")
-			.queryArgument("uuid", uuid)
-			.requestJson()
-			.handle(((jsonObject, throwable) -> {
-				updatingBingoInfo.set(false);
-
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					bingoInformation = jsonObject;
-				} else {
-					bingoInformation = null;
-				}
-				return null;
-			}));
-		return bingoInformation != null ? bingoInformation : null;
-	}
-
-	public class SoopyNetworthData {
-		private final HashMap<String, Long> categoryWorth;
-		private Long totalWorth;
-		private final String[] keys;
-
-		SoopyNetworthData(JsonObject nwData) {
-			categoryWorth = new HashMap<>();
-
-			if (nwData == null || nwData.isJsonNull()) {
-				totalWorth = -1L;
-				keys = new String[0];
-				return;
-			}
-			if (nwData.get("total").isJsonNull()) {
-				totalWorth = -1L;
-				keys = new String[0];
-				return;
-			}
-
-			totalWorth = nwData.get("total").getAsLong();
-			for (Map.Entry<String, JsonElement> entry : nwData.get("categories").getAsJsonObject().entrySet()) {
-				if (entry.getValue().isJsonNull()) {
-					continue;
-				}
-				categoryWorth.put(entry.getKey(), entry.getValue().getAsLong());
-			}
-
-			//Sort keys based on category value
-			keys = categoryWorth
-				.keySet()
-				.stream()
-				.sorted(Comparator.comparingLong(k -> getCategory((String) k)).reversed())
-				.toArray(String[]::new);
-		}
-
-		private SoopyNetworthData setLoading() {
-			totalWorth = -2L;
-			return this;
-		}
-
-		public long getTotal() {
-			return totalWorth;
-		}
-
-		public long getCategory(String name) {
-			if (categoryWorth.containsKey(name)) return categoryWorth.get(name);
-			return 0;
-		}
-
-		public String[] getCategories() {
-			return keys;
-		}
-	}
-
-	/**
-	 * -1 = default, -2 = loading, -3 = error
-	 * >= 0 = actual position
-	 */
-	public long getSoopyNetworthLeaderboardPosition() {
-		return "d0e05de76067454dbeaec6d19d886191".equals(uuid) ? 1 : soopyNetworthLeaderboardPosition;
-	}
-
-	public long getSoopyWeightLeaderboardPosition() {
-		return "d0e05de76067454dbeaec6d19d886191".equals(uuid) ? 1 : soopyWeightLeaderboardPosition;
-	}
-
-	public boolean isProfileMaxSoopyWeight(String profileName) {
-		String highestProfileName = "";
-		double largestProfileWeight = 0;
-
-		for (Map.Entry<String, SkyblockProfile> profileEntry : nameToProfile.entrySet()) {
-			Map<String, ProfileViewer.Level> levelingInfo = profileEntry.getValue().getLevelingInfo();
-			if (levelingInfo == null) {
-				continue;
-			}
-			SenitherWeight senitherWeight = new SenitherWeight(levelingInfo);
-			double weightValue = senitherWeight.getTotalWeight().getRaw();
-
-			if (weightValue > largestProfileWeight) {
-				largestProfileWeight = weightValue;
-				highestProfileName = profileEntry.getKey();
-			}
-		}
-
-		return highestProfileName.equals(profileName);
-	}
-
-	/**
-	 * Returns SoopyNetworthData with total = -1 if error
-	 * Returns null if still loading
-	 */
-	public SoopyNetworthData getSoopyNetworth(String profileName, Runnable callback) {
-		if (profileName == null) profileName = selectedProfileName;
-		if (soopyNetworth.get(profileName) != null) {
-			callback.run();
-			return soopyNetworth.get(profileName);
-		}
-
-		getOrLoadSkyblockProfiles(() -> {});
-		if (nameToProfile == null)
-			return null;                                              //Not sure how to support the callback in these cases
-		if (updatingSoopyNetworth.get())
-			return new SoopyNetworthData(null).setLoading(); //It shouldent really matter tho as these should never occur in /peek
-		updatingSoopyNetworth.set(true);
-
-		soopyNetworthLeaderboardPosition = -2; //loading
-		profileViewer.manager.apiUtils
-			.request()
-			.url("https://soopy.dev/api/v2/leaderboard/networth/user/" + this.uuid)
-			.requestJson()
-			.handle((jsonObject, throwable) -> {
-				if (throwable != null) throwable.printStackTrace();
-				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
-					|| !jsonObject.has("data")
-					|| !jsonObject.get("data").getAsJsonObject().has("data")
-					|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
-					//Something went wrong
-					//Set profile lb position to -3 to indicate that
-					soopyNetworthLeaderboardPosition = -3; //error
-					return null;
-				}
-				soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
-					"position").getAsLong();
-				return null;
-			});
-
-		soopyWeightLeaderboardPosition = -2; //loading
-		profileViewer.manager.apiUtils
-			.request()
-			.url("https://soopy.dev/api/v2/leaderboard/weight/user/" + this.uuid)
-			.requestJson()
-			.handle((jsonObject, throwable) -> {
-				if (throwable != null) throwable.printStackTrace();
-				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
-					|| !jsonObject.has("data")
-					|| !jsonObject.get("data").getAsJsonObject().has("data")
-					|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
-					//Something went wrong
-					//Set profile lb position to -3 to indicate that
-					soopyWeightLeaderboardPosition = -3; //error
-					return null;
-				}
-				soopyWeightLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
-					"position").getAsLong();
-				return null;
-			});
-
-		profileViewer.manager.apiUtils
-			.request()
-			.url("https://soopy.dev/api/v2/player_networth/" + this.uuid)
-			.method("POST")
-			.postData("application/json", profilesArray.toString())
-			.requestJson()
-			.handle((jsonObject, throwable) -> {
-				if (throwable != null) throwable.printStackTrace();
-				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()) {
-					//Something went wrong
-					//Set profile networths to null to indicate that
-					for (int i = 0; i < profilesArray.size(); i++) {
-						if (!profilesArray.get(i).isJsonObject()) {
-							return null;
-						}
-						JsonObject profile = profilesArray.get(i).getAsJsonObject();
-
-						String cuteName = profile.get("cute_name").getAsString();
-
-						soopyNetworth.put(cuteName, new SoopyNetworthData(null));
-					}
-					updatingSoopyNetworth.set(false);
-					callback.run();
-					return null;
-				}
-
-				//Success, update networth data
-				for (int i = 0; i < profilesArray.size(); i++) {
-					if (!profilesArray.get(i).isJsonObject()) {
-						return null;
-					}
-					JsonObject profile = profilesArray.get(i).getAsJsonObject();
-
-					String cuteName = profile.get("cute_name").getAsString();
-					String profileId = profile.get("profile_id").getAsString();
-
-					SoopyNetworthData networth;
-					if (jsonObject.getAsJsonObject("data").get(profileId).isJsonNull()) {
-						networth = new SoopyNetworthData(null);
-					} else {
-						networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
-					}
-
-					soopyNetworth.put(cuteName, networth);
-				}
-
-				updatingSoopyNetworth.set(false);
-				callback.run();
-				return null;
-			});
-		return null;
-	}
-
-	public SkyblockProfile getProfile(String profileName) {
-		return nameToProfile.get(profileName);
-	}
-
-	public SkyblockProfile getSelectedProfile() {
-		return nameToProfile.get(getSelectedProfileName());
-	}
-
-	public String getSelectedProfileName() {
-		return selectedProfileName;
-	}
-
-	public Map<String, SkyblockProfile> getOrLoadSkyblockProfiles(Runnable runnable) {
-		if (nameToProfile != null) {
-			return nameToProfile;
-		}
-
-		long currentTime = System.currentTimeMillis();
-		if (currentTime - lastPlayerInfoState < 15 * 1000 && updatingSkyblockProfilesState.get()) {
-			return null;
-		}
-		lastPlayerInfoState = currentTime;
-		updatingSkyblockProfilesState.set(true);
-
-		profileViewer.manager.apiUtils
-			.newHypixelApiRequest("skyblock/profiles")
-			.queryArgument("uuid", uuid)
-			.requestJson()
-			.handle((profilesJson, throwable) -> {
-				updatingSkyblockProfilesState.set(false);
-
-				if (profilesJson != null && profilesJson.has("success")
-					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
-					profilesArray = profilesJson.getAsJsonArray("profiles");
-					nameToProfile = new HashMap<>();
-
-					for (JsonElement profileEle : profilesJson.getAsJsonArray("profiles")) {
-						JsonObject profile = profileEle.getAsJsonObject();
-
-						if (!profile.has("members")) {
-							continue;
-						}
-
-						JsonObject members = profile.getAsJsonObject("members");
-						if (members.has(uuid)) {
-							JsonObject member = members.getAsJsonObject(uuid);
-
-							if (member.has("coop_invitation")) {
-								if (!member.getAsJsonObject("coop_invitation").get("confirmed").getAsBoolean()) {
-									continue;
-								}
-							}
-
-							String profileName = profile.get("cute_name").getAsString();
-							if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
-								selectedProfileName = profileName;
-							}
-							nameToProfile.put(profileName, new SkyblockProfile(profile));
-							profileNames.add(profileName);
-						}
-					}
-
-					if (runnable != null) {
-						runnable.run();
-					}
-				}
-				return null;
-			});
-
-		return null;
-	}
-
-	public JsonObject getOrLoadGuildInformation(Runnable runnable) {
-		if (guildInformation != null) {
-			return guildInformation;
-		}
-
-		long currentTime = System.currentTimeMillis();
-		if (currentTime - lastGuildInfoState < 15 * 1000 && updatingGuildInfoState.get()) {
-			return null;
-		}
-		lastGuildInfoState = currentTime;
-		updatingGuildInfoState.set(true);
-
-		profileViewer.manager.apiUtils
-			.newHypixelApiRequest("guild")
-			.queryArgument("player", uuid)
-			.requestJson()
-			.handle((jsonObject, ex) -> {
-				updatingGuildInfoState.set(false);
-
-				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					if (!jsonObject.has("guild")) {
-						return null;
-					}
-
-					guildInformation = jsonObject.getAsJsonObject("guild");
-
-					if (runnable != null) {
-						runnable.run();
-					}
-				}
-				return null;
-			});
-
-		return null;
-	}
-
-	public List<String> getProfileNames() {
-		return profileNames;
-	}
-
-	public void resetCache() {
-		profilesArray = null;
-		profileNames = new ArrayList<>();
-		guildInformation = null;
-		playerStatus = null;
-		nameToProfile = null;
-	}
-
-	public int getLevelingCap(JsonObject leveling, String skillName) {
-		JsonElement capsElement = Utils.getElement(leveling, "leveling_caps");
-		return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
-			? capsElement.getAsJsonObject().get(skillName).getAsInt()
-			: 50;
-	}
-
-	public String[] growArray(String bytes, int index, String[] oldArray) {
-		int newSize = Math.max(index + 1, oldArray.length);
-
-		String[] newArray = new String[newSize];
-		System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
-		newArray[index] = bytes;
-
-		return newArray;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public @Nullable JsonObject getHypixelProfile() {
-		return profileViewer.uuidToHypixelProfile.getOrDefault(uuid, null);
 	}
 }
