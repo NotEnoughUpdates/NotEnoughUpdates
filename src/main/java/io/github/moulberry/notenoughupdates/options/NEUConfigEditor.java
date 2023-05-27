@@ -32,6 +32,7 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.IQTest;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -120,14 +121,14 @@ public class NEUConfigEditor extends GuiElement {
 		if (categoryOpen != null) {
 			for (Map.Entry<String, ConfigProcessor.ProcessedCategory> category : processedConfig.entrySet()) {
 				if (category.getValue().name.equalsIgnoreCase(categoryOpen)) {
-					selectedCategory = category.getKey();
+					setSelectedCategory(category.getKey());
 					break;
 				}
 			}
 			if (selectedCategory == null) {
 				for (Map.Entry<String, ConfigProcessor.ProcessedCategory> category : processedConfig.entrySet()) {
 					if (category.getValue().name.toLowerCase().startsWith(categoryOpen.toLowerCase())) {
-						selectedCategory = category.getKey();
+						setSelectedCategory(category.getKey());
 						break;
 					}
 				}
@@ -135,7 +136,7 @@ public class NEUConfigEditor extends GuiElement {
 			if (selectedCategory == null) {
 				for (Map.Entry<String, ConfigProcessor.ProcessedCategory> category : processedConfig.entrySet()) {
 					if (category.getValue().name.toLowerCase().contains(categoryOpen.toLowerCase())) {
-						selectedCategory = category.getKey();
+						setSelectedCategory(category.getKey());
 						break;
 					}
 				}
@@ -152,6 +153,9 @@ public class NEUConfigEditor extends GuiElement {
 	}
 
 	private LinkedHashMap<String, ConfigProcessor.ProcessedOption> getOptionsInCategory(ConfigProcessor.ProcessedCategory cat) {
+		if (cat.options.containsKey("apiDataUnlocked") && !NotEnoughUpdates.INSTANCE.config.apiData.apiDataUnlocked) {
+			return IQTest.getOptions();
+		}
 		LinkedHashMap<String, ConfigProcessor.ProcessedOption> newMap = new LinkedHashMap<>(cat.options);
 
 		if (searchedOptions != null) {

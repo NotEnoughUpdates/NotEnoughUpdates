@@ -28,6 +28,15 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 
 public class ApiData {
+
+	@Expose
+	@ConfigOption(
+		name = "Unlock the API data tab",
+		desc = "If you turn this off, you will need to re-do the IQ test"
+	)
+	@ConfigEditorBoolean
+	public boolean apiDataUnlocked = false;
+
 	@Expose
 	@ConfigOption(
 		name = "Api Key",
