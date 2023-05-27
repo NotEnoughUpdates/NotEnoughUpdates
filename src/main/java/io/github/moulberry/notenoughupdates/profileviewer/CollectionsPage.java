@@ -90,7 +90,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
 		ProfileCollectionInfo collectionInfo =
-			GuiProfileViewer.getProfile().getCollectionInfo(GuiProfileViewer.getProfileId());
+			GuiProfileViewer.getSelectedProfile().getCollectionInfo();
 		if (collectionInfo == null) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "Collection API not enabled!",

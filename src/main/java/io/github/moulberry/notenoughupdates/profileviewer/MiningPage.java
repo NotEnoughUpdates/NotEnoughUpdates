@@ -59,9 +59,9 @@ public class MiningPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_mining);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		SkyblockProfiles profile = GuiProfileViewer.getProfile();
+		String profileName = GuiProfileViewer.getProfileName();
+		JsonObject profileInfo = profile.getProfile(profileName).getProfileJson();
 		if (profileInfo == null) return;
 
 		float xStart = 22;
@@ -71,7 +71,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		int y = guiTop + 25;
 		int sectionWidth = 110;
 		JsonObject leveling = Constants.LEVELING;
-		ProfileViewer.Level levelObjhotm = levelObjhotms.get(profileId);
+		ProfileViewer.Level levelObjhotm = levelObjhotms.get(profileName);
 		if (levelObjhotm == null) {
 			float hotmXp = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
 			levelObjhotm =
@@ -81,7 +81,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					7,
 					false
 				);
-			levelObjhotms.put(profileId, levelObjhotm);
+			levelObjhotms.put(profileName, levelObjhotm);
 		}
 
 		String skillName = EnumChatFormatting.RED + "HOTM";

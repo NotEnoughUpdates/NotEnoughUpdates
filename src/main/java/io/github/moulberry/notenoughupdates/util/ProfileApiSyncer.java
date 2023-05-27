@@ -20,7 +20,7 @@
 package io.github.moulberry.notenoughupdates.util;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class ProfileApiSyncer {
 
 	private final HashMap<String, Long> resyncTimes = new HashMap<>();
 	private final HashMap<String, Runnable> syncingCallbacks = new HashMap<>();
-	private final HashMap<String, Consumer<ProfileViewer.Profile>> finishSyncCallbacks = new HashMap<>();
+	private final HashMap<String, Consumer<SkyblockProfiles>> finishSyncCallbacks = new HashMap<>();
 	private long lastResync;
 
 	public static ProfileApiSyncer getInstance() {
@@ -50,7 +50,7 @@ public class ProfileApiSyncer {
 		String id,
 		long timeBetween,
 		Runnable syncingCallback,
-		Consumer<ProfileViewer.Profile> finishSyncCallback
+		Consumer<SkyblockProfiles> finishSyncCallback
 	) {
 		resyncTimes.put(id, timeBetween);
 		syncingCallbacks.put(id, syncingCallback);
@@ -89,8 +89,8 @@ public class ProfileApiSyncer {
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 
 		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-		NotEnoughUpdates.profileViewer.getProfileReset(uuid, (profile) -> {
-			for (Consumer<ProfileViewer.Profile> c : finishSyncCallbacks.values()) c.accept(profile);
+		NotEnoughUpdates.profileViewer.getSkyblockProfiles(uuid, (profile) -> {
+			for (Consumer<SkyblockProfiles> c : finishSyncCallbacks.values()) c.accept(profile);
 			finishSyncCallbacks.clear();
 		});
 	}

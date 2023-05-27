@@ -120,10 +120,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dung);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
+		SkyblockProfiles profile = GuiProfileViewer.getProfile();
+		String profileName = GuiProfileViewer.getProfileName();
 		JsonObject hypixelInfo = profile.getHypixelProfile();
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		JsonObject profileInfo = profile.getProfile(profileName).getProfileJson();
 		if (profileInfo == null) return;
 
 		JsonObject leveling = Constants.LEVELING;
@@ -140,7 +140,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			sectionWidth
 		);
 
-		ProfileViewer.Level levelObjCata = levelObjCatas.get(profileId);
+		ProfileViewer.Level levelObjCata = levelObjCatas.get(profileName);
 		//Catacombs level thingy
 		{
 			if (levelObjCata == null) {
@@ -153,7 +153,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 						false
 					);
 				levelObjCata.totalXp = cataXp;
-				levelObjCatas.put(profileId, levelObjCata);
+				levelObjCatas.put(profileName, levelObjCata);
 			}
 
 			String skillName = EnumChatFormatting.RED + "Catacombs";
@@ -609,7 +609,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 				String skillName = dungSkillsName[i];
 
 				HashMap<String, ProfileViewer.Level> levelObjClasses = levelObjClasseses.computeIfAbsent(
-					profileId,
+					profileName,
 					k -> new HashMap<>()
 				);
 				if (!levelObjClasses.containsKey(skillName)) {
@@ -752,7 +752,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 	private void calculateFloorLevelXP() {
 		JsonObject leveling = Constants.LEVELING;
 		if (leveling == null) return;
-		ProfileViewer.Level levelObjCata = levelObjCatas.get(GuiProfileViewer.getProfileId());
+		ProfileViewer.Level levelObjCata = levelObjCatas.get(GuiProfileViewer.getProfileName());
 		if (levelObjCata == null) return;
 
 		try {

@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
@@ -115,7 +116,7 @@ public class MiscTaskLevel {
 
 		// community upgrades
 		int sbXpCommunityUpgrade = 0;
-		JsonObject profileInformation = levelPage.getProfile().getProfileInformation(levelPage.getProfileId());
+		JsonObject profileInformation = GuiProfileViewer.getSelectedProfile().getOuterProfileJson();
 		if (profileInformation != null && profileInformation.has("community_upgrades")) {
 			JsonObject communityUpgrades = profileInformation.getAsJsonObject("community_upgrades");
 			JsonArray upgradeStates = communityUpgrades.getAsJsonArray("upgrade_states");
@@ -191,8 +192,6 @@ public class MiscTaskLevel {
 			true,
 			lore
 		);
-
-		totalXp += sbXpAccessoryUpgrade + sbXpUnlockedPowers;
 	}
 
 	private int getRankIndex(int pointsTotal) {

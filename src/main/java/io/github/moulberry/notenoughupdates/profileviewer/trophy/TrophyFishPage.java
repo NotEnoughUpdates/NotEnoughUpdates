@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Items;
@@ -141,7 +140,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		trophyFishList.clear();
 
-		JsonObject profileInformation = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		JsonObject profileInformation = GuiProfileViewer.getSelectedProfile().getProfileJson();
 		if (profileInformation == null || !profileInformation.has("trophy_fish")) {
 			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found", guiLeft + 431 / 2f, guiTop + 101, true, 0);
 			return;
@@ -149,10 +148,6 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		JsonObject trophyObject = profileInformation.get("trophy_fish").getAsJsonObject();
 
 		loadTrophyInformation(trophyObject);
-
-		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		int width = scaledResolution.getScaledWidth();
-		int height = scaledResolution.getScaledHeight();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TROPHY_FISH_TEXTURE);
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);

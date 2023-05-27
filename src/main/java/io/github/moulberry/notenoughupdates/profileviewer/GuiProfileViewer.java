@@ -19,8 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
@@ -143,7 +141,6 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 
-	private static final char[] c = new char[]{'k', 'm', 'b', 't'};
 	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
 	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {
 		{
@@ -157,8 +154,8 @@ public class GuiProfileViewer extends GuiScreen {
 	};
 	private static int guiLeft;
 	private static int guiTop;
-	private static ProfileViewer.Profile profile;
-	private static String profileId = null;
+	private static SkyblockProfiles profile;
+	private static String profileName = null;
 	public static AsyncDependencyLoader<Optional<PronounDB.PronounChoice>> pronouns =
 		AsyncDependencyLoader.withEqualsInvocation(
 			() ->
@@ -192,9 +189,9 @@ public class GuiProfileViewer extends GuiScreen {
 	private double lastBgBlurFactor = -1;
 	private boolean showBingoPage;
 
-	public GuiProfileViewer(ProfileViewer.Profile profile) {
+	public GuiProfileViewer(SkyblockProfiles profile) {
 		GuiProfileViewer.profile = profile;
-		GuiProfileViewer.profileId = profile.getLatestProfile();
+		GuiProfileViewer.profileName = profile.getSelectedProfileName();
 		String name = "";
 		if (profile.getHypixelProfile() != null) {
 			name = profile.getHypixelProfile().get("displayname").getAsString();
@@ -219,16 +216,6 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
 	}
 
-	private static float getMaxLevelXp(JsonArray levels, int offset, int maxLevel) {
-		float xpTotal = 0;
-
-		for (int i = offset; i < offset + maxLevel - 1; i++) {
-			xpTotal += levels.get(i).getAsFloat();
-		}
-
-		return xpTotal;
-	}
-
 	@Deprecated
 	public static String shortNumberFormat(double n, int iteration) {
 		return StringUtils.shortNumberFormat(n, iteration
@@ -243,12 +230,16 @@ public class GuiProfileViewer extends GuiScreen {
 		return guiTop;
 	}
 
-	public static ProfileViewer.Profile getProfile() {
+	public static SkyblockProfiles getProfile() {
 		return profile;
 	}
 
-	public static String getProfileId() {
-		return profileId;
+	public static String getProfileName() {
+		return profileName;
+	}
+
+	public static SkyblockProfiles.SkyblockProfile getSelectedProfile() {
+		return getProfile().getProfile(getProfileName());
 	}
 
 	@Override
@@ -259,19 +250,20 @@ public class GuiProfileViewer extends GuiScreen {
 		ProfileViewerPage page = currentPage;
 		if (profile == null) {
 			page = ProfileViewerPage.INVALID_NAME;
-		} else if (profile.getSkyblockProfiles(null) == null) {
+		} else if (profile.getOrLoadSkyblockProfiles(null) == null) {
 			page = ProfileViewerPage.LOADING;
-		} else if (profile.getLatestProfile() == null) {
+		} else if (profile.getSelectedProfileName() == null) {
 			page = ProfileViewerPage.NO_SKYBLOCK;
 		}
 
-		if (profileId == null && profile != null && profile.getLatestProfile() != null) {
-			profileId = profile.getLatestProfile();
+		if (profileName == null && profile != null && profile.getSelectedProfileName() != null) {
+			profileName = profile.getSelectedProfileName();
 		}
+
 		{
 			//this is just to cache the guild info
 			if (profile != null) {
-				profile.getGuildInformation(null);
+				profile.getOrLoadGuildInformation(null);
 			}
 		}
 
@@ -280,14 +272,12 @@ public class GuiProfileViewer extends GuiScreen {
 		guiLeft = (this.width - this.sizeX) / 2;
 		guiTop = (this.height - this.sizeY) / 2;
 
-		JsonObject currProfileInfo = profile != null ? profile.getProfileInformation(profileId) : null;
+		SkyblockProfiles.SkyblockProfile currProfileInfo = profile != null ? profile.getProfile(profileName) : null;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
 			showBingoPage = true;
 		} else {
 			showBingoPage =
-				currProfileInfo != null &&
-					currProfileInfo.has("game_mode") &&
-					currProfileInfo.get("game_mode").getAsString().equals("bingo");
+				currProfileInfo != null && currProfileInfo.getGamemode().equals("bingo");
 		}
 
 		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO) currentPage = ProfileViewerPage.BASIC;
@@ -328,7 +318,7 @@ public class GuiProfileViewer extends GuiScreen {
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
 				Utils.drawTexturedRect(guiLeft, guiTop + sizeY + 3, 100, 20, 0, 100 / 200f, 0, 20 / 185f, GL11.GL_NEAREST);
 				Utils.drawStringCenteredScaledMaxWidth(
-					profileId,
+					profileName,
 					guiLeft + 50,
 					guiTop + sizeY + 3 + 10,
 					true,
@@ -338,8 +328,7 @@ public class GuiProfileViewer extends GuiScreen {
 				//ironman icon
 				if (
 					currProfileInfo != null &&
-						currProfileInfo.has("game_mode") &&
-						currProfileInfo.get("game_mode").getAsString().equals("ironman")
+						currProfileInfo.getGamemode().equals("ironman")
 				) {
 					GlStateManager.color(1, 1, 1, 1);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
@@ -348,8 +337,7 @@ public class GuiProfileViewer extends GuiScreen {
 				//bingo! icon
 				if (
 					currProfileInfo != null &&
-						currProfileInfo.has("game_mode") &&
-						currProfileInfo.get("game_mode").getAsString().equals("bingo")
+						currProfileInfo.getGamemode().equals("bingo")
 				) {
 					GlStateManager.color(1, 1, 1, 1);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
@@ -358,8 +346,7 @@ public class GuiProfileViewer extends GuiScreen {
 				//stranded icon
 				if (
 					currProfileInfo != null &&
-						currProfileInfo.has("game_mode") &&
-						currProfileInfo.get("game_mode").getAsString().equals("island")
+						currProfileInfo.getGamemode().equals("island")
 				) {
 					GlStateManager.color(1, 1, 1, 1);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
@@ -368,10 +355,9 @@ public class GuiProfileViewer extends GuiScreen {
 				//icon if game mode is unknown
 				if (
 					currProfileInfo != null &&
-						currProfileInfo.has("game_mode") &&
-						!currProfileInfo.get("game_mode").getAsString().equals("island") &&
-						!currProfileInfo.get("game_mode").getAsString().equals("bingo") &&
-						!currProfileInfo.get("game_mode").getAsString().equals("ironman")
+						!currProfileInfo.getGamemode().equals("island") &&
+						!currProfileInfo.getGamemode().equals("bingo") &&
+						!currProfileInfo.getGamemode().equals("ironman")
 				) {
 					GlStateManager.color(1, 1, 1, 1);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
@@ -432,20 +418,19 @@ public class GuiProfileViewer extends GuiScreen {
 					);
 
 					for (int yIndex = 0; yIndex < profile.getProfileNames().size(); yIndex++) {
-						String otherProfileId = profile.getProfileNames().get(yIndex);
+						String otherProfileName = profile.getProfileNames().get(yIndex);
 						Utils.drawStringCenteredScaledMaxWidth(
-							otherProfileId,
+							otherProfileName,
 							guiLeft + 50,
 							guiTop + sizeY + 23 + dropdownOptionSize / 2f + dropdownOptionSize * yIndex,
 							true,
 							90,
 							new Color(33, 112, 104, 255).getRGB()
 						);
-						currProfileInfo = profile.getProfileInformation(otherProfileId);
+						currProfileInfo = profile.getProfile(otherProfileName);
 						if (
 							currProfileInfo != null &&
-								currProfileInfo.has("game_mode") &&
-								currProfileInfo.get("game_mode").getAsString().equals("ironman")
+								currProfileInfo.getGamemode().equals("ironman")
 						) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
@@ -459,8 +444,7 @@ public class GuiProfileViewer extends GuiScreen {
 						}
 						if (
 							currProfileInfo != null &&
-								currProfileInfo.has("game_mode") &&
-								currProfileInfo.get("game_mode").getAsString().equals("bingo")
+								currProfileInfo.getGamemode().equals("bingo")
 						) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
@@ -474,8 +458,7 @@ public class GuiProfileViewer extends GuiScreen {
 						}
 						if (
 							currProfileInfo != null &&
-								currProfileInfo.has("game_mode") &&
-								currProfileInfo.get("game_mode").getAsString().equals("island")
+								currProfileInfo.getGamemode().equals("island")
 						) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
@@ -489,10 +472,9 @@ public class GuiProfileViewer extends GuiScreen {
 						}
 						if (
 							currProfileInfo != null &&
-								currProfileInfo.has("game_mode") &&
-								!currProfileInfo.get("game_mode").getAsString().equals("island") &&
-								!currProfileInfo.get("game_mode").getAsString().equals("bingo") &&
-								!currProfileInfo.get("game_mode").getAsString().equals("ironman")
+								!currProfileInfo.getGamemode().equals("island") &&
+								!currProfileInfo.getGamemode().equals("bingo") &&
+								!currProfileInfo.getGamemode().equals("ironman")
 						) {
 							GlStateManager.color(1, 1, 1, 1);
 							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
@@ -562,35 +544,34 @@ public class GuiProfileViewer extends GuiScreen {
 										guiLeft + sizeX / 2f, guiTop + 151, true, 0
 									);
 									Utils.drawStringCentered(
-										EnumChatFormatting.YELLOW + "" + EnumChatFormatting.BOLD + "What are you doing with your life?",
+										EnumChatFormatting.YELLOW + String.valueOf(EnumChatFormatting.BOLD) + "What are you doing with your life?",
 										guiLeft + sizeX / 2f, guiTop + 161, true, 0
 									);
 									if (timeDiff > 600000) {
 										Utils.drawStringCentered(
-											EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "Maniac",
+											EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) + "Maniac",
 											guiLeft + sizeX / 2f, guiTop + 171, true, 0
 										);
 										if (timeDiff > 1200000) {
 											Utils.drawStringCentered(
-												EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You're a menace to society",
+												EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) + "You're a menace to society",
 												guiLeft + sizeX / 2f, guiTop + 181, true, 0
 											);
 											if (timeDiff > 1800000) {
 												Utils.drawStringCentered(
-													EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD +
+													EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) +
 														"You don't know what's gonna happen to you",
 													guiLeft + sizeX / 2f, guiTop + 191, true, 0
 												);
 												if (timeDiff > 3000000) {
 													Utils.drawStringCentered(
-														EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "You really want this?",
+														EnumChatFormatting.RED + String.valueOf(EnumChatFormatting.BOLD) + "You really want this?",
 														guiLeft + sizeX / 2f, guiTop + 91, true, 0
 													);
 													if (timeDiff > 3300000) {
 														Utils.drawStringCentered(
 															EnumChatFormatting.DARK_RED +
-																"" +
-																EnumChatFormatting.BOLD +
+																String.valueOf(EnumChatFormatting.BOLD) +
 																"OW LORD FORGIVE ME FOR THIS",
 															guiLeft + sizeX / 2f, guiTop + 71, true, 0
 														);
@@ -774,12 +755,12 @@ public class GuiProfileViewer extends GuiScreen {
 				mouseX < guiLeft + 106 + 100 &&
 				profile != null &&
 				!profile.getProfileNames().isEmpty() &&
-				profileId != null
+				profileName != null
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
 				String url =
 					"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-						profileId;
+						profileName;
 				Utils.openUrl(url);
 				Utils.playPressSound();
 				return;
@@ -793,7 +774,7 @@ public class GuiProfileViewer extends GuiScreen {
 					profileDropdownSelected = false;
 					int profileNum = 0;
 					for (int index = 0; index < profile.getProfileNames().size(); index++) {
-						if (profile.getProfileNames().get(index).equals(profileId)) {
+						if (profile.getProfileNames().get(index).equals(profileName)) {
 							profileNum = index;
 							break;
 						}
@@ -806,11 +787,11 @@ public class GuiProfileViewer extends GuiScreen {
 					if (profileNum >= profile.getProfileNames().size()) profileNum = 0;
 					if (profileNum < 0) profileNum = profile.getProfileNames().size() - 1;
 
-					String newProfileId = profile.getProfileNames().get(profileNum);
-					if (profileId != null && !profileId.equals(newProfileId)) {
+					String newProfileName = profile.getProfileNames().get(profileNum);
+					if (profileName != null && !profileName.equals(newProfileName)) {
 						resetCache();
 					}
-					profileId = newProfileId;
+					profileName = newProfileName;
 				} else {
 					profileDropdownSelected = !profileDropdownSelected;
 				}
@@ -819,11 +800,11 @@ public class GuiProfileViewer extends GuiScreen {
 				int extraY = mouseY - (guiTop + sizeY + 23);
 				int index = extraY / dropdownOptionSize;
 				if (index >= 0 && index < profile.getProfileNames().size()) {
-					String newProfileId = profile.getProfileNames().get(index);
-					if (profileId != null && !profileId.equals(newProfileId)) {
+					String newProfileName = profile.getProfileNames().get(index);
+					if (profileName != null && !profileName.equals(newProfileName)) {
 						resetCache();
 					}
-					profileId = newProfileId;
+					profileName = newProfileName;
 				}
 			}
 			playerNameTextField.otherComponentClick();

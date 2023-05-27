@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -41,8 +42,7 @@ public class DungeonTaskLevel {
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject dungeonTask = levelPage.getConstant().get("dungeon_task").getAsJsonObject();
 
-		Map<String, ProfileViewer.Level> skyblockInfo =
-			levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
+		Map<String, ProfileViewer.Level> skyblockInfo = GuiProfileViewer.getSelectedProfile().getLevelingInfo();
 
 		int sbLevelGainedFloor = 0;
 		int sbXpGainedClass = 0;
@@ -75,7 +75,7 @@ public class DungeonTaskLevel {
 				JsonObject normalCompletions = Utils
 					.getElement(object, "dungeons.dungeon_types.catacombs.tier_completions")
 					.getAsJsonObject();
-				if (normalCompletions.has(index + "")) {
+				if (normalCompletions.has(String.valueOf(index))) {
 					sbLevelGainedFloor = sbLevelGainedFloor + value;
 				}
 				index++;
@@ -86,7 +86,7 @@ public class DungeonTaskLevel {
 				JsonElement masterCompletions = Utils
 					.getElementOrDefault(object, "dungeons.dungeon_types.master_catacombs.tier_completions", null);
 				if (masterCompletions != null) {
-					if (masterCompletions.getAsJsonObject().has(i + "")) {
+					if (masterCompletions.getAsJsonObject().has(String.valueOf(i))) {
 						sbLevelGainedFloor = sbLevelGainedFloor + masterCatacombs;
 					}
 				}
@@ -104,8 +104,6 @@ public class DungeonTaskLevel {
 		lore.add(levelPage.buildLore("Catacombs Level Up", sbXpGainedLvl, catacombsLevelUp, false));
 		lore.add(levelPage.buildLore("Class Level Up", sbXpGainedClass, classLevelUp, false));
 		lore.add(levelPage.buildLore("Complete Dungeons", sbLevelGainedFloor, completeDungeon, false));
-
-		int totalSbXpGain = sbXpGainedLvl + sbXpGainedClass + sbLevelGainedFloor;
 
 		levelPage.renderLevelBar(
 			"Dungeon Task",

@@ -23,7 +23,7 @@ import com.mojang.brigadier.arguments.StringArgumentType.string
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
@@ -52,7 +52,7 @@ class PeekCommand {
 
         NotEnoughUpdates.profileViewer.getProfileByName(
             name
-        ) { profile: ProfileViewer.Profile? ->
+        ) { profile: SkyblockProfiles? ->
             if (profile == null) {
                 deleteReply("$RED[PEEK] Unknown player or the Hypixel API is down.")
             } else {
@@ -72,19 +72,19 @@ class PeekCommand {
                             return
                         }
                         val g = GRAY.toString()
-                        val profileInfo = profile.getProfileInformation(null)
+                        val profileInfo = profile.selectedProfile.profileJson
                         if (profileInfo == null) {
                             future = executor.schedule(this, 200, TimeUnit.MILLISECONDS)
                             return
                         }
                         var overallScore = 0f
                         val isMe = name.equals("moulberry", ignoreCase = true)
-                        val stats = profile.getStats(null)
+                        val stats = profile.selectedProfile.stats
                         if (stats == null) {
                             future = executor.schedule(this, 200, TimeUnit.MILLISECONDS)
                             return
                         }
-                        val skyblockInfo = profile.getSkyblockInfo(null)
+                        val skyblockInfo = profile.selectedProfile.levelingInfo
                         if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
                             deleteReply("$YELLOW[PEEK] Getting the player's Skyblock networth...")
                             val countDownLatch = CountDownLatch(1)
@@ -220,7 +220,7 @@ class PeekCommand {
                                 profile.getSoopyNetworth(null, Runnable {})
                             nwData?.total ?: -2L
                         } else {
-                            profile.getNetWorth(null)
+                            profile.selectedProfile.networth
                         }
                         val money =
                             Math.max(bankBalance + purseBalance, networth.toFloat())
@@ -245,16 +245,14 @@ class PeekCommand {
                         val activePet =
                             Utils.getElementAsString(
                                 Utils.getElement(
-                                    profile.getPetsInfo(
-                                        null
-                                    ), "active_pet.type"
+                                    profile.selectedProfile.petsInfo, "active_pet.type"
                                 ),
                                 "None Active"
                             )
                         val activePetTier =
                             Utils.getElementAsString(
                                 Utils.getElement(
-                                    profile.getPetsInfo(null),
+                                    profile.selectedProfile.petsInfo,
                                     "active_pet.tier"
                                 ), "UNKNOWN"
                             )

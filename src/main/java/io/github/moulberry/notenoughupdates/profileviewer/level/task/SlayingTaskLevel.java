@@ -51,7 +51,7 @@ public class SlayingTaskLevel {
 		// slayer
 		JsonObject slayingTask = levelPage.getConstant().get("slaying_task").getAsJsonObject();
 		JsonArray slayerLevelUpXp = slayingTask.get("slayer_level_up_xp").getAsJsonArray();
-		Map<String, ProfileViewer.Level> skyblockInfo = levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
+		Map<String, ProfileViewer.Level> skyblockInfo = GuiProfileViewer.getSelectedProfile().getLevelingInfo();
 
 		int sbXpGainedSlayer = 0;
 		if (skyblockInfo != null) {
@@ -105,8 +105,8 @@ public class SlayingTaskLevel {
 		int bossCollectionXp = 0;
 		JsonArray dungeonCollectionXp = bossCollectionsXp.getAsJsonArray("dungeon_collection_xp");
 		for (int i = 1; i <= 7; i++) {
-			if (!allComps.containsKey(i + "")) continue;
-			double value = allComps.get(i + "");
+			if (!allComps.containsKey(String.valueOf(i))) continue;
+			double value = allComps.get(String.valueOf(i));
 			switch (i) {
 				case 1:
 				case 2:
@@ -154,7 +154,8 @@ public class SlayingTaskLevel {
 		}
 
 		int sbXpBestiary = 0;
-		int bestiaryTiers = GuiProfileViewer.getProfile().getBestiaryTiers(object);
+		// TODO: what?
+		int bestiaryTiers = GuiProfileViewer.getSelectedProfile().getBestiaryLevel();
 		sbXpBestiary += bestiaryTiers;
 		sbXpBestiary = sbXpBestiary + (sbXpBestiary / 10) * 2;
 
@@ -247,7 +248,6 @@ public class SlayingTaskLevel {
 			true,
 			lore
 		);
-		totalXp += sbXpBestiary;
 	}
 
 	private int loopThroughCollection(int[] array, double value, JsonArray jsonArray) {

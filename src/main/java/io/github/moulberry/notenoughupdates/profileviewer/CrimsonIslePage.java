@@ -104,7 +104,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
 
 		if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
 			Utils.drawStringCentered(

@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
@@ -62,7 +63,7 @@ public class PowerStoneStatsDisplay {
 
 		if (profileInfo == null) return;
 
-		JsonObject inventoryInfo = ProfileViewerUtils.readInventoryInfo(profileInfo, "talisman_bag");
+		JsonArray inventoryInfo = ProfileViewerUtils.readInventoryInfo(profileInfo, "talisman_bag");
 		if (inventoryInfo == null) return;
 
 		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();

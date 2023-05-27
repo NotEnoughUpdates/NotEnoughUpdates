@@ -62,7 +62,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
 
 		int bestiarySize = BestiaryData.getBestiaryLocations().size();
 		int bestiaryXSize = (int) (350f / (bestiarySize - 1 + 0.0000001f));
@@ -117,7 +117,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Color color = new Color(128, 128, 128, 255);
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Bestiary Level: ",
-			EnumChatFormatting.GRAY + "" + (float) GuiProfileViewer.getProfile().getBestiaryTiers(profileInfo) / 10,
+			EnumChatFormatting.GRAY + "" + (float) GuiProfileViewer.getSelectedProfile().getBestiaryLevel() / 10,
 			guiLeft + 220,
 			guiTop + 50,
 			110

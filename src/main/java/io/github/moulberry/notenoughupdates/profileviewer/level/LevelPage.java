@@ -22,7 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.level;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.CoreTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.DungeonTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EssenceTaskLevel;
@@ -48,9 +48,6 @@ public class LevelPage {
 
 	private final GuiProfileViewer instance;
 	private final BasicPage basicPage;
-	private ProfileViewer.Profile profile;
-
-	private String profileId;
 
 	private final JsonObject constant;
 
@@ -84,8 +81,7 @@ public class LevelPage {
 	public void drawPage(int mouseX, int mouseY) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		this.profile = GuiProfileViewer.getProfile();
-		this.profileId = GuiProfileViewer.getProfileId();
+		SkyblockProfiles.SkyblockProfile profile = GuiProfileViewer.getSelectedProfile();
 
 		basicPage.drawSideButtons();
 
@@ -97,8 +93,8 @@ public class LevelPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_levels);
 		Utils.drawTexturedRect(guiLeft, guiTop, instance.sizeX, instance.sizeY, GL11.GL_NEAREST);
 
-		double skyblockLevel = profile.getSkyblockLevel(profileId);
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		double skyblockLevel = profile.getSkyblockLevel();
+		JsonObject profileInfo = profile.getProfileJson();
 
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
 		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
@@ -216,14 +212,6 @@ public class LevelPage {
 
 	public JsonObject getConstant() {
 		return constant;
-	}
-
-	public ProfileViewer.Profile getProfile() {
-		return profile;
-	}
-
-	public String getProfileId() {
-		return profileId;
 	}
 
 	public GuiProfileViewer getInstance() {

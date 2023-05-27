@@ -48,8 +48,7 @@ import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
 
-	public static JsonObject readInventoryInfo(JsonObject profileInfo, String bagName) {
-		JsonObject inventoryInfo = new JsonObject();
+	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		JsonElement element = Utils.getElement(profileInfo, bagName + ".data");
 
 		String bytes = Utils.getElementAsString(element, "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
@@ -70,12 +69,10 @@ public class ProfileViewerUtils {
 			contents.add(item);
 		}
 
-		inventoryInfo.add(bagName, contents);
-		return inventoryInfo;
+		return contents;
 	}
 
-	public static int getMagicalPower(JsonObject inventoryInfo, JsonObject profileInfo) {
-		JsonArray talismanBag = inventoryInfo.get("talisman_bag").getAsJsonArray();
+	public static int getMagicalPower(JsonArray talismanBag, JsonObject profileInfo) {
 		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(talismanBag).map(o -> {
 			try {
 				return JsonToNBT.getTagFromJson(o.getAsJsonObject().get("nbttag").getAsString());

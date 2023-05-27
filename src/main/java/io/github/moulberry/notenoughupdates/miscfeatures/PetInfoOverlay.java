@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -36,6 +37,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
@@ -283,15 +285,15 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
-	private static void getAndSetPet(ProfileViewer.Profile profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profile.getLatestProfile());
-		JsonObject invInfo = profile.getInventoryInfo(profile.getLatestProfile());
-		JsonObject profileInfo = profile.getProfileInformation(profile.getLatestProfile());
+	private static void getAndSetPet(SkyblockProfiles profile) {
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSelectedProfile().getLevelingInfo();
+		Map<String, JsonArray> invInfo = profile.getSelectedProfile().getInventoryInfo();
+		JsonObject profileInfo = profile.getSelectedProfile().getProfileJson();
 		if (invInfo != null && profileInfo != null) {
 			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
 			boolean hasBeastmasterCrest = false;
 			Rarity currentBeastRarity = Rarity.COMMON;
-			for (JsonElement talisman : invInfo.get("talisman_bag").getAsJsonArray()) {
+			for (JsonElement talisman : invInfo.get("talisman_bag")) {
 				if (talisman.isJsonNull()) continue;
 				String internalName = talisman.getAsJsonObject().get("internalname").getAsString();
 				if (internalName.startsWith("BEASTMASTER_CREST")) {

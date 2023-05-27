@@ -57,7 +57,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private TreeMap<Integer, Set<String>> topDeaths = null;
 	private int deathScroll = 0;
 	private int killScroll = 0;
-	private int mouseDWheel = 0;
 
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
@@ -179,11 +178,10 @@ public class ExtraPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_extra);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		SkyblockProfiles profile = GuiProfileViewer.getProfile();
+		JsonObject profileInfo = profile.getSelectedProfile().getProfileJson();
 		if (profileInfo == null) return;
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSelectedProfile().getLevelingInfo();
 
 		float xStart = 22;
 		float xOffset = 103;
@@ -221,7 +219,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
-		JsonObject guildInfo = profile.getGuildInformation(null);
+		JsonObject guildInfo = profile.getOrLoadGuildInformation(null);
 		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
 		{
 			if (shouldRenderGuild) {
@@ -532,7 +530,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 
-		mouseDWheel = Mouse.getDWheel();
+		int mouseDWheel = Mouse.getDWheel();
 		if (mouseX >= killDeathX && mouseX <= killDeathX + 76) {
 			if (mouseY >= guiTop + yStartTop && mouseY <= guiTop + yStartTop + 65) {
 				if (mouseDWheel > 0) {
