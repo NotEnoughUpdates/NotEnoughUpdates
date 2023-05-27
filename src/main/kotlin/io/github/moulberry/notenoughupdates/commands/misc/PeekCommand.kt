@@ -88,7 +88,7 @@ class PeekCommand {
                         if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
                             deleteReply("$YELLOW[PEEK] Getting the player's Skyblock networth...")
                             val countDownLatch = CountDownLatch(1)
-                            profile.getSoopyNetworth(null, Runnable { countDownLatch.countDown() })
+                            profile.getNameToSoopyNetworth(null, Runnable { countDownLatch.countDown() })
                             try { //Wait for async network request
                                 countDownLatch.await(10, TimeUnit.SECONDS)
                             } catch (e: InterruptedException) {
@@ -217,7 +217,7 @@ class PeekCommand {
                             )
                         val networth = if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
                             val nwData =
-                                profile.getSoopyNetworth(null, Runnable {})
+                                profile.getNameToSoopyNetworth(null, Runnable {})
                             nwData?.total ?: -2L
                         } else {
                             profile.selectedProfile.networth

@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.level;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.CoreTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.DungeonTaskLevel;
@@ -44,13 +45,11 @@ import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
 
-public class LevelPage {
+public class LevelPage extends GuiProfileViewerPage {
 
-	private final GuiProfileViewer instance;
+	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
 	private final BasicPage basicPage;
-
 	private final JsonObject constant;
-
 	private final CoreTaskLevel coreTaskLevel;
 	private final DungeonTaskLevel dungeonTaskLevel;
 	private final EssenceTaskLevel essenceTaskLevel;
@@ -58,13 +57,10 @@ public class LevelPage {
 	private final SkillRelatedTaskLevel skillRelatedTaskLevel;
 	private final SlayingTaskLevel slayingTaskLevel;
 	private final StoryTaskLevel storyTaskLevel;
-
 	private final EventTaskLevel eventTaskLevel;
 
-	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
-
 	public LevelPage(GuiProfileViewer instance, BasicPage basicPage) {
-		this.instance = instance;
+		super(instance);
 		this.basicPage = basicPage;
 		constant = Constants.SBLEVELS;
 
@@ -78,7 +74,7 @@ public class LevelPage {
 		eventTaskLevel = new EventTaskLevel(this);
 	}
 
-	public void drawPage(int mouseX, int mouseY) {
+	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 		SkyblockProfiles.SkyblockProfile profile = GuiProfileViewer.getSelectedProfile();
@@ -91,7 +87,7 @@ public class LevelPage {
 		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_levels);
-		Utils.drawTexturedRect(guiLeft, guiTop, instance.sizeX, instance.sizeY, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
 		double skyblockLevel = profile.getSkyblockLevel();
 		JsonObject profileInfo = profile.getProfileJson();
@@ -212,9 +208,5 @@ public class LevelPage {
 
 	public JsonObject getConstant() {
 		return constant;
-	}
-
-	public GuiProfileViewer getInstance() {
-		return instance;
 	}
 }

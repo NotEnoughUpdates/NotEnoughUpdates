@@ -136,7 +136,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		if (onSecondPage) {
-			levelPage.drawPage(mouseX, mouseY);
+			levelPage.drawPage(mouseX, mouseY, partialTicks);
 			return;
 		}
 
@@ -281,7 +281,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		long networth;
 		ArrayList<String> nwCategoryHover = new ArrayList<>();
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-			SkyblockProfiles.SoopyNetworthData nwData = profile.getSoopyNetworth(profileName, () -> {});
+			SkyblockProfiles.SoopyNetworthData nwData = profile.getNameToSoopyNetworth(profileName, () -> {});
 			if (nwData == null) {
 				networth = -2L;
 			} else {

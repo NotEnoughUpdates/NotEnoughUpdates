@@ -90,7 +90,7 @@ public class SkyblockProfiles {
 	);
 	private final ProfileViewer profileViewer;
 	private final String uuid;
-	private final HashMap<String, SoopyNetworthData> soopyNetworth = new HashMap<>();
+	private final HashMap<String, SoopyNetworthData> nameToSoopyNetworth = new HashMap<>();
 	private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingPlayerStatusState = new AtomicBoolean(false);
@@ -187,8 +187,8 @@ public class SkyblockProfiles {
 			if (levelingInfo == null) {
 				continue;
 			}
-			SenitherWeight senitherWeight = new SenitherWeight(levelingInfo);
-			double weightValue = senitherWeight.getTotalWeight().getRaw();
+
+			double weightValue = new SenitherWeight(levelingInfo).getTotalWeight().getRaw();
 
 			if (weightValue > largestProfileWeight) {
 				largestProfileWeight = weightValue;
@@ -203,11 +203,11 @@ public class SkyblockProfiles {
 	 * Returns SoopyNetworthData with total = -1 if error
 	 * Returns null if still loading
 	 */
-	public SoopyNetworthData getSoopyNetworth(String profileName, Runnable callback) {
+	public SoopyNetworthData getNameToSoopyNetworth(String profileName, Runnable callback) {
 		if (profileName == null) profileName = selectedProfileName;
-		if (soopyNetworth.get(profileName) != null) {
+		if (nameToSoopyNetworth.get(profileName) != null) {
 			callback.run();
-			return soopyNetworth.get(profileName);
+			return nameToSoopyNetworth.get(profileName);
 		}
 
 		getOrLoadSkyblockProfiles(() -> {});
@@ -226,14 +226,14 @@ public class SkyblockProfiles {
 				if (throwable != null) throwable.printStackTrace();
 				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
 					|| !jsonObject.has("data")
-					|| !jsonObject.get("data").getAsJsonObject().has("data")
-					|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+					|| !jsonObject.getAsJsonObject("data").has("data")
+					|| !jsonObject.getAsJsonObject("data").getAsJsonObject("data").has("position")) {
 					//Something went wrong
 					//Set profile lb position to -3 to indicate that
 					soopyNetworthLeaderboardPosition = -3; //error
 					return null;
 				}
-				soopyNetworthLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+				soopyNetworthLeaderboardPosition = jsonObject.getAsJsonObject("data").getAsJsonObject("data").get(
 					"position").getAsLong();
 				return null;
 			});
@@ -247,14 +247,14 @@ public class SkyblockProfiles {
 				if (throwable != null) throwable.printStackTrace();
 				if (throwable != null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
 					|| !jsonObject.has("data")
-					|| !jsonObject.get("data").getAsJsonObject().has("data")
-					|| !jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().has("position")) {
+					|| !jsonObject.getAsJsonObject("data").has("data")
+					|| !jsonObject.getAsJsonObject("data").getAsJsonObject("data").has("position")) {
 					//Something went wrong
 					//Set profile lb position to -3 to indicate that
 					soopyWeightLeaderboardPosition = -3; //error
 					return null;
 				}
-				soopyWeightLeaderboardPosition = jsonObject.get("data").getAsJsonObject().get("data").getAsJsonObject().get(
+				soopyWeightLeaderboardPosition = jsonObject.getAsJsonObject("data").getAsJsonObject("data").get(
 					"position").getAsLong();
 				return null;
 			});
@@ -278,7 +278,7 @@ public class SkyblockProfiles {
 
 						String cuteName = profile.get("cute_name").getAsString();
 
-						soopyNetworth.put(cuteName, new SoopyNetworthData(null));
+						nameToSoopyNetworth.put(cuteName, new SoopyNetworthData(null));
 					}
 					updatingSoopyNetworth.set(false);
 					callback.run();
@@ -302,7 +302,7 @@ public class SkyblockProfiles {
 						networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
 					}
 
-					soopyNetworth.put(cuteName, networth);
+					nameToSoopyNetworth.put(cuteName, networth);
 				}
 
 				updatingSoopyNetworth.set(false);
