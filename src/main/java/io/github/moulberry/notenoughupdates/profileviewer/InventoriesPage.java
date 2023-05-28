@@ -71,7 +71,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				"ender_chest_contents",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
 			);
-			// put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
 			put(
 				"backpack_contents",
 				Utils.editItemStackInfo(
@@ -702,14 +701,13 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int maxInvSize = rowSize * maxRowsPerPage;
 
 		int numInventories = (jsonInvSize - 1) / maxInvSize + 1;
-		JsonArray backPackSizes = inventoryInfo.get("backpack_sizes");
+		JsonArray backPackContents = inventoryInfo.get("backpack_contents");
 		if (invName.equals("backpack_contents")) {
-			numInventories = backPackSizes.size();
+			numInventories = backPackContents.size();
 		}
 
 		ItemStack[][][] inventories = new ItemStack[numInventories][][];
 
-		//int availableSlots = getAvailableSlotsForInventory(inventoryInfo, collectionInfo, invName);
 		int startNumberJ = 0;
 
 		for (int i = 0; i < numInventories; i++) {
@@ -717,7 +715,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			int invSize;
 
 			if (invName.equals("backpack_contents")) {
-				thisRows = backPackSizes.get(i).getAsInt() / 9;
+				thisRows = backPackContents.get(i).getAsJsonArray().size() / 9;
 				invSize = startNumberJ + (thisRows * 9);
 				maxInvSize = thisRows * 9;
 			} else {
@@ -774,7 +772,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			}
 			inventories[i] = items;
 			if (invName.equals("backpack_contents")) {
-				startNumberJ = startNumberJ + backPackSizes.get(i).getAsInt();
+				startNumberJ = startNumberJ + backPackContents.get(i).getAsJsonArray().size();
 			}
 		}
 

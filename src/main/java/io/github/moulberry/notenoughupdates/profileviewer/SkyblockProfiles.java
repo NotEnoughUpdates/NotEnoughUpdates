@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
@@ -558,11 +557,7 @@ public class SkyblockProfiles {
 				JsonArray contents = new JsonArray();
 
 				if (invName.equals("backpack_contents")) {
-					JsonObject backpackContentsObj = Utils.getElement(profileJson, "backpack_contents").getAsJsonObject();
-					JsonObject backpackIconsObj = Utils.getElement(profileJson, "backpack_icons").getAsJsonObject();
-					JsonObject backpackData = getBackpackData(backpackContentsObj, backpackIconsObj);
-					contents = backpackData.getAsJsonArray("contents");
-					inventoryNameToInfo.put("backpack_sizes", backpackData.getAsJsonArray("backpack_sizes"));
+					contents = getBackpackData(Utils.getElement(profileJson, "backpack_contents").getAsJsonObject());
 				} else {
 					String contentBytes = Utils.getElementAsString(
 						Utils.getElement(profileJson, invName + ".data"),
@@ -587,66 +582,29 @@ public class SkyblockProfiles {
 			return inventoryNameToInfo;
 		}
 
-		public JsonObject getBackpackData(JsonObject backpackContentsJson, JsonObject backpackIcons) {
-			// TODO: improve this becausec I CBA to understand this mess
-			if (backpackContentsJson == null || backpackIcons == null) {
-				JsonObject bundledReturn = new JsonObject();
-				bundledReturn.add("contents", new JsonArray());
-				bundledReturn.add("backpack_sizes", new JsonArray());
-
-				return bundledReturn;
+		private JsonArray getBackpackData(JsonObject backpackContentsJson) {
+			if (backpackContentsJson == null) {
+				return new JsonArray();
 			}
 
-			String[] backpackArray = new String[0];
-
-			//Create backpack array which sizes up
-			for (Map.Entry<String, JsonElement> backpackIcon : backpackIcons.entrySet()) {
-				if (backpackIcon.getValue() instanceof JsonObject) {
-					JsonObject backpackData = (JsonObject) backpackContentsJson.get(backpackIcon.getKey());
-					String bytes = Utils.getElementAsString(backpackData.get("data"), defaultNbtData);
-					backpackArray = ProfileViewerUtils.growArray(bytes, Integer.parseInt(backpackIcon.getKey()), backpackArray);
-				}
-			}
-
-			//reduce backpack array to filter out not existent backpacks
-			{
-				String[] tempBackpackArray = new String[0];
-				for (String s : backpackArray) {
-					if (s != null) {
-						String[] veryTempBackpackArray = new String[tempBackpackArray.length + 1];
-						System.arraycopy(tempBackpackArray, 0, veryTempBackpackArray, 0, tempBackpackArray.length);
-
-						veryTempBackpackArray[veryTempBackpackArray.length - 1] = s;
-						tempBackpackArray = veryTempBackpackArray;
-					}
-				}
-				backpackArray = tempBackpackArray;
-			}
-
-			JsonArray backpackSizes = new JsonArray();
+			// JsonArray of JsonObjects
 			JsonArray contents = new JsonArray();
+			for (Map.Entry<String, JsonElement> backpack : backpackContentsJson.entrySet()) {
+				if (backpack.getValue().isJsonObject()) {
+					try {
+						String bytes = Utils.getElementAsString(backpack.getValue().getAsJsonObject().get("data"), defaultNbtData);
+						NBTTagList items = CompressedStreamTools.readCompressed(
+							new ByteArrayInputStream(Base64.getDecoder().decode(bytes))
+						).getTagList("i", 10);
 
-			for (String backpack : backpackArray) {
-				try {
-					NBTTagCompound inv_contents_nbt = CompressedStreamTools.readCompressed(
-						new ByteArrayInputStream(Base64.getDecoder().decode(backpack))
-					);
-					NBTTagList items = inv_contents_nbt.getTagList("i", 10);
-
-					backpackSizes.add(new JsonPrimitive(items.tagCount()));
-					for (int j = 0; j < items.tagCount(); j++) {
-						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
-						contents.add(item);
+						for (int j = 0; j < items.tagCount(); j++) {
+							contents.add(profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j)));
+						}
+					} catch (IOException ignored) {
 					}
-				} catch (IOException ignored) {
 				}
 			}
-
-			JsonObject bundledReturn = new JsonObject();
-			bundledReturn.add("contents", contents);
-			bundledReturn.add("backpack_sizes", backpackSizes);
-
-			return bundledReturn;
+			return contents;
 		}
 
 		public EnumChatFormatting getSkyblockLevelColour() {
