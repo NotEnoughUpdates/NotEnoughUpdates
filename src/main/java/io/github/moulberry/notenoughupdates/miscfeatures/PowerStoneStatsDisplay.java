@@ -60,7 +60,6 @@ public class PowerStoneStatsDisplay {
 	@SubscribeEvent
 	public void onProfileDataLoaded(ProfileDataLoadedEvent event) {
 		JsonObject profileInfo = event.getProfileInfo();
-
 		if (profileInfo == null) return;
 
 		JsonArray inventoryInfo = ProfileViewerUtils.readInventoryInfo(profileInfo, "talisman_bag");
@@ -68,8 +67,7 @@ public class PowerStoneStatsDisplay {
 
 		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (configProfileSpecific == null) return;
-		int powerAmount = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
-		configProfileSpecific.magicalPower = powerAmount;
+		configProfileSpecific.magicalPower = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
 	}
 
 	@SubscribeEvent
@@ -93,8 +91,7 @@ public class PowerStoneStatsDisplay {
 					String rawNumber = line.split("§6")[1].replace(",", "");
 					NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 					if (configProfileSpecific == null) return;
-					int magicalPower = Integer.parseInt(rawNumber);
-					configProfileSpecific.magicalPower = magicalPower;
+					configProfileSpecific.magicalPower = Integer.parseInt(rawNumber);
 				}
 			}
 		}

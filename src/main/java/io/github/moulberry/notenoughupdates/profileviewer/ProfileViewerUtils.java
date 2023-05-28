@@ -49,24 +49,23 @@ import java.util.stream.Collectors;
 public class ProfileViewerUtils {
 
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
-		JsonElement element = Utils.getElement(profileInfo, bagName + ".data");
+		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
 
-		String bytes = Utils.getElementAsString(element, "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
-		NBTTagCompound inv_contents_nbt;
+		NBTTagCompound nbt;
 		try {
-			inv_contents_nbt = CompressedStreamTools.readCompressed(
+			nbt = CompressedStreamTools.readCompressed(
 				new ByteArrayInputStream(Base64.getDecoder().decode(bytes))
 			);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-		NBTTagList items = inv_contents_nbt.getTagList("i", 10);
+
+		NBTTagList items = nbt.getTagList("i", 10);
 		JsonArray contents = new JsonArray();
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		for (int j = 0; j < items.tagCount(); j++) {
-			JsonObject item = manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
-			contents.add(item);
+			contents.add(manager.getJsonFromNBTEntry(items.getCompoundTagAt(j)));
 		}
 
 		return contents;
@@ -149,16 +148,6 @@ public class ProfileViewerUtils {
 			}
 		}
 		return powerAmount;
-	}
-
-	public static String[] growArray(String bytes, int index, String[] oldArray) {
-		int newSize = Math.max(index + 1, oldArray.length);
-
-		String[] newArray = new String[newSize];
-		System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
-		newArray[index] = bytes;
-
-		return newArray;
 	}
 
 	public static int getLevelingCap(JsonObject leveling, String skillName) {
