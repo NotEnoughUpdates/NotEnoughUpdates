@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -140,12 +141,17 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		trophyFishList.clear();
 
-		JsonObject profileInformation = GuiProfileViewer.getSelectedProfile().getProfileJson();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInformation = selectedProfile.getProfileJson();
 		if (profileInformation == null || !profileInformation.has("trophy_fish")) {
 			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found", guiLeft + 431 / 2f, guiTop + 101, true, 0);
 			return;
 		}
-		JsonObject trophyObject = profileInformation.get("trophy_fish").getAsJsonObject();
+		JsonObject trophyObject = profileInformation.getAsJsonObject("trophy_fish");
 
 		loadTrophyInformation(trophyObject);
 
@@ -156,7 +162,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		GlStateManager.disableLighting();
 		RenderHelper.enableGUIStandardItemLighting();
 
-		JsonObject stats = profileInformation.get("stats").getAsJsonObject();
+		JsonObject stats = profileInformation.getAsJsonObject("stats");
 
 		int thunderKills = 0;
 		if (stats.has("kills_thunder")) {

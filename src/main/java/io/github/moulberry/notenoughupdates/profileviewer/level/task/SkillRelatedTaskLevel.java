@@ -33,12 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SkillRelatedTaskLevel {
+public class SkillRelatedTaskLevel extends GuiTaskLevel{
 
-	private final LevelPage levelPage;
+	public SkillRelatedTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public SkillRelatedTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject skillRelatedTask = levelPage.getConstant().get("skill_related_task").getAsJsonObject();
 		JsonObject miningObj = skillRelatedTask.get("mining").getAsJsonObject();

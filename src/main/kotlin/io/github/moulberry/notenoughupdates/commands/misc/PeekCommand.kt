@@ -50,7 +50,7 @@ class PeekCommand {
         deleteReply("$YELLOW[PEEK] Getting player information...")
 
 
-        NotEnoughUpdates.profileViewer.getProfileByName(
+        NotEnoughUpdates.profileViewer.loadPlayerByName(
             name
         ) { profile: SkyblockProfiles? ->
             if (profile == null) {
@@ -72,19 +72,19 @@ class PeekCommand {
                             return
                         }
                         val g = GRAY.toString()
-                        val profileInfo = profile.selectedProfile.profileJson
+                        val profileInfo = profile.latestProfile.profileJson
                         if (profileInfo == null) {
                             future = executor.schedule(this, 200, TimeUnit.MILLISECONDS)
                             return
                         }
                         var overallScore = 0f
                         val isMe = name.equals("moulberry", ignoreCase = true)
-                        val stats = profile.selectedProfile.stats
+                        val stats = profile.latestProfile.stats
                         if (stats == null) {
                             future = executor.schedule(this, 200, TimeUnit.MILLISECONDS)
                             return
                         }
-                        val skyblockInfo = profile.selectedProfile.levelingInfo
+                        val skyblockInfo = profile.latestProfile.levelingInfo
                         if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
                             deleteReply("$YELLOW[PEEK] Getting the player's Skyblock networth...")
                             val countDownLatch = CountDownLatch(1)
@@ -220,7 +220,7 @@ class PeekCommand {
                                 profile.getNameToSoopyNetworth(null, Runnable {})
                             nwData?.total ?: -2L
                         } else {
-                            profile.selectedProfile.networth
+                            profile.latestProfile.networth
                         }
                         val money =
                             Math.max(bankBalance + purseBalance, networth.toFloat())
@@ -245,14 +245,14 @@ class PeekCommand {
                         val activePet =
                             Utils.getElementAsString(
                                 Utils.getElement(
-                                    profile.selectedProfile.petsInfo, "active_pet.type"
+                                    profile.latestProfile.petsInfo, "active_pet.type"
                                 ),
                                 "None Active"
                             )
                         val activePetTier =
                             Utils.getElementAsString(
                                 Utils.getElement(
-                                    profile.selectedProfile.petsInfo,
+                                    profile.latestProfile.petsInfo,
                                     "active_pet.tier"
                                 ), "UNKNOWN"
                             )

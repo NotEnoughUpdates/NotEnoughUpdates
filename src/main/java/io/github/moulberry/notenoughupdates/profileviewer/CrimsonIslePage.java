@@ -104,8 +104,12 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
 
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 		if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "No data found for the Crimson Isles",
@@ -219,7 +223,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		for (int i = 0; i < apiDojoTestNames.size(); i++) {
 			Utils.renderAlignedString(
-				apiDojoTestNames.get(apiDojoTestNames.keySet().toArray()[i]) + ": ",
+				new ArrayList<>(apiDojoTestNames.values()).get(i) + ": ",
 				EnumChatFormatting.WHITE + String.valueOf(dojoScores[i]) + " (" +
 					dojoGrades[(dojoScores[i] / 200) >= 6 ? 5 : (dojoScores[i] / 200)] + ")",
 				guiLeft + (431 * 0.49f) - 65,
@@ -263,7 +267,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			}
 			lastRank = rank.getKey();
 		}
-		return dojoPointsToRank.get(dojoPointsToRank.keySet().toArray()[dojoPointsToRank.size() - 1]);
+		return dojoPointsToRank.get(lastRank);
 	}
 
 	public int getPointsToNextRank(int pointsTotal) {

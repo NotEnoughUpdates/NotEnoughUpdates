@@ -975,7 +975,7 @@ public class RenderListener {
 					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
 						String username = tag.getCompoundTag("SkullOwner").getString("Name");
 						Utils.playPressSound();
-						NotEnoughUpdates.profileViewer.getProfileByName(username, profile -> {
+						NotEnoughUpdates.profileViewer.loadPlayerByName(username, profile -> {
 							if (profile == null) {
 								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
 							} else {

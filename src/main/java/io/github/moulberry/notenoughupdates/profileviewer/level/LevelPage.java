@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.level.task.CoreTaskLev
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.DungeonTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EssenceTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EventTaskLevel;
+import io.github.moulberry.notenoughupdates.profileviewer.level.task.GuiTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.MiscTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SkillRelatedTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SlayingTaskLevel;
@@ -42,6 +43,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,34 +52,26 @@ public class LevelPage extends GuiProfileViewerPage {
 	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
 	private final BasicPage basicPage;
 	private final JsonObject constant;
-	private final CoreTaskLevel coreTaskLevel;
-	private final DungeonTaskLevel dungeonTaskLevel;
-	private final EssenceTaskLevel essenceTaskLevel;
-	private final MiscTaskLevel miscTaskLevel;
-	private final SkillRelatedTaskLevel skillRelatedTaskLevel;
-	private final SlayingTaskLevel slayingTaskLevel;
-	private final StoryTaskLevel storyTaskLevel;
-	private final EventTaskLevel eventTaskLevel;
+	private final List<GuiTaskLevel> tasks = new ArrayList<>();
 
 	public LevelPage(GuiProfileViewer instance, BasicPage basicPage) {
 		super(instance);
 		this.basicPage = basicPage;
 		constant = Constants.SBLEVELS;
 
-		coreTaskLevel = new CoreTaskLevel(this);
-		dungeonTaskLevel = new DungeonTaskLevel(this);
-		essenceTaskLevel = new EssenceTaskLevel(this);
-		miscTaskLevel = new MiscTaskLevel(this);
-		skillRelatedTaskLevel = new SkillRelatedTaskLevel(this);
-		slayingTaskLevel = new SlayingTaskLevel(this);
-		storyTaskLevel = new StoryTaskLevel(this);
-		eventTaskLevel = new EventTaskLevel(this);
+		tasks.add(new CoreTaskLevel(this));
+		tasks.add(new DungeonTaskLevel(this));
+		tasks.add(new EssenceTaskLevel(this));
+		tasks.add(new MiscTaskLevel(this));
+		tasks.add(new SkillRelatedTaskLevel(this));
+		tasks.add(new SlayingTaskLevel(this));
+		tasks.add(new StoryTaskLevel(this));
+		tasks.add(new EventTaskLevel(this));
 	}
 
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		SkyblockProfiles.SkyblockProfile profile = GuiProfileViewer.getSelectedProfile();
 
 		basicPage.drawSideButtons();
 
@@ -89,18 +83,16 @@ public class LevelPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_levels);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		double skyblockLevel = profile.getSkyblockLevel();
-		JsonObject profileInfo = profile.getProfileJson();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		double skyblockLevel = selectedProfile.getSkyblockLevel();
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
-		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		essenceTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		miscTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		skillRelatedTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		slayingTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		storyTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		eventTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
+		tasks.forEach(task -> task.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop));
 	}
 
 	public void renderLevelBar(

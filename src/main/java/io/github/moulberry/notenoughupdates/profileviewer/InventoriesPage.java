@@ -124,9 +124,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 		getInstance().inventoryTextField.setSize(88, 20);
 
-		SkyblockProfiles.SkyblockProfile profile = GuiProfileViewer.getSelectedProfile();
-		Map<String, JsonArray> inventoryInfo = profile.getInventoryInfo();
-		if (inventoryInfo == null) return;
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		Map<String, JsonArray> inventoryInfo = selectedProfile.getInventoryInfo();
 
 		int invNameIndex = 0;
 		for (Map.Entry<String, ItemStack> entry : invNameToDisplayMap.entrySet()) {
@@ -152,7 +155,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					if (Objects.equals(entry.getKey(), "talisman_bag")) {
 						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
-						int magicalPower = profile.getMagicalPower();
+						int magicalPower = getSelectedProfile().getMagicalPower();
 						getInstance()
 							.tooltipToDisplay.add(
 								magicalPower == -1
@@ -164,7 +167,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 							);
 
 						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
-						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfileJson());
+						String selectedPower = PlayerStats.getSelectedMagicalPower(getSelectedProfile().getProfileJson());
 						getInstance()
 							.tooltipToDisplay.add(
 								selectedPower == null
@@ -182,7 +185,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		if (armorItems == null) {
 			armorItems = new ItemStack[4];
-			JsonArray armor = inventoryInfo.get( "inv_armor");
+			JsonArray armor = inventoryInfo.get("inv_armor");
 			for (int i = 0; i < armor.size(); i++) {
 				if (armor.get(i) == null || !armor.get(i).isJsonObject()) continue;
 				armorItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(armor.get(i).getAsJsonObject(), false);
@@ -209,7 +212,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		if (equipmentItems == null) {
 			equipmentItems = new ItemStack[4];
-			JsonArray equippment = inventoryInfo.get( "equippment_contents");
+			JsonArray equippment = inventoryInfo.get("equippment_contents");
 			for (int i = 0; i < equippment.size(); i++) {
 				if (equippment.get(i) == null || !equippment.get(i).isJsonObject()) continue;
 				equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
@@ -234,6 +237,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			}
 		}
 
+		// TODO: 3D arrays...
 		ItemStack[][][] inventories = getItemsForInventory(inventoryInfo, selectedInventory);
 		if (currentInventoryIndex >= inventories.length) currentInventoryIndex = inventories.length - 1;
 		if (currentInventoryIndex < 0) currentInventoryIndex = 0;
@@ -321,7 +325,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16) {
 			if (mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
 				if (mouseY < guiTop + 101 + 17) {
-					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, profile.getProfileJson());
+					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, getSelectedProfile().getProfileJson());
 					if (quiverInfo == null) {
 						getInstance().tooltipToDisplay = Utils.createList(EnumChatFormatting.RED + "Error checking Quiver");
 					} else {

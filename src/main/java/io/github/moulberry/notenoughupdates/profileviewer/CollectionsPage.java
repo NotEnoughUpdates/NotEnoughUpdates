@@ -89,8 +89,12 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_cols);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileCollectionInfo collectionInfo =
-			GuiProfileViewer.getSelectedProfile().getCollectionInfo();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		ProfileCollectionInfo collectionInfo = selectedProfile.getCollectionInfo();
 		if (collectionInfo == null) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "Collection API not enabled!",
@@ -281,9 +285,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 				}
 
 				GlStateManager.color(1, 1, 1, 1);
-				if (tier >= 0) {
-					Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
-				}
+				Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
 
 				Utils.drawStringCentered(
 					StringUtils.shortNumberFormat(amount) + "", guiLeft + x + 10, guiTop + y + 26, true, color.getRGB());
@@ -399,6 +401,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	public void keyTyped(char typedChar, int keyCode) throws IOException {
 		ItemStack stack = null;
 		Iterator<ItemStack> items = ProfileViewer.getCollectionCatToCollectionMap().keySet().iterator();
+		// TOOD: check this - are there supposed to be breaks in each case?
 		switch (keyCode) {
 			case Keyboard.KEY_5:
 			case Keyboard.KEY_NUMPAD5:

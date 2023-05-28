@@ -33,12 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EssenceTaskLevel {
+public class EssenceTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public EssenceTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public EssenceTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		List<String> lore = new ArrayList<>();
 

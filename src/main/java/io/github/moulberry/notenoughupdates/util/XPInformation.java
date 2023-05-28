@@ -232,7 +232,7 @@ public class XPInformation {
 	};
 
 	private void onApiUpdated(SkyblockProfiles profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSelectedProfile().getLevelingInfo();
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
 
 		for (String skill : skills) {
 			SkillInfo info = new SkillInfo();

@@ -516,7 +516,7 @@ public class ProfileViewer {
 			});
 	}
 
-	public void getProfileByName(String name, Consumer<SkyblockProfiles> callback) {
+	public void loadPlayerByName(String name, Consumer<SkyblockProfiles> callback) {
 		String nameLower = name.toLowerCase();
 
 		if (nameToUuid.containsKey(nameLower) && nameToUuid.get(nameLower) == null) {

@@ -100,7 +100,7 @@ public class SkyblockProfiles {
 	private Map<String, SkyblockProfile> nameToProfile = null;
 	private JsonArray profilesArray;
 	private List<String> profileNames = new ArrayList<>();
-	private String selectedProfileName;
+	private String latestProfileName;
 	private long soopyNetworthLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 	private long soopyWeightLeaderboardPosition = -1; //-1 = default, -2 = loading, -3 = error
 	private JsonObject guildInformation = null;
@@ -204,7 +204,7 @@ public class SkyblockProfiles {
 	 * Returns null if still loading
 	 */
 	public SoopyNetworthData getNameToSoopyNetworth(String profileName, Runnable callback) {
-		if (profileName == null) profileName = selectedProfileName;
+		if (profileName == null) profileName = latestProfileName;
 		if (nameToSoopyNetworth.get(profileName) != null) {
 			callback.run();
 			return nameToSoopyNetworth.get(profileName);
@@ -312,16 +312,16 @@ public class SkyblockProfiles {
 		return null;
 	}
 
-	public SkyblockProfile getProfile(String profileName) {
-		return nameToProfile.get(profileName);
+	public @Nullable SkyblockProfile getProfile(String profileName) {
+		return nameToProfile == null ? null : nameToProfile.get(profileName);
 	}
 
-	public SkyblockProfile getSelectedProfile() {
-		return nameToProfile.get(getSelectedProfileName());
+	public SkyblockProfile getLatestProfile() {
+		return nameToProfile.get(latestProfileName);
 	}
 
-	public String getSelectedProfileName() {
-		return selectedProfileName;
+	public String getLatestProfileName() {
+		return latestProfileName;
 	}
 
 	public Map<String, SkyblockProfile> getOrLoadSkyblockProfiles(Runnable runnable) {
@@ -367,7 +367,7 @@ public class SkyblockProfiles {
 
 							String profileName = profile.get("cute_name").getAsString();
 							if (profile.has("selected") && profile.get("selected").getAsBoolean()) {
-								selectedProfileName = profileName;
+								latestProfileName = profileName;
 							}
 							nameToProfile.put(profileName, new SkyblockProfile(profile));
 							profileNames.add(profileName);
@@ -430,23 +430,6 @@ public class SkyblockProfiles {
 		guildInformation = null;
 		playerStatus = null;
 		nameToProfile = null;
-	}
-
-	public int getLevelingCap(JsonObject leveling, String skillName) {
-		JsonElement capsElement = Utils.getElement(leveling, "leveling_caps");
-		return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
-			? capsElement.getAsJsonObject().get(skillName).getAsInt()
-			: 50;
-	}
-
-	public String[] growArray(String bytes, int index, String[] oldArray) {
-		int newSize = Math.max(index + 1, oldArray.length);
-
-		String[] newArray = new String[newSize];
-		System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
-		newArray[index] = bytes;
-
-		return newArray;
 	}
 
 	public String getUuid() {
@@ -569,8 +552,8 @@ public class SkyblockProfiles {
 			}
 
 			JsonObject profileJson = getProfileJson();
-
 			inventoryNameToInfo = new HashMap<>();
+
 			for (String invName : inventoryNames) {
 				JsonArray contents = new JsonArray();
 
@@ -621,7 +604,7 @@ public class SkyblockProfiles {
 				if (backpackIcon.getValue() instanceof JsonObject) {
 					JsonObject backpackData = (JsonObject) backpackContentsJson.get(backpackIcon.getKey());
 					String bytes = Utils.getElementAsString(backpackData.get("data"), defaultNbtData);
-					backpackArray = growArray(bytes, Integer.parseInt(backpackIcon.getKey()), backpackArray);
+					backpackArray = ProfileViewerUtils.growArray(bytes, Integer.parseInt(backpackIcon.getKey()), backpackArray);
 				}
 			}
 
@@ -748,7 +731,7 @@ public class SkyblockProfiles {
 				}
 
 				int maxLevel =
-					getLevelingCap(leveling, skillName) +
+					ProfileViewerUtils.getLevelingCap(leveling, skillName) +
 						(
 							skillName.equals("farming")
 								? Utils.getElementAsInt(Utils.getElement(profileJson, "jacob2.perks.farming_level_cap"), 0)
@@ -768,7 +751,7 @@ public class SkyblockProfiles {
 				ProfileViewer.getLevel(
 					Utils.getElement(leveling, "leveling_xp").getAsJsonArray(),
 					Utils.getElementAsFloat(Utils.getElement(profileJson, "mining_core.experience"), 0),
-					getLevelingCap(leveling, "HOTM"),
+					ProfileViewerUtils.getLevelingCap(leveling, "HOTM"),
 					false
 				)
 			);
@@ -778,7 +761,7 @@ public class SkyblockProfiles {
 				ProfileViewer.getLevel(
 					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
 					Utils.getElementAsFloat(Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.experience"), 0),
-					getLevelingCap(leveling, "catacombs"),
+					ProfileViewerUtils.getLevelingCap(leveling, "catacombs"),
 					false
 				)
 			);
@@ -794,7 +777,7 @@ public class SkyblockProfiles {
 					ProfileViewer.getLevel(
 						Utils.getElement(leveling, "catacombs").getAsJsonArray(),
 						classExperience,
-						getLevelingCap(leveling, "catacombs"),
+						ProfileViewerUtils.getLevelingCap(leveling, "catacombs"),
 						false
 					)
 				);

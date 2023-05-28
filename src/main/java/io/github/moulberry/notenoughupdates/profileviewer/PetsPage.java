@@ -65,14 +65,23 @@ public class PetsPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		SkyblockProfiles profile = GuiProfileViewer.getProfile();
-		JsonObject petsInfo = GuiProfileViewer.getSelectedProfile().getPetsInfo();
-		if (petsInfo == null) return;
 		JsonObject petsJson = Constants.PETS;
-		if (petsJson == null) return;
+		if (petsJson == null) {
+			return;
+		}
+
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject petsInfo = selectedProfile.getPetsInfo();
+		if (petsInfo == null) {
+			return;
+		}
 
 		String location = null;
-		JsonObject status = profile.getPlayerStatus();
+		JsonObject status = GuiProfileViewer.getProfile().getPlayerStatus();
 		if (status != null && status.has("mode")) {
 			location = status.get("mode").getAsString();
 		}

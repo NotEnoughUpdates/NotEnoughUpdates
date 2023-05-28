@@ -36,12 +36,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class MiscTaskLevel {
+public class MiscTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public MiscTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public MiscTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject miscellaneousTask = levelPage.getConstant().getAsJsonObject("miscellaneous_task");
 		// I love doing this on god!!!

@@ -178,10 +178,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_extra);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		SkyblockProfiles profile = GuiProfileViewer.getProfile();
-		JsonObject profileInfo = profile.getSelectedProfile().getProfileJson();
-		if (profileInfo == null) return;
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSelectedProfile().getLevelingInfo();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInfo = selectedProfile.getProfileJson();
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		float xStart = 22;
 		float xOffset = 103;
@@ -219,7 +222,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
-		JsonObject guildInfo = profile.getOrLoadGuildInformation(null);
+		JsonObject guildInfo = GuiProfileViewer.getProfile().getOrLoadGuildInformation(null);
 		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
 		{
 			if (shouldRenderGuild) {

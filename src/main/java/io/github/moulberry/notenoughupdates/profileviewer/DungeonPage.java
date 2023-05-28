@@ -120,17 +120,19 @@ public class DungeonPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dung);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		SkyblockProfiles profile = GuiProfileViewer.getProfile();
-		String profileName = GuiProfileViewer.getProfileName();
-		JsonObject hypixelInfo = profile.getHypixelProfile();
-		JsonObject profileInfo = profile.getProfile(profileName).getProfileJson();
-		if (profileInfo == null) return;
-
 		JsonObject leveling = Constants.LEVELING;
 		if (leveling == null) return;
 
-		int sectionWidth = 110;
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
 
+		JsonObject profileInfo = selectedProfile.getProfileJson();
+		String profileName = GuiProfileViewer.getProfileName();
+		JsonObject hypixelInfo = GuiProfileViewer.getProfile().getHypixelProfile();
+
+		int sectionWidth = 110;
 		String dungeonString = onMasterMode ? "master_catacombs" : "catacombs";
 
 		Utils.renderShadowedString(
@@ -161,7 +163,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			int levelFloored = (int) Math.floor(level);
 
 			if (floorLevelTo == -1 && levelFloored >= 0) {
-				dungeonLevelTextField.setText("" + (levelFloored + 1));
+				dungeonLevelTextField.setText(String.valueOf(levelFloored + 1));
 				calculateFloorLevelXP();
 			}
 
@@ -484,7 +486,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 			int y3 = y + 117;
 
 			for (int i = 1; i <= 7; i++) {
-				int w = fontRendererObj.getStringWidth("" + i);
+				int w = fontRendererObj.getStringWidth(String.valueOf(i));
 
 				int bx = x + sectionWidth * i / 8 - w / 2;
 
@@ -705,7 +707,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 		if (mouseY >= y - 2 && mouseY <= y + 9) {
 			for (int i = 1; i <= 7; i++) {
-				int w = fontRendererObj.getStringWidth("" + i);
+				int w = fontRendererObj.getStringWidth(String.valueOf(i));
 
 				int x = guiLeft + 23 + 110 * i / 8 - w / 2;
 

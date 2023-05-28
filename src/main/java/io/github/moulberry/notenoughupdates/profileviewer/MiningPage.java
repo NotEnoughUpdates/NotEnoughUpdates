@@ -59,10 +59,13 @@ public class MiningPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_mining);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		SkyblockProfiles profile = GuiProfileViewer.getProfile();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
 		String profileName = GuiProfileViewer.getProfileName();
-		JsonObject profileInfo = profile.getProfile(profileName).getProfileJson();
-		if (profileInfo == null) return;
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 
 		float xStart = 22;
 		float yStartTop = 27;
@@ -394,7 +397,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format(Math.pow(miningSpeed + 2, 3)) +
 						" Mithril Powder"
 				)
@@ -437,7 +439,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format(Math.pow(miningFortune + 2, 3)) +
 						" Mithril Powder"
 				)
@@ -482,7 +483,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(tittyInsane + 2, 3)) +
 						" Mithril Powder"
 				)
@@ -580,7 +580,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(luckofcave + 2, 3.07)) +
 						" Mithril Powder"
 				)
@@ -618,7 +617,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					EnumChatFormatting.GRAY + "Works for all Powder types.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
-					EnumChatFormatting.DARK_GREEN + "" + (200 + ((dailyPowder) * 18)) + " Mithril Powder"
+					EnumChatFormatting.DARK_GREEN + String.valueOf(200 + ((dailyPowder) * 18)) + " Mithril Powder"
 				)
 					: Lists.newArrayList(
 						"Daily Powder",
@@ -652,8 +651,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "When mining ores, you have a",
 					EnumChatFormatting.GREEN +
-						"" +
-						effMinerStat +
+						String.valueOf(effMinerStat) +
 						"%" +
 						EnumChatFormatting.GRAY +
 						" chance to mine " +
@@ -663,7 +661,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(effMiner + 2, 2.6)) +
 						" Mithril Powder"
 				)
@@ -673,8 +670,7 @@ public class MiningPage extends GuiProfileViewerPage {
 						"",
 						EnumChatFormatting.GRAY + "When mining ores, you have a",
 						EnumChatFormatting.GREEN +
-							"" +
-							effMinerStat +
+							String.valueOf(effMinerStat) +
 							"%" +
 							EnumChatFormatting.GRAY +
 							" chance to mine " +
@@ -837,15 +833,13 @@ public class MiningPage extends GuiProfileViewerPage {
 						"chance to mine " +
 						EnumChatFormatting.GREEN,
 					EnumChatFormatting.GREEN +
-						"" +
-						Math.round(moleStat) +
+						String.valueOf(Math.round(moleStat)) +
 						EnumChatFormatting.GRAY +
 						" adjacent hard stone block" +
 						(moleStat == 1.0 ? "." : "s."),
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(mole + 2, 2.2)) +
 						" Gemstone Powder"
 				)
@@ -863,8 +857,7 @@ public class MiningPage extends GuiProfileViewerPage {
 							"chance to mine " +
 							EnumChatFormatting.GREEN,
 						EnumChatFormatting.GREEN +
-							"" +
-							Math.round(moleStat) +
+							String.valueOf(Math.round(moleStat)) +
 							EnumChatFormatting.GRAY +
 							" adjacent hard stone block" +
 							(moleStat == 1.0 ? "." : "s.")
@@ -895,7 +888,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(powderBuff + 2, 3.2)) +
 						" Gemstone Powder"
 				)
@@ -976,7 +968,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(seasonMine + 2, 2.3)) +
 						" Mithril Powder"
 				)
@@ -1019,7 +1010,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(lonesomeMiner + 2, 3.07)) +
 						" Gemstone Powder"
 				)
@@ -1052,7 +1042,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(professional + 2, 2.3)) +
 						" Gemstone Powder"
 				)
@@ -1083,7 +1072,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format(Math.pow(miningSpeed2 + 2, 3)) +
 						" Gemstone Powder"
 				)
@@ -1114,7 +1102,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(quickForge + 2, 4)) +
 						" Mithril Powder"
 				)
@@ -1145,7 +1132,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(fortunate + 2, 3.05)) +
 						" Mithril Powder"
 				)
@@ -1177,7 +1163,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(greatExplorer + 2, 4)) +
 						" Gemstone Powder"
 				)
@@ -1209,7 +1194,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(miningFortune2 + 2, 3.2)) +
 						" Gemstone Powder"
 				)
@@ -1236,18 +1220,18 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
 					"",
 					"§7When mining ores, you have a",
-					EnumChatFormatting.GREEN + "" + orbitStat + "%" + EnumChatFormatting.GRAY + " chance to get a random",
+					EnumChatFormatting.GREEN + String.valueOf(orbitStat) + "%" + EnumChatFormatting.GRAY + " chance to get a random",
 					"§7amount of experience orbs.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
-					EnumChatFormatting.DARK_GREEN + "" + ((orbit + 1) * 70) + " Mithril Powder"
+					EnumChatFormatting.DARK_GREEN + String.valueOf((orbit + 1) * 70) + " Mithril Powder"
 				)
 					: Lists.newArrayList(
 						"Orbiter",
 						"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
 						"",
 						"§7When mining ores, you have a",
-						EnumChatFormatting.GREEN + "" + orbitStat + "%" + EnumChatFormatting.GRAY + " chance to get a random",
+						EnumChatFormatting.GREEN + String.valueOf(orbitStat) + "%" + EnumChatFormatting.GRAY + " chance to get a random",
 						"§7amount of experience orbs."
 					),
 			80
@@ -1323,7 +1307,6 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
 						GuiProfileViewer.numberFormat.format((int) Math.pow(crystallized + 2, 2.4)) +
 						" Mithril Powder"
 				)

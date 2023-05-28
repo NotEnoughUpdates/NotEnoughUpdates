@@ -51,6 +51,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -190,12 +191,13 @@ public class GuiProfileViewer extends GuiScreen {
 
 	public GuiProfileViewer(SkyblockProfiles profile) {
 		GuiProfileViewer.profile = profile;
-		GuiProfileViewer.profileName = profile.getSelectedProfileName();
-		String name = "";
+		GuiProfileViewer.profileName = profile.getLatestProfileName();
+
+		String playerName = "";
 		if (profile.getHypixelProfile() != null) {
-			name = profile.getHypixelProfile().get("displayname").getAsString();
+			playerName = profile.getHypixelProfile().get("displayname").getAsString();
 		}
-		playerNameTextField = new GuiElementTextField(name, GuiElementTextField.SCALE_TEXT);
+		playerNameTextField = new GuiElementTextField(playerName, GuiElementTextField.SCALE_TEXT);
 		playerNameTextField.setSize(100, 20);
 
 		if (currentPage == ProfileViewerPage.LOADING) {
@@ -237,8 +239,8 @@ public class GuiProfileViewer extends GuiScreen {
 		return profileName;
 	}
 
-	public static SkyblockProfiles.SkyblockProfile getSelectedProfile() {
-		return getProfile().getProfile(profileName);
+	public static @Nullable SkyblockProfiles.SkyblockProfile getSelectedProfile() {
+		return profile.getProfile(profileName);
 	}
 
 	@Override
@@ -251,19 +253,17 @@ public class GuiProfileViewer extends GuiScreen {
 			page = ProfileViewerPage.INVALID_NAME;
 		} else if (profile.getOrLoadSkyblockProfiles(null) == null) {
 			page = ProfileViewerPage.LOADING;
-		} else if (profile.getSelectedProfileName() == null) {
+		} else if (profile.getLatestProfileName() == null) {
 			page = ProfileViewerPage.NO_SKYBLOCK;
 		}
 
-		if (profileName == null && profile != null && profile.getSelectedProfileName() != null) {
-			profileName = profile.getSelectedProfileName();
-		}
-
-		{
-			//this is just to cache the guild info
-			if (profile != null) {
-				profile.getOrLoadGuildInformation(null);
+		if (profile != null){
+			if (profileName == null && profile.getLatestProfileName() != null) {
+				profileName = profile.getLatestProfileName();
 			}
+
+			// Preload guild info
+			profile.getOrLoadGuildInformation(null);
 		}
 
 		this.sizeX = 431;
@@ -271,15 +271,16 @@ public class GuiProfileViewer extends GuiScreen {
 		guiLeft = (this.width - this.sizeX) / 2;
 		guiTop = (this.height - this.sizeY) / 2;
 
-		SkyblockProfiles.SkyblockProfile currProfileInfo = profile != null ? profile.getProfile(profileName) : null;
+		SkyblockProfiles.SkyblockProfile selectedProfile = profile != null ? profile.getProfile(profileName) : null;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
 			showBingoPage = true;
 		} else {
-			showBingoPage =
-				currProfileInfo != null && currProfileInfo.getGamemode().equals("bingo");
+			showBingoPage = selectedProfile != null && selectedProfile.getGamemode().equals("bingo");
 		}
 
-		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO) currentPage = ProfileViewerPage.BASIC;
+		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO) {
+			currentPage = ProfileViewerPage.BASIC;
+		}
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		drawDefaultBackground();
@@ -307,7 +308,7 @@ public class GuiProfileViewer extends GuiScreen {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bg);
 		Utils.drawTexturedRect(guiLeft, guiTop, sizeX, sizeY, GL11.GL_NEAREST);
 
-		if (!(page == ProfileViewerPage.LOADING)) {
+		if (page != ProfileViewerPage.LOADING) {
 			playerNameTextField.render(guiLeft + sizeX - 100, guiTop + sizeY + 5);
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 
@@ -324,45 +325,27 @@ public class GuiProfileViewer extends GuiScreen {
 					90,
 					new Color(63, 224, 208, 255).getRGB()
 				);
-				//ironman icon
-				if (
-					currProfileInfo != null &&
-						currProfileInfo.getGamemode().equals("ironman")
-				) {
+
+				if (selectedProfile != null) {
 					GlStateManager.color(1, 1, 1, 1);
-					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
+					switch (selectedProfile.getGamemode()) {
+						case "ironman": // Ironman icon
+							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
+							break;
+						case "bingo": // Bingo icon
+							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
+							break;
+						case "island": // Stranded icon
+							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
+							break;
+						default: // Unknown gamemode icon
+							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
+							break;
+					}
 					Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
 				}
-				//bingo! icon
-				if (
-					currProfileInfo != null &&
-						currProfileInfo.getGamemode().equals("bingo")
-				) {
-					GlStateManager.color(1, 1, 1, 1);
-					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
-					Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
-				}
-				//stranded icon
-				if (
-					currProfileInfo != null &&
-						currProfileInfo.getGamemode().equals("island")
-				) {
-					GlStateManager.color(1, 1, 1, 1);
-					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
-					Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
-				}
-				//icon if game mode is unknown
-				if (
-					currProfileInfo != null &&
-						!currProfileInfo.getGamemode().equals("island") &&
-						!currProfileInfo.getGamemode().equals("bingo") &&
-						!currProfileInfo.getGamemode().equals("ironman")
-				) {
-					GlStateManager.color(1, 1, 1, 1);
-					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
-					Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
-				}
-				//Render Open In Skycrypt button
+
+				// Render Open In SkyCrypt button
 				renderBlurredBackground(width, height, guiLeft + 100 + 6 + 2, guiTop + sizeY + 3 + 2, 100 - 4, 20 - 4);
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
 				Utils.drawTexturedRect(
@@ -387,9 +370,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (profileDropdownSelected && !profile.getProfileNames().isEmpty() && scaledResolution.getScaleFactor() < 4) {
 					int dropdownOptionSize = scaledResolution.getScaleFactor() == 3 ? 10 : 20;
-
-					int numProfiles = profile.getProfileNames().size();
-					int sizeYDropdown = numProfiles * dropdownOptionSize;
+					int sizeYDropdown = profile.getProfileNames().size() * dropdownOptionSize;
 					renderBlurredBackground(width, height, guiLeft + 2, guiTop + sizeY + 23, 100 - 4, sizeYDropdown - 2);
 					Minecraft.getMinecraft().getTextureManager().bindTexture(pv_dropdown);
 					Utils.drawTexturedRect(guiLeft, guiTop + sizeY + 23 - 3, 100, 3, 100 / 200f, 1, 0, 3 / 185f, GL11.GL_NEAREST);
@@ -418,6 +399,8 @@ public class GuiProfileViewer extends GuiScreen {
 
 					for (int yIndex = 0; yIndex < profile.getProfileNames().size(); yIndex++) {
 						String otherProfileName = profile.getProfileNames().get(yIndex);
+						selectedProfile = profile.getProfile(otherProfileName);
+
 						Utils.drawStringCenteredScaledMaxWidth(
 							otherProfileName,
 							guiLeft + 50,
@@ -426,57 +409,23 @@ public class GuiProfileViewer extends GuiScreen {
 							90,
 							new Color(33, 112, 104, 255).getRGB()
 						);
-						currProfileInfo = profile.getProfile(otherProfileName);
-						if (
-							currProfileInfo != null &&
-								currProfileInfo.getGamemode().equals("ironman")
-						) {
+
+						if (selectedProfile != null) {
 							GlStateManager.color(1, 1, 1, 1);
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
-							Utils.drawTexturedRect(
-								guiLeft - 16 - 5,
-								guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex,
-								16,
-								16,
-								GL11.GL_NEAREST
-							);
-						}
-						if (
-							currProfileInfo != null &&
-								currProfileInfo.getGamemode().equals("bingo")
-						) {
-							GlStateManager.color(1, 1, 1, 1);
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
-							Utils.drawTexturedRect(
-								guiLeft - 16 - 5,
-								guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex,
-								16,
-								16,
-								GL11.GL_NEAREST
-							);
-						}
-						if (
-							currProfileInfo != null &&
-								currProfileInfo.getGamemode().equals("island")
-						) {
-							GlStateManager.color(1, 1, 1, 1);
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
-							Utils.drawTexturedRect(
-								guiLeft - 16 - 5,
-								guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex,
-								16,
-								16,
-								GL11.GL_NEAREST
-							);
-						}
-						if (
-							currProfileInfo != null &&
-								!currProfileInfo.getGamemode().equals("island") &&
-								!currProfileInfo.getGamemode().equals("bingo") &&
-								!currProfileInfo.getGamemode().equals("ironman")
-						) {
-							GlStateManager.color(1, 1, 1, 1);
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
+							switch (selectedProfile.getGamemode()) {
+								case "ironman":
+									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
+									break;
+								case "bingo":
+									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
+									break;
+								case "island":
+									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
+									break;
+								default:
+									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
+									break;
+							}
 							Utils.drawTexturedRect(
 								guiLeft - 16 - 5,
 								guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex,
@@ -828,7 +777,7 @@ public class GuiProfileViewer extends GuiScreen {
 		if (playerNameTextField.getFocus()) {
 			if (keyCode == Keyboard.KEY_RETURN) {
 				currentPage = ProfileViewerPage.LOADING;
-				NotEnoughUpdates.profileViewer.getProfileByName(
+				NotEnoughUpdates.profileViewer.loadPlayerByName(
 					playerNameTextField.getText(),
 					profile -> { //todo: invalid name
 						if (profile != null) profile.resetCache();

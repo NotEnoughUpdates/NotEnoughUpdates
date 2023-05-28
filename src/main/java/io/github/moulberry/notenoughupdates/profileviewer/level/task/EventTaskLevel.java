@@ -29,12 +29,13 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventTaskLevel {
+public class EventTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public EventTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public EventTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		List<String> lore = new ArrayList<>();
 

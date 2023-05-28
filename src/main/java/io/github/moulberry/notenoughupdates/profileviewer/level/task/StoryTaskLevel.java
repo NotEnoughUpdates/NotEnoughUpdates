@@ -29,12 +29,13 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoryTaskLevel {
+public class StoryTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public StoryTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public StoryTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject storyTask = levelPage.getConstant().getAsJsonObject("story_task");
 		JsonArray storyTaskNames = storyTask.getAsJsonArray("complete_objectives_names");

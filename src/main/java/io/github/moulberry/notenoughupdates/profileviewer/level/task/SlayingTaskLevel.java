@@ -38,16 +38,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SlayingTaskLevel {
+public class SlayingTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
 	private final int[] bossLow = {25, 50, 100, 150, 250, 1000};
 	private final int[] thorn = {25, 50, 150, 250, 400, 1000};
 	private final int[] bossHigh = {50, 100, 150, 250, 500, 750, 1000};
 
+	public SlayingTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public SlayingTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		// slayer
 		JsonObject slayingTask = levelPage.getConstant().get("slaying_task").getAsJsonObject();

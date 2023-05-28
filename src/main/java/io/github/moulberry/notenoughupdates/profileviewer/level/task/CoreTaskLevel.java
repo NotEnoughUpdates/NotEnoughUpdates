@@ -35,11 +35,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CoreTaskLevel {
+public class CoreTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
-
-	public CoreTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
+	public CoreTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
 	private final List<String> skills = Arrays.asList(
 		"taming",
@@ -53,6 +53,7 @@ public class CoreTaskLevel {
 		"alchemy"
 	);
 
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject coreTask = levelPage.getConstant().get("core_task").getAsJsonObject();
 		// skills

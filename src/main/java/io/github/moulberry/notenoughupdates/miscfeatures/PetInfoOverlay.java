@@ -286,9 +286,9 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	private static void getAndSetPet(SkyblockProfiles profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSelectedProfile().getLevelingInfo();
-		Map<String, JsonArray> invInfo = profile.getSelectedProfile().getInventoryInfo();
-		JsonObject profileInfo = profile.getSelectedProfile().getProfileJson();
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
+		Map<String, JsonArray> invInfo = profile.getLatestProfile().getInventoryInfo();
+		JsonObject profileInfo = profile.getLatestProfile().getProfileJson();
 		if (invInfo != null && profileInfo != null) {
 			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
 			boolean hasBeastmasterCrest = false;

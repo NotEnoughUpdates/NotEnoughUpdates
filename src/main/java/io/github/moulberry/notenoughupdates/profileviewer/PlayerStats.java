@@ -556,7 +556,7 @@ public class PlayerStats {
 	private static float getStatMult(Map<String, JsonArray> inventoryInfo) {
 		float mult = 1f;
 
-		JsonArray armor = inventoryInfo.get( "inv_armor");
+		JsonArray armor = inventoryInfo.get("inv_armor");
 
 		String fullset = getFullset(armor, -1);
 
@@ -569,8 +569,6 @@ public class PlayerStats {
 			if (itemElement == null || !itemElement.isJsonObject()) continue;
 
 			JsonObject item = itemElement.getAsJsonObject();
-			String internalname = item.get("internalname").getAsString();
-
 			String reforge = Utils.getElementAsString(Utils.getElement(item, "ExtraAttributes.modifier"), "");
 
 			if (reforge.equals("renowned")) {
@@ -583,7 +581,7 @@ public class PlayerStats {
 
 	private static void applyLimits(Stats stats, Map<String, JsonArray> inventoryInfo) {
 		//>0
-		JsonArray armor = inventoryInfo.get( "inv_armor");
+		JsonArray armor = inventoryInfo.get("inv_armor");
 
 		String fullset = getFullset(armor, 3);
 
@@ -617,8 +615,8 @@ public class PlayerStats {
 		if (levelingInfo == null || inventoryInfo == null || profile == null) return null;
 
 		JsonArray armor = inventoryInfo.get("inv_armor");
-		JsonArray inventory = inventoryInfo.get( "inv_contents");
-		JsonArray talisman_bag = inventoryInfo.get( "talisman_bag");
+		JsonArray inventory = inventoryInfo.get("inv_contents");
+		JsonArray talisman_bag = inventoryInfo.get("talisman_bag");
 
 		Stats passiveBonuses = getPassiveBonuses(levelingInfo, profile);
 		Stats hotmBonuses = getHOTMBonuses(levelingInfo, profile);

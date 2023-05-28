@@ -150,4 +150,21 @@ public class ProfileViewerUtils {
 		}
 		return powerAmount;
 	}
+
+	public static String[] growArray(String bytes, int index, String[] oldArray) {
+		int newSize = Math.max(index + 1, oldArray.length);
+
+		String[] newArray = new String[newSize];
+		System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
+		newArray[index] = bytes;
+
+		return newArray;
+	}
+
+	public static int getLevelingCap(JsonObject leveling, String skillName) {
+		JsonElement capsElement = Utils.getElement(leveling, "leveling_caps");
+		return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
+			? capsElement.getAsJsonObject().get(skillName).getAsInt()
+			: 50;
+	}
 }

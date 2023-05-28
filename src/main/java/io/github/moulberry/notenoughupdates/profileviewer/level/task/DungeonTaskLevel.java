@@ -33,12 +33,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class DungeonTaskLevel {
+public class DungeonTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public DungeonTaskLevel(LevelPage levelPage) {super(levelPage);}
 
-	public DungeonTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject dungeonTask = levelPage.getConstant().get("dungeon_task").getAsJsonObject();
 

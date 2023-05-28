@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -62,7 +63,13 @@ public class BestiaryPage extends GuiProfileViewerPage {
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		JsonObject profileInfo = GuiProfileViewer.getSelectedProfile().getProfileJson();
+
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 
 		int bestiarySize = BestiaryData.getBestiaryLocations().size();
 		int bestiaryXSize = (int) (350f / (bestiarySize - 1 + 0.0000001f));
@@ -117,7 +124,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Color color = new Color(128, 128, 128, 255);
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Bestiary Level: ",
-			EnumChatFormatting.GRAY + "" + (float) GuiProfileViewer.getSelectedProfile().getBestiaryLevel() / 10,
+			EnumChatFormatting.GRAY + "" + (float) getSelectedProfile().getBestiaryLevel() / 10,
 			guiLeft + 220,
 			guiTop + 50,
 			110
