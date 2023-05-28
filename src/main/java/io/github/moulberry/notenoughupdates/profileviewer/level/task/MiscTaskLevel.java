@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
@@ -115,9 +116,15 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			}
 		}
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			// This is to make infer happy but shouldn't be possible
+			return;
+		}
+
 		// community upgrades
 		int sbXpCommunityUpgrade = 0;
-		JsonObject profileInformation = GuiProfileViewer.getSelectedProfile().getOuterProfileJson();
+		JsonObject profileInformation = selectedProfile.getOuterProfileJson();
 		if (profileInformation != null && profileInformation.has("community_upgrades")) {
 			JsonObject communityUpgrades = profileInformation.getAsJsonObject("community_upgrades");
 			JsonArray upgradeStates = communityUpgrades.getAsJsonArray("upgrade_states");

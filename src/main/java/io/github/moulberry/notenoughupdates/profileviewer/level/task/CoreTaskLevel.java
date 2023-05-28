@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
@@ -56,8 +57,15 @@ public class CoreTaskLevel extends GuiTaskLevel {
 	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject coreTask = levelPage.getConstant().get("core_task").getAsJsonObject();
+
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			// This is to make infer happy but shouldn't be possible
+			return;
+		}
+
 		// skills
-		Map<String, ProfileViewer.Level> skyblockInfo = GuiProfileViewer.getSelectedProfile().getLevelingInfo();
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		int sbXpGainedSkillLVL = 0;
 		if (skyblockInfo != null) {

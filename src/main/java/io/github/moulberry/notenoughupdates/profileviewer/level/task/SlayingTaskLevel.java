@@ -53,7 +53,14 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		// slayer
 		JsonObject slayingTask = levelPage.getConstant().get("slaying_task").getAsJsonObject();
 		JsonArray slayerLevelUpXp = slayingTask.get("slayer_level_up_xp").getAsJsonArray();
-		Map<String, ProfileViewer.Level> skyblockInfo = GuiProfileViewer.getSelectedProfile().getLevelingInfo();
+
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			// This is to make infer happy but shouldn't be possible
+			return;
+		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		int sbXpGainedSlayer = 0;
 		if (skyblockInfo != null) {

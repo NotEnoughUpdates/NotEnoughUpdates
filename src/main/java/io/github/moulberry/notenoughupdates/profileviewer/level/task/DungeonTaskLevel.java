@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
@@ -41,7 +42,13 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject dungeonTask = levelPage.getConstant().get("dungeon_task").getAsJsonObject();
 
-		Map<String, ProfileViewer.Level> skyblockInfo = GuiProfileViewer.getSelectedProfile().getLevelingInfo();
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			// This is to make infer happy but shouldn't be possible
+			return;
+		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		int sbLevelGainedFloor = 0;
 		int sbXpGainedClass = 0;
