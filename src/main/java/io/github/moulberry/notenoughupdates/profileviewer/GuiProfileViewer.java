@@ -257,9 +257,14 @@ public class GuiProfileViewer extends GuiScreen {
 			page = ProfileViewerPage.NO_SKYBLOCK;
 		}
 
+		System.out.println("gui: profiles null check: " + (profile == null));
+		System.out.println("gui: profile name: " + (profileName));
+
 		if (profile != null){
+			System.out.println("gui: latest profile name: " + profile.getLatestProfileName());
 			if (profileName == null && profile.getLatestProfileName() != null) {
 				profileName = profile.getLatestProfileName();
+				System.out.println("gui: set profile name: " + (profileName));
 			}
 
 			// Preload guild info

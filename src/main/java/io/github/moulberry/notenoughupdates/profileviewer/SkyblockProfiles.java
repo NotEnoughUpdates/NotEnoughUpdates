@@ -324,7 +324,9 @@ public class SkyblockProfiles {
 	}
 
 	public Map<String, SkyblockProfile> getOrLoadSkyblockProfiles(Runnable runnable) {
+		System.out.println("Loading sb profiles");
 		if (nameToProfile != null) {
+			System.out.println("Found cached sb profiles");
 			return nameToProfile;
 		}
 
@@ -372,6 +374,8 @@ public class SkyblockProfiles {
 							profileNames.add(profileName);
 						}
 					}
+
+					System.out.println("Loaded sb profiles: " + nameToProfile.size() + " - " + latestProfileName);
 
 					if (runnable != null) {
 						runnable.run();
@@ -424,6 +428,7 @@ public class SkyblockProfiles {
 	}
 
 	public void resetCache() {
+		System.out.println("Resetting cache");
 		profilesArray = null;
 		profileNames = new ArrayList<>();
 		guildInformation = null;
