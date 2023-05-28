@@ -510,8 +510,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				i++;
 			}
 
-			Map<String, JsonArray>
-				inventoryInfo = GuiProfileViewer.getProfile().getProfile(GuiProfileViewer.getProfileName()).getInventoryInfo();
+		 	SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+			if (selectedProfile == null) {
+				return;
+			}
+
+			Map<String, JsonArray> inventoryInfo = selectedProfile.getInventoryInfo();
 			if (inventoryInfo == null) return;
 
 			ItemStack[][][] inventories = getItemsForInventory(inventoryInfo, selectedInventory);
