@@ -136,6 +136,15 @@ fun <T : ArgumentBuilder<DefaultSource, T>> T.thenLiteralExecute(
         thenExecute(block)
     }
 
+fun <T : ArgumentBuilder<DefaultSource, T>> T.thenRedirect(node: CommandNode<DefaultSource>): T {
+    node.children.forEach {
+        this.then(it)
+    }
+    forward(node.redirect, node.redirectModifier, node.isFork)
+    executes(node.command)
+    return this
+}
+
 fun <T : ArgumentBuilder<DefaultSource, T>, U : ArgumentBuilder<DefaultSource, U>> T.then(
     node: U,
     block: U.() -> Unit
