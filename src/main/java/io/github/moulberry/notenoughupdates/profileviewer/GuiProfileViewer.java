@@ -257,14 +257,9 @@ public class GuiProfileViewer extends GuiScreen {
 			page = ProfileViewerPage.NO_SKYBLOCK;
 		}
 
-		System.out.println("gui: profiles null check: " + (profile == null));
-		System.out.println("gui: profile name: " + (profileName));
-
 		if (profile != null){
-			System.out.println("gui: latest profile name: " + profile.getLatestProfileName());
 			if (profileName == null && profile.getLatestProfileName() != null) {
 				profileName = profile.getLatestProfileName();
-				System.out.println("gui: set profile name: " + (profileName));
 			}
 
 			// Preload guild info
@@ -280,7 +275,7 @@ public class GuiProfileViewer extends GuiScreen {
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.alwaysShowBingoTab) {
 			showBingoPage = true;
 		} else {
-			showBingoPage = selectedProfile != null && selectedProfile.getGamemode().equals("bingo");
+			showBingoPage = selectedProfile != null && selectedProfile.getGamemode() != null && selectedProfile.getGamemode().equals("bingo");
 		}
 
 		if (!showBingoPage && currentPage == ProfileViewerPage.BINGO) {
@@ -331,7 +326,7 @@ public class GuiProfileViewer extends GuiScreen {
 					new Color(63, 224, 208, 255).getRGB()
 				);
 
-				if (selectedProfile != null) {
+				if (selectedProfile != null && selectedProfile.getGamemode() != null) {
 					GlStateManager.color(1, 1, 1, 1);
 					switch (selectedProfile.getGamemode()) {
 						case "ironman": // Ironman icon
@@ -415,7 +410,7 @@ public class GuiProfileViewer extends GuiScreen {
 							new Color(33, 112, 104, 255).getRGB()
 						);
 
-						if (selectedProfile != null) {
+						if (selectedProfile != null && selectedProfile.getGamemode() != null) {
 							GlStateManager.color(1, 1, 1, 1);
 							switch (selectedProfile.getGamemode()) {
 								case "ironman":

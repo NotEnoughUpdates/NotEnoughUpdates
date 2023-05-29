@@ -253,7 +253,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						playerName = EnumChatFormatting.GRAY + name;
 						if (rankName != null) {
-							String icon = getIcon(selectedProfile.getGamemode());
+							String icon = selectedProfile.getGamemode() == null ? "" : getIcon(selectedProfile.getGamemode());
 							playerName =
 								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name +
 									(icon.equals("") ? "" : " " + icon);

@@ -324,9 +324,7 @@ public class SkyblockProfiles {
 	}
 
 	public Map<String, SkyblockProfile> getOrLoadSkyblockProfiles(Runnable runnable) {
-		System.out.println("Loading sb profiles");
 		if (nameToProfile != null) {
-			System.out.println("Found cached sb profiles");
 			return nameToProfile;
 		}
 
@@ -342,12 +340,11 @@ public class SkyblockProfiles {
 			.queryArgument("uuid", uuid)
 			.requestJson()
 			.handle((profilesJson, throwable) -> {
-				updatingSkyblockProfilesState.set(false);
-
 				if (profilesJson != null && profilesJson.has("success")
 					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
-					profilesArray = profilesJson.getAsJsonArray("profiles");
-					nameToProfile = new HashMap<>();
+					Map<String, SkyblockProfile> nameToProfile = new HashMap<>();
+					String latestProfileName = null;
+					List<String> profileNames = new ArrayList<>();
 
 					for (JsonElement profileEle : profilesJson.getAsJsonArray("profiles")) {
 						JsonObject profile = profileEle.getAsJsonObject();
@@ -359,7 +356,6 @@ public class SkyblockProfiles {
 						JsonObject members = profile.getAsJsonObject("members");
 						if (members.has(uuid)) {
 							JsonObject member = members.getAsJsonObject(uuid);
-
 							if (member.has("coop_invitation")) {
 								if (!member.getAsJsonObject("coop_invitation").get("confirmed").getAsBoolean()) {
 									continue;
@@ -375,7 +371,11 @@ public class SkyblockProfiles {
 						}
 					}
 
-					System.out.println("Loaded sb profiles: " + nameToProfile.size() + " - " + latestProfileName);
+					this.nameToProfile = nameToProfile;
+					this.profilesArray = profilesJson.getAsJsonArray("profiles");
+					this.latestProfileName = latestProfileName;
+					this.profileNames.addAll(profileNames);
+					updatingSkyblockProfilesState.set(false);
 
 					if (runnable != null) {
 						runnable.run();
@@ -428,7 +428,6 @@ public class SkyblockProfiles {
 	}
 
 	public void resetCache() {
-		System.out.println("Resetting cache");
 		profilesArray = null;
 		profileNames = new ArrayList<>();
 		guildInformation = null;
@@ -514,7 +513,7 @@ public class SkyblockProfiles {
 
 		public SkyblockProfile(JsonObject outerProfileJson) {
 			this.outerProfileJson = outerProfileJson;
-			this.gamemode = outerProfileJson.get("game_mode").getAsString();
+			this.gamemode = Utils.getElementAsString(outerProfileJson.get("game_mode"), null);
 		}
 
 		public JsonObject getOuterProfileJson() {
@@ -528,7 +527,7 @@ public class SkyblockProfiles {
 			return Utils.getElement(outerProfileJson, "members." + SkyblockProfiles.this.uuid).getAsJsonObject();
 		}
 
-		public String getGamemode() {
+		public @Nullable String getGamemode() {
 			return gamemode;
 		}
 
@@ -562,7 +561,7 @@ public class SkyblockProfiles {
 				JsonArray contents = new JsonArray();
 
 				if (invName.equals("backpack_contents")) {
-					contents = getBackpackData(Utils.getElement(profileJson, "backpack_contents").getAsJsonObject());
+					contents = getBackpackData(Utils.getElement(profileJson, "backpack_contents"));
 				} else {
 					String contentBytes = Utils.getElementAsString(
 						Utils.getElement(profileJson, invName + ".data"),
@@ -587,14 +586,14 @@ public class SkyblockProfiles {
 			return inventoryNameToInfo;
 		}
 
-		private JsonArray getBackpackData(JsonObject backpackContentsJson) {
-			if (backpackContentsJson == null) {
+		private JsonArray getBackpackData(JsonElement backpackContentsJson) {
+			if (backpackContentsJson == null || !backpackContentsJson.isJsonObject()) {
 				return new JsonArray();
 			}
 
 			// JsonArray of JsonObjects
 			JsonArray contents = new JsonArray();
-			for (Map.Entry<String, JsonElement> backpack : backpackContentsJson.entrySet()) {
+			for (Map.Entry<String, JsonElement> backpack : backpackContentsJson.getAsJsonObject().entrySet()) {
 				if (backpack.getValue().isJsonObject()) {
 					try {
 						String bytes = Utils.getElementAsString(backpack.getValue().getAsJsonObject().get("data"), defaultNbtData);
