@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -53,13 +54,11 @@ import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -90,7 +89,6 @@ public class CustomAH extends Gui {
 	private boolean scrollClicked = false;
 
 	private long lastUpdateSearch;
-	private long lastSearchFieldUpdate;
 	private boolean shouldUpdateSearch = false;
 	private boolean shouldSortItems = false;
 
@@ -208,10 +206,6 @@ public class CustomAH extends Gui {
 
 	private static final int DUNGEON_FILTER_ALL = 0;
 	private static final int DUNGEON_FILTER_DUNGEON = 1;
-	private static final int DUNGEON_FILTER_1 = 2;
-	private static final int DUNGEON_FILTER_2 = 3;
-	private static final int DUNGEON_FILTER_3 = 4;
-	private static final int DUNGEON_FILTER_4 = 5;
 	private static final int DUNGEON_FILTER_5 = 6;
 
 	private int dungeonFilter = DUNGEON_FILTER_ALL;
@@ -417,24 +411,22 @@ public class CustomAH extends Gui {
 		long timeUntilEnd = auc.end - System.currentTimeMillis();
 		String endsIn = EnumChatFormatting.YELLOW + prettyTime(timeUntilEnd);
 
-		NumberFormat format = NumberFormat.getInstance(Locale.US);
-
 		tooltip.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.STRIKETHROUGH + "-----------------");
 		tooltip.add(EnumChatFormatting.GRAY + "Seller: [CLICK TO SEE]");
 
 		if (auc.bin) {
 			tooltip.add(EnumChatFormatting.GRAY + "Buy it now: " +
-				EnumChatFormatting.GOLD + format.format(auc.starting_bid));
+				EnumChatFormatting.GOLD + StringUtils.formatNumber(auc.starting_bid));
 		} else {
 			if (auc.bid_count > 0) {
 				tooltip.add(EnumChatFormatting.GRAY + "Bids: " + EnumChatFormatting.GREEN + auc.bid_count + " bids");
 				tooltip.add("");
 				tooltip.add(EnumChatFormatting.GRAY + "Top bid: " +
-					EnumChatFormatting.GOLD + format.format(auc.highest_bid_amount));
+					EnumChatFormatting.GOLD + StringUtils.formatNumber(auc.highest_bid_amount));
 				tooltip.add(EnumChatFormatting.GRAY + "Bidder: [CLICK TO SEE]");
 			} else {
 				tooltip.add(EnumChatFormatting.GRAY + "Starting bid: " +
-					EnumChatFormatting.GOLD + format.format(auc.starting_bid));
+					EnumChatFormatting.GOLD + StringUtils.formatNumber(auc.starting_bid));
 			}
 		}
 
@@ -682,59 +674,57 @@ public class CustomAH extends Gui {
 
 									long lowestBin = manager.auctionManager.getLowestBin(internalname);
 
-									NumberFormat format = NumberFormat.getInstance(Locale.US);
-
 									APIManager.CraftInfo craftCost = manager.auctionManager.getCraftCost(internalname);
 
 									if (lowestBin > 0) {
 										tooltipToRender.add(
 											EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Lowest BIN: " +
-												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(lowestBin) + " coins");
+												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber(lowestBin) + " coins");
 									}
 									if (hasBazaarPrice) {
 										int bazaarBuyPrice = (int) bazaarInfo.get("avg_buy").getAsFloat();
 										tooltipToRender.add(
 											EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Buy: " +
-												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(bazaarBuyPrice) + " coins");
+												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber(bazaarBuyPrice) + " coins");
 										int bazaarSellPrice = (int) bazaarInfo.get("avg_sell").getAsFloat();
 										tooltipToRender.add(
 											EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Sell: " +
-												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(bazaarSellPrice) + " coins");
+												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber(bazaarSellPrice) + " coins");
 										int bazaarInstantBuyPrice = (int) bazaarInfo.get("curr_buy").getAsFloat();
 										tooltipToRender.add(
 											EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Insta-Buy: " +
-												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(bazaarInstantBuyPrice) +
+												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber(bazaarInstantBuyPrice) +
 												" coins");
 										int bazaarInstantSellPrice = (int) bazaarInfo.get("curr_sell").getAsFloat();
 										tooltipToRender.add(
 											EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Bazaar Insta-Sell: " +
-												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(bazaarInstantSellPrice) +
+												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber(bazaarInstantSellPrice) +
 												" coins");
 									}
 									if (hasAuctionPrice) {
 										int auctionPrice =
 											(int) (auctionInfo.get("price").getAsFloat() / auctionInfo.get("count").getAsFloat());
 										tooltipToRender.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Price: " +
-											EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format(auctionPrice) + " coins");
+											EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber(auctionPrice) + " coins");
 										tooltipToRender.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Sales: " +
 											EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-											format.format(auctionInfo.get("sales").getAsFloat()) + " sales/day");
+											StringUtils.formatNumber(auctionInfo.get("sales").getAsFloat()) + " sales/day");
 										if (auctionInfo.has("clean_price")) {
 											tooltipToRender.add(
 												EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Price (Clean): " +
 													EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-													format.format((int) auctionInfo.get("clean_price").getAsFloat()) + " coins");
+													StringUtils.formatNumber((int) auctionInfo.get("clean_price").getAsFloat()) + " coins");
 											tooltipToRender.add(
 												EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "AH Sales (Clean): " +
 													EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
-													format.format(auctionInfo.get("clean_sales").getAsFloat()) + " sales/day");
+													StringUtils.formatNumber(auctionInfo.get("clean_sales").getAsFloat()) + " sales/day");
 										}
 
 									}
 									if (craftCost.fromRecipe) {
 										tooltipToRender.add(
 											EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Raw Craft Cost: " +
-												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + format.format((int) craftCost.craftCost) +
+												EnumChatFormatting.GOLD + EnumChatFormatting.BOLD + StringUtils.formatNumber((int) craftCost.craftCost) +
 												" coins");
 									}
 									tooltipToRender.add("");
@@ -1604,16 +1594,11 @@ public class CustomAH extends Gui {
 			init();
 
 		if (!isEditingPrice()) {
-			if (this.priceFilterField.textboxKeyTyped(typedChar, keyCode)) {
-				this.updateSearch();
-				return true;
-			}
-			if (this.binPriceFilterField.textboxKeyTyped(typedChar, keyCode)) {
-				this.updateSearch();
-				return true;
-			}
-			if (this.searchField.textboxKeyTyped(typedChar, keyCode)) {
-				lastSearchFieldUpdate = System.currentTimeMillis();
+			if (
+				this.priceFilterField.textboxKeyTyped(typedChar, keyCode) ||
+				this.binPriceFilterField.textboxKeyTyped(typedChar, keyCode) ||
+				this.searchField.textboxKeyTyped(typedChar, keyCode)
+			) {
 				this.updateSearch();
 				return true;
 			}

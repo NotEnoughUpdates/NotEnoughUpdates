@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -64,7 +65,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 
 		int sbXpGainedSlayer = 0;
 		if (skyblockInfo != null) {
-			for (String slayer : SkyblockProfiles.slayers) {
+			for (String slayer : Weight.SLAYER_NAMES) {
 				ProfileViewer.Level level = skyblockInfo.get(slayer);
 				for (int i = 0; i < (int) level.level; i++) {
 					int asInt = slayerLevelUpXp.get(i).getAsInt();

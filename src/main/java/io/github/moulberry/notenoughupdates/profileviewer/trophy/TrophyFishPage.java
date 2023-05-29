@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
@@ -38,7 +39,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -122,7 +122,6 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 	};
 	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation("notenoughupdates:pv_trophy_fish_tab.png");
-	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 	private static final String checkX = "§c✖";
 	private static final String check = "§a✔";
 	private final Map<String, Integer> total = new HashMap<>();
@@ -341,7 +340,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		if (trophyFishList.get(name) != null) {
 			tooltip.add(" ");
 			tooltip.add(EnumChatFormatting.GRAY + "Total: " + EnumChatFormatting.GOLD +
-				NUMBER_FORMAT.format(trophyFishList.get(name).getTotal()));
+				StringUtils.formatNumber(trophyFishList.get(name).getTotal()));
 		}
 		return tooltip;
 	}
@@ -357,7 +356,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 
 		if (trophyFishRarityIntegerMap.containsKey(rarity)) {
-			return color + name + ": " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishRarityIntegerMap.get(rarity));
+			return color + name + ": " + EnumChatFormatting.GOLD + StringUtils.formatNumber(trophyFishRarityIntegerMap.get(rarity));
 		} else {
 			return color + name + ": " + checkX;
 		}

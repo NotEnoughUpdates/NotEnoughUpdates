@@ -517,10 +517,9 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	public float getLevelPercent(Pet pet) {
-		DecimalFormat df = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 		if (pet == null) return 0;
 		try {
-			return Float.parseFloat(df.format(Math.min(pet.petLevel.getPercentageToNextLevel() * 100f, 100f)));
+			return Float.parseFloat(StringUtils.formatToTenths(Math.min(pet.petLevel.getPercentageToNextLevel() * 100f, 100f)));
 		} catch (Exception ignored) {
 			return 0;
 		}
@@ -1082,13 +1081,13 @@ public class PetInfoOverlay extends TextOverlay {
 
 	public String roundFloat(float f) {
 		if (f % 1 < 0.05f) {
-			return NumberFormat.getNumberInstance().format((int) f);
+			return StringUtils.formatNumber((int) f);
 		} else {
 			String s = Utils.floatToString(f, 1);
 			if (s.contains(".")) {
-				return NumberFormat.getNumberInstance().format((int) f) + '.' + s.split("\\.")[1];
+				return StringUtils.formatNumber((int) f) + '.' + s.split("\\.")[1];
 			} else if (s.contains(",")) {
-				return NumberFormat.getNumberInstance().format((int) f) + ',' + s.split(",")[1];
+				return StringUtils.formatNumber((int) f) + ',' + s.split(",")[1];
 			} else {
 				return s;
 			}

@@ -38,16 +38,13 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class BestiaryPage extends GuiProfileViewerPage {
 
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final ResourceLocation BESTIARY_TEXTURE = new ResourceLocation("notenoughupdates:pv_bestiary_tab.png");
-	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 	private static final int XCOUNT = 7;
 	private static final int YCOUNT = 5;
 	private static final float XPADDING = (190 - XCOUNT * 20) / (float) (XCOUNT + 1);
@@ -204,10 +201,10 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									mobItem.getDisplayName() + " " + ((levelNum == -1) ? "?" : (int) Math.floor(levelNum))
 								);
 								tooltipToDisplay.add(
-									EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + numberFormat.format(kills)
+									EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + StringUtils.formatNumber(kills)
 								);
 								tooltipToDisplay.add(
-									EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths)
+									EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + StringUtils.formatNumber(deaths)
 								);
 								if (level != null) {
 									String progressStr;

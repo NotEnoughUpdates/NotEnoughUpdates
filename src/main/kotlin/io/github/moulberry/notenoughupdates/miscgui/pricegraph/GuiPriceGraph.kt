@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.miscgui.pricegraph
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.util.SpecialColour
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.roundToDecimals
@@ -31,7 +32,6 @@ import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
@@ -42,7 +42,6 @@ import kotlin.math.abs
 private const val X_SIZE = 364
 private const val Y_SIZE = 215
 private val dateFormat = SimpleDateFormat("'§b'd MMMMM yyyy '§eat§b' HH:mm")
-private val numberFormat = NumberFormat.getInstance()
 private val config = NotEnoughUpdates.INSTANCE.config
 
 class GuiPriceGraph(itemId: String) : GuiScreen() {
@@ -248,29 +247,29 @@ class GuiPriceGraph(itemId: String) : GuiScreen() {
                 if (closestPoint.value.sellPrice == null) {
                     text.add(
                         "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Lowest BIN: ${EnumChatFormatting.GOLD}" +
-                                "${EnumChatFormatting.BOLD}${numberFormat.format(closestPoint.value.buyPrice)}"
+                                "${EnumChatFormatting.BOLD}${StringUtils.formatNumber(closestPoint.value.buyPrice)}"
                     )
                     if (config.ahGraph.movingAverages && buyMovingAverage[x] != null) text.add(
                         "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Lowest BIN Moving Average: ${EnumChatFormatting.GOLD}" +
-                                "${EnumChatFormatting.BOLD}${numberFormat.format(buyMovingAverage[x])}"
+                                "${EnumChatFormatting.BOLD}${StringUtils.formatNumber(buyMovingAverage[x])}"
                     )
                 } else {
                     text.add(
                         "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Buy: ${EnumChatFormatting.GOLD}" +
-                                "${EnumChatFormatting.BOLD}${numberFormat.format(closestPoint.value.buyPrice)}"
+                                "${EnumChatFormatting.BOLD}${StringUtils.formatNumber(closestPoint.value.buyPrice)}"
                     )
                     text.add(
                         "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Sell: ${EnumChatFormatting.GOLD}" +
-                                "${EnumChatFormatting.BOLD}${numberFormat.format(closestPoint.value.sellPrice)}"
+                                "${EnumChatFormatting.BOLD}${StringUtils.formatNumber(closestPoint.value.sellPrice)}"
                     )
                     if (config.ahGraph.movingAverages) {
                         if (buyMovingAverage[x] != null) text.add(
                             "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Buy Moving Average: ${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}" +
-                                    numberFormat.format(buyMovingAverage[x])
+                                    StringUtils.formatNumber(buyMovingAverage[x])
                         )
                         if (sellMovingAverage[x] != null) text.add(
                             "${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Sell Moving Average: ${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}" +
-                                    numberFormat.format(sellMovingAverage[x])
+                                    StringUtils.formatNumber(sellMovingAverage[x])
                         )
                     }
                 }

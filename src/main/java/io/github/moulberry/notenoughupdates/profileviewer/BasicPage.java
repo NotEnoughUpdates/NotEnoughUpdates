@@ -67,7 +67,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.DECIMAL_FORMAT;
 import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class BasicPage extends GuiProfileViewerPage {
@@ -296,7 +295,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						WordUtils.capitalizeFully(category.replace("_", " ")) +
 						": " +
 						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(nwData.getCategory(category)));
+						StringUtils.formatNumber(nwData.getCategory(category)));
 				}
 
 				nwCategoryHover.add("");
@@ -314,16 +313,16 @@ public class BasicPage extends GuiProfileViewerPage {
 		} else if (networth == -1) {
 			networth = selectedProfile.getNetworth();
 		}
-		int fontWidth = fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth));
+		int fontWidth = fr.getStringWidth("Net Worth: " + StringUtils.formatNumber(networth));
 		int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
 		if (networth > 0) {
 			if (fontWidth >= 117) {
 				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-					GuiProfileViewer.numberFormat.format(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
+					StringUtils.formatNumber(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
 			} else {
 				Utils.drawStringCentered(
 					EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(networth),
+						StringUtils.formatNumber(networth),
 					guiLeft + 68, guiTop + 38, true, 0
 				);
 			}
@@ -337,7 +336,7 @@ public class BasicPage extends GuiProfileViewerPage {
 								.get("avg_buy")
 								.getAsDouble()
 					);
-				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(
+				String networthIRLMoney = StringUtils.formatNumber(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
 
 
@@ -359,7 +358,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							&& profile.isProfileMaxSoopyWeight(profileName)) {
 							getInstance().tooltipToDisplay.add("");
 							String lbPosStr =
-								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
 									profile.getSoopyNetworthLeaderboardPosition());
 							getInstance().tooltipToDisplay.add(
 								lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
@@ -654,10 +653,10 @@ public class BasicPage extends GuiProfileViewerPage {
 										"/" +
 										StringUtils.shortNumberFormat(maxXp));
 						}
-						String totalXpS = GuiProfileViewer.numberFormat.format((long) level.totalXp);
+						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-							DECIMAL_FORMAT.format(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
@@ -794,13 +793,13 @@ public class BasicPage extends GuiProfileViewerPage {
 			EnumChatFormatting.GREEN +
 				"Senither Weight: " +
 				EnumChatFormatting.GOLD +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
+				StringUtils.formatNumber(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
 			guiLeft + 63, guiTop + 18, true, 0
 		);
 
 		int textWidth = fr.getStringWidth(
 			"Senither Weight: " +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
+				StringUtils.formatNumber(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
 		);
 		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
 			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
@@ -810,7 +809,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Skills: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+							StringUtils.formatNumber(roundToNearestInt(senitherWeight
 								.getSkillsWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -820,7 +819,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Slayer: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+							StringUtils.formatNumber(roundToNearestInt(senitherWeight
 								.getSlayerWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -830,7 +829,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Dungeons: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(
+							StringUtils.formatNumber(
 								roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
 							)
 					);
@@ -839,7 +838,7 @@ public class BasicPage extends GuiProfileViewerPage {
 					&& profile.isProfileMaxSoopyWeight(profileName)) {
 
 					String lbPosStr =
-						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
 							profile.getSoopyWeightLeaderboardPosition());
 					getInstance().tooltipToDisplay.add("");
 					String stateStr = EnumChatFormatting.RED + "An error occurred";
@@ -857,12 +856,12 @@ public class BasicPage extends GuiProfileViewerPage {
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
 				"Lily Weight: " + EnumChatFormatting.GOLD +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
+				StringUtils.formatNumber(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
 			guiLeft + 63, guiTop + 28, true, 0
 		);
 
 		int fontWidth = fr.getStringWidth(
-			"Lily Weight: " + GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
+			"Lily Weight: " + StringUtils.formatNumber(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
 		);
 		if (mouseX > guiLeft + 63 - fontWidth / 2 && mouseX < guiLeft + 63 + fontWidth / 2) {
 			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fr.FONT_HEIGHT) {
@@ -872,7 +871,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Skills: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+							StringUtils.formatNumber(roundToNearestInt(lilyWeight
 								.getSkillsWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -882,7 +881,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Slayer: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+							StringUtils.formatNumber(roundToNearestInt(lilyWeight
 								.getSlayerWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -892,7 +891,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Dungeons: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+							StringUtils.formatNumber(roundToNearestInt(lilyWeight
 								.getDungeonsWeight()
 								.getWeightStruct()
 								.getRaw()))

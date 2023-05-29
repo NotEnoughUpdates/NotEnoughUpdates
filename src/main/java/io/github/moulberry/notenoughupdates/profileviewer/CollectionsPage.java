@@ -37,11 +37,9 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 public class CollectionsPage extends GuiProfileViewerPage {
 
@@ -72,7 +70,6 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		"XIX",
 		"XX",
 	};
-	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 	private static List<String> tooltipToDisplay = null;
 	private static ItemStack selectedCollectionCategory = null;
 	private int page = 0;
@@ -278,9 +275,9 @@ public class CollectionsPage extends GuiProfileViewerPage {
 								tierString
 						);
 						tooltipToDisplay.add(
-							"Collected: " + numberFormat.format(thisCollection.getPersonalCollectionCount())
+							"Collected: " + StringUtils.formatNumber(thisCollection.getPersonalCollectionCount())
 						);
-						tooltipToDisplay.add("Total Collected: " + numberFormat.format(amount));
+						tooltipToDisplay.add("Total Collected: " + StringUtils.formatNumber(amount));
 					}
 				}
 
@@ -288,7 +285,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 				Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
 
 				Utils.drawStringCentered(
-					StringUtils.shortNumberFormat(amount) + "", guiLeft + x + 10, guiTop + y + 26, true, color.getRGB());
+					StringUtils.shortNumberFormat(amount), guiLeft + x + 10, guiTop + y + 26, true, color.getRGB());
 			}
 		}
 
@@ -405,16 +402,16 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		switch (keyCode) {
 			case Keyboard.KEY_5:
 			case Keyboard.KEY_NUMPAD5:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_4:
 			case Keyboard.KEY_NUMPAD4:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_3:
 			case Keyboard.KEY_NUMPAD3:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_2:
 			case Keyboard.KEY_NUMPAD2:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_1:
 			case Keyboard.KEY_NUMPAD1:
 				stack = items.next();

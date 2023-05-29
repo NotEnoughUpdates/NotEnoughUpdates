@@ -39,15 +39,12 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 @NEUAutoSubscribe
 public class PowerStoneStatsDisplay {
 	private static PowerStoneStatsDisplay instance = null;
-	private final NumberFormat format = NumberFormat.getInstance(Locale.US);
 	private boolean dirty = true;
 
 	public static PowerStoneStatsDisplay getInstance() {
@@ -151,7 +148,7 @@ public class PowerStoneStatsDisplay {
 					return;
 				}
 
-				event.toolTip.set(index, "§7At §6" + format.format((double) magicalPower) + " Magical Power§7:");
+				event.toolTip.set(index, "§7At §6" + StringUtils.formatNumber((double) magicalPower) + " Magical Power§7:");
 				foundMagicalPower = true;
 				continue;
 			}
@@ -175,7 +172,7 @@ public class PowerStoneStatsDisplay {
 				}
 				double realStat = (currentStat / scaledCurrentPower) * scaledMagicalPower;
 
-				String format = this.format.format((double) Math.round(realStat));
+				String format = StringUtils.formatNumber((double) Math.round(realStat));
 				format += rawStat.substring(rawStat.length() - 1);
 
 				event.toolTip.set(index, line.replace(rawStat, format));

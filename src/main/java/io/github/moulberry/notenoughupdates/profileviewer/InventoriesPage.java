@@ -161,7 +161,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 									? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
 									: magicalPowerString
 										.append(EnumChatFormatting.GOLD)
-										.append(GuiProfileViewer.numberFormat.format(magicalPower))
+										.append(StringUtils.formatNumber(magicalPower))
 										.toString()
 							);
 

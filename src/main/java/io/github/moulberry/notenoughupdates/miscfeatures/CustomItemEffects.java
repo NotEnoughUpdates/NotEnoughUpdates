@@ -715,7 +715,9 @@ public class CustomItemEffects {
 						NBTTagCompound buildersItem = items.getCompoundTagAt(j);
 						if (buildersItem.getKeySet().size() > 0) {
 							String internalname =
-								NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(buildersItem.getCompoundTag("tag"));
+								NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+																								 .withItemNBT(buildersItem.getCompoundTag("tag"))
+																								 .resolveInternalName();
 							if (internalname != null && internalname.equals("INFINIDIRT_WAND")) {
 								return true;
 							}

@@ -54,13 +54,10 @@ import org.lwjgl.opengl.GL20;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -73,8 +70,6 @@ public class GuiProfileViewer extends GuiScreen {
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	public static final ResourceLocation pv_ironman = new ResourceLocation("notenoughupdates:pv_ironman.png");
 	public static final ResourceLocation pv_bingo = new ResourceLocation("notenoughupdates:pv_bingo.png");
-
-	public final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 	public static final ResourceLocation pv_stranded = new ResourceLocation("notenoughupdates:pv_stranded.png");
 	public static final ResourceLocation pv_unknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
 	public static final ResourceLocation resource_packs =
@@ -139,11 +134,7 @@ public class GuiProfileViewer extends GuiScreen {
 				);
 			}
 		};
-
-	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
-
-	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
-	public static HashMap<String, String> MINION_RARITY_TO_NUM = new HashMap<String, String>() {
+	public static final HashMap<String, String> RARITY_TO_NUM = new HashMap<String, String>() {
 		{
 			put("COMMON", "0");
 			put("UNCOMMON", "1");
@@ -153,6 +144,7 @@ public class GuiProfileViewer extends GuiScreen {
 			put("MYTHIC", "5");
 		}
 	};
+	public static ProfileViewerPage currentPage = ProfileViewerPage.BASIC;
 	private static int guiLeft;
 	private static int guiTop;
 	private static SkyblockProfiles profile;
@@ -215,12 +207,6 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.TROPHY_FISH, new TrophyFishPage(this));
 		pages.put(ProfileViewerPage.BESTIARY, new BestiaryPage(this));
 		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
-	}
-
-	@Deprecated
-	public static String shortNumberFormat(double n, int iteration) {
-		return StringUtils.shortNumberFormat(n, iteration
-		);
 	}
 
 	public static int getGuiLeft() {
@@ -829,8 +815,8 @@ public class GuiProfileViewer extends GuiScreen {
 				String totalXpStr = null;
 				if (skillName.contains("Catacombs")) {
 					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						numberFormat.format(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
-						DECIMAL_FORMAT.format(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
+						StringUtils.formatNumber(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+						StringUtils.formatToTenths(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
 				}
 				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
 				if (levelObj.maxed) {

@@ -576,7 +576,9 @@ public class APIManager {
 			}
 
 			NBTTagCompound tag = item_tag.getTagList("i", 10).getCompoundTagAt(0).getCompoundTag("tag");
-			String internalname = manager.getInternalnameFromNBT(tag);
+			String internalname = manager.createItemResolutionQuery()
+																	 .withItemNBT(tag)
+																	 .resolveInternalName();
 
 			NBTTagCompound display = tag.getCompoundTag("display");
 			if (display.hasKey("Lore", 9)) {

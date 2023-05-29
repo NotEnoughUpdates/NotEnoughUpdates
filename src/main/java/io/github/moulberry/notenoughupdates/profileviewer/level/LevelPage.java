@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.profileviewer.level;
 
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
@@ -42,7 +43,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -133,9 +133,8 @@ public class LevelPage extends GuiProfileViewerPage {
 		String levelStr;
 		if (mouseX > x && mouseX < x + 120) {
 			if (mouseY > y - 4 && mouseY < y + 13) {
-				NumberFormat numberFormat = NumberFormat.getInstance();
-				String xpFormatted = numberFormat.format((int) xp);
-				String maxFormatted = numberFormat.format((int) max);
+				String xpFormatted = StringUtils.formatNumber((int) xp);
+				String maxFormatted = StringUtils.formatNumber((int) max);
 
 				levelStr =
 					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
@@ -176,8 +175,8 @@ public class LevelPage extends GuiProfileViewerPage {
 	}
 
 	public String buildLore(String name, double xpGotten, double xpGainful, boolean hasNoLimit) {
-		String xpGottenFormatted = NumberFormat.getInstance().format((int) xpGotten);
-		String xpGainfulFormatted = NumberFormat.getInstance().format((int) xpGainful);
+		String xpGottenFormatted = StringUtils.formatNumber((int) xpGotten);
+		String xpGainfulFormatted = StringUtils.formatNumber((int) xpGainful);
 
 		if (xpGainful == 0 && xpGotten == 0 && !hasNoLimit) {
 			return EnumChatFormatting.GOLD + name + ": §c§lNOT DETECTABLE!";

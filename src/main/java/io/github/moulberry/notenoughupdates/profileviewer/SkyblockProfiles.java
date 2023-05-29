@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
@@ -48,17 +49,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SkyblockProfiles {
-	public static final List<String> slayers = Arrays.asList("zombie", "spider", "wolf", "enderman", "blaze");
-	private static final HashMap<String, String> petRarityToNumMap = new HashMap<String, String>() {
-		{
-			put("COMMON", "0");
-			put("UNCOMMON", "1");
-			put("RARE", "2");
-			put("EPIC", "3");
-			put("LEGENDARY", "4");
-			put("MYTHIC", "5");
-		}
-	};
 	private static final String defaultNbtData = "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=";
 	private static final List<String> inventoryNames = Arrays.asList(
 		"inv_armor",
@@ -744,7 +734,7 @@ public class SkyblockProfiles {
 					)
 				);
 			}
-			for (String slayerName : slayers) {
+			for (String slayerName : Weight.SLAYER_NAMES) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
 					profileJson,
 					"slayer_bosses." + slayerName + ".xp"
@@ -950,7 +940,7 @@ public class SkyblockProfiles {
 
 							String petname = pet.get("type").getAsString();
 							String tier = pet.get("tier").getAsString();
-							String tierNum = petRarityToNumMap.get(tier);
+							String tierNum = GuiProfileViewer.RARITY_TO_NUM.get(tier);
 							if (tierNum != null) {
 								String internalname2 = petname + ";" + tierNum;
 								JsonObject info2 = profileViewer.getManager().auctionManager.getItemAuctionInfo(internalname2);

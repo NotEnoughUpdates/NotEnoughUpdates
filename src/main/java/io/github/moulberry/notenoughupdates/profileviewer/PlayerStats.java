@@ -476,7 +476,7 @@ public class PlayerStats {
 					return new Stats();
 				}
 
-				String tierNum = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier);
+				String tierNum = GuiProfileViewer.RARITY_TO_NUM.get(tier);
 				float exp = pet.get("exp").getAsFloat();
 				if (tierNum == null) return new Stats();
 

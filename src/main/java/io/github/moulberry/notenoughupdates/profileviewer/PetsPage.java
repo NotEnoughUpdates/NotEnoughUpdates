@@ -106,13 +106,13 @@ public class PetsPage extends GuiProfileViewerPage {
 			}
 			sortedPets.sort((pet1, pet2) -> {
 				String tier1 = pet1.get("tier").getAsString();
-				String tierNum1 = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier1);
+				String tierNum1 = GuiProfileViewer.RARITY_TO_NUM.get(tier1);
 				if (tierNum1 == null) return 1;
 				int tierNum1I = Integer.parseInt(tierNum1);
 				float exp1 = pet1.get("exp").getAsFloat();
 
 				String tier2 = pet2.get("tier").getAsString();
-				String tierNum2 = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier2);
+				String tierNum2 = GuiProfileViewer.RARITY_TO_NUM.get(tier2);
 				if (tierNum2 == null) return -1;
 				int tierNum2I = Integer.parseInt(tierNum2);
 				float exp2 = pet2.get("exp").getAsFloat();
