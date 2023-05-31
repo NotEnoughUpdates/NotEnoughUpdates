@@ -35,8 +35,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.NPCRetexturing;
 import io.github.moulberry.notenoughupdates.miscgui.AccessoryBagOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiCustomEnchant;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
-import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
+import io.github.moulberry.notenoughupdates.miscgui.hex.GuiCustomHex;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
@@ -265,8 +265,6 @@ public class NEUEventListener {
 			}
 			if (currentTime - lastSkyblockScoreboard < 5 * 60 * 1000) { //5 minutes
 				neu.manager.auctionManager.tick();
-			} else {
-				neu.manager.auctionManager.markNeedsUpdate();
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,16 +17,13 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.auction;
+package io.github.moulberry.notenoughupdates.events
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.CompressedStreamTools
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.*
 
-public class CustomAHGui extends GuiScreen {
-	public CustomAHGui() {
-		this.allowUserInput = true;
-	}
-
-	public boolean doesGuiPauseGame() {
-		return false;
-	}
-}
+data class DrawSlotReturnEvent(val slot: Slot) : NEUEvent()

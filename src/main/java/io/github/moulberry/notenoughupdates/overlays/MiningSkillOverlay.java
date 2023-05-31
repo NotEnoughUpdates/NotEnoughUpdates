@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -79,8 +79,13 @@ public class MiningSkillOverlay
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.skillOverlays.miningSkillOverlay;
+	}
+
+	@Override
 	public void update() {
-		if (!NotEnoughUpdates.INSTANCE.config.skillOverlays.miningSkillOverlay) {
+		if (!isEnabled()) {
 			compact = -1;
 			overlayStrings = null;
 			return;

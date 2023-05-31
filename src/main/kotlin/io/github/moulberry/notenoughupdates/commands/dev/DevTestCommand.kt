@@ -31,6 +31,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph
+import io.github.moulberry.notenoughupdates.util.ApiCache
 import io.github.moulberry.notenoughupdates.util.PronounDB
 import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.TabListUtils
@@ -186,6 +187,10 @@ class DevTestCommand {
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Config saved")
             }.withHelp("Force sync the config to disk")
+            thenLiteralExecute("clearapicache") {
+                ApiCache.clear()
+                reply("Cleared API cache")
+            }.withHelp("Clear the API cache")
             thenLiteralExecute("searchmode") {
                 NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true
                 reply(AQUA.toString() + "I would never search")

@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
@@ -1567,9 +1566,6 @@ public class NEUOverlay extends Gui {
 	public float getWidthMult() {
 		float scaleFMult = 1;
 		if (Utils.peekGuiScale().getScaleFactor() == 4) scaleFMult *= 0.9f;
-		if (manager.auctionManager.customAH.isRenderOverAuctionView() ||
-			Minecraft.getMinecraft().currentScreen instanceof CustomAHGui)
-			scaleFMult *= 0.8f;
 		return (float) Math.max(0.5, Math.min(1.5, NotEnoughUpdates.INSTANCE.config.itemlist.paneWidthMult)) * scaleFMult;
 	}
 

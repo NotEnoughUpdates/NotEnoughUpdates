@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUApi;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.auction.CustomAHGui;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
@@ -63,7 +62,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -246,28 +244,9 @@ public class RenderListener {
 			lastGuiClosed = System.currentTimeMillis();
 		}
 
-		neu.manager.auctionManager.customAH.lastGuiScreenSwitch = System.currentTimeMillis();
 		BetterContainers.reset();
 		inventoryLoaded = false;
 		inventoryLoadedTicks = 3;
-
-		if (event.gui == null && neu.manager.auctionManager.customAH.isRenderOverAuctionView() &&
-			!(Minecraft.getMinecraft().currentScreen instanceof CustomAHGui)) {
-			event.gui = new CustomAHGui();
-		}
-
-		if (!(event.gui instanceof GuiChest || event.gui instanceof GuiEditSign)) {
-			neu.manager.auctionManager.customAH.setRenderOverAuctionView(false);
-		} else if (event.gui instanceof GuiChest && (neu.manager.auctionManager.customAH.isRenderOverAuctionView() ||
-			Minecraft.getMinecraft().currentScreen instanceof CustomAHGui)) {
-			GuiChest chest = (GuiChest) event.gui;
-			ContainerChest container = (ContainerChest) chest.inventorySlots;
-			String containerName = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-
-			neu.manager.auctionManager.customAH.setRenderOverAuctionView(
-				containerName.trim().equals("Auction View") || containerName.trim().equals("BIN Auction View") ||
-					containerName.trim().equals("Confirm Bid") || containerName.trim().equals("Confirm Purchase"));
-		}
 
 		//OPEN
 		if (Minecraft.getMinecraft().currentScreen == null && event.gui instanceof GuiContainer) {
@@ -342,8 +321,7 @@ public class RenderListener {
 
 		}
 		inDungeonPage = false;
-		if ((NotificationHandler.shouldRenderOverlay(event.gui) || event.gui instanceof CustomAHGui) &&
-			neu.isOnSkyblock()) {
+		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock()) {
 			ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 			int width = scaledresolution.getScaledWidth();
 
@@ -442,8 +420,6 @@ public class RenderListener {
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
-		boolean customAhActive =
-			event.gui instanceof CustomAHGui || neu.manager.auctionManager.customAH.isRenderOverAuctionView();
 
 		if (storageOverlayActive) {
 			StorageOverlay.getInstance().render();
@@ -451,7 +427,7 @@ public class RenderListener {
 			return;
 		}
 
-		if (tradeWindowActive || customAhActive) {
+		if (tradeWindowActive) {
 			event.setCanceled(true);
 
 			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -463,19 +439,11 @@ public class RenderListener {
 
 			if (event.mouseX < width * neu.overlay.getWidthMult() / 3 ||
 				event.mouseX > width - width * neu.overlay.getWidthMult() / 3) {
-				if (customAhActive) {
-					neu.manager.auctionManager.customAH.drawScreen(event.mouseX, event.mouseY);
-				} else {
-					TradeWindow.render(event.mouseX, event.mouseY);
-				}
+				TradeWindow.render(event.mouseX, event.mouseY);
 				neu.overlay.render(false);
 			} else {
 				neu.overlay.render(false);
-				if (customAhActive) {
-					neu.manager.auctionManager.customAH.drawScreen(event.mouseX, event.mouseY);
-				} else {
-					TradeWindow.render(event.mouseX, event.mouseY);
-				}
+				TradeWindow.render(event.mouseX, event.mouseY);
 			}
 		}
 
@@ -568,10 +536,7 @@ public class RenderListener {
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
-		boolean customAhActive =
-			event.gui instanceof CustomAHGui || neu.manager.auctionManager.customAH.isRenderOverAuctionView();
-
-		if (!(tradeWindowActive || storageOverlayActive || customAhActive)) {
+		if (!(tradeWindowActive || storageOverlayActive)) {
 			if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock()) {
 				GlStateManager.pushMatrix();
 				if (!focusInv) {
@@ -1001,8 +966,6 @@ public class RenderListener {
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
-		boolean customAhActive =
-			event.gui instanceof CustomAHGui || neu.manager.auctionManager.customAH.isRenderOverAuctionView();
 
 		if (storageOverlayActive) {
 			if (StorageOverlay.getInstance().mouseInput(mouseX, mouseY)) {
@@ -1011,13 +974,9 @@ public class RenderListener {
 			return;
 		}
 
-		if (tradeWindowActive || customAhActive) {
+		if (tradeWindowActive) {
 			event.setCanceled(true);
-			if (customAhActive) {
-				neu.manager.auctionManager.customAH.handleMouseInput();
-			} else {
-				TradeWindow.handleMouseInput();
-			}
+			TradeWindow.handleMouseInput();
 			neu.overlay.mouseInput();
 			return;
 		}
@@ -1157,8 +1116,6 @@ public class RenderListener {
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
-		boolean customAhActive =
-			event.gui instanceof CustomAHGui || neu.manager.auctionManager.customAH.isRenderOverAuctionView();
 
 		if (storageOverlayActive) {
 			if (StorageOverlay.getInstance().keyboardInput()) {
@@ -1167,22 +1124,13 @@ public class RenderListener {
 			}
 		}
 
-		if (tradeWindowActive || customAhActive) {
-			if (customAhActive) {
-				if (neu.manager.auctionManager.customAH.keyboardInput()) {
-					event.setCanceled(true);
-					Minecraft.getMinecraft().dispatchKeypresses();
-				} else if (neu.overlay.keyboardInput(focusInv)) {
-					event.setCanceled(true);
-				}
-			} else {
+		if (tradeWindowActive) {
 				TradeWindow.keyboardInput();
 				if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE) {
 					event.setCanceled(true);
 					Minecraft.getMinecraft().dispatchKeypresses();
 					neu.overlay.keyboardInput(focusInv);
 				}
-			}
 			return;
 		}
 

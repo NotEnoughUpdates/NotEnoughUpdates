@@ -277,14 +277,6 @@ public class ChatListener {
 				}
 			}
 		}
-		if (e.message.getFormattedText().contains(
-			EnumChatFormatting.YELLOW + "Visit the Auction House to collect your item!")) {
-			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBid != null &&
-				System.currentTimeMillis() - NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBidMillis < 5000) {
-				NotEnoughUpdates.INSTANCE.sendChatMessage("/viewauction " +
-					NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.niceAucId(NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.latestBid));
-			}
-		}
 		if (r != null) {
 			if (neu.manager.failViewItem(r)) {
 				e.setCanceled(true);

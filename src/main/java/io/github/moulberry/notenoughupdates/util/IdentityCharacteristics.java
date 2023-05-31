@@ -17,23 +17,36 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.commands.misc
+package io.github.moulberry.notenoughupdates.util;
 
-import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.brigadier.reply
-import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
-import net.minecraft.util.EnumChatFormatting.RED
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+/**
+ * Wrapper around a {@link T} that implements hashing and equality according to object identity instead of the objects
+ * default equals implementation.
+ */
+public final class IdentityCharacteristics<T> {
+	private final T object;
 
-@NEUAutoSubscribe
-class AhCommand {
-    @SubscribeEvent
-    fun onCommands(event: RegisterBrigadierCommandEvent) {
-        event.command("neuah") {
-            thenExecute {  ->
-                    reply("${RED}NeuAH has been removed from NEU.")
-            }
-        }
-    }
+	public IdentityCharacteristics(T object) {
+		this.object = object;
+	}
+
+	public static <T> IdentityCharacteristics<T> of(T object) {
+		return new IdentityCharacteristics<>(object);
+	}
+
+	public T getObject() {
+		return object;
+	}
+
+	@Override
+	public int hashCode() {
+		return System.identityHashCode(object);
+	}
+
+	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+	@Override
+	public boolean equals(Object obj) {
+		return obj == object;
+	}
+
 }

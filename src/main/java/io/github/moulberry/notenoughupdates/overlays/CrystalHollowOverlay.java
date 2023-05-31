@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -129,9 +129,14 @@ public class CrystalHollowOverlay extends TextOverlay {
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return NotEnoughUpdates.INSTANCE.config.mining.crystalHollowOverlay;
+	}
+
+	@Override
 	public void update() {
 		overlayStrings = null;
-		if (!NotEnoughUpdates.INSTANCE.config.mining.crystalHollowOverlay || SBInfo.getInstance().getLocation() == null ||
+		if (!isEnabled() || SBInfo.getInstance().getLocation() == null ||
 			!SBInfo.getInstance().getLocation().equals("crystal_hollows"))
 			return;
 

@@ -151,6 +151,12 @@ object ApiCache {
         }
     }
 
+    fun clear() {
+        synchronized(this) {
+            cachedRequests.clear()
+        }
+    }
+
     private fun evictCache() {
         synchronized(this) {
             val it = cachedRequests.iterator()

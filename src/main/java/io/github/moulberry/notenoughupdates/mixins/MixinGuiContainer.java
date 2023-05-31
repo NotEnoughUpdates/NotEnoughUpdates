@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.DrawSlotReturnEvent;
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
@@ -66,7 +67,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Set;
 
-@Mixin(GuiContainer.class)
+@Mixin(value = GuiContainer.class, priority = 500)
 public abstract class MixinGuiContainer extends GuiScreen {
 	private static boolean hasProfileViewerStack = false;
 	private static final ItemStack profileViewerStack = Utils.createItemStack(
@@ -78,7 +79,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	@Inject(method = "drawSlot", at = @At("RETURN"))
 	public void drawSlotRet(Slot slotIn, CallbackInfo ci) {
 		SlotLocking.getInstance().drawSlot(slotIn);
-		DungeonNpcProfitOverlay.onDrawSlot(slotIn);
+		new DrawSlotReturnEvent(slotIn).post();
 	}
 
 	@Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
@@ -171,14 +172,12 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		}
 	}
 
-	@Redirect(method = "drawScreen", at = @At(
-		value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/inventory/GuiContainer;renderToolTip(Lnet/minecraft/item/ItemStack;II)V"))
-	public void drawScreen_renderTooltip(GuiContainer guiContainer, ItemStack stack, int x, int y) {
+	@ModifyArg(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;renderToolTip(Lnet/minecraft/item/ItemStack;II)V"), index = 0)
+	public ItemStack adjustItemStack(ItemStack itemStack) {
 		if (theSlot.slotNumber == BetterContainers.profileViewerStackIndex) {
-			this.renderToolTip(profileViewerStack, x, y);
+			return profileViewerStack;
 		} else {
-			this.renderToolTip(stack, x, y);
+			return itemStack;
 		}
 	}
 
@@ -301,7 +300,8 @@ public abstract class MixinGuiContainer extends GuiScreen {
 	public boolean drawScreen_canBeHovered(Slot slot) {
 		if ((NotEnoughUpdates.INSTANCE.config.improvedSBMenu.hideEmptyPanes &&
 			BetterContainers.isOverriding() && BetterContainers.isBlankStack(slot.slotNumber, slot.getStack())) ||
-			slot.getStack() != null && slot.getStack().hasTagCompound() && slot.getStack().getTagCompound().getBoolean("NEUHIDETOOLIP")) {
+			slot.getStack() != null &&
+				slot.getStack().hasTagCompound() && slot.getStack().getTagCompound().getBoolean("NEUHIDETOOLIP")) {
 			return false;
 		}
 		return slot.canBeHovered();

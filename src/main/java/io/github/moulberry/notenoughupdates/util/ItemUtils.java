@@ -139,6 +139,7 @@ public class ItemUtils {
 	}
 
 	public static List<String> getLore(ItemStack is) {
+		if (is == null) return new ArrayList<>();
 		return getLore(is.getTagCompound());
 	}
 
