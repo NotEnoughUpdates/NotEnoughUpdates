@@ -21,6 +21,8 @@ package io.github.moulberry.notenoughupdates.util
 
 import io.github.moulberry.notenoughupdates.NEUManager
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.core.util.StringUtils
+import net.minecraft.inventory.IInventory
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.ItemDye
 import net.minecraft.item.ItemStack
@@ -109,5 +111,7 @@ object MuseumUtil {
         }
     }
 
-
+    fun isMuseumInventory(inventory: IInventory): Boolean {
+        return StringUtils.cleanColour(inventory.displayName.unformattedText).startsWith("Museum ➜")
+    }
 }

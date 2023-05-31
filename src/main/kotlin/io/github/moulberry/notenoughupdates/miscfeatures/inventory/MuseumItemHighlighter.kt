@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Linnea Gräf
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -26,14 +26,13 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEvent
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
-import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.LRUCache
 import io.github.moulberry.notenoughupdates.util.MuseumUtil
+import io.github.moulberry.notenoughupdates.util.MuseumUtil.isMuseumInventory
 import net.minecraft.client.gui.Gui
 import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.inventory.IInventory
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -74,10 +73,6 @@ object MuseumItemHighlighter {
 
     fun isCompletedRetrievedItem(itemStack: ItemStack): Boolean {
         return itemStack.hasDisplayName() && itemStack.item == Items.dye && EnumDyeColor.byDyeDamage(itemStack.itemDamage) == EnumDyeColor.LIME
-    }
-
-    fun isMuseumInventory(inventory: IInventory): Boolean {
-        return StringUtils.cleanColour(inventory.displayName.unformattedText).startsWith("Museum ➜")
     }
 
     @SubscribeEvent
