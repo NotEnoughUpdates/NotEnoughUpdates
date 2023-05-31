@@ -285,7 +285,7 @@ public class SkyblockProfiles {
 					String profileId = profile.get("profile_id").getAsString().replace("-", "");
 
 					SoopyNetworthData networth;
-					if (jsonObject.getAsJsonObject("data").get(profileId) == null || jsonObject.getAsJsonObject("data").isJsonNull(profileId)) {
+					if (jsonObject.getAsJsonObject("data").get(profileId) == null) {
 						networth = new SoopyNetworthData(null);
 					} else {
 						networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
