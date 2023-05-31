@@ -69,7 +69,6 @@ object MuseumTooltipManager {
     )
 
     private fun addItemToDonatedList(itemsToAdd: List<String>) {
-        println(itemsToAdd)
         val profile = SBInfo.getInstance().currentProfile ?: return
 
         for (internalName in itemsToAdd) {
