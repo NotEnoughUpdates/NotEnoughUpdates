@@ -24,9 +24,11 @@ import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
+import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -67,8 +69,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private float xpGainHourLast = -1;
 	private float xpGainHour = -1;
 
-	private final int ENCH_SIZE = 160;
-	private final int ENCH_BLOCK_SIZE = 1296;
 	private int xpGainTimer = 0;
 
 	private String skillType = "Farming";
@@ -134,6 +134,30 @@ public class FarmingSkillOverlay extends TextOverlay {
 	@Override
 	public boolean isEnabled() {
 		return NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingOverlay;
+	}
+
+	private enum CropType {
+		WHEAT("THEORETICAL_HOE_WHEAT", "ENCHANTED_HAY_BLOCK", 1296),
+		NETHER_WART("THEORETICAL_HOE_WARTS", "ENCHANTED_NETHER_STALK", 160),
+		SUGAR_CANE("THEORETICAL_HOE_CANE", "ENCHANTED_SUGAR", 160),
+		CARROT("THEORETICAL_HOE_CARROT", "ENCHANTED_CARROT", 160),
+		POTATO("THEORETICAL_HOE_POTATO", "ENCHANTED_POTATO", 160),
+		COCOA_BEANS("COCO_CHOPPER", "ENCHANTED_COCOA", 160),
+		PUMPKIN("PUMPKIN_DICER", "ENCHANTED_PUMPKIN", 160),
+		MELON("MELON_DICER", "ENCHANTED_MELON", 160),
+		CACTUS("CACTUS_KNIFE", "ENCHANTED_CACTUS_GREEN", 160),
+		;
+
+		private final String toolName;
+		private final String item;
+		private final int enchSize;
+
+		CropType(String toolName, String item, int enchSize) {
+			this.toolName = toolName;
+			this.item = item;
+			this.enchSize = enchSize;
+		}
+
 	}
 
 	@Override
@@ -203,7 +227,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 			cultivatingTierAmount = "Maxed";
 		}
 
-		String internalName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+		String internalName =
+			new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withItemStack(stack).resolveInternalName();
 		if (internalName != null) {
 
 			//Set default skillType to Farming and get BZ price config value
@@ -217,50 +242,34 @@ public class FarmingSkillOverlay extends TextOverlay {
 				foraging = 1;
 				coins = 2;
 
-				//WARTS
-			} else  if (internalName.startsWith("THEORETICAL_HOE_WARTS")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_NETHER_STALK", ENCH_SIZE) : 5;
-
-				//COCOA
-			} else if (internalName.equals("COCO_CHOPPER")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_COCOA", ENCH_SIZE) : 3;
-
-				//CACTUS
-			} else if (internalName.equals("CACTUS_KNIFE")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_CACTUS_GREEN", ENCH_SIZE) : 3;
-
-				//CANE
-			} else if (internalName.startsWith("THEORETICAL_HOE_CANE")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_SUGAR", ENCH_SIZE) : 5;
-
-				//CARROT
-			} else if (internalName.startsWith("THEORETICAL_HOE_CARROT")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_CARROT", ENCH_SIZE) : 4;
-
-				//POTATO
-			} else if (internalName.startsWith("THEORETICAL_HOE_POTATO")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_POTATO", ENCH_SIZE) : 4;
-
 				//MUSHROOM
 			} else if (internalName.equals("FUNGI_CUTTER")) {
-				coins = useBZPrice ? ((getCoinsBz("ENCHANTED_RED_MUSHROOM", ENCH_SIZE) +
-					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", ENCH_SIZE)) / 2) : 10;
 
-				//PUMPKIN
-			} else if (internalName.startsWith("PUMPKIN_DICER")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_PUMPKIN", ENCH_SIZE) : 10;
-
-				//MELON
-			} else if (internalName.startsWith("MELON_DICER")) {
-				coins = useBZPrice ? getCoinsBz("ENCHANTED_MELON", ENCH_SIZE) : 2;
-
-				//WHEAT
-			} else if (internalName.startsWith("THEORETICAL_HOE_WHEAT")) {
-				coins = useBZPrice
-					? getCoinsBz("ENCHANTED_HAY_BLOCK", ENCH_BLOCK_SIZE) : 6;
+				if (useBZPrice) {
+					coins = (getCoinsBz("ENCHANTED_RED_MUSHROOM", 160) +
+						getCoinsBz("ENCHANTED_BROWN_MUSHROOM", 160)) / 2;
+				} else {
+					Double red = HypixelItemAPI.getNPCSellPrice("ENCHANTED_RED_MUSHROOM");
+					Double brown = HypixelItemAPI.getNPCSellPrice("ENCHANTED_BROWN_MUSHROOM");
+					if (red == null || brown == null) {
+						coins = 0;
+					} else {
+						coins = (red * 160 + brown * 160) / 2;
+					}
+				}
 
 			} else {
+				// EVERYTHING ELSE
 				coins = 0;
+				for (CropType crop : CropType.values()) {
+					if (internalName.startsWith(crop.toolName)) {
+						Double npcSellPrice = HypixelItemAPI.getNPCSellPrice(crop.item);
+						if (npcSellPrice == null) {
+							npcSellPrice = 0.0;
+						}
+						coins = useBZPrice ? getCoinsBz(crop.item, crop.enchSize) : npcSellPrice / crop.enchSize;
+					}
+				}
 			}
 		}
 
