@@ -67,6 +67,7 @@ import io.github.moulberry.notenoughupdates.options.seperateSections.Toolbar;
 import io.github.moulberry.notenoughupdates.options.seperateSections.TooltipTweaks;
 import io.github.moulberry.notenoughupdates.options.seperateSections.TradeMenu;
 import io.github.moulberry.notenoughupdates.options.seperateSections.WardrobeKeybinds;
+import io.github.moulberry.notenoughupdates.options.seperateSections.WorldConfig;
 import io.github.moulberry.notenoughupdates.overlays.MiningOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
