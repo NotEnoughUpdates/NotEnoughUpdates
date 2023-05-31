@@ -93,14 +93,14 @@ public class AuctionProfit {
 			if (!display.hasKey("Lore", 9)) continue;
 			NBTTagList lore = itemStack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
 
-			int coinsToCheck = 0;
+			double coinsToCheck = 0;
 			for (int i = 0; i < lore.tagCount(); i++) {
 				String line = lore.getStringTagAt(i);
 				if (line.contains("§7Buy it now")) {
 					isBin = true;
 					String s = line.split("§7Buy it now: ")[1];
 					String coinsString = s.split("coins")[0];
-					int coins = tryParse(EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim()));
+					double coins = tryParse(EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim()));
 					if (coins != 0) {
 						coinsToCheck += coins;
 					}
@@ -110,7 +110,7 @@ public class AuctionProfit {
 					String s = line.split("§7Top bid: ")[1];
 					String coinsString = s.split("coins")[0];
 					String textWithoutFormattingCodes = EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim());
-					int coins = tryParse(textWithoutFormattingCodes);
+					double coins = tryParse(textWithoutFormattingCodes);
 					if (coins != 0) {
 						coinsToCheck += coins;
 					}
@@ -119,20 +119,16 @@ public class AuctionProfit {
 				if (line.contains("§7Sold for: ")) {
 					String s = line.split("§7Sold for: ")[1];
 					String coinsString = s.split("coins")[0];
-					int coins = tryParse(EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim()));
+					double coins = tryParse(EnumChatFormatting.getTextWithoutFormattingCodes(coinsString.trim()));
 					if (coins != 0) {
-						if (coins > 1000000) {
-							coins /= 1.01;
-						}
+						coins = removeTax(coins);
 						coinsToCollect += coins;
 					}
 				}
 
 				if (line.contains("§7Status: §aSold!") || line.contains("§7Status: §aEnded!")) {
 					if (coinsToCheck != 0) {
-						if (coinsToCheck > 1000000) {
-							coinsToCheck /= 1.01;
-						}
+						coinsToCheck = removeTax(coinsToCheck);
 						coinsToCollect += coinsToCheck;
 						coinsToCheck = 0;
 					}
@@ -172,11 +168,21 @@ public class AuctionProfit {
 		fontRendererObj.drawString(valueIfSoldStr, a + 6, guiTop + 42, -1, false);
 	}
 
-	public static Integer tryParse(String s) {
+	private double removeTax(double coins) {
+		if (coins < 10_000_000) {
+			return coins / 1.01;
+		}
+		if (coins < 100_000_000) {
+			return coins / 1.02;
+		}
+		return coins / 1.025;
+	}
+
+	public static Double tryParse(String s) {
 		try {
-			return Integer.parseInt(s.replace(",", ""));
+			return Double.parseDouble(s.replace(",", ""));
 		} catch (NumberFormatException exception) {
-			return 0;
+			return 0.0;
 		}
 	}
 
