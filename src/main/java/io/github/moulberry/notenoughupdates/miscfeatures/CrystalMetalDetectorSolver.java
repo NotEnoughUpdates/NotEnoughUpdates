@@ -148,14 +148,8 @@ public class CrystalMetalDetectorSolver {
 		// Delay to keep old chest location from being treated as the new chest location
 		if (chestRecentlyFound) {
 			long currentTimeMillis = System.currentTimeMillis();
-			if (chestLastFoundMillis == 0) {
-				chestLastFoundMillis = currentTimeMillis;
-				return;
-			} else if (currentTimeMillis - chestLastFoundMillis < 1000 && distToTreasure < 5.0) {
-				return;
-			}
-
-			chestLastFoundMillis = 0;
+			if (currentTimeMillis - chestLastFoundMillis < 1000 && distToTreasure < 5.0) return;
+			chestLastFoundMillis = currentTimeMillis;
 			chestRecentlyFound = false;
 		}
 
@@ -204,7 +198,8 @@ public class CrystalMetalDetectorSolver {
 	}
 
 	static void findPossibleSolutions(double distToTreasure, Vec3Comparable playerPos, boolean centerNewlyDiscovered) {
-		if (prevDistToTreasure == distToTreasure && prevPlayerPos.equals(playerPos) &&
+		if (Math.abs(prevDistToTreasure - distToTreasure) < 0.2 &&
+			prevPlayerPos.distanceTo(playerPos) <= 0.1 &&
 			!evaluatedPlayerPositions.containsKey(playerPos)) {
 			evaluatedPlayerPositions.put(playerPos, distToTreasure);
 			if (possibleBlocks.size() == 0) {

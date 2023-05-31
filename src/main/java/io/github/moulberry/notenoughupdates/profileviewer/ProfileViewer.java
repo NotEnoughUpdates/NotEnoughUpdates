@@ -963,30 +963,29 @@ public class ProfileViewer {
 			}
 
 			double skyblockLevel = getSkyblockLevel(profileName);
+			EnumChatFormatting levelColour = EnumChatFormatting.WHITE;
 
-			EnumChatFormatting previousColor = EnumChatFormatting.WHITE;
 			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
 				Utils.showOutdatedRepoNotification();
 				return EnumChatFormatting.WHITE;
 			}
+
 			JsonObject sblevelColours = Constants.SBLEVELS.getAsJsonObject("sblevel_colours");
 			try {
 				for (Map.Entry<String, JsonElement> stringJsonElementEntry : sblevelColours.entrySet()) {
-					int key = Integer.parseInt(stringJsonElementEntry.getKey());
+					int nextLevelBracket = Integer.parseInt(stringJsonElementEntry.getKey());
 					EnumChatFormatting valueByName = EnumChatFormatting.getValueByName(stringJsonElementEntry
 						.getValue()
 						.getAsString());
-					if (skyblockLevel <= key) {
-						skyBlockExperienceColour.put(profileName, previousColor);
-						return previousColor;
+					if (skyblockLevel >= nextLevelBracket) {
+						levelColour = valueByName;
 					}
-					previousColor = valueByName;
 				}
 			} catch (RuntimeException ignored) {
 				// catch both numberformat and getValueByName being wrong
 			}
-			skyBlockExperienceColour.put(profileName, EnumChatFormatting.WHITE);
-			return EnumChatFormatting.WHITE;
+			skyBlockExperienceColour.put(profileName, levelColour);
+			return levelColour;
 		}
 
 		public double getSkyblockLevel(String profileName) {

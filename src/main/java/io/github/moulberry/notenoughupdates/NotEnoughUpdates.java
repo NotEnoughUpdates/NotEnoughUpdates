@@ -25,7 +25,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.commands.Commands;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
@@ -44,6 +43,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.CustomBlockSounds;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumCheapestItemOverlay;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumItemHighlighter;
 import io.github.moulberry.notenoughupdates.miscfeatures.updater.AutoUpdater;
 import io.github.moulberry.notenoughupdates.mixins.AccessorMinecraft;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
@@ -52,6 +53,7 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -139,7 +141,9 @@ public class NotEnoughUpdates {
 	private static final long CHAT_MSG_COOLDOWN = 200;
 	//Stolen from Biscut and used for detecting whether in skyblock
 	private static final Set<String> SKYBLOCK_IN_ALL_LANGUAGES =
-		Sets.newHashSet("SKYBLOCK", "\u7A7A\u5C9B\u751F\u5B58", "\u7A7A\u5CF6\u751F\u5B58");
+		Sets.newHashSet("SKYBLOCK", "\u7A7A\u5C9B\u751F\u5B58", "\u7A7A\u5CF6\u751F\u5B58",
+			"SKIBLOCK"
+		); // april fools language
 	public static NotEnoughUpdates INSTANCE = null;
 	public static HashMap<String, String> petRarityToColourMap = new HashMap<String, String>() {{
 		put("UNKNOWN", EnumChatFormatting.RED.toString());
@@ -158,7 +162,6 @@ public class NotEnoughUpdates {
 	public Navigation navigation = new Navigation(this);
 	public GuiScreen openGui = null;
 	public long lastOpenedGui = 0;
-	public Commands commands;
 	public boolean packDevEnabled = false;
 	public Color[][] colourMap = null;
 	public AutoUpdater autoUpdater = new AutoUpdater(this);
@@ -168,6 +171,13 @@ public class NotEnoughUpdates {
 	private String currChatMessage = null;
 	private File neuDir;
 	private boolean hasSkyblockScoreboard;
+
+	public NotEnoughUpdates() {
+		// Budget Construction Event
+		((AccessorMinecraft) FMLClientHandler.instance().getClient())
+			.onGetDefaultResourcePacks()
+			.add(new NEURepoResourcePack(null, "neurepo"));
+	}
 
 	public File getConfigFile() {
 		return this.configFile;
@@ -179,13 +189,6 @@ public class NotEnoughUpdates {
 
 	public File getNeuDir() {
 		return this.neuDir;
-	}
-
-	public NotEnoughUpdates() {
-		// Budget Construction Event
-		((AccessorMinecraft) FMLClientHandler.instance().getClient())
-			.onGetDefaultResourcePacks()
-			.add(new NEURepoResourcePack(null, "neurepo"));
 	}
 
 	/**
@@ -250,6 +253,13 @@ public class NotEnoughUpdates {
 				config.apiData.repoBranch = "prerelease";
 			}
 
+			if (config.apiData.moulberryCodesApi.isEmpty()) {
+				config.apiData.moulberryCodesApi = "moulberry.codes";
+			}
+			if (config.ahGraph.serverUrl.trim().isEmpty()) {
+				config.ahGraph.serverUrl = "pricehistory.notenoughupdates.org";
+			}
+
 			saveConfig();
 		}
 
@@ -271,6 +281,8 @@ public class NotEnoughUpdates {
 		MinecraftForge.EVENT_BUS.register(navigation);
 		MinecraftForge.EVENT_BUS.register(new WorldListener(this));
 		AutoLoad.INSTANCE.provide(supplier -> MinecraftForge.EVENT_BUS.register(supplier.get()));
+		MinecraftForge.EVENT_BUS.register(MuseumItemHighlighter.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(MuseumCheapestItemOverlay.INSTANCE);
 
 		if (Minecraft.getMinecraft().getResourceManager() instanceof IReloadableResourceManager) {
 			IReloadableResourceManager manager = (IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager();
@@ -281,7 +293,7 @@ public class NotEnoughUpdates {
 			manager.registerReloadListener(new CustomBlockSounds.ReloaderListener());
 		}
 
-		this.commands = new Commands();
+		BrigadierRoot.INSTANCE.updateHooks();
 
 		BackgroundBlur.registerListener();
 

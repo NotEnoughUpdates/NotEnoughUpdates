@@ -36,8 +36,8 @@ import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupAligned;
 import io.github.moulberry.notenoughupdates.mbgui.MBGuiGroupFloating;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
-import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
+import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
 import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
@@ -1661,7 +1661,7 @@ public class NEUOverlay extends Gui {
 			buttonXSize, ySize, 1 - leftPressed, leftPressed, 1 - leftPressed, leftPressed
 		);
 		GlStateManager.bindTexture(0);
-		Utils.drawStringCenteredScaled(EnumChatFormatting.BOLD + "Prev", fr,
+		Utils.drawStringCenteredScaled(EnumChatFormatting.BOLD + "Prev",
 			leftSide - 1 + buttonXSize * 300 / 480f + leftPressed,
 			top + ySize / 2f + leftPressed, false,
 			(int) (buttonXSize * 240 / 480f), Color.BLACK.getRGB()
@@ -1680,7 +1680,7 @@ public class NEUOverlay extends Gui {
 			buttonXSize, ySize, 1 - rightPressed, rightPressed, 1 - rightPressed, rightPressed
 		);
 		GlStateManager.bindTexture(0);
-		Utils.drawStringCenteredScaled(EnumChatFormatting.BOLD + "Next", fr,
+		Utils.drawStringCenteredScaled(EnumChatFormatting.BOLD + "Next",
 			rightSide + 1 - buttonXSize * 300 / 480f + rightPressed,
 			top + ySize / 2f + rightPressed, false,
 			(int) (buttonXSize * 240 / 480f), Color.BLACK.getRGB()
@@ -1695,7 +1695,7 @@ public class NEUOverlay extends Gui {
 			new Color(50, 50, 50).getRGB()
 		);
 		drawRect(leftSide + buttonXSize + 3, top + 1, rightSide - buttonXSize - 3, top + ySize - 1, fg.getRGB());
-		Utils.drawStringCenteredScaledMaxWidth(pageText, fr, (leftSide + rightSide) / 2,
+		Utils.drawStringCenteredScaledMaxWidth(pageText, (leftSide + rightSide) / 2,
 			top + ySize / 2f, false, strMaxLen, Color.BLACK.getRGB()
 		);
 	}
@@ -1840,8 +1840,6 @@ public class NEUOverlay extends Gui {
 			return;
 		}
 		GlStateManager.enableDepth();
-
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 
 		Utils.resetGuiScale();
 		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.itemlist.paneGuiScale);
@@ -2234,7 +2232,7 @@ public class NEUOverlay extends Gui {
 			textToDisplay = text;
 		}
 		if (textToDisplay != null) {
-			Utils.drawHoveringText(textToDisplay, mouseX, mouseY, width, height, -1, fr);
+			Utils.drawHoveringText(textToDisplay, mouseX, mouseY, width, height, -1);
 			textToDisplay = null;
 		}
 

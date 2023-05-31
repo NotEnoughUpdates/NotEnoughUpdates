@@ -74,14 +74,7 @@ public class NEUOverlayPlacements extends GuiScreen {
 		drawRect((width - 176) / 2, (height - 166) / 2,
 			(width + 176) / 2, (height + 166) / 2, new Color(100, 100, 100, 200).getRGB()
 		);
-		Utils.drawStringCentered(
-			GOLD + "Inventory",
-			Minecraft.getMinecraft().fontRendererObj,
-			width / 2f,
-			height / 2f,
-			false,
-			0
-		);
+		Utils.drawStringCentered(GOLD + "Inventory", width / 2f, height / 2f, false, 0);
 
 		MBGuiGroupFloating mainGroup = NotEnoughUpdates.INSTANCE.overlay.guiGroup;
 		mainGroup.render(0, 0);
@@ -145,7 +138,8 @@ public class NEUOverlayPlacements extends GuiScreen {
 			}
 
 			if (anchorPoint.inventoryRelative) {
-				Utils.drawStringCentered(GOLD + "Inv-Relative", Minecraft.getMinecraft().fontRendererObj,
+				Utils.drawStringCentered(
+					GOLD + "Inv-Relative",
 					position.x + element.getWidth() * 0.5f, position.y + element.getHeight() * 0.5f, false, 0
 				);
 			}

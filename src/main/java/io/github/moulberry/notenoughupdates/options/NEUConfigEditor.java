@@ -34,7 +34,6 @@ import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -226,13 +225,19 @@ public class NEUConfigEditor extends GuiElement {
 			if (searchedOptions == null) {
 				searchedOptions = new HashSet<>();
 			} else {
+				Set<ConfigProcessor.ProcessedOption> searchedOptions2 = new HashSet<>();
 				for (ConfigProcessor.ProcessedOption option : searchedOptions) {
 					ConfigProcessor.ProcessedCategory cat = categoryForOption.get(option);
 					if (cat == null) continue;
 
 					searchedCategories.add(cat);
+					for (ConfigProcessor.ProcessedOption catOption : cat.options.values()) {
+						if (catOption.accordionId == -1 || option.accordionId == -1) continue;
+						if (catOption.accordionId == option.accordionId) searchedOptions2.add(catOption);
+					}
 					searchedAccordions.computeIfAbsent(cat, k -> new HashSet<>()).add(option.accordionId);
 				}
+				searchedOptions.addAll(searchedOptions2);
 			}
 		}
 	}
@@ -289,15 +294,9 @@ public class NEUConfigEditor extends GuiElement {
 
 		RenderUtils.drawFloatingRectDark(x + 5, y + 5, xSize - 10, 20, false);
 
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 		TextRenderUtils.drawStringCenteredScaledMaxWidth(
 			"NotEnoughUpdates by " + EnumChatFormatting.DARK_PURPLE + "Moulberry",
-			fr,
-			x + xSize / 2,
-			y + 15,
-			false,
-			200,
-			0xa0a0a0
+			x + xSize / 2, y + 15, false, 200, 0xa0a0a0
 		);
 
 		RenderUtils.drawFloatingRectDark(x + 4, y + 49 - 20,
@@ -334,9 +333,7 @@ public class NEUConfigEditor extends GuiElement {
 			} else {
 				catName = EnumChatFormatting.GRAY + catName;
 			}
-			TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-				fr, x + 75, y + 70 + catY, false, 100, -1
-			);
+			TextRenderUtils.drawStringCenteredScaledMaxWidth(catName, x + 75, y + 70 + catY, false, 100, -1);
 			catY += 15;
 			if (catY > 0) {
 				catBarSize =
@@ -366,9 +363,7 @@ public class NEUConfigEditor extends GuiElement {
 
 		GlScissorStack.pop(scaledResolution);
 
-		TextRenderUtils.drawStringCenteredScaledMaxWidth("Categories",
-			fr, x + 75, y + 44, false, 120, 0xa368ef
-		);
+		TextRenderUtils.drawStringCenteredScaledMaxWidth("Categories", x + 75, y + 44, false, 120, 0xa368ef);
 
 		RenderUtils.drawFloatingRectDark(x + 149, y + 29, xSize - 154, ySize - 34, false);
 
@@ -405,8 +400,9 @@ public class NEUConfigEditor extends GuiElement {
 		if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
 			ConfigProcessor.ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
 
-			TextRenderUtils.drawStringScaledMaxWidth(cat.desc,
-				fr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
+			TextRenderUtils.drawStringScaledMaxWidth(
+				cat.desc,
+				innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
 			);
 		}
 
@@ -552,7 +548,9 @@ public class NEUConfigEditor extends GuiElement {
 		GlScissorStack.clear();
 
 		if (tooltipToDisplay != null) {
-			TextRenderUtils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+			TextRenderUtils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1,
+				Minecraft.getMinecraft().fontRendererObj
+			);
 		}
 
 		GlStateManager.translate(0, 0, -2);

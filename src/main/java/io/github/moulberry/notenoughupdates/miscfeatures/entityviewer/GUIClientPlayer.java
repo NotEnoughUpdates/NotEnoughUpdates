@@ -32,9 +32,9 @@ public class GUIClientPlayer extends AbstractClientPlayer {
 		super(null, new GameProfile(UUID.randomUUID(), "GuiPlayer"));
 	}
 
-	ResourceLocation overrideSkin = DefaultPlayerSkin.getDefaultSkinLegacy();
-	ResourceLocation overrideCape = null;
-	boolean overrideIsSlim = false;
+	public ResourceLocation overrideSkin = DefaultPlayerSkin.getDefaultSkinLegacy();
+	public ResourceLocation overrideCape = null;
+	public boolean overrideIsSlim = false;
 	NetworkPlayerInfo playerInfo = new NetworkPlayerInfo(this.getGameProfile()) {
 		@Override
 		public String getSkinType() {

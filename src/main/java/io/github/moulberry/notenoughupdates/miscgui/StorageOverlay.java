@@ -20,6 +20,8 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
@@ -56,7 +58,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ClientCommandHandler;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -73,9 +74,6 @@ import java.util.Set;
 
 public class StorageOverlay extends GuiElement {
 	public static final ResourceLocation[] STORAGE_PREVIEW_TEXTURES = new ResourceLocation[4];
-	private static final int CHEST_TOP_OFFSET = 17;
-	private static final int CHEST_SLOT_SIZE = 18;
-	private static final int CHEST_BOTTOM_OFFSET = 215;
 	private static final ResourceLocation[] STORAGE_TEXTURES = new ResourceLocation[4];
 	private static final ResourceLocation STORAGE_ICONS_TEXTURE = new ResourceLocation(
 		"notenoughupdates:storage_gui/storage_icons.png");
@@ -86,6 +84,7 @@ public class StorageOverlay extends GuiElement {
 	private static final StorageOverlay INSTANCE = new StorageOverlay();
 	private static final String CHROMA_STR = "230:255:255:0:0";
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+	private static final NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 
 	static {
 		for (int i = 0; i < STORAGE_TEXTURES.length; i++) {
@@ -282,7 +281,7 @@ public class StorageOverlay extends GuiElement {
 		if (stack != null &&
 			(stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) || stack.getItem() == Item.getItemFromBlock(
 				Blocks.glass_pane))) {
-			String internalName = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(stack);
+			String internalName = manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
 			if (internalName != null) {
 				if (internalName.startsWith("STAINED_GLASS_PANE")) {
 					if (cache != null) cache[index] = stack.getItemDamage() + 1;
@@ -862,11 +861,11 @@ public class StorageOverlay extends GuiElement {
 				Gui.drawRect(storageX, storageY, storageX + 162, storageY + h, 0x80000000);
 
 				if (storageId < 9) {
-					Utils.drawStringCenteredScaledMaxWidth("Locked Page", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Locked Page",
 						storageX + 81, storageY + h / 2, true, 150, 0xd94c00
 					);
 				} else {
-					Utils.drawStringCenteredScaledMaxWidth("Empty Backpack Slot", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Empty Backpack Slot",
 						storageX + 81, storageY + h / 2, true, 150, 0xd94c00
 					);
 				}
@@ -889,7 +888,7 @@ public class StorageOverlay extends GuiElement {
 
 				Gui.drawRect(storageX, storageY, storageX + 162, storageY + h, 0x80000000);
 
-				Utils.drawStringCenteredScaledMaxWidth("Click to load items", fontRendererObj,
+				Utils.drawStringCenteredScaledMaxWidth("Click to load items",
 					storageX + 81, storageY + h / 2, true, 150, 0xffdf00
 				);
 			} else {
@@ -1045,7 +1044,7 @@ public class StorageOverlay extends GuiElement {
 					int itemY = storageY + 1 + 18 * (k / 9);
 
 					if (!searchBar.getText().isEmpty()) {
-						if (stack == null || !NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(stack, searchBar.getText())) {
+						if (stack == null || !manager.doesStackMatchSearch(stack, searchBar.getText())) {
 							GlStateManager.disableDepth();
 							Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
 							GlStateManager.enableDepth();
@@ -1233,35 +1232,35 @@ public class StorageOverlay extends GuiElement {
 
 				if (StorageManager.getInstance().desiredStoragePage == storageId &&
 					StorageManager.getInstance().onStorageMenu) {
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81 - 1, storageY + storageH / 2 - 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81 + 1, storageY + storageH / 2 - 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81, storageY + storageH / 2 - 5 - 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81, storageY + storageH / 2 - 5 + 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
 						storageX + 81, storageY + storageH / 2 - 5, false, 150, 0xffdf00
 					);
 
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81 - 1, storageY + storageH / 2 + 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81 + 1, storageY + storageH / 2 + 5, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81, storageY + storageH / 2 + 5 - 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81, storageY + storageH / 2 + 5 + 1, false, 150, 0x111111
 					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info", fontRendererObj,
+					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
 						storageX + 81, storageY + storageH / 2 + 5, false, 150, 0xffdf00
 					);
 				}
@@ -1299,7 +1298,7 @@ public class StorageOverlay extends GuiElement {
 			GlStateManager.popMatrix();
 
 			if (!searchBar.getText().isEmpty()) {
-				if (playerItems[i] == null || !NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(
+				if (playerItems[i] == null || !manager.doesStackMatchSearch(
 					playerItems[i],
 					searchBar.getText()
 				)) {
@@ -1333,7 +1332,7 @@ public class StorageOverlay extends GuiElement {
 			GlStateManager.popMatrix();
 
 			if (!searchBar.getText().isEmpty()) {
-				if (playerItems[i + 9] == null || !NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(
+				if (playerItems[i + 9] == null || !manager.doesStackMatchSearch(
 					playerItems[i + 9],
 					searchBar.getText()
 				)) {
@@ -1613,9 +1612,10 @@ public class StorageOverlay extends GuiElement {
 						break;
 					case 9:
 						tooltipToDisplay = createTooltip(
-							"Open Full Settings",
-							0,
-							"Click To Open"
+							"Disable optifine CIT",
+							!NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT ? 0 : 1,
+							"CIT Enabled",
+							"CIT Disabled"
 						);
 						break;
 				}
@@ -1685,26 +1685,10 @@ public class StorageOverlay extends GuiElement {
 				}
 				GlStateManager.translate(0, 0, -100);
 			} else {
-				Utils.drawHoveringText(
-					tooltipToDisplay,
-					mouseX,
-					mouseY,
-					width,
-					height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 			}
 		} else if (tooltipToDisplay != null) {
-			Utils.drawHoveringText(
-				tooltipToDisplay,
-				mouseX,
-				mouseY,
-				width,
-				height,
-				-1,
-				Minecraft.getMinecraft().fontRendererObj
-			);
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
 		} else {
 			allowTypingInSearchBar = true;
 		}
@@ -2045,7 +2029,8 @@ public class StorageOverlay extends GuiElement {
 						!NotEnoughUpdates.INSTANCE.config.storageGUI.showEnchantGlint;
 					break;
 				case 9:
-					ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neu storage gui");
+					NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT =
+						!NotEnoughUpdates.INSTANCE.config.storageGUI.disableCIT;
 					break;
 			}
 			dirty = true;
@@ -2195,6 +2180,15 @@ public class StorageOverlay extends GuiElement {
 
 	@Override
 	public boolean keyboardInput() {
+		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+		int width = scaledResolution.getScaledWidth();
+		int height = scaledResolution.getScaledHeight();
+		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
+		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+
+		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+		GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+
 		if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 			clearSearch();
 			return false;
@@ -2205,18 +2199,23 @@ public class StorageOverlay extends GuiElement {
 		if (Keyboard.getEventKey() == Minecraft.getMinecraft().gameSettings.keyBindFullscreen.getKeyCode()) {
 			return false;
 		}
+		
+		if (!searchBar.getFocus() && !renameStorageField.getFocus() &&
+				(Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
+				Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode())) {
+			for (Slot slot : container.inventorySlots.inventorySlots) {
+				if (slot != null && ((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
+					String internalName = manager.createItemResolutionQuery().withItemStack(slot.getStack()).resolveInternalName();
+					JsonObject item = manager.getItemInformation().get(internalName);
+					if (Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode()) manager.showRecipe(item);
+					if (Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(internalName);
+				}
+			}
+		}
 
 		if (Keyboard.getEventKeyState()) {
 			if (NotEnoughUpdates.INSTANCE.config.slotLocking.enableSlotLocking &&
 				KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.config.slotLocking.slotLockKey) && !searchBar.getFocus()) {
-				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-				GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
-
-				ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-				int width = scaledResolution.getScaledWidth();
-				int height = scaledResolution.getScaledHeight();
-				int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
-				int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 				for (Slot slot : container.inventorySlots.inventorySlots) {
 					if (slot != null &&

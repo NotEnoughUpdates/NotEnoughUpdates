@@ -128,6 +128,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 	private final Map<String, Integer> total = new HashMap<>();
 	private final Map<String, TrophyFish> trophyFishList = new HashMap<>();
 	private long totalCount = 0;
+	private static List<String> tooltipToDisplay = null;
 
 	public TrophyFishPage(GuiProfileViewer instance) {
 		super(instance);
@@ -142,14 +143,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		JsonObject profileInformation = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
 		if (profileInformation == null || !profileInformation.has("trophy_fish")) {
-			Utils.drawStringCentered(
-				EnumChatFormatting.RED + "No data found",
-				Minecraft.getMinecraft().fontRendererObj,
-				guiLeft + 431 / 2f,
-				guiTop + 101,
-				true,
-				0
-			);
+			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found", guiLeft + 431 / 2f, guiTop + 101, true, 0);
 			return;
 		}
 		JsonObject trophyObject = profileInformation.get("trophy_fish").getAsJsonObject();
@@ -180,11 +174,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Thunder Kills: §f" + thunderKills,
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 36,
-			guiTop + 112,
-			true,
-			0
+			guiLeft + 36, guiTop + 112, true, 0
 		);
 
 		ItemStack lord_jawbus_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
@@ -198,11 +188,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Lord Jawbus Kills: §f" + jawbusKills,
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 36,
-			guiTop + 124,
-			true,
-			0
+			guiLeft + 36, guiTop + 124, true, 0
 		);
 
 		ItemStack fishing_rod = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
@@ -210,14 +196,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		);
 		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(fishing_rod, guiLeft + 20, guiTop + 21);
 
-		Utils.drawStringF(
-			EnumChatFormatting.AQUA + "Total Caught: §f" + totalCount,
-			Minecraft.getMinecraft().fontRendererObj,
-			guiLeft + 38,
-			guiTop + 25,
-			true,
-			0
-		);
+		Utils.drawStringF(EnumChatFormatting.AQUA + "Total Caught: §f" + totalCount, guiLeft + 38, guiTop + 25, true, 0);
 
 		ArrayList<TrophyFish> arrayList = new ArrayList<>(trophyFishList.values());
 		arrayList.sort((c1, c2) -> Integer.compare(c2.getTotal(), c1.getTotal()));
@@ -248,15 +227,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 			if (mouseX >= x && mouseX < x + 24) {
 				if (mouseY >= y && mouseY <= y + 24) {
-					Utils.drawHoveringText(
-						getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()),
-						mouseX,
-						mouseY,
-						width,
-						height,
-						-1,
-						Minecraft.getMinecraft().fontRendererObj
-					);
+					tooltipToDisplay = new ArrayList<>();
+					tooltipToDisplay.addAll(getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()));
 				}
 			}
 		}
@@ -273,15 +245,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
 				if (mouseX >= x && mouseX < x + 24) {
 					if (mouseY >= y && mouseY <= y + 24) {
-						Utils.drawHoveringText(
-							getTooltip(difference, null),
-							mouseX,
-							mouseY,
-							width,
-							height,
-							-1,
-							Minecraft.getMinecraft().fontRendererObj
-						);
+						tooltipToDisplay = new ArrayList<>();
+						tooltipToDisplay.addAll(getTooltip(difference, null));
 						GlStateManager.color(1, 1, 1, 1);
 					}
 				}
@@ -302,7 +267,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			y = guiTop + 50 + i;
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
-			Utils.drawStringF(armorHelmets.get(itemStack).getLeft(), Minecraft.getMinecraft().fontRendererObj, x + 20, y + 4, true, 0);
+			Utils.drawStringF(armorHelmets.get(itemStack).getLeft(), x + 20, y + 4, true, 0);
 
 			int hasValue = trophiesPerTier[integer - 1];
 			int neededValue = integer == 1 ? 15 : 18;
@@ -311,14 +276,27 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			try {
 				JsonElement jsonElement = rewards.get(integer - 1);
 				if (!jsonElement.isJsonNull()) {
-					Utils.drawStringF(check, Minecraft.getMinecraft().fontRendererObj, x + 100, y + 2, true, 0);
+					Utils.drawStringF(check, x + 100, y + 2, true, 0);
 				} else {
-					Utils.drawStringF(neededText, Minecraft.getMinecraft().fontRendererObj, x + 100, y + 4, true, 0);
+					Utils.drawStringF(neededText, x + 100, y + 4, true, 0);
 				}
 			} catch (IndexOutOfBoundsException exception) {
-				Utils.drawStringF(neededText, Minecraft.getMinecraft().fontRendererObj, x + 100, y + 4, true, 0);
+				Utils.drawStringF(neededText, x + 100, y + 4, true, 0);
 			}
 			i += 10;
+		}
+
+		if (tooltipToDisplay != null) {
+			Utils.drawHoveringText(
+				tooltipToDisplay,
+				mouseX,
+				mouseY,
+				getInstance().width,
+				getInstance().height,
+				-1,
+				Minecraft.getMinecraft().fontRendererObj
+			);
+			tooltipToDisplay = null;
 		}
 
 		GlStateManager.enableLighting();

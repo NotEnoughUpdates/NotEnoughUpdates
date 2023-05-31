@@ -169,6 +169,8 @@ public class GuiInvButtonEditor extends GuiScreen {
 		put("crimson isle", "skull:c3687e25c632bce8aa61e0d64c24e694c3eea629ea944f4cf30dcfb4fbce071");
 		put("trapper den", "skull:6102f82148461ced1f7b62e326eb2db3a94a33cba81d4281452af4d8aeca4991");
 		put("arachne sanctuary", "skull:35e248da2e108f09813a6b848a0fcef111300978180eda41d3d1a7a8e4dba3c3");
+		put("garden", "skull:f4880d2c1e7b86e87522e20882656f45bafd42f94932b2c5e0d6ecaa490cb4c");
+		put("winter", "skull:6dd663136cafa11806fdbca6b596afd85166b4ec02142c8d5ac8941d89ab7");
 	}};
 
 	private static LinkedHashMap<String, List<NEUConfig.InventoryButton>> presets = null;
@@ -411,7 +413,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Load preset",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 8,
 			false,
@@ -420,7 +421,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"from Clipboard",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16,
 			false,
@@ -429,7 +429,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"Save preset",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 8 + 24,
 			false,
@@ -438,7 +437,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"to Clipboard",
-			fontRendererObj,
 			guiLeft - 44 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
 			guiTop + 16 + 24,
 			false,
@@ -459,7 +457,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 			);
 			Utils.drawStringCenteredScaledMaxWidth(
 				"\u00a7nPresets",
-				fontRendererObj,
 				guiLeft + xSize + 22 + 40,
 				guiTop + 10,
 				false,
@@ -471,7 +468,6 @@ public class GuiInvButtonEditor extends GuiScreen {
 			for (String presetName : presets.keySet()) {
 				Utils.drawStringCenteredScaledMaxWidth(
 					presetName,
-					fontRendererObj,
 					guiLeft + xSize + 22 + 40,
 					guiTop + 25 + 10 * (index++),
 					false,

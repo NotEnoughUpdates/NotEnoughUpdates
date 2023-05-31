@@ -1263,7 +1263,8 @@ public class MiningPage extends GuiProfileViewerPage {
 				Lists.newArrayList(
 					"Front Loaded",
 					"§7Grants §a+100 §6⸕ Mining Speed",
-					"§7and §6☘ Mining Fortune §7for",
+					"§7and §6☘ Mining Fortune §7as",
+					"§7well as §a+2 base powder §7for",
 					"§7the first §e2,500 §7ores you",
 					"§7mine in a day."
 				),
@@ -1280,7 +1281,7 @@ public class MiningPage extends GuiProfileViewerPage {
 				Lists.newArrayList(
 					"Star Powder",
 					"§7Mining Mithril Ore near §5Fallen",
-					"§5Crystals §7gives §a+3 §7extra",
+					"§5Crystals §7gives §ax3 §7extra",
 					"§7Mithril Powder§7."
 				),
 			new ItemStack(starPowder > 0 ? Items.diamond : Items.coal)
@@ -1370,8 +1371,8 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§6Pickaxe Ability: Maniac Miner",
 					"§7Spends all your Mana and grants",
 					"§7§a+1 §6⸕ Mining Speed §7for",
-					"§7every 10 Mana spent, for",
-					"§7§a§a15s§7§7.",
+					"§7every §b10 Mana §7spent, for",
+					"§7§a15s§7.",
 					"§8Cooldown: §a59s"
 				)
 		);
@@ -1453,15 +1454,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		GlStateManager.enableLighting();
 		if (mouseX >= xPosition && mouseX < xPosition + 16) {
 			if (mouseY >= yPosition && mouseY <= yPosition + 16) {
-				Utils.drawHoveringText(
-					tooltip,
-					mouseX,
-					mouseY,
-					getInstance().width,
-					getInstance().height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltip, mouseX, mouseY, getInstance().width, getInstance().height, -1);
 			}
 		}
 	}
@@ -1519,15 +1512,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		GlStateManager.enableLighting();
 		if (mouseX >= xPosition && mouseX < xPosition + 16) {
 			if (mouseY >= yPosition && mouseY <= yPosition + 16) {
-				Utils.drawHoveringText(
-					tooltip,
-					mouseX,
-					mouseY,
-					getInstance().width,
-					getInstance().height,
-					-1,
-					Minecraft.getMinecraft().fontRendererObj
-				);
+				Utils.drawHoveringText(tooltip, mouseX,mouseY, getInstance().width, getInstance().height, -1);
 			}
 		}
 	}

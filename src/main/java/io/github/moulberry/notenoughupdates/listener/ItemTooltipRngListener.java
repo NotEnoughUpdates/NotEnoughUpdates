@@ -31,12 +31,14 @@ import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,8 @@ public class ItemTooltipRngListener {
 	private final Pattern RUNS_SELECTED_PATTERN = Pattern.compile("§5§o§d-(.+)- §d(.*)§5/§d(.+)");
 
 	private final Pattern SLAYER_INVENTORY_TITLE_PATTERN = Pattern.compile("(.+) RNG Meter");
+
+	private final Pattern TIER_AMOUNT = Pattern.compile("§5§o§7Tier (.+) amount: §a(\\d+).*");
 
 	private final Map<String, Integer> dungeonData = new LinkedHashMap<>();
 	private final Map<String, LinkedHashMap<String, Integer>> slayerData = new LinkedHashMap<>();
@@ -115,7 +119,7 @@ public class ItemTooltipRngListener {
 					if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterProfitPerUnit) {
 						if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterRunsNeeded) {
 							String name = Utils.getOpenChestName().contains("Catacombs") ? "Score" : "XP";
-							String formatCoinsPer = getFormatCoinsPer(event.itemStack, needed, 1, name);
+							String formatCoinsPer = getFormatCoinsPer(event.itemStack, needed, 1, 1, 0, name);
 							if (formatCoinsPer != null) {
 								newToolTip.add(line);
 								newToolTip.add(formatCoinsPer);
@@ -137,18 +141,19 @@ public class ItemTooltipRngListener {
 		event.toolTip.addAll(newToolTip);
 	}
 
-	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, String label) {
+	private String getFormatCoinsPer(ItemStack stack, int needed, int multiplier, int amountPerTier, int cost, String label) {
 		String internalName = neu.manager.createItemResolutionQuery().withItemStack(stack).resolveInternalName();
-		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName, false);
+		double profit = neu.manager.auctionManager.getBazaarOrBin(internalName, false) * amountPerTier;
 		if (profit <= 0) return null;
 
 		//ask hypixel nicely to release a 'chest price api' with 4 dimensions for us. the 4 dimensions needed are: item name, floor, normal/mm, s/s+
 //		double chestPrice = grabChestPrice(stack, internalName);
 //		profit -= chestPrice;
 
-		double coinsPer = (profit / needed) * multiplier;
+		double coinsPer = ((profit / needed) * multiplier) - cost;
 		String format = StringUtils.shortNumberFormat(coinsPer);
-		return "§7Coins per " + label + ": §6" + format + " coins";
+		EnumChatFormatting profitIndicator = coinsPer >= 0 ? EnumChatFormatting.GREEN : EnumChatFormatting.RED;
+		return "§7Coins per " + label + ": " + profitIndicator + format + " coins";
 	}
 
 	private void fractionDisplay(List<String> newToolTip, String line) {
@@ -311,8 +316,18 @@ public class ItemTooltipRngListener {
 		toolTip.add(
 			"   §7" + labelPlural + " completed: §e" + runsHavingFormat + " §7(of §e" + runsNeededFormat + " §7needed)");
 
+		int amountPerTier = parseAmountFromTooltip(toolTip);
+
+		int cost = 0;
+		if (repoCategory.equals("slayer")) {
+			JsonObject slayerCost = Constants.MISC;
+			if (slayerCost.has("slayer_cost")) {
+				cost = slayerCost.getAsJsonArray("slayer_cost").get(currentSelected).getAsInt();
+			}
+		}
+
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterProfitPerUnit) {
-			String formatCoinsPer = getFormatCoinsPer(stack, needed, gainPerRun, labelSingular);
+			String formatCoinsPer = getFormatCoinsPer(stack, needed, gainPerRun, amountPerTier, cost, labelSingular);
 			if (formatCoinsPer != null) {
 				toolTip.add("   " + formatCoinsPer);
 			}
@@ -322,6 +337,25 @@ public class ItemTooltipRngListener {
 		if (progressString != null) {
 			toolTip.add(progressString);
 		}
+	}
+
+	private int parseAmountFromTooltip(List<String> tooltip) {
+		Map<Integer, Integer> tierToAmount = new HashMap<>();
+
+		for (String line : tooltip) {
+			Matcher amountMatcher = TIER_AMOUNT.matcher(line);
+			if (amountMatcher.matches()) {
+				try {
+					int tier = Utils.parseRomanNumeral(amountMatcher.group(1));
+					int lowerBoundDrop = Integer.parseInt(amountMatcher.group(2));
+					tierToAmount.put(tier, lowerBoundDrop);
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return tierToAmount.get(currentSelected + 1) == null ? 1 : tierToAmount.get(currentSelected + 1);
 	}
 
 	private int getRepoScore(ItemStack stack, String repoCategory) {

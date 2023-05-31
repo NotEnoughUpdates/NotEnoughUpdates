@@ -1710,7 +1710,8 @@
       "anchorRight": false,
       "anchorBottom": true,
       "backgroundIndex": 0,
-      "command": ""
+      "command": "warp garden",
+      "icon": "skull:f4880d2c1e7b86e87522e20882656f45bafd42f94932b2c5e0d6ecaa490cb4c"
     },
     {
       "x": -19,

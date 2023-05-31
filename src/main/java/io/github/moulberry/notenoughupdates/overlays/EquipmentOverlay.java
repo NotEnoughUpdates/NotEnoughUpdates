@@ -25,16 +25,17 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.events.GuiInventoryBackgroundDrawnEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -52,7 +53,9 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @NEUAutoSubscribe
@@ -108,7 +111,9 @@ public class EquipmentOverlay {
 			case 2:
 				return ARMOR_DISPLAY_DARK;
 			case 3:
-				return NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && isPetRendering ? ARMOR_DISPLAY_TRANSPARENT_PET : ARMOR_DISPLAY_TRANSPARENT;
+				return NotEnoughUpdates.INSTANCE.config.petOverlay.colourStyle == 3 && isPetRendering
+					? ARMOR_DISPLAY_TRANSPARENT_PET
+					: ARMOR_DISPLAY_TRANSPARENT;
 			case 4:
 				return ARMOR_DISPLAY_FSR;
 		}
@@ -142,13 +147,37 @@ public class EquipmentOverlay {
 	public static final int PET_OVERLAY_OFFSET_Y = ARMOR_OVERLAY_HEIGHT - 14 /* overlaying pixels */;
 	//</editor-fold>
 
-
 	public boolean shouldRenderPets;
 	public boolean shouldRenderArmorHud;
 
 	public ItemStack petStack;
 
+	private Map<String, Map<Integer, ItemStack>> profileCache = new HashMap<>();
+
 	//<editor-fold desc="events">
+	@SubscribeEvent
+	public void onButtonExclusionZones(ButtonExclusionZoneEvent event) {
+		if (isRenderingArmorHud()) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight() - 200,
+					event.getGuiBaseRect().getTop(),
+					50, 84
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_LEFT
+			);
+		}
+		if (isRenderingPetHud()) {
+			event.blockArea(
+				new Rectangle(
+					event.getGuiBaseRect().getRight() - 200,
+					event.getGuiBaseRect().getTop() + 60,
+					50, 60
+				),
+				ButtonExclusionZoneEvent.PushDirection.TOWARDS_LEFT
+			);
+		}
+	}
 
 	@SubscribeEvent
 	public void onGuiTick(TickEvent.ClientTickEvent event) {
@@ -229,12 +258,7 @@ public class EquipmentOverlay {
 			)) {
 			Utils.drawHoveringText(
 				tooltipToDisplay,
-				mouseX - calculateTooltipXOffset(tooltipToDisplay, Minecraft.getMinecraft().fontRendererObj),
-				mouseY,
-				width,
-				height,
-				-1,
-				Minecraft.getMinecraft().fontRendererObj
+				mouseX - calculateTooltipXOffset(tooltipToDisplay), mouseY, width, height, -1
 			);
 		}
 
@@ -263,7 +287,8 @@ public class EquipmentOverlay {
 			slot4 = getWardrobeSlot(37);
 		}
 
-		if ((screen instanceof GuiChest || screen instanceof GuiInventory) && NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay){
+		if ((screen instanceof GuiChest || screen instanceof GuiInventory) &&
+			NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
 			petStack = getRepoPetStack();
 		}
 		if ((!(screen instanceof GuiInventory) && !(screen instanceof GuiInvButtonEditor))
@@ -321,12 +346,8 @@ public class EquipmentOverlay {
 			tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			Utils.drawHoveringText(
 				tooltipToDisplay,
-				mouseX - calculateTooltipXOffset(tooltipToDisplay, Minecraft.getMinecraft().fontRendererObj),
-				mouseY,
-				width,
-				height,
-				-1,
-				Minecraft.getMinecraft().fontRendererObj
+				mouseX - calculateTooltipXOffset(tooltipToDisplay),
+				mouseY, width, height, -1
 			);
 		}
 	}
@@ -347,6 +368,8 @@ public class EquipmentOverlay {
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return null;
 
+		profileCache.putIfAbsent(lastProfile, new HashMap<>());
+		Map<Integer, ItemStack> cache = profileCache.get(lastProfile);
 		if (isInNamedGui("Your Equipment")) {
 			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
 			if (itemStack != null) {
@@ -356,15 +379,21 @@ public class EquipmentOverlay {
 					itemToSave.add("internalname", new JsonPrimitive("_"));
 				}
 				profileSpecific.savedEquipment.put(armourSlot, itemToSave);
+				cache.put(armourSlot, itemStack);
 				return itemStack;
 			}
 		} else {
 			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
+				if (cache.containsKey(armourSlot)) {
+					return cache.get(armourSlot);
+				}
 				//don't use cache since the internalName is identical in most cases
-				JsonObject jsonObject = profileSpecific.savedEquipment
-					.get(armourSlot);
-				if (jsonObject != null) return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject
-					.getAsJsonObject(), false);
+				JsonObject jsonObject = profileSpecific.savedEquipment.get(armourSlot);
+				if (jsonObject != null) {
+					ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
+					cache.put(armourSlot, result);
+					return result;
+				}
 			}
 		}
 		return null;
@@ -413,14 +442,13 @@ public class EquipmentOverlay {
 	 * Calculates the width of the longest String in the tooltip, which can be used to offset the entire tooltip to the left more precisely
 	 *
 	 * @param tooltipToDisplay tooltip
-	 * @param fr               FontRenderer object
 	 * @return offset to apply
 	 */
-	private int calculateTooltipXOffset(List<String> tooltipToDisplay, FontRenderer fr) {
+	private int calculateTooltipXOffset(List<String> tooltipToDisplay) {
 		int offset = 0;
 		if (tooltipToDisplay != null) {
 			for (String line : tooltipToDisplay) {
-				int lineWidth = fr.getStringWidth(line);
+				int lineWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(line);
 				if (lineWidth > offset) {
 					offset = lineWidth;
 				}
@@ -430,7 +458,8 @@ public class EquipmentOverlay {
 	}
 
 	public void renderPreviewArmorHud() {
-		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud || !(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
+		if (!NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ||
+			!(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
 		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
 
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
@@ -443,7 +472,8 @@ public class EquipmentOverlay {
 	}
 
 	public void renderPreviewPetInvHud() {
-		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay || !(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
+		if (!NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay ||
+			!(Minecraft.getMinecraft().currentScreen instanceof GuiInvButtonEditor)) return;
 		GuiInvButtonEditor container = (GuiInvButtonEditor) Minecraft.getMinecraft().currentScreen;
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;

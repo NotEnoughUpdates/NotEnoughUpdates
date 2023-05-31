@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.mixins;
 
+import io.github.moulberry.notenoughupdates.core.ChromaColour;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.awt.*;
 
 @Mixin({ItemStack.class})
 public class MixinItemStack {
@@ -65,5 +69,33 @@ public class MixinItemStack {
 			}
 		} catch (Exception ignored) {
 		}
+	}
+
+	@Redirect(method = "getTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;hasKey(Ljava/lang/String;I)Z", ordinal = 2))
+	public boolean getTooltip_hasKey2(NBTTagCompound nbttagcompound, String key, int type) {
+		ItemStack stack = (ItemStack) (Object) this;
+		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
+		if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
+			return true;
+		} else if (data != null && !ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
+			return false;
+		}
+		return nbttagcompound.hasKey("color", 3);
+		}
+
+	@Redirect(method = "getTooltip", at = @At(value = "INVOKE", target = "Ljava/lang/Integer;toHexString(I)Ljava/lang/String;"))
+	public String getTooltip_toHexString(int colour) {
+		ItemStack stack = (ItemStack) (Object) this;
+		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
+		if (data != null && data.customLeatherColour != null && ItemCustomizeManager.shouldRenderLeatherColour(stack)) {
+			int currentColour = ChromaColour.specialToChromaRGB(data.customLeatherColour);
+			Color c = new Color(currentColour, false);
+			String hex = Integer.toHexString(c.getRGB() & 0xFFFFFF);
+			if (hex.length() < 6) {
+				hex = hex + "000000".substring(0, 6 - hex.length());
+			}
+			return hex.length() < 6 ? "0" + hex : hex;
+		}
+		return Integer.toHexString(colour);
 	}
 }

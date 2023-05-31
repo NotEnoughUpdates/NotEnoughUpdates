@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditor
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
+import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
 import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 import org.lwjgl.input.Keyboard;
 
@@ -32,7 +33,7 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Enable AH/BZ Price Graph",
-		desc = "Enable or disable the graph. Disabling this will also make it so that no price data is stored.",
+		desc = "Enable or disable the graph.",
 		searchTags = {"auction", "bazaar"}
 	)
 	@ConfigEditorBoolean
@@ -58,6 +59,16 @@ public class AHGraph {
 
 	@Expose
 	@ConfigOption(
+		name = "Default Time",
+		desc = "Change the default time period for the graph."
+	)
+	@ConfigEditorDropdown(
+		values = {"1 Hour", "1 Day", "1 Week", "All Time"}
+	)
+	public int defaultMode = 1;
+
+	@Expose
+	@ConfigOption(
 		name = "Graph Colour",
 		desc = "Set a custom colour for the graph.",
 		searchTags = "color"
@@ -76,13 +87,60 @@ public class AHGraph {
 
 	@Expose
 	@ConfigOption(
-		name = "Default Time",
-		desc = "Change the default time period for the graph."
+		name = "Moving Average",
+		desc = "Whether the graph should have a moving average line or not."
+	)
+	@ConfigEditorBoolean
+	public boolean movingAverages = false;
+		// Disabled by default because it looks weird to people who don't know what it is
+
+	@Expose
+	@ConfigOption(
+		name = "Moving Average Size (%)",
+		desc = "The percent of the time displayed that should be averaged."
+	)
+	@ConfigEditorSlider(
+		minValue = 0.05f,
+		maxValue = 0.5f,
+		minStep = 0.05f
+	)
+	public double movingAveragePercent = 0.2;
+
+	@Expose
+	@ConfigOption(
+		name = "Moving Average Colour",
+		desc = "Set a custom colour for the graph's moving average line.",
+		searchTags = "color"
+	)
+	@ConfigEditorColour
+	public String movingAverageColor = "0:255:0:255:171";
+
+	@Expose
+	@ConfigOption(
+		name = "Secondary Moving Average Colour",
+		desc = "Set a custom colour for the second graph's secondary moving average line line.",
+		searchTags = "color"
+	)
+	@ConfigEditorColour
+	public String movingAverageColor2 = "0:255:255:109:0";
+
+	@Expose
+	@ConfigOption(
+		name = "Data Source",
+		desc = "Where NEU should get the data for the graph.\nPrices are only stored locally if this is set to 'Local'."
 	)
 	@ConfigEditorDropdown(
-		values = {"1 Hour", "1 Day", "1 Week", "All Time"}
+		values = {"Server", "Local"}
 	)
-	public int defaultMode = 1;
+	public int dataSource = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Price History API",
+		desc = "§4Do §lNOT §r§4change this, unless you know exactly what you are doing\n§fDefault: §apricehistory.notenoughupdates.org"
+	)
+	@ConfigEditorText
+	public String serverUrl = "pricehistory.notenoughupdates.org";
 
 	@Expose
 	@ConfigOption(

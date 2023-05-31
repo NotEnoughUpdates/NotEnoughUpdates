@@ -112,7 +112,7 @@ public class ItemPriceInformation {
 		boolean bazaarItem = bazaarInfo != null;
 
 		boolean auctionItem = !bazaarItem;
-		boolean auctionInfoErrored = auctionInfo == null;
+		boolean auctionInfoErrored = auctionInfo == null && lowestBin < 0;
 		if (auctionItem) {
 			long currentTime = System.currentTimeMillis();
 			long lastUpdate = NotEnoughUpdates.INSTANCE.manager.auctionManager.getLastLowestBinUpdateTime();
@@ -139,7 +139,7 @@ public class ItemPriceInformation {
 				stackMultiplier = shiftStackMultiplier;
 			}
 
-			//values = {"", "Buy", "Sell", "Buy (Insta)", "Sell (Insta)", "Raw Craft Cost"}
+			//values = {"", "Buy", "Sell", "Buy (Insta)", "Sell (Insta)", "Raw Craft Cost", "Instabuys (Hourly)", "Instasells (Hourly)", "Instabuys (Daily)", "Instasells (Daily)", "Instabuys (Weekly)", "Instasells (Weekly)"}
 			for (int lineId : lines) {
 				switch (lineId) {
 					case 0:
@@ -202,6 +202,84 @@ public class ItemPriceInformation {
 							double cost = craftCost.craftCost;
 							if (shiftPressed) cost = cost * shiftStackMultiplier;
 							tooltip.add(formatPrice("Raw Craft Cost: ", cost));
+						}
+						break;
+					case 5:
+						if (bazaarInfo.has("instabuys_hourly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Insta-Buys (Hourly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instabuys_hourly").getAsFloat()));
+						}
+						break;
+					case 6:
+						if (bazaarInfo.has("instasells_hourly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Insta-Sells (Hourly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instasells_hourly").getAsFloat()));
+						}
+						break;
+					case 7:
+						if (bazaarInfo.has("instabuys_daily")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Insta-Buys (Daily): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instabuys_daily").getAsFloat()));
+						}
+						break;
+					case 8:
+						if (bazaarInfo.has("instasells_daily")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Insta-Sells (Daily): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instasells_daily").getAsFloat()));
+						}
+						break;
+					case 9:
+						if (bazaarInfo.has("instabuys_weekly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Insta-Buys (Weekly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instabuys_weekly").getAsFloat()));
+						}
+						break;
+					case 10:
+						if (bazaarInfo.has("instasells_weekly")) {
+							if (!added) {
+								tooltip.add("");
+								added = true;
+							}
+							
+							tooltip.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+								"Insta-Sells (Weekly): " +
+								EnumChatFormatting.GOLD + EnumChatFormatting.BOLD +
+								format.format(bazaarInfo.get("instasells_weekly").getAsFloat()));
 						}
 						break;
 				}
@@ -364,6 +442,15 @@ public class ItemPriceInformation {
 						break;
 				}
 			}
+
+		} else if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rawCraft && craftCost != null && craftCost.fromRecipe) {
+
+			if (craftCost.craftCost == 0) return;
+			double cost = craftCost.craftCost;
+			int shiftStackMultiplier = useStackSize && stack.stackSize > 1 ? stack.stackSize : 64;
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) cost = cost * shiftStackMultiplier;
+			tooltip.add("");
+			tooltip.add(formatPrice("Raw Craft Cost: ", cost));
 
 		} else if (auctionInfoErrored && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
 			String message = EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "[NEU] API is down";

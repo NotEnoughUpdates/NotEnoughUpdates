@@ -68,10 +68,30 @@ public class TooltipTweaks {
 			"\u00a7eDrag text to rearrange"
 	)
 	@ConfigEditorDraggableList(
-		exampleText = {"\u00a7eBuy", "\u00a7eSell", "\u00a7eBuy (Insta)", "\u00a7eSell (Insta)", "\u00a7eRaw Craft Cost"}
+		exampleText = {
+			"\u00a7eBuy",
+			"\u00a7eSell",
+			"\u00a7eBuy (Insta)",
+			"\u00a7eSell (Insta)",
+			"\u00a7eRaw Craft Cost",
+			"\u00a7eInsta-Buys (Hourly)",
+			"\u00a7eInsta-Sells (Hourly)",
+			"\u00a7eInsta-Buys (Daily)",
+			"\u00a7eInsta-Sells (Daily)",
+			"\u00a7eInsta-Buys (Weekly)",
+			"\u00a7eInsta-Sells (Weekly)"}
 	)
 	@ConfigAccordionId(id = 0)
 	public List<Integer> priceInfoBaz = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
+
+	@Expose
+	@ConfigOption(
+		name = "Show raw craft on items that can't be sold",
+		desc = "Raw craft cost will be shown on items that can't be sold on the ah or bz"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean rawCraft = true;
 
 	@Expose
 	@ConfigOption(
@@ -155,6 +175,23 @@ public class TooltipTweaks {
 		values = {"Default", "Small", "Normal", "Large", "Auto"}
 	)
 	public int guiScale = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Custom tooltips",
+		desc = "Replace tooltips with neu's custom tooltips"
+	)
+	@ConfigEditorBoolean
+	public boolean customTooltips = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Scrollable Tooltips",
+		desc = "Make tooltips text scrollable, by making some text lines disappear when using the mouse while hovering over an item."
+	)
+	@ConfigEditorBoolean
+	public boolean scrollableTooltips = false;
+
 
 	@Expose
 	@ConfigOption(
@@ -250,4 +287,12 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	public boolean essencePriceInEssenceShop = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Item Cost in Garden NPC",
+		desc = "Show the item cost in garden NPC shop"
+	)
+	@ConfigEditorBoolean
+	public boolean gardenNpcPrice = true;
 }

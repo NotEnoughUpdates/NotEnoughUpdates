@@ -122,8 +122,8 @@ dependencies {
 
 
 		if (project.findProperty("neu.buildflags.oneconfig") == "true") {
-				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
-				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-alpha+") // Should be included in jar
+				shadowOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
+				runtimeOnly("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
 		}
 
 		"oneconfigCompileOnly"(project(":oneconfigquarantine", configuration = "namedElements"))
@@ -134,20 +134,25 @@ dependencies {
 		implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 		kotlinDependencies(kotlin("stdlib"))
 
+		ksp("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
+		implementation("com.google.auto.service:auto-service-annotations:1.0.1")
+
 		compileOnly(ksp(project(":annotations"))!!)
-        compileOnly("org.projectlombok:lombok:1.18.24")
+		compileOnly("org.projectlombok:lombok:1.18.24")
 		annotationProcessor("org.projectlombok:lombok:1.18.24")
 		"oneconfigAnnotationProcessor"("org.projectlombok:lombok:1.18.24")
+
+		shadowImplementation("com.mojang:brigadier:1.0.18")
 
 		shadowImplementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 				isTransitive = false // Dependencies of mixin are already bundled by minecraft
 		}
-		annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
+		annotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
 
 		@Suppress("VulnerableLibrariesLocal")
 		shadowApi("info.bliki.wiki:bliki-core:3.1.0")
 		testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-		testAnnotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
+		testAnnotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
 
 		devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
@@ -233,6 +238,7 @@ tasks.shadowJar {
 		from(kotlinDependencyCollectionJar)
 		dependsOn(kotlinDependencyCollectionJar)
 		fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
+		relocate("com.mojang.brigadier")
 }
 
 tasks.assemble.get().dependsOn(remapJar)

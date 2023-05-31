@@ -33,12 +33,10 @@ public class Calculator {
 		source = source.toLowerCase(Locale.ROOT);
 		return evaluate(shuntingYard(lex(source)));
 	}
-
 	///<editor-fold desc="Lexing Time">
 	public enum TokenType {
-		NUMBER, BINOP, LPAREN, RPAREN, POSTOP
+		NUMBER, BINOP, LPAREN, RPAREN, POSTOP, PREOP
 	}
-
 	public static class Token {
 		public TokenType type;
 		String operatorValue;
@@ -89,6 +87,7 @@ public class Calculator {
 
 	public static List<Token> lex(String source) throws CalculatorException {
 		List<Token> tokens = new ArrayList<>();
+		boolean justParsedNumber = false;
 		for (int i = 0; i < source.length(); ) {
 			char c = source.charAt(i);
 			if (Character.isWhitespace(c)) {
@@ -97,7 +96,11 @@ public class Calculator {
 			}
 			Token token = new Token();
 			token.tokenStart = i;
-			if (binops.indexOf(c) != -1) {
+			if (!justParsedNumber && c == '-') {
+				token.tokenLength = 1;
+				token.type = TokenType.PREOP;
+				token.operatorValue = "-";
+			} else if (binops.indexOf(c) != -1) {
 				token.tokenLength = 1;
 				token.type = TokenType.BINOP;
 				token.operatorValue = c + "";
@@ -137,6 +140,7 @@ public class Calculator {
 			} else {
 				throw new CalculatorException("Unknown thing " + c, i, 1);
 			}
+			justParsedNumber = token.type == TokenType.NUMBER;
 			tokens.add(token);
 			i += token.tokenLength;
 		}
@@ -188,6 +192,9 @@ public class Calculator {
 					}
 					op.push(currentlyShunting);
 					break;
+				case PREOP:
+					op.push(currentlyShunting);
+					break;
 				case LPAREN:
 					op.push(currentlyShunting);
 					break;
@@ -223,12 +230,14 @@ public class Calculator {
 	/// </editor-fold>
 
 	///<editor-fold desc="Evaluating Time">
-
 	public static BigDecimal evaluate(List<Token> rpnTokens) throws CalculatorException {
 		Deque<BigDecimal> values = new ArrayDeque<>();
 		try {
 			for (Token command : rpnTokens) {
 				switch (command.type) {
+					case PREOP:
+						values.push(values.pop().negate());
+						break;
 					case NUMBER:
 						values.push(new BigDecimal(command.numericValue).scaleByPowerOfTen(command.exponent));
 						break;
@@ -317,7 +326,5 @@ public class Calculator {
 			throw new CalculatorException("Unfinished expression", 0, 0);
 		}
 	}
-
-	///</editor-fold>
-
+	/// </editor-fold>
 }

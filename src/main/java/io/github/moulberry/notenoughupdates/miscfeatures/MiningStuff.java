@@ -152,12 +152,7 @@ public class MiningStuff {
 			if (alpha > 10) {
 				TextRenderUtils.drawStringCenteredScaledMaxWidth(
 					"Titanium has spawned nearby!",
-					Minecraft.getMinecraft().fontRendererObj,
-					0,
-					0,
-					true,
-					width / 4 - 20,
-					colour | (colour << 8) | (colour << 16) | (alpha << 24)
+					0, 0, true, width / 4 - 20, colour | (colour << 8) | (colour << 16) | (alpha << 24)
 				);
 			}
 

@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.core.util;
 
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -92,9 +91,8 @@ public class ArrowPagesUtils {
 
 		String selectedPage = (currentPage + 1) + "/" + totalPages;
 
-		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
-		Utils.drawStringCenteredScaledMaxWidth(selectedPage, fontRendererObj,
-			guiLeft + pageStringX, guiTop + pageStringY, false, 28, Color.BLACK.getRGB()
+		Utils.drawStringCenteredScaledMaxWidth(
+			selectedPage, guiLeft + pageStringX, guiTop + pageStringY, false, 28, Color.BLACK.getRGB()
 		);
 	}
 

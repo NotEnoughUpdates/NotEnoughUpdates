@@ -44,13 +44,13 @@ public class MutingComposter {
 	}
 
 	protected boolean isEnabled() {
-		return SBInfo.getInstance().getLocation().equals("garden")
+		return "garden".equals(SBInfo.getInstance().getLocation())
 			&& NotEnoughUpdates.INSTANCE.config.garden.muteComposterSounds;
 	}
 
 	@SubscribeEvent
 	public void onSoundPlay(PlaySoundEvent event) {
-		if (mutableSounds.contains(event.name) && isEnabled() && event.sound.getXPosF() == -11.5 && event.sound.getYPosF() == 72.5 && event.sound.getZPosF() == -26.5) {
+		if (mutableSounds.contains(event.name) && isEnabled()) {
 			event.result = null;
 		}
 	}

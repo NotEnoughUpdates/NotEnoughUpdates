@@ -121,7 +121,6 @@ public class FlipperInfoPane extends InfoPane {
 	}
 
 	private int renderParagraph(int width, int height, int startY, String text, Color bg) {
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 
 		int paneWidth = (int) (width / 3 * overlay.getWidthMult());
 		int rightSide = (int) (width * overlay.getInfoPaneOffsetFactor());
@@ -129,7 +128,7 @@ public class FlipperInfoPane extends InfoPane {
 
 		int yOff = 0;
 		for (String line : text.split("\n")) {
-			yOff += Utils.renderStringTrimWidth(line, fr, false, leftSide + overlay.getBoxPadding() + 5,
+			yOff += Utils.renderStringTrimWidth(line, false, leftSide + overlay.getBoxPadding() + 5,
 				startY + overlay.getBoxPadding() + 10 + yOff,
 				width * 1 / 3 - overlay.getBoxPadding() * 2 - 10, Color.WHITE.getRGB(), -1
 			);

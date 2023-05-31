@@ -23,7 +23,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
-import io.github.moulberry.notenoughupdates.miscgui.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.miscgui.pricegraph.LocalGraphDataProvider;
 import io.github.moulberry.notenoughupdates.recipes.Ingredient;
 import io.github.moulberry.notenoughupdates.recipes.ItemShopRecipe;
 import io.github.moulberry.notenoughupdates.recipes.NeuRecipe;
@@ -116,7 +116,7 @@ public class APIManager {
 					ItemPriceInformation.updateAuctionableItemsList();
 					didFirstUpdate = true;
 				}
-				GuiPriceGraph.addToCache(lowestBins, false);
+				LocalGraphDataProvider.INSTANCE.savePrices(lowestBins, false);
 			});
 	}
 
@@ -155,6 +155,15 @@ public class APIManager {
 						productInfo.addProperty("avg_buy", quickStatus.get("buyPrice").getAsFloat());
 						productInfo.addProperty("avg_sell", quickStatus.get("sellPrice").getAsFloat());
 
+						float instasellsWeekly = quickStatus.get("sellMovingWeek").getAsFloat();
+						float instabuysWeekly = quickStatus.get("buyMovingWeek").getAsFloat();
+						productInfo.addProperty("instasells_weekly", instasellsWeekly);
+						productInfo.addProperty("instabuys_weekly", instabuysWeekly);
+						productInfo.addProperty("instasells_daily", instasellsWeekly / 7);
+						productInfo.addProperty("instabuys_daily", instabuysWeekly / 7);
+						productInfo.addProperty("instasells_hourly", instasellsWeekly / 7 / 24);
+						productInfo.addProperty("instabuys_hourly", instabuysWeekly / 7 / 24);
+
 						for (JsonElement element : product.get("sell_summary").getAsJsonArray()) {
 							if (element.isJsonObject()) {
 								JsonObject sellSummaryFirst = element.getAsJsonObject();
@@ -174,7 +183,7 @@ public class APIManager {
 						bazaarJson.add(transformHypixelBazaarToNEUItemId(entry.getKey()), productInfo);
 					}
 				}
-				GuiPriceGraph.addToCache(bazaarJson, true);
+				LocalGraphDataProvider.INSTANCE.savePrices(bazaarJson, true);
 			});
 	}
 

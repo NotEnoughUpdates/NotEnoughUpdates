@@ -24,8 +24,6 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -115,11 +113,9 @@ public class CraftingRecipe implements NeuRecipe {
 
 	@Override
 	public void drawExtraInfo(GuiItemRecipe gui, int mouseX, int mouseY) {
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-
 		String craftingText = getCraftText();
 		if (craftingText != null)
-			Utils.drawStringCenteredScaledMaxWidth(craftingText, fontRenderer,
+			Utils.drawStringCenteredScaledMaxWidth(craftingText,
 				gui.guiLeft + EXTRA_STRING_X, gui.guiTop + EXTRA_STRING_Y, false, 75, 0x404040
 			);
 	}

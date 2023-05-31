@@ -628,7 +628,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 					levelObjClasses.put(skillName, levelObj);
 				}
 
-				classAverage.level = (float) (levelObjClasses.values().stream().mapToDouble(l -> l.level).sum() / 5);
+				classAverage.level = (float) (levelObjClasses.values().stream().mapToDouble(l -> Math.min(50, l.level)).sum() / 5);
 				if (classAverage.level >= 50) {
 					classAverage.maxed = true;
 				}

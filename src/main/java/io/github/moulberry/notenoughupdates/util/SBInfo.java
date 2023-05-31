@@ -37,10 +37,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -308,13 +304,13 @@ public class SBInfo {
 
 	private static final String profilePrefix = "\u00a7r\u00a7e\u00a7lProfile: \u00a7r\u00a7a";
 	private static final String skillsPrefix = "\u00a7r\u00a7e\u00a7lSkills: \u00a7r\u00a7a";
-	private static final String completedFactionQuests = "\u00a7r \u00a7r\u00a7a";
+	private static final String completedFactionQuests =
+		"\u00a7r \u00a7r\u00a7a(?!(Paul|Finnegan|Aatrox|Cole|Diana|Diaz|Foxy|Marina)).*";
 	public ArrayList<String> completedQuests = new ArrayList<>();
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
 
 	public void tick() {
-		boolean tempIsInDungeon = false;
 
 		long currentTime = System.currentTimeMillis();
 
@@ -353,7 +349,7 @@ public class SBInfo {
 						} catch (Exception ignored) {
 						}
 					}
-				} else if (name.startsWith(completedFactionQuests)) {
+				} else if (name.matches(completedFactionQuests) && "crimson_isle".equals(mode)) {
 					if (completedQuests.isEmpty()) {
 						completedQuests.add(name);
 					} else if (!completedQuests.contains(name)) {
@@ -366,32 +362,20 @@ public class SBInfo {
 		}
 
 		try {
-			Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
-
-			ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
-
-			List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
-
-			List<String> lines = new ArrayList<>();
-			for (int i = scores.size() - 1; i >= 0; i--) {
-				Score score = scores.get(i);
-				ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
-				String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
-				line = Utils.cleanDuplicateColourCodes(line);
-
-				String cleanLine = Utils.cleanColour(line);
-
-				if (cleanLine.contains("Cleared:") && cleanLine.contains("%")) {
+			List<String> lines = SidebarUtil.readSidebarLines(true, false);
+			boolean tempIsInDungeon = false;
+			for (String line : lines) {
+				if (line.contains("Cleared:") && line.contains("%")) {
 					tempIsInDungeon = true;
+					break;
 				}
-
-				lines.add(line);
 			}
 			isInDungeon = tempIsInDungeon;
 
 			boolean containsStranded = false;
 			boolean containsBingo = false;
 			for (String line : lines) { //Slayer stuff
+				line = SidebarUtil.cleanTeamName(line);
 				if (line.contains("Tarantula Broodfather")) {
 					slayer = "Tarantula";
 				} else if (line.contains("Revenant Horror")) {
@@ -403,8 +387,8 @@ public class SBInfo {
 				} else if (line.contains("Inferno Demonlord")) {
 					slayer = "Blaze";
 				}
-				if (lines.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
-					lines.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
+				if (line.contains("Slayer Quest") && SlayerOverlay.unloadOverlayTimer == -1 ||
+					line.contains("Slayer Quest") && System.currentTimeMillis() - SlayerOverlay.unloadOverlayTimer > 500) {
 					SlayerOverlay.slayerQuest = true;
 				}
 				if (SlayerOverlay.slayerQuest) {

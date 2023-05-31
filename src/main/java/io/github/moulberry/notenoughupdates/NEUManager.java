@@ -47,6 +47,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
@@ -102,7 +103,7 @@ public class NEUManager {
 	private final TreeMap<String, JsonObject> itemMap = new TreeMap<>();
 	private boolean hasBeenLoadedBefore = false;
 
-	private final TreeMap<String, HashMap<String, List<Integer>>> titleWordMap = new TreeMap<>();
+	public final TreeMap<String, HashMap<String, List<Integer>>> titleWordMap = new TreeMap<>();
 	private final TreeMap<String, HashMap<String, List<Integer>>> loreWordMap = new TreeMap<>();
 
 	public final KeyBinding keybindGive =
@@ -320,7 +321,7 @@ public class NEUManager {
 				synchronized (titleWordMap) {
 					int wordIndex = 0;
 					for (String str : json.get("displayname").getAsString().split(" ")) {
-						str = clean(str);
+						str = cleanForTitleMapSearch(str);
 						if (!titleWordMap.containsKey(str)) {
 							titleWordMap.put(str, new HashMap<>());
 						}
@@ -338,7 +339,7 @@ public class NEUManager {
 					int wordIndex = 0;
 					for (JsonElement element : json.get("lore").getAsJsonArray()) {
 						for (String str : element.getAsString().split(" ")) {
-							str = clean(str);
+							str = cleanForTitleMapSearch(str);
 							if (!loreWordMap.containsKey(str)) {
 								loreWordMap.put(str, new HashMap<>());
 							}
@@ -466,8 +467,8 @@ public class NEUManager {
 		int lastStringMatch = -1;
 		ArrayList<DebugMatch> debugMatches = new ArrayList<>();
 
-		toSearch = clean(toSearch).toLowerCase();
-		query = clean(query).toLowerCase();
+		toSearch = cleanForTitleMapSearch(toSearch).toLowerCase();
+		query = cleanForTitleMapSearch(query).toLowerCase();
 		String[] splitToSearch = toSearch.split(" ");
 		String[] queryArray = query.split(" ");
 
@@ -550,6 +551,9 @@ public class NEUManager {
 			result = result || multiSearchString(stack.getDisplayName(), query);
 
 			String lore = "";
+			if (stack.getItem() instanceof ItemArmor && ((ItemArmor)stack.getItem()).getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
+				lore = String.format("#%06x ",((ItemArmor)stack.getItem()).getColor(stack));
+			}
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag != null) {
 				NBTTagCompound display = tag.getCompoundTag("display");
@@ -684,7 +688,7 @@ public class NEUManager {
 	public Set<String> search(String query, TreeMap<String, HashMap<String, List<Integer>>> wordMap) {
 		HashMap<String, List<Integer>> matches = null;
 
-		query = clean(query).toLowerCase();
+		query = cleanForTitleMapSearch(query).toLowerCase();
 		for (String queryWord : query.split(" ")) {
 			HashMap<String, List<Integer>> matchesToKeep = new HashMap<>();
 			for (HashMap<String, List<Integer>> wordMatches : subMapWithKeysThatAreSuffixes(queryWord, wordMap).values()) {
@@ -859,7 +863,7 @@ public class NEUManager {
 		return item;
 	}
 
-	private String clean(String str) {
+	public static String cleanForTitleMapSearch(String str) {
 		return str.replaceAll("(\u00a7.)|[^0-9a-zA-Z ]", "").toLowerCase().trim();
 	}
 
@@ -1193,6 +1197,19 @@ public class NEUManager {
 		json.addProperty("crafttext", crafttext);
 		json.addProperty("clickcommand", clickcommand);
 		json.addProperty("damage", damage);
+		nbttag.setInteger("HideFlags", 254);
+		NBTTagCompound display = nbttag.getCompoundTag("display");
+		nbttag.setTag("display", display);
+		display.setString("Name", displayName);
+		NBTTagList loreList = new NBTTagList();
+		for (String loreLine : lore) {
+			loreList.appendTag(new NBTTagString(loreLine));
+		}
+		display.setTag("Lore", loreList);
+		NBTTagCompound extraAttributes = nbttag.getCompoundTag("ExtraAttributes");
+		nbttag.setTag("ExtraAttributes", extraAttributes);
+		extraAttributes.setString("id", internalname);
+
 		json.addProperty("nbttag", nbttag.toString());
 		json.addProperty("modver", NotEnoughUpdates.VERSION);
 		json.addProperty("infoType", infoType);
@@ -1265,6 +1282,7 @@ public class NEUManager {
 	}
 
 	public void writeJson(JsonObject json, File file) throws IOException {
+		file.getParentFile().mkdirs();
 		file.createNewFile();
 
 		try (
