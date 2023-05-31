@@ -19,49 +19,21 @@
 
 package io.github.moulberry.notenoughupdates.commands.misc
 
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates
-import io.github.moulberry.notenoughupdates.auction.CustomAHGui
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.Utils
-import io.github.moulberry.notenoughupdates.util.brigadier.RestArgumentType
-import io.github.moulberry.notenoughupdates.util.brigadier.get
 import io.github.moulberry.notenoughupdates.util.brigadier.reply
-import io.github.moulberry.notenoughupdates.util.brigadier.thenArgumentExecute
+import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import net.minecraft.util.EnumChatFormatting.RED
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.function.Predicate
 
 @NEUAutoSubscribe
 class AhCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
-        val hook = event.command("neuah") {
-
-            thenArgumentExecute("search", RestArgumentType) { search ->
-                if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey == null ||
-                    NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isBlank()
-                ) {
-                    reply("${RED}Can't open NEU AH: an api key is not set. Run /api new and put the result in settings.")
-                    return@thenArgumentExecute
-                }
-                NotEnoughUpdates.INSTANCE.openGui = CustomAHGui()
-                NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.lastOpen = System.currentTimeMillis()
-                NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.clearSearch()
-                NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.updateSearch()
-
-                val search = this[search]
-
-                NotEnoughUpdates.INSTANCE.manager.auctionManager.customAH.setSearch(
-                    if (search.isBlank() && NotEnoughUpdates.INSTANCE.config.neuAuctionHouse.saveLastSearch)
-                        null else search
-                )
+        event.command("neuah") {
+            thenExecute {  ->
+                    reply("${RED}NeuAH has been removed from NEU.")
             }
-        }
-        hook.beforeCommand = Predicate {
-            if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard())
-                Utils.addChatMessage("${RED}You must be on SkyBlock to use this feature.")
-            NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()
         }
     }
 }
