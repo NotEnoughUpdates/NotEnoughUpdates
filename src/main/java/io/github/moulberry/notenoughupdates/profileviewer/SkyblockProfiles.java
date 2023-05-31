@@ -282,10 +282,10 @@ public class SkyblockProfiles {
 					JsonObject profile = profilesArray.get(i).getAsJsonObject();
 
 					String cuteName = profile.get("cute_name").getAsString();
-					String profileId = profile.get("profile_id").getAsString();
+					String profileId = profile.get("profile_id").getAsString().replace("-", "");
 
 					SoopyNetworthData networth;
-					if (jsonObject.getAsJsonObject("data").get(profileId).isJsonNull()) {
+					if (jsonObject.getAsJsonObject("data").get(profileId) == null || jsonObject.getAsJsonObject("data").isJsonNull(profileId)) {
 						networth = new SoopyNetworthData(null);
 					} else {
 						networth = new SoopyNetworthData(jsonObject.getAsJsonObject("data").get(profileId).getAsJsonObject());
