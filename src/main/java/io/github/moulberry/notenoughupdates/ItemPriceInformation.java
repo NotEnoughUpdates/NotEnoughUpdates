@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
+import io.github.moulberry.notenoughupdates.miscfeatures.inventory.MuseumTooltipManager;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
@@ -462,6 +463,17 @@ public class ItemPriceInformation {
 			if (!added)
 				tooltip.add("");
 			tooltip.add(formatPrice("NPC Sell Price: ", npcSellPrice * stackMultiplier));
+		}
+
+		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.museumDonationStatus) {
+			if (!MuseumTooltipManager.INSTANCE.hasPlayerVisitedMuseum()) {
+				tooltip.add(EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() +
+					"[NEU] Visit your Museum to display donation status");
+			}
+			if (MuseumTooltipManager.INSTANCE.isItemDonated(internalname)) {
+				tooltip.add(
+					EnumChatFormatting.YELLOW + "Item already donated to museum");
+			}
 		}
 	}
 

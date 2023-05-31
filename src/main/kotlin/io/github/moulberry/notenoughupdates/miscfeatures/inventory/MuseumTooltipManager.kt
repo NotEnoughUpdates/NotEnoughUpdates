@@ -44,10 +44,10 @@ object MuseumTooltipManager {
     @KSerializable
     data class ProfileSpecificMuseumData(
         val donatedItems: MutableSet<String>,
-        val visitedOnce: Boolean
+        var visitedOnce: Boolean
     )
 
-    val loadedMuseumData by lazy {
+    private val loadedMuseumDataDelegate = lazy {
         var data = MuseumData(hashMapOf())
         if (file.exists()) {
             val content = file.readText()
@@ -58,6 +58,7 @@ object MuseumTooltipManager {
         }
         data
     }
+    private val loadedMuseumData by loadedMuseumDataDelegate
 
     private val file = File(NotEnoughUpdates.INSTANCE.neuDir, "donated_museum_items.json")
 
@@ -68,6 +69,7 @@ object MuseumTooltipManager {
     )
 
     private fun addItemToDonatedList(itemsToAdd: List<String>) {
+        println(itemsToAdd)
         val profile = SBInfo.getInstance().currentProfile ?: return
 
         for (internalName in itemsToAdd) {
@@ -75,6 +77,7 @@ object MuseumTooltipManager {
 
             val profileData = loadedMuseumData.profiles[profile]!!
             profileData.donatedItems.add(internalName)
+            profileData.visitedOnce = true
         }
     }
 
@@ -96,6 +99,9 @@ object MuseumTooltipManager {
      */
     fun hasPlayerVisitedMuseum(): Boolean {
         val profile = SBInfo.getInstance().currentProfile ?: return false
+        if (SBInfo.getInstance().stranded || SBInfo.getInstance().bingo) {
+            return true
+        }
 
         val profileData = loadedMuseumData.profiles[profile] ?: return false
         return profileData.visitedOnce
@@ -108,7 +114,10 @@ object MuseumTooltipManager {
         if (!MuseumUtil.isMuseumInventory(chest.lowerChestInventory)) return
 
         val armor = Utils.getOpenChestName().stripControlCodes().endsWith("Armor Sets")
-        for (slot in chest.inventorySlots) {
+        val slots = chest.inventorySlots
+
+        for (i in 0..53) {
+            val slot = slots[i]
             if (slot == null || slot.stack == null) continue
             val item = MuseumUtil.findMuseumItem(slot.stack, armor) ?: continue
             if (donatedStates.contains(item.state)) {
@@ -118,9 +127,9 @@ object MuseumTooltipManager {
     }
 
     @SubscribeEvent
-    fun onWorldLoad(@Suppress("UNUSED_PARAMETER") event: WorldEvent.Load) {
+    fun onWorldUnload(@Suppress("UNUSED_PARAMETER") event: WorldEvent.Unload) {
         // Only save when the Museum has actually been opened
-        if ((::loadedMuseumData.getDelegate() as Lazy<*>).isInitialized()) {
+        if (loadedMuseumDataDelegate.isInitialized()) {
             if (!file.exists()) {
                 file.createNewFile()
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -101,6 +101,15 @@ public class TooltipTweaks {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean npcSellPrice = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Display donation status",
+		desc = "Add an extra line on items you have already donated to the museum. Visit all pages of the museum to populate this list."
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean museumDonationStatus = true;
 
 	@Expose
 	@ConfigOption(
