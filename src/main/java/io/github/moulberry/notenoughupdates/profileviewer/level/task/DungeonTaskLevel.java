@@ -78,11 +78,10 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 			int index = 0;
 			for (JsonElement completeCatacomb : completeCatacombs) {
 				int value = completeCatacomb.getAsInt();
-				JsonObject normalCompletions = Utils
-					.getElement(object, "dungeons.dungeon_types.catacombs.tier_completions")
-					.getAsJsonObject();
-				if (normalCompletions.has(String.valueOf(index))) {
-					sbLevelGainedFloor = sbLevelGainedFloor + value;
+				JsonElement normalCompletions = Utils
+					.getElementOrDefault(object, "dungeons.dungeon_types.catacombs.tier_completions", null);
+				if (normalCompletions != null && normalCompletions.getAsJsonObject().has("" + index)) {
+					sbLevelGainedFloor += value;
 				}
 				index++;
 			}
@@ -92,8 +91,8 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 				JsonElement masterCompletions = Utils
 					.getElementOrDefault(object, "dungeons.dungeon_types.master_catacombs.tier_completions", null);
 				if (masterCompletions != null) {
-					if (masterCompletions.getAsJsonObject().has(String.valueOf(i))) {
-						sbLevelGainedFloor = sbLevelGainedFloor + masterCatacombs;
+					if (masterCompletions.getAsJsonObject().has("" + i)) {
+						sbLevelGainedFloor += masterCatacombs;
 					}
 				}
 			}
