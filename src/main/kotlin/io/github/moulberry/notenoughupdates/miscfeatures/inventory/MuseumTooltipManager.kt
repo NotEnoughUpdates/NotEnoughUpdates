@@ -38,7 +38,7 @@ object MuseumTooltipManager {
 
     @KSerializable
     data class MuseumData(
-        val profiles: HashMap<String, ProfileSpecificMuseumData>
+        val profiles: MutableMap<String, ProfileSpecificMuseumData> = mutableMapOf()
     )
 
     @KSerializable
@@ -48,7 +48,7 @@ object MuseumTooltipManager {
     )
 
     private val loadedMuseumDataDelegate = lazy {
-        var data = MuseumData(hashMapOf())
+        var data = MuseumData()
         if (file.exists()) {
             val content = file.readText()
             data = Gson().fromJson(content, MuseumData::class.java)
