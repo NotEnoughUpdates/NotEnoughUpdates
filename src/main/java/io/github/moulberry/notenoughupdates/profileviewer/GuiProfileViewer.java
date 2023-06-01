@@ -228,7 +228,7 @@ public class GuiProfileViewer extends GuiScreen {
 		return profileName;
 	}
 
-	public static @Nullable SkyblockProfiles.SkyblockProfile getSelectedProfile() {
+	public static SkyblockProfiles.SkyblockProfile getSelectedProfile() {
 		return profile.getProfile(profileName);
 	}
 

@@ -666,7 +666,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		JsonObject leveling = Constants.LEVELING;
 		if (leveling == null) return;
 		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
-		if (selectedProfile == null) return;
+//		if (selectedProfile == null) return;
 		ProfileViewer.Level levelObjCata = selectedProfile.getLevelingInfo().get("cosmetic_catacombs");
 		if (levelObjCata == null) return;
 

@@ -110,7 +110,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		}
 
 		JsonObject profileInfo = selectedProfile.getProfileJson();
-		if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
+		if (!profileInfo.has("nether_island_player_data")) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "No data found for the Crimson Isles",
 				guiLeft + 431 / 2f, guiTop + 101, true, 0
