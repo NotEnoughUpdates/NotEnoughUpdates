@@ -57,7 +57,7 @@ import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewe
 
 public class InventoriesPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_invs = new ResourceLocation("notenoughupdates:pv_invs.png");
+	private static final ResourceLocation pv_invs = new ResourceLocation("notenoughupdates:pv_invs.png");
 	private static final ResourceLocation CHEST_GUI_TEXTURE =
 		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static final Pattern FISHING_SPEED_PATTERN = Pattern.compile("^Fishing Speed: \\+(\\d+)");
@@ -99,7 +99,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	};
 	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
 	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
-
 	private ItemStack[] bestWeapons = null;
 	private ItemStack[] bestRods = null;
 	private ItemStack[] armorItems = null;
@@ -186,8 +185,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			armorItems = new ItemStack[4];
 			JsonArray armor = inventoryInfo.get("inv_armor");
 			for (int i = 0; i < armor.size(); i++) {
-				if (armor.get(i) == null || !armor.get(i).isJsonObject()) continue;
-				armorItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(armor.get(i).getAsJsonObject(), false);
+				if (armor.get(i) != null && armor.get(i).isJsonObject()) {
+					armorItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(armor.get(i).getAsJsonObject(), false);
+				}
 			}
 		}
 
@@ -213,8 +213,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			equipmentItems = new ItemStack[4];
 			JsonArray equippment = inventoryInfo.get("equippment_contents");
 			for (int i = 0; i < equippment.size(); i++) {
-				if (equippment.get(i) == null || !equippment.get(i).isJsonObject()) continue;
-				equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
+				if (equippment.get(i) != null && equippment.get(i).isJsonObject()) {
+					equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
+				}
 			}
 		}
 
