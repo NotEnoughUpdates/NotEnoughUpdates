@@ -65,13 +65,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class GuiProfileViewer extends GuiScreen {
 
-	public static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
-	public static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
+	private static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
+	private static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
-	public static final ResourceLocation pv_ironman = new ResourceLocation("notenoughupdates:pv_ironman.png");
-	public static final ResourceLocation pv_bingo = new ResourceLocation("notenoughupdates:pv_bingo.png");
-	public static final ResourceLocation pv_stranded = new ResourceLocation("notenoughupdates:pv_stranded.png");
-	public static final ResourceLocation pv_unknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
+	private static final Map<String, ResourceLocation> gamemodeToIcon = new HashMap<String, ResourceLocation>() {{
+		put("ironman", new ResourceLocation("notenoughupdates:pv_ironman.png"));
+		put("bingo", new ResourceLocation("notenoughupdates:pv_bingo.png"));
+		put("island", new ResourceLocation("notenoughupdates:pv_stranded.png")); // Stranded
+	}};
+	private static final ResourceLocation gamemodeIconUnknown = new ResourceLocation("notenoughupdates:pv_unknown.png");
 	public static final ResourceLocation resource_packs =
 		new ResourceLocation("minecraft:textures/gui/resource_packs.png");
 	public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
@@ -173,10 +175,10 @@ public class GuiProfileViewer extends GuiScreen {
 	public long lastTime = 0;
 	public long startTime = 0;
 	public List<String> tooltipToDisplay = null;
-	Shader blurShaderHorz = null;
-	Framebuffer blurOutputHorz = null;
-	Shader blurShaderVert = null;
-	Framebuffer blurOutputVert = null;
+	private Shader blurShaderHorz = null;
+	private Framebuffer blurOutputHorz = null;
+	private Shader blurShaderVert = null;
+	private Framebuffer blurOutputVert = null;
 	private boolean profileDropdownSelected = false;
 	private double lastBgBlurFactor = -1;
 	private boolean showBingoPage;
@@ -314,20 +316,8 @@ public class GuiProfileViewer extends GuiScreen {
 
 				if (selectedProfile != null && selectedProfile.getGamemode() != null) {
 					GlStateManager.color(1, 1, 1, 1);
-					switch (selectedProfile.getGamemode()) {
-						case "ironman": // Ironman icon
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
-							break;
-						case "bingo": // Bingo icon
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
-							break;
-						case "island": // Stranded icon
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
-							break;
-						default: // Unknown gamemode icon
-							Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
-							break;
-					}
+					ResourceLocation gamemodeIcon = gamemodeToIcon.getOrDefault(selectedProfile.getGamemode(), gamemodeIconUnknown);
+					Minecraft.getMinecraft().getTextureManager().bindTexture(gamemodeIcon);
 					Utils.drawTexturedRect(guiLeft - 16 - 5, guiTop + sizeY + 5, 16, 16, GL11.GL_NEAREST);
 				}
 
@@ -398,20 +388,8 @@ public class GuiProfileViewer extends GuiScreen {
 
 						if (selectedProfile != null && selectedProfile.getGamemode() != null) {
 							GlStateManager.color(1, 1, 1, 1);
-							switch (selectedProfile.getGamemode()) {
-								case "ironman":
-									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_ironman);
-									break;
-								case "bingo":
-									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_bingo);
-									break;
-								case "island":
-									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_stranded);
-									break;
-								default:
-									Minecraft.getMinecraft().getTextureManager().bindTexture(pv_unknown);
-									break;
-							}
+							ResourceLocation gamemodeIcon = gamemodeToIcon.getOrDefault(selectedProfile.getGamemode(), gamemodeIconUnknown);
+							Minecraft.getMinecraft().getTextureManager().bindTexture(gamemodeIcon);
 							Utils.drawTexturedRect(
 								guiLeft - 16 - 5,
 								guiTop + sizeY + 2 + 23 + dropdownOptionSize * yIndex,
