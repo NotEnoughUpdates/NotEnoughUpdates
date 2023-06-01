@@ -27,6 +27,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -40,12 +41,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -54,7 +55,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation pv_dung = new ResourceLocation("notenoughupdates:pv_dung.png");
 	private static final ItemStack DEADBUSH = new ItemStack(Item.getItemFromBlock(Blocks.deadbush));
-	private static final String[] dungSkillsName = {"Healer", "Mage", "Berserk", "Archer", "Tank"};
 	private static final ItemStack[] BOSS_HEADS = new ItemStack[7];
 	private static final ItemStack[] dungSkillsStack = {
 		new ItemStack(Items.potionitem, 1, 16389),
@@ -100,7 +100,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 	};
 
 	private static int floorTime = 7;
-	private final HashMap<String, HashMap<String, ProfileViewer.Level>> levelObjClasseses = new HashMap<>();
 
 	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private int floorLevelTo = -1;
@@ -131,7 +130,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
 
 		JsonObject profileInfo = selectedProfile.getProfileJson();
-		String profileName = GuiProfileViewer.getProfileName();
 		JsonObject hypixelInfo = GuiProfileViewer.getProfile().getHypixelProfile();
 
 		int sectionWidth = 110;
@@ -573,12 +571,10 @@ public class DungeonPage extends GuiProfileViewerPage {
 			}
 		}
 
-		//Skills
+		// Skills
 		{
 			int x = guiLeft + 298;
 			int y = guiTop + 27;
-
-			//Gui.drawRect(x, y, x+120, y+147, 0xffffffff);
 
 			Utils.renderShadowedString(
 				EnumChatFormatting.DARK_PURPLE + "Class Levels",
@@ -593,46 +589,18 @@ public class DungeonPage extends GuiProfileViewerPage {
 				activeClass = activeClassElement.getAsString();
 			}
 
-			ProfileViewer.Level classAverage = new ProfileViewer.Level();
 
-			for (int i = 0; i < dungSkillsName.length; i++) {
-				String skillName = dungSkillsName[i];
+			float classLevelSum = 0;
+			for (int i = 0; i < Weight.DUNGEON_CLASS_NAMES.size(); i++) {
+				String skillName = Weight.DUNGEON_CLASS_NAMES.get(i);
 
-				HashMap<String, ProfileViewer.Level> levelObjClasses = levelObjClasseses.computeIfAbsent(
-					profileName,
-					k -> new HashMap<>()
-				);
-				if (!levelObjClasses.containsKey(skillName)) {
-					float cataXp = getElementAsFloat(profileInfo, "dungeons.player_classes." + skillName.toLowerCase() + ".experience");
-					ProfileViewer.Level levelObj = ProfileViewer.getLevel(
-						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
-						cataXp,
-						50,
-						false
-					);
-
-					if (levelObj.level == 50) {
-						levelObj.level = 50 + (cataXp - 569809640) / 200000000;
-					}
-
-					levelObjClasses.put(skillName, levelObj);
-				}
-
-				classAverage.level = (float) (levelObjClasses.values().stream().mapToDouble(l -> Math.min(50, l.level)).sum() / 5);
-				if (classAverage.level >= 50) {
-					classAverage.maxed = true;
-				}
-
-				String colour = EnumChatFormatting.WHITE.toString();
-				if (skillName.toLowerCase().equals(activeClass)) {
-					colour = EnumChatFormatting.GREEN.toString();
-				}
-
-				ProfileViewer.Level levelObj = levelObjClasses.get(skillName);
+				classLevelSum += levelingInfo.get(skillName).level;
+				String colour = skillName.equalsIgnoreCase(activeClass) ? EnumChatFormatting.GREEN.toString() : EnumChatFormatting.WHITE.toString();
+				ProfileViewer.Level levelObj = levelingInfo.get("cosmetic_" + skillName);
 
 				getInstance()
 					.renderXpBar(
-						colour + skillName,
+						colour + WordUtils.capitalizeFully(skillName),
 						dungSkillsStack[i],
 						x,
 						y + 20 + 24 * i,
@@ -641,6 +609,12 @@ public class DungeonPage extends GuiProfileViewerPage {
 						mouseX,
 						mouseY
 					);
+			}
+
+			ProfileViewer.Level classAverage = new ProfileViewer.Level();
+			classAverage.level = classLevelSum / Weight.DUNGEON_CLASS_NAMES.size();
+			if (classAverage.level >= 50) {
+				classAverage.maxed = true;
 			}
 
 			getInstance().renderXpBar(

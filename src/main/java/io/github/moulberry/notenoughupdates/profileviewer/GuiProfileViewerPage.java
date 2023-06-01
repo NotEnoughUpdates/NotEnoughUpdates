@@ -40,7 +40,7 @@ public abstract class GuiProfileViewerPage {
 	/**
 	 * @see GuiProfileViewer#getSelectedProfile()
 	 */
-	public @Nullable SkyblockProfiles.SkyblockProfile getSelectedProfile() {
+	public SkyblockProfiles.SkyblockProfile getSelectedProfile() {
 		return GuiProfileViewer.getSelectedProfile();
 	}
 

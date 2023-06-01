@@ -652,10 +652,14 @@ public class SkyblockProfiles {
 				return null;
 			}
 
-			Map<String, ProfileViewer.Level> out = new HashMap<>();
 			JsonObject profileJson = getProfileJson();
+			// Skills API disabled
+			if (!profileJson.has("experience_skill_combat")) {
+				return null;
+			}
 
-			float totalSkillXP = 0;
+			Map<String, ProfileViewer.Level> out = new HashMap<>();
+
 			for (String skillName : skills) {
 				float skillExperience = 0;
 				if (skillName.equals("social")) {
@@ -673,8 +677,6 @@ public class SkyblockProfiles {
 					);
 				}
 
-				totalSkillXP += skillExperience;
-
 				JsonArray levelingArray = Utils.getElement(leveling, "leveling_xp").getAsJsonArray();
 				if (skillName.equals("runecrafting")) {
 					levelingArray = Utils.getElement(leveling, "runecrafting_xp").getAsJsonArray();
@@ -682,20 +684,12 @@ public class SkyblockProfiles {
 					levelingArray = Utils.getElement(leveling, "social").getAsJsonArray();
 				}
 
-				int maxLevel =
-					ProfileViewerUtils.getLevelingCap(leveling, skillName) +
-						(
-							skillName.equals("farming")
-								? Utils.getElementAsInt(Utils.getElement(profileJson, "jacob2.perks.farming_level_cap"), 0)
-								: 0
-						);
-				out.put(skillName, ProfileViewer.getLevel(levelingArray, skillExperience, maxLevel, false));
-			}
+				int maxLevel = ProfileViewerUtils.getLevelingCap(leveling, skillName);
+				if (skillName.equals("farming")) {
+					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacob2.perks.farming_level_cap"), 0);
+				}
 
-			// TODO: Skills API disabled?
-			// ^ Maybe check if combat exp field exists instead of this
-			if (totalSkillXP <= 0) {
-				return null;
+				out.put(skillName, ProfileViewer.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
 
 			out.put(
@@ -727,8 +721,7 @@ public class SkyblockProfiles {
 				)
 			);
 
-			List<String> dungeonClasses = Arrays.asList("healer", "tank", "mage", "archer", "berserk");
-			for (String className : dungeonClasses) {
+			for (String className : Weight.DUNGEON_CLASS_NAMES) {
 				float classExperience = Utils.getElementAsFloat(
 					Utils.getElement(profileJson, "dungeons.player_classes." + className + ".experience"),
 					0
@@ -742,7 +735,17 @@ public class SkyblockProfiles {
 						false
 					)
 				);
+				out.put(
+					"cosmetic_" + className,
+					ProfileViewer.getLevel(
+						Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+						classExperience,
+						99,
+						false
+					)
+				);
 			}
+
 			for (String slayerName : Weight.SLAYER_NAMES) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
 					profileJson,

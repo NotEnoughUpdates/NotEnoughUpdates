@@ -818,7 +818,7 @@ public class GuiProfileViewer extends GuiScreen {
 								StringUtils.shortNumberFormat(maxXp) +
 								// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
 								// a conditional here to add the overflow level rather than above
-								((skillName.contains("Catacombs") && levelObj.level >= 50) ?
+								(skillName.contains("Catacombs") && levelObj.level >= 50 ?
 									EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
 					}
 				}
