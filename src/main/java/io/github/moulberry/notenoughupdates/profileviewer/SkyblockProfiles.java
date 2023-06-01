@@ -717,6 +717,15 @@ public class SkyblockProfiles {
 					false
 				)
 			);
+			out.put(
+				"cosmetic_catacombs",
+				ProfileViewer.getLevel(
+					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+					Utils.getElementAsFloat(Utils.getElement(profileJson, "dungeons.dungeon_types.catacombs.experience"), 0),
+					99,
+					false
+				)
+			);
 
 			List<String> dungeonClasses = Arrays.asList("healer", "tank", "mage", "archer", "berserk");
 			for (String className : dungeonClasses) {

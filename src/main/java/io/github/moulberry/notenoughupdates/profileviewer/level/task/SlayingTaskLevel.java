@@ -30,6 +30,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -195,12 +196,12 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		int sbXpFromSlayerDefeat = 0;
 
 		JsonArray defeatSlayersXp = slayingTask.get("defeat_slayers_xp").getAsJsonArray();
-		for (String s : ExtraPage.slayers.keySet()) {
-			int maxLevel = ExtraPage.slayers.get(s);
+		for (Map.Entry<String, JsonElement> entry : Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").entrySet()) {
+			int maxLevel = entry.getValue().getAsInt();
 			for (int i = 0; i < 5; i++) {
 				if (i >= maxLevel) break;
 				float tier = Utils.getElementAsFloat(
-					Utils.getElement(object, "slayer_bosses." + s + ".boss_kills_tier_" + i),
+					Utils.getElement(object, "slayer_bosses." + entry.getKey() + ".boss_kills_tier_" + i),
 					0
 				);
 				if (tier != 0) {

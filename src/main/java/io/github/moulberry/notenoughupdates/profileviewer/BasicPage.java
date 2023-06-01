@@ -687,8 +687,8 @@ public class BasicPage extends GuiProfileViewerPage {
 						}
 
 						String slayerNameLower = entry.getKey().toLowerCase();
-						if (ExtraPage.slayers.containsKey(slayerNameLower)) {
-							int maxLevel = ExtraPage.slayers.get(slayerNameLower);
+						if (Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").has(slayerNameLower)) {
+							int maxLevel = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").get(slayerNameLower).getAsInt();
 							for (int i = 0; i < 5; i++) {
 								if (i >= maxLevel) break;
 								float tier = Utils.getElementAsFloat(

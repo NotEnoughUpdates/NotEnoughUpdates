@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.trophy.TrophyFishPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.DungeonsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.util.AsyncDependencyLoader;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -1028,7 +1029,7 @@ public class GuiProfileViewer extends GuiScreen {
 		}
 		if (skillName.contains("catacombs")) {
 			return (level.totalXp / DungeonsWeight.CATACOMBS_LEVEL_50_XP) * 100;
-		} else if (ExtraPage.slayers.containsKey(skillName)) {
+		} else if (Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").has(skillName)) {
 			return (level.totalXp / 1000000) * 100;
 		} else if (skillName.equalsIgnoreCase("social")) {
 			return (level.totalXp / 272800) * 100;

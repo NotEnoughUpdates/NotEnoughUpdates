@@ -41,7 +41,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -51,8 +50,19 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 
 public class ExtraPage extends GuiProfileViewerPage {
-// Hehe
+
 	private static final ResourceLocation pv_extra = new ResourceLocation("notenoughupdates:pv_extra.png");
+	private static final List<String> skills = Arrays.asList(
+		"taming",
+		"mining",
+		"foraging",
+		"enchanting",
+		"farming",
+		"combat",
+		"fishing",
+		"alchemy",
+		"carpentry"
+	); // TODO: why is this hardcoded
 	private TreeMap<Integer, Set<String>> topKills = null;
 	private TreeMap<Integer, Set<String>> topDeaths = null;
 	private int deathScroll = 0;
@@ -76,9 +86,8 @@ public class ExtraPage extends GuiProfileViewerPage {
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		//Note: don't know why it made me make it return a boolean, but it fixed the error, so I left it alone.
 
-		//Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
+		// Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
 		if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
 			mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
 			mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
@@ -92,17 +101,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 		return false;
 	}
 
-	// pls update in the future tyvm !!!
-	public final static HashMap<String, Integer> slayers = new HashMap<String, Integer>() {
-		{
-			put("zombie", 5);
-			put("spider", 4);
-			put("wolf", 4);
-			put("enderman", 4);
-			put("blaze", 4);
-		}
-	};
-
 	public void drawEssence(
 		JsonObject profileInfo,
 		float xStart,
@@ -112,16 +110,17 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float mouseX,
 		float mouseY
 	) {
-		int guiLeft = GuiProfileViewer.getGuiLeft();
-		int guiTop = GuiProfileViewer.getGuiTop();
-		yStartTop += 77;
 		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
-		JsonObject parents = Constants.PARENTS;
+
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+		yStartTop += 77;
+
 		JsonArray essenceArray = new JsonArray();
-		essenceArray.addAll(parents.get("ESSENCE_WITHER").getAsJsonArray());
+		essenceArray.addAll(Constants.PARENTS.get("ESSENCE_WITHER").getAsJsonArray());
 		//add wither essence since it's not part of the parents array
 		essenceArray.add(new JsonPrimitive("ESSENCE_WITHER"));
 
@@ -145,6 +144,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				guiTop + yStartTop + (yOffset - 1) * i,
 				76
 			);
+
 			if (Constants.ESSENCESHOPS == null) return;
 			JsonObject essenceShops = Constants.ESSENCESHOPS;
 			if (mouseX >= guiLeft + xStart + xOffset && mouseX <= guiLeft + xStart + xOffset + 76 &&
@@ -165,7 +165,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 					String name = entry.getValue().getAsJsonObject().get("name").getAsString();
 					getInstance().tooltipToDisplay.add(EnumChatFormatting.GOLD + name + ": " + formatting + perkTier + "/" + max);
 				}
-
 			}
 		}
 	}
@@ -267,24 +266,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			float totalSlayerCount = 0;
 			float totalSlayerXP = 0;
 
-			List<String> skills = Arrays.asList(
-				"taming",
-				"mining",
-				"foraging",
-				"enchanting",
-				"farming",
-				"combat",
-				"fishing",
-				"alchemy",
-				"carpentry"
-			);
-
 			for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
 				if (skills.contains(entry.getKey())) {
 					totalSkillLVL += entry.getValue().level;
 					totalTrueSkillLVL += Math.floor(entry.getValue().level);
 					totalSkillCount++;
-				} else if (slayers.containsKey(entry.getKey())) {
+				} else if (Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").has(entry.getKey())) {
 					totalSlayerLVL += entry.getValue().level;
 					totalSlayerCount++;
 					totalSlayerXP += entry.getValue().totalXp;

@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DungeonPage extends GuiProfileViewerPage {
@@ -101,7 +102,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 	private static int floorTime = 7;
 	private final HashMap<String, HashMap<String, ProfileViewer.Level>> levelObjClasseses = new HashMap<>();
 
-	private final HashMap<String, ProfileViewer.Level> levelObjCatas = new HashMap<>();
 	private final GuiElementTextField dungeonLevelTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 	private int floorLevelTo = -1;
 	private long floorLevelToXP = -1;
@@ -128,6 +128,8 @@ public class DungeonPage extends GuiProfileViewerPage {
 			return;
 		}
 
+		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
+
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		String profileName = GuiProfileViewer.getProfileName();
 		JsonObject hypixelInfo = GuiProfileViewer.getProfile().getHypixelProfile();
@@ -142,22 +144,8 @@ public class DungeonPage extends GuiProfileViewerPage {
 			sectionWidth
 		);
 
-		ProfileViewer.Level levelObjCata = levelObjCatas.get(profileName);
-		//Catacombs level thingy
+		ProfileViewer.Level levelObjCata = levelingInfo.get("cosmetic_catacombs");
 		{
-			if (levelObjCata == null) {
-				float cataXp = getElementAsFloat(profileInfo, "dungeons.dungeon_types.catacombs.experience");
-				levelObjCata =
-					ProfileViewer.getLevel(
-						Utils.getElementOrDefault(leveling, "catacombs", new JsonArray()).getAsJsonArray(),
-						cataXp,
-						99,
-						false
-					);
-				levelObjCata.totalXp = cataXp;
-				levelObjCatas.put(profileName, levelObjCata);
-			}
-
 			String skillName = EnumChatFormatting.RED + "Catacombs";
 			float level = levelObjCata.level;
 			int levelFloored = (int) Math.floor(level);
@@ -754,7 +742,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 	private void calculateFloorLevelXP() {
 		JsonObject leveling = Constants.LEVELING;
 		if (leveling == null) return;
-		ProfileViewer.Level levelObjCata = levelObjCatas.get(GuiProfileViewer.getProfileName());
+		ProfileViewer.Level levelObjCata = getSelectedProfile().getLevelingInfo().get("cosmetic_catacombs");
 		if (levelObjCata == null) return;
 
 		try {
