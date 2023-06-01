@@ -301,7 +301,7 @@ public class SkyblockProfiles {
 		return null;
 	}
 
-	public @Nullable SkyblockProfile getProfile(String profileName) {
+	public SkyblockProfile getProfile(String profileName) {
 		return nameToProfile == null ? null : nameToProfile.get(profileName);
 	}
 
