@@ -692,7 +692,7 @@ public class SkyblockProfiles {
 				out.put(skillName, ProfileViewer.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
 
-			// Skills API disabled?
+			// TODO: Skills API disabled?
 			// ^ Maybe check if combat exp field exists instead of this
 			if (totalSkillXP <= 0) {
 				return null;
@@ -701,7 +701,7 @@ public class SkyblockProfiles {
 			out.put(
 				"hotm",
 				ProfileViewer.getLevel(
-					Utils.getElement(leveling, "leveling_xp").getAsJsonArray(),
+					Utils.getElement(leveling, "HOTM").getAsJsonArray(),
 					Utils.getElementAsFloat(Utils.getElement(profileJson, "mining_core.experience"), 0),
 					ProfileViewerUtils.getLevelingCap(leveling, "HOTM"),
 					false
