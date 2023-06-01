@@ -209,32 +209,26 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Dojo Stats", guiLeft + (431 * 0.49f), guiTop + 14, true, 0);
 
 		JsonObject dojoStats = data.getAsJsonObject("dojo");
-		int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
-		int pointsTotal = 0;
 
-		for (int i = 0; i < apiDojoTestNames.size(); i++) {
-			for (Map.Entry<String, JsonElement> dojoData : dojoStats.entrySet()) {
-				if (dojoData.getKey().equals("dojo_points_" + apiDojoTestNames.keySet().toArray()[i])) {
-					dojoScores[i] = dojoData.getValue().getAsInt();
-					pointsTotal += dojoData.getValue().getAsInt();
-				}
-			}
-		}
-
-		for (int i = 0; i < apiDojoTestNames.size(); i++) {
+		int totalPoints = 0;
+		int idx = 0;
+		for (Map.Entry<String, String> dojoTest : apiDojoTestNames.entrySet()) {
+			int curPoints = dojoStats.get("dojo_points_" + dojoTest.getKey()).getAsInt();
+			totalPoints += curPoints;
 			Utils.renderAlignedString(
-				new ArrayList<>(apiDojoTestNames.values()).get(i) + ": ",
-				EnumChatFormatting.WHITE + String.valueOf(dojoScores[i]) + " (" +
-					dojoGrades[(dojoScores[i] / 200) >= 6 ? 5 : (dojoScores[i] / 200)] + ")",
+				dojoTest.getValue() + ": ",
+				EnumChatFormatting.WHITE + "" + curPoints + " (" +
+					dojoGrades[(curPoints / 200) >= 6 ? 5 : (curPoints / 200)] + ")",
 				guiLeft + (431 * 0.49f) - 65,
-				guiTop + 30 + (i * 12),
+				guiTop + 30 + (idx * 12),
 				130
 			);
+			idx ++;
 		}
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GRAY + "Points: ",
-			EnumChatFormatting.GOLD + String.valueOf(pointsTotal),
+			EnumChatFormatting.GOLD + String.valueOf(totalPoints),
 			guiLeft + (431 * 0.49f) - 65,
 			guiTop + 40 + (apiDojoTestNames.size() * 12),
 			130
@@ -242,7 +236,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GRAY + "Rank: ",
-			getRank(pointsTotal),
+			getRank(totalPoints),
 			guiLeft + (431 * 0.49f) - 65,
 			guiTop + 52 + (apiDojoTestNames.size() * 12),
 			130
@@ -250,9 +244,9 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GRAY + "Points to next: ",
-			getPointsToNextRank(pointsTotal) == 0
+			getPointsToNextRank(totalPoints) == 0
 				? EnumChatFormatting.GOLD + "MAXED!"
-				: String.valueOf(getPointsToNextRank(pointsTotal)),
+				: String.valueOf(getPointsToNextRank(totalPoints)),
 			guiLeft + (431 * 0.49f) - 65,
 			guiTop + 64 + (apiDojoTestNames.size() * 12),
 			130
