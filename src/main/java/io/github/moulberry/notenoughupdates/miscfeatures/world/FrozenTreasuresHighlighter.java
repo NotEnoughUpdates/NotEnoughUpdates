@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -91,7 +91,7 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 						.getString("Value");
 
 					// Decode and find texture url from the texture value
-					String trimmedJson = new String(Base64.getDecoder().decode(textureValue)).replace(" ", "");
+					String trimmedJson = new String(Base64.getDecoder().decode(textureValue.replace(";", ""))).replace(" ", "");
 
 
 					String textureUrl = "";
