@@ -552,7 +552,8 @@ public class SkyblockProfiles {
 						).getTagList("i", 10);
 
 						for (int j = 0; j < items.tagCount(); j++) {
-							contents.add(profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j)));
+							JsonObject backpackObj = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
+							contents.add(backpackObj == null ? new JsonObject() : backpackObj);
 						}
 					} catch (IOException ignored) {
 					}
