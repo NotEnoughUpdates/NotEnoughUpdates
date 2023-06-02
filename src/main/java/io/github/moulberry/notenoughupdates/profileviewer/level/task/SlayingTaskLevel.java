@@ -24,7 +24,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
-import io.github.moulberry.notenoughupdates.profileviewer.ExtraPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
@@ -63,7 +62,6 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		}
 
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
-
 		int sbXpGainedSlayer = 0;
 		if (skyblockInfo != null) {
 			for (String slayer : Weight.SLAYER_NAMES) {
@@ -165,7 +163,6 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		}
 
 		int sbXpBestiary = 0;
-		// TODO: what?
 		int bestiaryTiers = GuiProfileViewer.getSelectedProfile().getBestiaryLevel();
 		sbXpBestiary += bestiaryTiers;
 		sbXpBestiary = sbXpBestiary + (sbXpBestiary / 10) * 2;
@@ -196,7 +193,12 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		int sbXpFromSlayerDefeat = 0;
 
 		JsonArray defeatSlayersXp = slayingTask.get("defeat_slayers_xp").getAsJsonArray();
-		for (Map.Entry<String, JsonElement> entry : Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").entrySet()) {
+		JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
+		if (slayerToTier == null) {
+			Utils.showOutdatedRepoNotification();
+			return;
+		}
+		for (Map.Entry<String, JsonElement> entry : slayerToTier.entrySet()) {
 			int maxLevel = entry.getValue().getAsInt();
 			for (int i = 0; i < 5; i++) {
 				if (i >= maxLevel) break;

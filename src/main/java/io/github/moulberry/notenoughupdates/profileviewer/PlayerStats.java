@@ -612,7 +612,7 @@ public class PlayerStats {
 		JsonObject petsInfo,
 		JsonObject profile
 	) {
-		if (levelingInfo == null || inventoryInfo == null || profile == null) return null;
+		if (inventoryInfo == null || profile == null) return null;
 
 		JsonArray armor = inventoryInfo.get("inv_armor");
 		JsonArray inventory = inventoryInfo.get("inv_contents");

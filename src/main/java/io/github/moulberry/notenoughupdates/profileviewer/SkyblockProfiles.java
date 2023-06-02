@@ -179,12 +179,11 @@ public class SkyblockProfiles {
 		double largestProfileWeight = 0;
 
 		for (Map.Entry<String, SkyblockProfile> profileEntry : nameToProfile.entrySet()) {
-			Map<String, ProfileViewer.Level> levelingInfo = profileEntry.getValue().getLevelingInfo();
-			if (levelingInfo == null) {
+			if (!profileEntry.getValue().skillsApiEnabled()) {
 				continue;
 			}
 
-			double weightValue = new SenitherWeight(levelingInfo).getTotalWeight().getRaw();
+			double weightValue = new SenitherWeight(profileEntry.getValue().getLevelingInfo()).getTotalWeight().getRaw();
 			if (weightValue > largestProfileWeight) {
 				largestProfileWeight = weightValue;
 				highestProfileName = profileEntry.getKey();
@@ -597,6 +596,13 @@ public class SkyblockProfiles {
 			return skyblockLevel = (element / 100.0);
 		}
 
+		public boolean skillsApiEnabled() {
+			return getProfileJson().has("experience_skill_combat");
+		}
+
+		/**
+		 * NOTE: will NOT return null if skills api is disabled, use {@link SkyblockProfile#skillsApiEnabled()} instead
+ 		 */
 		public Map<String, ProfileViewer.Level> getLevelingInfo() {
 			if (levelingInfo != null) {
 				return levelingInfo;
@@ -609,11 +615,6 @@ public class SkyblockProfiles {
 			}
 
 			JsonObject profileJson = getProfileJson();
-			// Skills API disabled
-			if (!profileJson.has("experience_skill_combat")) {
-				return null;
-			}
-
 			Map<String, ProfileViewer.Level> out = new HashMap<>();
 
 			for (String skillName : skills) {
@@ -795,6 +796,10 @@ public class SkyblockProfiles {
 		public PlayerStats.Stats getStats() {
 			if (stats != null) {
 				return stats;
+			}
+
+			if (skillsApiEnabled()) {
+				return null;
 			}
 
 			return stats = PlayerStats.getStats(

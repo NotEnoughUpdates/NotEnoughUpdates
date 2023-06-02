@@ -64,11 +64,9 @@ public class CoreTaskLevel extends GuiTaskLevel {
 			return;
 		}
 
-		// skills
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
-
 		int sbXpGainedSkillLVL = 0;
-		if (skyblockInfo != null) {
+		if (selectedProfile.skillsApiEnabled()) {
 			for (String skill : skills) {
 				ProfileViewer.Level level = skyblockInfo.get(skill);
 				for (int i = 1; i <= level.level; i++) {

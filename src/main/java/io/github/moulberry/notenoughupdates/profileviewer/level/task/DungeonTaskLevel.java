@@ -27,10 +27,10 @@ import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 		int sbXpGainedClass = 0;
 		int sbXpGainedLvl = 0;
 		int catacombsLvl = 0;
-		if (skyblockInfo != null && skyblockInfo.containsKey("catacombs")) {
+		if (skyblockInfo.containsKey("catacombs")) {
 			ProfileViewer.Level catacombs = skyblockInfo.get("catacombs");
 
 			catacombsLvl = (int) catacombs.level;
@@ -66,8 +66,7 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 				}
 			}
 
-			List<String> dungeonClasses = Arrays.asList("healer", "tank", "mage", "archer", "berserk");
-			for (String dungeonClass : dungeonClasses) {
+			for (String dungeonClass : Weight.DUNGEON_CLASS_NAMES) {
 				ProfileViewer.Level level = skyblockInfo.get(dungeonClass);
 				for (int i = 1; i <= level.level; i++) {
 					if (i <= 50) sbXpGainedClass += dungeonTask.get("class_xp").getAsInt();

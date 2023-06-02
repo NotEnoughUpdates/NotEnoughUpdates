@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -467,8 +468,8 @@ public class BasicPage extends GuiProfileViewerPage {
 			entityPlayer.getDataWatcher().updateObject(10, b);
 		}
 
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getProfile(profileName).getLevelingInfo();
-		Map<String, JsonArray> inventoryInfo = profile.getProfile(profileName).getInventoryInfo();
+		Map<String, ProfileViewer.Level> skyblockInfo = getSelectedProfile().getLevelingInfo();
+		Map<String, JsonArray> inventoryInfo = getSelectedProfile().getInventoryInfo();
 
 		if (entityPlayer != null) {
 			if (backgroundClickedX != -1 && Mouse.isButtonDown(1)) {
@@ -602,7 +603,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (skyblockInfo != null) {
+		if (selectedProfile.skillsApiEnabled()) {
 			int position = 0;
 			for (Map.Entry<String, ItemStack> entry : ProfileViewer.getSkillToSkillDisplayMap().entrySet()) {
 				if (entry.getValue() == null || entry.getKey() == null) {
@@ -682,8 +683,14 @@ public class BasicPage extends GuiProfileViewerPage {
 						}
 
 						String slayerNameLower = entry.getKey().toLowerCase();
-						if (Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").has(slayerNameLower)) {
-							int maxLevel = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier").get(slayerNameLower).getAsInt();
+						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
+							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
+							if (slayerToTier == null) {
+								Utils.showOutdatedRepoNotification();
+								return;
+							}
+
+							int maxLevel = slayerToTier.get(slayerNameLower).getAsInt();
 							for (int i = 0; i < 5; i++) {
 								if (i >= maxLevel) break;
 								float tier = Utils.getElementAsFloat(
@@ -713,7 +720,9 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		drawSideButtons();
-		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) renderWeight(mouseX, mouseY, skyblockInfo, selectedProfile.getProfileJson());
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) {
+			renderWeight(mouseX, mouseY, selectedProfile);
+		}
 	}
 
 	private String getIcon(String gameModeType) {
@@ -756,12 +765,13 @@ public class BasicPage extends GuiProfileViewerPage {
 	private void renderWeight(
 		int mouseX,
 		int mouseY,
-		Map<String, ProfileViewer.Level> skyblockInfo,
-		JsonObject profileInfo
+		SkyblockProfiles.SkyblockProfile selectedProfile
 	) {
-		if (skyblockInfo == null) {
+		if (!selectedProfile.skillsApiEnabled()) {
 			return;
 		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		SkyblockProfiles profile = GuiProfileViewer.getProfile();
 		String profileName = GuiProfileViewer.getProfileName();
@@ -777,7 +787,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
-		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, profileInfo);
+		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, selectedProfile.getProfileJson());
 
 		long weight = -2L;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {

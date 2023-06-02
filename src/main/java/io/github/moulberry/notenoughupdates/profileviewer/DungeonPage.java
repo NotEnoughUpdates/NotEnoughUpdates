@@ -541,16 +541,16 @@ public class DungeonPage extends GuiProfileViewerPage {
 
 			float classLevelSum = 0;
 			for (int i = 0; i < Weight.DUNGEON_CLASS_NAMES.size(); i++) {
-				String skillName = Weight.DUNGEON_CLASS_NAMES.get(i);
+				String className = Weight.DUNGEON_CLASS_NAMES.get(i);
 
-				classLevelSum += levelingInfo.get(skillName).level;
-				String colour = skillName.equalsIgnoreCase(activeClass) ? EnumChatFormatting.GREEN.toString() : EnumChatFormatting.WHITE.toString();
-				ProfileViewer.Level levelObj = levelingInfo.get("cosmetic_" + skillName);
+				classLevelSum += levelingInfo.get(className).level;
+				String colour = className.equalsIgnoreCase(activeClass) ? EnumChatFormatting.GREEN.toString() : EnumChatFormatting.WHITE.toString();
+				ProfileViewer.Level levelObj = levelingInfo.get("cosmetic_" + className);
 
 				getInstance()
 					.renderXpBar(
-						colour + WordUtils.capitalizeFully(skillName),
-						classToIcon.get(skillName),
+						colour + WordUtils.capitalizeFully(className),
+						classToIcon.get(className),
 						x,
 						y + 20 + 24 * i,
 						sectionWidth,
@@ -668,7 +668,6 @@ public class DungeonPage extends GuiProfileViewerPage {
 		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
 		if (selectedProfile == null) return;
 		ProfileViewer.Level levelObjCata = selectedProfile.getLevelingInfo().get("cosmetic_catacombs");
-		if (levelObjCata == null) return;
 
 		try {
 			dungeonLevelTextField.setCustomBorderColour(0xffffffff);

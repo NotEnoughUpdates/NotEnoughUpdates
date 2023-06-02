@@ -68,15 +68,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -325,7 +321,9 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}
-		if (skyblockInfo != null) config.tamingLevel = (int) skyblockInfo.get("taming").level;
+		if (profile.getLatestProfile().skillsApiEnabled()) {
+			config.tamingLevel = (int) skyblockInfo.get("taming").level;
+		}
 
 		//JsonObject petObject = profile.getPetsInfo(profile.getLatestProfile());
         /*JsonObject petsJson = Constants.PETS;

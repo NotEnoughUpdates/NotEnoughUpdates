@@ -103,7 +103,7 @@ class PeekCommand {
                                 )
                             }'s Info $STRIKETHROUGH-=-"
                         )
-                        if (skyblockInfo == null) {
+                        if (!profile.latestProfile.skillsApiEnabled()) {
                             Utils.addChatMessage(YELLOW.toString() + "Skills API disabled!")
                         } else {
                             var totalSkillLVL = 0f

@@ -208,12 +208,11 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	public void drawDojoStats(JsonObject data, int guiLeft, int guiTop) {
 		Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Dojo Stats", guiLeft + (431 * 0.49f), guiTop + 14, true, 0);
 
-		JsonObject dojoStats = data.getAsJsonObject("dojo");
 
 		int totalPoints = 0;
 		int idx = 0;
 		for (Map.Entry<String, String> dojoTest : apiDojoTestNames.entrySet()) {
-			int curPoints = dojoStats.get("dojo_points_" + dojoTest.getKey()).getAsInt();
+			int curPoints = Utils.getElementAsInt(data.get("dojo.dojo_points_" + dojoTest.getKey()), 0);
 			totalPoints += curPoints;
 			Utils.renderAlignedString(
 				dojoTest.getValue() + ": ",

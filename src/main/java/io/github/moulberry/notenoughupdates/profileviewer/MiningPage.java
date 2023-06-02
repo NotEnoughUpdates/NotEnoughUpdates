@@ -72,7 +72,6 @@ public class MiningPage extends GuiProfileViewerPage {
 		}
 
 		JsonObject profileInfo = selectedProfile.getProfileJson();
-		ProfileViewer.Level hotmLevelingInfo = selectedProfile.getLevelingInfo().get("hotm");
 
 		float xStart = 22;
 		float yStartTop = 27;
@@ -151,6 +150,8 @@ public class MiningPage extends GuiProfileViewerPage {
 		if (molePerkPct == 0) {
 			molePerkPct = 100;
 		}
+
+		ProfileViewer.Level hotmLevelingInfo = selectedProfile.getLevelingInfo().get("hotm");
 
 		// Render stats
 		// HOTM

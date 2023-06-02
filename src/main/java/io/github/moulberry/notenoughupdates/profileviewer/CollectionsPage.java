@@ -92,6 +92,11 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			return;
 		}
 
+		JsonObject resourceCollectionInfo = ProfileViewer.getOrLoadCollectionsResource();
+		if (resourceCollectionInfo == null) {
+			return;
+		}
+
 		ProfileCollectionInfo collectionInfo = selectedProfile.getCollectionInfo();
 		if (collectionInfo == null) {
 			Utils.drawStringCentered(
@@ -100,9 +105,6 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			);
 			return;
 		}
-
-		JsonObject resourceCollectionInfo = ProfileViewer.getOrLoadCollectionsResource();
-		if (resourceCollectionInfo == null) return;
 
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
