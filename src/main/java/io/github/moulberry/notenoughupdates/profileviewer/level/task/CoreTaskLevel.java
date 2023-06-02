@@ -60,7 +60,6 @@ public class CoreTaskLevel extends GuiTaskLevel {
 
 		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
 		if (selectedProfile == null) {
-			// This is to make infer happy but shouldn't be possible
 			return;
 		}
 

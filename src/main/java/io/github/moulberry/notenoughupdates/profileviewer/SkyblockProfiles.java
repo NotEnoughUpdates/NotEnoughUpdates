@@ -617,7 +617,8 @@ public class SkyblockProfiles {
 
 		/**
 		 * NOTE: will NOT return null if skills api is disabled, use {@link SkyblockProfile#skillsApiEnabled()} instead
-		 * This can still return null if the leveling constant is not up to date
+		 * This can still return null if the leveling constant is not up-to-date
+		 * @return Map containing skills, slayers, HOTM, dungeons & dungeon classes
  		 */
 		public Map<String, ProfileViewer.Level> getLevelingInfo() {
 			if (levelingInfo != null) {
