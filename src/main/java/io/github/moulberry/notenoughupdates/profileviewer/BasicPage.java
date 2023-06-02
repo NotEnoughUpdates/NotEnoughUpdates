@@ -603,7 +603,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (selectedProfile.skillsApiEnabled()) {
+		if (skyblockInfo != null && selectedProfile.skillsApiEnabled()) {
 			int position = 0;
 			for (Map.Entry<String, ItemStack> entry : ProfileViewer.getSkillToSkillDisplayMap().entrySet()) {
 				if (entry.getValue() == null || entry.getKey() == null) {
@@ -772,6 +772,9 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
+		if (skyblockInfo == null) {
+			return;
+		}
 
 		SkyblockProfiles profile = GuiProfileViewer.getProfile();
 		String profileName = GuiProfileViewer.getProfileName();

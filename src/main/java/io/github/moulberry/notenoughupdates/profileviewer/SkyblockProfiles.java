@@ -183,7 +183,12 @@ public class SkyblockProfiles {
 				continue;
 			}
 
-			double weightValue = new SenitherWeight(profileEntry.getValue().getLevelingInfo()).getTotalWeight().getRaw();
+			Map<String, ProfileViewer.Level> levelingInfo = profileEntry.getValue().getLevelingInfo();
+			if (levelingInfo == null) {
+				continue;
+			}
+
+			double weightValue = new SenitherWeight(levelingInfo).getTotalWeight().getRaw();
 			if (weightValue > largestProfileWeight) {
 				largestProfileWeight = weightValue;
 				highestProfileName = profileEntry.getKey();
@@ -602,6 +607,7 @@ public class SkyblockProfiles {
 
 		/**
 		 * NOTE: will NOT return null if skills api is disabled, use {@link SkyblockProfile#skillsApiEnabled()} instead
+		 * This can still return null if the leveling constant is not up to date
  		 */
 		public Map<String, ProfileViewer.Level> getLevelingInfo() {
 			if (levelingInfo != null) {

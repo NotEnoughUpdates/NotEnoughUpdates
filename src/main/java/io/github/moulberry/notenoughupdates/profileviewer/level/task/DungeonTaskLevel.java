@@ -54,7 +54,7 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 		int sbXpGainedClass = 0;
 		int sbXpGainedLvl = 0;
 		int catacombsLvl = 0;
-		if (skyblockInfo.containsKey("catacombs")) {
+		if (skyblockInfo != null && skyblockInfo.containsKey("catacombs")) {
 			ProfileViewer.Level catacombs = skyblockInfo.get("catacombs");
 
 			catacombsLvl = (int) catacombs.level;

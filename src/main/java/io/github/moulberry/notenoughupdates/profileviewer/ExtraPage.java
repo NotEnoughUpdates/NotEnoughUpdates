@@ -259,64 +259,66 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		);
 
-		float totalSkillLVL = 0;
-		float totalTrueSkillLVL = 0;
-		float totalSlayerLVL = 0;
-		float totalSkillCount = 0;
-		float totalSlayerCount = 0;
-		float totalSlayerXP = 0;
+		if (skyblockInfo != null) {
+			float totalSkillLVL = 0;
+			float totalTrueSkillLVL = 0;
+			float totalSlayerLVL = 0;
+			float totalSkillCount = 0;
+			float totalSlayerCount = 0;
+			float totalSlayerXP = 0;
 
-		for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
-			if (skills.contains(entry.getKey())) {
-				totalSkillLVL += entry.getValue().level;
-				totalTrueSkillLVL += Math.floor(entry.getValue().level);
-				totalSkillCount++;
-			} else if (Weight.SLAYER_NAMES.contains(entry.getKey())) {
-				totalSlayerLVL += entry.getValue().level;
-				totalSlayerCount++;
-				totalSlayerXP += entry.getValue().totalXp;
+			for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
+				if (skills.contains(entry.getKey())) {
+					totalSkillLVL += entry.getValue().level;
+					totalTrueSkillLVL += Math.floor(entry.getValue().level);
+					totalSkillCount++;
+				} else if (Weight.SLAYER_NAMES.contains(entry.getKey())) {
+					totalSlayerLVL += entry.getValue().level;
+					totalSlayerCount++;
+					totalSlayerXP += entry.getValue().totalXp;
+				}
 			}
+
+			float avgSkillLVL = totalSkillLVL / totalSkillCount;
+			float avgTrueSkillLVL = totalTrueSkillLVL / totalSkillCount;
+			float avgSlayerLVL = totalSlayerLVL / totalSlayerCount;
+
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "AVG Skill Level",
+				selectedProfile.skillsApiEnabled() ?
+					EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10 :
+					EnumChatFormatting.RED + "Skills API not enabled!",
+				guiLeft + xStart,
+				guiTop + yStartBottom + yOffset,
+				76
+			);
+
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "True AVG Skill Level",
+				selectedProfile.skillsApiEnabled() ?
+					EnumChatFormatting.WHITE.toString() + Math.floor(avgTrueSkillLVL * 10) / 10 :
+					EnumChatFormatting.RED + "Skills API not enabled!",
+				guiLeft + xStart,
+				guiTop + yStartBottom + yOffset * 2,
+				76
+			);
+
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "AVG Slayer Level",
+				EnumChatFormatting.WHITE.toString() + Math.floor(avgSlayerLVL * 10) / 10,
+				guiLeft + xStart,
+				guiTop + yStartBottom + yOffset * 3,
+				76
+			);
+
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "Total Slayer XP",
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(totalSlayerXP),
+				guiLeft + xStart,
+				guiTop + yStartBottom + yOffset * 4,
+				76
+			);
 		}
-
-		float avgSkillLVL = totalSkillLVL / totalSkillCount;
-		float avgTrueSkillLVL = totalTrueSkillLVL / totalSkillCount;
-		float avgSlayerLVL = totalSlayerLVL / totalSlayerCount;
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.RED + "AVG Skill Level",
-			selectedProfile.skillsApiEnabled() ?
-				EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10 :
-				EnumChatFormatting.RED + "Skills API not enabled!",
-			guiLeft + xStart,
-			guiTop + yStartBottom + yOffset,
-			76
-		);
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.RED + "True AVG Skill Level",
-			selectedProfile.skillsApiEnabled() ?
-				EnumChatFormatting.WHITE.toString() + Math.floor(avgTrueSkillLVL * 10) / 10 :
-				EnumChatFormatting.RED + "Skills API not enabled!",
-			guiLeft + xStart,
-			guiTop + yStartBottom + yOffset * 2,
-			76
-		);
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.RED + "AVG Slayer Level",
-			EnumChatFormatting.WHITE.toString() + Math.floor(avgSlayerLVL * 10) / 10,
-			guiLeft + xStart,
-			guiTop + yStartBottom + yOffset * 3,
-			76
-		);
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.RED + "Total Slayer XP",
-			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(totalSlayerXP),
-			guiLeft + xStart,
-			guiTop + yStartBottom + yOffset * 4,
-			76
-		);
 
 		float auctions_bids = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_bids"), 0);
 		float auctions_highest_bid = Utils.getElementAsFloat(

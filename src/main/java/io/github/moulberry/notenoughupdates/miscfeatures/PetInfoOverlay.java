@@ -321,7 +321,7 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}
-		if (profile.getLatestProfile().skillsApiEnabled()) {
+		if (skyblockInfo != null && profile.getLatestProfile().skillsApiEnabled()) {
 			config.tamingLevel = (int) skyblockInfo.get("taming").level;
 		}
 
