@@ -706,9 +706,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int maxInvSize = rowSize * maxRowsPerPage;
 
 		int numInventories = (jsonInvSize - 1) / maxInvSize + 1;
-		JsonArray backPackContents = inventoryInfo.get("backpack_contents");
+		JsonArray backpackSizes = inventoryInfo.get("backpack_sizes");
 		if (invName.equals("backpack_contents")) {
-			numInventories = backPackContents.size();
+			numInventories = backpackSizes.size();
 		}
 
 		ItemStack[][][] inventories = new ItemStack[numInventories][][];
@@ -720,7 +720,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			int invSize;
 
 			if (invName.equals("backpack_contents")) {
-				thisRows = backPackContents.get(i).getAsJsonObject().entrySet().size() / 9;
+				thisRows = backpackSizes.get(i).getAsInt() / 9;
 				invSize = startNumberJ + (thisRows * 9);
 				maxInvSize = thisRows * 9;
 			} else {
@@ -777,7 +777,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			}
 			inventories[i] = items;
 			if (invName.equals("backpack_contents")) {
-				startNumberJ = startNumberJ + backPackContents.get(i).getAsJsonObject().entrySet().size();
+				startNumberJ = startNumberJ + backpackSizes.get(i).getAsInt();
 			}
 		}
 
