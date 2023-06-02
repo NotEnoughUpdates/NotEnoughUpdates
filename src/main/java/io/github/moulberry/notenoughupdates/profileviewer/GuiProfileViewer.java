@@ -66,8 +66,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class GuiProfileViewer extends GuiScreen {
 
-	private static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
-	private static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
+	public static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
+	public static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
 	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final Map<String, ResourceLocation> gamemodeToIcon = new HashMap<String, ResourceLocation>() {{
 		put("ironman", new ResourceLocation("notenoughupdates:pv_ironman.png"));
@@ -228,7 +228,7 @@ public class GuiProfileViewer extends GuiScreen {
 		return profileName;
 	}
 
-	public static SkyblockProfiles.SkyblockProfile getSelectedProfile() {
+	public static @Nullable SkyblockProfiles.SkyblockProfile getSelectedProfile() {
 		return profile.getProfile(profileName);
 	}
 

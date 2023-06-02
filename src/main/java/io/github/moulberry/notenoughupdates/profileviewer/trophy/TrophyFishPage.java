@@ -46,9 +46,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
+
 public class TrophyFishPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final Map<String, EnumChatFormatting> internalTrophyFish = new HashMap<String, EnumChatFormatting>() {
 		{
 			put("gusher", EnumChatFormatting.WHITE);

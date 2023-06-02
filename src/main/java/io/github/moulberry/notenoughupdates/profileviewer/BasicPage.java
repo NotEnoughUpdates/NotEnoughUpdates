@@ -279,43 +279,38 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		long networth;
+		String stateStr = EnumChatFormatting.RED + "An error occurred";
+		long networth = -2;
 		ArrayList<String> nwCategoryHover = new ArrayList<>();
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-			SkyblockProfiles.SoopyNetworthData nwData = profile.getNameToSoopyNetworth(profileName, () -> {});
-			if (nwData == null) {
-				networth = -2L;
-			} else {
-				networth = nwData.getTotal();
+			SkyblockProfiles.SoopyNetworth nwData = selectedProfile.getSoopyNetworth(() -> {});
+			networth = nwData.getNetworth();
 
-				for (String category : nwData.getCategories()) {
-					if (nwData.getCategory(category) == 0) continue;
-
-					nwCategoryHover.add(EnumChatFormatting.GREEN +
-						WordUtils.capitalizeFully(category.replace("_", " ")) +
+			if (networth == -1) {
+				stateStr = EnumChatFormatting.YELLOW + "Loading...";
+			} else if (networth != -2) { // -2 indicates error
+				for (Map.Entry<String, Long> entry : nwData.getCategoryToTotal().entrySet()) {
+					nwCategoryHover.add(
+						EnumChatFormatting.GREEN +
+						WordUtils.capitalizeFully(entry.getKey().replace("_", " ")) +
 						": " +
 						EnumChatFormatting.GOLD +
-						StringUtils.formatNumber(nwData.getCategory(category)));
+						StringUtils.formatNumber(entry.getValue())
+					);
 				}
-
 				nwCategoryHover.add("");
 			}
-		} else {
+		}
+
+		// Calculate using NEU networth if not using soopy networth or soopy networth errored
+		if (networth == -2) {
 			networth = selectedProfile.getNetworth();
 		}
 
-		//Networth is under 0
-		//If = -1 -> an error occurred
-		//If = -2 -> still loading networth
-		String stateStr = EnumChatFormatting.RED + "An error occurred";
-		if (networth == -2) {
-			stateStr = EnumChatFormatting.YELLOW + "Loading...";
-		} else if (networth == -1) {
-			networth = selectedProfile.getNetworth();
-		}
-		int fontWidth = fr.getStringWidth("Net Worth: " + StringUtils.formatNumber(networth));
-		int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
 		if (networth > 0) {
+			int fontWidth = fr.getStringWidth("Net Worth: " + StringUtils.formatNumber(networth));
+			int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
+
 			if (fontWidth >= 117) {
 				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
 					StringUtils.formatNumber(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);

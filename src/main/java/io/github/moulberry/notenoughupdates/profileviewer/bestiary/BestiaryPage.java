@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -41,9 +42,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
+
 public class BestiaryPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final ResourceLocation BESTIARY_TEXTURE = new ResourceLocation("notenoughupdates:pv_bestiary_tab.png");
 	private static final int XCOUNT = 7;
 	private static final int YCOUNT = 5;
@@ -185,7 +187,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 						if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
 							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
 							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+							level = ProfileViewerUtils.getLevel(levelingArray, kills, levelCap, false);
 						} else {
 							Utils.showOutdatedRepoNotification();
 						}

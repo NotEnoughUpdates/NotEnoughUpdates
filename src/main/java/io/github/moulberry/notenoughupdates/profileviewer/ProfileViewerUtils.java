@@ -156,4 +156,40 @@ public class ProfileViewerUtils {
 			? capsElement.getAsJsonObject().get(skillName).getAsInt()
 			: 50;
 	}
+
+	public static ProfileViewer.Level getLevel(JsonArray levelingArray, float xp, int levelCap, boolean cumulative) {
+		ProfileViewer.Level levelObj = new ProfileViewer.Level();
+		levelObj.totalXp = xp;
+		levelObj.maxLevel = levelCap;
+
+		for (int level = 0; level < levelingArray.size(); level++) {
+			float levelXp = levelingArray.get(level).getAsFloat();
+
+			if (levelXp > xp) {
+				if (cumulative) {
+					float previous = level > 0 ? levelingArray.get(level - 1).getAsFloat() : 0;
+					levelObj.maxXpForLevel = (levelXp - previous);
+					levelObj.level = 1 + level + (xp - levelXp) / levelObj.maxXpForLevel;
+				} else {
+					levelObj.maxXpForLevel = levelXp;
+					levelObj.level = level + xp / levelXp;
+				}
+
+				if (levelObj.level > levelCap) {
+					levelObj.level = levelCap;
+					levelObj.maxed = true;
+				}
+
+				return levelObj;
+			} else {
+				if (!cumulative) {
+					xp -= levelXp;
+				}
+			}
+		}
+
+		levelObj.level = Math.min(levelingArray.size(), levelCap);
+		levelObj.maxed = true;
+		return levelObj;
+	}
 }

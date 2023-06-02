@@ -41,10 +41,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
+
 public class CollectionsPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_cols = new ResourceLocation("notenoughupdates:pv_cols.png");
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
+	private static final ResourceLocation pv_cols = new ResourceLocation("notenoughupdates:pv_cols.png");
 	private static final int COLLS_XCOUNT = 5;
 	private static final int COLLS_YCOUNT = 4;
 	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
@@ -100,7 +101,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			return;
 		}
 
-		JsonObject resourceCollectionInfo = ProfileViewer.getResourceCollectionInformation();
+		JsonObject resourceCollectionInfo = ProfileViewer.getOrLoadCollectionsResource();
 		if (resourceCollectionInfo == null) return;
 
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
@@ -398,7 +399,6 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	public void keyTyped(char typedChar, int keyCode) throws IOException {
 		ItemStack stack = null;
 		Iterator<ItemStack> items = ProfileViewer.getCollectionCatToCollectionMap().keySet().iterator();
-		// TOOD: check this - are there supposed to be breaks in each case?
 		switch (keyCode) {
 			case Keyboard.KEY_5:
 			case Keyboard.KEY_NUMPAD5:

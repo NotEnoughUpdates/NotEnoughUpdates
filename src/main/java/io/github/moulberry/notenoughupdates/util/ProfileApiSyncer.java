@@ -89,7 +89,7 @@ public class ProfileApiSyncer {
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 
 		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-		NotEnoughUpdates.profileViewer.getSkyblockProfiles(uuid, (profile) -> {
+		NotEnoughUpdates.profileViewer.getOrLoadSkyblockProfiles(uuid, (profile) -> {
 			for (Consumer<SkyblockProfiles> c : finishSyncCallbacks.values()) c.accept(profile);
 			finishSyncCallbacks.clear();
 		});

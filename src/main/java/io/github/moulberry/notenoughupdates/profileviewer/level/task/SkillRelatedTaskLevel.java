@@ -23,6 +23,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -46,7 +47,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 
 		float hotmXp = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.experience"), 0);
 		ProfileViewer.Level levelObjHotm =
-			ProfileViewer.getLevel(
+			ProfileViewerUtils.getLevel(
 				Utils.getElementOrDefault(Constants.LEVELING, "HOTM", new JsonArray()).getAsJsonArray(),
 				hotmXp,
 				7,

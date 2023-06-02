@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -435,7 +434,7 @@ public class ProfileViewer {
 		this.manager = manager;
 	}
 
-	public static JsonObject getResourceCollectionInformation() {
+	public static JsonObject getOrLoadCollectionsResource() {
 		if (resourceCollection != null) return resourceCollection;
 		if (updatingResourceCollection.get()) return null;
 
@@ -451,42 +450,6 @@ public class ProfileViewer {
 				}
 			});
 		return null;
-	}
-
-	public static Level getLevel(JsonArray levelingArray, float xp, int levelCap, boolean cumulative) {
-		Level levelObj = new Level();
-		levelObj.totalXp = xp;
-		levelObj.maxLevel = levelCap;
-
-		for (int level = 0; level < levelingArray.size(); level++) {
-			float levelXp = levelingArray.get(level).getAsFloat();
-
-			if (levelXp > xp) {
-				if (cumulative) {
-					float previous = level > 0 ? levelingArray.get(level - 1).getAsFloat() : 0;
-					levelObj.maxXpForLevel = (levelXp - previous);
-					levelObj.level = 1 + level + (xp - levelXp) / levelObj.maxXpForLevel;
-				} else {
-					levelObj.maxXpForLevel = levelXp;
-					levelObj.level = level + xp / levelXp;
-				}
-
-				if (levelObj.level > levelCap) {
-					levelObj.level = levelCap;
-					levelObj.maxed = true;
-				}
-
-				return levelObj;
-			} else {
-				if (!cumulative) {
-					xp -= levelXp;
-				}
-			}
-		}
-
-		levelObj.level = Math.min(levelingArray.size(), levelCap);
-		levelObj.maxed = true;
-		return levelObj;
 	}
 
 	public void putNameUuid(String name, String uuid) {
@@ -550,13 +513,13 @@ public class ProfileViewer {
 							);
 					}
 
-					callback.accept(getSkyblockProfiles(uuid, ignored -> {}));
+					callback.accept(getOrLoadSkyblockProfiles(uuid, ignored -> {}));
 				}
 			}
 		);
 	}
 
-	public SkyblockProfiles getSkyblockProfiles(String uuid, Consumer<SkyblockProfiles> callback) {
+	public SkyblockProfiles getOrLoadSkyblockProfiles(String uuid, Consumer<SkyblockProfiles> callback) {
 		if (uuidToSkyblockProfiles.containsKey(uuid)) {
 			uuidToSkyblockProfiles.get(uuid).resetCache();
 		}
