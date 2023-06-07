@@ -274,6 +274,10 @@ public class SkyblockProfiles {
 			});
 	}
 
+	public AtomicBoolean getUpdatingSkyblockProfilesState() {
+		return updatingSkyblockProfilesState;
+	}
+
 	public @Nullable SkyblockProfile getProfile(String profileName) {
 		return nameToProfile == null ? null : nameToProfile.get(profileName);
 	}
@@ -308,6 +312,13 @@ public class SkyblockProfiles {
 					Map<String, SkyblockProfile> nameToProfile = new HashMap<>();
 					String latestProfileName = null;
 					List<String> profileNames = new ArrayList<>();
+
+					// player has no skyblock profiles
+					if (profilesJson.get("profiles").isJsonNull()) {
+						updatingSkyblockProfilesState.set(false);
+						this.nameToProfile = new HashMap<>();
+						return null;
+					}
 
 					for (JsonElement profileEle : profilesJson.getAsJsonArray("profiles")) {
 						JsonObject profile = profileEle.getAsJsonObject();

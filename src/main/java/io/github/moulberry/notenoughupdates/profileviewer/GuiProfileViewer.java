@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -242,11 +242,14 @@ public class GuiProfileViewer extends GuiScreen {
 			page = ProfileViewerPage.INVALID_NAME;
 		} else if (profile.getOrLoadSkyblockProfiles(null) == null) {
 			page = ProfileViewerPage.LOADING;
-		} else if (profile.getLatestProfileName() == null) {
+		}
+
+		if (profile != null && profile.getLatestProfileName() == null &&
+			!profile.getUpdatingSkyblockProfilesState().get()) {
 			page = ProfileViewerPage.NO_SKYBLOCK;
 		}
 
-		if (profile != null){
+		if (profile != null) {
 			if (profileName == null && profile.getLatestProfileName() != null) {
 				profileName = profile.getLatestProfileName();
 			}
