@@ -37,7 +37,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 class ProfileViewerCommands {
     companion object {
         fun CommandContext<ICommandSender>.openPv(name: String) {
-            if (!NotEnoughUpdates.INSTANCE.isOnSkyblock) return
+            if (!NotEnoughUpdates.INSTANCE.isOnSkyblock) {
+                Minecraft.getMinecraft().thePlayer.sendChatMessage("/pv")
+                return
+            }
             if (!OpenGlHelper.isFramebufferEnabled()) {
                 reply("${RED}Some parts of the profile viewer do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.")
             }
