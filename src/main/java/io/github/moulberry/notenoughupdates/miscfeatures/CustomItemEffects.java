@@ -787,8 +787,9 @@ public class CustomItemEffects {
 			if (tick - lastEtherwarpUse > 10 || !NotEnoughUpdates.INSTANCE.config.itemOverlays.etherwarpZoom) {
 				boolean aotv = Minecraft.getMinecraft().thePlayer.isSneaking() &&
 					(heldInternal.equals("ASPECT_OF_THE_VOID") || heldInternal.equals("ASPECT_OF_THE_END"));
-				if (aotv || heldInternal.equals("ETHERWARP_CONDUIT")) {
-					usingEtherwarp = !aotv;
+
+				if(heldInternal.equals("ETHERWARP_CONDUIT")) usingEtherwarp = true;
+				else if (aotv) usingEtherwarp = false;
 
 					if (aotv) {
 						NBTTagCompound tag = held.getTagCompound();
@@ -853,7 +854,6 @@ public class CustomItemEffects {
 							}
 
 							return;
-						}
 					}
 				}
 			}
