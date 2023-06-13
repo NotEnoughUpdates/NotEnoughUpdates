@@ -629,8 +629,9 @@ public class SkyblockProfiles {
 		/**
 		 * NOTE: will NOT return null if skills api is disabled, use {@link SkyblockProfile#skillsApiEnabled()} instead
 		 * This can still return null if the leveling constant is not up-to-date
+		 *
 		 * @return Map containing skills, slayers, HOTM, dungeons & dungeon classes
- 		 */
+		 */
 		public Map<String, ProfileViewer.Level> getLevelingInfo() {
 			if (levelingInfo != null) {
 				return levelingInfo;
@@ -649,7 +650,10 @@ public class SkyblockProfiles {
 				float skillExperience = 0;
 				if (skillName.equals("social")) {
 					// Get the coop's social skill experience since social is a shared skill
-					for (Map.Entry<String, JsonElement> memberProfileJson : outerProfileJson.entrySet()) {
+					for (Map.Entry<String, JsonElement> memberProfileJson : Utils
+						.getElement(outerProfileJson, "members")
+						.getAsJsonObject()
+						.entrySet()) {
 						skillExperience += Utils.getElementAsFloat(
 							Utils.getElement(memberProfileJson.getValue(), "experience_skill_social2"),
 							0
