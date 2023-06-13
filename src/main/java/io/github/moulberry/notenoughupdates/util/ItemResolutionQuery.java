@@ -121,6 +121,9 @@ public class ItemResolutionQuery {
 				case "ABICASE":
 					resolvedName = resolvePhoneCase();
 					break;
+				case "PARTY_HAT_SLOTH":
+					resolvedName = resolveSlothHatName();
+					break;
 			}
 		}
 
@@ -276,6 +279,11 @@ public class ItemResolutionQuery {
 		int crabHatYear = getExtraAttributes().getInteger("party_hat_year");
 		String color = getExtraAttributes().getString("party_hat_color");
 		return "PARTY_HAT_CRAB_" + color.toUpperCase(Locale.ROOT) + (crabHatYear == 2022 ? "_ANIMATED" : "");
+	}
+
+	private String resolveSlothHatName() {
+		String emoji = getExtraAttributes().getString("party_hat_emoji");
+		return "PARTY_HAT_SLOTH_" + emoji.toUpperCase(Locale.ROOT);
 	}
 
 	private String resolvePhoneCase() {
