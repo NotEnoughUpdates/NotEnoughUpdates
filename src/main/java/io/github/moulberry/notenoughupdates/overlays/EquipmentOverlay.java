@@ -303,8 +303,18 @@ public class EquipmentOverlay {
 
 	private void drawSlot(ItemStack stack, int x, int y, int mouseX, int mouseY, List<String> tooltip) {
 		if (stack == null) return;
+
 		Utils.drawItemStack(stack, x, y, true);
 		if (Utils.isWithinRect(mouseX, mouseY, x, y, 16, 16)) {
+			// draw the slot overlay
+			GlStateManager.disableLighting();
+			GlStateManager.disableDepth();
+			GlStateManager.colorMask(true, true, true, false);
+			Utils.drawGradientRect(x, y, x + 16, y + 16, -2130706433, -2130706433);
+			GlStateManager.colorMask(true, true, true, true);
+			GlStateManager.enableLighting();
+			GlStateManager.enableDepth();
+
 			List<String> tt = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			if (shouldShowEquipmentTooltip(tt))
 				tooltip.addAll(tt);
