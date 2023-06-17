@@ -19,7 +19,6 @@
 
 package io.github.moulberry.notenoughupdates.commands.misc
 
-import com.mojang.brigadier.arguments.StringArgumentType.string
 import com.mojang.brigadier.context.CommandContext
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
@@ -36,9 +35,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @NEUAutoSubscribe
 class ProfileViewerCommands {
     companion object {
-        fun CommandContext<ICommandSender>.openPv(name: String) {
+        fun CommandContext<ICommandSender>.openPv(name: String?) {
             if (!NotEnoughUpdates.INSTANCE.isOnSkyblock) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage("/pv")
+                Minecraft.getMinecraft().thePlayer.sendChatMessage("/pv ${name ?: ""}")
                 return
             }
             if (!OpenGlHelper.isFramebufferEnabled()) {
@@ -50,7 +49,9 @@ class ProfileViewerCommands {
                 return
             }
 
-            NotEnoughUpdates.profileViewer.getProfileByName(name) { profile ->
+            NotEnoughUpdates.profileViewer.getProfileByName(
+                name ?: Minecraft.getMinecraft().thePlayer.name
+            ) { profile ->
                 if (profile == null) {
                     reply("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.")
                 } else {
@@ -68,9 +69,9 @@ class ProfileViewerCommands {
             event.command(name) {
                 thenExecute {
                     before()
-                    openPv(Minecraft.getMinecraft().thePlayer.name)
+                    openPv(null)
                 }
-                thenArgument("player", string()) { player ->
+                thenArgument("player", RestArgumentType) { player ->
                     suggestsList { Minecraft.getMinecraft().theWorld.playerEntities.map { it.name } }
                     thenExecute {
                         before()
