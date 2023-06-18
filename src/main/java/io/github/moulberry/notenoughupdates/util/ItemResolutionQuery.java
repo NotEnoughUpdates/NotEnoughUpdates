@@ -37,6 +37,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -202,10 +203,23 @@ public class ItemResolutionQuery {
 	 */
 	public static String findInternalNameByDisplayName(String displayName, boolean mayBeMangled) {
 		var cleanDisplayName = StringUtils.cleanColour(displayName);
+		return filterInternalNameCandidates(
+			findInternalNameCandidatesForDisplayName(cleanDisplayName),
+			displayName,
+			mayBeMangled
+		);
+	}
+
+	public static String filterInternalNameCandidates(
+		Collection<String> candidateInternalNames,
+		String displayName,
+		boolean mayBeMangled
+	) {
+		var cleanDisplayName = StringUtils.cleanColour(displayName);
 		var manager = NotEnoughUpdates.INSTANCE.manager;
 		String bestMatch = null;
 		int bestMatchLength = -1;
-		for (String internalName : findInternalNameCandidatesForDisplayName(cleanDisplayName)) {
+		for (String internalName : candidateInternalNames) {
 			var cleanItemDisplayName = StringUtils.cleanColour(manager.getDisplayName(internalName));
 			if (cleanItemDisplayName.length() == 0) continue;
 			if (mayBeMangled

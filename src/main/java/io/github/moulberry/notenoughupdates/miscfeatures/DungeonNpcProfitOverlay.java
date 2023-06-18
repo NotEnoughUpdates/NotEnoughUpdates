@@ -361,8 +361,10 @@ public class DungeonNpcProfitOverlay {
 				return new SkyblockItem(internalName, amount);
 			} else {
 				// Remove Book (from hot potato book), as a perf optimization since "book" is a very common phrase
-				String id = ItemResolutionQuery.findInternalNameByDisplayName(
-					line.trim().replace("Book", ""), true);
+				String trimmedLine = line.trim();
+				String id =
+					ItemResolutionQuery.filterInternalNameCandidates(ItemResolutionQuery.findInternalNameCandidatesForDisplayName(
+						trimmedLine.replace("Book", "")), trimmedLine, true);
 				if (id == null) return null;
 				return new SkyblockItem(id, 1);
 			}
