@@ -175,7 +175,7 @@ public class Calculator {
 			} else {
 				throw new CalculatorException("Unknown thing " + c, i, 1);
 			}
-			justParsedNumber = token.type == TokenType.NUMBER;
+			justParsedNumber = token.type == TokenType.NUMBER || token.type == TokenType.VARIABLE;
 			tokens.add(token);
 			i += token.tokenLength;
 		}
