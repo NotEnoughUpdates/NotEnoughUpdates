@@ -206,10 +206,10 @@ public class EquipmentOverlay {
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
 		// Draw Backgrounds
-		GlStateManager.color(1, 1, 1, 1);
+		GL11.glColor4f(1F, 1F, 1F, 1F);
 		AccessorGuiContainer container = ((AccessorGuiContainer) inventory);
-		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
-		int overlayTop = container.getGuiTop();
+		final int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		final int overlayTop = container.getGuiTop();
 		if (shouldRenderArmorHud) {
 			ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
 			Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
@@ -220,10 +220,9 @@ public class EquipmentOverlay {
 		if (shouldRenderPets) {
 			ResourceLocation customPetTexture = getCustomPetTexture(shouldRenderArmorHud);
 			Minecraft.getMinecraft().getTextureManager().bindTexture(customPetTexture);
+			GlStateManager.color(1, 1, 1, 1);
 
-			overlayTop += PET_OVERLAY_OFFSET_Y;
-
-			Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
+			Utils.drawTexturedRect(overlayLeft, overlayTop + PET_OVERLAY_OFFSET_Y, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 		}
 		GlStateManager.bindTexture(0);
 
