@@ -35,6 +35,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -155,8 +156,9 @@ public class Utils {
 	public static Splitter PATH_SPLITTER = Splitter.on(".").omitEmptyStrings().limit(2);
 	private static ScaledResolution lastScale = new ScaledResolution(Minecraft.getMinecraft());
 	private static long startTime = 0;
-	private static DecimalFormat simpleDoubleFormat = new DecimalFormat("0.0");
+	private static final DecimalFormat simpleDoubleFormat = new DecimalFormat("0.0");
 
+	@SafeVarargs
 	public static <T> ArrayList<T> createList(T... values) {
 		ArrayList<T> list = new ArrayList<>();
 		Collections.addAll(list, values);
@@ -347,14 +349,12 @@ public class Utils {
 			return simpleDoubleFormat.format(n);
 		}
 
-		if (n < 1000 && iteration == 0) return "" + (int) n;
+		if (n < 1000 && iteration == 0) return String.valueOf((int) n);
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return (d < 1000 ?
-			((d > 99.9 || isRound || (!isRound && d > 9.99) ?
-				(int) d * 10 / 10 : d + ""
-			) + "" + c[iteration])
-			: shortNumberFormat(d, iteration + 1));
+		return d < 1000 ?
+			(isRound || d > 9.99 ? (int) d * 10 / 10 : String.valueOf(d)) + String.valueOf(c[iteration])
+			: shortNumberFormat(d, iteration + 1);
 	}
 
 	public static String trimIgnoreColour(String str) {
@@ -473,6 +473,7 @@ public class Utils {
 		return list;
 	}
 
+	@SuppressWarnings("MalformedFormatString")
 	public static String floatToString(float f, int decimals) {
 		if (decimals <= 0) {
 			return String.valueOf(Math.round(f));
@@ -1648,12 +1649,7 @@ public class Utils {
 			if (c == '\u00A7') {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
-				int colIndex = "0123456789abcdef".indexOf(c);
-				if (colIndex >= 0) {
-					currentColour = colIndex;
-				} else {
-					currentColour = 0;
-				}
+				currentColour = Math.max(0, "0123456789abcdef".indexOf(c));
 			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0) {
 				if (currentColour > 0) {
 					mostCommon[currentColour]++;
@@ -1981,6 +1977,42 @@ public class Utils {
 		worldrenderer.pos(left, top, 0.0D).endVertex();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
+	}
+
+	/**
+	 * Draws a solid color rectangle with the specified coordinates and color (ARGB format). Args: x1, y1, x2, y2, color
+	 * @see Gui#drawRect
+	 */
+	public static void drawRect(float left, float top, float right, float bottom, int color) {
+		float i;
+		if (left < right) {
+			i = left;
+			left = right;
+			right = i;
+		}
+		if (top < bottom) {
+			i = top;
+			top = bottom;
+			bottom = i;
+		}
+		float f = (float)(color >> 24 & 0xFF) / 255.0f;
+		float g = (float)(color >> 16 & 0xFF) / 255.0f;
+		float h = (float)(color >> 8 & 0xFF) / 255.0f;
+		float j = (float)(color & 0xFF) / 255.0f;
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+		GlStateManager.enableBlend();
+		GlStateManager.disableTexture2D();
+		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.color(g, h, j, f);
+		worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+		worldRenderer.pos(left, bottom, 0.0).endVertex();
+		worldRenderer.pos(right, bottom, 0.0).endVertex();
+		worldRenderer.pos(right, top, 0.0).endVertex();
+		worldRenderer.pos(left, top, 0.0).endVertex();
+		tessellator.draw();
+		GlStateManager.enableTexture2D();
+		GlStateManager.disableBlend();
 	}
 
 	public static String prettyTime(Duration time) {
