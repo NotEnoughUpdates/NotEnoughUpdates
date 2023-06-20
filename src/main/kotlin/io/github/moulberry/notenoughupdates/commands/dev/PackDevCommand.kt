@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.util.brigadier.*
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.command.ICommandSender
@@ -35,8 +36,10 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+
 
 @NEUAutoSubscribe
 class PackDevCommand {
@@ -152,6 +155,31 @@ class PackDevCommand {
             npcListCommand("armor stand", "getarmorstand", "getarmorstands", EntityArmorStand::class.java) {
                 Minecraft.getMinecraft().theWorld.loadedEntityList
             }
+            thenLiteralExecute("block") {
+                val pos = Minecraft.getMinecraft().thePlayer.rayTrace(4.0, 10f).blockPos
+
+                val block: IBlockState = Minecraft.getMinecraft().theWorld.getBlockState(pos)
+                if (block.block.hasTileEntity(block)) {
+                    val te = Minecraft.getMinecraft().theWorld.getTileEntity(pos)
+                    val s = StringBuilder().also {
+                        it.appendLine("NBT: ${te.tileData}")
+                        if (te is TileEntitySkull && te.playerProfile != null) {
+                            it.appendLine("PlayerProfile:\nId: ")
+                            it.appendLine(te.playerProfile.id)
+                            it.append("Name: ")
+                            it.appendLine(te.playerProfile.name)
+                            it.append("Textures: ")
+                            it.appendLine(te.playerProfile.properties.get("textures")?.joinToString(", ", "[", "]") { p -> "${p.name}: ${p.value}" })
+                        }
+                    }.toString().trim()
+
+                    MiscUtils.copyToClipboard(s)
+                    reply("Copied data to clipboard")
+                    return@thenLiteralExecute
+                }
+                reply("No tile entity found at your cursor")
+            }.withHelp("Find the tile entity you're looking at and copy data about it to your clipboard")
+
             thenExecute {
                 NotEnoughUpdates.INSTANCE.packDevEnabled = !NotEnoughUpdates.INSTANCE.packDevEnabled
                 if (NotEnoughUpdates.INSTANCE.packDevEnabled) {
