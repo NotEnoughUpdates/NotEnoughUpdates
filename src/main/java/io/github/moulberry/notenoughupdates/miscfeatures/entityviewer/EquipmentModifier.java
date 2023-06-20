@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures.entityviewer;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -35,6 +36,8 @@ public class EquipmentModifier extends EntityViewerModifier {
 		String[] split = item.split("#");
 		if (split.length == 2) {
 			switch (split[0].intern()) {
+				case "SKULL":
+					return Utils.createSkull("Placeholder Skull", "00000000-0000-0000-0000-000000000000", split[1]);
 				case "LEATHER_LEGGINGS":
 					return coloredLeatherArmor(Items.leather_leggings, split[1]);
 				case "LEATHER_HELMET":
