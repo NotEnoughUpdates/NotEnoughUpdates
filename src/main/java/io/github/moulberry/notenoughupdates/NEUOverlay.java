@@ -1150,6 +1150,8 @@ public class NEUOverlay extends Gui {
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
 							manager.showRecipe(item);
 							return true;
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint) {
+							NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(item);
 						} else if (keyPressed == manager.keybindGive.getKeyCode()) {
 							if (Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode) {
 								Minecraft.getMinecraft().thePlayer.inventory.addItemStackToInventory(
@@ -2222,12 +2224,16 @@ public class NEUOverlay extends Gui {
 				(json.has("clickcommand") && !json.get("clickcommand").getAsString().isEmpty())
 					|| !manager.getAvailableRecipesFor(internalname).isEmpty();
 			boolean hasInfo = json.has("info") && json.get("info").getAsJsonArray().size() > 0;
+			boolean hasWaypoint = NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(json);
 
 			if (hasClick || hasInfo) text.add("");
 			if (hasClick)
 				text.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "LMB/R : View recipe!");
 			if (hasInfo)
 				text.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "RMB : View additional information!");
+			if (hasWaypoint)
+				text.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD +
+					Keyboard.getKeyName(NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint) + " : Set waypoint!");
 
 			textToDisplay = text;
 		}
