@@ -1150,7 +1150,7 @@ public class NEUOverlay extends Gui {
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
 							manager.showRecipe(item);
 							return true;
-						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint) {
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint && NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
 							NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(item);
 						} else if (keyPressed == manager.keybindGive.getKeyCode()) {
 							if (Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode) {
