@@ -51,6 +51,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -60,6 +61,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -628,29 +630,37 @@ public class GuiProfileViewer extends GuiScreen {
 	private void renderRecentPlayers(boolean renderCurrent) {
 		// todo Do render current stuff
 		// todo find current profile name being viewed
-		// todo name on hover
 		// todo skull
+		// todo make player name work
+		String playerName = "";
+		if (profile.getHypixelProfile() != null) {
+			playerName = profile.getHypixelProfile().get("displayname").getAsString();
+		}
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
-		boolean ownProfile = Minecraft.getMinecraft().thePlayer.getName() == currentProfile;
-		if (ownProfile == renderCurrent) {
-			renderRecentPlayer(0, ownProfile);
+		boolean selected = Minecraft.getMinecraft().thePlayer.getName() == playerName;
+		if (selected == renderCurrent) {
+			Pair<String, String> playerData = ProfileViewerUtils.getPLayerData(Minecraft.getMinecraft().thePlayer.getName());
+			ItemStack skull = new ItemStack(Blocks.barrier).setStackDisplayName(playerData.getLeft());
+			renderRecentPlayer(skull, 0, selected);
 		}
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
-			boolean selected = previousProfileSearches.get(i) == currentProfile;
+			selected = Objects.equals(previousProfileSearches.get(i), playerName.toLowerCase());
 			if (selected == renderCurrent) {
-				renderRecentPlayer(i + 1, selected);
+				Pair<String, String> playerData = ProfileViewerUtils.getPLayerData(previousProfileSearches.get(i));
+				ItemStack skull = new ItemStack(Blocks.barrier).setStackDisplayName(playerData.getLeft());
+				renderRecentPlayer(skull, i + 1, selected);
 			}
 		}
 	}
 
-	private void renderRecentPlayer(int yIndex, boolean selected) {
+	private void renderRecentPlayer(ItemStack skull, int yIndex, boolean selected) {
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
 		GlStateManager.alphaFunc(516, 0.1F);
 
-		int x = guiLeft + sizeX + 28;
+		int x = guiLeft + sizeX;
 		int y = guiTop + yIndex * 28;
 
 		float uMin = 0;
@@ -668,7 +678,7 @@ public class GuiProfileViewer extends GuiScreen {
 
 			renderBlurredBackground(width, height, x + 2, y + 2, 28 - 4, 28 - 4);
 		} else {
-			renderBlurredBackground(width, height, x + 2, y + 4, 28 - 4, 28 - 4);
+			renderBlurredBackground(width, height, x + 4, y + 2, 28 - 4, 28 - 4);
 		}
 
 		GlStateManager.disableLighting();
@@ -678,11 +688,10 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.alphaFunc(516, 0.1F);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-		Utils.drawTexturedRect(x, y, 28, selected ? 32 : 31, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(x, y, selected ? 32 : 31, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
 
 		GlStateManager.enableDepth();
-		// todo get the skull and draw it.
-//		Utils.drawItemStack(stack, x + 6, y + 9);
+		Utils.drawItemStack(skull, x + 6, y + 9);
 	}
 
 	@Override
