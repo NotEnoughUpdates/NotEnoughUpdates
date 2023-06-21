@@ -20,10 +20,14 @@
 package io.github.moulberry.notenoughupdates.miscgui;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Optional;
 
 public class NeuSearchCalculator {
 
@@ -43,7 +47,7 @@ public class NeuSearchCalculator {
 		if (!lastInput.equals(input)) {
 			lastInput = input;
 			try {
-				BigDecimal calculate = Calculator.calculate(input);
+				BigDecimal calculate = Calculator.calculate(input, PROVIDE_LOWEST_BIN);
 				lastResult = new DecimalFormat("#,##0.##").format(calculate);
 			} catch (Calculator.CalculatorException ignored) {
 				lastResult = null;
@@ -52,4 +56,12 @@ public class NeuSearchCalculator {
 
 		return lastResult;
 	}
+
+	public static Calculator.VariableProvider PROVIDE_LOWEST_BIN = name -> {
+		double bazaarOrBin = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(name, false);
+		if (bazaarOrBin < 0)
+			return Optional.empty();
+		return Optional.of(BigDecimal.valueOf(bazaarOrBin));
+	};
+
 }

@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscgui.CalendarOverlay
 import io.github.moulberry.notenoughupdates.miscgui.DynamicLightItemsEditor
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemCustomize
+import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator
 import io.github.moulberry.notenoughupdates.util.Calculator
 import io.github.moulberry.notenoughupdates.util.Calculator.CalculatorException
 import io.github.moulberry.notenoughupdates.util.MinecraftExecutor
@@ -51,7 +52,7 @@ class MiscCommands {
             thenArgumentExecute("calculation", RestArgumentType) { calculation ->
                 val calculation = this[calculation]
                 try {
-                    val calculate = Calculator.calculate(calculation)
+                    val calculate = Calculator.calculate(calculation, NeuSearchCalculator.PROVIDE_LOWEST_BIN)
                     val formatter = DecimalFormat("#,##0.##")
                     val formatted = formatter.format(calculate)
                     reply("$WHITE$calculation $YELLOW= $GREEN$formatted")

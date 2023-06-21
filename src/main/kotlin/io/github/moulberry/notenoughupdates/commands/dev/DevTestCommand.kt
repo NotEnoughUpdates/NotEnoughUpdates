@@ -31,10 +31,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.Custom
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph
-import io.github.moulberry.notenoughupdates.util.ApiCache
-import io.github.moulberry.notenoughupdates.util.PronounDB
-import io.github.moulberry.notenoughupdates.util.SBInfo
-import io.github.moulberry.notenoughupdates.util.TabListUtils
+import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -108,6 +105,13 @@ class DevTestCommand {
         val hook = event.command("neudevtest") {
             requires {
                 canPlayerExecute(it)
+            }
+            thenLiteral("testsearch") {
+                thenArgument("name", RestArgumentType) { arg ->
+                    thenExecute {
+                        reply("Resolved ID: ${ItemResolutionQuery.findInternalNameByDisplayName(get(arg), true)}")
+                    }
+                }.withHelp("Search for an item id by name")
             }
             thenLiteralExecute("garden") {
                 val player = Minecraft.getMinecraft().thePlayer
