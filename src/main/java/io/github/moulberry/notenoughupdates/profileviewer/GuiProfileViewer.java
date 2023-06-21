@@ -51,7 +51,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -628,32 +627,27 @@ public class GuiProfileViewer extends GuiScreen {
 	}
 
 	private void renderRecentPlayers(boolean renderCurrent) {
-		// todo Do render current stuff
-		// todo find current profile name being viewed
-		// todo skull
-		// todo make player name work
 		String playerName = "";
 		if (profile.getHypixelProfile() != null) {
 			playerName = profile.getHypixelProfile().get("displayname").getAsString();
 		}
-		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+
 		boolean selected = Objects.equals(Minecraft.getMinecraft().thePlayer.getName(), playerName);
 		if (selected == renderCurrent) {
-			Pair<String, String> playerData = ProfileViewerUtils.getPLayerData(Minecraft.getMinecraft().thePlayer.getName());
-			ItemStack skull = new ItemStack(Blocks.barrier).setStackDisplayName(playerData.getLeft());
-			renderRecentPlayer(skull, 0, selected);
+			renderRecentPlayer(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(), 0, selected);
 		}
+
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
 			selected = Objects.equals(previousProfileSearches.get(i), playerName.toLowerCase());
 			if (selected == renderCurrent) {
-				Pair<String, String> playerData = ProfileViewerUtils.getPLayerData(previousProfileSearches.get(i));
-				ItemStack skull = new ItemStack(Blocks.barrier).setStackDisplayName(playerData.getLeft());
-				renderRecentPlayer(skull, i + 1, selected);
+				renderRecentPlayer(previousProfileSearches.get(i), i + 1, selected);
 			}
 		}
 	}
 
-	private void renderRecentPlayer(ItemStack skull, int yIndex, boolean selected) {
+	private void renderRecentPlayer(String name, int yIndex, boolean selected) {
 		GlStateManager.disableLighting();
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -676,9 +670,9 @@ public class GuiProfileViewer extends GuiScreen {
 				vMax = 200 / 256f;
 			}
 
-			renderBlurredBackground(width, height, x + 2, y + 2, 30, 28 - 4);
+			renderBlurredBackground(width, height, x - 2, y + 2, 30 - 2, 28 - 4);
 		} else {
-			renderBlurredBackground(width, height, x + 4, y + 2, 28 - 2, 28 - 4);
+			renderBlurredBackground(width, height, x, y + 2, 28 - 2, 28 - 4);
 		}
 
 		GlStateManager.disableLighting();
@@ -691,7 +685,10 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawTexturedRect(x - 3, y, 32, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
 
 		GlStateManager.enableDepth();
-		Utils.drawItemStack(skull, x + 3, y + 6);
+
+		ItemStack playerHead = ProfileViewerUtils.getPlayerData(name);
+
+		Utils.drawItemStack(playerHead, x + 3, y + 6);
 	}
 
 	@Override
@@ -726,6 +723,39 @@ public class GuiProfileViewer extends GuiScreen {
 		if (pages.containsKey(currentPage)) {
 			if (pages.get(currentPage).mouseClicked(mouseX, mouseY, mouseButton)) {
 				return;
+			}
+		}
+		String playerName = "";
+		if (profile.getHypixelProfile() != null) {
+			playerName = profile.getHypixelProfile().get("displayname").getAsString().toLowerCase();
+		}
+		int x = guiLeft + sizeX;
+		int y = guiTop;
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+
+		if (mouseX > x && mouseX < x + 29) {
+			if (mouseY > y && mouseY < y + 28) {
+				if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
+					Utils.playPressSound();
+					NotEnoughUpdates.profileViewer.loadPlayerByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
+						profile.resetCache();
+						NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+					});
+				}
+			}
+		}
+
+		for (int i = 0; i < previousProfileSearches.size(); i++) {
+			if (mouseX > x && mouseX < x + 28) {
+				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
+					if (!playerName.equals(previousProfileSearches.get(i))) {
+						Utils.playPressSound();
+						NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i), profile -> {
+							profile.resetCache();
+							NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+						});
+					}
+				}
 			}
 		}
 
