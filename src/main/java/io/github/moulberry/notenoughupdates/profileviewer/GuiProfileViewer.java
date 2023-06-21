@@ -688,7 +688,7 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.alphaFunc(516, 0.1F);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-		Utils.drawTexturedRect(selected ? x - 4 : x, y, selected ? 32 : 28, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(x - 3, y, 32, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
 
 		GlStateManager.enableDepth();
 		Utils.drawItemStack(skull, x + 3, y + 6);
