@@ -283,11 +283,13 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		renderTabs(true);
+		renderRecentPlayers(true);
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.disableDepth();
 		GlStateManager.translate(0, 0, -2);
 		renderTabs(false);
+		renderRecentPlayers(false);
 		GlStateManager.translate(0, 0, 2);
 
 		GlStateManager.disableLighting();
@@ -623,6 +625,66 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawItemStack(stack, x + 6, y + 9);
 	}
 
+	private void renderRecentPlayers(boolean renderCurrent) {
+		// todo Do render current stuff
+		// todo find current profile name being viewed
+		// todo name on hover
+		// todo skull
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+		boolean ownProfile = Minecraft.getMinecraft().thePlayer.getName() == currentProfile;
+		if (ownProfile == renderCurrent) {
+			renderRecentPlayer(0, ownProfile);
+		}
+		for (int i = 0; i < previousProfileSearches.size(); i++) {
+			boolean selected = previousProfileSearches.get(i) == currentProfile;
+			if (selected == renderCurrent) {
+				renderRecentPlayer(i + 1, selected);
+			}
+		}
+	}
+
+	private void renderRecentPlayer(int yIndex, boolean selected) {
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+
+		int x = guiLeft + sizeX + 28;
+		int y = guiTop + yIndex * 28;
+
+		float uMin = 0;
+		float uMax = 28 / 256f;
+		float vMin = 20 / 256f;
+		float vMax = 51 / 256f;
+		if (selected) {
+			vMin = 52 / 256f;
+			vMax = 84 / 256f;
+
+			if (yIndex != 0) {
+				uMin = 28 / 256f;
+				uMax = 56 / 256f;
+			}
+
+			renderBlurredBackground(width, height, x + 2, y + 2, 28 - 4, 28 - 4);
+		} else {
+			renderBlurredBackground(width, height, x + 2, y + 4, 28 - 4, 28 - 4);
+		}
+
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+		Utils.drawTexturedRect(x, y, 28, selected ? 32 : 31, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+
+		GlStateManager.enableDepth();
+		// todo get the skull and draw it.
+//		Utils.drawItemStack(stack, x + 6, y + 9);
+	}
+
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
@@ -748,7 +810,10 @@ public class GuiProfileViewer extends GuiScreen {
 				NotEnoughUpdates.profileViewer.loadPlayerByName(
 					playerNameTextField.getText(),
 					profile -> { //todo: invalid name
-						if (profile != null) profile.resetCache();
+						if (profile != null) {
+							profile.resetCache();
+							ProfileViewerUtils.saveSearch(playerNameTextField.getText());
+						}
 						Minecraft.getMinecraft().displayGuiScreen(new GuiProfileViewer(profile));
 					}
 				);
