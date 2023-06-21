@@ -25,6 +25,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
@@ -51,6 +52,7 @@ class ProfileViewerCommands {
                     reply("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.")
                 } else {
                     profile.resetCache()
+                    ProfileViewerUtils.saveSearch(name)
                     NotEnoughUpdates.INSTANCE.openGui = GuiProfileViewer(profile)
                 }
             }

@@ -28,11 +28,14 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,14 +43,17 @@ import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
-
+	Map<String, Pair<String, String>> playerCache = new HashMap<>();
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
 
@@ -191,5 +197,40 @@ public class ProfileViewerUtils {
 		levelObj.level = Math.min(levelingArray.size(), levelCap);
 		levelObj.maxed = true;
 		return levelObj;
+	}
+
+	public static void saveSearch(String username) {
+		String nameLower = username.toLowerCase();
+		if (nameLower.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) return;
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+		previousProfileSearches.remove(nameLower);
+		previousProfileSearches.add(0, nameLower);
+		while (previousProfileSearches.size() > 6) {
+			previousProfileSearches.remove(previousProfileSearches.size() - 1);
+		}
+	}
+
+	public Pair<String, String> getPLayerData(String username) {
+		if (!playerCache.containsKey(username)) {
+			AtomicReference<String> displayName = new AtomicReference<>("");
+			if (!NotEnoughUpdates.profileViewer.nameToUuid.containsKey(username)) {
+				NotEnoughUpdates.INSTANCE.manager.apiUtils
+					.request()
+					.url("https://api.mojang.com/users/profiles/minecraft/" + username)
+					.requestJson()
+					.thenAccept(jsonObject -> {
+						if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
+							jsonObject.get("id").getAsJsonPrimitive().isString() &&
+							jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
+							jsonObject.get("id").getAsJsonPrimitive().isString()) {
+							String uuid = jsonObject.get("id").getAsString();
+							displayName.set(jsonObject.get("name").getAsString());
+							NotEnoughUpdates.profileViewer.nameToUuid.put(username, uuid);
+						}
+					});
+			}
+			playerCache.put(username, new MutablePair<>(displayName.get(), "Placeholder"));
+		}
+		return playerCache.get(username);
 	}
 }

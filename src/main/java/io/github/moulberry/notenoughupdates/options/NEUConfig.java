@@ -460,6 +460,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public ArrayList<String> previousBazaarSearches = new ArrayList<>();
 		@Expose
+		public ArrayList<String> previousProfileSearches = new ArrayList<>();
+		@Expose
 		public ArrayList<String> eventFavourites = new ArrayList<>();
 		@Expose
 		public ArrayList<String> quickCommands = createDefaultQuickCommands();

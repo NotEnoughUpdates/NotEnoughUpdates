@@ -428,7 +428,7 @@ public class ProfileViewer {
 	@Getter
 	private final NEUManager manager;
 	private final HashMap<String, SkyblockProfiles> uuidToSkyblockProfiles = new HashMap<>();
-	private final HashMap<String, String> nameToUuid = new HashMap<>();
+	final HashMap<String, String> nameToUuid = new HashMap<>();
 
 	public ProfileViewer(NEUManager manager) {
 		this.manager = manager;

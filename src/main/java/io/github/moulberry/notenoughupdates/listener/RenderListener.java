@@ -52,6 +52,7 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.Rectangle;
@@ -945,6 +946,7 @@ public class RenderListener {
 								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
 							} else {
 								profile.resetCache();
+								ProfileViewerUtils.saveSearch(username);
 								NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
 							}
 						});
