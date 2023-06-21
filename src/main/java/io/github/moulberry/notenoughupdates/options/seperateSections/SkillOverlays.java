@@ -122,7 +122,8 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Crops/s time frame",
-		desc = "Defines the duration in seconds over which the average crop yield is calculated."
+		desc = "Defines the duration in seconds over which the average crop yield is calculated\n" +
+			"This calculator is more exact than the crops/m/h calculator"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
