@@ -212,7 +212,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		int totalPoints = 0;
 		int idx = 0;
 		for (Map.Entry<String, String> dojoTest : apiDojoTestNames.entrySet()) {
-			int curPoints = Utils.getElementAsInt(data.get("dojo.dojo_points_" + dojoTest.getKey()), 0);
+			int curPoints = Utils.getElementAsInt(Utils.getElement(data, "dojo.dojo_points_" + dojoTest.getKey()), 0);
 			totalPoints += curPoints;
 			Utils.renderAlignedString(
 				dojoTest.getValue() + ": ",
