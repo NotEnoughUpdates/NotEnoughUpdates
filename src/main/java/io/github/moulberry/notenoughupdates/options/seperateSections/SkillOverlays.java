@@ -90,7 +90,7 @@ public class SkillOverlays {
 		}
 	)
 	@ConfigAccordionId(id = 0)
-	public List<Integer> farmingText = new ArrayList<>(Arrays.asList(0, 9, 10, 1, 2, 3, 4, 5, 7, 6, 11));
+	public List<Integer> farmingText = new ArrayList<>(Arrays.asList(0, 9, 10, 1, 2, 12, 3, 4, 5, 7, 6, 11));
 
 	@Expose
 	@ConfigOption(
