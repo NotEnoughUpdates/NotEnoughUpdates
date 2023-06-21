@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
-	Map<String, Pair<String, String>> playerCache = new HashMap<>();
+	static Map<String, Pair<String, String>> playerCache = new HashMap<>();
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
 
@@ -210,13 +210,18 @@ public class ProfileViewerUtils {
 		}
 	}
 
-	public Pair<String, String> getPLayerData(String username) {
-		if (!playerCache.containsKey(username)) {
+	//todo better way to accomplish this i think
+//	if (profile.getHypixelProfile() != null) {
+//		playerName = profile.getHypixelProfile().get("displayname").getAsString();
+//	}
+	public static Pair<String, String> getPLayerData(String username) {
+		String nameLower = username.toLowerCase();
+		if (!playerCache.containsKey(nameLower)) {
 			AtomicReference<String> displayName = new AtomicReference<>("");
-			if (!NotEnoughUpdates.profileViewer.nameToUuid.containsKey(username)) {
+			if (!NotEnoughUpdates.profileViewer.nameToUuid.containsKey(nameLower)) {
 				NotEnoughUpdates.INSTANCE.manager.apiUtils
 					.request()
-					.url("https://api.mojang.com/users/profiles/minecraft/" + username)
+					.url("https://api.mojang.com/users/profiles/minecraft/" + nameLower)
 					.requestJson()
 					.thenAccept(jsonObject -> {
 						if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
@@ -225,12 +230,12 @@ public class ProfileViewerUtils {
 							jsonObject.get("id").getAsJsonPrimitive().isString()) {
 							String uuid = jsonObject.get("id").getAsString();
 							displayName.set(jsonObject.get("name").getAsString());
-							NotEnoughUpdates.profileViewer.nameToUuid.put(username, uuid);
+							NotEnoughUpdates.profileViewer.nameToUuid.put(nameLower, uuid);
 						}
 					});
 			}
-			playerCache.put(username, new MutablePair<>(displayName.get(), "Placeholder"));
+			playerCache.put(nameLower, new MutablePair<>(displayName.get(), "Placeholder"));
 		}
-		return playerCache.get(username);
+		return playerCache.get(nameLower);
 	}
 }
