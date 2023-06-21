@@ -71,6 +71,21 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private int xpGainTimer = 0;
 
+	public static final int cropsPerSecondMaxFrameSize = 120;
+	/**
+	 * 6
+	 * Stores the values of the crop counter. Values can be accessed using the {@link #cropsPerSecondCursor}
+	 */
+	//+2 is to prevent calculation issues
+	private final int[] cropsPerSecondValues = new int[cropsPerSecondMaxFrameSize + 2];
+	/**
+	 * The theoretical call interval of {@link #update()} is 1 second,
+	 * but in reality it can deviate by one tick, or 50ms,
+	 * which means we have to save time stamps of the values in order to prevent up to 5% incorrectness.
+	 */
+	private final long[] cropsPerSecondTimeStamps = new long[cropsPerSecondMaxFrameSize + 2];
+	private int cropsPerSecondCursor = -1;
+
 	private String skillType = "Farming";
 
 	public FarmingSkillOverlay(
@@ -187,10 +202,14 @@ public class FarmingSkillOverlay extends TextOverlay {
 					counter = ea.getInteger("mined_crops");
 					cultivating = ea.getInteger("farmed_cultivating");
 					counterQueue.add(0, counter);
+					cropsPerSecondTimeStamps[++cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = System.currentTimeMillis();
+					cropsPerSecondValues[cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = counter;
 				} else if (ea.hasKey("farmed_cultivating", 99)) {
 					counter = ea.getInteger("farmed_cultivating");
 					cultivating = ea.getInteger("farmed_cultivating");
 					counterQueue.add(0, counter);
+					cropsPerSecondTimeStamps[++cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = System.currentTimeMillis();
+					cropsPerSecondValues[cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = counter;
 				}
 			}
 		}
@@ -318,7 +337,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			lastTotalXp = totalXp;
 		}
 
-		while (counterQueue.size() >= 4) {
+		while (counterQueue.size() > 3) {
 			counterQueue.removeLast();
 		}
 
@@ -441,6 +460,30 @@ public class FarmingSkillOverlay extends TextOverlay {
 							String.format("%,." + cropDecimals + "f", cpsInterp * 60 * cropMultiplier)
 					);
 				}
+
+				int current = cropsPerSecondValues[cropsPerSecondCursor % cropsPerSecondMaxFrameSize];
+				int prev = cropsPerSecondValues[Math.max(cropsPerSecondCursor - 1, 0) % cropsPerSecondMaxFrameSize];
+				int frame = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame;
+				float cropsPerSecond = current - cropsPerSecondValues[Math.max(cropsPerSecondCursor - frame, 0) %
+					cropsPerSecondMaxFrameSize];
+				cropsPerSecond = interp(
+					cropsPerSecond,
+					prev -
+						cropsPerSecondValues[Math.max(Math.max(cropsPerSecondCursor - frame - 1, 0), 0) %
+							cropsPerSecondMaxFrameSize]
+				);
+				float timePassed =
+					cropsPerSecondTimeStamps[cropsPerSecondCursor % cropsPerSecondMaxFrameSize] -
+						cropsPerSecondTimeStamps[Math.max(
+							cropsPerSecondCursor - frame, 0) % cropsPerSecondMaxFrameSize];
+				timePassed /= 1000f;
+				cropsPerSecond /= timePassed;
+
+				lineMap.put(
+					12,
+					EnumChatFormatting.AQUA + "Crops/s: " + EnumChatFormatting.YELLOW +
+						String.format("%,.0f", cropsPerSecond)
+				);
 			}
 
 			if (counter >= 0 && coins > 0) {

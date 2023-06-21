@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.github.moulberry.notenoughupdates.overlays.FarmingSkillOverlay.cropsPerSecondMaxFrameSize;
+
 public class SkillOverlays {
 	@ConfigOption(
 		name = "Skill Overlay info",
@@ -83,7 +85,8 @@ public class SkillOverlays {
 			"\u00a7bPitch: \u00a7e69.42\u00a7l\u1D52",
 			"\u00a7bCultivating: \u00a7e10,137,945/20,000,000",
 			"\u00a7bCoins/m \u00a7e57,432",
-			"\u00a7bContest Estimate \u00a7e342,784"
+			"\u00a7bContest Estimate \u00a7e342,784",
+			"\u00a7bCrops/s: \u00a7e732",
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -115,6 +118,19 @@ public class SkillOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean cropsPerHour = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Crops/s time frame",
+		desc = "Defines the duration in seconds over which the average crop yield is calculated."
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = cropsPerSecondMaxFrameSize,
+		minStep = 1
+	)
+	public int farmingCropsPerSecondTimeFrame = 5;
 
 	@Expose
 	@ConfigOption(
