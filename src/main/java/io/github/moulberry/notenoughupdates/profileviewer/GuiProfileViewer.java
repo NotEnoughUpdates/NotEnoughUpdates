@@ -637,7 +637,7 @@ public class GuiProfileViewer extends GuiScreen {
 			playerName = profile.getHypixelProfile().get("displayname").getAsString();
 		}
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
-		boolean selected = Minecraft.getMinecraft().thePlayer.getName() == playerName;
+		boolean selected = Objects.equals(Minecraft.getMinecraft().thePlayer.getName(), playerName);
 		if (selected == renderCurrent) {
 			Pair<String, String> playerData = ProfileViewerUtils.getPLayerData(Minecraft.getMinecraft().thePlayer.getName());
 			ItemStack skull = new ItemStack(Blocks.barrier).setStackDisplayName(playerData.getLeft());
@@ -663,22 +663,22 @@ public class GuiProfileViewer extends GuiScreen {
 		int x = guiLeft + sizeX;
 		int y = guiTop + yIndex * 28;
 
-		float uMin = 0;
-		float uMax = 28 / 256f;
-		float vMin = 20 / 256f;
-		float vMax = 51 / 256f;
+		float uMin = 226 / 256f;
+		float uMax = 1f;
+		float vMin = 144 / 256f;
+		float vMax = 172 / 256f;
 		if (selected) {
-			vMin = 52 / 256f;
-			vMax = 84 / 256f;
+			uMin = 196 /256f;
+			uMax = 226 / 256f;
 
 			if (yIndex != 0) {
-				uMin = 28 / 256f;
-				uMax = 56 / 256f;
+				vMin = 172 / 256f;
+				vMax = 200 / 256f;
 			}
 
-			renderBlurredBackground(width, height, x + 2, y + 2, 28 - 4, 28 - 4);
+			renderBlurredBackground(width, height, x + 2, y + 2, 30, 28 - 4);
 		} else {
-			renderBlurredBackground(width, height, x + 4, y + 2, 28 - 4, 28 - 4);
+			renderBlurredBackground(width, height, x + 4, y + 2, 28 - 2, 28 - 4);
 		}
 
 		GlStateManager.disableLighting();
@@ -688,10 +688,10 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.alphaFunc(516, 0.1F);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
-		Utils.drawTexturedRect(x, y, selected ? 32 : 31, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(selected ? x - 4 : x, y, selected ? 32 : 28, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
 
 		GlStateManager.enableDepth();
-		Utils.drawItemStack(skull, x + 6, y + 9);
+		Utils.drawItemStack(skull, x + 3, y + 6);
 	}
 
 	@Override
