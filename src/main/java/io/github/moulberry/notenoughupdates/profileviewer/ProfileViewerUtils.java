@@ -29,13 +29,12 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -49,11 +48,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
-	static Map<String, Pair<String, String>> playerCache = new HashMap<>();
+	static Map<String, ItemStack> playerSkullCache = new HashMap<>();
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
 
@@ -210,32 +210,58 @@ public class ProfileViewerUtils {
 		}
 	}
 
-	//todo better way to accomplish this i think
-//	if (profile.getHypixelProfile() != null) {
-//		playerName = profile.getHypixelProfile().get("displayname").getAsString();
-//	}
-	public static Pair<String, String> getPLayerData(String username) {
+	public static ItemStack getPlayerData(String username) {
 		String nameLower = username.toLowerCase();
-		if (!playerCache.containsKey(nameLower)) {
-			AtomicReference<String> displayName = new AtomicReference<>("");
-			if (!NotEnoughUpdates.profileViewer.nameToUuid.containsKey(nameLower)) {
-				NotEnoughUpdates.INSTANCE.manager.apiUtils
-					.request()
-					.url("https://api.mojang.com/users/profiles/minecraft/" + nameLower)
-					.requestJson()
-					.thenAccept(jsonObject -> {
-						if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
-							jsonObject.get("id").getAsJsonPrimitive().isString() &&
-							jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
-							jsonObject.get("id").getAsJsonPrimitive().isString()) {
-							String uuid = jsonObject.get("id").getAsString();
-							displayName.set(jsonObject.get("name").getAsString());
-							NotEnoughUpdates.profileViewer.nameToUuid.put(nameLower, uuid);
+		if (!playerSkullCache.containsKey(nameLower)) {
+			AtomicReference<String> displayName = new AtomicReference<>(nameLower);
+			AtomicReference<String> uuid = new AtomicReference<>("");
+			AtomicReference<String> skullTexture = new AtomicReference<>("");
+
+			CompletableFuture<Void> future = NotEnoughUpdates.INSTANCE.manager.apiUtils
+				.request()
+				.url("https://api.mojang.com/users/profiles/minecraft/" + nameLower)
+				.requestJson()
+				.thenAcceptAsync(jsonObject -> {
+					if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
+						jsonObject.get("id").getAsJsonPrimitive().isString() &&
+						jsonObject.has("name") && jsonObject.get("name").isJsonPrimitive() &&
+						jsonObject.get("name").getAsJsonPrimitive().isString()) {
+						uuid.set(jsonObject.get("id").getAsString());
+						displayName.set(jsonObject.get("name").getAsString());
+					}
+				});
+				future.join();
+
+			future = NotEnoughUpdates.INSTANCE.manager.apiUtils
+				.request()
+				.url("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false")
+				.requestJson()
+				.thenAcceptAsync(jsonObject -> {
+					if (jsonObject.has("properties") && jsonObject.get("properties").isJsonArray()) {
+						JsonArray propertiesArray = jsonObject.getAsJsonArray("properties");
+						if (propertiesArray.size() > 0) {
+							JsonObject textureObject = propertiesArray.get(0).getAsJsonObject();
+							if (textureObject.has("value") && textureObject.get("value").isJsonPrimitive()
+								&& textureObject.get("value").getAsJsonPrimitive().isString()) {
+								String textureValue = textureObject.get("value").getAsString();
+
+								skullTexture.set(textureValue);
+							}
 						}
-					});
-			}
-			playerCache.put(nameLower, new MutablePair<>(displayName.get(), "Placeholder"));
+					}
+				});
+			future.join();
+
+			ItemStack skull = Utils.createSkull(
+				displayName.get(),
+				uuid.get(),
+				skullTexture.get()
+			);
+
+
+			NotEnoughUpdates.profileViewer.nameToUuid.put(nameLower, uuid.get());
+			playerSkullCache.put(nameLower, skull);
 		}
-		return playerCache.get(nameLower);
+		return playerSkullCache.get(nameLower);
 	}
 }
