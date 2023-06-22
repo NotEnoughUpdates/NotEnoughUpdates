@@ -75,7 +75,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	public static final int CPS_MAX_FRAME_SIZE = 120;
 	/**
-	 * 6
 	 * Stores the values of the crop counter. Values can be accessed using the {@link #cropsPerSecondCursor}
 	 */
 	//+2 is to prevent calculation issues
@@ -386,16 +385,30 @@ public class FarmingSkillOverlay extends TextOverlay {
 					counter = ea.getInteger("mined_crops");
 					cultivating = ea.getInteger("farmed_cultivating");
 					counterQueue.add(0, counter);
+
 					cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] =
 						System.currentTimeMillis();
 					cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] = counter;
+					//TODO implement this
+//					int timeFrame = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame;
+//					//clear old values. -1 is used to interpolate, therefore -2
+//					int clearOldIndex = mod(cropsPerSecondCursor - timeFrame - 1, CPS_MAX_FRAME_SIZE);
+//					cropsPerSecondTimeStamps[clearOldIndex] = 0;
+//					cropsPerSecondValues[clearOldIndex] = 0;
 				} else if (ea.hasKey("farmed_cultivating", 99)) {
 					counter = ea.getInteger("farmed_cultivating");
 					cultivating = ea.getInteger("farmed_cultivating");
 					counterQueue.add(0, counter);
+
 					cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] =
 						System.currentTimeMillis();
 					cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] = counter;
+					//TODO implement this
+//					int timeFrame = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame;
+//					//clear old values. -1 is used to interpolate, therefore -2
+//					int clearOldIndex = mod(cropsPerSecondCursor - timeFrame - 1, CPS_MAX_FRAME_SIZE);
+//					cropsPerSecondTimeStamps[clearOldIndex] = 0;
+//					cropsPerSecondValues[clearOldIndex] = 0;
 				}
 			}
 		}
@@ -669,26 +682,39 @@ public class FarmingSkillOverlay extends TextOverlay {
 	}
 
 	/**
+	 * @return x mod y with the sign of the divisor, y, instead of the dividend, x.
+	 */
+	int mod(int x, int y) {
+		int mod = x % y;
+		if (mod < 0)
+			mod += y;
+		return mod;
+	}
+
+
+	/**
 	 * Finds the average crops farmed during the configured time frame or since the player has started farming.
 	 * This value is interpolated with the average of one second ago and rendered to the overlay.
 	 */
 	private void renderCropsPerSecond() {
+		if(cropsPerSecondCursor == -1) return;
+
 		int current = cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE];
-		int prev = cropsPerSecondValues[Math.max(cropsPerSecondCursor - 1, 0) % CPS_MAX_FRAME_SIZE];
+		int prev = cropsPerSecondValues[mod(cropsPerSecondCursor - 1, CPS_MAX_FRAME_SIZE)];
 		int timeFrame = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame;
 
 		//The searchIndex serves to find the start of the player farming.
 		//This makes it so that even if the timeframe is set high,
 		// the initial average will be the average since the player starts farming instead of the full timeframe.
-		int searchIndex = Math.max(cropsPerSecondCursor - timeFrame, 0) %
-			CPS_MAX_FRAME_SIZE;
-		while (cropsPerSecondValues[searchIndex] == cropsPerSecondValues[Math.max(searchIndex - 1, 0)] && searchIndex != cropsPerSecondCursor) {
+		int searchIndex = mod(cropsPerSecondCursor - timeFrame, CPS_MAX_FRAME_SIZE);
+		while (cropsPerSecondValues[searchIndex] == cropsPerSecondValues[mod(searchIndex - 1, CPS_MAX_FRAME_SIZE)] &&
+			mod(searchIndex, CPS_MAX_FRAME_SIZE) != mod(cropsPerSecondCursor, CPS_MAX_FRAME_SIZE)) {
 			searchIndex++;
 			searchIndex %= CPS_MAX_FRAME_SIZE;
 		}
 
 		float cropsPerSecond = current - cropsPerSecondValues[searchIndex];
-		cropsPerSecond = interp(cropsPerSecond, prev - cropsPerSecondValues[Math.max(searchIndex - 1, 0)]);
+		cropsPerSecond = interp(cropsPerSecond, prev - cropsPerSecondValues[mod(searchIndex - 1, CPS_MAX_FRAME_SIZE)]);
 
 		float timePassed =
 			cropsPerSecondTimeStamps[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] - cropsPerSecondTimeStamps[searchIndex];
@@ -696,7 +722,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 		cropsPerSecond /= timePassed;
 
-		if(Float.isNaN(cropsPerSecond)) cropsPerSecond = 0;
+		if (Float.isNaN(cropsPerSecond)) cropsPerSecond = 0;
 
 		lineMap.put(
 			12,
