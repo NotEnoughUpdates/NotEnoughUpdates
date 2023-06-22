@@ -738,7 +738,6 @@ public class GuiProfileViewer extends GuiScreen {
 		if (mouseX > x && mouseX < x + 29) {
 			if (mouseY > y && mouseY < y + 28) {
 				if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
-					Utils.playPressSound();
 					NotEnoughUpdates.profileViewer.loadPlayerByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
 						profile.resetCache();
 						NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
@@ -751,7 +750,6 @@ public class GuiProfileViewer extends GuiScreen {
 			if (mouseX > x && mouseX < x + 28) {
 				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
 					if (!playerName.equals(previousProfileSearches.get(i))) {
-						Utils.playPressSound();
 						NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i), profile -> {
 							profile.resetCache();
 							NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);

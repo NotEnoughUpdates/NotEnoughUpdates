@@ -211,16 +211,22 @@ public class ProfileViewerUtils {
 		}
 	}
 
+	private static ItemStack fallBackSkull() {
+		return Utils.createSkull(
+			"Simon",
+			"f3c4dfb91c7b40ac81fd462538538523",
+			"ewogICJ0aW1lc3RhbXAiIDogMTY4NzQwMTM4MjY4MywKICAicHJvZmlsZUlkIiA6ICJmM2M0ZGZiOTFjN2I0MGFjODFmZDQ2MjUzODUzODUyMyIsCiAgInByb2ZpbGVOYW1lIiA6ICJTaW1vbiIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kN2ViYThhZWU0ZmQxMTUxMmI3ZTFhMjc5YTE0YWM2NDhlNDQzNDgxYjlmMzcxMzZhNzEwMThkMzg3Mjk0Y2YzIgogICAgfQogIH0KfQ"
+		);
+	}
+
 	public static ItemStack getPlayerData(String username) {
 		String nameLower = username.toLowerCase();
 		if (!playerSkullCache.containsKey(nameLower)) {
+			playerSkullCache.put(nameLower, fallBackSkull());
+
 			getPlayerSkull(nameLower, skull -> {
 				if (skull == null) {
-					skull = Utils.createSkull(
-						"Simon",
-						"f3c4dfb91c7b40ac81fd462538538523",
-						"ewogICJ0aW1lc3RhbXAiIDogMTY4NzQwMTM4MjY4MywKICAicHJvZmlsZUlkIiA6ICJmM2M0ZGZiOTFjN2I0MGFjODFmZDQ2MjUzODUzODUyMyIsCiAgInByb2ZpbGVOYW1lIiA6ICJTaW1vbiIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kN2ViYThhZWU0ZmQxMTUxMmI3ZTFhMjc5YTE0YWM2NDhlNDQzNDgxYjlmMzcxMzZhNzEwMThkMzg3Mjk0Y2YzIgogICAgfQogIH0KfQ"
-					);
+					skull = fallBackSkull();
 				}
 
 				playerSkullCache.put(nameLower, skull);
