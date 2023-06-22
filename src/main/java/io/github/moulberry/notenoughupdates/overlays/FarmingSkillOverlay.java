@@ -462,7 +462,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private void renderCoins() {
 		float cropsMultiplier = 0;
 		String unit = null;
-		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCPSUnit) {
+		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCoinRateUnit) {
 			case 0:
 				unit = "/s";
 				break;
@@ -647,7 +647,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private void renderCropsPerSecond() {
 		float cropsMultiplier = 0;
 		String unit = null;
-		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCPSUnit) {
+		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropRateUnit) {
 			case 0:
 				unit = "/s";
 				break;

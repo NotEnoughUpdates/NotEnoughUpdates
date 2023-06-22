@@ -139,14 +139,24 @@ public class SkillOverlays {
 	public int farmingResetCPS = 5;
 	@Expose
 	@ConfigOption(
-		name = "Rate unit",
-		desc = "Choose the unit for displaying the crop and coin rate"
+		name = "Crop rate unit",
+		desc = "Choose the unit for displaying the crop rate"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorDropdown(
 		values = {"/s", "/m", "/h"}
 	)
-	public int farmingCPSUnit = 0;
+	public int farmingCropRateUnit = 0;
+	@Expose
+	@ConfigOption(
+		name = "Coin rate unit",
+		desc = "Choose the unit for displaying the coin rate"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorDropdown(
+		values = {"/s", "/m", "/h"}
+	)
+	public int farmingCoinRateUnit = 0;
 
 	@Expose
 	public Position farmingPosition = new Position(10, 200);
