@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -283,11 +284,13 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		renderTabs(true);
+		renderRecentPlayers(true);
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.disableDepth();
 		GlStateManager.translate(0, 0, -2);
 		renderTabs(false);
+		renderRecentPlayers(false);
 		GlStateManager.translate(0, 0, 2);
 
 		GlStateManager.disableLighting();
@@ -623,6 +626,72 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawItemStack(stack, x + 6, y + 9);
 	}
 
+	private void renderRecentPlayers(boolean renderCurrent) {
+		String playerName = "";
+		if (profile.getHypixelProfile() != null) {
+			playerName = profile.getHypixelProfile().get("displayname").getAsString();
+		}
+
+		boolean selected = Objects.equals(Minecraft.getMinecraft().thePlayer.getName(), playerName);
+		if (selected == renderCurrent) {
+			renderRecentPlayer(Minecraft.getMinecraft().thePlayer.getName().toLowerCase(), 0, selected);
+		}
+
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+
+		for (int i = 0; i < previousProfileSearches.size(); i++) {
+			selected = Objects.equals(previousProfileSearches.get(i), playerName.toLowerCase());
+			if (selected == renderCurrent) {
+				renderRecentPlayer(previousProfileSearches.get(i), i + 1, selected);
+			}
+		}
+	}
+
+	private void renderRecentPlayer(String name, int yIndex, boolean selected) {
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+
+		int x = guiLeft + sizeX;
+		int y = guiTop + yIndex * 28;
+
+		float uMin = 226 / 256f;
+		float uMax = 1f;
+		float vMin = 144 / 256f;
+		float vMax = 172 / 256f;
+
+		if (yIndex != 0) {
+			vMin = 172 / 256f;
+			vMax = 200 / 256f;
+		}
+
+		if (selected) {
+			uMin = 196 /256f;
+			uMax = 226 / 256f;
+
+			renderBlurredBackground(width, height, x - 2, y + 2, 30 - 2, 28 - 4);
+		} else {
+			renderBlurredBackground(width, height, x, y + 2, 28 - 2, 28 - 4);
+		}
+
+		GlStateManager.disableLighting();
+		GlStateManager.enableBlend();
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+
+		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
+		Utils.drawTexturedRect(x - 3, y, 32, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
+
+		GlStateManager.enableDepth();
+
+		ItemStack playerHead = ProfileViewerUtils.getPlayerData(name);
+
+		Utils.drawItemStack(playerHead, x + 3, y + 6);
+	}
+
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (currentPage != ProfileViewerPage.LOADING && currentPage != ProfileViewerPage.INVALID_NAME) {
@@ -655,6 +724,40 @@ public class GuiProfileViewer extends GuiScreen {
 		if (pages.containsKey(currentPage)) {
 			if (pages.get(currentPage).mouseClicked(mouseX, mouseY, mouseButton)) {
 				return;
+			}
+		}
+
+		String playerName = "";
+		if (profile.getHypixelProfile() != null) {
+			playerName = profile.getHypixelProfile().get("displayname").getAsString().toLowerCase();
+		}
+		int x = guiLeft + sizeX;
+		int y = guiTop;
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+
+		if (mouseX > x && mouseX < x + 29) {
+			if (mouseY > y && mouseY < y + 28) {
+				if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
+					Utils.playPressSound();
+					NotEnoughUpdates.profileViewer.loadPlayerByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
+						profile.resetCache();
+						NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+					});
+				}
+			}
+		}
+
+		for (int i = 0; i < previousProfileSearches.size(); i++) {
+			if (mouseX > x && mouseX < x + 28) {
+				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
+					if (!playerName.equals(previousProfileSearches.get(i))) {
+						Utils.playPressSound();
+						NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i), profile -> {
+							profile.resetCache();
+							NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+						});
+					}
+				}
 			}
 		}
 
@@ -748,7 +851,10 @@ public class GuiProfileViewer extends GuiScreen {
 				NotEnoughUpdates.profileViewer.loadPlayerByName(
 					playerNameTextField.getText(),
 					profile -> { //todo: invalid name
-						if (profile != null) profile.resetCache();
+						if (profile != null) {
+							profile.resetCache();
+							ProfileViewerUtils.saveSearch(playerNameTextField.getText());
+						}
 						Minecraft.getMinecraft().displayGuiScreen(new GuiProfileViewer(profile));
 					}
 				);
