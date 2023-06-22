@@ -96,7 +96,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		super(position, dummyStrings, styleSupplier);
 	}
 
-	private float interp(float now, float last) {
+	private float interpolate(float now, float last) {
 		float interp = now;
 		if (last >= 0 && last != now) {
 			float factor = (System.currentTimeMillis() - lastUpdate) / 1000f;
@@ -104,6 +104,24 @@ public class FarmingSkillOverlay extends TextOverlay {
 			interp = last + (now - last) * factor;
 		}
 		return interp;
+	}
+
+	/**
+	 * @return x mod y with the sign of the divisor, y, instead of the dividend, x.
+	 * Moreover -1 % 2 is mathematically both -1 and 1. Java chose -1, we want 1.
+	 */
+	private int mod(int x, int y) {
+		int mod = x % y;
+		if (mod < 0)
+			mod += y;
+		return mod;
+	}
+
+	private void resetCropsPerSecond() {
+		cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
+		cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
+		cropsPerSecond = 0;
+		cropsPerSecondLast = 0;
 	}
 
 	private double getCoinsBz(String enchCropName, int numItemsForEnch) {
@@ -218,16 +236,14 @@ public class FarmingSkillOverlay extends TextOverlay {
 		skillType = "Farming";
 		foraging = 0;
 
-		//WOOD
 		boolean useBZPrice = NotEnoughUpdates.INSTANCE.config.skillOverlays.useBZPrice;
 		if (internalName.equals("TREECAPITATOR_AXE") || internalName.equalsIgnoreCase("JUNGLE_AXE")) {
+			//WOOD
 			skillType = "Foraging";
 			foraging = 1;
 			coins = 2;
-
-			//MUSHROOM
 		} else if (internalName.equals("FUNGI_CUTTER")) {
-
+			//MUSHROOM
 			if (useBZPrice) {
 				coins = (getCoinsBz("ENCHANTED_RED_MUSHROOM", 160) +
 					getCoinsBz("ENCHANTED_BROWN_MUSHROOM", 160)) / 2;
@@ -240,7 +256,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 					coins = (red * 160 + brown * 160) / 2;
 				}
 			}
-
 		} else {
 			// EVERYTHING ELSE
 			coins = 0;
@@ -254,7 +269,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 				}
 			}
 		}
-
 	}
 
 	private void updateSkillInfo() {
@@ -409,13 +423,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 		}
 	}
 
-	private void resetCropsPerSecond() {
-		cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
-		cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
-		cropsPerSecond = 0;
-		cropsPerSecondLast = 0;
-	}
-
 	@Override
 	public void updateFrequent() {
 		super.updateFrequent();
@@ -455,7 +462,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	}
 
 	private void renderCounter() {
-		int counterInterp = (int) interp(counter, counterLast);
+		int counterInterp = (int) interpolate(counter, counterLast);
 		lineMap.put(0, EnumChatFormatting.AQUA + "Counter: " + EnumChatFormatting.YELLOW + format.format(counterInterp));
 	}
 
@@ -479,7 +486,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 		if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
 			lineMap.put(10, EnumChatFormatting.AQUA + "Coins" + unit + ": " + EnumChatFormatting.YELLOW + "N/A");
 		} else {
-			float cropsPerSecond = cropsPerSecondLast != 0 ? interp(this.cropsPerSecond, cropsPerSecondLast) : this.cropsPerSecond;
+			float cropsPerSecond = cropsPerSecondLast != 0
+				? interpolate(this.cropsPerSecond, cropsPerSecondLast)
+				: this.cropsPerSecond;
 			float cropsPerUnit = cropsPerSecond * cropsMultiplier;
 			lineMap.put(10, EnumChatFormatting.AQUA + "Coins" + unit + ": " + EnumChatFormatting.YELLOW +
 				String.format("%,.0f", cropsPerUnit * coins));
@@ -488,7 +497,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private void renderCultivating() {
 		if (cultivatingTier <= 9 && cultivating > 0) {
-			int counterInterp = (int) interp(cultivating, cultivatingLast);
+			int counterInterp = (int) interpolate(cultivating, cultivatingLast);
 			lineMap.put(
 				9,
 				EnumChatFormatting.AQUA + "Cultivating: " + EnumChatFormatting.YELLOW + format.format(counterInterp) + "/" +
@@ -496,7 +505,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			);
 		}
 		if (cultivatingTier == 10) {
-			int counterInterp = (int) interp(cultivating, cultivatingLast);
+			int counterInterp = (int) interpolate(cultivating, cultivatingLast);
 			lineMap.put(
 				9,
 				EnumChatFormatting.AQUA + "Cultivating: " + EnumChatFormatting.YELLOW + format.format(counterInterp)
@@ -509,7 +518,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			if (jacobPredictionLast == jacobPrediction && jacobPrediction <= 0) {
 				lineMap.put(11, EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW + "N/A");
 			} else {
-				float predInterp = interp(jacobPrediction, jacobPredictionLast);
+				float predInterp = interpolate(jacobPrediction, jacobPredictionLast);
 				lineMap.put(
 					11,
 					EnumChatFormatting.AQUA + "Contest Estimate: " + EnumChatFormatting.YELLOW +
@@ -524,7 +533,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		if (xpGainHourLast == xpGainHour && xpGainHour <= 0) {
 			lineMap.put(5, EnumChatFormatting.AQUA + "XP/h: " + EnumChatFormatting.YELLOW + "N/A");
 		} else {
-			xpInterp = interp(xpGainHour, xpGainHourLast);
+			xpInterp = interpolate(xpGainHour, xpGainHourLast);
 
 			lineMap.put(5, EnumChatFormatting.AQUA + "XP/h: " + EnumChatFormatting.YELLOW +
 				format.format(xpInterp) + (isFarming ? "" : EnumChatFormatting.RED + " (PAUSED)"));
@@ -540,7 +549,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			float progress = skillInfo.currentXp / skillInfo.currentXpMax;
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				progress = interp(progress, skillInfoLast.currentXp / skillInfoLast.currentXpMax);
+				progress = interpolate(progress, skillInfoLast.currentXp / skillInfoLast.currentXpMax);
 			}
 
 			float lines = 25;
@@ -561,12 +570,12 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 			int current = (int) skillInfo.currentXp;
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				current = (int) interp(current, skillInfoLast.currentXp);
+				current = (int) interpolate(current, skillInfoLast.currentXp);
 			}
 
 			int remaining = (int) (skillInfo.currentXpMax - skillInfo.currentXp);
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				remaining = (int) interp(remaining, (int) (skillInfoLast.currentXpMax - skillInfoLast.currentXp));
+				remaining = (int) interpolate(remaining, (int) (skillInfoLast.currentXpMax - skillInfoLast.currentXp));
 			}
 
 			lineMap.put(2, levelStr.toString());
@@ -595,7 +604,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		if (skillInfo != null && skillInfo.level == 60) {
 			int current = (int) skillInfo.currentXp;
 			if (skillInfoLast != null && skillInfo.currentXpMax == skillInfoLast.currentXpMax) {
-				current = (int) interp(current, skillInfoLast.currentXp);
+				current = (int) interpolate(current, skillInfoLast.currentXp);
 			}
 
 			if (foraging == 0) {
@@ -633,17 +642,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 			String.format("%.2f", pitch) + EnumChatFormatting.BOLD + "\u1D52");
 	}
 
-	/**
-	 * @return x mod y with the sign of the divisor, y, instead of the dividend, x.
-	 * Moreover -1 % 2 is mathematically both -1 and 1. Java chose -1, we want 1.
-	 */
-	int mod(int x, int y) {
-		int mod = x % y;
-		if (mod < 0)
-			mod += y;
-		return mod;
-	}
-
 	private void renderCropsPerSecond() {
 		float cropsMultiplier = 0;
 		String unit = null;
@@ -670,7 +668,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 			);
 		} else {
 			//Don't interpolate at the start
-			float cropsPerSecond = cropsPerSecondLast != 0 ? interp(this.cropsPerSecond, cropsPerSecondLast) : this.cropsPerSecond;
+			float cropsPerSecond = cropsPerSecondLast != 0
+				? interpolate(this.cropsPerSecond, cropsPerSecondLast)
+				: this.cropsPerSecond;
 			float cropsPerUnit = cropsPerSecond * cropsMultiplier;
 
 			lineMap.put(
