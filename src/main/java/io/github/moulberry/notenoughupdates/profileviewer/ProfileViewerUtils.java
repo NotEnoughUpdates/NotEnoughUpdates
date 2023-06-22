@@ -48,12 +48,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
-	static Map<String, ItemStack> playerSkullCache = new HashMap<>();
+	static final HashMap<String, ItemStack> playerSkullCache = new HashMap<>();
 
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
@@ -240,11 +239,12 @@ public class ProfileViewerUtils {
 			callback.accept(null);
 			return;
 		}
+		System.out.println("Searching: " + username);
 		NotEnoughUpdates.profileViewer.getPlayerUUID(username, uuid -> {
 			if (uuid == null) {
 				callback.accept(null);
 			} else {
-				CompletableFuture<Void> future = NotEnoughUpdates.INSTANCE.manager.apiUtils
+				NotEnoughUpdates.INSTANCE.manager.apiUtils
 					.request()
 					.url("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false")
 					.requestJson()
@@ -261,13 +261,12 @@ public class ProfileViewerUtils {
 										uuid,
 										textureObject.get("value").getAsString()
 									);
-
+									System.out.println("Found: " + username);
 									callback.accept(skull);
 								}
 							}
 						}
 					});
-				future.join();
 			}
 		});
 	}

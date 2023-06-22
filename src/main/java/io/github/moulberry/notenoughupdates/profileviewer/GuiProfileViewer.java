@@ -652,7 +652,7 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
 		int x = guiLeft + sizeX;
 		int y = guiTop + yIndex * 28;
@@ -680,7 +680,7 @@ public class GuiProfileViewer extends GuiScreen {
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 		Utils.drawTexturedRect(x - 3, y, 32, 28, uMin, uMax, vMin, vMax, GL11.GL_NEAREST);
