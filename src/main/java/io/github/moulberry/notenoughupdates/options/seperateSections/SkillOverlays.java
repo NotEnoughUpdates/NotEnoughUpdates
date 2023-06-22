@@ -51,12 +51,14 @@ public class SkillOverlays {
 		buttonText = ""
 	)
 	public boolean skillInfo = false;
+
 	@ConfigOption(
 		name = "Farming",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean farmingAccordion = false;
+
 	@Expose
 	@ConfigOption(
 		name = "Enable Farming Overlay",
@@ -112,11 +114,11 @@ public class SkillOverlays {
 		minStep = 1
 	)
 	public int farmingPauseTimer = 3;
+
 	@Expose
 	@ConfigOption(
 		name = "Crop rate time frame",
-		desc = "Defines the duration in seconds over which the average crop yield is calculated\n" +
-			"This calculator is more exact than the crops/m/h calculator"
+		desc = "Defines the duration in seconds over which the average crop yield is calculated"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
@@ -125,6 +127,29 @@ public class SkillOverlays {
 		minStep = 1
 	)
 	public int farmingCropsPerSecondTimeFrame = 5;
+
+	@Expose
+	@ConfigOption(
+		name = "Crop rate unit",
+		desc = "Choose the unit for displaying the crop rate"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorDropdown(
+		values = {"/s", "/m", "/h"}
+	)
+	public int farmingCropRateUnit = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Coin rate unit",
+		desc = "Choose the unit for displaying the coin rate"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorDropdown(
+		values = {"/s", "/m", "/h"}
+	)
+	public int farmingCoinRateUnit = 0;
+
 	@Expose
 	@ConfigOption(
 		name = "Reset crop rate",
@@ -137,26 +162,6 @@ public class SkillOverlays {
 		minStep = 1
 	)
 	public int farmingResetCPS = 5;
-	@Expose
-	@ConfigOption(
-		name = "Crop rate unit",
-		desc = "Choose the unit for displaying the crop rate"
-	)
-	@ConfigAccordionId(id = 0)
-	@ConfigEditorDropdown(
-		values = {"/s", "/m", "/h"}
-	)
-	public int farmingCropRateUnit = 0;
-	@Expose
-	@ConfigOption(
-		name = "Coin rate unit",
-		desc = "Choose the unit for displaying the coin rate"
-	)
-	@ConfigAccordionId(id = 0)
-	@ConfigEditorDropdown(
-		values = {"/s", "/m", "/h"}
-	)
-	public int farmingCoinRateUnit = 0;
 
 	@Expose
 	public Position farmingPosition = new Position(10, 200);
@@ -171,12 +176,14 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 0)
 	public int farmingStyle = 0;
+
 	@ConfigOption(
 		name = "Mining",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 1)
 	public boolean miningAccordion = false;
+
 	@Expose
 	@ConfigOption(
 		name = "Enable Mining Overlay",
