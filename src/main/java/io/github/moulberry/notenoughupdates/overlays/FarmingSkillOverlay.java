@@ -73,19 +73,19 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private int xpGainTimer = 0;
 
-	public static final int cropsPerSecondMaxFrameSize = 120;
+	public static final int CPS_MAX_FRAME_SIZE = 120;
 	/**
 	 * 6
 	 * Stores the values of the crop counter. Values can be accessed using the {@link #cropsPerSecondCursor}
 	 */
 	//+2 is to prevent calculation issues
-	private final int[] cropsPerSecondValues = new int[cropsPerSecondMaxFrameSize + 2];
+	private final int[] cropsPerSecondValues = new int[CPS_MAX_FRAME_SIZE + 2];
 	/**
 	 * The theoretical call interval of {@link #update()} is 1 second,
 	 * but in reality it can deviate by one tick, or 50ms,
-	 * which means we have to save time stamps of the values in order to prevent up to 5% incorrectness.
+	 * which means we have to save time stamps of the values in order to prevent up to 5% (50ms) incorrectness.
 	 */
-	private final long[] cropsPerSecondTimeStamps = new long[cropsPerSecondMaxFrameSize + 2];
+	private final long[] cropsPerSecondTimeStamps = new long[CPS_MAX_FRAME_SIZE + 2];
 	private int cropsPerSecondCursor = -1;
 
 	private String skillType = "Farming";
@@ -386,14 +386,16 @@ public class FarmingSkillOverlay extends TextOverlay {
 					counter = ea.getInteger("mined_crops");
 					cultivating = ea.getInteger("farmed_cultivating");
 					counterQueue.add(0, counter);
-					cropsPerSecondTimeStamps[++cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = System.currentTimeMillis();
-					cropsPerSecondValues[cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = counter;
+					cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] =
+						System.currentTimeMillis();
+					cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] = counter;
 				} else if (ea.hasKey("farmed_cultivating", 99)) {
 					counter = ea.getInteger("farmed_cultivating");
 					cultivating = ea.getInteger("farmed_cultivating");
 					counterQueue.add(0, counter);
-					cropsPerSecondTimeStamps[++cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = System.currentTimeMillis();
-					cropsPerSecondValues[cropsPerSecondCursor % cropsPerSecondMaxFrameSize] = counter;
+					cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] =
+						System.currentTimeMillis();
+					cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] = counter;
 				}
 			}
 		}
@@ -666,25 +668,35 @@ public class FarmingSkillOverlay extends TextOverlay {
 			String.format("%.2f", pitch) + EnumChatFormatting.BOLD + "\u1D52");
 	}
 
+	/**
+	 * Finds the average crops farmed during the configured time frame or since the player has started farming.
+	 * This value is interpolated with the average of one second ago and rendered to the overlay.
+	 */
 	private void renderCropsPerSecond() {
+		int current = cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE];
+		int prev = cropsPerSecondValues[Math.max(cropsPerSecondCursor - 1, 0) % CPS_MAX_FRAME_SIZE];
+		int timeFrame = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame;
 
-		int current = cropsPerSecondValues[cropsPerSecondCursor % cropsPerSecondMaxFrameSize];
-		int prev = cropsPerSecondValues[Math.max(cropsPerSecondCursor - 1, 0) % cropsPerSecondMaxFrameSize];
-		int frame = NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame;
-		float cropsPerSecond = current - cropsPerSecondValues[Math.max(cropsPerSecondCursor - frame, 0) %
-			cropsPerSecondMaxFrameSize];
-		cropsPerSecond = interp(
-			cropsPerSecond,
-			prev -
-				cropsPerSecondValues[Math.max(Math.max(cropsPerSecondCursor - frame - 1, 0), 0) %
-					cropsPerSecondMaxFrameSize]
-		);
+		//The searchIndex serves to find the start of the player farming.
+		//This makes it so that even if the timeframe is set high,
+		// the initial average will be the average since the player starts farming instead of the full timeframe.
+		int searchIndex = Math.max(cropsPerSecondCursor - timeFrame, 0) %
+			CPS_MAX_FRAME_SIZE;
+		while (cropsPerSecondValues[searchIndex] == cropsPerSecondValues[Math.max(searchIndex - 1, 0)] && searchIndex != cropsPerSecondCursor) {
+			searchIndex++;
+			searchIndex %= CPS_MAX_FRAME_SIZE;
+		}
+
+		float cropsPerSecond = current - cropsPerSecondValues[searchIndex];
+		cropsPerSecond = interp(cropsPerSecond, prev - cropsPerSecondValues[Math.max(searchIndex - 1, 0)]);
+
 		float timePassed =
-			cropsPerSecondTimeStamps[cropsPerSecondCursor % cropsPerSecondMaxFrameSize] -
-				cropsPerSecondTimeStamps[Math.max(
-					cropsPerSecondCursor - frame, 0) % cropsPerSecondMaxFrameSize];
+			cropsPerSecondTimeStamps[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] - cropsPerSecondTimeStamps[searchIndex];
 		timePassed /= 1000f;
+
 		cropsPerSecond /= timePassed;
+
+		if(Float.isNaN(cropsPerSecond)) cropsPerSecond = 0;
 
 		lineMap.put(
 			12,
