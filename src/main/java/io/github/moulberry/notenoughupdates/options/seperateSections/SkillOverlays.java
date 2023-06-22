@@ -105,7 +105,7 @@ public class SkillOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Pause Timer",
-		desc = "How many seconds does it wait before pausing the timers above"
+		desc = "How many seconds does it wait before pausing the XP/h timer"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
