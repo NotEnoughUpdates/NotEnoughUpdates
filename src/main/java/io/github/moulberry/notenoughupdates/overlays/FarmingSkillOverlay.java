@@ -88,6 +88,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private int cropsPerSecondCursor = -1;
 	private float cpsLast = 0;
 	private float cps = 0;
+	private float cpsResetTimer = 1;
 
 	private String skillType = "Farming";
 
@@ -436,10 +437,12 @@ public class FarmingSkillOverlay extends TextOverlay {
 	 * Finds the average crops farmed during the configured time frame or since the player has started farming.
 	 */
 	private void updateNewCropsPerSecond(int counter) {
+		//update values in arrays
 		cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_WINDOW_SIZE] =
 			System.currentTimeMillis();
 		cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE] = counter;
 
+		//calculate
 		int current = cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE];
 		int timeFrame = Math.min(
 			NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame,
@@ -464,9 +467,26 @@ public class FarmingSkillOverlay extends TextOverlay {
 		newCropsPerSecond /= timePassed;
 
 		if (Float.isNaN(newCropsPerSecond)) newCropsPerSecond = 0;
-
 		cpsLast = cps;
 		cps = newCropsPerSecond;
+
+		//reset logic
+		if (counter == counterLast) {
+			cpsResetTimer++;
+		} else {
+			//starts at 1 because by the time the increment takes place, a second has already passed.
+			cpsResetTimer = 1;
+		}
+
+		boolean isFarming = cpsResetTimer <= NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingResetCPS;
+
+		if (!isFarming) {
+			//reset crops/s
+			cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
+			cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
+			cps = 0;
+			cpsLast = 0;
+		}
 	}
 
 	@Override
@@ -706,6 +726,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	/**
 	 * @return x mod y with the sign of the divisor, y, instead of the dividend, x.
+	 * Moreover -1 % 2 is mathematically both -1 and 1. Java chose -1, we want 1.
 	 */
 	int mod(int x, int y) {
 		int mod = x % y;
@@ -715,7 +736,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 	}
 
 	private void renderCropsPerSecond() {
-		float cropsPerSecond = interp(cps, cpsLast);
+		//Don't interpolate at the start
+		float cropsPerSecond = cpsLast != 0 ? interp(cps, cpsLast) : cps;
 
 		lineMap.put(
 			12,

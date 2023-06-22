@@ -118,7 +118,18 @@ public class SkillOverlays {
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
 	public boolean cropsPerHour = false;
-
+	@Expose
+	@ConfigOption(
+		name = "Pause Timer",
+		desc = "How many seconds does it wait before pausing the timers above"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 20,
+		minStep = 1
+	)
+	public int farmingPauseTimer = 3;
 	@Expose
 	@ConfigOption(
 		name = "Crops/s time frame",
@@ -132,19 +143,18 @@ public class SkillOverlays {
 		minStep = 1
 	)
 	public int farmingCropsPerSecondTimeFrame = 5;
-
 	@Expose
 	@ConfigOption(
-		name = "Pause Timer",
-		desc = "How many seconds does it wait before pausing"
+		name = "Reset crops/s",
+		desc = "How many seconds does it wait before resetting the crops/s calculator"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
 		minValue = 1,
-		maxValue = 20,
+		maxValue = CPS_WINDOW_SIZE - 2,
 		minStep = 1
 	)
-	public int farmingPauseTimer = 3;
+	public int farmingResetCPS = 3;
 
 	@Expose
 	public Position farmingPosition = new Position(10, 200);
