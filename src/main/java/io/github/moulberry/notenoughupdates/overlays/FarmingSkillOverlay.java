@@ -36,7 +36,6 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,9 +53,6 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private String cultivatingTierAmount = "1";
 	private int foraging = 0;
 	private double coins = -1;
-	private float cropsPerSecondLast = 0;
-	private float cropsPerSecond = 0;
-	private final LinkedList<Integer> counterQueue = new LinkedList<>();
 	private String lastItemHeld = "null";
 	private int jacobPredictionLast = -1;
 	private int jacobPrediction = -1;
@@ -86,8 +82,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 	 */
 	private long[] cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
 	private int cropsPerSecondCursor = -1;
-	private float cpsLast = 0;
-	private float cps = 0;
+	private float cropsPerSecondLast = 0;
+	private float cropsPerSecond = 0;
 	private float cpsResetTimer = 1;
 
 	private String skillType = "Farming";
@@ -140,15 +136,13 @@ public class FarmingSkillOverlay extends TextOverlay {
 		}
 	}
 
-	// Check if there is an active Jacob's contest
+	/**
+	 * @return if there is an active Jacob's contest
+	 */
 	private static boolean isJacobTime() {
 		long now = System.currentTimeMillis();
 		return now % 3600000 >= 900000 && now % 3600000 <= 2100000;
 	}
-
-	//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
-	//Needed due to farming fortune causing inconsistent amounts of crops each block break
-	private static ArrayList<Float> cropsOverLastXSeconds = new ArrayList<>();
 
 	@Override
 	public boolean isEnabled() {
@@ -184,6 +178,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		if (!isEnabled()) {
 			counter = -1;
 			overlayStrings = null;
+			resetCropsPerSecond();
 			return;
 		}
 
@@ -197,7 +192,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 		ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
-		updateCultivating(stack);
+		updateCounter(stack);
+
+		updateCropsPerSecond();
 
 		String internalName =
 			new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager).withItemStack(stack).resolveInternalName();
@@ -208,82 +205,12 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 		updateSkillInfo();
 
-		while (counterQueue.size() > 3) {
-			counterQueue.removeLast();
-		}
-
-		if (counterQueue.isEmpty()) {
-			cropsPerSecond = -1;
-			cropsPerSecondLast = 0;
-		} else {
-			updateCropsPerSecond();
-		}
-
 		if (counter != -1) {
 			overlayStrings = new ArrayList<>();
 		} else {
 			overlayStrings = null;
 		}
 		gatherJacobData();
-	}
-
-	private void updateCropsPerSecond() {
-		cropsPerSecondLast = cropsPerSecond;
-		int last = counterQueue.getLast();
-		int first = counterQueue.getFirst();
-
-		//This is a list of the last X cropsPerSeconds to try and calm down the fluctuation for crops/min (they will be averaged)
-		//Needed due to farming fortune causing inconsistent amounts of crops each block break
-		//Making this while in case somehow it goes over X+1
-		while (cropsOverLastXSeconds.size() > 60) {
-			cropsOverLastXSeconds.remove(0);
-		}
-		if ((first - last) / 2f != 0) {
-			cropsOverLastXSeconds.add((first - last) / 2f);
-		} else {
-			if (cropsPerSecondLast == 0) {
-				//This is to prevent bleeding from one crop to the next (or if you stop and then start again at a different pace)
-				//It removes 12 per tick because otherwise it would take 60s to go to N/A (now it only takes 5s)
-				int i = 12;
-				while (i > 0) {
-					i--;
-					if (cropsOverLastXSeconds.size() > 0) {
-						cropsOverLastXSeconds.remove(0);
-					} else {
-						break;
-					}
-				}
-			}
-		}
-
-		if (!lastItemHeld.equals(NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
-			? "null"
-			: NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()))) {
-			lastItemHeld = NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
-				? "null"
-				: NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem());
-			cropsOverLastXSeconds.clear();
-		}
-
-		ArrayList<Float> temp = new ArrayList<>(cropsOverLastXSeconds);
-		if (cropsOverLastXSeconds.size() >= 3) {
-			temp.remove(Collections.min(temp));
-		}
-		if (cropsOverLastXSeconds.size() >= 6) {
-			temp.remove(Collections.min(temp));
-			temp.remove(Collections.max(temp));
-		}
-		if (cropsOverLastXSeconds.size() >= 10) {
-			temp.remove(Collections.max(temp));
-		}
-
-		float cropsOverLastXSecondsTotal = 0;
-		for (Float crops : temp) {
-			cropsOverLastXSecondsTotal += crops;
-		}
-		//To prevent 0/0
-		cropsPerSecond =
-			temp.size() != 0 && cropsOverLastXSecondsTotal != 0 ? cropsOverLastXSecondsTotal / temp.size() : 0;
 	}
 
 	private void updateSkillType(String internalName) {
@@ -377,7 +304,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		}
 	}
 
-	private void updateCultivating(ItemStack stack) {
+	private void updateCounter(ItemStack stack) {
 		if (stack != null && stack.hasTagCompound()) {
 			NBTTagCompound tag = stack.getTagCompound();
 
@@ -387,15 +314,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 				if (ea.hasKey("mined_crops", 99)) {
 					counter = ea.getInteger("mined_crops");
 					cultivating = ea.getInteger("farmed_cultivating");
-					counterQueue.add(0, counter);
-
-					updateNewCropsPerSecond(counter);
 				} else if (ea.hasKey("farmed_cultivating", 99)) {
 					counter = ea.getInteger("farmed_cultivating");
 					cultivating = ea.getInteger("farmed_cultivating");
-					counterQueue.add(0, counter);
-
-					updateNewCropsPerSecond(counter);
 				}
 			}
 		}
@@ -436,7 +357,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	/**
 	 * Finds the average crops farmed during the configured time frame or since the player has started farming.
 	 */
-	private void updateNewCropsPerSecond(int counter) {
+	private void updateCropsPerSecond() {
 		//update values in arrays
 		cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_WINDOW_SIZE] =
 			System.currentTimeMillis();
@@ -467,8 +388,8 @@ public class FarmingSkillOverlay extends TextOverlay {
 		newCropsPerSecond /= timePassed;
 
 		if (Float.isNaN(newCropsPerSecond)) newCropsPerSecond = 0;
-		cpsLast = cps;
-		cps = newCropsPerSecond;
+		cropsPerSecondLast = cropsPerSecond;
+		cropsPerSecond = newCropsPerSecond;
 
 		//reset logic
 		if (counter == counterLast) {
@@ -478,15 +399,21 @@ public class FarmingSkillOverlay extends TextOverlay {
 			cpsResetTimer = 1;
 		}
 
-		boolean isFarming = cpsResetTimer <= NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingResetCPS;
-
-		if (!isFarming) {
-			//reset crops/s
-			cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
-			cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
-			cps = 0;
-			cpsLast = 0;
+		String currentItemHeld = NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem()) == null
+			? "null" : NEUManager.getUUIDForItem(Minecraft.getMinecraft().thePlayer.getHeldItem());
+		if (!lastItemHeld.equals(currentItemHeld)) {
+			lastItemHeld = currentItemHeld;
+			resetCropsPerSecond();
+		} else if (cpsResetTimer > NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingResetCPS) {
+			resetCropsPerSecond();
 		}
+	}
+
+	private void resetCropsPerSecond() {
+		cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
+		cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
+		cropsPerSecond = 0;
+		cropsPerSecondLast = 0;
 	}
 
 	@Override
@@ -504,11 +431,11 @@ public class FarmingSkillOverlay extends TextOverlay {
 			}
 
 			if (counter >= 0) {
-				renderCrops();
 				renderCropsPerSecond();
+				if (coins > 0) {
+					renderCoins();
+				}
 			}
-
-			renderCoins();
 
 			renderCultivating();
 
@@ -529,51 +456,33 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private void renderCounter() {
 		int counterInterp = (int) interp(counter, counterLast);
-		lineMap.put(
-			0,
-			EnumChatFormatting.AQUA + "Counter: " + EnumChatFormatting.YELLOW + format.format(counterInterp)
-		);
-	}
-
-	private void renderCrops() {
-		String cropsTimeSuffix = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? "h" : "m";
-		int cropMultiplier = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? 60 : 1;
-		int cropDecimals = NotEnoughUpdates.INSTANCE.config.skillOverlays.cropsPerHour ? 0 : 2;
-		if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
-			lineMap.put(
-				1,
-				EnumChatFormatting.AQUA +
-					(foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
-					EnumChatFormatting.YELLOW + "N/A"
-			);
-		} else {
-			float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
-
-			lineMap.put(
-				1,
-				EnumChatFormatting.AQUA +
-					(foraging == 1 ? "Logs/" + cropsTimeSuffix + ": " : "Crops/" + cropsTimeSuffix + ": ") +
-					EnumChatFormatting.YELLOW +
-					String.format("%,." + cropDecimals + "f", cpsInterp * 60 * cropMultiplier)
-			);
-		}
+		lineMap.put(0, EnumChatFormatting.AQUA + "Counter: " + EnumChatFormatting.YELLOW + format.format(counterInterp));
 	}
 
 	private void renderCoins() {
-		String coinsTimeSuffix = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? "h" : "m";
-		int coinMultiplier = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? 60 : 1;
-		int coinDecimals = NotEnoughUpdates.INSTANCE.config.skillOverlays.coinsPerHour ? 0 : 2;
-		if (counter >= 0 && coins > 0) {
-			if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
-				lineMap.put(
-					10,
-					EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW + "N/A"
-				);
-			} else {
-				float cpsInterp = interp(cropsPerSecond, cropsPerSecondLast);
-				lineMap.put(10, EnumChatFormatting.AQUA + "Coins/" + coinsTimeSuffix + ": " + EnumChatFormatting.YELLOW +
-					String.format("%,." + coinDecimals + "f", (cpsInterp * 60) * coins * coinMultiplier));
-			}
+		float cropsMultiplier = 0;
+		String unit = null;
+		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCPSUnit) {
+			case 0:
+				unit = "/s";
+				break;
+			case 1:
+				cropsMultiplier = 60;
+				unit = "/m";
+				break;
+			case 2:
+				cropsMultiplier = 3600;
+				unit = "/h";
+				break;
+		}
+
+		if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
+			lineMap.put(10, EnumChatFormatting.AQUA + "Coins" + unit + ": " + EnumChatFormatting.YELLOW + "N/A");
+		} else {
+			float cropsPerSecond = cropsPerSecondLast != 0 ? interp(this.cropsPerSecond, cropsPerSecondLast) : this.cropsPerSecond;
+			float cropsPerUnit = cropsPerSecond * cropsMultiplier;
+			lineMap.put(10, EnumChatFormatting.AQUA + "Coins" + unit + ": " + EnumChatFormatting.YELLOW +
+				String.format("%,.0f", cropsPerUnit * coins));
 		}
 	}
 
@@ -736,30 +645,40 @@ public class FarmingSkillOverlay extends TextOverlay {
 	}
 
 	private void renderCropsPerSecond() {
-		//Don't interpolate at the start
-		float cropsPerSecond = cpsLast != 0 ? interp(cps, cpsLast) : cps;
-
-		float cropsPerUnit = 0;
+		float cropsMultiplier = 0;
 		String unit = null;
 		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCPSUnit) {
 			case 0:
-				cropsPerUnit = cropsPerSecond;
-				unit ="/s";
+				unit = "/s";
 				break;
 			case 1:
-				cropsPerUnit = cropsPerSecond * 60;
-				unit ="/m";
+				cropsMultiplier = 60;
+				unit = "/m";
 				break;
 			case 2:
-				cropsPerUnit = cropsPerSecond * 3600;
-				unit ="/h";
+				cropsMultiplier = 3600;
+				unit = "/h";
 				break;
 		}
 
-		lineMap.put(
-			12,
-			EnumChatFormatting.AQUA + "Crops" + unit + ": " + EnumChatFormatting.YELLOW +
-				String.format("%,.0f", cropsPerUnit)
-		);
+		if (cropsPerSecondLast == cropsPerSecond && cropsPerSecond <= 0) {
+			lineMap.put(
+				1,
+				EnumChatFormatting.AQUA +
+					(foraging == 1 ? "Logs" + unit + ": " : "Crops" + unit + ": ") +
+					EnumChatFormatting.YELLOW + "N/A"
+			);
+		} else {
+			//Don't interpolate at the start
+			float cropsPerSecond = cropsPerSecondLast != 0 ? interp(this.cropsPerSecond, cropsPerSecondLast) : this.cropsPerSecond;
+			float cropsPerUnit = cropsPerSecond * cropsMultiplier;
+
+			lineMap.put(
+				1,
+				EnumChatFormatting.AQUA + (foraging == 1 ? "Logs" + unit + ": " : "Crops" + unit + ": ") +
+					EnumChatFormatting.YELLOW +
+					String.format("%,.0f", cropsPerUnit)
+			);
+		}
 	}
 }

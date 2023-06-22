@@ -75,7 +75,7 @@ public class SkillOverlays {
 	@ConfigEditorDraggableList(
 		exampleText = {
 			"\u00a7bCounter: \u00a7e37,547,860",
-			"\u00a7bCrops/m: \u00a7e38.29",
+			"\u00a7bCrops/s: \u00a7e732",
 			"\u00a7bFarming: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
@@ -86,11 +86,10 @@ public class SkillOverlays {
 			"\u00a7bCultivating: \u00a7e10,137,945/20,000,000",
 			"\u00a7bCoins/m \u00a7e57,432",
 			"\u00a7bContest Estimate \u00a7e342,784",
-			"\u00a7bCrops/s: \u00a7e732",
 		}
 	)
 	@ConfigAccordionId(id = 0)
-	public List<Integer> farmingText = new ArrayList<>(Arrays.asList(0, 9, 10, 1, 2, 12, 3, 4, 5, 7, 6, 11));
+	public List<Integer> farmingText = new ArrayList<>(Arrays.asList(0, 9, 10, 1, 2, 3, 4, 5, 7, 6, 11));
 
 	@Expose
 	@ConfigOption(
@@ -101,23 +100,6 @@ public class SkillOverlays {
 	@ConfigAccordionId(id = 0)
 	public boolean useBZPrice = true;
 
-	@Expose
-	@ConfigOption(
-		name = "Use coins per hour",
-		desc = "Uses coins/h instead of coins/m"
-	)
-	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
-	public boolean coinsPerHour = false;
-
-	@Expose
-	@ConfigOption(
-		name = "Use crops per hour",
-		desc = "Uses crops/h instead of crops/m"
-	)
-	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
-	public boolean cropsPerHour = false;
 	@Expose
 	@ConfigOption(
 		name = "Pause Timer",
@@ -132,7 +114,7 @@ public class SkillOverlays {
 	public int farmingPauseTimer = 3;
 	@Expose
 	@ConfigOption(
-		name = "Exact rate time frame",
+		name = "Crop rate time frame",
 		desc = "Defines the duration in seconds over which the average crop yield is calculated\n" +
 			"This calculator is more exact than the crops/m/h calculator"
 	)
@@ -145,8 +127,8 @@ public class SkillOverlays {
 	public int farmingCropsPerSecondTimeFrame = 5;
 	@Expose
 	@ConfigOption(
-		name = "Reset exact rate",
-		desc = "How many seconds does it wait before resetting the exact rate values"
+		name = "Reset crop rate",
+		desc = "How many seconds does it wait before resetting the crop rate values when inactive"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
@@ -154,11 +136,11 @@ public class SkillOverlays {
 		maxValue = CPS_WINDOW_SIZE - 2,
 		minStep = 1
 	)
-	public int farmingResetCPS = 3;
+	public int farmingResetCPS = 5;
 	@Expose
 	@ConfigOption(
-		name = "Exact rate unit",
-		desc = "Choose the unit for displaying the exact rate"
+		name = "Rate unit",
+		desc = "Choose the unit for displaying the crop and coin rate"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorDropdown(
