@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.github.moulberry.notenoughupdates.overlays.FarmingSkillOverlay.CPS_MAX_FRAME_SIZE;
+import static io.github.moulberry.notenoughupdates.overlays.FarmingSkillOverlay.CPS_WINDOW_SIZE;
 
 public class SkillOverlays {
 	@ConfigOption(
@@ -128,7 +128,7 @@ public class SkillOverlays {
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
 		minValue = 1,
-		maxValue = CPS_MAX_FRAME_SIZE,
+		maxValue = CPS_WINDOW_SIZE - 2,
 		minStep = 1
 	)
 	public int farmingCropsPerSecondTimeFrame = 5;

@@ -73,18 +73,18 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private int xpGainTimer = 0;
 
-	public static final int CPS_MAX_FRAME_SIZE = 120;
+	public static final int CPS_WINDOW_SIZE = 122;
 	/**
-	 * Stores the values of the crop counter. Values can be accessed using the {@link #cropsPerSecondCursor}
+	 * Stores the values of the crop counter as a sliding window.
+	 * Values can be accessed using the {@link #cropsPerSecondCursor}.
 	 */
-	//+2 is to prevent calculation issues
-	private final int[] cropsPerSecondValues = new int[CPS_MAX_FRAME_SIZE + 2];
+	private int[] cropsPerSecondValues = new int[CPS_WINDOW_SIZE];
 	/**
 	 * The theoretical call interval of {@link #update()} is 1 second,
 	 * but in reality it can deviate by one tick, or 50ms,
 	 * which means we have to save time stamps of the values in order to prevent up to 5% (50ms) incorrectness.
 	 */
-	private final long[] cropsPerSecondTimeStamps = new long[CPS_MAX_FRAME_SIZE + 2];
+	private long[] cropsPerSecondTimeStamps = new long[CPS_WINDOW_SIZE];
 	private int cropsPerSecondCursor = -1;
 	private float cpsLast = 0;
 	private float cps = 0;
@@ -436,30 +436,30 @@ public class FarmingSkillOverlay extends TextOverlay {
 	 * Finds the average crops farmed during the configured time frame or since the player has started farming.
 	 */
 	private void updateNewCropsPerSecond(int counter) {
-		cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] =
+		cropsPerSecondTimeStamps[++cropsPerSecondCursor % CPS_WINDOW_SIZE] =
 			System.currentTimeMillis();
-		cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] = counter;
+		cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE] = counter;
 
-		int current = cropsPerSecondValues[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE];
+		int current = cropsPerSecondValues[cropsPerSecondCursor % CPS_WINDOW_SIZE];
 		int timeFrame = Math.min(
 			NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropsPerSecondTimeFrame,
-			CPS_MAX_FRAME_SIZE
+			CPS_WINDOW_SIZE
 		);
 
 		//The searchIndex serves to find the start of the player farming.
 		//This makes it so that even if the timeframe is set high,
 		// the initial average will be the average since the player starts farming instead of the full timeframe.
-		int searchIndex = mod(cropsPerSecondCursor - timeFrame, CPS_MAX_FRAME_SIZE);
-		while (cropsPerSecondValues[searchIndex] == cropsPerSecondValues[mod(searchIndex - 1, CPS_MAX_FRAME_SIZE)] &&
-			mod(searchIndex, CPS_MAX_FRAME_SIZE) != mod(cropsPerSecondCursor, CPS_MAX_FRAME_SIZE)) {
+		int searchIndex = mod(cropsPerSecondCursor - timeFrame, CPS_WINDOW_SIZE);
+		while (cropsPerSecondValues[searchIndex] == cropsPerSecondValues[mod(searchIndex - 1, CPS_WINDOW_SIZE)] &&
+			mod(searchIndex, CPS_WINDOW_SIZE) != mod(cropsPerSecondCursor, CPS_WINDOW_SIZE)) {
 			searchIndex++;
-			searchIndex %= CPS_MAX_FRAME_SIZE;
+			searchIndex %= CPS_WINDOW_SIZE;
 		}
 
 		float newCropsPerSecond = current - cropsPerSecondValues[searchIndex];
 
 		float timePassed =
-			cropsPerSecondTimeStamps[cropsPerSecondCursor % CPS_MAX_FRAME_SIZE] - cropsPerSecondTimeStamps[searchIndex];
+			cropsPerSecondTimeStamps[cropsPerSecondCursor % CPS_WINDOW_SIZE] - cropsPerSecondTimeStamps[searchIndex];
 		timePassed /= 1000f;
 		newCropsPerSecond /= timePassed;
 
