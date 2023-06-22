@@ -69,7 +69,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private int xpGainTimer = 0;
 
-	public static final int CPS_WINDOW_SIZE = 122;
+	public static final int CPS_WINDOW_SIZE = 302;
 	/**
 	 * Stores the values of the crop counter as a sliding window.
 	 * Values can be accessed using the {@link #cropsPerSecondCursor}.
