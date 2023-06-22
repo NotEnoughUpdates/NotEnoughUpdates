@@ -739,10 +739,27 @@ public class FarmingSkillOverlay extends TextOverlay {
 		//Don't interpolate at the start
 		float cropsPerSecond = cpsLast != 0 ? interp(cps, cpsLast) : cps;
 
+		float cropsPerUnit = 0;
+		String unit = null;
+		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCPSUnit) {
+			case 0:
+				cropsPerUnit = cropsPerSecond;
+				unit ="/s";
+				break;
+			case 1:
+				cropsPerUnit = cropsPerSecond * 60;
+				unit ="/m";
+				break;
+			case 2:
+				cropsPerUnit = cropsPerSecond * 3600;
+				unit ="/h";
+				break;
+		}
+
 		lineMap.put(
 			12,
-			EnumChatFormatting.AQUA + "Crops/s: " + EnumChatFormatting.YELLOW +
-				String.format("%,.0f", cropsPerSecond)
+			EnumChatFormatting.AQUA + "Crops" + unit + ": " + EnumChatFormatting.YELLOW +
+				String.format("%,.0f", cropsPerUnit)
 		);
 	}
 }

@@ -132,7 +132,7 @@ public class SkillOverlays {
 	public int farmingPauseTimer = 3;
 	@Expose
 	@ConfigOption(
-		name = "Crops/s time frame",
+		name = "Exact rate time frame",
 		desc = "Defines the duration in seconds over which the average crop yield is calculated\n" +
 			"This calculator is more exact than the crops/m/h calculator"
 	)
@@ -145,8 +145,8 @@ public class SkillOverlays {
 	public int farmingCropsPerSecondTimeFrame = 5;
 	@Expose
 	@ConfigOption(
-		name = "Reset crops/s",
-		desc = "How many seconds does it wait before resetting the crops/s calculator"
+		name = "Reset exact rate",
+		desc = "How many seconds does it wait before resetting the exact rate values"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
@@ -155,6 +155,16 @@ public class SkillOverlays {
 		minStep = 1
 	)
 	public int farmingResetCPS = 3;
+	@Expose
+	@ConfigOption(
+		name = "Exact rate unit",
+		desc = "Choose the unit for displaying the exact rate"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorDropdown(
+		values = {"/s", "/m", "/h"}
+	)
+	public int farmingCPSUnit = 0;
 
 	@Expose
 	public Position farmingPosition = new Position(10, 200);
