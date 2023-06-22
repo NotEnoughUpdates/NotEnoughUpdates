@@ -49,11 +49,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
 	static Map<String, ItemStack> playerSkullCache = new HashMap<>();
+	private static final ExecutorService skullGetter = Executors.newCachedThreadPool();
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
 
@@ -213,13 +216,28 @@ public class ProfileViewerUtils {
 	public static ItemStack getPlayerData(String username) {
 		String nameLower = username.toLowerCase();
 		if (!playerSkullCache.containsKey(nameLower)) {
-			AtomicReference<String> displayName = new AtomicReference<>(nameLower);
+				fetchSkull(nameLower);
+
+			ItemStack skull = Utils.createSkull(
+				"Simon",
+				"f3c4dfb91c7b40ac81fd462538538523",
+				"ewogICJ0aW1lc3RhbXAiIDogMTY4NzQwMTM4MjY4MywKICAicHJvZmlsZUlkIiA6ICJmM2M0ZGZiOTFjN2I0MGFjODFmZDQ2MjUzODUzODUyMyIsCiAgInByb2ZpbGVOYW1lIiA6ICJTaW1vbiIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kN2ViYThhZWU0ZmQxMTUxMmI3ZTFhMjc5YTE0YWM2NDhlNDQzNDgxYjlmMzcxMzZhNzEwMThkMzg3Mjk0Y2YzIgogICAgfQogIH0KfQ"
+			);
+
+			playerSkullCache.put(nameLower, skull);
+		}
+		return playerSkullCache.get(nameLower);
+	}
+
+	private static void fetchSkull(String username) {
+		skullGetter.execute(() -> {
+			AtomicReference<String> displayName = new AtomicReference<>(username);
 			AtomicReference<String> uuid = new AtomicReference<>("");
 			AtomicReference<String> skullTexture = new AtomicReference<>("");
 
 			CompletableFuture<Void> future = NotEnoughUpdates.INSTANCE.manager.apiUtils
 				.request()
-				.url("https://api.mojang.com/users/profiles/minecraft/" + nameLower)
+				.url("https://api.mojang.com/users/profiles/minecraft/" + username)
 				.requestJson()
 				.thenAcceptAsync(jsonObject -> {
 					if (jsonObject.has("id") && jsonObject.get("id").isJsonPrimitive() &&
@@ -230,7 +248,7 @@ public class ProfileViewerUtils {
 						displayName.set(jsonObject.get("name").getAsString());
 					}
 				});
-				future.join();
+			future.join();
 
 			future = NotEnoughUpdates.INSTANCE.manager.apiUtils
 				.request()
@@ -258,10 +276,8 @@ public class ProfileViewerUtils {
 				skullTexture.get()
 			);
 
-
-			NotEnoughUpdates.profileViewer.nameToUuid.put(nameLower, uuid.get());
-			playerSkullCache.put(nameLower, skull);
-		}
-		return playerSkullCache.get(nameLower);
+			NotEnoughUpdates.profileViewer.nameToUuid.put(username, uuid.get());
+			playerSkullCache.put(username, skull);
+		});
 	}
 }
