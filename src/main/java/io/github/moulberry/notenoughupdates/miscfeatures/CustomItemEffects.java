@@ -96,7 +96,12 @@ public class CustomItemEffects {
 
 	private final Pattern etherwarpDistancePattern = Pattern.compile("up to (?<distance>\\d{2}) blocks away\\.");
 
-	private final List<String> aoteNames = Arrays.asList("ASPECT_OF_THE_END", "ASPECT_OF_THE_VOID", "ASPECT_OF_THE_LEECH_1", "ASPECT_OF_THE_LEECH_2");
+	private final List<String> aoteNames = Arrays.asList(
+		"ASPECT_OF_THE_END",
+		"ASPECT_OF_THE_VOID",
+		"ASPECT_OF_THE_LEECH_1",
+		"ASPECT_OF_THE_LEECH_2"
+	);
 
 	public int aoteTeleportationMillis = 0;
 	public Vector3f aoteTeleportationCurr = null;
@@ -761,7 +766,6 @@ public class CustomItemEffects {
 		add(Blocks.farmland);
 	}};
 
-
 	List<Block> scytheBlocks = Arrays.asList(
 		Blocks.leaves, Blocks.leaves2, Blocks.red_flower, Blocks.yellow_flower, Blocks.tallgrass, Blocks.double_plant);
 
@@ -1298,7 +1302,8 @@ public class CustomItemEffects {
 			HashSet<BlockPos> candidatesOld = new HashSet<>();
 			TreeMap<Float, Set<BlockPos>> candidatesOldSorted = new TreeMap<>();
 
-			getBuildersWandCandidates(Minecraft.getMinecraft().thePlayer,
+			getBuildersWandCandidates(
+				Minecraft.getMinecraft().thePlayer,
 				event.target,
 				event.partialTicks,
 				candidatesOld,
