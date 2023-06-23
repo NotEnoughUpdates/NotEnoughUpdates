@@ -52,10 +52,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
-	static final HashMap<String, ItemStack> playerSkullCache = new HashMap<>();
+	static Map<String, ItemStack> playerSkullCache = new HashMap<>();
 
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
-		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
+		String bytes = Utils.getElementAsString(
+			Utils.getElement(profileInfo, bagName + ".data"),
+			"Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA="
+		);
 
 		NBTTagCompound nbt;
 		try {
@@ -92,7 +95,8 @@ public class ProfileViewerUtils {
 			}
 			JsonArray lastElementJsonArray = new JsonArray();
 			lastElementJsonArray.add(new JsonPrimitive(lastElement));
-			return new AbstractMap.SimpleEntry<>(tag.getCompoundTag("ExtraAttributes").getString("id"),
+			return new AbstractMap.SimpleEntry<>(
+				tag.getCompoundTag("ExtraAttributes").getString("id"),
 				Utils.getRarityFromLore(lastElementJsonArray)
 			);
 		}).sorted(Comparator.comparingInt(e -> -e.getValue())).collect(Collectors.toMap(
@@ -229,17 +233,17 @@ public class ProfileViewerUtils {
 				}
 
 				playerSkullCache.put(nameLower, skull);
-				});
+			});
 		}
 		return playerSkullCache.get(nameLower);
 	}
 
 	private static void getPlayerSkull(String username, Consumer<ItemStack> callback) {
-		if (NotEnoughUpdates.profileViewer.nameToUuid.containsKey(username) && NotEnoughUpdates.profileViewer.nameToUuid.get(username) == null) {
+		if (NotEnoughUpdates.profileViewer.nameToUuid.containsKey(username) &&
+			NotEnoughUpdates.profileViewer.nameToUuid.get(username) == null) {
 			callback.accept(null);
 			return;
 		}
-		System.out.println("Searching: " + username);
 		NotEnoughUpdates.profileViewer.getPlayerUUID(username, uuid -> {
 			if (uuid == null) {
 				callback.accept(null);
@@ -261,7 +265,6 @@ public class ProfileViewerUtils {
 										uuid,
 										textureObject.get("value").getAsString()
 									);
-									System.out.println("Found: " + username);
 									callback.accept(skull);
 								}
 							}
