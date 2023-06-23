@@ -96,6 +96,8 @@ public class CustomItemEffects {
 
 	private final Pattern etherwarpDistancePattern = Pattern.compile("up to (?<distance>\\d{2}) blocks away\\.");
 
+	private final List<String> aoteNames = Arrays.asList("ASPECT_OF_THE_END", "ASPECT_OF_THE_VOID", "ASPECT_OF_THE_LEECH_1", "ASPECT_OF_THE_LEECH_2");
+
 	public int aoteTeleportationMillis = 0;
 	public Vector3f aoteTeleportationCurr = null;
 
@@ -196,7 +198,7 @@ public class CustomItemEffects {
 				if (tpTime <= 0 || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0) return;
 
 				boolean aote = NotEnoughUpdates.INSTANCE.config.itemOverlays.enableSmoothAOTE &&
-					(internal.equals("ASPECT_OF_THE_END") || internal.equals("ASPECT_OF_THE_VOID"));
+					aoteNames.contains(internal);
 				boolean hyp = NotEnoughUpdates.INSTANCE.config.itemOverlays.enableSmoothHyperion && shadowWarp;
 				if (usingEtherwarp) {
 					tpTime = NotEnoughUpdates.INSTANCE.config.itemOverlays.smoothTpMillisEtherwarp;

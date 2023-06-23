@@ -143,7 +143,7 @@ public class ItemOverlays {
 	public String zapperOverlayColour = "0:102:171:5:0";
 
 	@ConfigOption(
-		name = "Smooth AOTE/AOTV/Hyp",
+		name = "Smooth AOTE/AOTV/AOTL/Hyp",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 3)
@@ -152,7 +152,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Enable Smooth AOTE",
-		desc = "Teleport smoothly to your destination when using AOTE or AOTV"
+		desc = "Teleport smoothly to your destination when using AOTE, AOTV or AOTL"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 3)
