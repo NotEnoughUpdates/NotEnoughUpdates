@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
 	static Map<String, ItemStack> playerSkullCache = new HashMap<>();
+	static Map<String, Long> lastSoopyRequestTime = new HashMap<>();
+	static Map<String, JsonObject> soopyDataCache = new HashMap<>();
 
 	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
 		String bytes = Utils.getElementAsString(
