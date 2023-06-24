@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -41,7 +42,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -51,13 +51,23 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 
 public class ExtraPage extends GuiProfileViewerPage {
-// Hehe
+
 	private static final ResourceLocation pv_extra = new ResourceLocation("notenoughupdates:pv_extra.png");
+	private static final List<String> skills = Arrays.asList(
+		"taming",
+		"mining",
+		"foraging",
+		"enchanting",
+		"farming",
+		"combat",
+		"fishing",
+		"alchemy",
+		"carpentry"
+	); // TODO: why is this hardcoded
 	private TreeMap<Integer, Set<String>> topKills = null;
 	private TreeMap<Integer, Set<String>> topDeaths = null;
 	private int deathScroll = 0;
 	private int killScroll = 0;
-	private int mouseDWheel = 0;
 
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
@@ -77,9 +87,8 @@ public class ExtraPage extends GuiProfileViewerPage {
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		//Note: don't know why it made me make it return a boolean, but it fixed the error, so I left it alone.
 
-		//Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
+		// Dimensions: X: guiLeft + xStart + xOffset * 3, Y: guiTop + yStartBottom + 77, Width: 80, Height: 12
 		if (mouseX >= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 &&
 			mouseX <= GuiProfileViewer.getGuiLeft() + 22 + 103 * 3 + 80 &&
 			mouseY >= GuiProfileViewer.getGuiTop() + 105 + 77 && mouseY <= GuiProfileViewer.getGuiTop() + 105 + 77 + 12) {
@@ -93,17 +102,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 		return false;
 	}
 
-	// pls update in the future tyvm !!!
-	public final static HashMap<String, Integer> slayers = new HashMap<String, Integer>() {
-		{
-			put("zombie", 5);
-			put("spider", 4);
-			put("wolf", 4);
-			put("enderman", 4);
-			put("blaze", 4);
-		}
-	};
-
 	public void drawEssence(
 		JsonObject profileInfo,
 		float xStart,
@@ -113,16 +111,17 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float mouseX,
 		float mouseY
 	) {
-		int guiLeft = GuiProfileViewer.getGuiLeft();
-		int guiTop = GuiProfileViewer.getGuiTop();
-		yStartTop += 77;
 		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
-		JsonObject parents = Constants.PARENTS;
+
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+		yStartTop += 77;
+
 		JsonArray essenceArray = new JsonArray();
-		essenceArray.addAll(parents.get("ESSENCE_WITHER").getAsJsonArray());
+		essenceArray.addAll(Constants.PARENTS.get("ESSENCE_WITHER").getAsJsonArray());
 		//add wither essence since it's not part of the parents array
 		essenceArray.add(new JsonPrimitive("ESSENCE_WITHER"));
 
@@ -146,6 +145,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				guiTop + yStartTop + (yOffset - 1) * i,
 				76
 			);
+
 			if (Constants.ESSENCESHOPS == null) return;
 			JsonObject essenceShops = Constants.ESSENCESHOPS;
 			if (mouseX >= guiLeft + xStart + xOffset && mouseX <= guiLeft + xStart + xOffset + 76 &&
@@ -166,7 +166,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 					String name = entry.getValue().getAsJsonObject().get("name").getAsString();
 					getInstance().tooltipToDisplay.add(EnumChatFormatting.GOLD + name + ": " + formatting + perkTier + "/" + max);
 				}
-
 			}
 		}
 	}
@@ -179,11 +178,13 @@ public class ExtraPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_extra);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
-		if (profileInfo == null) return;
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInfo = selectedProfile.getProfileJson();
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		float xStart = 22;
 		float xOffset = 103;
@@ -221,7 +222,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
-		JsonObject guildInfo = profile.getGuildInformation(null);
+		JsonObject guildInfo = GuiProfileViewer.getProfile().getOrLoadGuildInformation(null);
 		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
 		{
 			if (shouldRenderGuild) {
@@ -266,24 +267,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			float totalSlayerCount = 0;
 			float totalSlayerXP = 0;
 
-			List<String> skills = Arrays.asList(
-				"taming",
-				"mining",
-				"foraging",
-				"enchanting",
-				"farming",
-				"combat",
-				"fishing",
-				"alchemy",
-				"carpentry"
-			);
-
 			for (Map.Entry<String, ProfileViewer.Level> entry : skyblockInfo.entrySet()) {
 				if (skills.contains(entry.getKey())) {
 					totalSkillLVL += entry.getValue().level;
 					totalTrueSkillLVL += Math.floor(entry.getValue().level);
 					totalSkillCount++;
-				} else if (slayers.containsKey(entry.getKey())) {
+				} else if (Weight.SLAYER_NAMES.contains(entry.getKey())) {
 					totalSlayerLVL += entry.getValue().level;
 					totalSlayerCount++;
 					totalSlayerXP += entry.getValue().totalXp;
@@ -296,7 +285,9 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "AVG Skill Level",
-				EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10,
+				selectedProfile.skillsApiEnabled() ?
+					EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10 :
+					EnumChatFormatting.RED + "Skills API not enabled!",
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset,
 				76
@@ -304,7 +295,9 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.RED + "True AVG Skill Level",
-				EnumChatFormatting.WHITE.toString() + Math.floor(avgTrueSkillLVL * 10) / 10,
+				selectedProfile.skillsApiEnabled() ?
+					EnumChatFormatting.WHITE.toString() + Math.floor(avgTrueSkillLVL * 10) / 10 :
+					EnumChatFormatting.RED + "Skills API not enabled!",
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 2,
 				76
@@ -532,7 +525,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 
-		mouseDWheel = Mouse.getDWheel();
+		int mouseDWheel = Mouse.getDWheel();
 		if (mouseX >= killDeathX && mouseX <= killDeathX + 76) {
 			if (mouseY >= guiTop + yStartTop && mouseY <= guiTop + yStartTop + 65) {
 				if (mouseDWheel > 0) {

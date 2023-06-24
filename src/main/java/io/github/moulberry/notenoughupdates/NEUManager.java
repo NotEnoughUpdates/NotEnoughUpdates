@@ -39,7 +39,6 @@ import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
-import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -49,7 +48,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
@@ -63,7 +61,6 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -143,7 +140,6 @@ public class NEUManager {
 
 	public File configLocation;
 	public File repoLocation;
-	public File configFile;
 
 	public KatSitterOverlay katSitterOverlay;
 
@@ -160,24 +156,6 @@ public class NEUManager {
 
 		this.repoLocation = new File(configLocation, "repo");
 		repoLocation.mkdir();
-	}
-
-	public String getCurrentProfile() {
-		return SBInfo.getInstance().currentProfile;
-	}
-
-	public <T> T getJsonFromFile(File file, Class<T> clazz) {
-		try (
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file),
-				StandardCharsets.UTF_8
-			))
-		) {
-			T obj = gson.fromJson(reader, clazz);
-			return obj;
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 	/**
@@ -738,17 +716,6 @@ public class NEUManager {
 		return inputWithoutLastChar + incrementedLastChar;
 	}
 
-	public JsonObject getJsonFromItemBytes(String item_bytes) {
-		try {
-			NBTTagCompound tag =
-				CompressedStreamTools.readCompressed(new ByteArrayInputStream(Base64.getDecoder().decode(item_bytes)));
-			//System.out.println(tag.toString());
-			return getJsonFromNBT(tag);
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
 	public static String getUUIDFromNBT(NBTTagCompound tag) {
 		String uuid = null;
 		if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
@@ -778,16 +745,6 @@ public class NEUManager {
 		return null;
 	}
 
-	/**
-	 * Replaced with {@link #createItemResolutionQuery()}
-	 */
-	@Deprecated
-	public String getInternalnameFromNBT(NBTTagCompound tag) {
-		return createItemResolutionQuery()
-			.withItemNBT(tag)
-			.resolveInternalName();
-	}
-
 	public String[] getLoreFromNBT(NBTTagCompound tag) {
 		return ItemUtils.getLore(tag).toArray(new String[0]);
 	}
@@ -806,7 +763,9 @@ public class NEUManager {
 
 		if (id == 141) id = 391; //for some reason hypixel thinks carrots have id 141
 
-		String internalname = getInternalnameFromNBT(tag);
+		String internalname = createItemResolutionQuery()
+			.withItemNBT(tag)
+			.resolveInternalName();
 		if (internalname == null) return null;
 
 		NBTTagCompound display = tag.getCompoundTag("display");
@@ -818,8 +777,6 @@ public class NEUManager {
 			itemid = itemMc.getRegistryName();
 		}
 		String displayName = display.getString("Name");
-		String[] info = new String[0];
-		String clickcommand = "";
 
 		JsonObject item = new JsonObject();
 		item.addProperty("internalname", internalname);
@@ -1229,25 +1186,6 @@ public class NEUManager {
 		json.add("lore", jsonlore);
 
 		return json;
-	}
-
-	public boolean writeItemJson(
-		String internalname, String itemid, String displayName, String[] lore, String crafttext,
-		String infoType, String[] info, String clickcommand, int damage, NBTTagCompound nbttag
-	) {
-		return writeItemJson(
-			new JsonObject(),
-			internalname,
-			itemid,
-			displayName,
-			lore,
-			crafttext,
-			infoType,
-			info,
-			clickcommand,
-			damage,
-			nbttag
-		);
 	}
 
 	public boolean writeItemJson(

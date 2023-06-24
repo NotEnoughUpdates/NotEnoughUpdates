@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -34,7 +35,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -213,11 +213,10 @@ public class CrystalHollowOverlay extends TextOverlay {
 					if (crystalCheck()) {
 						int count = getCountCrystal(hidden.crystals);
 						float percent = (float) count / hidden.crystals.size() * 100;
-						DecimalFormat df = new DecimalFormat("#.#");
 						overlayStrings.add(
 							EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] +
 								"Crystals: " + getColor(percent) +
-								df.format(percent) + "%");
+								StringUtils.formatToTenths(percent) + "%");
 					}
 					break;
 				case 3:
@@ -334,11 +333,10 @@ public class CrystalHollowOverlay extends TextOverlay {
 	) {
 		int count = getCount(parts, inventoryData, storageData);
 		float percent = (float) count / parts.size() * 100;
-		DecimalFormat df = new DecimalFormat("#.#");
 		overlayStrings.add(
 			EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.mining.crystalHollowPartColor] + text + ": " +
 				getColor(percent) +
-				df.format(percent) + "%");
+				StringUtils.formatToTenths(percent) + "%");
 	}
 
 	private EnumChatFormatting getColor(float percent) {

@@ -19,18 +19,14 @@
 
 package io.github.moulberry.notenoughupdates.core.util;
 
-import com.google.common.collect.Sets;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Set;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class StringUtils {
-	public static final Set<String> PROTOCOLS = Sets.newHashSet("http", "https");
+	private final static DecimalFormat TENTHS_DECIMAL_FORMAT = new DecimalFormat("#.#");
+	public static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 
 	public static String cleanColour(String in) {
 		return in.replaceAll("(?i)\\u00A7.", "");
@@ -38,24 +34,6 @@ public class StringUtils {
 
 	public static String cleanColourNotModifiers(String in) {
 		return in.replaceAll("(?i)\\u00A7[0-9a-f]", "\u00A7r");
-	}
-
-	public static String trimToWidth(String str, int len) {
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-		String trim = fr.trimStringToWidth(str, len);
-
-		if (str.length() != trim.length() && !trim.endsWith(" ")) {
-			char next = str.charAt(trim.length());
-			if (next != ' ') {
-				String[] split = trim.split(" ");
-				String last = split[split.length - 1];
-				if (last.length() < 8) {
-					trim = trim.substring(0, trim.length() - last.length());
-				}
-			}
-		}
-
-		return trim;
 	}
 
 	public static String substringBetween(String str, String open, String close) {
@@ -99,22 +77,6 @@ public class StringUtils {
 		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + sizeSuffix[iteration] : shortNumberFormat(d, iteration + 1);
 	}
 
-	public static String urlEncode(String something) {
-		try {
-			return URLEncoder.encode(something, StandardCharsets.UTF_8.name());
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e); // UTF 8 should always be present
-		}
-	}
-
-	/**
-	 * taken and modified from https://stackoverflow.com/a/23326014/5507634
-	 */
-	public static String replaceLast(String string, String toReplace, String replacement) {
-		int start = string.lastIndexOf(toReplace);
-		return string.substring(0, start) + replacement + string.substring(start + toReplace.length());
-	}
-
 	public static String removeLastWord(String string, String splitString) {
 		try {
 			String[] split = string.split(splitString);
@@ -142,5 +104,13 @@ public class StringUtils {
 			}
 		}
 		return true;
+	}
+
+	public static String formatToTenths(Number num) {
+		return TENTHS_DECIMAL_FORMAT.format(num);
+	}
+
+	public static String formatNumber(Number num) {
+		return NUMBER_FORMAT.format(num);
 	}
 }

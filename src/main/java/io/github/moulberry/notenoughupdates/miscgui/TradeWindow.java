@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -46,12 +47,10 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -74,10 +73,6 @@ public class TradeWindow {
 	private static Integer[] theirTradeIndexes = new Integer[16];
 	private static String[] theirTradeOld = new String[16];
 	private static Long[] theirTradeChangesMillis = new Long[16];
-
-	private static ItemStack lastBackpack;
-	private static int lastBackpackX;
-	private static int lastBackpackY;
 
 	public static boolean hypixelTradeWindowActive(String containerName) {
 		return containerName != null && containerName.trim().startsWith("You     ");
@@ -129,9 +124,8 @@ public class TradeWindow {
 			JsonObject info = NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(internalName);
 			if (info != null && !NotEnoughUpdates.INSTANCE.manager.auctionManager.isVanillaItem(internalName) &&
 				info.has("price") && info.has("count")) {
-				long auctionPricePer = (long) (info.get("price").getAsDouble() / info.get("count").getAsDouble());
 
-				pricePer = auctionPricePer;
+				pricePer = (long) (info.get("price").getAsDouble() / info.get("count").getAsDouble());
 			}
 		}
 		if (pricePer == -1) {
@@ -293,7 +287,9 @@ public class TradeWindow {
 					for (int k = 0; k < items.tagCount(); k++) {
 						if (items.getCompoundTagAt(k).getKeySet().size() > 0) {
 							NBTTagCompound nbt = items.getCompoundTagAt(k).getCompoundTag("tag");
-							String internalname2 = NotEnoughUpdates.INSTANCE.manager.getInternalnameFromNBT(nbt);
+							String internalname2 = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+																																			.withItemNBT(nbt)
+																																			.resolveInternalName();
 							if (internalname2 != null) {
 								long pricePer2 = getPrice(internalname2);
 								if (pricePer2 > 0) {
@@ -412,7 +408,7 @@ public class TradeWindow {
 			if (stack == null) continue;
 
 			NBTTagCompound tag = stack.getTagCompound();
-			String uuid = null;
+			String uuid;
 			if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
 				NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 
@@ -533,7 +529,7 @@ public class TradeWindow {
 				if (stack == null) continue;
 
 				NBTTagCompound tag = stack.getTagCompound();
-				String uuid = null;
+				String uuid;
 				if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
 					NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 
@@ -820,8 +816,6 @@ public class TradeWindow {
 				theirPrice += processTopItems(stack, theirTopItems, theirTopItemsStack, theirTopItemsCount);
 			}
 
-			NumberFormat format = NumberFormat.getInstance(Locale.US);
-
 			GlStateManager.disableLighting();
 			GlStateManager.color(1, 1, 1, 1);
 			Minecraft.getMinecraft().getTextureManager().bindTexture(location);
@@ -831,7 +825,7 @@ public class TradeWindow {
 			drawStringShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "Total Value",
 				guiLeft - 40 - 3, guiTop + 11, 72
 			);
-			drawStringShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + format.format(ourPrice),
+			drawStringShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + StringUtils.formatNumber(ourPrice),
 				guiLeft - 40 - 3, guiTop + 21, 72
 			);
 
@@ -861,7 +855,7 @@ public class TradeWindow {
 						GlStateManager.disableBlend();
 						GlStateManager.color(1, 1, 1, 1);
 						drawStringShadow(
-							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + format.format(entry.getKey()),
+							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + StringUtils.formatNumber(entry.getKey()),
 							guiLeft - 29 - 3,
 							guiTop + 57 + 18 * ourTopIndex,
 							52
@@ -875,7 +869,7 @@ public class TradeWindow {
 							72
 						);
 						drawStringShadow(
-							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + format.format(entry.getKey()),
+							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + StringUtils.formatNumber(entry.getKey()),
 							guiLeft - 40 - 3,
 							guiTop + 56 + 20 * ourTopIndex,
 							72
@@ -894,7 +888,7 @@ public class TradeWindow {
 			drawStringShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + "Total Value",
 				guiLeft + xSize + 3 + 40, guiTop + 11, 72
 			);
-			drawStringShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + format.format(theirPrice),
+			drawStringShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + StringUtils.formatNumber(theirPrice),
 				guiLeft + xSize + 3 + 40, guiTop + 21, 72
 			);
 
@@ -924,7 +918,7 @@ public class TradeWindow {
 						GlStateManager.disableBlend();
 						GlStateManager.color(1, 1, 1, 1);
 						drawStringShadow(
-							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + format.format(entry.getKey()),
+							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + StringUtils.formatNumber(entry.getKey()),
 							guiLeft + xSize + 3 + 51,
 							guiTop + 57 + 18 * theirTopIndex,
 							52
@@ -935,7 +929,7 @@ public class TradeWindow {
 							guiLeft + xSize + 3 + 40, guiTop + 46 + 20 * theirTopIndex, 72
 						);
 						drawStringShadow(
-							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + format.format(entry.getKey()),
+							EnumChatFormatting.GOLD.toString() + EnumChatFormatting.BOLD + StringUtils.formatNumber(entry.getKey()),
 							guiLeft + xSize + 3 + 40,
 							guiTop + 56 + 20 * theirTopIndex,
 							72
@@ -1099,15 +1093,12 @@ public class TradeWindow {
 				if (mouseY >= guiTop + ySize - 19 && mouseY <= guiTop + ySize - 19 + 17) {
 					NotEnoughUpdates.INSTANCE.config.tradeMenu.enableCustomTrade =
 						!NotEnoughUpdates.INSTANCE.config.tradeMenu.enableCustomTrade;
-					return;
 				} else if (mouseY >= guiTop + ySize - 38 && mouseY <= guiTop + ySize - 38 + 17) {
 					NotEnoughUpdates.INSTANCE.config.tradeMenu.customTradePrices =
 						!NotEnoughUpdates.INSTANCE.config.tradeMenu.customTradePrices;
-					return;
 				} else if (mouseY >= guiTop + ySize - 57 && mouseY <= guiTop + ySize - 57 + 17) {
 					NotEnoughUpdates.INSTANCE.config.tradeMenu.customTradePriceStyle =
 						!NotEnoughUpdates.INSTANCE.config.tradeMenu.customTradePriceStyle;
-					return;
 				}
 			}
 		}

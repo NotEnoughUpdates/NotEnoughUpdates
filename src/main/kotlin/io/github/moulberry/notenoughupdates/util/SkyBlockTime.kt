@@ -82,9 +82,9 @@ data class SkyBlockTime(
             val minute = getUnit(skyBlockMinute)
             val second = getUnit(skyBlockSecond)
             return SkyBlockTime(year, month, day, hour, minute, second)
-
         }
 
+        @JvmStatic
         fun now(): SkyBlockTime {
             return fromInstant(Instant.now())
         }
@@ -106,6 +106,28 @@ data class SkyBlockTime(
             }
 
             return prefix + name
+        }
+
+        fun monthNameToInt(month: String): Int? {
+            val superSeason = when {
+                month.endsWith("Spring") -> 2
+                month.endsWith("Summer") -> 5
+                month.endsWith("Autumn") -> 8
+                month.endsWith("Winter") -> 11
+                else -> return null
+            }
+            val subSeason = when {
+                month.startsWith("Early") -> -1
+                month.startsWith("Late") -> 1
+                else -> 0
+            }
+            return superSeason + subSeason
+        }
+
+        fun fromDayMonthYear(day: Int, month: String, year: Int): SkyBlockTime? {
+            return monthNameToInt(month)?.let {
+                SkyBlockTime(year = year, month = it, day = day)
+            }
         }
 
         fun daySuffix(n: Int): String {

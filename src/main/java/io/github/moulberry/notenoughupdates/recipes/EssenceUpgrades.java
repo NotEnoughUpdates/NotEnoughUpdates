@@ -229,7 +229,7 @@ public class EssenceUpgrades implements NeuRecipe {
 			if (essenceItemStack != null) {
 				essenceItemStack = essenceItemStack.copy();
 				essenceItemStack.setStackDisplayName(
-					EnumChatFormatting.AQUA + NumberFormat.getInstance().format(tierUpgrade.getEssenceRequired()) + " " + EnumChatFormatting.DARK_GRAY +
+					EnumChatFormatting.AQUA + StringUtils.formatNumber(tierUpgrade.getEssenceRequired()) + " " + EnumChatFormatting.DARK_GRAY +
 						tierUpgrade.getEssenceType() + " Essence");
 
 				essenceItemStack.getTagCompound().setInteger(

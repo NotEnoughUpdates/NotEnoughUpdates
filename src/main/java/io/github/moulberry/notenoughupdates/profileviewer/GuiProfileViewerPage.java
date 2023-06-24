@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 public abstract class GuiProfileViewerPage {
@@ -34,6 +35,13 @@ public abstract class GuiProfileViewerPage {
 	 */
 	public GuiProfileViewer getInstance() {
 		return instance;
+	}
+
+	/**
+	 * @see GuiProfileViewer#getSelectedProfile()
+	 */
+	public @Nullable SkyblockProfiles.SkyblockProfile getSelectedProfile() {
+		return GuiProfileViewer.getSelectedProfile();
 	}
 
 	public abstract void drawPage(int mouseX, int mouseY, float partialTicks);

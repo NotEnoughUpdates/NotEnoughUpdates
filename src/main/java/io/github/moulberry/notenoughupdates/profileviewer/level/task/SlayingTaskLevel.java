@@ -24,10 +24,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
-import io.github.moulberry.notenoughupdates.profileviewer.ExtraPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -37,25 +39,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SlayingTaskLevel {
+public class SlayingTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
 	private final int[] bossLow = {25, 50, 100, 150, 250, 1000};
 	private final int[] thorn = {25, 50, 150, 250, 400, 1000};
 	private final int[] bossHigh = {50, 100, 150, 250, 500, 750, 1000};
 
+	public SlayingTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public SlayingTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		// slayer
 		JsonObject slayingTask = levelPage.getConstant().get("slaying_task").getAsJsonObject();
 		JsonArray slayerLevelUpXp = slayingTask.get("slayer_level_up_xp").getAsJsonArray();
-		Map<String, ProfileViewer.Level> skyblockInfo = levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 		int sbXpGainedSlayer = 0;
 		if (skyblockInfo != null) {
-			for (String slayer : ProfileViewer.SLAYERS) {
+			for (String slayer : Weight.SLAYER_NAMES) {
 				ProfileViewer.Level level = skyblockInfo.get(slayer);
 				for (int i = 0; i < (int) level.level; i++) {
 					int asInt = slayerLevelUpXp.get(i).getAsInt();
@@ -105,8 +113,8 @@ public class SlayingTaskLevel {
 		int bossCollectionXp = 0;
 		JsonArray dungeonCollectionXp = bossCollectionsXp.getAsJsonArray("dungeon_collection_xp");
 		for (int i = 1; i <= 7; i++) {
-			if (!allComps.containsKey(i + "")) continue;
-			double value = allComps.get(i + "");
+			if (!allComps.containsKey(String.valueOf(i))) continue;
+			double value = allComps.get(String.valueOf(i));
 			switch (i) {
 				case 1:
 				case 2:
@@ -154,7 +162,7 @@ public class SlayingTaskLevel {
 		}
 
 		int sbXpBestiary = 0;
-		int bestiaryTiers = GuiProfileViewer.getProfile().getBestiaryTiers(object);
+		int bestiaryTiers = GuiProfileViewer.getSelectedProfile().getBestiaryLevel();
 		sbXpBestiary += bestiaryTiers;
 		sbXpBestiary = sbXpBestiary + (sbXpBestiary / 10) * 2;
 
@@ -184,12 +192,17 @@ public class SlayingTaskLevel {
 		int sbXpFromSlayerDefeat = 0;
 
 		JsonArray defeatSlayersXp = slayingTask.get("defeat_slayers_xp").getAsJsonArray();
-		for (String s : ExtraPage.slayers.keySet()) {
-			int maxLevel = ExtraPage.slayers.get(s);
+		JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
+		if (slayerToTier == null) {
+			Utils.showOutdatedRepoNotification();
+			return;
+		}
+		for (Map.Entry<String, JsonElement> entry : slayerToTier.entrySet()) {
+			int maxLevel = entry.getValue().getAsInt();
 			for (int i = 0; i < 5; i++) {
 				if (i >= maxLevel) break;
 				float tier = Utils.getElementAsFloat(
-					Utils.getElement(object, "slayer_bosses." + s + ".boss_kills_tier_" + i),
+					Utils.getElement(object, "slayer_bosses." + entry.getKey() + ".boss_kills_tier_" + i),
 					0
 				);
 				if (tier != 0) {
@@ -247,7 +260,6 @@ public class SlayingTaskLevel {
 			true,
 			lore
 		);
-		totalXp += sbXpBestiary;
 	}
 
 	private int loopThroughCollection(int[] array, double value, JsonArray jsonArray) {

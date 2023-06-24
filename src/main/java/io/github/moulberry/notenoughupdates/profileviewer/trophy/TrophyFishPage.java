@@ -23,11 +23,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Items;
@@ -38,17 +39,19 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
 
 public class TrophyFishPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final Map<String, EnumChatFormatting> internalTrophyFish = new HashMap<String, EnumChatFormatting>() {
 		{
 			put("gusher", EnumChatFormatting.WHITE);
@@ -122,7 +125,6 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 	};
 	private static final ResourceLocation TROPHY_FISH_TEXTURE = new ResourceLocation("notenoughupdates:pv_trophy_fish_tab.png");
-	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance(Locale.US);
 	private static final String checkX = "§c✖";
 	private static final String check = "§a✔";
 	private final Map<String, Integer> total = new HashMap<>();
@@ -141,18 +143,19 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		trophyFishList.clear();
 
-		JsonObject profileInformation = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInformation = selectedProfile.getProfileJson();
 		if (profileInformation == null || !profileInformation.has("trophy_fish")) {
 			Utils.drawStringCentered(EnumChatFormatting.RED + "No data found", guiLeft + 431 / 2f, guiTop + 101, true, 0);
 			return;
 		}
-		JsonObject trophyObject = profileInformation.get("trophy_fish").getAsJsonObject();
+		JsonObject trophyObject = profileInformation.getAsJsonObject("trophy_fish");
 
 		loadTrophyInformation(trophyObject);
-
-		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		int width = scaledResolution.getScaledWidth();
-		int height = scaledResolution.getScaledHeight();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(TROPHY_FISH_TEXTURE);
 		Utils.drawTexturedRect(guiLeft, guiTop, 431, 202, GL11.GL_NEAREST);
@@ -161,7 +164,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		GlStateManager.disableLighting();
 		RenderHelper.enableGUIStandardItemLighting();
 
-		JsonObject stats = profileInformation.get("stats").getAsJsonObject();
+		JsonObject stats = profileInformation.getAsJsonObject("stats");
 
 		int thunderKills = 0;
 		if (stats.has("kills_thunder")) {
@@ -209,21 +212,23 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			RenderHelper.enableGUIStandardItemLighting();
 			Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 			Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap = value.getTrophyFishRarityIntegerMap();
-			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.BRONZE)) {
+			TrophyFish.TrophyFishRarity highestRarity = getHighestRarity(trophyFishRarityIntegerMap).orElse(null);
+
+			if (highestRarity == TrophyFish.TrophyFishRarity.BRONZE) {
 				GlStateManager.color(255 / 255f, 130 / 255f, 0 / 255f, 1);
 			}
-			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.SILVER)) {
+			if (highestRarity == TrophyFish.TrophyFishRarity.SILVER) {
 				GlStateManager.color(192 / 255f, 192 / 255f, 192 / 255f, 1);
 			}
-			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.GOLD)) {
+			if (highestRarity == TrophyFish.TrophyFishRarity.GOLD) {
 				GlStateManager.color(1, 0.82F, 0, 1);
 			}
-			if (trophyFishRarityIntegerMap.containsKey(TrophyFish.TrophyFishRarity.DIAMOND)) {
+			if (highestRarity == TrophyFish.TrophyFishRarity.DIAMOND) {
 				GlStateManager.color(31 / 255f, 216 / 255f, 241 / 255f, 1);
 			}
 			Utils.drawTexturedRect(x - 2, y - 2, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 			GlStateManager.color(1, 1, 1, 1);
-			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(getItem(value.getName()), x, y);
+			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(getItem(value.getName(), highestRarity), x, y);
 
 			if (mouseX >= x && mouseX < x + 24) {
 				if (mouseY >= y && mouseY <= y + 24) {
@@ -340,7 +345,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		if (trophyFishList.get(name) != null) {
 			tooltip.add(" ");
 			tooltip.add(EnumChatFormatting.GRAY + "Total: " + EnumChatFormatting.GOLD +
-				NUMBER_FORMAT.format(trophyFishList.get(name).getTotal()));
+				StringUtils.formatNumber(trophyFishList.get(name).getTotal()));
 		}
 		return tooltip;
 	}
@@ -356,14 +361,21 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		}
 
 		if (trophyFishRarityIntegerMap.containsKey(rarity)) {
-			return color + name + ": " + EnumChatFormatting.GOLD + NUMBER_FORMAT.format(trophyFishRarityIntegerMap.get(rarity));
+			return color + name + ": " + EnumChatFormatting.GOLD + StringUtils.formatNumber(trophyFishRarityIntegerMap.get(
+				rarity));
 		} else {
 			return color + name + ": " + checkX;
 		}
 	}
 
-	private ItemStack getItem(String name) {
-		String repoName = name.toUpperCase(Locale.US).replace(" ", "_") + "_BRONZE";
+	private Optional<TrophyFish.TrophyFishRarity> getHighestRarity(Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityMap) {
+		if (trophyFishRarityMap == null) return Optional.empty();
+		return trophyFishRarityMap.keySet().stream().max(Comparator.comparing(Enum::ordinal));
+	}
+
+	private ItemStack getItem(String name, TrophyFish.TrophyFishRarity highestCaughtRarity) {
+		String repoName = name.toUpperCase(Locale.US).replace(" ", "_") + "_" +
+			(highestCaughtRarity == null ? "BRONZE" : highestCaughtRarity.name());
 		JsonObject jsonItem = NotEnoughUpdates.INSTANCE.manager.getItemInformation().get(repoName);
 		return NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonItem);
 	}

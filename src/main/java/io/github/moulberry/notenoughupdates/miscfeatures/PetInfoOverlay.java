@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -36,6 +37,7 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
@@ -66,15 +68,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -283,15 +281,15 @@ public class PetInfoOverlay extends TextOverlay {
 		}
 	}
 
-	private static void getAndSetPet(ProfileViewer.Profile profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profile.getLatestProfile());
-		JsonObject invInfo = profile.getInventoryInfo(profile.getLatestProfile());
-		JsonObject profileInfo = profile.getProfileInformation(profile.getLatestProfile());
+	private static void getAndSetPet(SkyblockProfiles profile) {
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
+		Map<String, JsonArray> invInfo = profile.getLatestProfile().getInventoryInfo();
+		JsonObject profileInfo = profile.getLatestProfile().getProfileJson();
 		if (invInfo != null && profileInfo != null) {
 			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
 			boolean hasBeastmasterCrest = false;
 			Rarity currentBeastRarity = Rarity.COMMON;
-			for (JsonElement talisman : invInfo.get("talisman_bag").getAsJsonArray()) {
+			for (JsonElement talisman : invInfo.get("talisman_bag")) {
 				if (talisman.isJsonNull()) continue;
 				String internalName = talisman.getAsJsonObject().get("internalname").getAsString();
 				if (internalName.startsWith("BEASTMASTER_CREST")) {
@@ -323,7 +321,9 @@ public class PetInfoOverlay extends TextOverlay {
 				}
 			}
 		}
-		if (skyblockInfo != null) config.tamingLevel = (int) skyblockInfo.get("taming").level;
+		if (skyblockInfo != null && profile.getLatestProfile().skillsApiEnabled()) {
+			config.tamingLevel = (int) skyblockInfo.get("taming").level;
+		}
 
 		//JsonObject petObject = profile.getPetsInfo(profile.getLatestProfile());
         /*JsonObject petsJson = Constants.PETS;
@@ -515,10 +515,9 @@ public class PetInfoOverlay extends TextOverlay {
 	}
 
 	public float getLevelPercent(Pet pet) {
-		DecimalFormat df = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 		if (pet == null) return 0;
 		try {
-			return Float.parseFloat(df.format(Math.min(pet.petLevel.getPercentageToNextLevel() * 100f, 100f)));
+			return Float.parseFloat(StringUtils.formatToTenths(Math.min(pet.petLevel.getPercentageToNextLevel() * 100f, 100f)));
 		} catch (Exception ignored) {
 			return 0;
 		}
@@ -1085,13 +1084,13 @@ public class PetInfoOverlay extends TextOverlay {
 
 	public String roundFloat(float f) {
 		if (f % 1 < 0.05f) {
-			return NumberFormat.getNumberInstance().format((int) f);
+			return StringUtils.formatNumber((int) f);
 		} else {
 			String s = Utils.floatToString(f, 1);
 			if (s.contains(".")) {
-				return NumberFormat.getNumberInstance().format((int) f) + '.' + s.split("\\.")[1];
+				return StringUtils.formatNumber((int) f) + '.' + s.split("\\.")[1];
 			} else if (s.contains(",")) {
-				return NumberFormat.getNumberInstance().format((int) f) + ',' + s.split(",")[1];
+				return StringUtils.formatNumber((int) f) + ',' + s.split(",")[1];
 			} else {
 				return s;
 			}

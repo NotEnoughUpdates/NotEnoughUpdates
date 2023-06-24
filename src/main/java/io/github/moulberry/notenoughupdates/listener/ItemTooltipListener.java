@@ -30,7 +30,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -57,7 +56,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -164,7 +162,6 @@ public class ItemTooltipListener {
 
 		for (int k = 0; k < event.toolTip.size(); k++) {
 			String line = event.toolTip.get(k);
-			boolean thisLineHasEnchants = false;
 
 			if (line.endsWith(EnumChatFormatting.DARK_GRAY + "Reforge Stone") &&
 				NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showReforgeStats) {
@@ -299,7 +296,7 @@ public class ItemTooltipListener {
 
 						if (reforgeCost >= 0) {
 							String text = EnumChatFormatting.BLUE + "Apply Cost: " + EnumChatFormatting.GOLD +
-								NumberFormat.getNumberInstance().format(reforgeCost) + " coins";
+								StringUtils.formatNumber(reforgeCost) + " coins";
 							newTooltip.add("");
 							newTooltip.add(text);
 						}
@@ -495,12 +492,11 @@ public class ItemTooltipListener {
 						}
 					}
 
-					NumberFormat format = NumberFormat.getInstance(Locale.US);
 					String valueStringBIN1;
 					String valueStringBIN2;
 					if (totalValue >= 0) {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Value (BIN): ";
-						valueStringBIN2 = EnumChatFormatting.GOLD + format.format(totalValue) + " coins";
+						valueStringBIN2 = EnumChatFormatting.GOLD + StringUtils.formatNumber(totalValue) + " coins";
 					} else {
 						valueStringBIN1 = EnumChatFormatting.YELLOW + "Can't find BIN: ";
 						valueStringBIN2 = missingItem;
@@ -513,9 +509,9 @@ public class ItemTooltipListener {
 
 					String plStringBIN;
 					if (profitLossBIN >= 0) {
-						plStringBIN = prefix + "+" + format.format(profitLossBIN) + " coins";
+						plStringBIN = prefix + "+" + StringUtils.formatNumber(profitLossBIN) + " coins";
 					} else {
-						plStringBIN = prefix + "-" + format.format(-profitLossBIN) + " coins";
+						plStringBIN = prefix + "-" + StringUtils.formatNumber(-profitLossBIN) + " coins";
 					}
 
 					String neu = EnumChatFormatting.YELLOW + "[NEU] ";
@@ -526,7 +522,7 @@ public class ItemTooltipListener {
 					}
 
 					for (Map.Entry<String, Double> entry : itemValues.entrySet()) {
-						newTooltip.add(neu + entry.getKey() + prefix + "+" + format.format(entry.getValue().intValue()));
+						newTooltip.add(neu + entry.getKey() + prefix + "+" + StringUtils.formatNumber(entry.getValue().intValue()));
 					}
 				}
 			}

@@ -48,34 +48,30 @@ import java.util.stream.Collectors;
 
 public class ProfileViewerUtils {
 
-	public static JsonObject readInventoryInfo(JsonObject profileInfo, String bagName) {
-		JsonObject inventoryInfo = new JsonObject();
-		JsonElement element = Utils.getElement(profileInfo, bagName + ".data");
+	public static JsonArray readInventoryInfo(JsonObject profileInfo, String bagName) {
+		String bytes = Utils.getElementAsString(Utils.getElement(profileInfo, bagName + ".data"), "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
 
-		String bytes = Utils.getElementAsString(element, "Hz8IAAAAAAAAAD9iYD9kYD9kAAMAPwI/Gw0AAAA=");
-		NBTTagCompound inv_contents_nbt;
+		NBTTagCompound nbt;
 		try {
-			inv_contents_nbt = CompressedStreamTools.readCompressed(
+			nbt = CompressedStreamTools.readCompressed(
 				new ByteArrayInputStream(Base64.getDecoder().decode(bytes))
 			);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-		NBTTagList items = inv_contents_nbt.getTagList("i", 10);
+
+		NBTTagList items = nbt.getTagList("i", 10);
 		JsonArray contents = new JsonArray();
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
 		for (int j = 0; j < items.tagCount(); j++) {
-			JsonObject item = manager.getJsonFromNBTEntry(items.getCompoundTagAt(j));
-			contents.add(item);
+			contents.add(manager.getJsonFromNBTEntry(items.getCompoundTagAt(j)));
 		}
 
-		inventoryInfo.add(bagName, contents);
-		return inventoryInfo;
+		return contents;
 	}
 
-	public static int getMagicalPower(JsonObject inventoryInfo, JsonObject profileInfo) {
-		JsonArray talismanBag = inventoryInfo.get("talisman_bag").getAsJsonArray();
+	public static int getMagicalPower(JsonArray talismanBag, JsonObject profileInfo) {
 		Map<String, Integer> accessories = JsonUtils.getJsonArrayAsStream(talismanBag).map(o -> {
 			try {
 				return JsonToNBT.getTagFromJson(o.getAsJsonObject().get("nbttag").getAsString());
@@ -152,5 +148,48 @@ public class ProfileViewerUtils {
 			}
 		}
 		return powerAmount;
+	}
+
+	public static int getLevelingCap(JsonObject leveling, String skillName) {
+		JsonElement capsElement = Utils.getElement(leveling, "leveling_caps");
+		return capsElement != null && capsElement.isJsonObject() && capsElement.getAsJsonObject().has(skillName)
+			? capsElement.getAsJsonObject().get(skillName).getAsInt()
+			: 50;
+	}
+
+	public static ProfileViewer.Level getLevel(JsonArray levelingArray, float xp, int levelCap, boolean cumulative) {
+		ProfileViewer.Level levelObj = new ProfileViewer.Level();
+		levelObj.totalXp = xp;
+		levelObj.maxLevel = levelCap;
+
+		for (int level = 0; level < levelingArray.size(); level++) {
+			float levelXp = levelingArray.get(level).getAsFloat();
+
+			if (levelXp > xp) {
+				if (cumulative) {
+					float previous = level > 0 ? levelingArray.get(level - 1).getAsFloat() : 0;
+					levelObj.maxXpForLevel = (levelXp - previous);
+					levelObj.level = 1 + level + (xp - levelXp) / levelObj.maxXpForLevel;
+				} else {
+					levelObj.maxXpForLevel = levelXp;
+					levelObj.level = level + xp / levelXp;
+				}
+
+				if (levelObj.level > levelCap) {
+					levelObj.level = levelCap;
+					levelObj.maxed = true;
+				}
+
+				return levelObj;
+			} else {
+				if (!cumulative) {
+					xp -= levelXp;
+				}
+			}
+		}
+
+		levelObj.level = Math.min(levelingArray.size(), levelCap);
+		levelObj.maxed = true;
+		return levelObj;
 	}
 }

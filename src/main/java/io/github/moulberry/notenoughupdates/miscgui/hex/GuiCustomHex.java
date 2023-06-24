@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GlScissorStack;
 import io.github.moulberry.notenoughupdates.core.GuiElementTextField;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingFloat;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.miscfeatures.SlotLocking;
@@ -63,13 +64,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -82,13 +81,9 @@ public class GuiCustomHex extends Gui {
 		"textures/entity/enchanting_table_book.png");
 	private static final ModelBook MODEL_BOOK = new ModelBook();
 
-	private static final int EXPERIENCE_ORB_COUNT = 30;
-
 	private static final Pattern XP_COST_PATTERN = Pattern.compile("\\u00a73(\\d+) Exp Levels");
 	private static final Pattern ENCHANT_LEVEL_PATTERN = Pattern.compile("(.*)_(.*)");
 	private static final Pattern ENCHANT_NAME_PATTERN = Pattern.compile("([^IVX]*) ([IVX]*)");
-
-	public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 
 	public class Enchantment {
 		public int slotIndex;
@@ -112,8 +107,10 @@ public class GuiCustomHex extends Gui {
 			this.level = level;
 			boolean isUlt = false;
 			for (String lore : displayLore) {
-				if (lore.contains("§l")) isUlt = true;
-				break;
+				if (lore.contains("§l")) {
+					isUlt = true;
+					break;
+				}
 			}
 			JsonObject bazaarInfo = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(
 				(isUlt ? "ULTIMATE_" : "") + enchId.toUpperCase() + ";" + level);
@@ -502,7 +499,7 @@ public class GuiCustomHex extends Gui {
 									int index = 0;
 									for (String lore : enchantment.displayLore) {
 										if (lore.contains("N/A") && enchantment.price > 0) {
-											String price = numberFormat.format(enchantment.price);
+											String price = StringUtils.formatNumber(enchantment.price);
 											enchantment.displayLore.set(index, "\u00a76" + price + ".0 Coins");
 										}
 										if (lore.contains("Loading...")) {
@@ -1532,7 +1529,7 @@ public class GuiCustomHex extends Gui {
 			fr.drawString(levelStr, left + 8 - levelWidth / 2, top + 4 + 1, 0x2d2102, false);
 			fr.drawString(levelStr, left + 8 - levelWidth / 2, top + 4, colour, false);
 
-			String priceStr = "" + numberFormat.format(enchanterCurrentEnch.price) + " Coins";
+			String priceStr = StringUtils.formatNumber(enchanterCurrentEnch.price) + " Coins";
 			if (enchanterCurrentEnch.price < 0) priceStr = "";
 			int priceWidth = fr.getStringWidth(priceStr);
 			int priceTop = guiTop + 16;
@@ -2076,7 +2073,7 @@ public class GuiCustomHex extends Gui {
 				}
 			}
 
-			String priceStr = "" + numberFormat.format(enchanterCurrentItem.getPrice()) + " Coins";
+			String priceStr = StringUtils.formatNumber(enchanterCurrentItem.getPrice()) + " Coins";
 			if (enchanterCurrentItem.price < 0) priceStr = "";
 			int priceWidth = fr.getStringWidth(priceStr);
 			int priceTop = guiTop + 10;

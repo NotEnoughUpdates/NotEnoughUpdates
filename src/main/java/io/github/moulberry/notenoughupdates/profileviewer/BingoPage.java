@@ -52,8 +52,7 @@ public class BingoPage extends GuiProfileViewerPage {
 
 	@Override
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
-		processBingoResources();
-		JsonObject bingoInfo = GuiProfileViewer.getProfile().getBingoInformation();
+		loadBingoResources();
 
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
 		int width = scaledResolution.getScaledWidth();
@@ -61,9 +60,16 @@ public class BingoPage extends GuiProfileViewerPage {
 
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		//check if the player has created a bingo profile for the current event
+
+		JsonObject bingoInfo = GuiProfileViewer.getProfile().getBingoInformation();
+		// Check if the player has created a bingo profile for the current event
 		if (bingoInfo == null) {
 			showMissingDataMessage(guiLeft, guiTop);
+			return;
+		}
+
+		// Bingo goals data not loaded yet
+		if (bingoGoals == null) {
 			return;
 		}
 
@@ -304,7 +310,7 @@ public class BingoPage extends GuiProfileViewerPage {
 		return list;
 	}
 
-	private void processBingoResources() {
+	private void loadBingoResources() {
 		long currentTime = System.currentTimeMillis();
 
 		//renew every 2 minutes

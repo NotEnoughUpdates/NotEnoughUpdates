@@ -21,21 +21,32 @@ package io.github.moulberry.notenoughupdates.util;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 public class CalculatorTest {
 	public static void main(String[] args) throws Calculator.CalculatorException {
-		List<Calculator.Token> lex = Calculator.lex("10k + 3 * 4m");
-		List<Calculator.Token> shunted = Calculator.shuntingYard(lex);
-		for (Calculator.Token rawToken : shunted) {
-			System.out.printf(
-				"%s(%s)",
-				rawToken.type,
-				rawToken.operatorValue == null ? rawToken.numericValue + " * 10 ^ " + rawToken.exponent : rawToken.operatorValue
-			);
+		Scanner s = new Scanner(System.in);
+		while (true) {
+			try {
+				List<Calculator.Token> lex = Calculator.lex(s.nextLine());
+				List<Calculator.Token> shunted = Calculator.shuntingYard(lex);
+				for (Calculator.Token rawToken : shunted) {
+					System.out.printf(
+						"%s(%s)",
+						rawToken.type,
+						rawToken.operatorValue == null
+							? rawToken.numericValue + " * 10 ^ " + rawToken.exponent
+							: rawToken.operatorValue
+					);
+				}
+				System.out.println();
+				BigDecimal evaluate = Calculator.evaluate(name -> Optional.of(BigDecimal.valueOf(16)), shunted);
+				System.out.println("Eval: " + evaluate);
+			} catch (Calculator.CalculatorException e) {
+				e.printStackTrace();
+			}
 		}
-		System.out.println();
-		BigDecimal evaluate = Calculator.evaluate(shunted);
-		System.out.println("Eval: " + evaluate);
 	}
 
 }

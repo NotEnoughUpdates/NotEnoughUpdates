@@ -25,6 +25,8 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -37,16 +39,14 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
 
 public class BestiaryPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 	private static final ResourceLocation BESTIARY_TEXTURE = new ResourceLocation("notenoughupdates:pv_bestiary_tab.png");
-	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 	private static final int XCOUNT = 7;
 	private static final int YCOUNT = 5;
 	private static final float XPADDING = (190 - XCOUNT * 20) / (float) (XCOUNT + 1);
@@ -62,7 +62,13 @@ public class BestiaryPage extends GuiProfileViewerPage {
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 
 		int bestiarySize = BestiaryData.getBestiaryLocations().size();
 		int bestiaryXSize = (int) (350f / (bestiarySize - 1 + 0.0000001f));
@@ -117,7 +123,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 		Color color = new Color(128, 128, 128, 255);
 		Utils.renderAlignedString(
 			EnumChatFormatting.RED + "Bestiary Level: ",
-			EnumChatFormatting.GRAY + "" + (float) GuiProfileViewer.getProfile().getBestiaryTiers(profileInfo) / 10,
+			EnumChatFormatting.GRAY + "" + (float) getSelectedProfile().getBestiaryLevel() / 10,
 			guiLeft + 220,
 			guiTop + 50,
 			110
@@ -181,7 +187,7 @@ public class BestiaryPage extends GuiProfileViewerPage {
 						if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
 							JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
 							int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-							level = ProfileViewer.getLevel(levelingArray, kills, levelCap, false);
+							level = ProfileViewerUtils.getLevel(levelingArray, kills, levelCap, false);
 						} else {
 							Utils.showOutdatedRepoNotification();
 						}
@@ -197,10 +203,10 @@ public class BestiaryPage extends GuiProfileViewerPage {
 									mobItem.getDisplayName() + " " + ((levelNum == -1) ? "?" : (int) Math.floor(levelNum))
 								);
 								tooltipToDisplay.add(
-									EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + numberFormat.format(kills)
+									EnumChatFormatting.GRAY + "Kills: " + EnumChatFormatting.GREEN + StringUtils.formatNumber(kills)
 								);
 								tooltipToDisplay.add(
-									EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + numberFormat.format(deaths)
+									EnumChatFormatting.GRAY + "Deaths: " + EnumChatFormatting.GREEN + StringUtils.formatNumber(deaths)
 								);
 								if (level != null) {
 									String progressStr;

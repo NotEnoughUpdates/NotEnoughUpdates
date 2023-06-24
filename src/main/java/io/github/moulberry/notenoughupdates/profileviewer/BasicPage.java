@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -67,7 +68,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.DECIMAL_FORMAT;
 import static io.github.moulberry.notenoughupdates.util.Utils.roundToNearestInt;
 
 public class BasicPage extends GuiProfileViewerPage {
@@ -130,13 +130,12 @@ public class BasicPage extends GuiProfileViewerPage {
 	@Override
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
+		SkyblockProfiles profile = GuiProfileViewer.getProfile();
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		if (onSecondPage) {
-			levelPage.drawPage(mouseX, mouseY);
+			levelPage.drawPage(mouseX, mouseY, partialTicks);
 			return;
 		}
 
@@ -202,8 +201,11 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_basic);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
-		if (profileInfo == null) return;
+		String profileName = GuiProfileViewer.getProfileName();
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
 
 		if (entityPlayer != null && profile.getHypixelProfile() != null) {
 			String playerName = null;
@@ -251,11 +253,10 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						playerName = EnumChatFormatting.GRAY + name;
 						if (rankName != null) {
-							String icon = getIcon(getGameModeType(profileInfo));
+							String icon = selectedProfile.getGamemode() == null ? "" : getIcon(selectedProfile.getGamemode());
 							playerName =
 								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name +
 									(icon.equals("") ? "" : " " + icon);
-							;
 						}
 					}
 				}
@@ -279,50 +280,45 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		long networth;
+		String stateStr = EnumChatFormatting.RED + "An error occurred";
+		long networth = -2;
 		ArrayList<String> nwCategoryHover = new ArrayList<>();
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-			ProfileViewer.Profile.SoopyNetworthData nwData = profile.getSoopyNetworth(profileId, () -> {});
-			if (nwData == null) {
-				networth = -2l;
-			} else {
-				networth = nwData.getTotal();
+			SkyblockProfiles.SoopyNetworth nwData = selectedProfile.getSoopyNetworth(() -> {});
+			networth = nwData.getNetworth();
 
-				for (String category : nwData.getCategories()) {
-					if (nwData.getCategory(category) == 0) continue;
-
-					nwCategoryHover.add(EnumChatFormatting.GREEN +
-						WordUtils.capitalizeFully(category.replace("_", " ")) +
+			if (networth == -1) {
+				stateStr = EnumChatFormatting.YELLOW + "Loading...";
+			} else if (networth != -2) { // -2 indicates error
+				for (Map.Entry<String, Long> entry : nwData.getCategoryToTotal().entrySet()) {
+					nwCategoryHover.add(
+						EnumChatFormatting.GREEN +
+						WordUtils.capitalizeFully(entry.getKey().replace("_", " ")) +
 						": " +
 						EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(nwData.getCategory(category)));
+						StringUtils.formatNumber(entry.getValue())
+					);
 				}
-
 				nwCategoryHover.add("");
 			}
-		} else {
-			networth = profile.getNetWorth(profileId);
 		}
 
-		//Networth is under 0
-		//If = -1 -> an error occurred
-		//If = -2 -> still loading networth
-		String stateStr = EnumChatFormatting.RED + "An error occurred";
+		// Calculate using NEU networth if not using soopy networth or soopy networth errored
 		if (networth == -2) {
-			stateStr = EnumChatFormatting.YELLOW + "Loading...";
-		} else if (networth == -1) {
-			networth = profile.getNetWorth(profileId);
+			networth = selectedProfile.getNetworth();
 		}
-		int fontWidth = fr.getStringWidth("Net Worth: " + GuiProfileViewer.numberFormat.format(networth));
-		int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
+
 		if (networth > 0) {
+			int fontWidth = fr.getStringWidth("Net Worth: " + StringUtils.formatNumber(networth));
+			int offset = (fontWidth >= 117 ? 63 + (fontWidth - 117) : 63);
+
 			if (fontWidth >= 117) {
 				fr.drawString(EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-					GuiProfileViewer.numberFormat.format(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
+					StringUtils.formatNumber(networth), guiLeft + 8, guiTop + 38 - fr.FONT_HEIGHT / 2f, 0, true);
 			} else {
 				Utils.drawStringCentered(
 					EnumChatFormatting.GREEN + "Net Worth: " + EnumChatFormatting.GOLD +
-						GuiProfileViewer.numberFormat.format(networth),
+						StringUtils.formatNumber(networth),
 					guiLeft + 68, guiTop + 38, true, 0
 				);
 			}
@@ -336,7 +332,7 @@ public class BasicPage extends GuiProfileViewerPage {
 								.get("avg_buy")
 								.getAsDouble()
 					);
-				String networthIRLMoney = GuiProfileViewer.numberFormat.format(Math.round(
+				String networthIRLMoney = StringUtils.formatNumber(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
 
 
@@ -355,10 +351,10 @@ public class BasicPage extends GuiProfileViewerPage {
 
 						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
 							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
-							&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
+							&& profile.isProfileMaxSoopyWeight(profileName)) {
 							getInstance().tooltipToDisplay.add("");
 							String lbPosStr =
-								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
 									profile.getSoopyNetworthLeaderboardPosition());
 							getInstance().tooltipToDisplay.add(
 								lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
@@ -472,15 +468,15 @@ public class BasicPage extends GuiProfileViewerPage {
 			entityPlayer.getDataWatcher().updateObject(10, b);
 		}
 
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(profileId);
-		JsonObject inventoryInfo = profile.getInventoryInfo(profileId);
+		Map<String, ProfileViewer.Level> skyblockInfo = getSelectedProfile().getLevelingInfo();
+		Map<String, JsonArray> inventoryInfo = getSelectedProfile().getInventoryInfo();
 
 		if (entityPlayer != null) {
 			if (backgroundClickedX != -1 && Mouse.isButtonDown(1)) {
 				Arrays.fill(entityPlayer.inventory.armorInventory, null);
 			} else {
-				if (inventoryInfo != null && inventoryInfo.has("inv_armor")) {
-					JsonArray items = inventoryInfo.get("inv_armor").getAsJsonArray();
+				if (inventoryInfo != null && inventoryInfo.containsKey("inv_armor")) {
+					JsonArray items = inventoryInfo.get("inv_armor");
 					if (items != null && items.size() == 4) {
 						for (int i = 0; i < entityPlayer.inventory.armorInventory.length; i++) {
 							JsonElement itemElement = items.get(i);
@@ -531,7 +527,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
-		JsonObject petsInfo = profile.getPetsInfo(profileId);
+		JsonObject petsInfo = profile.getProfile(profileName).getPetsInfo();
 		if (petsInfo != null) {
 			JsonElement activePetElement = petsInfo.get("active_pet");
 			if (activePetElement != null && activePetElement.isJsonObject()) {
@@ -582,8 +578,8 @@ public class BasicPage extends GuiProfileViewerPage {
 		int sbLevelX = guiLeft + 162;
 		int sbLevelY = guiTop + 90;
 
-		double skyblockLevel = profile.getSkyblockLevel(profileId);
-		EnumChatFormatting skyblockLevelColour = profile.getSkyblockLevelColour(profileId);
+		double skyblockLevel = profile.getProfile(profileName).getSkyblockLevel();
+		EnumChatFormatting skyblockLevelColour = profile.getProfile(profileName).getSkyblockLevelColour();
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(sbLevelX, sbLevelY, 0);
@@ -607,7 +603,7 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (skyblockInfo != null) {
+		if (skyblockInfo != null && selectedProfile.skillsApiEnabled()) {
 			int position = 0;
 			for (Map.Entry<String, ItemStack> entry : ProfileViewer.getSkillToSkillDisplayMap().entrySet()) {
 				if (entry.getValue() == null || entry.getKey() == null) {
@@ -653,15 +649,15 @@ public class BasicPage extends GuiProfileViewerPage {
 										"/" +
 										StringUtils.shortNumberFormat(maxXp));
 						}
-						String totalXpS = GuiProfileViewer.numberFormat.format((long) level.totalXp);
+						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
 							EnumChatFormatting.DARK_GRAY + " (" +
-							DECIMAL_FORMAT.format(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
-							int doubleDrops = Utils.getElementAsInt(Utils.getElement(profileInfo, "jacob2.perks.double_drops"), 0);
-							int peltCount = Utils.getElementAsInt(Utils.getElement(profileInfo, "trapper_quest.pelt_count"), 0);
+							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacob2.perks.double_drops"), 0);
+							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "trapper_quest.pelt_count"), 0);
 
 							if (doubleDrops == 15) {
 								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
@@ -670,7 +666,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
 
 							// medals
-							JsonObject medals_inv = Utils.getElement(profileInfo, "jacob2.medals_inv").getAsJsonObject();
+							JsonObject medals_inv = Utils.getElement(selectedProfile.getProfileJson(), "jacob2.medals_inv").getAsJsonObject();
 							tooltipToDisplay.add(" ");
 							for (String medalName : medalNames) {
 								String textWithoutFormattingCodes =
@@ -687,12 +683,18 @@ public class BasicPage extends GuiProfileViewerPage {
 						}
 
 						String slayerNameLower = entry.getKey().toLowerCase();
-						if (ExtraPage.slayers.containsKey(slayerNameLower)) {
-							int maxLevel = ExtraPage.slayers.get(slayerNameLower);
+						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
+							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
+							if (slayerToTier == null) {
+								Utils.showOutdatedRepoNotification();
+								return;
+							}
+
+							int maxLevel = slayerToTier.get(slayerNameLower).getAsInt();
 							for (int i = 0; i < 5; i++) {
 								if (i >= maxLevel) break;
 								float tier = Utils.getElementAsFloat(
-									Utils.getElement(profileInfo, "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
+									Utils.getElement(selectedProfile.getProfileJson(), "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
 									0
 								);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
@@ -718,7 +720,9 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		drawSideButtons();
-		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) renderWeight(mouseX, mouseY, skyblockInfo, profileInfo);
+		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) {
+			renderWeight(mouseX, mouseY, selectedProfile);
+		}
 	}
 
 	private String getIcon(String gameModeType) {
@@ -761,15 +765,19 @@ public class BasicPage extends GuiProfileViewerPage {
 	private void renderWeight(
 		int mouseX,
 		int mouseY,
-		Map<String, ProfileViewer.Level> skyblockInfo,
-		JsonObject profileInfo
+		SkyblockProfiles.SkyblockProfile selectedProfile
 	) {
+		if (!selectedProfile.skillsApiEnabled()) {
+			return;
+		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 		if (skyblockInfo == null) {
 			return;
 		}
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
+		SkyblockProfiles profile = GuiProfileViewer.getProfile();
+		String profileName = GuiProfileViewer.getProfileName();
 
 		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
 			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
@@ -782,7 +790,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		SenitherWeight senitherWeight = new SenitherWeight(skyblockInfo);
-		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, profileInfo);
+		LilyWeight lilyWeight = new LilyWeight(skyblockInfo, selectedProfile.getProfileJson());
 
 		long weight = -2L;
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
@@ -793,13 +801,13 @@ public class BasicPage extends GuiProfileViewerPage {
 			EnumChatFormatting.GREEN +
 				"Senither Weight: " +
 				EnumChatFormatting.GOLD +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
+				StringUtils.formatNumber(roundToNearestInt(senitherWeight.getTotalWeight().getRaw())),
 			guiLeft + 63, guiTop + 18, true, 0
 		);
 
 		int textWidth = fr.getStringWidth(
 			"Senither Weight: " +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
+				StringUtils.formatNumber(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
 		);
 		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
 			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
@@ -809,7 +817,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Skills: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+							StringUtils.formatNumber(roundToNearestInt(senitherWeight
 								.getSkillsWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -819,7 +827,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Slayer: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(senitherWeight
+							StringUtils.formatNumber(roundToNearestInt(senitherWeight
 								.getSlayerWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -829,16 +837,16 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Dungeons: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(
+							StringUtils.formatNumber(
 								roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
 							)
 					);
 
 				if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
-					&& profile.isProfileMaxSoopyWeight(profile, profileId)) {
+					&& profile.isProfileMaxSoopyWeight(profileName)) {
 
 					String lbPosStr =
-						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + GuiProfileViewer.numberFormat.format(
+						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
 							profile.getSoopyWeightLeaderboardPosition());
 					getInstance().tooltipToDisplay.add("");
 					String stateStr = EnumChatFormatting.RED + "An error occurred";
@@ -856,12 +864,12 @@ public class BasicPage extends GuiProfileViewerPage {
 		Utils.drawStringCentered(
 			EnumChatFormatting.GREEN +
 				"Lily Weight: " + EnumChatFormatting.GOLD +
-				GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
+				StringUtils.formatNumber(roundToNearestInt(lilyWeight.getTotalWeight().getRaw())),
 			guiLeft + 63, guiTop + 28, true, 0
 		);
 
 		int fontWidth = fr.getStringWidth(
-			"Lily Weight: " + GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
+			"Lily Weight: " + StringUtils.formatNumber(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
 		);
 		if (mouseX > guiLeft + 63 - fontWidth / 2 && mouseX < guiLeft + 63 + fontWidth / 2) {
 			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fr.FONT_HEIGHT) {
@@ -871,7 +879,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Skills: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+							StringUtils.formatNumber(roundToNearestInt(lilyWeight
 								.getSkillsWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -881,7 +889,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Slayer: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+							StringUtils.formatNumber(roundToNearestInt(lilyWeight
 								.getSlayerWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -891,7 +899,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GREEN +
 							"Dungeons: " +
 							EnumChatFormatting.GOLD +
-							GuiProfileViewer.numberFormat.format(roundToNearestInt(lilyWeight
+							StringUtils.formatNumber(roundToNearestInt(lilyWeight
 								.getDungeonsWeight()
 								.getWeightStruct()
 								.getRaw()))
@@ -972,13 +980,6 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 		}
 		return 0;
-	}
-
-	public String getGameModeType(JsonObject profileInfo) {
-		if (profileInfo != null && profileInfo.has("game_mode")) {
-			return profileInfo.get("game_mode").getAsString();
-		}
-		return "";
 	}
 
 	public void drawSideButtons() {

@@ -49,11 +49,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_bg;
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_dropdown;
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
+
 public class GuiCosmetics extends GuiScreen {
-	public static final ResourceLocation pv_bg = new ResourceLocation("notenoughupdates:pv_bg.png");
-	public static final ResourceLocation pv_dropdown = new ResourceLocation("notenoughupdates:pv_dropdown.png");
 	public static final ResourceLocation cosmetics_fg = new ResourceLocation("notenoughupdates:cosmetics_fg.png");
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
 
 	private final GuiElementTextField unlockTextField = new GuiElementTextField("", GuiElementTextField.SCALE_TEXT);
 
@@ -301,7 +302,6 @@ public class GuiCosmetics extends GuiScreen {
 			}
 		}
 
-		int index = 0;
 		int displayingCapes = 0;
 		for (CapeManager.CapeData cape : CapeManager.INSTANCE.getCapes()) {
 			boolean equipable = CapeManager.INSTANCE.getAvailableCapes() == null ||
@@ -315,7 +315,6 @@ public class GuiCosmetics extends GuiScreen {
 		float totalAvail = sizeX - 20;
 		float xOffset = scroll * (totalNeeded - totalAvail);
 
-		index = 0;
 		int displayIndex = 0;
 		for (CapeManager.CapeData cape : CapeManager.INSTANCE.getCapes()) {
 			boolean equipable = CapeManager.INSTANCE.getAvailableCapes() == null ||
@@ -447,7 +446,6 @@ public class GuiCosmetics extends GuiScreen {
 			Minecraft.getMinecraft().displayWidth * (sizeX - 6) / width, Minecraft.getMinecraft().displayHeight
 		);
 
-		int index = 0;
 		int displayingCapes = 0;
 		for (CapeManager.CapeData capeData : CapeManager.INSTANCE.getCapes()) {
 			boolean equipable = CapeManager.INSTANCE.getAvailableCapes() == null ||
@@ -461,7 +459,6 @@ public class GuiCosmetics extends GuiScreen {
 		float totalAvail = sizeX - 20;
 		float xOffset = scroll * (totalNeeded - totalAvail);
 
-		index = 0;
 		int displayIndex = 0;
 		for (CapeManager.CapeData capeData : CapeManager.INSTANCE.getCapes()) {
 			boolean equipable = CapeManager.INSTANCE.getAvailableCapes() == null ||

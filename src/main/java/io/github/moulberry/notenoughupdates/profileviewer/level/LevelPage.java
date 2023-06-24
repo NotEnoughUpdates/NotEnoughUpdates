@@ -20,13 +20,16 @@
 package io.github.moulberry.notenoughupdates.profileviewer.level;
 
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.CoreTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.DungeonTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EssenceTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.EventTaskLevel;
+import io.github.moulberry.notenoughupdates.profileviewer.level.task.GuiTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.MiscTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SkillRelatedTaskLevel;
 import io.github.moulberry.notenoughupdates.profileviewer.level.task.SlayingTaskLevel;
@@ -40,52 +43,35 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LevelPage {
-
-	private final GuiProfileViewer instance;
-	private final BasicPage basicPage;
-	private ProfileViewer.Profile profile;
-
-	private String profileId;
-
-	private final JsonObject constant;
-
-	private final CoreTaskLevel coreTaskLevel;
-	private final DungeonTaskLevel dungeonTaskLevel;
-	private final EssenceTaskLevel essenceTaskLevel;
-	private final MiscTaskLevel miscTaskLevel;
-	private final SkillRelatedTaskLevel skillRelatedTaskLevel;
-	private final SlayingTaskLevel slayingTaskLevel;
-	private final StoryTaskLevel storyTaskLevel;
-
-	private final EventTaskLevel eventTaskLevel;
+public class LevelPage extends GuiProfileViewerPage {
 
 	private static final ResourceLocation pv_levels = new ResourceLocation("notenoughupdates:pv_levels.png");
+	private final BasicPage basicPage;
+	private final JsonObject constant;
+	private final List<GuiTaskLevel> tasks = new ArrayList<>();
 
 	public LevelPage(GuiProfileViewer instance, BasicPage basicPage) {
-		this.instance = instance;
+		super(instance);
 		this.basicPage = basicPage;
 		constant = Constants.SBLEVELS;
 
-		coreTaskLevel = new CoreTaskLevel(this);
-		dungeonTaskLevel = new DungeonTaskLevel(this);
-		essenceTaskLevel = new EssenceTaskLevel(this);
-		miscTaskLevel = new MiscTaskLevel(this);
-		skillRelatedTaskLevel = new SkillRelatedTaskLevel(this);
-		slayingTaskLevel = new SlayingTaskLevel(this);
-		storyTaskLevel = new StoryTaskLevel(this);
-		eventTaskLevel = new EventTaskLevel(this);
+		tasks.add(new CoreTaskLevel(this));
+		tasks.add(new DungeonTaskLevel(this));
+		tasks.add(new EssenceTaskLevel(this));
+		tasks.add(new MiscTaskLevel(this));
+		tasks.add(new SkillRelatedTaskLevel(this));
+		tasks.add(new SlayingTaskLevel(this));
+		tasks.add(new StoryTaskLevel(this));
+		tasks.add(new EventTaskLevel(this));
 	}
 
-	public void drawPage(int mouseX, int mouseY) {
+	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
-		this.profile = GuiProfileViewer.getProfile();
-		this.profileId = GuiProfileViewer.getProfileId();
 
 		basicPage.drawSideButtons();
 
@@ -95,20 +81,18 @@ public class LevelPage {
 		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_levels);
-		Utils.drawTexturedRect(guiLeft, guiTop, instance.sizeX, instance.sizeY, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		double skyblockLevel = profile.getSkyblockLevel(profileId);
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		double skyblockLevel = selectedProfile.getSkyblockLevel();
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 
 		drawMainBar(skyblockLevel, mouseX, mouseY, guiLeft, guiTop);
-		dungeonTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		essenceTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		miscTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		skillRelatedTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		slayingTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		storyTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		eventTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
-		coreTaskLevel.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop);
+		tasks.forEach(task -> task.drawTask(profileInfo, mouseX, mouseY, guiLeft, guiTop));
 	}
 
 	public void renderLevelBar(
@@ -149,9 +133,8 @@ public class LevelPage {
 		String levelStr;
 		if (mouseX > x && mouseX < x + 120) {
 			if (mouseY > y - 4 && mouseY < y + 13) {
-				NumberFormat numberFormat = NumberFormat.getInstance();
-				String xpFormatted = numberFormat.format((int) xp);
-				String maxFormatted = numberFormat.format((int) max);
+				String xpFormatted = StringUtils.formatNumber((int) xp);
+				String maxFormatted = StringUtils.formatNumber((int) max);
 
 				levelStr =
 					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
@@ -192,8 +175,8 @@ public class LevelPage {
 	}
 
 	public String buildLore(String name, double xpGotten, double xpGainful, boolean hasNoLimit) {
-		String xpGottenFormatted = NumberFormat.getInstance().format((int) xpGotten);
-		String xpGainfulFormatted = NumberFormat.getInstance().format((int) xpGainful);
+		String xpGottenFormatted = StringUtils.formatNumber((int) xpGotten);
+		String xpGainfulFormatted = StringUtils.formatNumber((int) xpGainful);
 
 		if (xpGainful == 0 && xpGotten == 0 && !hasNoLimit) {
 			return EnumChatFormatting.GOLD + name + ": §c§lNOT DETECTABLE!";
@@ -216,17 +199,5 @@ public class LevelPage {
 
 	public JsonObject getConstant() {
 		return constant;
-	}
-
-	public ProfileViewer.Profile getProfile() {
-		return profile;
-	}
-
-	public String getProfileId() {
-		return profileId;
-	}
-
-	public GuiProfileViewer getInstance() {
-		return instance;
 	}
 }

@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -230,8 +231,8 @@ public class XPInformation {
 		"runecrafting"
 	};
 
-	private void onApiUpdated(ProfileViewer.Profile profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getSkyblockInfo(null);
+	private void onApiUpdated(SkyblockProfiles profile) {
+		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
 
 		for (String skill : skills) {
 			SkillInfo info = new SkillInfo();

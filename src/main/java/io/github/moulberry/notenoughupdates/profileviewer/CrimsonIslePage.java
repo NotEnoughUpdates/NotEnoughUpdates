@@ -104,9 +104,13 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		JsonObject profileInfo = GuiProfileViewer.getProfile().getProfileInformation(GuiProfileViewer.getProfileId());
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
 
-		if (profileInfo == null || !profileInfo.has("nether_island_player_data")) {
+		JsonObject profileInfo = selectedProfile.getProfileJson();
+		if (!profileInfo.has("nether_island_player_data")) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "No data found for the Crimson Isles",
 				guiLeft + 431 / 2f, guiTop + 101, true, 0
@@ -204,33 +208,26 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 	public void drawDojoStats(JsonObject data, int guiLeft, int guiTop) {
 		Utils.drawStringCentered(EnumChatFormatting.YELLOW + "Dojo Stats", guiLeft + (431 * 0.49f), guiTop + 14, true, 0);
 
-		JsonObject dojoStats = data.getAsJsonObject("dojo");
-		int[] dojoScores = {0, 0, 0, 0, 0, 0, 0};
-		int pointsTotal = 0;
 
-		for (int i = 0; i < apiDojoTestNames.size(); i++) {
-			for (Map.Entry<String, JsonElement> dojoData : dojoStats.entrySet()) {
-				if (dojoData.getKey().equals("dojo_points_" + apiDojoTestNames.keySet().toArray()[i])) {
-					dojoScores[i] = dojoData.getValue().getAsInt();
-					pointsTotal += dojoData.getValue().getAsInt();
-				}
-			}
-		}
-
-		for (int i = 0; i < apiDojoTestNames.size(); i++) {
+		int totalPoints = 0;
+		int idx = 0;
+		for (Map.Entry<String, String> dojoTest : apiDojoTestNames.entrySet()) {
+			int curPoints = Utils.getElementAsInt(Utils.getElement(data, "dojo.dojo_points_" + dojoTest.getKey()), 0);
+			totalPoints += curPoints;
 			Utils.renderAlignedString(
-				apiDojoTestNames.get(apiDojoTestNames.keySet().toArray()[i]) + ": ",
-				EnumChatFormatting.WHITE + String.valueOf(dojoScores[i]) + " (" +
-					dojoGrades[(dojoScores[i] / 200) >= 6 ? 5 : (dojoScores[i] / 200)] + ")",
+				dojoTest.getValue() + ": ",
+				EnumChatFormatting.WHITE + "" + curPoints + " (" +
+					dojoGrades[(curPoints / 200) >= 6 ? 5 : (curPoints / 200)] + ")",
 				guiLeft + (431 * 0.49f) - 65,
-				guiTop + 30 + (i * 12),
+				guiTop + 30 + (idx * 12),
 				130
 			);
+			idx ++;
 		}
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GRAY + "Points: ",
-			EnumChatFormatting.GOLD + String.valueOf(pointsTotal),
+			EnumChatFormatting.GOLD + String.valueOf(totalPoints),
 			guiLeft + (431 * 0.49f) - 65,
 			guiTop + 40 + (apiDojoTestNames.size() * 12),
 			130
@@ -238,7 +235,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GRAY + "Rank: ",
-			getRank(pointsTotal),
+			getRank(totalPoints),
 			guiLeft + (431 * 0.49f) - 65,
 			guiTop + 52 + (apiDojoTestNames.size() * 12),
 			130
@@ -246,9 +243,9 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GRAY + "Points to next: ",
-			getPointsToNextRank(pointsTotal) == 0
+			getPointsToNextRank(totalPoints) == 0
 				? EnumChatFormatting.GOLD + "MAXED!"
-				: String.valueOf(getPointsToNextRank(pointsTotal)),
+				: String.valueOf(getPointsToNextRank(totalPoints)),
 			guiLeft + (431 * 0.49f) - 65,
 			guiTop + 64 + (apiDojoTestNames.size() * 12),
 			130
@@ -263,7 +260,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 			}
 			lastRank = rank.getKey();
 		}
-		return dojoPointsToRank.get(dojoPointsToRank.keySet().toArray()[dojoPointsToRank.size() - 1]);
+		return dojoPointsToRank.get(lastRank);
 	}
 
 	public int getPointsToNextRank(int pointsTotal) {

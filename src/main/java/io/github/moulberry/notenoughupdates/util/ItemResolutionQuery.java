@@ -37,6 +37,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -121,6 +122,9 @@ public class ItemResolutionQuery {
 				case "ABICASE":
 					resolvedName = resolvePhoneCase();
 					break;
+				case "PARTY_HAT_SLOTH":
+					resolvedName = resolveSlothHatName();
+					break;
 			}
 		}
 
@@ -199,10 +203,23 @@ public class ItemResolutionQuery {
 	 */
 	public static String findInternalNameByDisplayName(String displayName, boolean mayBeMangled) {
 		var cleanDisplayName = StringUtils.cleanColour(displayName);
+		return filterInternalNameCandidates(
+			findInternalNameCandidatesForDisplayName(cleanDisplayName),
+			displayName,
+			mayBeMangled
+		);
+	}
+
+	public static String filterInternalNameCandidates(
+		Collection<String> candidateInternalNames,
+		String displayName,
+		boolean mayBeMangled
+	) {
+		var cleanDisplayName = StringUtils.cleanColour(displayName);
 		var manager = NotEnoughUpdates.INSTANCE.manager;
 		String bestMatch = null;
 		int bestMatchLength = -1;
-		for (String internalName : findInternalNameCandidatesForDisplayName(cleanDisplayName)) {
+		for (String internalName : candidateInternalNames) {
 			var cleanItemDisplayName = StringUtils.cleanColour(manager.getDisplayName(internalName));
 			if (cleanItemDisplayName.length() == 0) continue;
 			if (mayBeMangled
@@ -276,6 +293,11 @@ public class ItemResolutionQuery {
 		int crabHatYear = getExtraAttributes().getInteger("party_hat_year");
 		String color = getExtraAttributes().getString("party_hat_color");
 		return "PARTY_HAT_CRAB_" + color.toUpperCase(Locale.ROOT) + (crabHatYear == 2022 ? "_ANIMATED" : "");
+	}
+
+	private String resolveSlothHatName() {
+		String emoji = getExtraAttributes().getString("party_hat_emoji");
+		return "PARTY_HAT_SLOTH_" + emoji.toUpperCase(Locale.ROOT);
 	}
 
 	private String resolvePhoneCase() {

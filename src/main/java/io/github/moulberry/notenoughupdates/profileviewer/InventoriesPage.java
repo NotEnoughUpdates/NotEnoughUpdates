@@ -57,7 +57,7 @@ import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewe
 
 public class InventoriesPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_invs = new ResourceLocation("notenoughupdates:pv_invs.png");
+	private static final ResourceLocation pv_invs = new ResourceLocation("notenoughupdates:pv_invs.png");
 	private static final ResourceLocation CHEST_GUI_TEXTURE =
 		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static final Pattern FISHING_SPEED_PATTERN = Pattern.compile("^Fishing Speed: \\+(\\d+)");
@@ -71,7 +71,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				"ender_chest_contents",
 				Utils.createItemStack(Item.getItemFromBlock(Blocks.ender_chest), EnumChatFormatting.GRAY + "Ender Chest")
 			);
-			// put("backpack_contents", Utils.createItemStack(Item.getItemFromBlock(Blocks.dropper), EnumChatFormatting.GRAY+"Backpacks"));
 			put(
 				"backpack_contents",
 				Utils.editItemStackInfo(
@@ -100,7 +99,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	};
 	private final ItemStack fillerStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
 	private HashMap<String, ItemStack[][][]> inventoryItems = new HashMap<>();
-
 	private ItemStack[] bestWeapons = null;
 	private ItemStack[] bestRods = null;
 	private ItemStack[] armorItems = null;
@@ -124,11 +122,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 		getInstance().inventoryTextField.setSize(88, 20);
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
-		JsonObject inventoryInfo = profile.getInventoryInfo(profileId);
-		JsonObject profileInformation = profile.getProfileInformation(profileId);
-		if (inventoryInfo == null) return;
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		Map<String, JsonArray> inventoryInfo = selectedProfile.getInventoryInfo();
 
 		int invNameIndex = 0;
 		for (Map.Entry<String, ItemStack> entry : invNameToDisplayMap.entrySet()) {
@@ -147,26 +146,26 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				Utils.drawTexturedRect(guiLeft + x - 2, guiTop + y - 2, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 			}
 
-			Utils.drawItemStackWithText(entry.getValue(), guiLeft + x, guiTop + y, "" + (invNameIndex + 1), true);
+			Utils.drawItemStackWithText(entry.getValue(), guiLeft + x, guiTop + y, String.valueOf(invNameIndex + 1), true);
 
 			if (mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) {
 				if (mouseY >= guiTop + y && mouseY <= guiTop + y + 16) {
 					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					if (Objects.equals(entry.getKey(), "talisman_bag")) {
 						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
-						int magicalPower = profile.getMagicalPower(profileId);
+						int magicalPower = getSelectedProfile().getMagicalPower();
 						getInstance()
 							.tooltipToDisplay.add(
 								magicalPower == -1
 									? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
 									: magicalPowerString
 										.append(EnumChatFormatting.GOLD)
-										.append(GuiProfileViewer.numberFormat.format(magicalPower))
+										.append(StringUtils.formatNumber(magicalPower))
 										.toString()
 							);
 
 						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
-						String selectedPower = PlayerStats.getSelectedMagicalPower(profile.getProfileInformation(profileId));
+						String selectedPower = PlayerStats.getSelectedMagicalPower(getSelectedProfile().getProfileJson());
 						getInstance()
 							.tooltipToDisplay.add(
 								selectedPower == null
@@ -184,10 +183,11 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		if (armorItems == null) {
 			armorItems = new ItemStack[4];
-			JsonArray armor = Utils.getElement(inventoryInfo, "inv_armor").getAsJsonArray();
+			JsonArray armor = inventoryInfo.get("inv_armor");
 			for (int i = 0; i < armor.size(); i++) {
-				if (armor.get(i) == null || !armor.get(i).isJsonObject()) continue;
-				armorItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(armor.get(i).getAsJsonObject(), false);
+				if (armor.get(i) != null && armor.get(i).isJsonObject()) {
+					armorItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(armor.get(i).getAsJsonObject(), false);
+				}
 			}
 		}
 
@@ -211,10 +211,11 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		if (equipmentItems == null) {
 			equipmentItems = new ItemStack[4];
-			JsonArray equippment = Utils.getElement(inventoryInfo, "equippment_contents").getAsJsonArray();
+			JsonArray equippment = inventoryInfo.get("equippment_contents");
 			for (int i = 0; i < equippment.size(); i++) {
-				if (equippment.get(i) == null || !equippment.get(i).isJsonObject()) continue;
-				equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
+				if (equippment.get(i) != null && equippment.get(i).isJsonObject()) {
+					equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
+				}
 			}
 		}
 
@@ -236,6 +237,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			}
 		}
 
+		// TODO: 3D arrays...
 		ItemStack[][][] inventories = getItemsForInventory(inventoryInfo, selectedInventory);
 		if (currentInventoryIndex >= inventories.length) currentInventoryIndex = inventories.length - 1;
 		if (currentInventoryIndex < 0) currentInventoryIndex = 0;
@@ -299,7 +301,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				.get("ARROW")),
 			guiLeft + 173,
 			guiTop + 101,
-			"" + (arrowCount > 999 ? StringUtils.shortNumberFormat(arrowCount) : arrowCount),
+			String.valueOf(arrowCount > 999 ? StringUtils.shortNumberFormat(arrowCount) : arrowCount),
 			true
 		);
 		Utils.drawItemStackWithText(
@@ -308,7 +310,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				.get("GREEN_CANDY")),
 			guiLeft + 173,
 			guiTop + 119,
-			"" + greenCandyCount,
+			String.valueOf(greenCandyCount),
 			true
 		);
 		Utils.drawItemStackWithText(
@@ -317,13 +319,13 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				.get("PURPLE_CANDY")),
 			guiLeft + 173,
 			guiTop + 137,
-			"" + purpleCandyCount,
+			String.valueOf(purpleCandyCount),
 			true
 		);
 		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16) {
 			if (mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
 				if (mouseY < guiTop + 101 + 17) {
-					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, profile.getProfileInformation(profileId));
+					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, getSelectedProfile().getProfileJson());
 					if (quiverInfo == null) {
 						getInstance().tooltipToDisplay = Utils.createList(EnumChatFormatting.RED + "Error checking Quiver");
 					} else {
@@ -509,7 +511,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				i++;
 			}
 
-			JsonObject inventoryInfo = GuiProfileViewer.getProfile().getInventoryInfo(GuiProfileViewer.getProfileId());
+		 	SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+			if (selectedProfile == null) {
+				return;
+			}
+
+			Map<String, JsonArray> inventoryInfo = selectedProfile.getInventoryInfo();
 			if (inventoryInfo == null) return;
 
 			ItemStack[][][] inventories = getItemsForInventory(inventoryInfo, selectedInventory);
@@ -518,8 +525,6 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 			ItemStack[][] inventory = inventories[currentInventoryIndex];
 			if (inventory == null) return;
-
-			int inventoryRows = inventory.length;
 
 			int staticSelectorHeight = guiTop + 177;
 
@@ -593,7 +598,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 	private int countItemsInInventory(
 		String internalname,
-		JsonObject inventoryInfo,
+		Map<String, JsonArray> inventoryInfo,
 		boolean specific,
 		String... invsToSearch
 	) {
@@ -619,7 +624,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	}
 
 	private ItemStack[] findBestItems(
-		JsonObject inventoryInfo,
+		Map<String, JsonArray> inventoryInfo,
 		int numItems,
 		String[] invsToSearch,
 		String[] typeMatches,
@@ -671,10 +676,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		return bestItems;
 	}
 
-	private ItemStack[][][] getItemsForInventory(JsonObject inventoryInfo, String invName) {
+	private ItemStack[][][] getItemsForInventory(Map<String, JsonArray> inventoryInfo, String invName) {
 		if (inventoryItems.containsKey(invName)) return inventoryItems.get(invName);
 
-		JsonArray jsonInv = Utils.getElement(inventoryInfo, invName).getAsJsonArray();
+		JsonArray jsonInv = inventoryInfo.get(invName);
 
 		if (jsonInv.size() == 0) return new ItemStack[1][][];
 
@@ -701,14 +706,13 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int maxInvSize = rowSize * maxRowsPerPage;
 
 		int numInventories = (jsonInvSize - 1) / maxInvSize + 1;
-		JsonArray backPackSizes = (JsonArray) inventoryInfo.get("backpack_sizes");
+		JsonArray backpackSizes = inventoryInfo.get("backpack_sizes");
 		if (invName.equals("backpack_contents")) {
-			numInventories = backPackSizes.size();
+			numInventories = backpackSizes.size();
 		}
 
 		ItemStack[][][] inventories = new ItemStack[numInventories][][];
 
-		//int availableSlots = getAvailableSlotsForInventory(inventoryInfo, collectionInfo, invName);
 		int startNumberJ = 0;
 
 		for (int i = 0; i < numInventories; i++) {
@@ -716,7 +720,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			int invSize;
 
 			if (invName.equals("backpack_contents")) {
-				thisRows = backPackSizes.get(i).getAsInt() / 9;
+				thisRows = backpackSizes.get(i).getAsInt() / 9;
 				invSize = startNumberJ + (thisRows * 9);
 				maxInvSize = thisRows * 9;
 			} else {
@@ -773,7 +777,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			}
 			inventories[i] = items;
 			if (invName.equals("backpack_contents")) {
-				startNumberJ = startNumberJ + backPackSizes.get(i).getAsInt();
+				startNumberJ = startNumberJ + backpackSizes.get(i).getAsInt();
 			}
 		}
 

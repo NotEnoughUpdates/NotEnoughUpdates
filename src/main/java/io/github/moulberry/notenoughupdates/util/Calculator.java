@@ -27,16 +27,26 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class Calculator {
-	public static BigDecimal calculate(String source) throws CalculatorException {
-		source = source.toLowerCase(Locale.ROOT);
-		return evaluate(shuntingYard(lex(source)));
+	public interface VariableProvider {
+		Optional<BigDecimal> provideVariable(String name) throws CalculatorException;
 	}
+
+	public static BigDecimal calculate(String source, VariableProvider variables) throws CalculatorException {
+		return evaluate(variables, shuntingYard(lex(source)));
+	}
+
+	public static BigDecimal calculate(String source) throws CalculatorException {
+		return calculate(source, (ignored) -> Optional.empty());
+	}
+
 	///<editor-fold desc="Lexing Time">
 	public enum TokenType {
-		NUMBER, BINOP, LPAREN, RPAREN, POSTOP, PREOP
+		NUMBER, BINOP, LPAREN, RPAREN, POSTOP, PREOP, VARIABLE
 	}
+
 	public static class Token {
 		public TokenType type;
 		String operatorValue;
@@ -49,6 +59,7 @@ public class Calculator {
 	static String binops = "+-*/^x";
 	static String postops = "mkbts%";
 	static String digits = "0123456789";
+	static String nameCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 
 	static void readDigitsInto(Token token, String source, boolean decimals) {
 		int startIndex = token.tokenStart + token.tokenLength;
@@ -103,7 +114,7 @@ public class Calculator {
 			} else if (binops.indexOf(c) != -1) {
 				token.tokenLength = 1;
 				token.type = TokenType.BINOP;
-				token.operatorValue = c + "";
+				token.operatorValue = String.valueOf(c);
 				if (c == '*' && i + 1 < source.length() && source.charAt(i + 1) == '*') {
 					token.tokenLength++;
 					token.operatorValue = "^";
@@ -111,7 +122,7 @@ public class Calculator {
 			} else if (postops.indexOf(c) != -1) {
 				token.tokenLength = 1;
 				token.type = TokenType.POSTOP;
-				token.operatorValue = c + "";
+				token.operatorValue = String.valueOf(c).toLowerCase(Locale.ROOT);
 			} else if (c == ')') {
 				token.tokenLength = 1;
 				token.type = TokenType.RPAREN;
@@ -127,6 +138,30 @@ public class Calculator {
 				if (token.tokenLength == 1) {
 					throw new CalculatorException("Invalid number literal", i, 1);
 				}
+			} else if ('$' == c) {
+				token.tokenLength = 1;
+				token.type = TokenType.VARIABLE;
+				token.operatorValue = "";
+				boolean inParenthesis = false;
+				if (i + 1 < source.length() && source.charAt(i + 1) == '{') {
+					token.tokenLength++;
+					inParenthesis = true;
+				}
+				for (int j = token.tokenStart + token.tokenLength; j < source.length(); j++) {
+					char d = source.charAt(j);
+					if (inParenthesis) {
+						if (d == '}') {
+							token.tokenLength++;
+							inParenthesis = false;
+							break;
+						}
+					} else if (nameCharacters.indexOf(d) == -1) break;
+					token.operatorValue += d;
+					token.tokenLength++;
+				}
+				if (token.operatorValue.length() == 0 || inParenthesis) {
+					throw new CalculatorException("Unterminated variable literal", token.tokenStart, token.tokenLength);
+				}
 			} else if (digits.indexOf(c) != -1) {
 				token.type = TokenType.NUMBER;
 				readDigitsInto(token, source, false);
@@ -140,7 +175,7 @@ public class Calculator {
 			} else {
 				throw new CalculatorException("Unknown thing " + c, i, 1);
 			}
-			justParsedNumber = token.type == TokenType.NUMBER;
+			justParsedNumber = token.type == TokenType.NUMBER || token.type == TokenType.VARIABLE;
 			tokens.add(token);
 			i += token.tokenLength;
 		}
@@ -174,6 +209,7 @@ public class Calculator {
 		for (Token currentlyShunting : toShunt) {
 			switch (currentlyShunting.type) {
 				case NUMBER:
+				case VARIABLE:
 					out.add(currentlyShunting);
 					break;
 				case BINOP:
@@ -230,11 +266,19 @@ public class Calculator {
 	/// </editor-fold>
 
 	///<editor-fold desc="Evaluating Time">
-	public static BigDecimal evaluate(List<Token> rpnTokens) throws CalculatorException {
+	public static BigDecimal evaluate(VariableProvider provider, List<Token> rpnTokens) throws CalculatorException {
 		Deque<BigDecimal> values = new ArrayDeque<>();
 		try {
 			for (Token command : rpnTokens) {
 				switch (command.type) {
+					case VARIABLE:
+						values.push(provider.provideVariable(command.operatorValue)
+																.orElseThrow(() -> new CalculatorException(
+																	"Unknown variable " + command.operatorValue,
+																	command.tokenStart,
+																	command.tokenLength
+																)));
+						break;
 					case PREOP:
 						values.push(values.pop().negate());
 						break;

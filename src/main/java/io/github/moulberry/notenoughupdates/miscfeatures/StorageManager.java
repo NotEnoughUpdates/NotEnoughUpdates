@@ -488,11 +488,14 @@ public class StorageManager {
 					}
 				}
 			}
-
 			storageOpenSwitchMillis = System.currentTimeMillis();
-			desiredStoragePage = page;
 
-			NotEnoughUpdates.INSTANCE.sendChatMessage("/storage " + (desiredStoragePage - 8));
+			if (page < 9) {
+				NotEnoughUpdates.INSTANCE.sendChatMessage("/enderchest " + (page + 1));
+			} else {
+				desiredStoragePage = page;
+				NotEnoughUpdates.INSTANCE.sendChatMessage("/storage");
+			}
 		}
 	}
 

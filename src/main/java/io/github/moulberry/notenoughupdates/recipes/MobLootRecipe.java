@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NEUManager;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.entityviewer.EntityViewer;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
@@ -87,7 +88,7 @@ public class MobLootRecipe implements NeuRecipe {
 				return chance;
 			}
 
-			String format = GuiProfileViewer.numberFormat.format(chanceIn);
+			String format = StringUtils.formatNumber(chanceIn);
 			return "1/" + format + " (" + chance + ")";
 		}
 	}

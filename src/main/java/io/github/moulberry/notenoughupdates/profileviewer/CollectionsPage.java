@@ -37,16 +37,15 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
+
+import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
 
 public class CollectionsPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_cols = new ResourceLocation("notenoughupdates:pv_cols.png");
-	public static final ResourceLocation pv_elements = new ResourceLocation("notenoughupdates:pv_elements.png");
+	private static final ResourceLocation pv_cols = new ResourceLocation("notenoughupdates:pv_cols.png");
 	private static final int COLLS_XCOUNT = 5;
 	private static final int COLLS_YCOUNT = 4;
 	private static final float COLLS_XPADDING = (190 - COLLS_XCOUNT * 20) / (float) (COLLS_XCOUNT + 1);
@@ -72,7 +71,6 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		"XIX",
 		"XX",
 	};
-	private static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
 	private static List<String> tooltipToDisplay = null;
 	private static ItemStack selectedCollectionCategory = null;
 	private int page = 0;
@@ -89,8 +87,17 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_cols);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileCollectionInfo collectionInfo =
-			GuiProfileViewer.getProfile().getCollectionInfo(GuiProfileViewer.getProfileId());
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject resourceCollectionInfo = ProfileViewer.getOrLoadCollectionsResource();
+		if (resourceCollectionInfo == null) {
+			return;
+		}
+
+		ProfileCollectionInfo collectionInfo = selectedProfile.getCollectionInfo();
 		if (collectionInfo == null) {
 			Utils.drawStringCentered(
 				EnumChatFormatting.RED + "Collection API not enabled!",
@@ -98,9 +105,6 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			);
 			return;
 		}
-
-		JsonObject resourceCollectionInfo = ProfileViewer.getResourceCollectionInformation();
-		if (resourceCollectionInfo == null) return;
 
 		int collectionCatSize = ProfileViewer.getCollectionCatToCollectionMap().size();
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
@@ -274,19 +278,17 @@ public class CollectionsPage extends GuiProfileViewerPage {
 								tierString
 						);
 						tooltipToDisplay.add(
-							"Collected: " + numberFormat.format(thisCollection.getPersonalCollectionCount())
+							"Collected: " + StringUtils.formatNumber(thisCollection.getPersonalCollectionCount())
 						);
-						tooltipToDisplay.add("Total Collected: " + numberFormat.format(amount));
+						tooltipToDisplay.add("Total Collected: " + StringUtils.formatNumber(amount));
 					}
 				}
 
 				GlStateManager.color(1, 1, 1, 1);
-				if (tier >= 0) {
-					Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
-				}
+				Utils.drawStringCentered(tierString, guiLeft + x + 10, guiTop + y - 4, true, tierStringColour);
 
 				Utils.drawStringCentered(
-					StringUtils.shortNumberFormat(amount) + "", guiLeft + x + 10, guiTop + y + 26, true, color.getRGB());
+					StringUtils.shortNumberFormat(amount), guiLeft + x + 10, guiTop + y + 26, true, color.getRGB());
 			}
 		}
 
@@ -402,16 +404,16 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		switch (keyCode) {
 			case Keyboard.KEY_5:
 			case Keyboard.KEY_NUMPAD5:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_4:
 			case Keyboard.KEY_NUMPAD4:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_3:
 			case Keyboard.KEY_NUMPAD3:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_2:
 			case Keyboard.KEY_NUMPAD2:
-				stack = items.next();
+				items.next();
 			case Keyboard.KEY_1:
 			case Keyboard.KEY_NUMPAD1:
 				stack = items.next();

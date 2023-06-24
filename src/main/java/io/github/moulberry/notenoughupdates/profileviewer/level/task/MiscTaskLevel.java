@@ -23,6 +23,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.CrimsonIslePage;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
@@ -35,12 +37,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class MiscTaskLevel {
+public class MiscTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public MiscTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public MiscTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject miscellaneousTask = levelPage.getConstant().getAsJsonObject("miscellaneous_task");
 		// I love doing this on god!!!
@@ -113,9 +116,14 @@ public class MiscTaskLevel {
 			}
 		}
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
 		// community upgrades
 		int sbXpCommunityUpgrade = 0;
-		JsonObject profileInformation = levelPage.getProfile().getProfileInformation(levelPage.getProfileId());
+		JsonObject profileInformation = selectedProfile.getOuterProfileJson();
 		if (profileInformation != null && profileInformation.has("community_upgrades")) {
 			JsonObject communityUpgrades = profileInformation.getAsJsonObject("community_upgrades");
 			JsonArray upgradeStates = communityUpgrades.getAsJsonArray("upgrade_states");
@@ -191,8 +199,6 @@ public class MiscTaskLevel {
 			true,
 			lore
 		);
-
-		totalXp += sbXpAccessoryUpgrade + sbXpUnlockedPowers;
 	}
 
 	private int getRankIndex(int pointsTotal) {

@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
@@ -38,15 +39,12 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 @NEUAutoSubscribe
 public class PowerStoneStatsDisplay {
 	private static PowerStoneStatsDisplay instance = null;
-	private final NumberFormat format = NumberFormat.getInstance(Locale.US);
 	private boolean dirty = true;
 
 	public static PowerStoneStatsDisplay getInstance() {
@@ -59,16 +57,14 @@ public class PowerStoneStatsDisplay {
 	@SubscribeEvent
 	public void onProfileDataLoaded(ProfileDataLoadedEvent event) {
 		JsonObject profileInfo = event.getProfileInfo();
-
 		if (profileInfo == null) return;
 
-		JsonObject inventoryInfo = ProfileViewerUtils.readInventoryInfo(profileInfo, "talisman_bag");
+		JsonArray inventoryInfo = ProfileViewerUtils.readInventoryInfo(profileInfo, "talisman_bag");
 		if (inventoryInfo == null) return;
 
 		NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (configProfileSpecific == null) return;
-		int powerAmount = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
-		configProfileSpecific.magicalPower = powerAmount;
+		configProfileSpecific.magicalPower = ProfileViewerUtils.getMagicalPower(inventoryInfo, profileInfo);
 	}
 
 	@SubscribeEvent
@@ -92,8 +88,7 @@ public class PowerStoneStatsDisplay {
 					String rawNumber = line.split("§6")[1].replace(",", "");
 					NEUConfig.HiddenProfileSpecific configProfileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 					if (configProfileSpecific == null) return;
-					int magicalPower = Integer.parseInt(rawNumber);
-					configProfileSpecific.magicalPower = magicalPower;
+					configProfileSpecific.magicalPower = Integer.parseInt(rawNumber);
 				}
 			}
 		}
@@ -153,7 +148,7 @@ public class PowerStoneStatsDisplay {
 					return;
 				}
 
-				event.toolTip.set(index, "§7At §6" + format.format((double) magicalPower) + " Magical Power§7:");
+				event.toolTip.set(index, "§7At §6" + StringUtils.formatNumber((double) magicalPower) + " Magical Power§7:");
 				foundMagicalPower = true;
 				continue;
 			}
@@ -177,7 +172,7 @@ public class PowerStoneStatsDisplay {
 				}
 				double realStat = (currentStat / scaledCurrentPower) * scaledMagicalPower;
 
-				String format = this.format.format((double) Math.round(realStat));
+				String format = StringUtils.formatNumber((double) Math.round(realStat));
 				format += rawStat.substring(rawStat.length() - 1);
 
 				event.toolTip.set(index, line.replace(rawStat, format));

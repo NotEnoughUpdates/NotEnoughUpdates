@@ -22,7 +22,9 @@ package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
@@ -34,11 +36,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CoreTaskLevel {
+public class CoreTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
-
-	public CoreTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
+	public CoreTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
 	private final List<String> skills = Arrays.asList(
 		"taming",
@@ -52,13 +54,18 @@ public class CoreTaskLevel {
 		"alchemy"
 	);
 
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject coreTask = levelPage.getConstant().get("core_task").getAsJsonObject();
-		// skills
-		Map<String, ProfileViewer.Level> skyblockInfo = levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
 
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 		int sbXpGainedSkillLVL = 0;
-		if (skyblockInfo != null) {
+		if (skyblockInfo != null && selectedProfile.skillsApiEnabled()) {
 			for (String skill : skills) {
 				ProfileViewer.Level level = skyblockInfo.get(skill);
 				for (int i = 1; i <= level.level; i++) {
@@ -108,9 +115,7 @@ public class CoreTaskLevel {
 		JsonObject minionXp = Constants.MISC.get("minionXp").getAsJsonObject();
 		int collectionsXp = coreTask.get("collections_xp").getAsInt();
 		ProfileCollectionInfo collection;
-		collection = levelPage.getProfile().getCollectionInfo(
-			levelPage.getProfileId()
-		);
+		collection = GuiProfileViewer.getSelectedProfile().getCollectionInfo();
 		if (collection != null) {
 			sbXpCollection = 0;
 			for (Map.Entry<String, ProfileCollectionInfo.CollectionInfo> stringCollectionInfoEntry : collection
@@ -122,7 +127,7 @@ public class CoreTaskLevel {
 
 			for (int tier : collection.getCraftedGenerators().values()) {
 				for (int i = 1; i <= tier; i++) {
-					if (minionXp.has(i + "")) sbXpMinionTier += minionXp.get(i + "").getAsInt();
+					if (minionXp.has(String.valueOf(i))) sbXpMinionTier += minionXp.get(String.valueOf(i)).getAsInt();
 				}
 			}
 		}

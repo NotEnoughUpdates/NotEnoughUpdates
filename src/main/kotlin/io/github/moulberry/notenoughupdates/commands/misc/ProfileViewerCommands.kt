@@ -52,6 +52,7 @@ class ProfileViewerCommands {
             NotEnoughUpdates.profileViewer.getProfileByName(
                 name ?: Minecraft.getMinecraft().thePlayer.name
             ) { profile ->
+            NotEnoughUpdates.profileViewer.loadPlayerByName(name) { profile ->
                 if (profile == null) {
                     reply("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.")
                 } else {

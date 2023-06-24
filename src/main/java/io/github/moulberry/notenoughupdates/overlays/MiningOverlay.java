@@ -208,8 +208,8 @@ public class MiningOverlay extends TextTabOverlay {
 							}
 						}
 					}
-					if (line.startsWith("\u00a77\u00a79")) {
-						String textAfter = line.substring(4);
+					if (line.startsWith("\u00a79")) {
+						String textAfter = line.substring(2);
 						if (!textAfter.contains("\u00a7") && !textAfter.equals("Rewards") && !textAfter.equals("Progress")) {
 							commName = textAfter;
 						}

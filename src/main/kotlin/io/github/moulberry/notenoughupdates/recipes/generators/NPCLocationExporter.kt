@@ -32,7 +32,9 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.passive.EntityVillager
+import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -41,9 +43,18 @@ import java.util.*
 
 @NEUAutoSubscribe
 class NPCLocationExporter {
-    class NPCNamePrompt(val uuid: UUID, val position: BlockPos, val island: String, val skinId: String) : GuiScreen() {
+    class NPCNamePrompt(val uuid: UUID, val position: BlockPos, val island: String, val itemStack: ItemStack) :
+        GuiScreen() {
+        constructor(uuid: UUID, position: BlockPos, island: String, skinId: String) : this(
+            uuid, position, island, ItemUtils.createSkullItemStack(
+                uuid.toString(),
+                uuid.toString(),
+                "https://textures.minecraft.net/texture/$skinId"
+            )
+        )
+
         val nameField = GuiElementTextField("§9Unknown (NPC)", GuiElementTextField.COLOUR).also {
-            it.setSize(100, 20)
+            it.setSize(200, 20)
         }
         var name
             get() = nameField.text
@@ -54,20 +65,14 @@ class NPCLocationExporter {
             get() = StringUtils.cleanColour(name.replace(" ", "_"))
                 .uppercase()
                 .replace("[^A-Z_0-9]".toRegex(), "")
-        val itemStack
-            get() = ItemUtils.createSkullItemStack(
-                name,
-                uuid.toString(),
-                "https://textures.minecraft.net/texture/$skinId"
-            )
         val top get() = height / 2 - 50
         val left get() = width / 2 - 100
 
         override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
             super.drawScreen(mouseX, mouseY, partialTicks)
             drawDefaultBackground()
-            RenderUtils.drawFloatingRect(left, top, 200, 100)
-            nameField.render(left + 48 + 20, top + 20)
+            RenderUtils.drawFloatingRect(left, top, 250, 100)
+            nameField.render(left + 25, top + 60)
             GlStateManager.pushMatrix()
             GlStateManager.translate((left + 5).toDouble(), (top + 5).toDouble(), 0.0)
             GlStateManager.scale(3.0, 3.0, 1.0)
@@ -80,7 +85,9 @@ class NPCLocationExporter {
 
         fun save() {
             val itemStack = this.itemStack
+            itemStack.setStackDisplayName(name)
             ItemUtils.getExtraAttributes(itemStack).setString("id", id)
+            ItemUtils.appendLore(itemStack, listOf(""))
             val json = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack)
             json["internalname"] = id
             json["clickcommand"] = ""
@@ -106,8 +113,8 @@ class NPCLocationExporter {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             val mouseX = Utils.getMouseX()
             val mouseY = Utils.getMouseY()
-            if (mouseX - left - 48 - 20 in 0..nameField.width &&
-                mouseY - top - 20 in 0..nameField.height
+            if (mouseX - left - 25 in 0..nameField.width &&
+                mouseY - top - 60 in 0..nameField.height
             ) {
                 nameField.mouseClicked(mouseX, mouseY, mouseButton)
             } else {
@@ -137,6 +144,18 @@ class NPCLocationExporter {
             return
         }
         if (pointedEntity !is AbstractClientPlayer) {
+            if (pointedEntity is EntityLivingBase) {
+                Minecraft.getMinecraft().displayGuiScreen(
+                    NPCNamePrompt(
+                        pointedEntity.uniqueID,
+                        pointedEntity.position,
+                        SBInfo.getInstance().getLocation(),
+                        pointedEntity.getCurrentArmor(3)?.takeIf { it.stackSize > 0 }
+                            ?: ItemUtils.createQuestionMarkSkull("")
+                    )
+                )
+                return
+            }
             Utils.addChatMessage("Entity under cursor is not a player")
             return
         }

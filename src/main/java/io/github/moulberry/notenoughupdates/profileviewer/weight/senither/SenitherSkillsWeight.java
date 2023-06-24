@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.weight.senither;
 
 import com.google.gson.JsonArray;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.SkillsWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.WeightStruct;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -46,7 +47,7 @@ public class SenitherSkillsWeight extends SkillsWeight {
 			int maxLevel = skillName.equals("farming")
 				? 60
 				: Utils.getElementAsInt(Utils.getElement(Constants.LEVELING, "leveling_caps." + skillName), 50);
-			double level = ProfileViewer.getLevel(
+			double level = ProfileViewerUtils.getLevel(
 				Utils.getElement(Constants.LEVELING, "leveling_xp").getAsJsonArray(),
 				currentSkillXp,
 				maxLevel,

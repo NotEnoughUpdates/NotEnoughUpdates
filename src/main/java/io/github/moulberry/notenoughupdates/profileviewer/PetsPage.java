@@ -65,15 +65,23 @@ public class PetsPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
-		JsonObject petsInfo = profile.getPetsInfo(profileId);
-		if (petsInfo == null) return;
 		JsonObject petsJson = Constants.PETS;
-		if (petsJson == null) return;
+		if (petsJson == null) {
+			return;
+		}
+
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject petsInfo = selectedProfile.getPetsInfo();
+		if (petsInfo == null) {
+			return;
+		}
 
 		String location = null;
-		JsonObject status = profile.getPlayerStatus();
+		JsonObject status = GuiProfileViewer.getProfile().getPlayerStatus();
 		if (status != null && status.has("mode")) {
 			location = status.get("mode").getAsString();
 		}
@@ -98,13 +106,13 @@ public class PetsPage extends GuiProfileViewerPage {
 			}
 			sortedPets.sort((pet1, pet2) -> {
 				String tier1 = pet1.get("tier").getAsString();
-				String tierNum1 = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier1);
+				String tierNum1 = GuiProfileViewer.RARITY_TO_NUM.get(tier1);
 				if (tierNum1 == null) return 1;
 				int tierNum1I = Integer.parseInt(tierNum1);
 				float exp1 = pet1.get("exp").getAsFloat();
 
 				String tier2 = pet2.get("tier").getAsString();
-				String tierNum2 = GuiProfileViewer.MINION_RARITY_TO_NUM.get(tier2);
+				String tierNum2 = GuiProfileViewer.RARITY_TO_NUM.get(tier2);
 				if (tierNum2 == null) return -1;
 				int tierNum2I = Integer.parseInt(tierNum2);
 				float exp2 = pet2.get("exp").getAsFloat();

@@ -22,9 +22,10 @@ package io.github.moulberry.notenoughupdates.profileviewer.level.task;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
-import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -33,29 +34,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SkillRelatedTaskLevel {
+public class SkillRelatedTaskLevel extends GuiTaskLevel{
 
-	private final LevelPage levelPage;
+	public SkillRelatedTaskLevel(LevelPage levelPage) {
+		super(levelPage);
+	}
 
-	public SkillRelatedTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		JsonObject skillRelatedTask = levelPage.getConstant().get("skill_related_task").getAsJsonObject();
-		JsonObject miningObj = skillRelatedTask.get("mining").getAsJsonObject();
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
 
-		float hotmXp = Utils.getElementAsFloat(Utils.getElement(object, "mining_core.experience"), 0);
-		ProfileViewer.Level levelObjHotm =
-			ProfileViewer.getLevel(
-				Utils.getElementOrDefault(Constants.LEVELING, "HOTM", new JsonArray()).getAsJsonArray(),
-				hotmXp,
-				7,
-				false
-			);
+		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
+		if (levelingInfo == null) {
+			return;
+		}
+
+		JsonObject skillRelatedTask = levelPage.getConstant().getAsJsonObject("skill_related_task");
+		JsonObject miningObj = skillRelatedTask.getAsJsonObject("mining");
+
+		int hotmLevel = (int) levelingInfo.get("hotm").level;
 
 		int hotmXP = 0;
-		float level = levelObjHotm.level;
 		JsonArray hotmXpArray = miningObj.get("hotm_xp").getAsJsonArray();
-		for (int i = 1; i <= level; i++) {
+		for (int i = 1; i <= hotmLevel; i++) {
 			hotmXP += hotmXpArray.get(i - 1).getAsInt();
 		}
 

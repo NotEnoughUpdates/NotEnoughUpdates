@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022 - 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,7 +24,6 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
-import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
@@ -169,17 +168,17 @@ public class ItemTooltipRngListener {
 		if (matcher.matches()) {
 			String odds = matcher.group(1);
 			int baseChance = calculateChance(matcher.group(2));
-			String baseFormat = GuiProfileViewer.numberFormat.format(baseChance);
+			String baseFormat = StringUtils.formatNumber(baseChance);
 
 			String fractionFormat = "§7(1/" + baseFormat + ")";
 			result = odds + " " + fractionFormat;
 		} else if (matcherSelected.matches()) {
 			String odds = matcherSelected.group(1);
 			int baseChance = calculateChance(matcherSelected.group(2));
-			String baseFormat = GuiProfileViewer.numberFormat.format(baseChance);
+			String baseFormat = StringUtils.formatNumber(baseChance);
 
 			int increasedChance = calculateChance(matcherSelected.group(3));
-			String increased = GuiProfileViewer.numberFormat.format(increasedChance);
+			String increased = StringUtils.formatNumber(increasedChance);
 			String fractionFormat = "§7(§8§m1/" + baseFormat + "§r §71/" + increased + ")";
 
 			result = odds + " " + fractionFormat;
@@ -287,6 +286,7 @@ public class ItemTooltipRngListener {
 			labelSingular = "Boss";
 			repoCategory = "slayer";
 		}
+		if (runsData == null) return;
 
 		int repoScore = getRepoScore(stack, repoCategory);
 		if (repoScore != -1) {
@@ -304,8 +304,8 @@ public class ItemTooltipRngListener {
 
 		int runsNeeded = (int) Math.floor((double) needed / (double) gainPerRun);
 		int runsHaving = having / gainPerRun;
-		String runsNeededFormat = GuiProfileViewer.numberFormat.format(runsNeeded);
-		String runsHavingFormat = GuiProfileViewer.numberFormat.format(runsHaving);
+		String runsNeededFormat = StringUtils.formatNumber(runsNeeded);
+		String runsHavingFormat = StringUtils.formatNumber(runsHaving);
 
 		String progressString = null;
 		if (nextLineProgress) {

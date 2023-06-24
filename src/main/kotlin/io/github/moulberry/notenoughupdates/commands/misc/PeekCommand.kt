@@ -23,7 +23,7 @@ import com.mojang.brigadier.arguments.StringArgumentType.string
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
@@ -50,9 +50,9 @@ class PeekCommand {
         deleteReply("$YELLOW[PEEK] Getting player information...")
 
 
-        NotEnoughUpdates.profileViewer.getProfileByName(
+        NotEnoughUpdates.profileViewer.loadPlayerByName(
             name
-        ) { profile: ProfileViewer.Profile? ->
+        ) { profile: SkyblockProfiles? ->
             if (profile == null) {
                 deleteReply("$RED[PEEK] Unknown player or the Hypixel API is down.")
             } else {
@@ -72,29 +72,28 @@ class PeekCommand {
                             return
                         }
                         val g = GRAY.toString()
-                        val profileInfo = profile.getProfileInformation(null)
+                        val profileInfo = profile.latestProfile.profileJson
                         if (profileInfo == null) {
                             future = executor.schedule(this, 200, TimeUnit.MILLISECONDS)
                             return
                         }
                         var overallScore = 0f
                         val isMe = name.equals("moulberry", ignoreCase = true)
-                        val stats = profile.getStats(null)
+                        val stats = profile.latestProfile.stats
                         if (stats == null) {
                             future = executor.schedule(this, 200, TimeUnit.MILLISECONDS)
                             return
                         }
-                        val skyblockInfo = profile.getSkyblockInfo(null)
+                        val skyblockInfo = profile.latestProfile.levelingInfo
                         if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
                             deleteReply("$YELLOW[PEEK] Getting the player's Skyblock networth...")
                             val countDownLatch = CountDownLatch(1)
-                            profile.getSoopyNetworth(null, Runnable { countDownLatch.countDown() })
-                            try { //Wait for async network request
+                            profile.latestProfile.getSoopyNetworth { countDownLatch.countDown() }
+                            try { // Wait for async network request
                                 countDownLatch.await(10, TimeUnit.SECONDS)
-                            } catch (e: InterruptedException) {
-                            }
+                            } catch (_: InterruptedException) {}
 
-                            //Now it's waited for network request the data should be cached (accessed in nw section)
+                            // Now it's waited for network request the data should be cached (accessed in nw section)
                         }
                         deleteReply(
                             "$GREEN $STRIKETHROUGH-=-$RESET$GREEN ${
@@ -104,7 +103,7 @@ class PeekCommand {
                                 )
                             }'s Info $STRIKETHROUGH-=-"
                         )
-                        if (skyblockInfo == null) {
+                        if (skyblockInfo == null || !profile.latestProfile.skillsApiEnabled()) {
                             Utils.addChatMessage(YELLOW.toString() + "Skills API disabled!")
                         } else {
                             var totalSkillLVL = 0f
@@ -216,11 +215,10 @@ class PeekCommand {
                                 ), 0f
                             )
                         val networth = if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth) {
-                            val nwData =
-                                profile.getSoopyNetworth(null, Runnable {})
-                            nwData?.total ?: -2L
+                            val nwData = profile.latestProfile.getSoopyNetworth {}
+                            nwData?.networth ?: -2L
                         } else {
-                            profile.getNetWorth(null)
+                            profile.latestProfile.networth
                         }
                         val money =
                             Math.max(bankBalance + purseBalance, networth.toFloat())
@@ -245,16 +243,14 @@ class PeekCommand {
                         val activePet =
                             Utils.getElementAsString(
                                 Utils.getElement(
-                                    profile.getPetsInfo(
-                                        null
-                                    ), "active_pet.type"
+                                    profile.latestProfile.petsInfo, "active_pet.type"
                                 ),
                                 "None Active"
                             )
                         val activePetTier =
                             Utils.getElementAsString(
                                 Utils.getElement(
-                                    profile.getPetsInfo(null),
+                                    profile.latestProfile.petsInfo,
                                     "active_pet.tier"
                                 ), "UNKNOWN"
                             )

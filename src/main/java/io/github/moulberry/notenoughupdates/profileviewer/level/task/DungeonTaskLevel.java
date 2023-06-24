@@ -23,26 +23,31 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
+import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class DungeonTaskLevel {
+public class DungeonTaskLevel extends GuiTaskLevel {
 
-	private final LevelPage levelPage;
+	public DungeonTaskLevel(LevelPage levelPage) {super(levelPage);}
 
-	public DungeonTaskLevel(LevelPage levelPage) {this.levelPage = levelPage;}
-
+	@Override
 	public void drawTask(JsonObject object, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		JsonObject dungeonTask = levelPage.getConstant().get("dungeon_task").getAsJsonObject();
 
-		Map<String, ProfileViewer.Level> skyblockInfo =
-			levelPage.getProfile().getSkyblockInfo(levelPage.getProfileId());
+		SkyblockProfiles.SkyblockProfile selectedProfile = GuiProfileViewer.getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		Map<String, ProfileViewer.Level> skyblockInfo = selectedProfile.getLevelingInfo();
 
 		int sbLevelGainedFloor = 0;
 		int sbXpGainedClass = 0;
@@ -60,8 +65,7 @@ public class DungeonTaskLevel {
 				}
 			}
 
-			List<String> dungeonClasses = Arrays.asList("healer", "tank", "mage", "archer", "berserk");
-			for (String dungeonClass : dungeonClasses) {
+			for (String dungeonClass : Weight.DUNGEON_CLASS_NAMES) {
 				ProfileViewer.Level level = skyblockInfo.get(dungeonClass);
 				for (int i = 1; i <= level.level; i++) {
 					if (i <= 50) sbXpGainedClass += dungeonTask.get("class_xp").getAsInt();
@@ -72,11 +76,10 @@ public class DungeonTaskLevel {
 			int index = 0;
 			for (JsonElement completeCatacomb : completeCatacombs) {
 				int value = completeCatacomb.getAsInt();
-				JsonObject normalCompletions = Utils
-					.getElement(object, "dungeons.dungeon_types.catacombs.tier_completions")
-					.getAsJsonObject();
-				if (normalCompletions.has(index + "")) {
-					sbLevelGainedFloor = sbLevelGainedFloor + value;
+				JsonElement normalCompletions = Utils
+					.getElementOrDefault(object, "dungeons.dungeon_types.catacombs.tier_completions", null);
+				if (normalCompletions != null && normalCompletions.getAsJsonObject().has("" + index)) {
+					sbLevelGainedFloor += value;
 				}
 				index++;
 			}
@@ -86,8 +89,8 @@ public class DungeonTaskLevel {
 				JsonElement masterCompletions = Utils
 					.getElementOrDefault(object, "dungeons.dungeon_types.master_catacombs.tier_completions", null);
 				if (masterCompletions != null) {
-					if (masterCompletions.getAsJsonObject().has(i + "")) {
-						sbLevelGainedFloor = sbLevelGainedFloor + masterCatacombs;
+					if (masterCompletions.getAsJsonObject().has("" + i)) {
+						sbLevelGainedFloor += masterCatacombs;
 					}
 				}
 			}
@@ -104,8 +107,6 @@ public class DungeonTaskLevel {
 		lore.add(levelPage.buildLore("Catacombs Level Up", sbXpGainedLvl, catacombsLevelUp, false));
 		lore.add(levelPage.buildLore("Class Level Up", sbXpGainedClass, classLevelUp, false));
 		lore.add(levelPage.buildLore("Complete Dungeons", sbLevelGainedFloor, completeDungeon, false));
-
-		int totalSbXpGain = sbXpGainedLvl + sbXpGainedClass + sbLevelGainedFloor;
 
 		levelPage.renderLevelBar(
 			"Dungeon Task",

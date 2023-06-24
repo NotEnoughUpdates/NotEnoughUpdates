@@ -20,10 +20,8 @@
 package io.github.moulberry.notenoughupdates.profileviewer;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -34,18 +32,27 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class MiningPage extends GuiProfileViewerPage {
 
-	public static final ResourceLocation pv_mining = new ResourceLocation("notenoughupdates:pv_mining.png");
-	private static final ItemStack iron_pick = new ItemStack(Items.iron_pickaxe);
-	private final HashMap<String, ProfileViewer.Level> levelObjhotms = new HashMap<>();
+	private static final ResourceLocation miningPageTexture = new ResourceLocation("notenoughupdates:pv_mining.png");
+	private static final ItemStack hotmSkillIcon = new ItemStack(Items.iron_pickaxe);
+	private static final Map<String, EnumChatFormatting> crystalToColor = new HashMap<String, EnumChatFormatting>() {{
+		put("jade", EnumChatFormatting.GREEN);
+		put("amethyst", EnumChatFormatting.DARK_PURPLE);
+		put("amber", EnumChatFormatting.GOLD);
+		put("sapphire", EnumChatFormatting.AQUA);
+		put("topaz", EnumChatFormatting.YELLOW);
+		put("jasper", EnumChatFormatting.LIGHT_PURPLE);
+		put("ruby", EnumChatFormatting.RED);
+	}};
 
 	public MiningPage(GuiProfileViewer instance) {
 		super(instance);
@@ -56,13 +63,15 @@ public class MiningPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_mining);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(miningPageTexture);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		ProfileViewer.Profile profile = GuiProfileViewer.getProfile();
-		String profileId = GuiProfileViewer.getProfileId();
-		JsonObject profileInfo = profile.getProfileInformation(profileId);
-		if (profileInfo == null) return;
+		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
+		if (selectedProfile == null) {
+			return;
+		}
+
+		JsonObject profileInfo = selectedProfile.getProfileJson();
 
 		float xStart = 22;
 		float yStartTop = 27;
@@ -70,218 +79,85 @@ public class MiningPage extends GuiProfileViewerPage {
 		int x = guiLeft + 23;
 		int y = guiTop + 25;
 		int sectionWidth = 110;
-		JsonObject leveling = Constants.LEVELING;
-		ProfileViewer.Level levelObjhotm = levelObjhotms.get(profileId);
-		if (levelObjhotm == null) {
-			float hotmXp = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.experience"), 0);
-			levelObjhotm =
-				ProfileViewer.getLevel(
-					Utils.getElementOrDefault(leveling, "HOTM", new JsonArray()).getAsJsonArray(),
-					hotmXp,
-					7,
-					false
-				);
-			levelObjhotms.put(profileId, levelObjhotm);
-		}
 
-		String skillName = EnumChatFormatting.RED + "HOTM";
-		//The stats that show
-		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.powder_mithril"), 0);
-		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.powder_gemstone"), 0);
+		// Get stats
+		JsonObject miningCore = profileInfo.getAsJsonObject("mining_core");
+		JsonObject nodes = miningCore.getAsJsonObject("nodes");
+
+		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(miningCore, "powder_mithril"), 0);
+		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(miningCore, "powder_gemstone"), 0);
 		float mithrilPowderTotal = Utils.getElementAsFloat(Utils.getElement(
 			profileInfo,
-			"mining_core.powder_spent_mithril"
+			"powder_spent_mithril"
 		), 0);
-		float gemstonePowderTotal = (Utils.getElementAsFloat(Utils.getElement(
+		float gemstonePowderTotal = Utils.getElementAsFloat(Utils.getElement(
 			profileInfo,
-			"mining_core.powder_spent_gemstone"
-		), 0));
-		String jadeCrystal =
-			(Utils.getElementAsString(Utils.getElement(profileInfo, "mining_core.crystals.jade_crystal.state"), "Not Found"));
+			"powder_spent_gemstone"
+		), 0);
+
 		float crystalPlacedAmount =
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.crystals.jade_crystal.total_placed"), 0));
-		String jadeCrystalString = "§c✖";
-		String amethystCrystal =
-			(Utils.getElementAsString(
-				Utils.getElement(profileInfo, "mining_core.crystals.amethyst_crystal.state"),
-				"Not Found"
-			));
-		String amethystCrystalString = "§c✖";
-		String amberCrystal =
-			(Utils.getElementAsString(
-				Utils.getElement(profileInfo, "mining_core.crystals.amber_crystal.state"),
-				"Not Found"
-			));
-		String amberCrystalString = "§c✖";
-		String sapphireCrystal =
-			(Utils.getElementAsString(
-				Utils.getElement(profileInfo, "mining_core.crystals.sapphire_crystal.state"),
-				"Not Found"
-			));
-		String sapphireCrystalString = "§c✖";
-		String topazCrystal =
-			(Utils.getElementAsString(
-				Utils.getElement(profileInfo, "mining_core.crystals.topaz_crystal.state"),
-				"Not Found"
-			));
-		String topazCrystalString = "§c✖";
-		String jasperCrystal =
-			(Utils.getElementAsString(
-				Utils.getElement(profileInfo, "mining_core.crystals.jasper_crystal.state"),
-				"Not Found"
-			));
-		String jasperCrystalString = "§c✖";
-		String rubyCrystal =
-			(Utils.getElementAsString(Utils.getElement(profileInfo, "mining_core.crystals.ruby_crystal.state"), "Not Found"));
-		String rubyCrystalString = "§c✖";
-		int miningFortune = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mining_fortune"), 0)));
-		int miningFortuneStat = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.mining_fortune"),
-			0
-		)) * 5);
-		int miningSpeed = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mining_speed"), 0)));
-		int miningSpeedStat = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mining_speed"), 0)) *
-			20);
-		int dailyPowder = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.daily_powder"), 0)));
-		int dailyPowderStat = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.daily_powder"), 0)) *
-			36 + 364);
-		int effMiner = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.efficient_miner"), 0)));
-		float effMinerStat = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.efficient_miner"), 0)) * 0.4 + 10.4
-		);
-		float effMinerStat2 = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.efficient_miner"), 0)) * .06 + 0.31
-		);
-		int tittyInsane = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.titanium_insanium"),
-			0
-		)));
-		float tittyInsaneStat = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.titanium_insanium"), 0)) * .1 + 2
-		);
-		int luckofcave = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.random_event"), 0)));
-		int luckofcaveStat = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.random_event"), 0)));
-		int madMining = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mining_madness"), 0)));
-		int skyMall = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.daily_effect"), 0)));
-		int goblinKiller = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.goblin_killer"), 0)));
-		int seasonMine = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mining_experience"), 0)));
-		float seasonMineStat = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.mining_experience"), 0)) * 0.1 + 5
-		);
-		int quickForge = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.forge_time"), 0)));
-		float quickForgeStat = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.forge_time"), 0)) * .5 + 10
-		);
-		int frontLoad = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.front_loaded"), 0)));
-		int orbit = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.experience_orbs"), 0)));
-		float orbitStat = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.experience_orbs"), 0)) * .01 + 0.2
-		);
-		int crystallized = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.fallen_star_bonus"),
-			0
-		)));
-		int crystallizedStat = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.fallen_star_bonus"),
-			0
-		)) * 6 + 14);
-		int professional = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.professional"), 0)));
-		int professionalStat = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.professional"),
-			0
-		)) * 5 + 50);
-		int greatExplorer = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.great_explorer"), 0)));
-		int greatExplorerStat = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.great_explorer"),
-			0
-		)) * 4 + 16);
-		int fortunate = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.fortunate"), 0)));
-		int fortunateStat = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.fortunate"), 0)) * 4 +
-			20);
-		int lonesomeMiner = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.lonesome_miner"), 0)));
-		float lonesomeMinerStat = (float) (
-			(Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.lonesome_miner"), 0)) * .5 + 5
-		);
-		int miningFortune2 = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.mining_fortune_2"),
-			0
-		)));
-		int miningFortune2Stat = ((Utils.getElementAsInt(Utils.getElement(
-			profileInfo,
-			"mining_core.nodes.mining_fortune_2"
-		), 0)) * 5);
-		int miningSpeed2 = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mining_speed_2"), 0)));
-		int miningSpeed2Stat = ((Utils.getElementAsInt(
-			Utils.getElement(profileInfo, "mining_core.nodes.mining_speed_2"),
-			0
-		)) * 40);
-		int miningSpeedBoost = ((Utils.getElementAsInt(Utils.getElement(
-			profileInfo,
-			"mining_core.nodes.mining_speed_boost"
-		), 0)));
-		int veinSeeker = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.vein_seeker"), 0)));
-		int powderBuff = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.powder_buff"), 0)));
-		int potm = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.special_0"), 0)));
-		int fortnite = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.precision_mining"), 0)));
-		int starPowder = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.star_powder"), 0)));
-		int pickoblus = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.pickaxe_toss"), 0)));
-		int maniacMiner = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.maniac_miner"), 0)));
+			Utils.getElementAsFloat(Utils.getElement(miningCore, "crystals.jade_crystal.total_placed"), 0);
 
-		if (effMinerStat2 < 1) {
-			effMinerStat2 = 1;
-		}
-		int mole = ((Utils.getElementAsInt(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)));
-		float moleStat = (float) ((Utils.getElementAsFloat(Utils.getElement(profileInfo, "mining_core.nodes.mole"), 0)) *
-			0.051);
-		double moleperkstat = (double) mole / 20 - 0.55 + 50;
-		double moleperkstat2 = (double) Math.round(moleperkstat * 100) / 100;
-
-		float output = Math.round((float) (moleperkstat2 % 1) * 100);
-		if (output == 0) {
-			output = 100;
+		int miningFortune = Utils.getElementAsInt(Utils.getElement(nodes, "mining_fortune"), 0);
+		int miningFortuneStat = miningFortune * 5;
+		int miningSpeed = Utils.getElementAsInt(Utils.getElement(nodes, "mining_speed"), 0);
+		int miningSpeedStat = miningSpeed * 20;
+		int dailyPowder = Utils.getElementAsInt(Utils.getElement(nodes, "daily_powder"), 0);
+		int dailyPowderStat = dailyPowder * 36 + 364;
+		int effMiner = Utils.getElementAsInt(Utils.getElement(nodes, "efficient_miner"), 0);
+		float effMinerStat = (float) (effMiner * 0.4 + 10.4);
+		float effMinerStat2 = Math.max(1, (float) (effMiner * .06 + 0.31));
+		int tittyInsane = Utils.getElementAsInt(Utils.getElement(nodes, "titanium_insanium"), 0);
+		float tittyInsaneStat = (float) (tittyInsane * .1 + 2);
+		int luckOfCave = Utils.getElementAsInt(Utils.getElement(nodes, "random_event"), 0);
+		int madMining = Utils.getElementAsInt(Utils.getElement(nodes, "mining_madness"), 0);
+		int skyMall = Utils.getElementAsInt(Utils.getElement(nodes, "daily_effect"), 0);
+		int goblinKiller = Utils.getElementAsInt(Utils.getElement(nodes, "goblin_killer"), 0);
+		int seasonMine = Utils.getElementAsInt(Utils.getElement(nodes, "mining_experience"), 0);
+		float seasonMineStat = (float) (seasonMine * 0.1 + 5);
+		int quickForge = Utils.getElementAsInt(Utils.getElement(nodes, "forge_time"), 0);
+		float quickForgeStat = (float) (quickForge * .5 + 10);
+		int frontLoad = Utils.getElementAsInt(Utils.getElement(nodes, "front_loaded"), 0);
+		int orbit = Utils.getElementAsInt(Utils.getElement(nodes, "experience_orbs"), 0);
+		float orbitStat = (float) (orbit * .01 + 0.2);
+		int crystallized = Utils.getElementAsInt(Utils.getElement(nodes, "fallen_star_bonus"), 0);
+		int crystallizedStat = crystallized * 6 + 14;
+		int professional = Utils.getElementAsInt(Utils.getElement(nodes, "professional"), 0);
+		int professionalStat = professional * 5 + 50;
+		int greatExplorer = Utils.getElementAsInt(Utils.getElement(nodes, "great_explorer"), 0);
+		int greatExplorerStat = greatExplorer * 4 + 16;
+		int fortunate = Utils.getElementAsInt(Utils.getElement(nodes, "fortunate"), 0);
+		int fortunateStat = fortunate * 4 + 20;
+		int lonesomeMiner = ((Utils.getElementAsInt(Utils.getElement(nodes, "lonesome_miner"), 0)));
+		float lonesomeMinerStat = (float) (lonesomeMiner * .5 + 5);
+		int miningFortune2 = Utils.getElementAsInt(Utils.getElement(nodes, "mining_fortune_2"), 0);
+		int miningFortune2Stat = miningFortune2 * 5;
+		int miningSpeed2 = Utils.getElementAsInt(Utils.getElement(nodes, "mining_speed_2"), 0);
+		int miningSpeed2Stat = miningSpeed2 * 40;
+		int miningSpeedBoost = Utils.getElementAsInt(Utils.getElement(nodes, "mining_speed_boost"), 0);
+		int veinSeeker = Utils.getElementAsInt(Utils.getElement(nodes, "vein_seeker"), 0);
+		int powderBuff = Utils.getElementAsInt(Utils.getElement(nodes, "powder_buff"), 0);
+		int potm = ((Utils.getElementAsInt(Utils.getElement(nodes, "special_0"), 0)));
+		int fortnite = Utils.getElementAsInt(Utils.getElement(nodes, "precision_mining"), 0);
+		int starPowder = Utils.getElementAsInt(Utils.getElement(nodes, "star_powder"), 0);
+		int pickoblus = Utils.getElementAsInt(Utils.getElement(nodes, "pickaxe_toss"), 0);
+		int maniacMiner = Utils.getElementAsInt(Utils.getElement(nodes, "maniac_miner"), 0);
+		int mole = Utils.getElementAsInt(Utils.getElement(nodes, "mole"), 0);
+		float moleStat = (float) (mole * 0.051);
+		double molePerkStat = (double) mole / 20 - 0.55 + 50;
+		double molePerkStat2 = (double) Math.round(molePerkStat * 100) / 100;
+		float molePerkPct = Math.round((float) (molePerkStat2 % 1) * 100);
+		if (molePerkPct == 0) {
+			molePerkPct = 100;
 		}
 
-		//The logic for some of the stats
-		if (Objects.equals(jadeCrystal, "NOT_FOUND")) {
-			jadeCrystalString = "§c✖";
-		} else if (Objects.equals(jadeCrystal, "FOUND")) {
-			jadeCrystalString = "§a✔";
-		}
-		if (Objects.equals(amethystCrystal, "NOT_FOUND")) {
-			amethystCrystalString = "§c✖";
-		} else if (Objects.equals(amethystCrystal, "FOUND")) {
-			amethystCrystalString = "§a✔";
-		}
-		if (Objects.equals(amberCrystal, "NOT_FOUND")) {
-			amberCrystalString = "§c✖";
-		} else if (Objects.equals(amberCrystal, "FOUND")) {
-			amberCrystalString = "§a✔";
-		}
-		if (Objects.equals(sapphireCrystal, "NOT_FOUND")) {
-			sapphireCrystalString = "§c✖";
-		} else if (Objects.equals(sapphireCrystal, "FOUND")) {
-			sapphireCrystalString = "§a✔";
-		}
-		if (Objects.equals(topazCrystal, "NOT_FOUND")) {
-			topazCrystalString = "§c✖";
-		} else if (Objects.equals(topazCrystal, "FOUND")) {
-			topazCrystalString = "§a✔";
-		}
-		if (Objects.equals(jasperCrystal, "NOT_FOUND")) {
-			jasperCrystalString = "§c✖";
-		} else if (Objects.equals(jasperCrystal, "FOUND")) {
-			jasperCrystalString = "§a✔";
-		}
-		if (Objects.equals(rubyCrystal, "NOT_FOUND")) {
-			rubyCrystalString = "§c✖";
-		} else if (Objects.equals(rubyCrystal, "FOUND")) {
-			rubyCrystalString = "§a✔";
-		}
+		ProfileViewer.Level hotmLevelingInfo = selectedProfile.getLevelingInfo().get("hotm");
 
-		//The rendering of the stats
-		//hotm level
-		getInstance().renderXpBar(skillName, iron_pick, x, y, sectionWidth, levelObjhotm, mouseX, mouseY);
-		//Powder
+		// Render stats
+		// HOTM
+		getInstance().renderXpBar(EnumChatFormatting.RED + "HOTM", hotmSkillIcon, x, y, sectionWidth, hotmLevelingInfo, mouseX, mouseY);
+
+		// Powder
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_GREEN + "Mithril Powder",
 			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(mithrilPowder),
@@ -310,56 +186,22 @@ public class MiningPage extends GuiProfileViewerPage {
 			guiTop + yStartTop + 54,
 			115
 		);
-		//Crystals
-		Utils.renderAlignedString(
-			EnumChatFormatting.GREEN + "Jade Crystal:",
-			EnumChatFormatting.WHITE + jadeCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 74,
-			110
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.GOLD + "Amber Crystal:",
-			EnumChatFormatting.WHITE + amberCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 84,
-			110
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.DARK_PURPLE + "Amethyst Crystal:",
-			EnumChatFormatting.WHITE + amethystCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 94,
-			110
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.AQUA + "Sapphire Crystal:",
-			EnumChatFormatting.WHITE + sapphireCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 104,
-			110
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.YELLOW + "Topaz Crystal:",
-			EnumChatFormatting.WHITE + topazCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 114,
-			110
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.LIGHT_PURPLE + "Jasper Crystal:",
-			EnumChatFormatting.WHITE + jasperCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 124,
-			110
-		);
-		Utils.renderAlignedString(
-			EnumChatFormatting.RED + "Ruby Crystal:",
-			EnumChatFormatting.WHITE + rubyCrystalString,
-			guiLeft + xStart,
-			guiTop + yStartTop + 134,
-			110
-		);
+
+		// Crystals
+		int idx = 0;
+		for (Map.Entry<String, EnumChatFormatting> crystal : crystalToColor.entrySet()) {
+			String crystalState = Utils.getElementAsString(Utils.getElement(miningCore, "crystals." + crystal.getKey() + "_crystal.state"), "NOT_FOUND");
+			String crystalStr = crystalState.equals("FOUND") ? "§a✔" : "§c✖";
+			Utils.renderAlignedString(
+				crystal.getValue() + WordUtils.capitalizeFully(crystal.getKey()) + " Crystal:",
+				EnumChatFormatting.WHITE + crystalStr,
+				guiLeft + xStart,
+				guiTop + yStartTop + 74 + idx * 10,
+				110
+			);
+			idx ++; // Move text down 10 px every crystal
+		}
+
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Total Placed Crystals:",
 			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(crystalPlacedAmount),
@@ -368,9 +210,7 @@ public class MiningPage extends GuiProfileViewerPage {
 			110
 		);
 
-		//hotm render
-		//Pain
-
+		// HOTM tree
 		renderHotmPerk(
 			miningSpeed,
 			(int) (guiLeft + xStart + 255),
@@ -394,8 +234,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format(Math.pow(miningSpeed + 2, 3)) +
+						StringUtils.formatNumber(Math.pow(miningSpeed + 2, 3)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -437,8 +276,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format(Math.pow(miningFortune + 2, 3)) +
+						StringUtils.formatNumber(Math.pow(miningFortune + 2, 3)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -482,8 +320,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(tittyInsane + 2, 3)) +
+						StringUtils.formatNumber((int) Math.pow(tittyInsane + 2, 3)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -563,34 +400,33 @@ public class MiningPage extends GuiProfileViewerPage {
 		);
 
 		renderHotmPerk(
-			luckofcave,
+			luckOfCave,
 			(int) (guiLeft + xStart + 207),
 			(int) (guiTop + yStartTop + 90),
 			mouseX,
 			mouseY,
 			() ->
-				luckofcave != 0 && luckofcave != 45
+				luckOfCave != 0 && luckOfCave != 45
 					? Lists.newArrayList(
 					"Luck of the Cave",
-					"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
+					"§7Level " + luckOfCave + EnumChatFormatting.DARK_GRAY + "/45",
 					"",
 					"§7Increases the chance for you to",
 					"§7trigger rare occurrences in",
-					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7.",
+					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(luckofcave + 2, 3.07)) +
+						StringUtils.formatNumber((int) Math.pow(luckOfCave + 2, 3.07)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
 						"Luck of the Cave",
-						"§7Level " + luckofcave + EnumChatFormatting.DARK_GRAY + "/45",
+						"§7Level " + luckOfCave + EnumChatFormatting.DARK_GRAY + "/45",
 						"",
 						"§7Increases the chance for you to",
 						"§7trigger rare occurrences in",
-						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckofcaveStat + "%§7."
+						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7."
 					),
 			45
 		);
@@ -618,7 +454,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					EnumChatFormatting.GRAY + "Works for all Powder types.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
-					EnumChatFormatting.DARK_GREEN + "" + (200 + ((dailyPowder) * 18)) + " Mithril Powder"
+					EnumChatFormatting.DARK_GREEN + String.valueOf(200 + ((dailyPowder) * 18)) + " Mithril Powder"
 				)
 					: Lists.newArrayList(
 						"Daily Powder",
@@ -637,7 +473,6 @@ public class MiningPage extends GuiProfileViewerPage {
 			100
 		);
 
-		float finalEffMinerStat2 = effMinerStat2;
 		renderHotmPerk(
 			effMiner,
 			(int) (guiLeft + xStart + 255),
@@ -652,19 +487,17 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "When mining ores, you have a",
 					EnumChatFormatting.GREEN +
-						"" +
-						effMinerStat +
+						String.valueOf(effMinerStat) +
 						"%" +
 						EnumChatFormatting.GRAY +
 						" chance to mine " +
 						EnumChatFormatting.GREEN +
-						Math.round(finalEffMinerStat2),
+						Math.round(effMinerStat2),
 					EnumChatFormatting.GRAY + "adjacent ores.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(effMiner + 2, 2.6)) +
+						StringUtils.formatNumber((int) Math.pow(effMiner + 2, 2.6)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -673,13 +506,12 @@ public class MiningPage extends GuiProfileViewerPage {
 						"",
 						EnumChatFormatting.GRAY + "When mining ores, you have a",
 						EnumChatFormatting.GREEN +
-							"" +
-							effMinerStat +
+							String.valueOf(effMinerStat) +
 							"%" +
 							EnumChatFormatting.GRAY +
 							" chance to mine " +
 							EnumChatFormatting.GREEN +
-							Math.round(finalEffMinerStat2),
+							Math.round(effMinerStat2),
 						EnumChatFormatting.GRAY + "adjacent ores."
 					),
 			100
@@ -814,7 +646,7 @@ public class MiningPage extends GuiProfileViewerPage {
 			true // A redstone block or bedrock is being rendered, so standard GUI item lighting needs to be enabled.
 		);
 
-		float finalOutput = output;
+		float finalMolePerkPct = molePerkPct;
 		renderHotmPerk(
 			mole,
 			(int) (guiLeft + xStart + 255),
@@ -831,22 +663,20 @@ public class MiningPage extends GuiProfileViewerPage {
 					EnumChatFormatting.GRAY +
 						"a " +
 						EnumChatFormatting.GREEN +
-						finalOutput +
+						finalMolePerkPct +
 						"% " +
 						EnumChatFormatting.GRAY +
 						"chance to mine " +
 						EnumChatFormatting.GREEN,
 					EnumChatFormatting.GREEN +
-						"" +
-						Math.round(moleStat) +
+						String.valueOf(Math.round(moleStat)) +
 						EnumChatFormatting.GRAY +
 						" adjacent hard stone block" +
 						(moleStat == 1.0 ? "." : "s."),
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(mole + 2, 2.2)) +
+						StringUtils.formatNumber((int) Math.pow(mole + 2, 2.2)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -857,14 +687,13 @@ public class MiningPage extends GuiProfileViewerPage {
 						EnumChatFormatting.GRAY +
 							"a " +
 							EnumChatFormatting.GREEN +
-							finalOutput +
+							finalMolePerkPct +
 							"% " +
 							EnumChatFormatting.GRAY +
 							"chance to mine " +
 							EnumChatFormatting.GREEN,
 						EnumChatFormatting.GREEN +
-							"" +
-							Math.round(moleStat) +
+							String.valueOf(Math.round(moleStat)) +
 							EnumChatFormatting.GRAY +
 							" adjacent hard stone block" +
 							(moleStat == 1.0 ? "." : "s.")
@@ -895,8 +724,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(powderBuff + 2, 3.2)) +
+						StringUtils.formatNumber((int) Math.pow(powderBuff + 2, 3.2)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -976,8 +804,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(seasonMine + 2, 2.3)) +
+						StringUtils.formatNumber((int) Math.pow(seasonMine + 2, 2.3)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -1019,8 +846,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(lonesomeMiner + 2, 3.07)) +
+						StringUtils.formatNumber((int) Math.pow(lonesomeMiner + 2, 3.07)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -1052,8 +878,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(professional + 2, 2.3)) +
+						StringUtils.formatNumber((int) Math.pow(professional + 2, 2.3)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -1083,8 +908,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format(Math.pow(miningSpeed2 + 2, 3)) +
+						StringUtils.formatNumber(Math.pow(miningSpeed2 + 2, 3)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -1114,8 +938,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(quickForge + 2, 4)) +
+						StringUtils.formatNumber((int) Math.pow(quickForge + 2, 4)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -1145,8 +968,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(fortunate + 2, 3.05)) +
+						StringUtils.formatNumber((int) Math.pow(fortunate + 2, 3.05)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
@@ -1177,8 +999,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(greatExplorer + 2, 4)) +
+						StringUtils.formatNumber((int) Math.pow(greatExplorer + 2, 4)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -1209,8 +1030,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(miningFortune2 + 2, 3.2)) +
+						StringUtils.formatNumber((int) Math.pow(miningFortune2 + 2, 3.2)) +
 						" Gemstone Powder"
 				)
 					: Lists.newArrayList(
@@ -1236,18 +1056,18 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
 					"",
 					"§7When mining ores, you have a",
-					EnumChatFormatting.GREEN + "" + orbitStat + "%" + EnumChatFormatting.GRAY + " chance to get a random",
+					EnumChatFormatting.GREEN + String.valueOf(orbitStat) + "%" + EnumChatFormatting.GRAY + " chance to get a random",
 					"§7amount of experience orbs.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
-					EnumChatFormatting.DARK_GREEN + "" + ((orbit + 1) * 70) + " Mithril Powder"
+					EnumChatFormatting.DARK_GREEN + String.valueOf((orbit + 1) * 70) + " Mithril Powder"
 				)
 					: Lists.newArrayList(
 						"Orbiter",
 						"§7Level " + orbit + EnumChatFormatting.DARK_GRAY + "/80",
 						"",
 						"§7When mining ores, you have a",
-						EnumChatFormatting.GREEN + "" + orbitStat + "%" + EnumChatFormatting.GRAY + " chance to get a random",
+						EnumChatFormatting.GREEN + String.valueOf(orbitStat) + "%" + EnumChatFormatting.GRAY + " chance to get a random",
 						"§7amount of experience orbs."
 					),
 			80
@@ -1323,8 +1143,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
-						"" +
-						GuiProfileViewer.numberFormat.format((int) Math.pow(crystallized + 2, 2.4)) +
+						StringUtils.formatNumber((int) Math.pow(crystallized + 2, 2.4)) +
 						" Mithril Powder"
 				)
 					: Lists.newArrayList(
