@@ -41,6 +41,8 @@ Use [DevAuth](https://github.com/DJtheRedstoner/DevAuth). You do **not** need to
 
 Hot Reloading is possible by launching using the IntelliJ debugger and having [DCEVM 1.8](https://dcevm.github.io/) installed to your JVM. Then you can run a regular build and confirm the reload prompt. This can cause issues (especially with commands), so restarting is sometimes still necessary.
 
+> Warning: Depending on your system configuration, you may need to install DCEVM onto an existing JVM. In that case you need to install a Java 1.8 JVM, specifically version 1.8u181 (although some newer versions up until 1.8u265 *may* work). These old JVM versions may require an Oracle account to download and you can find them [here](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html).
+
 For quicker hot swapping or if the above does not work you can install [Single Hotswap](https://plugins.jetbrains.com/plugin/14832-single-hotswap). With this you can hot swap a single java class instead of rebuilding the entire project.This still requires DCEVM.
 
 ## Creating a new Release
