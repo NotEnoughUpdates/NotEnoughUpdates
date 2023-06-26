@@ -777,7 +777,8 @@ public class RenderListener {
 							}
 						}
 					}
-					double kismetPrice = neu.manager.auctionManager.getBazaarInfo("KISMET_FEATHER").get("curr_buy").getAsFloat();
+					JsonObject kismetBazaar = neu.manager.auctionManager.getBazaarInfo("KISMET_FEATHER");
+					double kismetPrice = (kismetBazaar != null && kismetBazaar.has("curr_buy")) ? kismetBazaar.get("curr_buy").getAsFloat() : 0;
 					String kismetStr = EnumChatFormatting.RED + formatCoins(kismetPrice) + " coins";
 					if (neu.config.dungeons.useKismetOnDungeonProfit)
 						profitLossBIN = kismetUsed ? profitLossBIN - kismetPrice : profitLossBIN;
