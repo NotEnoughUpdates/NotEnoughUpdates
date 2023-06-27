@@ -27,6 +27,8 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.Locale;
+
 public class CookieWarning {
 
 	private static boolean hasNotified;
@@ -88,26 +90,26 @@ public class CookieWarning {
 				String number = digits[i];
 				String unit = digits[i + 1];
 				long val = Integer.parseInt(number);
-				switch (unit) {
-					case "Years":
-					case "Year":
+				switch (unit.toLowerCase(Locale.ROOT)) {
+					case "years":
+					case "year":
 						minutes += val * 525600;
 						break;
-					case "Months":
-					case "Month":
+					case "months":
+					case "month":
 						minutes += val * 43200;
 						break;
-					case "Days":
-					case "Day":
+					case "days":
+					case "day":
 						minutes += val * 1440;
 						break;
-					case "Hours":
-					case "Hour":
+					case "hours":
+					case "hour":
 					case "h":
 						minutes += val * 60;
 						break;
-					case "Minutes":
-					case "Minute":
+					case "minutes":
+					case "minute":
 					case "m":
 						minutes += val;
 						break;
