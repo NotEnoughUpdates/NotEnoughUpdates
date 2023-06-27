@@ -874,11 +874,6 @@ public class RenderListener {
 	 */
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onGuiScreenMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
-		if (Mouse.getEventButtonState() && StorageManager.getInstance().onAnyClick()) {
-			event.setCanceled(true);
-			return;
-		}
-
 		final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		final int scaledWidth = scaledresolution.getScaledWidth();
 		final int scaledHeight = scaledresolution.getScaledHeight();

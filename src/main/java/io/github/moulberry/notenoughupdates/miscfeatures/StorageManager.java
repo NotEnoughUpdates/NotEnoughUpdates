@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -35,7 +35,6 @@ import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -84,7 +83,8 @@ public class StorageManager {
 	private static final StorageManager INSTANCE = new StorageManager();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-		.registerTypeAdapter(ItemStack.class, new ItemStackDeserializer()).create();
+		.registerTypeAdapter(ItemStack.class, new ItemStackDeserializer())
+		.create();
 
 	public static class ItemStackSerializer implements JsonSerializer<ItemStack> {
 		@Override
@@ -151,7 +151,7 @@ public class StorageManager {
 
 		private <T> void appendIfNotNull(StringBuilder builder, String key, T value) {
 			if (value != null) {
-				if (builder.indexOf("{") != builder.length()-1) {
+				if (builder.indexOf("{") != builder.length() - 1) {
 					builder.append(",");
 				}
 				builder.append(key).append(":");
@@ -264,8 +264,10 @@ public class StorageManager {
 	public static int MAX_ENDER_CHEST_PAGES = 9;
 
 	public static final ItemStack LOCKED_ENDERCHEST_STACK =
-		Utils.createItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane),
-			"\u00a7cLocked Page", 14,
+		Utils.createItemStack(
+			Item.getItemFromBlock(Blocks.stained_glass_pane),
+			"\u00a7cLocked Page",
+			14,
 			"\u00a77Unlock more Ender Chest",
 			"\u00a77pages in the community",
 			"\u00a77shop!"
@@ -285,10 +287,6 @@ public class StorageManager {
 	private String lastSearch = "";
 
 	private boolean[] storagePresent = null;
-
-	//TODO: Replace with /storage {id} when hypixel becomes not lazy
-	public int desiredStoragePage = -1;
-	public long storageOpenSwitchMillis = 0;
 
 	private final ItemStack[] missingBackpackStacks = new ItemStack[18];
 
@@ -333,8 +331,11 @@ public class StorageManager {
 			return missingBackpackStacks[storageId];
 		}
 
-		ItemStack stack = Utils.createItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane),
-			"\u00a7cEmpty Backpack Slot " + (storageId + 1), 12,
+		ItemStack stack = Utils.createItemStack(
+			Item.getItemFromBlock(Blocks.stained_glass_pane),
+			"\u00a7eEmpty Backpack Slot " + (storageId + 1),
+			12,
+			storageId + 1,
 			"",
 			"\u00a7eLeft-click a backpack",
 			"\u00a7eitem on this slot to place",
@@ -438,79 +439,13 @@ public class StorageManager {
 	}
 
 	public void sendToPage(int page) {
-		if (desiredStoragePage != getCurrentPageId() &&
-			System.currentTimeMillis() - storageOpenSwitchMillis < 100) return;
 		if (getCurrentPageId() == page) return;
 
-		if (page == 0) {
-			NotEnoughUpdates.INSTANCE.sendChatMessage("/enderchest");
-		} else if (getCurrentWindowId() != -1 && onStorageMenu) {
-			if (page < 9) {
-				sendMouseClick(getCurrentWindowId(), 9 + page);
-			} else {
-				sendMouseClick(getCurrentWindowId(), 27 + page - MAX_ENDER_CHEST_PAGES);
-			}
+		if (page < MAX_ENDER_CHEST_PAGES) {
+			NotEnoughUpdates.INSTANCE.sendChatMessage("/enderchest " + (page + 1));
 		} else {
-			boolean onEnderchest = page < MAX_ENDER_CHEST_PAGES && currentStoragePage < MAX_ENDER_CHEST_PAGES;
-			boolean onStorage = page >= MAX_ENDER_CHEST_PAGES && currentStoragePage >= MAX_ENDER_CHEST_PAGES;
-			if (currentStoragePage >= 0 && (onEnderchest || (onStorage))) {
-				int currentPageDisplay = getDisplayIdForStorageId(currentStoragePage);
-				int desiredPageDisplay = getDisplayIdForStorageId(page);
-
-				if (onEnderchest && desiredPageDisplay > currentPageDisplay) {
-					boolean isLastPage = true;
-					for (int pageN = page + 1; pageN < MAX_ENDER_CHEST_PAGES; pageN++) {
-						if (getDisplayIdForStorageId(pageN) >= 0) {
-							isLastPage = false;
-							break;
-						}
-					}
-					if (isLastPage) {
-						sendMouseClick(getCurrentWindowId(), 8);
-						return;
-					}
-				}
-
-				if (onStorage && page == MAX_ENDER_CHEST_PAGES) {
-					sendMouseClick(getCurrentWindowId(), 5);
-					return;
-				} else if (onStorage && desiredPageDisplay == storageConfig.displayToStorageIdMap.size() - 1) {
-					sendMouseClick(getCurrentWindowId(), 8);
-					return;
-				} else {
-					int delta = desiredPageDisplay - currentPageDisplay;
-					if (delta == -1) {
-						sendMouseClick(getCurrentWindowId(), 6);
-						return;
-					} else if (delta == 1) {
-						sendMouseClick(getCurrentWindowId(), 7);
-						return;
-					}
-				}
-			}
-			storageOpenSwitchMillis = System.currentTimeMillis();
-
-			if (page < 9) {
-				NotEnoughUpdates.INSTANCE.sendChatMessage("/enderchest " + (page + 1));
-			} else {
-				desiredStoragePage = page;
-				NotEnoughUpdates.INSTANCE.sendChatMessage("/storage");
-			}
+			NotEnoughUpdates.INSTANCE.sendChatMessage("/backpack " + (page + 1 - MAX_ENDER_CHEST_PAGES));
 		}
-	}
-
-	private void sendMouseClick(int windowId, int slotIndex) {
-		EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
-		short short1 = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-		ItemStack itemstack = playerIn.openContainer.getSlot(slotIndex).getStack();
-		Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-			windowId,
-			slotIndex,
-			0,
-			0,
-			itemstack,
-			short1
-		));
 	}
 
 	public int getDisplayIdForStorageId(int storageId) {
@@ -531,19 +466,6 @@ public class StorageManager {
 			}
 		}
 		return -1;
-	}
-
-	public boolean onAnyClick() {
-		if (onStorageMenu && desiredStoragePage >= 0) {
-			if (desiredStoragePage < 9) {
-				sendMouseClick(getCurrentWindowId(), 9 + desiredStoragePage);
-			} else {
-				sendMouseClick(getCurrentWindowId(), 27 + desiredStoragePage - MAX_ENDER_CHEST_PAGES);
-			}
-			desiredStoragePage = -1;
-			return true;
-		}
-		return false;
 	}
 
 	public void openWindowPacket(S2DPacketOpenWindow packet) {

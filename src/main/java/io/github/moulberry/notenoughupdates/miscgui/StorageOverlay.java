@@ -65,7 +65,6 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +78,6 @@ public class StorageOverlay extends GuiElement {
 		"notenoughupdates:storage_gui/storage_icons.png");
 	private static final ResourceLocation STORAGE_PANE_CTM_TEXTURE = new ResourceLocation(
 		"notenoughupdates:storage_gui/storage_gui_pane_ctm.png");
-	private static final ResourceLocation[] LOAD_CIRCLE_SEQ = new ResourceLocation[11];
 	private static final ResourceLocation[] NOT_RICKROLL_SEQ = new ResourceLocation[19];
 	private static final StorageOverlay INSTANCE = new StorageOverlay();
 	private static final String CHROMA_STR = "230:255:255:0:0";
@@ -97,15 +95,6 @@ public class StorageOverlay extends GuiElement {
 		for (int i = 0; i < NOT_RICKROLL_SEQ.length; i++) {
 			NOT_RICKROLL_SEQ[i] = new ResourceLocation("notenoughupdates:storage_gui/we_do_a_little_rolling/" + i + ".jpg");
 		}
-
-		LOAD_CIRCLE_SEQ[0] = new ResourceLocation("notenoughupdates:loading_circle_seq/1.png");
-		LOAD_CIRCLE_SEQ[1] = new ResourceLocation("notenoughupdates:loading_circle_seq/1.png");
-		LOAD_CIRCLE_SEQ[2] = new ResourceLocation("notenoughupdates:loading_circle_seq/2.png");
-		for (int i = 2; i <= 7; i++) {
-			LOAD_CIRCLE_SEQ[i + 1] = new ResourceLocation("notenoughupdates:loading_circle_seq/" + i + ".png");
-		}
-		LOAD_CIRCLE_SEQ[9] = new ResourceLocation("notenoughupdates:loading_circle_seq/7.png");
-		LOAD_CIRCLE_SEQ[10] = new ResourceLocation("notenoughupdates:loading_circle_seq/1.png");
 	}
 
 	private final Set<Vector2f> enchantGlintRenderLocations = new HashSet<>();
@@ -123,12 +112,8 @@ public class StorageOverlay extends GuiElement {
 	private int guiLeft;
 	private int guiTop;
 	private boolean fastRender = false;
-	private int loadCircleIndex = 0;
 	private int rollIndex = 0;
-	private int loadCircleRotation = 0;
-	private long millisAccumIndex = 0;
 	private long millisAccumRoll = 0;
-	private long millisAccumRotation = 0;
 	private long lastMillis = 0;
 	private int scrollVelocity = 0;
 	private long lastScroll = 0;
@@ -397,13 +382,6 @@ public class StorageOverlay extends GuiElement {
 		long currentTime = System.currentTimeMillis();
 		if (lastMillis > 0) {
 			long deltaTime = currentTime - lastMillis;
-			millisAccumIndex += deltaTime;
-			loadCircleIndex += millisAccumIndex / (1000 / 15);
-			millisAccumIndex %= (1000 / 15);
-
-			millisAccumRotation += deltaTime;
-			loadCircleRotation += millisAccumRotation / (1000 / 107);
-			millisAccumRotation %= (1000 / 107);
 
 			millisAccumRoll += deltaTime;
 			rollIndex += millisAccumRoll / 100;
@@ -411,11 +389,8 @@ public class StorageOverlay extends GuiElement {
 		}
 
 		lastMillis = currentTime;
-		loadCircleIndex %= LOAD_CIRCLE_SEQ.length;
 		rollIndex %= NOT_RICKROLL_SEQ.length * 2;
-		loadCircleRotation %= 360;
 
-		Color loadCircleColour = Color.getHSBColor(loadCircleRotation / 360f, 0.3f, 0.9f);
 		ItemStack stackOnMouse = Minecraft.getMinecraft().thePlayer.inventory.getItemStack();
 		if (stackOnMouse != null) {
 			String stackDisplay = Utils.cleanColour(stackOnMouse.getDisplayName());
@@ -1199,21 +1174,6 @@ public class StorageOverlay extends GuiElement {
 							borderColour
 						); //Bottom
 					}
-				} else if (currentTime - StorageManager.getInstance().storageOpenSwitchMillis < 1000 &&
-					StorageManager.getInstance().desiredStoragePage == storageId &&
-					StorageManager.getInstance().getCurrentPageId() != storageId) {
-					Gui.drawRect(storageX, storageY, storageX + storageW, storageY + storageH, 0x30000000);
-
-					Minecraft.getMinecraft().getTextureManager().bindTexture(LOAD_CIRCLE_SEQ[loadCircleIndex]);
-					GlStateManager.color(loadCircleColour.getRed() / 255f, loadCircleColour.getGreen() / 255f,
-						loadCircleColour.getBlue() / 255f, 1
-					);
-
-					GlStateManager.pushMatrix();
-					GlStateManager.translate(storageX + storageW / 2, storageY + storageH / 2, 0);
-					GlStateManager.rotate(loadCircleRotation, 0, 0, 1);
-					Utils.drawTexturedRect(-10, -10, 20, 20, GL11.GL_LINEAR);
-					GlStateManager.popMatrix();
 				} else if (whiteOverlay) {
 					Gui.drawRect(storageX, storageY, storageX + storageW, storageY + storageH, 0x80ffffff);
 				} else {
@@ -1228,41 +1188,6 @@ public class StorageOverlay extends GuiElement {
 							}
 						}
 					}
-				}
-
-				if (StorageManager.getInstance().desiredStoragePage == storageId &&
-					StorageManager.getInstance().onStorageMenu) {
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
-						storageX + 81 - 1, storageY + storageH / 2 - 5, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
-						storageX + 81 + 1, storageY + storageH / 2 - 5, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
-						storageX + 81, storageY + storageH / 2 - 5 - 1, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
-						storageX + 81, storageY + storageH / 2 - 5 + 1, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Please click again to load...",
-						storageX + 81, storageY + storageH / 2 - 5, false, 150, 0xffdf00
-					);
-
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
-						storageX + 81 - 1, storageY + storageH / 2 + 5, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
-						storageX + 81 + 1, storageY + storageH / 2 + 5, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
-						storageX + 81, storageY + storageH / 2 + 5 - 1, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
-						storageX + 81, storageY + storageH / 2 + 5 + 1, false, 150, 0x111111
-					);
-					Utils.drawStringCenteredScaledMaxWidth("Use /neustwhy for more info",
-						storageX + 81, storageY + storageH / 2 + 5, false, 150, 0xffdf00
-					);
 				}
 
 				GlStateManager.enableDepth();
@@ -1921,8 +1846,8 @@ public class StorageOverlay extends GuiElement {
 				case 2:
 					vIndex = NotEnoughUpdates.INSTANCE.config.storageGUI.displayStyle;
 					break;
-                /*case 3:
-                    vIndex = */
+				/*case 3:
+					vIndex = */
 			}
 
 			Utils.drawTexturedRect(
@@ -2199,7 +2124,7 @@ public class StorageOverlay extends GuiElement {
 		if (Keyboard.getEventKey() == Minecraft.getMinecraft().gameSettings.keyBindFullscreen.getKeyCode()) {
 			return false;
 		}
-		
+
 		if (!searchBar.getFocus() && !renameStorageField.getFocus() &&
 				(Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode() ||
 				Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode())) {
@@ -2348,5 +2273,4 @@ public class StorageOverlay extends GuiElement {
 			this.y = y;
 		}
 	}
-
 }
