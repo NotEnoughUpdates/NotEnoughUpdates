@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -151,7 +151,7 @@ public class StorageManager {
 
 		private <T> void appendIfNotNull(StringBuilder builder, String key, T value) {
 			if (value != null) {
-				if (builder.indexOf("{") != builder.length()-1) {
+				if (builder.indexOf("{") != builder.length() - 1) {
 					builder.append(",");
 				}
 				builder.append(key).append(":");
@@ -286,8 +286,6 @@ public class StorageManager {
 
 	private boolean[] storagePresent = null;
 
-	//TODO: Replace with /storage {id} when hypixel becomes not lazy
-	public int desiredStoragePage = -1;
 	public long storageOpenSwitchMillis = 0;
 
 	private final ItemStack[] missingBackpackStacks = new ItemStack[18];
@@ -438,18 +436,11 @@ public class StorageManager {
 	}
 
 	public void sendToPage(int page) {
-		if (desiredStoragePage != getCurrentPageId() &&
-			System.currentTimeMillis() - storageOpenSwitchMillis < 100) return;
+		if (System.currentTimeMillis() - storageOpenSwitchMillis < 100) return;
 		if (getCurrentPageId() == page) return;
 
 		if (page == 0) {
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/enderchest");
-		} else if (getCurrentWindowId() != -1 && onStorageMenu) {
-			if (page < 9) {
-				sendMouseClick(getCurrentWindowId(), 9 + page);
-			} else {
-				sendMouseClick(getCurrentWindowId(), 27 + page - MAX_ENDER_CHEST_PAGES);
-			}
 		} else {
 			boolean onEnderchest = page < MAX_ENDER_CHEST_PAGES && currentStoragePage < MAX_ENDER_CHEST_PAGES;
 			boolean onStorage = page >= MAX_ENDER_CHEST_PAGES && currentStoragePage >= MAX_ENDER_CHEST_PAGES;
@@ -493,8 +484,7 @@ public class StorageManager {
 			if (page < 9) {
 				NotEnoughUpdates.INSTANCE.sendChatMessage("/enderchest " + (page + 1));
 			} else {
-				desiredStoragePage = page;
-				NotEnoughUpdates.INSTANCE.sendChatMessage("/storage");
+				NotEnoughUpdates.INSTANCE.sendChatMessage("/bp " + (page - 8));
 			}
 		}
 	}
@@ -531,19 +521,6 @@ public class StorageManager {
 			}
 		}
 		return -1;
-	}
-
-	public boolean onAnyClick() {
-		if (onStorageMenu && desiredStoragePage >= 0) {
-			if (desiredStoragePage < 9) {
-				sendMouseClick(getCurrentWindowId(), 9 + desiredStoragePage);
-			} else {
-				sendMouseClick(getCurrentWindowId(), 27 + desiredStoragePage - MAX_ENDER_CHEST_PAGES);
-			}
-			desiredStoragePage = -1;
-			return true;
-		}
-		return false;
 	}
 
 	public void openWindowPacket(S2DPacketOpenWindow packet) {
@@ -593,7 +570,6 @@ public class StorageManager {
 			return;
 		}
 		StorageOverlay.getInstance().fastRenderCheck();
-
 	}
 
 	public void closeWindowPacket(S2EPacketCloseWindow packet) {
@@ -778,7 +754,6 @@ public class StorageManager {
 					setItemSlot(i, packet.getItemStacks()[i + 9]);
 				}
 			}
-
 		}
 	}
 
