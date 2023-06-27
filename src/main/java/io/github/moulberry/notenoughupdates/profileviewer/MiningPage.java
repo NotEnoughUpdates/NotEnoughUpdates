@@ -87,11 +87,11 @@ public class MiningPage extends GuiProfileViewerPage {
 		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(miningCore, "powder_mithril"), 0);
 		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(miningCore, "powder_gemstone"), 0);
 		float mithrilPowderTotal = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
+			miningCore,
 			"powder_spent_mithril"
 		), 0);
 		float gemstonePowderTotal = Utils.getElementAsFloat(Utils.getElement(
-			profileInfo,
+			miningCore,
 			"powder_spent_gemstone"
 		), 0);
 
