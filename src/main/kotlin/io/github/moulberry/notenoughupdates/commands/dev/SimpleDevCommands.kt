@@ -54,21 +54,21 @@ class SimpleDevCommands {
         }.withHelp("Display the dungeon win pop up")
         event.command("neuenablestorage") {
             thenLiteralExecute("disable") {
-                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
+                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = false
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Disabled the NEU storage overlay. Click here to enable again") {
                     chatStyle.chatClickEvent = ClickEvent(
-                        ClickEvent.Action.SUGGEST_COMMAND,
+                        ClickEvent.Action.RUN_COMMAND,
                         "/neuenablestorage"
                     )
                 }
             }.withHelp("Disable the neu storage overlay")
             thenExecute {
-                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = false
+                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Enabled the NEU storage overlay. Click here to disable again") {
                     chatStyle.chatClickEvent = ClickEvent(
-                        ClickEvent.Action.SUGGEST_COMMAND,
+                        ClickEvent.Action.RUN_COMMAND,
                         "/neuenablestorage disable"
                     )
                 }
@@ -99,7 +99,7 @@ class SimpleDevCommands {
             thenExecute {
                 NotEnoughUpdates.INSTANCE.manager
                     .userFacingRepositoryReload()
-                    .thenAccept { it
+                    .thenAccept {
                         it.forEach(::reply)
                     }
             }
