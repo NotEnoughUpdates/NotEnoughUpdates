@@ -46,6 +46,8 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,8 +78,8 @@ public class SBInfo {
 	public IChatComponent footer;
 	public IChatComponent header;
 
-	public String location = "";
-	public String lastLocation = "";
+	public @NotNull String location = "";
+	public @NotNull String lastLocation = "";
 	public String date = "";
 	public String time = "";
 	public String objective = "";
@@ -85,7 +87,7 @@ public class SBInfo {
 	public boolean stranded = false;
 	public boolean bingo = false;
 
-	public String mode = null;
+	public @Nullable String mode = null;
 
 	public Date currentTimeDate = null;
 
@@ -275,7 +277,7 @@ public class SBInfo {
 	/**
 	 * @return the current mode, as returned by /locraw, usually equivalent to a skyblock public island type.
 	 */
-	public String getLocation() {
+	public @Nullable String getLocation() {
 		return mode;
 	}
 
@@ -290,7 +292,7 @@ public class SBInfo {
 	/**
 	 * @return the current location as displayed on the scoreboard
 	 */
-	public String getScoreboardLocation() {
+	public @NotNull String getScoreboardLocation() {
 		return location;
 	}
 
@@ -298,7 +300,7 @@ public class SBInfo {
 	 * @return the previous location as displayed on the scoreboard
 	 * @see #getScoreboardLocation()
 	 */
-	public String getLastScoreboardLocation() {
+	public @NotNull String getLastScoreboardLocation() {
 		return lastLocation;
 	}
 
