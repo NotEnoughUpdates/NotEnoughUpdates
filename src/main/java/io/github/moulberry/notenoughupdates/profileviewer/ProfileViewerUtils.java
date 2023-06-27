@@ -206,6 +206,7 @@ public class ProfileViewerUtils {
 	}
 
 	public static void saveSearch(String username) {
+		if (username == null) return;
 		String nameLower = username.toLowerCase();
 		if (nameLower.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) return;
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
