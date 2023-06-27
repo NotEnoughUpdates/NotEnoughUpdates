@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -935,7 +935,11 @@ public class Utils {
 	}
 
 	public static ItemStack createItemStack(Item item, String displayName, int damage, String... lore) {
-		ItemStack stack = new ItemStack(item, 1, damage);
+		return createItemStack(item, displayName, damage, 1, lore);
+	}
+
+	public static ItemStack createItemStack(Item item, String displayName, int damage, int amount, String... lore) {
+		ItemStack stack = new ItemStack(item, amount, damage);
 		NBTTagCompound tag = new NBTTagCompound();
 		addNameAndLore(tag, displayName, lore);
 		tag.setInteger("HideFlags", 254);
@@ -990,6 +994,7 @@ public class Utils {
 
 		return itemStack;
 	}
+
 	public static ItemStack createSkull(String displayName, String uuid, String value) {
 		return createSkull(displayName, uuid, value, null);
 	}
@@ -1522,6 +1527,7 @@ public class Utils {
 			Minecraft.getMinecraft().fontRendererObj
 		);
 	}
+
 	public static JsonObject getConstant(String constant, Gson gson) {
 		return getConstant(constant, gson, JsonObject.class);
 	}
