@@ -299,6 +299,11 @@ public class Calculator {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
 									throw new CalculatorException(right + " has a decimal, pick a power that is non-decimal", rightToken.tokenStart, rightToken.tokenLength);
 								}
+
+								if (right.doubleValue() < 0) {
+									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
+									throw new CalculatorException(right + " is a negative number, pick a power that is positive", rightToken.tokenStart, rightToken.tokenLength);
+								}
 								values.push(left.pow(right.intValue()).setScale(2, RoundingMode.HALF_UP));
 								break;
 							case "x":
