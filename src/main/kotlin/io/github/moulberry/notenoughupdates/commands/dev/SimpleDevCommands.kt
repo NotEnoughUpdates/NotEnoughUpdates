@@ -30,10 +30,8 @@ import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.function.Consumer
 
 @NEUAutoSubscribe
 class SimpleDevCommands {
@@ -66,7 +64,7 @@ class SimpleDevCommands {
                 }
             }.withHelp("Disable the neu storage overlay")
             thenExecute {
-                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = true
+                NotEnoughUpdates.INSTANCE.config.storageGUI.enableStorageGUI3 = false
                 NotEnoughUpdates.INSTANCE.saveConfig()
                 reply("Enabled the NEU storage overlay. Click here to disable again") {
                     chatStyle.chatClickEvent = ClickEvent(
