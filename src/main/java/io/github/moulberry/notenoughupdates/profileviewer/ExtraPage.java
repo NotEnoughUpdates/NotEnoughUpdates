@@ -192,7 +192,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float yStartBottom = 105;
 		float yOffset = 10;
 
-		float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), 0);
+		float bankBalance = Utils.getElementAsFloat(Utils.getElement(selectedProfile.getOuterProfileJson(), "banking.balance"), 0);
 		float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
 
 		Utils.renderAlignedString(
