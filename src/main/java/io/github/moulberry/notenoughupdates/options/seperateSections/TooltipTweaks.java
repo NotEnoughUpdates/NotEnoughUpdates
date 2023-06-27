@@ -109,7 +109,7 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 0)
-	public boolean museumDonationStatus = true;
+	public boolean museumDonationStatus = false;
 
 	@Expose
 	@ConfigOption(

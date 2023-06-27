@@ -66,7 +66,7 @@ object IQTest {
 
     val answerOption = ProcessedOption(
         "IQ Test Question",
-        "Please type out the answer to §a$question",
+        "Please type out the answer to §a$question\n§cIf you just want to set your api key do §6/neusetkey <key>",
         -1,
         javaClass.getField("answer"),
         this,
