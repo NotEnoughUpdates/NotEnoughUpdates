@@ -288,6 +288,8 @@ public class StorageManager {
 
 	private boolean[] storagePresent = null;
 
+	public long storageOpenSwitchMillis = 0;
+
 	private final ItemStack[] missingBackpackStacks = new ItemStack[18];
 
 	private boolean shouldRenderStorageOverlayCached = false;
@@ -439,6 +441,7 @@ public class StorageManager {
 	}
 
 	public void sendToPage(int page) {
+		if (System.currentTimeMillis() - storageOpenSwitchMillis < 100) return;
 		if (getCurrentPageId() == page) return;
 
 		if (page < MAX_ENDER_CHEST_PAGES) {
@@ -446,6 +449,8 @@ public class StorageManager {
 		} else {
 			NotEnoughUpdates.INSTANCE.sendChatMessage("/backpack " + (page + 1 - MAX_ENDER_CHEST_PAGES));
 		}
+
+		storageOpenSwitchMillis = System.currentTimeMillis();
 	}
 
 	public int getDisplayIdForStorageId(int storageId) {
