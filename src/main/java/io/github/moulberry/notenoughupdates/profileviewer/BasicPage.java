@@ -57,6 +57,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -238,6 +239,10 @@ public class BasicPage extends GuiProfileViewerPage {
 						String rankName = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".tag"), null);
 						String rankColor = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".color"), "7");
 						String rankPlus = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".plus"), "");
+						String rankTagColor = Utils.getElementAsString(
+							Utils.getElement(misc, "ranks." + rank + ".tagColor"),
+							rankColor
+						);
 
 						String name = entityPlayer.getName();
 
@@ -254,9 +259,16 @@ public class BasicPage extends GuiProfileViewerPage {
 						playerName = EnumChatFormatting.GRAY + name;
 						if (rankName != null) {
 							String icon = selectedProfile.getGamemode() == null ? "" : getIcon(selectedProfile.getGamemode());
-							playerName =
-								"\u00A7" + rankColor + "[" + rankName + rankPlusColor + rankPlus + "\u00A7" + rankColor + "] " + name +
-									(icon.equals("") ? "" : " " + icon);
+							playerName = MessageFormat.format(
+								"§{0}[§{1}{2}{3}{4}§{5}] {6}",
+								rankColor,
+								rankTagColor,
+								rankName,
+								rankPlusColor,
+								rankPlus,
+								rankColor,
+								name
+							) + (icon.equals("") ? "" : " " + icon);
 						}
 					}
 				}
@@ -334,7 +346,6 @@ public class BasicPage extends GuiProfileViewerPage {
 					);
 				String networthIRLMoney = StringUtils.formatNumber(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
-
 
 				if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2) {
 					if (mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
@@ -547,7 +558,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						GlStateManager.translate(x, y, 0);
 						ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, false);
 
-						//Remove extra attributes so no CIT
+						// Remove extra attributes so no CIT
 						NBTTagCompound stackTag = stack.getTagCompound() == null ? new NBTTagCompound() : stack.getTagCompound();
 						stackTag.removeTag("ExtraAttributes");
 						stack.setTagCompound(stackTag);
