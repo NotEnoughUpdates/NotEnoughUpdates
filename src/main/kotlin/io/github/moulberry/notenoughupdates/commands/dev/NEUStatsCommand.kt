@@ -61,10 +61,18 @@ class NEUStatsCommand {
                         .toString()
                 )
             }.withHelp("Copy the mod list to your clipboard")
+            thenLiteralExecute("repo") {
+                clipboardAndSendMessage(
+                    DiscordMarkdownBuilder()
+                        .also(::appendRepoStats)
+                        .toString()
+                )
+            }.withHelp("Copy the repo stats to your clipboard")
             thenLiteralExecute("full") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
                         .also(::appendStats)
+                        .also(::appendRepoStats)
                         .also(::appendModList)
                         .toString()
                 )
@@ -175,6 +183,32 @@ class NEUStatsCommand {
         builder.category("Mods Loaded")
         Loader.instance().activeModList.forEach {
             builder.append(it.name, "${it.source.name} (${it.displayVersion})")
+        }
+        return builder
+    }
+
+    private fun appendRepoStats(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
+        val apiData = NotEnoughUpdates.INSTANCE.config.apiData
+        val contains = builder.toString().lines().any { it == "# Repo Stats" }
+        builder.checkLast()
+        if (!contains) {
+            builder.category("Repo Stats")
+            builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
+            builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
+            builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
+        }
+        if (NotEnoughUpdates.INSTANCE.manager.repoLocation.isDirectory) {
+            val files = NotEnoughUpdates.INSTANCE.manager.repoLocation.listFiles()
+            builder.category("Repo Files")
+            files?.forEach { file ->
+                if (file.isDirectory) {
+                    builder.append(file.name, file.listFiles()?.size)
+                } else if (file.isFile) {
+                    builder.append("", file.name)
+                }
+            }
+        } else {
+            builder.category("Repo folder not found!")
         }
         return builder
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -33,7 +33,19 @@ public class DiscordMarkdownBuilder {
 	}
 
 	public DiscordMarkdownBuilder append(String key, Object value) {
-		builder.append("[").append(key).append("]").append("[").append(value).append("]").append("\n");
+		if (!key.isEmpty()) {
+			builder.append("[").append(key).append("]");
+		}
+		builder.append("[").append(value).append("]").append("\n");
+		return this;
+	}
+
+	public DiscordMarkdownBuilder checkLast() {
+		int length = builder.length();
+		String lastThreeChars = builder.substring(length - 3);
+		if (lastThreeChars.equals("```")) {
+			builder.delete(length - 3, length);
+		}
 		return this;
 	}
 
