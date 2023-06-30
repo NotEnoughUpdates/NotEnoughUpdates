@@ -188,10 +188,18 @@ class NEUStatsCommand {
 
     private fun appendRepoStats(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
         val apiData = NotEnoughUpdates.INSTANCE.config.apiData
-        builder.category("Repo Stats")
-        builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
-        builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
-        builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
+        if (apiData.repoUser == "" || apiData.repoName == "" || apiData.repoBranch == "") {
+            NotEnoughUpdates.INSTANCE.config.executeRunnable(23)
+            NotEnoughUpdates.INSTANCE.config.executeRunnable(22)
+            builder.append("", "")
+            builder.category("Reset Repository location")
+            builder.append("", "")
+        } else {
+            builder.category("Repo Stats")
+            builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
+            builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
+            builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
+        }
         return builder
     }
 
