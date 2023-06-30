@@ -402,6 +402,9 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		ItemStack stack = null;
 		Iterator<ItemStack> items = ProfileViewer.getCollectionCatToCollectionMap().keySet().iterator();
 		switch (keyCode) {
+			case Keyboard.KEY_6:
+			case Keyboard.KEY_NUMPAD6:
+				items.next();
 			case Keyboard.KEY_5:
 			case Keyboard.KEY_NUMPAD5:
 				items.next();
