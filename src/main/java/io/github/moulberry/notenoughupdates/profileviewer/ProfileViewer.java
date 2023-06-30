@@ -186,7 +186,16 @@ public class ProfileViewer {
 						"MAGMA_FISH"
 					)
 				);
-				put(CAT_RIFT, Utils.createList("AGARICUS_CAP", "CADUCOUS_STEM", "HALF_EATEN_CARROT", "HEMOVIBE", "METAL_HEART", "WILTED_BERBERIS"));
+				put(CAT_RIFT,
+					Utils.createList(
+						"AGARICUS_CAP",
+						"CADUCOUS_STEM",
+						"HALF_EATEN_CARROT",
+						"HEMOVIBE",
+						"METAL_HEART",
+						"WILTED_BERBERIS"
+					)
+				);
 			}
 		};
 	@Getter
@@ -259,12 +268,12 @@ public class ProfileViewer {
 						"REVENANT",
 						"TARANTULA",
 						"VOIDLING",
-						"INFERNO",
-						"VAMPIRE"
+						"INFERNO"
 					)
 				);
 				put(CAT_FORAGING, Utils.createList("OAK", "SPRUCE", "BIRCH", "DARK_OAK", "ACACIA", "JUNGLE", "FLOWER"));
 				put(CAT_FISHING, Utils.createList("FISHING", null, null, null, null, null, "CLAY", null, null, null));
+				put(CAT_RIFT, Utils.createList(null, null, null, "VAMPIRE"));
 			}
 		};
 	@Getter
