@@ -1,0 +1,11 @@
+
+
+config:
+  validation: true
+
+
+forge:
+  GlStateManagerWarnings:
+    active: true
+  InvalidSubscribeEvent:
+    active: true

@@ -31,7 +31,8 @@ plugins {
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
 		kotlin("jvm") version "1.8.21"
-		id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+	id("io.gitlab.arturbosch.detekt") version "1.23.0"
+	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
 }
 
 
@@ -77,6 +78,7 @@ repositories {
 		maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 		maven("https://jitpack.io")
 		maven("https://repo.polyfrost.cc/releases")
+		maven("https://maven.notenoughupdates.org/releases")
 }
 
 val shadowImplementation: Configuration by configurations.creating {
@@ -156,7 +158,7 @@ dependencies {
 		testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 		testAnnotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
 		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
-
+		detektPlugins("org.notenoughupdates:detektrules:1.0.0")
 		devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 }
 
@@ -246,21 +248,36 @@ tasks.shadowJar {
 tasks.assemble.get().dependsOn(remapJar)
 
 tasks.processResources {
-		from(tasks["generateBuildFlags"])
-		filesMatching(listOf("mcmod.info", "fabric.mod.json", "META-INF/mods.toml")) {
-				expand(
-						"version" to project.version, "mcversion" to "1.8.9"
-				)
-		}
+	from(tasks["generateBuildFlags"])
+	filesMatching(listOf("mcmod.info", "fabric.mod.json", "META-INF/mods.toml")) {
+		expand(
+			"version" to project.version, "mcversion" to "1.8.9"
+		)
+	}
+}
+
+val detektProjectBaseline by tasks.registering(io.gitlab.arturbosch.detekt.DetektCreateBaselineTask::class) {
+	description = "Overrides current baseline."
+	buildUponDefaultConfig.set(true)
+	ignoreFailures.set(true)
+	parallel.set(true)
+	setSource(files(rootDir))
+	config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+	baseline.set(file("$rootDir/config/detekt/baseline.xml"))
+	include("**/*.kt")
+	include("**/*.kts")
+	exclude("**/resources/**")
+	exclude("**/build/**")
 }
 
 idea {
-		module {
-				// Not using += due to https://github.com/gradle/gradle/issues/8749
-				sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin") // or tasks["kspKotlin"].destination
-				testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
-				generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
-		}
+	module {
+		// Not using += due to https://github.com/gradle/gradle/issues/8749
+		sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin") // or tasks["kspKotlin"].destination
+		testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
+		generatedSourceDirs =
+			generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
+	}
 }
 
 sourceSets.main {

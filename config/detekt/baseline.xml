@@ -1,0 +1,439 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ComplexCondition:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$mouseX &gt;= guiLeft + 114 &amp;&amp; mouseX &lt;= guiLeft + 202 &amp;&amp; mouseY &gt;= guiTop + ySize - 32 &amp;&amp; mouseY &lt;= guiTop + ySize - 12 &amp;&amp; itemSelected != null</ID>
+    <ID>ComplexCondition:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$mouseX &gt;= guiLeft + 15 &amp;&amp; mouseX &lt;= guiLeft + 103 &amp;&amp; mouseY &gt;= (guiTop + ySize - 32) &amp;&amp; mouseY &lt;= (guiTop + ySize - 12)</ID>
+    <ID>ComplexCondition:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$mouseX &gt;= guiLeft + xSize + 3 &amp;&amp; mouseX &lt;= guiLeft + xSize + 19 &amp;&amp; mouseY &gt;= guiTop &amp;&amp; mouseY &lt;= guiTop + 16</ID>
+    <ID>ComplexCondition:GuiPriceGraph.kt$GuiPriceGraph$mouseX &gt;= guiLeft + 17 &amp;&amp; mouseX &lt;= guiLeft + 315 &amp;&amp; mouseY &gt;= guiTop + 35 &amp;&amp; mouseY &lt;= guiTop + 198 &amp;&amp; !customSelecting</ID>
+    <ID>ComplexCondition:GuiPriceGraph.kt$GuiPriceGraph$mouseY &gt;= guiTop + 17 &amp;&amp; mouseY &lt;= guiTop + 35 &amp;&amp; mouseX &gt;= guiLeft + 244 &amp;&amp; mouseX &lt;= guiLeft + 316</ID>
+    <ID>ComplexCondition:GuiPriceGraph.kt$GuiPriceGraph$mouseY &gt;= guiTop + 35 &amp;&amp; mouseY &lt;= guiTop + 198 &amp;&amp; mouseX &gt;= guiLeft + 17 &amp;&amp; mouseX &lt;= guiLeft + 315</ID>
+    <ID>ComplexCondition:GuiPriceGraph.kt$GuiPriceGraph$rawData.get() == null || rawData.get()!!.size &lt; 2 || data.isEmpty() &amp;&amp; processedData</ID>
+    <ID>CyclomaticComplexMethod:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:GuiPriceGraph.kt$GuiPriceGraph$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>CyclomaticComplexMethod:GuiPriceGraph.kt$GuiPriceGraph$private fun processData()</ID>
+    <ID>CyclomaticComplexMethod:LocalGraphDataProvider.kt$LocalGraphDataProvider$fun savePrices(items: JsonObject, bazaar: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$private fun drawLines(guiLeft: Int, guiTop: Int)</ID>
+    <ID>CyclomaticComplexMethod:NEUAutoSymbolProcessor.kt$NEUAutoSymbolProcessor$fun collectSubscribers(elements: List&lt;KSAnnotated&gt;): List&lt;NEUEventSubscriber&gt;</ID>
+    <ID>EmptyClassBlock:RepoExportingInterruptedException.kt$RepoExportingInterruptedException${ }</ID>
+    <ID>EmptyDefaultConstructor:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$()</ID>
+    <ID>EmptyFunctionBlock:ItemSearchGui.kt$ItemSearchGui.ItemScrollingList${ }</ID>
+    <ID>ImplicitDefaultLocale:NEUStatsCommand.kt$NEUStatsCommand$String.format( "% 2d%% %03d/%03dMB", currentMemory * 100L / maxMemory, currentMemory / ONE_MB, maxMemory / ONE_MB )</ID>
+    <ID>ImplicitDefaultLocale:NEUStatsCommand.kt$NEUStatsCommand$String.format("% 2d%% %03dMB", totalMemory * 100L / maxMemory, totalMemory / ONE_MB)</ID>
+    <ID>ImplicitDefaultLocale:NEUStatsCommand.kt$NEUStatsCommand$String.format("%dx%d (%s)", Display.getWidth(), Display.getHeight(), GL11.glGetString(GL11.GL_VENDOR))</ID>
+    <ID>LongMethod:DevTestCommand.kt$DevTestCommand$@SubscribeEvent fun onCommands(event: RegisterBrigadierCommandEvent)</ID>
+    <ID>LongMethod:DungeonCommands.kt$DungeonCommands$@SubscribeEvent fun onCommands(event: RegisterBrigadierCommandEvent)</ID>
+    <ID>LongMethod:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:GuiPriceGraph.kt$GuiPriceGraph$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>LongMethod:GuiPriceGraph.kt$GuiPriceGraph$private fun processData()</ID>
+    <ID>LongMethod:MiscCommands.kt$MiscCommands$@SubscribeEvent fun onCommands(event: RegisterBrigadierCommandEvent)</ID>
+    <ID>LongMethod:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$private fun drawButtons(guiLeft: Int, xSize: Int, guiTop: Int)</ID>
+    <ID>LongMethod:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$private fun drawLines(guiLeft: Int, guiTop: Int)</ID>
+    <ID>LongMethod:NEUAutoSymbolProcessor.kt$NEUAutoSymbolProcessor$fun collectSubscribers(elements: List&lt;KSAnnotated&gt;): List&lt;NEUEventSubscriber&gt;</ID>
+    <ID>LongMethod:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$override fun run()</ID>
+    <ID>LongMethod:SimpleDevCommands.kt$SimpleDevCommands$@SubscribeEvent fun onCommands(event: RegisterBrigadierCommandEvent)</ID>
+    <ID>LongParameterList:GuiPriceGraph.kt$GuiPriceGraph$( x: Double, prevX: Double, buyLine: Pair&lt;Double, Double&gt;?, sellLine: Pair&lt;Double, Double&gt;?, buyColor: Int, sellColor: Int )</ID>
+    <ID>LoopWithTooManyJumpStatements:GuiPriceGraph.kt$GuiPriceGraph$for</ID>
+    <ID>LoopWithTooManyJumpStatements:HotmInformation.kt$HotmInformation$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ItemShopExporter.kt$ItemShopExporter$for</ID>
+    <ID>LoopWithTooManyJumpStatements:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$for</ID>
+    <ID>LoopWithTooManyJumpStatements:MuseumTooltipManager.kt$MuseumTooltipManager$for</ID>
+    <ID>LoopWithTooManyJumpStatements:NEUAutoSymbolProcessor.kt$NEUAutoSymbolProcessor$for</ID>
+    <ID>LoopWithTooManyJumpStatements:ProfileDataLoadedEvent.kt$ProfileDataLoadedEvent$for</ID>
+    <ID>MagicNumber:DevTestCommand.kt$DevTestCommand$0.5f</ID>
+    <ID>MagicNumber:DevTestCommand.kt$DevTestCommand$48</ID>
+    <ID>MagicNumber:DevTestCommand.kt$DevTestCommand$96F</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$127</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$128</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$16</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$24</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$255</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$3</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$4</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$7</ID>
+    <ID>MagicNumber:DungeonCommands.kt$DungeonCommands$8</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$10</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$103</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$114</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$12</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$130</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$15</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$16</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$16F</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$17</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$18</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$18f</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$19</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$202</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$20F</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$21</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$217</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$22</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$24</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$24F</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$25</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$26</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$27</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$28</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$3</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$32</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$42</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$4210752</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$45</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$46</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$46F</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$50</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$52</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$7</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$70</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$88</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$88F</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$88f</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$9</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$999</ID>
+    <ID>MagicNumber:DynamicLightItemsEditor.kt$DynamicLightItemsEditor$9f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$0.5f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$0x00ffffff</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$0x4D8b8b8b</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$0x8b8b8b</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$0xffffff</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1.77f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$10</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$100.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1000</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1000000</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1000000000</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1000000000f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1000000f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$1000f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$11</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$116</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$120</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$13</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$16</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$166</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$16f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$17</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$17.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$18</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$188.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$19</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$197f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$198</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$198.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$2.5f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$206</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$208</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$215</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$231</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$24</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$244</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$245</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$247</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$252</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$261</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$298.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$3</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$30</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$315</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$315.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$316</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$320f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$33</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$35</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$35.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$35f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$36</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$3600.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$3600L</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$36f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$37</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$4</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$45.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$5</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$512f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$5f</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$6</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$6.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$60</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$60L</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$7</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$86400</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$86400.0</ID>
+    <ID>MagicNumber:GuiPriceGraph.kt$GuiPriceGraph$86400L</ID>
+    <ID>MagicNumber:HotmInformation.kt$HotmInformation$5</ID>
+    <ID>MagicNumber:HotmInformation.kt$HotmInformation.Companion$20</ID>
+    <ID>MagicNumber:IQTest.kt$IQTest$0.1</ID>
+    <ID>MagicNumber:IQTest.kt$IQTest$10_000L</ID>
+    <ID>MagicNumber:IQTest.kt$IQTest$20</ID>
+    <ID>MagicNumber:IQTest.kt$IQTest$27</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui$10</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui$100</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui$20</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui$200</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui$5</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui.ItemScrollingList$100</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui.ItemScrollingList$18F</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui.ItemScrollingList$20</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui.ItemScrollingList$200</ID>
+    <ID>MagicNumber:ItemSearchGui.kt$ItemSearchGui.ItemScrollingList$30</ID>
+    <ID>MagicNumber:ItemShopExporter.kt$ItemShopExporter$3</ID>
+    <ID>MagicNumber:ItemShopExporter.kt$ItemShopExporter$4</ID>
+    <ID>MagicNumber:ItemShopExporter.kt$ItemShopExporter$5</ID>
+    <ID>MagicNumber:ItemShopExporter.kt$ItemShopExporter$9</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$0.003F</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$0xFF0000</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$0xff00ff</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$100</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$100F</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$110</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$15</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$16</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$18</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$19</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$33</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$4</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$40</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$50</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$9</ID>
+    <ID>MagicNumber:KatRecipe.kt$KatRecipe$90</ID>
+    <ID>MagicNumber:LocalGraphDataProvider.kt$LocalGraphDataProvider$100</ID>
+    <ID>MagicNumber:LocalGraphDataProvider.kt$LocalGraphDataProvider$86400000L</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$10</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$100000.0</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$106</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$110</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$128</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$128f</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$130</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$131</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$150</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$155</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$156</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$16</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$168f</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$170</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$175</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$185</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$187</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$200</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$237</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$4</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$5</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$53</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$60000</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$9</ID>
+    <ID>MagicNumber:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$95</ID>
+    <ID>MagicNumber:MuseumItemHighlighter.kt$MuseumItemHighlighter$16</ID>
+    <ID>MagicNumber:MuseumItemHighlighter.kt$MuseumItemHighlighter$4</ID>
+    <ID>MagicNumber:MuseumItemHighlighter.kt$MuseumItemHighlighter$7</ID>
+    <ID>MagicNumber:MuseumTooltipManager.kt$MuseumTooltipManager$53</ID>
+    <ID>MagicNumber:NEUStatsCommand.kt$NEUStatsCommand$100L</ID>
+    <ID>MagicNumber:NEUStatsCommand.kt$NEUStatsCommand$1024L</ID>
+    <ID>MagicNumber:NEUStatsCommand.kt$NEUStatsCommand$15</ID>
+    <ID>MagicNumber:NEUStatsCommand.kt$NEUStatsCommand$32</ID>
+    <ID>MagicNumber:NEUStatsCommand.kt$NEUStatsCommand$64</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter$3</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$100</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$20</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$200</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$25</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$250</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$3.0</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$360</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$5</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$50</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$5000.0</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$60</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$8</ID>
+    <ID>MagicNumber:NPCLocationExporter.kt$NPCLocationExporter.NPCNamePrompt$8F</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu$4</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu$5</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu.SkyBlockButton.ACCESSORY$53</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu.SkyBlockButton.FISHING$43</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu.SkyBlockButton.POTION$52</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu.SkyBlockButton.QUIVER$44</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu.SkyBlockButton.SACK_OF_SACKS$35</ID>
+    <ID>MagicNumber:OldSkyBlockMenu.kt$OldSkyBlockMenu.SkyBlockButton.TRADES$40</ID>
+    <ID>MagicNumber:PackDevCommand.kt$PackDevCommand$4</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$10</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$100</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$1000</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$100f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$10f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$15</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$1600</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$20</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$200</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$2000f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$20f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$25</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$2L</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$300</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$35</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$4f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$5.5</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$50</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$500</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$600</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$6f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$7</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$8</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$800</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$81f</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$9</ID>
+    <ID>MagicNumber:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$900</ID>
+    <ID>MagicNumber:PetLeveling.kt$PetLeveling$100</ID>
+    <ID>MagicNumber:RepoExporters.kt$RepoExporters$20</ID>
+    <ID>MagicNumber:RepoExporters.kt$RepoExporters$30</ID>
+    <ID>MagicNumber:SidebarUtil.kt$SidebarUtil$126</ID>
+    <ID>MagicNumber:SidebarUtil.kt$SidebarUtil$15</ID>
+    <ID>MagicNumber:SidebarUtil.kt$SidebarUtil$167</ID>
+    <ID>MagicNumber:SidebarUtil.kt$SidebarUtil$21</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$1000</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$12</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$124</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$1559829300</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$24</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$31</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$60</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime$60.0</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$10</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$1000</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$11</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$12</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$124</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$13</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$1559829300000</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$24</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$3</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$31</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$5</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$60</ID>
+    <ID>MagicNumber:SkyBlockTime.kt$SkyBlockTime.Companion$8</ID>
+    <ID>MagicNumber:SkyMallDisplay.kt$SkyMallDisplay.Companion$1_000</ID>
+    <ID>MagicNumber:WardrobeMouseButtons.kt$WardrobeMouseButtons$300</ID>
+    <ID>MagicNumber:WardrobeMouseButtons.kt$WardrobeMouseButtons$36</ID>
+    <ID>MatchingDeclarationName:Collection.kt$ProfileCollectionInfo</ID>
+    <ID>MaxLineLength:ApiCache.kt$ApiCache$cachedRequests[cacheKey]?.dispose()</ID>
+    <ID>MaxLineLength:ApiCache.kt$ApiCache.CacheResult$throw IllegalStateException("Attempting to read from a disposed future. Most likely caused by non synchronized access to ApiCache.cachedRequests")</ID>
+    <ID>MaxLineLength:ButtonExclusionZoneEvent.kt$ButtonExclusionZoneEvent$TOWARDS_LEFT -&gt; buttonPosition.copy(x = overlappingExclusionZone.area.left - buttonPosition.width - margin)</ID>
+    <ID>MaxLineLength:ButtonExclusionZoneEvent.kt$ButtonExclusionZoneEvent$TOWARDS_TOP -&gt; buttonPosition.copy(y = overlappingExclusionZone.area.top - buttonPosition.height - margin)</ID>
+    <ID>MaxLineLength:DynamicLightItemsEditor.kt$DynamicLightItemsEditor.Companion$NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(itemStack).resolveInternalName()</ID>
+    <ID>MaxLineLength:EnforcedConfigValues.kt$EnforcedConfigValues$if (hasSentPSAsOnce || Minecraft.getMinecraft().thePlayer == null || !NotEnoughUpdates.INSTANCE.isOnSkyblock) return</ID>
+    <ID>MaxLineLength:FeaturesCommand.kt$FeaturesCommand$(</ID>
+    <ID>MaxLineLength:FeaturesCommand.kt$FeaturesCommand$EnumChatFormatting.DARK_PURPLE.toString() + "" + EnumChatFormatting.BOLD + "NEU" + EnumChatFormatting.RESET</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$"${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Buy Moving Average: ${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}"</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$"${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Buy: ${EnumChatFormatting.GOLD}"</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$"${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Sell Moving Average: ${EnumChatFormatting.GOLD}${EnumChatFormatting.BOLD}"</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$"${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Bazaar Insta-Sell: ${EnumChatFormatting.GOLD}"</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$"${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Lowest BIN Moving Average: ${EnumChatFormatting.GOLD}"</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$// The server only deletes old data every hour, so you could get 30 days and 1 hour, this is just for consistency</ID>
+    <ID>MaxLineLength:GuiPriceGraph.kt$GuiPriceGraph$}</ID>
+    <ID>MaxLineLength:HelpCommand.kt$HelpCommand$"§6/neupackdev §r§7- pack creator command - getnpc, getmob(s), getarmorstand(s), getall. Optional radius argument for all."</ID>
+    <ID>MaxLineLength:HelpCommand.kt$HelpCommand$"§7Commands marked with a §2\"ⴵ\"§7 require an api key. You can set your api key via \"/api new\" or by manually putting it in the api field in \"/neu\""</ID>
+    <ID>MaxLineLength:KotlinTypeAdapterFactory.kt$KotlinTypeAdapterFactory$.</ID>
+    <ID>MaxLineLength:KotlinTypeAdapterFactory.kt$KotlinTypeAdapterFactory$param to kotlinClass.memberProperties.find { it.name == param.name &amp;&amp; it.returnType.isSubtypeOf(typeOf&lt;Map&lt;String, JsonElement&gt;&gt;()) } as KProperty1&lt;Any, Map&lt;String, JsonElement&gt;&gt;</ID>
+    <ID>MaxLineLength:MiscCommands.kt$MiscCommands$"${RED}NEU Cosmetics do not work with OptiFine Fast Render. Go to ESC &gt; Options &gt; Video Settings &gt; Performance &gt; Fast Render to disable it."</ID>
+    <ID>MaxLineLength:MiscCommands.kt$MiscCommands$"§eTurn on Sign Calculator in /neu misc to also support this in sign popups and the neu search bar."</ID>
+    <ID>MaxLineLength:MiscCommands.kt$MiscCommands$if</ID>
+    <ID>MaxLineLength:MiscCommands.kt$MiscCommands$reply("§bTo ensure we do not accidentally corrupt your mod folder, we can only offer support for auto-updates on system with certain capabilities for file deletions (specifically unix systems). You can still manually update your files")</ID>
+    <ID>MaxLineLength:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$"${EnumChatFormatting.GREEN}Using ${EnumChatFormatting.AQUA}craft cost ${EnumChatFormatting.GREEN}as price source!"</ID>
+    <ID>MaxLineLength:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$"${EnumChatFormatting.GREEN}Using ${EnumChatFormatting.BLUE}lowest BIN ${EnumChatFormatting.GREEN}as price source!"</ID>
+    <ID>MaxLineLength:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$* Determine if the overlay should be active based on the config option and the currently open GuiChest, if applicable</ID>
+    <ID>MaxLineLength:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay$config.museumCheapestItemOverlay &amp;&amp; NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()</ID>
+    <ID>MaxLineLength:MuseumItemHighlighter.kt$MuseumItemHighlighter$return itemStack.hasDisplayName() &amp;&amp; itemStack.item == Items.dye &amp;&amp; EnumDyeColor.byDyeDamage(itemStack.itemDamage) == EnumDyeColor.LIME</ID>
+    <ID>MaxLineLength:NEUAutoSymbolProcessor.kt$NEUAutoSymbolProcessor$if</ID>
+    <ID>MaxLineLength:NEUAutoSymbolProcessor.kt$NEUAutoSymbolProcessor$subscribers.sortedBy { it.declaration.simpleName.asString() }</ID>
+    <ID>MaxLineLength:NEUBrigadierHook.kt$NEUBrigadierHook$return brigadierRoot.getAllUsages("/$commandName", commandNode, mutableSetOf()).joinToString("\n") { "${it.path} - ${it.help ?: "Missing help"}"}</ID>
+    <ID>MaxLineLength:NEUStatsCommand.kt$NEUStatsCommand$reply("${GREEN}This will copy a summary of the loaded Java classes to your clipboard. Please paste this into your discord support ticket by pressing CTRL+V.")</ID>
+    <ID>MaxLineLength:NEUStatsCommand.kt$NEUStatsCommand$return (ManagementFactory.getOperatingSystemMXBean() as UnixOperatingSystemMXBean).totalPhysicalMemorySize</ID>
+    <ID>MaxLineLength:NPCLocationExporter.kt$NPCLocationExporter$// Just use jerry pet skin, idk, this will probably cause texture packs to overwrite us, but uhhhhh uhhhhhhh</ID>
+    <ID>MaxLineLength:NPCLocationExporter.kt$NPCLocationExporter$if (event.buttonstate || event.button != 2 || !NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing) return</ID>
+    <ID>MaxLineLength:PackDevCommand.kt$PackDevCommand$val entity = getEntities(dist).minByOrNull { it.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer) }</ID>
+    <ID>MaxLineLength:PetLeveling.kt$PetLeveling.ExpLadder$(expForNextLevel - (cumulativeLevelCost[currentOneIndexedLevel] - currentExp.toFloat())).coerceAtLeast(0F)</ID>
+    <ID>MaxLineLength:ProfileViewerCommands.kt$ProfileViewerCommands.Companion$reply("${RED}Some parts of the profile viewer do not work with OptiFine Fast Render. Go to ESC &gt; Options &gt; Video Settings &gt; Performance &gt; Fast Render to disable it.")</ID>
+    <ID>MaxLineLength:WardrobeMouseButtons.kt$WardrobeMouseButtons$if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return</ID>
+    <ID>MaxLineLength:build.gradle.kts$generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")</ID>
+    <ID>MayBeConst:DevTestCommand.kt$DevTestCommand.Companion$val SPECIAL_KICK = "SPECIAL_KICK"</ID>
+    <ID>MemberNameEqualsClassName:Shimmy.kt$Shimmy.Companion$private fun shimmy(source: Any?, fieldName: String): Any?</ID>
+    <ID>NestedBlockDepth:GuiPriceGraph.kt$GuiPriceGraph$override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)</ID>
+    <ID>PrintStackTrace:LocalGraphDataProvider.kt$LocalGraphDataProvider$e</ID>
+    <ID>ReturnCount:ApiCache.kt$ApiCache$fun cacheRequest( request: Request, cacheKey: CacheKey?, futureSupplier: Supplier&lt;CompletableFuture&lt;String&gt;&gt;, maxAge: Duration? ): CompletableFuture&lt;String&gt;</ID>
+    <ID>ReturnCount:Collection.kt$ProfileCollectionInfo.Companion$fun getCollectionData( profileData: JsonObject, mainPlayer: String, collectionData: CollectionMetadata ): ProfileCollectionInfo?</ID>
+    <ID>ReturnCount:DynamicLightItemsEditor.kt$DynamicLightItemsEditor.Companion$@JvmStatic fun findDynamicLightItems(itemStack: ItemStack): Int</ID>
+    <ID>ReturnCount:GuiPriceGraph.kt$GuiPriceGraph$private fun formatPrice(price: Long): String</ID>
+    <ID>ReturnCount:ItemShopExporter.kt$ItemShopExporter$override fun canExport(gui: GuiScreen): Boolean</ID>
+    <ID>ReturnCount:ItemShopExporter.kt$ItemShopExporter$suspend fun findIngredientForLoreLine( context: RepoExportingContext, loreLine: String, ): Ingredient?</ID>
+    <ID>ReturnCount:KotlinTypeAdapterFactory.kt$KotlinTypeAdapterFactory$@OptIn(ExperimentalStdlibApi::class) override fun &lt;T : Any&gt; create(gson: Gson, type: TypeToken&lt;T&gt;): TypeAdapter&lt;T&gt;?</ID>
+    <ID>ReturnCount:MuseumItemHighlighter.kt$MuseumItemHighlighter$@SubscribeEvent fun onBackgroundDrawn(event: GuiContainerBackgroundDrawnEvent)</ID>
+    <ID>ReturnCount:MuseumItemHighlighter.kt$MuseumItemHighlighter$@SubscribeEvent fun onItemOverride(event: ReplaceItemEvent)</ID>
+    <ID>ReturnCount:MuseumTooltipManager.kt$MuseumTooltipManager$@SubscribeEvent fun onBackgroundDrawn(event: GuiContainerBackgroundDrawnEvent)</ID>
+    <ID>ReturnCount:MuseumTooltipManager.kt$MuseumTooltipManager$fun hasPlayerVisitedMuseum(): Boolean</ID>
+    <ID>ReturnCount:MuseumTooltipManager.kt$MuseumTooltipManager$fun isItemDonated(item: String): Boolean</ID>
+    <ID>ReturnCount:MuseumUtil.kt$MuseumUtil$fun findMuseumItem(stack: ItemStack, isOnArmorPage: Boolean): MuseumItem?</ID>
+    <ID>ReturnCount:NEUStatsCommand.kt$NEUStatsCommand$private fun getMemorySize(): Long</ID>
+    <ID>ReturnCount:NPCLocationExporter.kt$NPCLocationExporter$@SubscribeEvent fun onMouseClick(event: MouseEvent)</ID>
+    <ID>ReturnCount:OldSkyBlockMenu.kt$OldSkyBlockMenu$@SubscribeEvent fun replaceItem(event: ReplaceItemEvent)</ID>
+    <ID>ReturnCount:PeekCommand.kt$PeekCommand.&lt;no name provided&gt;$override fun run()</ID>
+    <ID>ReturnCount:PetLeveling.kt$PetLeveling$internal fun getPetLevelingForPet0(petIdWithoutRarity: String, rarity: Rarity): ExpLadder</ID>
+    <ID>ReturnCount:PetLeveling.kt$PetLeveling.ExpLadder$fun getPetExpForLevel(level: Int): Long</ID>
+    <ID>ReturnCount:ProfileDataLoadedEvent.kt$ProfileDataLoadedEvent$private fun readProfileInfo(): JsonObject?</ID>
+    <ID>ReturnCount:RepoExporters.kt$RepoExporters$@SubscribeEvent fun onGuiClick(event: GuiScreenEvent.MouseInputEvent.Pre)</ID>
+    <ID>ReturnCount:Shimmy.kt$Shimmy.Companion$@JvmStatic fun makeShimmy(source: Any?, path: List&lt;String&gt;): Shimmy?</ID>
+    <ID>ReturnCount:SidebarUtil.kt$SidebarUtil$private fun fetchScoreboardLines(): List&lt;String&gt;</ID>
+    <ID>ReturnCount:SkyMallDisplay.kt$SkyMallDisplay$@SubscribeEvent(receiveCanceled = true) fun onChatReceive(event: ClientChatReceivedEvent)</ID>
+    <ID>ReturnCount:WardrobeMouseButtons.kt$WardrobeMouseButtons$private fun checkKeybinds(event: GuiScreenEvent)</ID>
+    <ID>SwallowedException:IQTest.kt$IQTest$e: CalculatorException</ID>
+    <ID>SwallowedException:LocalGraphDataProvider.kt$LocalGraphDataProvider$e: Exception</ID>
+    <ID>SwallowedException:NEUBrigadierHook.kt$NEUBrigadierHook$syntax: CommandSyntaxException</ID>
+    <ID>SwallowedException:NEUStatsCommand.kt$NEUStatsCommand$e: java.lang.Exception</ID>
+    <ID>SwallowedException:Shimmy.kt$Shimmy.Companion$e: NoSuchFieldException</ID>
+    <ID>ThrowingExceptionsWithoutMessageOrCause:MiscCommands.kt$MiscCommands$NullPointerException()</ID>
+    <ID>TooGenericExceptionCaught:Coroutines.kt$Coroutines.&lt;no name provided&gt;$ex: Throwable</ID>
+    <ID>TooGenericExceptionCaught:DevTestCommand.kt$DevTestCommand$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DungeonCommands.kt$DungeonCommands$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LocalGraphDataProvider.kt$LocalGraphDataProvider$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:completablefuture.kt$t: Throwable</ID>
+    <ID>TooGenericExceptionThrown:DevTestCommand.kt$DevTestCommand.&lt;no name provided&gt;$throw Error("L")</ID>
+    <ID>TooManyFunctions:GuiPriceGraph.kt$GuiPriceGraph : GuiScreen</ID>
+    <ID>TooManyFunctions:KatRecipe.kt$KatRecipe : NeuRecipe</ID>
+    <ID>TooManyFunctions:MuseumCheapestItemOverlay.kt$MuseumCheapestItemOverlay</ID>
+    <ID>TooManyFunctions:dsl.kt$io.github.moulberry.notenoughupdates.util.brigadier.dsl.kt</ID>
+    <ID>UnusedParameter:EnforcedConfigValues.kt$EnforcedConfigValues$event: GuiOpenEvent</ID>
+    <ID>UnusedParameter:EnforcedConfigValues.kt$EnforcedConfigValues$tickEvent: TickEvent.ClientTickEvent</ID>
+    <ID>UnusedParameter:KatRecipe.kt$KatRecipe.Companion$output: JsonObject</ID>
+    <ID>UnusedParameter:MuseumItemHighlighter.kt$MuseumItemHighlighter$event: RepositoryReloadEvent</ID>
+    <ID>UnusedParameter:PetLeveling.kt$PetLeveling$event: RepositoryReloadEvent</ID>
+    <ID>UnusedPrivateProperty:DungeonCommands.kt$DungeonCommands$val level = floor.lastOrNull()?.digitToIntOrNull()</ID>
+    <ID>VariableNaming:GuiPriceGraph.kt$GuiPriceGraph$private val TEXTURE: ResourceLocation = when (config.ahGraph.graphStyle) { 1 -&gt; ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_dark.png") 2 -&gt; ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_phqdark.png") 3 -&gt; ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui_fsr.png") else -&gt; ResourceLocation("notenoughupdates:price_graph_gui/price_information_gui.png") }</ID>
+    <ID>VariableNaming:NEUStatsCommand.kt$NEUStatsCommand$val ONE_MB = 1024L * 1024L</ID>
+    <ID>WildcardImport:ButtonExclusionZoneEvent.kt$import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent.PushDirection.*</ID>
+    <ID>WildcardImport:Coroutines.kt$import kotlin.coroutines.*</ID>
+    <ID>WildcardImport:DevTestCommand.kt$import io.github.moulberry.notenoughupdates.util.*</ID>
+    <ID>WildcardImport:DevTestCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:DevTestCommand.kt$import net.minecraft.util.EnumChatFormatting.*</ID>
+    <ID>WildcardImport:DiagCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:DungeonCommands.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:FairySoulsCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:HelpCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:KotlinTypeAdapterFactory.kt$import com.google.gson.*</ID>
+    <ID>WildcardImport:KotlinTypeAdapterFactory.kt$import kotlin.reflect.*</ID>
+    <ID>WildcardImport:LocalGraphDataProvider.kt$import java.io.*</ID>
+    <ID>WildcardImport:MiscCommands.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:MiscCommands.kt$import net.minecraft.util.EnumChatFormatting.*</ID>
+    <ID>WildcardImport:MuseumCheapestItemOverlay.kt$import io.github.moulberry.notenoughupdates.util.*</ID>
+    <ID>WildcardImport:PackDevCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:PeekCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:PeekCommand.kt$import net.minecraft.util.EnumChatFormatting.*</ID>
+    <ID>WildcardImport:ProfileViewerCommands.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:SetKeyCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:SettingsCommand.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:SimpleDevCommands.kt$import io.github.moulberry.notenoughupdates.util.brigadier.*</ID>
+    <ID>WildcardImport:buildflags.kt$import org.gradle.api.tasks.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

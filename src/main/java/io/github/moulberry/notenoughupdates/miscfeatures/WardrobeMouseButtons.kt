@@ -52,6 +52,7 @@ class WardrobeMouseButtons {
         checkKeybinds(event)
     }
 
+    @Suppress("InvalidSubscribeEvent")
     private fun checkKeybinds(event: GuiScreenEvent) {
         if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return
         val gui = event.gui as? GuiChest ?: return
