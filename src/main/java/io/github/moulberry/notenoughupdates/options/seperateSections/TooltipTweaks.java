@@ -306,11 +306,45 @@ public class TooltipTweaks {
 	@ConfigEditorBoolean
 	public boolean essencePriceInEssenceShop = true;
 
+	@ConfigOption(
+		name = "Garden Visitors",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 2)
+	public boolean gardenVisitors = false;
+
 	@Expose
 	@ConfigOption(
 		name = "Item Cost in Garden NPC",
 		desc = "Show the item cost in garden NPC shop"
 	)
 	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
 	public boolean gardenNpcPrice = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Copper  value",
+		desc = "Calculate how much coins is a copper worth"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean copperCoins = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Ignore beginner items",
+		desc = "Ignore beginner items, such as basic hoes, axes"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean ignoreBeginnerItems = true;
+	@Expose
+	@ConfigOption(
+		name = "Ignore AH items",
+		desc = "Ignore items that can be sold to AH"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean ignoreAHItems = true;
 }
