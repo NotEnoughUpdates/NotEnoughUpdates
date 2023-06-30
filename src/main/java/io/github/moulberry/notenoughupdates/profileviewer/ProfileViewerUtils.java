@@ -106,6 +106,9 @@ public class ProfileViewerUtils {
 		));
 
 		Set<String> ignoredTalismans = new HashSet<>();
+
+		// While there are several crab hats, only one of them counts towards the magical power
+		boolean countedCrabHat = false;
 		int powerAmount = 0;
 		for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
 			if (ignoredTalismans.contains(entry.getKey())) continue;
@@ -127,6 +130,7 @@ public class ProfileViewerUtils {
 						break;
 				}
 			}
+
 			if (entry.getKey().equals("ABICASE")) {
 				if (profileInfo != null && profileInfo.has("nether_island_player_data")) {
 					JsonObject data = profileInfo.get("nether_island_player_data").getAsJsonObject();
@@ -136,6 +140,12 @@ public class ProfileViewerUtils {
 					}
 				}
 			}
+
+			if (entry.getKey().startsWith("PARTY_HAT")) {
+				if (countedCrabHat) continue;
+				countedCrabHat = true;
+			}
+
 			switch (entry.getValue()) {
 				case 0:
 				case 6:
