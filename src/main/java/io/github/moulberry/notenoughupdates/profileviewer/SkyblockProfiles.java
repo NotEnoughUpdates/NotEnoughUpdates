@@ -757,7 +757,7 @@ public class SkyblockProfiles {
 					ProfileViewerUtils.getLevel(
 						Utils.getElement(leveling, "slayer_xp." + slayerName).getAsJsonArray(),
 						slayerExperience,
-						9,
+						slayerName.equals("vampire") ? 5 : 9,
 						true
 					)
 				);

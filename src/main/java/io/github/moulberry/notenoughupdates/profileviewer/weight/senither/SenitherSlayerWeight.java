@@ -35,7 +35,7 @@ public class SenitherSlayerWeight extends SlayerWeight {
 	}
 
 	public void getSlayerWeight(String slayerName) {
-		if (slayerName.equals("blaze")) {
+		if (slayerName.equals("blaze") || slayerName.equals("vampire")) {
 			return;
 		}
 

@@ -576,7 +576,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		// sb lvl
 
 		int sbLevelX = guiLeft + 162;
-		int sbLevelY = guiTop + 90;
+		int sbLevelY = guiTop + 74;
 
 		double skyblockLevel = profile.getProfile(profileName).getSkyblockLevel();
 		EnumChatFormatting skyblockLevelColour = profile.getProfile(profileName).getSkyblockLevelColour();
@@ -598,7 +598,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		);
 
 		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
-			if (mouseY >= guiTop + 69 && mouseY <= guiTop + 131) {
+			if (mouseY >= guiTop + 49 && mouseY <= guiTop + 113) {
 				if (Mouse.isButtonDown(0)) onSecondPage = true;
 			}
 		}
@@ -621,6 +621,12 @@ public class BasicPage extends GuiProfileViewerPage {
 
 				int x = guiLeft + 237 + 86 * xPosition;
 				int y = guiTop + 24 + 21 * yPosition;
+
+				if (entry.getKey().equals("social")) {
+					position--;
+					x = guiLeft + 132;
+					y = guiTop + 124;
+				}
 
 				Utils.renderAlignedString(skillName, EnumChatFormatting.WHITE.toString() + levelFloored, x + 14, y - 4, 60);
 
