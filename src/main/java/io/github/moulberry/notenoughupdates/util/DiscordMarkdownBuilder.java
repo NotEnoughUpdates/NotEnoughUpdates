@@ -40,15 +40,6 @@ public class DiscordMarkdownBuilder {
 		return this;
 	}
 
-	public DiscordMarkdownBuilder checkLast() {
-		int length = builder.length();
-		String lastThreeChars = builder.substring(length - 3);
-		if (lastThreeChars.equals("```")) {
-			builder.delete(length - 3, length);
-		}
-		return this;
-	}
-
 	@Override
 	public String toString() {
 		return builder.append("```").toString();

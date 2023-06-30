@@ -65,6 +65,7 @@ class NEUStatsCommand {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
                         .also(::appendRepoStats)
+                        .also(::appendAdvancedRepoStats)
                         .toString()
                 )
             }.withHelp("Copy the repo stats to your clipboard")
@@ -72,7 +73,7 @@ class NEUStatsCommand {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
                         .also(::appendStats)
-                        .also(::appendRepoStats)
+                        .also(::appendAdvancedRepoStats)
                         .also(::appendModList)
                         .toString()
                 )
@@ -174,9 +175,7 @@ class NEUStatsCommand {
         )
         builder.append("SB Profile", SBInfo.getInstance().currentProfile)
         builder.append("Has Advanced Tab", if (SBInfo.getInstance().hasNewTab) "TRUE" else "FALSE")
-        builder.category("Repo Stats")
-        builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
-        builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
+            .also(::appendRepoStats)
     }
 
     private fun appendModList(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
@@ -189,14 +188,14 @@ class NEUStatsCommand {
 
     private fun appendRepoStats(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
         val apiData = NotEnoughUpdates.INSTANCE.config.apiData
-        val contains = builder.toString().lines().any { it == "# Repo Stats" }
-        builder.checkLast()
-        if (!contains) {
-            builder.category("Repo Stats")
-            builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
-            builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
-            builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
-        }
+        builder.category("Repo Stats")
+        builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
+        builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
+        builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
+        return builder
+    }
+
+    private fun appendAdvancedRepoStats(builder: DiscordMarkdownBuilder): DiscordMarkdownBuilder {
         if (NotEnoughUpdates.INSTANCE.manager.repoLocation.isDirectory) {
             val files = NotEnoughUpdates.INSTANCE.manager.repoLocation.listFiles()
             builder.category("Repo Files")
