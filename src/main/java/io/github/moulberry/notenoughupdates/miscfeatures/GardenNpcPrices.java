@@ -127,7 +127,8 @@ public class GardenNpcPrices {
 		Map<String, Double> prices = new HashMap<>();
 		for (SkyMartItem item : SkyMartItem.values()) {
 			if (item.isWorthless && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreBeginnerItems) continue;
-			if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getItemAuctionInfo(item.internalName)!=null&&NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreAHItems) continue;
+			boolean isBazaar = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(item.internalName)!=null;
+			if (!isBazaar&&NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreAHItems) continue;
 			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(item.internalName, false) /item.copperPrice*amount;
 			prices.put(item.displayName, price);
 		}
