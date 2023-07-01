@@ -324,7 +324,7 @@ public class TooltipTweaks {
 
 	@Expose
 	@ConfigOption(
-		name = "Copper  value",
+		name = "Copper value",
 		desc = "Calculate how much coins is a copper worth"
 	)
 	@ConfigEditorBoolean
