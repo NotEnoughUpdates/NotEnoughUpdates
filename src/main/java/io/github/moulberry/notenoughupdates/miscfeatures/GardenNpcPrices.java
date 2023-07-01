@@ -81,7 +81,7 @@ public class GardenNpcPrices {
 	//§5§o §aEnchanted Hay Bale §8x62
 	//§5§o §9Enchanted Cookie §8x4
 	//§5§o §9Tightly-Tied Hay Bale
-	private final Pattern copperRegex = Pattern.compile("§5§o §8\\+§c(\\d+) Copper");
+	private final Pattern copperRegex = Pattern.compile(".* §8\\+§c(\\d+) Copper.*");
 	//§5§o §8+§c24 Copper
 	//§5§o §8+§c69 Copper
 	//§5§o §8+§cNaN Copper
@@ -109,7 +109,7 @@ public class GardenNpcPrices {
 					if (copperMatcher.matches()) {
 						int amount = Integer.parseInt(copperMatcher.group(1));
 						Object[] copperMax = calculateCopper(amount);
-						event.toolTip.set(i, event.toolTip.get(i) + " §7(§6" + Utils.shortNumberFormat((Double) copperMax[1], 0) + "§7 coins selling "+copperMax[0]+"§7)");
+						event.toolTip.set(i, event.toolTip.get(i) + " §7(§6" + Utils.shortNumberFormat((Double) copperMax[1], 0) + "§7 selling "+copperMax[0]+"§7)");
 					}
 				}
 
