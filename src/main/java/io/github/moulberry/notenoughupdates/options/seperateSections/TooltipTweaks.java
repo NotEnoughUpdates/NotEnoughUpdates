@@ -331,18 +331,23 @@ public class TooltipTweaks {
 	@ConfigAccordionId(id = 2)
 	public boolean copperCoins = true;
 
+
 	@Expose
 	@ConfigOption(
-		name = "Ignore beginner items",
-		desc = "Ignore beginner items, such as basic hoes, axes"
+		name = "AH items cost threshold",
+		desc = "Ignore AH items that cost less or equal copper than"
 	)
-	@ConfigEditorBoolean
+	@ConfigEditorSlider(
+		minValue = 0f,
+		maxValue = 500f,
+		minStep = 5f
+	)
 	@ConfigAccordionId(id = 2)
-	public boolean ignoreBeginnerItems = true;
+	public double AHPriceIgnoreThreshold = 0;
 	@Expose
 	@ConfigOption(
 		name = "Ignore AH items",
-		desc = "Ignore items that can be sold to AH"
+		desc = "Ignore ALL items that can be sold to AH"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)

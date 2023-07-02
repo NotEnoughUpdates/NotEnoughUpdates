@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -93,13 +92,14 @@ public class GardenNpcPrices {
 
 	public Object[] calculateCopper(int amount) {
 		JsonObject skymart = Utils.getConstant("skymart", NotEnoughUpdates.INSTANCE.manager.gson);
+		if (skymart == null) {return new Object[]{"NEU REPO error", 0};};
 		Map<String, Double> prices = new HashMap<>();
 		for (Map.Entry<String, JsonElement> entry : skymart.entrySet()) {
 			String internalName = entry.getKey();
 			JsonObject item = entry.getValue().getAsJsonObject();
-			if (!Objects.equals(item.get("currency").getAsString(), "copper") || (item.get("isWorthless").getAsBoolean() && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreBeginnerItems)) continue;
+			if (!Objects.equals(item.get("currency").getAsString(), "copper")) continue;
 			boolean isBazaar = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalName)!=null;
-			if (!isBazaar&&NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreAHItems) continue;
+			if (!isBazaar&&(NotEnoughUpdates.INSTANCE.config.tooltipTweaks.ignoreAHItems||item.get("price").getAsInt()<=NotEnoughUpdates.INSTANCE.config.tooltipTweaks.AHPriceIgnoreThreshold)) continue;
 			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, false) /item.get("price").getAsInt()*amount;
 			prices.put(item.get("display").getAsString(), price);
 		}
