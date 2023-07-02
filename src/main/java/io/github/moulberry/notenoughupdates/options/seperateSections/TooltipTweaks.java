@@ -351,5 +351,5 @@ public class TooltipTweaks {
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
-	public boolean ignoreAHItems = true;
+	public boolean ignoreAllAHItems = true;
 }
