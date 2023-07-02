@@ -98,7 +98,7 @@ public class Calculator {
 
 	public static List<Token> lex(String source) throws CalculatorException {
 		List<Token> tokens = new ArrayList<>();
-		boolean justParsedNumber = false;
+		boolean doesNotHaveLValue = true;
 		for (int i = 0; i < source.length(); ) {
 			char c = source.charAt(i);
 			if (Character.isWhitespace(c)) {
@@ -107,7 +107,7 @@ public class Calculator {
 			}
 			Token token = new Token();
 			token.tokenStart = i;
-			if (!justParsedNumber && c == '-') {
+			if (doesNotHaveLValue && c == '-') {
 				token.tokenLength = 1;
 				token.type = TokenType.PREOP;
 				token.operatorValue = "-";
@@ -175,7 +175,8 @@ public class Calculator {
 			} else {
 				throw new CalculatorException("Unknown thing " + c, i, 1);
 			}
-			justParsedNumber = token.type == TokenType.NUMBER || token.type == TokenType.VARIABLE;
+			doesNotHaveLValue =
+				token.type == TokenType.LPAREN || token.type == TokenType.PREOP || token.type == TokenType.BINOP;
 			tokens.add(token);
 			i += token.tokenLength;
 		}
@@ -218,7 +219,7 @@ public class Calculator {
 						Token l = op.peek();
 						if (l.type == TokenType.LPAREN)
 							break;
-						assert (l.type == TokenType.BINOP);
+						assert (l.type == TokenType.BINOP || l.type == TokenType.PREOP);
 						int pl = getPrecedence(l);
 						if (pl >= p) { // Association order
 							out.add(op.pop());
