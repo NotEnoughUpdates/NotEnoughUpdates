@@ -467,18 +467,19 @@ public class FarmingSkillOverlay extends TextOverlay {
 	}
 
 	private void renderCoins() {
-		float cropsMultiplier = 0;
+		float coinsMultiplier = 0;
 		String unit = null;
 		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCoinRateUnit) {
 			case 0:
+				coinsMultiplier = 1;
 				unit = "/s";
 				break;
 			case 1:
-				cropsMultiplier = 60;
+				coinsMultiplier = 60;
 				unit = "/m";
 				break;
 			case 2:
-				cropsMultiplier = 3600;
+				coinsMultiplier = 3600;
 				unit = "/h";
 				break;
 		}
@@ -489,7 +490,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			float cropsPerSecond = cropsPerSecondLast != 0
 				? interpolate(this.cropsPerSecond, cropsPerSecondLast)
 				: this.cropsPerSecond;
-			float cropsPerUnit = cropsPerSecond * cropsMultiplier;
+			float cropsPerUnit = cropsPerSecond * coinsMultiplier;
 			lineMap.put(10, EnumChatFormatting.AQUA + "Coins" + unit + ": " + EnumChatFormatting.YELLOW +
 				String.format("%,.0f", cropsPerUnit * coins));
 		}
@@ -647,6 +648,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		String unit = null;
 		switch (NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingCropRateUnit) {
 			case 0:
+				cropsMultiplier = 1;
 				unit = "/s";
 				break;
 			case 1:
