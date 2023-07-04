@@ -42,7 +42,7 @@ dependencies {
 		mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
 		forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
-		modApi("cc.polyfrost:oneconfig-1.8.9-forge:0.1.0-alpha+") // Don't you just love 0.1.0-alpha+
+		modApi("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+") // no
 }
 
 tasks.withType<JavaCompile> {

@@ -25,9 +25,9 @@ import neubs.setVersionFromEnvironment
 plugins {
 		idea
 		java
-		id("gg.essential.loom") version "0.10.0.+"
+		id("gg.essential.loom") version "1.2.polyfrost.2" // eventually this can be replaced with actual essential loom but polyfrost's fork has critical fixes
 		id("dev.architectury.architectury-pack200") version "0.1.3"
-		id("com.github.johnrengelman.shadow") version "7.1.2"
+		id("com.github.johnrengelman.shadow") version "8.1.1"
 		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
 		`maven-publish`
 		kotlin("jvm") version "1.8.21"
@@ -45,12 +45,12 @@ setVersionFromEnvironment("2.1.1")
 
 // Minecraft configuration:
 loom {
-		launchConfigs {
-				"client" {
+		runs {
+				named("client") {
 						property("mixin.debug", "true")
 						property("asmhelper.verbose", "true")
-						arg("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
-						arg("--mixin", "mixins.notenoughupdates.json")
+					  programArgs("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
+				  	programArgs("--mixin", "mixins.notenoughupdates.json")
 				}
 		}
 		runConfigs {
@@ -164,7 +164,7 @@ dependencies {
 
 java {
 		withSourcesJar()
-//		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 // Tasks:
@@ -172,8 +172,6 @@ java {
 tasks.withType(JavaCompile::class) {
 		options.encoding = "UTF-8"
 		options.isFork = true
-		if (JavaVersion.current().isJava9Compatible)
-				options.release.set(8)
 }
 tasks.named("compileOneconfigJava", JavaCompile::class) {
 		doFirst {
@@ -205,7 +203,7 @@ tasks.withType(Jar::class) {
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 		archiveClassifier.set("dep")
 		from(tasks.shadowJar)
-		input.set(tasks.shadowJar.get().archiveFile)
+		inputFile.set(tasks.shadowJar.get().archiveFile)
 		doLast {
 				println("Jar name: ${archiveFile.get().asFile}")
 		}
@@ -258,7 +256,7 @@ idea {
 		module {
 				// Not using += due to https://github.com/gradle/gradle/issues/8749
 				sourceDirs = sourceDirs + file("build/generated/ksp/main/kotlin") // or tasks["kspKotlin"].destination
-				testSourceDirs = testSourceDirs + file("build/generated/ksp/test/kotlin")
+			  testSources.from(file("build/generated/ksp/test/kotlin"))
 				generatedSourceDirs = generatedSourceDirs + file("build/generated/ksp/main/kotlin") + file("build/generated/ksp/test/kotlin")
 		}
 }

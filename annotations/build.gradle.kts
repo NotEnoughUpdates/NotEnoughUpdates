@@ -26,6 +26,10 @@ repositories {
 		mavenCentral()
 }
 
+java {
+  	toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+}
+
 tasks.withType<JavaCompile> {
 		if (JavaVersion.current().isJava9Compatible) {
 				options.release.set(8)
