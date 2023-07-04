@@ -109,6 +109,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 			if (json == null) return;
 
+			final Map<String, CustomSkull> skullCache = new HashMap<>();
+
 			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
 				if (entry.getValue().isJsonObject()) {
 					JsonObject obj = entry.getValue().getAsJsonObject();
@@ -116,12 +118,17 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 						String location = obj.get("model").getAsString();
 						ResourceLocation loc = new ResourceLocation("notenoughupdates:custom_skull_textures/" + location + ".json");
 
-						CustomSkull skull = new CustomSkull();
-						skull.model = ModelBlock.deserialize(new InputStreamReader(Minecraft
-							.getMinecraft()
-							.getResourceManager()
-							.getResource(loc)
-							.getInputStream()));
+						CustomSkull skull;
+						if ((skull = skullCache.get(location)) == null) {
+							skull = new CustomSkull();
+							skull.model = ModelBlock.deserialize(new InputStreamReader(Minecraft
+								.getMinecraft()
+								.getResourceManager()
+								.getResource(loc)
+								.getInputStream()));
+
+							skullCache.put(location, skull);
+						}
 
 						customSkulls.put(entry.getKey(), skull);
 					} else if (obj.has("texture")) {
@@ -140,15 +147,16 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 			loadSprites();
 
-			for (CustomSkull skull : customSkulls.values()) {
-				if (skull.model != null) {
-					skull.modelBaked = bakeModel(skull.model, ModelRotation.X0_Y0, false);
+			customSkulls.values().stream().distinct().forEach(
+				(CustomSkull skull) -> {
+					if (skull.model != null) {
+						skull.modelBaked = bakeModel(skull.model, ModelRotation.X0_Y0, false);
+					}
 				}
-			}
+			);
 
 			Minecraft.getMinecraft().getTextureManager().loadTexture(atlas, textureMap);
-		} catch (Exception ignored) {
-		}
+		} catch (Exception ignored) {}
 	}
 
 	private void loadSprites() {
