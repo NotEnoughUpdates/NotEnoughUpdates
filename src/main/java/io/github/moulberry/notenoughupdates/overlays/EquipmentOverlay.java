@@ -348,16 +348,11 @@ public class EquipmentOverlay {
 		);
 		ItemStack petInfo = petStack;
 
-		ResourceLocation customPetTexture = getCustomPetTexture(isRenderingArmorHud());
-		Minecraft.getMinecraft().getTextureManager().bindTexture(customPetTexture);
-		GlStateManager.color(1, 1, 1, 1);
-
 		AccessorGuiContainer container = ((AccessorGuiContainer) inventory);
 
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 
-		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 		GlStateManager.bindTexture(0);
 
 		Utils.drawItemStack(petInfo, overlayLeft + 8, overlayTop + 8, true);
