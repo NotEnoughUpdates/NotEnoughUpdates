@@ -45,15 +45,13 @@ setVersionFromEnvironment("2.1.1")
 
 // Minecraft configuration:
 loom {
-		runs {
-				named("client") {
-						property("mixin.debug", "true")
-						property("asmhelper.verbose", "true")
-					  programArgs("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
-				  	programArgs("--mixin", "mixins.notenoughupdates.json")
-				}
-		}
 		runConfigs {
+			  "client" {
+					  property("mixin.debug", "true")
+					  property("asmhelper.verbose", "true")
+					  programArgs("--mixin", "mixins.notenoughupdates.json")
+					  programArgs("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
+				}
 				"server" {
 						isIdeConfigGenerated = false
 				}
