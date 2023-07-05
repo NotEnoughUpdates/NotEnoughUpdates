@@ -459,7 +459,7 @@ public class SBInfo {
 
 	public void updateMayor() {
 		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("resources/skyblock/election")
+			.newAnonymousHypixelApiRequest("resources/skyblock/election")
 			.requestJson()
 			.thenAccept(newJson -> mayorJson = newJson);
 	}

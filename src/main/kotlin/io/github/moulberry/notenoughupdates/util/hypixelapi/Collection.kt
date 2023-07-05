@@ -95,7 +95,7 @@ data class ProfileCollectionInfo(
 
         val hypixelCollectionInfo: CompletableFuture<CollectionMetadata> by lazy {
             NotEnoughUpdates.INSTANCE.manager.apiUtils
-                .newHypixelApiRequest("resources/skyblock/collections")
+                .newAnonymousHypixelApiRequest("resources/skyblock/collections")
                 .requestJson()
                 .thenApply {
                     NotEnoughUpdates.INSTANCE.manager.gson.fromJson(it, CollectionMetadata::class.java)

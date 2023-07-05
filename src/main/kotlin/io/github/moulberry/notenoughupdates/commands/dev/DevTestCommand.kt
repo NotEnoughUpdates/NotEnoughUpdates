@@ -210,7 +210,8 @@ class DevTestCommand {
             }.withHelp("Force sync the config to disk")
             thenLiteralExecute("clearapicache") {
                 ApiCache.clear()
-                reply("Cleared API cache")
+                NotEnoughUpdates.INSTANCE.manager.ursaClient.clearToken()
+                reply("Cleared API cache and reset ursa token")
             }.withHelp("Clear the API cache")
             thenLiteralExecute("searchmode") {
                 NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true

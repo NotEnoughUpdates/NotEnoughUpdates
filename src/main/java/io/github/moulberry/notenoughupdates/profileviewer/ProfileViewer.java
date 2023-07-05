@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import lombok.Getter;
 import net.minecraft.init.Blocks;
@@ -474,7 +475,7 @@ public class ProfileViewer {
 		updatingResourceCollection.set(true);
 
 		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("resources/skyblock/collections")
+			.newAnonymousHypixelApiRequest("resources/skyblock/collections")
 			.requestJson()
 			.thenAccept(jsonObject -> {
 				updatingResourceCollection.set(false);
@@ -528,11 +529,8 @@ public class ProfileViewer {
 					callback.accept(null);
 				} else {
 					if (!uuidToHypixelProfile.containsKey(uuid)) {
-						manager.apiUtils
-							.newHypixelApiRequest("player")
-							.queryArgument("uuid", uuid)
-							.maxCacheAge(Duration.ofSeconds(30))
-							.requestJson()
+						manager.ursaClient
+							.get(UrsaClient.player(Utils.parseDashlessUUID(uuid)))
 							.thenAccept(playerJson -> {
 									if (
 										playerJson != null &&

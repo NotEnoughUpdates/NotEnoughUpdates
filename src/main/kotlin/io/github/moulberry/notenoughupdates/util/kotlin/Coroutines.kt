@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
+import java.util.concurrent.ForkJoinPool
 import kotlin.coroutines.*
 
 @NEUAutoSubscribe
@@ -54,6 +55,13 @@ object Coroutines {
         }
     }
 
+    fun <T> launchCoroutine(block: suspend () -> T): CompletableFuture<T> {
+        return launchCoroutineOnCurrentThread {
+            continueOn(ForkJoinPool.commonPool())
+            block()
+        }
+    }
+
     private data class DelayedTask(val contination: () -> Unit, var tickDelay: Int)
 
     private val tasks = mutableListOf<DelayedTask>()
@@ -73,6 +81,18 @@ object Coroutines {
                 }
             }
             toRun.forEach { it.contination() }
+        }
+    }
+
+
+    suspend fun <T> CompletableFuture<T>.await(): T {
+        return suspendCoroutine { cont ->
+            handle { res, ex ->
+                if (ex != null)
+                    cont.resumeWithException(ex)
+                else
+                    cont.resume(res)
+            }
         }
     }
 
