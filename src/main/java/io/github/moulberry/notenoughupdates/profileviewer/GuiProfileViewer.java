@@ -557,6 +557,25 @@ public class GuiProfileViewer extends GuiScreen {
 				}
 			}
 		}
+		int x = guiLeft + sizeX;
+		int y = guiTop;
+		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
+
+		if (mouseX > x && mouseX < x + 29) {
+			if (mouseY > y && mouseY < y + 28) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.add(Minecraft.getMinecraft().thePlayer.getName());
+			}
+		}
+
+		for (int i = 0; i < previousProfileSearches.size(); i++) {
+			if (mouseX > x && mouseX < x + 28) {
+				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
+					tooltipToDisplay = new ArrayList<>();
+					tooltipToDisplay.add(previousProfileSearches.get(i));
+				}
+			}
+		}
 
 		if (tooltipToDisplay != null) {
 			List<String> grayTooltip = new ArrayList<>(tooltipToDisplay.size());
