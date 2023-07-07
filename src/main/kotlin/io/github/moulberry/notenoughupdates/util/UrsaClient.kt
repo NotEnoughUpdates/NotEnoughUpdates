@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.util
 
 import com.google.gson.JsonObject
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.await
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.continueOn
@@ -36,11 +37,14 @@ class UrsaClient(val apiUtil: ApiUtil) {
     private data class Token(
         val obtainedAt: Instant,
         val token: String,
+        val obtainedFrom: String,
     ) {
         val isValid get() = Duration.between(obtainedAt, Instant.now()).seconds < 3500
     }
 
     val logger = NEUDebugFlag.API_CACHE
+
+    // Needs synchronized access
     private var token: Token? = null
     private var isPollingForToken = false
 
@@ -51,11 +55,13 @@ class UrsaClient(val apiUtil: ApiUtil) {
     )
 
     private val queue = ConcurrentLinkedQueue<Request<*>>()
-    val ursaRoot = "http://localhost:3000"
+    private val ursaRoot
+        get() = NotEnoughUpdates.INSTANCE.config.apiData.ursaApi.takeIf { it.isNotBlank() }
+            ?: "https://ursa.notenoughupdates.org/"
 
-    private suspend fun authorizeRequest(connection: ApiUtil.Request) {
+    private suspend fun authorizeRequest(usedUrsaRoot: String, connection: ApiUtil.Request) {
         val t = token
-        if (t != null && t.isValid) {
+        if (t != null && t.isValid && t.obtainedFrom == usedUrsaRoot) {
             logger.log("Authorizing request using token")
             connection.header("x-ursa-token", t.token)
         } else {
@@ -70,7 +76,7 @@ class UrsaClient(val apiUtil: ApiUtil) {
         }
     }
 
-    private fun saveToken(connection: ApiUtil.Request) {
+    private fun saveToken(usedUrsaRoot: String, connection: ApiUtil.Request) {
         logger.log("Attempting to save token")
         val token = connection.responseHeaders["x-ursa-token"]?.firstOrNull()
         if (token == null) {
@@ -79,7 +85,7 @@ class UrsaClient(val apiUtil: ApiUtil) {
             return
         }
         synchronized(this) {
-            this.token = Token(Instant.now(), token)
+            this.token = Token(Instant.now(), token, usedUrsaRoot)
             isPollingForToken = false
             logger.log("Token saving successful")
         }
@@ -90,13 +96,14 @@ class UrsaClient(val apiUtil: ApiUtil) {
     }
 
     private suspend fun <T> performRequest(request: Request<T>) {
-        val apiRequest = apiUtil.request().url("$ursaRoot/${request.path}")
+        val usedUrsaRoot = ursaRoot
+        val apiRequest = apiUtil.request().url("$usedUrsaRoot/${request.path}")
         try {
             logger.log("Ursa Request started")
-            authorizeRequest(apiRequest)
+            authorizeRequest(usedUrsaRoot, apiRequest)
             val response = apiRequest.requestJson(request.objectMapping).await()
             logger.log("Request completed")
-            saveToken(apiRequest)
+            saveToken(usedUrsaRoot, apiRequest)
             request.consumer.complete(response)
         } catch (e: Exception) {
             logger.log("Request failed")
@@ -116,7 +123,8 @@ class UrsaClient(val apiUtil: ApiUtil) {
         }
         logger.log("Request found")
         synchronized(this) {
-            if (token?.isValid != true) {
+            val t = token
+            if (!(t != null && t.isValid && t.obtainedFrom == ursaRoot)) {
                 isPollingForToken = true
                 logger.log("No token saved. Marking this request as a token poll request")
             }
