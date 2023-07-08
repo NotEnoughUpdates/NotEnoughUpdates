@@ -35,11 +35,11 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 class UrsaClient(val apiUtil: ApiUtil) {
     private data class Token(
-        val obtainedAt: Instant,
+        val validUntil: Instant,
         val token: String,
         val obtainedFrom: String,
     ) {
-        val isValid get() = Duration.between(obtainedAt, Instant.now()).seconds < 3500
+        val isValid get() = validUntil.minusSeconds(60) < Instant.now()
     }
 
     val logger = NEUDebugFlag.API_CACHE
@@ -79,13 +79,14 @@ class UrsaClient(val apiUtil: ApiUtil) {
     private fun saveToken(usedUrsaRoot: String, connection: ApiUtil.Request) {
         logger.log("Attempting to save token")
         val token = connection.responseHeaders["x-ursa-token"]?.firstOrNull()
+        val validUntil = connection.responseHeaders["x-ursa-expires"]?.firstOrNull()?.toLongOrNull()?.let { Instant.ofEpochMilli(it) } ?: (Instant.now() + Duration.ofMinutes(55))
         if (token == null) {
             isPollingForToken = false
             logger.log("No token found. Marking as non polling")
             return
         }
         synchronized(this) {
-            this.token = Token(Instant.now(), token, usedUrsaRoot)
+            this.token = Token(validUntil, token, usedUrsaRoot)
             isPollingForToken = false
             logger.log("Token saving successful")
         }
