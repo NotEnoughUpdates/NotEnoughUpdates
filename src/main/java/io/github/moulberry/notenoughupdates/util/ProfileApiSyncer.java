@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import net.minecraft.client.Minecraft;
@@ -89,9 +90,15 @@ public class ProfileApiSyncer {
 		if (Minecraft.getMinecraft().thePlayer == null) return;
 
 		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-		NotEnoughUpdates.profileViewer.getOrLoadSkyblockProfiles(uuid, (profile) -> {
-			for (Consumer<SkyblockProfiles> c : finishSyncCallbacks.values()) c.accept(profile);
-			finishSyncCallbacks.clear();
-		});
+		NotEnoughUpdates.INSTANCE.manager.apiUtils
+			.newHypixelApiRequest("/skyblock/profiles")
+			.queryArgument("uuid", uuid)
+			.requestJson()
+			.thenAcceptAsync((profile) -> {
+				SkyblockProfiles skyblockProfiles = new SkyblockProfiles(NotEnoughUpdates.profileViewer, uuid);
+				for (Consumer<SkyblockProfiles> c : finishSyncCallbacks.values())
+					c.accept((skyblockProfiles));
+				finishSyncCallbacks.clear();
+			}, MinecraftExecutor.OnThread);
 	}
 }
