@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
@@ -151,11 +152,15 @@ public class MiningPage extends GuiProfileViewerPage {
 			molePerkPct = 100;
 		}
 
-		ProfileViewer.Level hotmLevelingInfo = selectedProfile.getLevelingInfo().get("hotm");
-
 		// Render stats
-		// HOTM
-		getInstance().renderXpBar(EnumChatFormatting.RED + "HOTM", hotmSkillIcon, x, y, sectionWidth, hotmLevelingInfo, mouseX, mouseY);
+		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
+		if (levelingInfo != null) {
+			ProfileViewer.Level hotmLevelingInfo = levelingInfo.get("hotm");
+			
+			// HOTM
+			getInstance().renderXpBar(EnumChatFormatting.RED + "HOTM", hotmSkillIcon, x, y, sectionWidth, hotmLevelingInfo, mouseX, mouseY);
+		}
+
 
 		// Powder
 		Utils.renderAlignedString(

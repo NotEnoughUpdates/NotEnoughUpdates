@@ -127,6 +127,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 		}
 
 		Map<String, ProfileViewer.Level> levelingInfo = selectedProfile.getLevelingInfo();
+		if (levelingInfo == null) {
+			return;
+		}
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		JsonObject hypixelInfo = GuiProfileViewer.getProfile().getHypixelProfile();
 
