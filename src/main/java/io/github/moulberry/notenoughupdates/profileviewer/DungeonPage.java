@@ -546,9 +546,9 @@ public class DungeonPage extends GuiProfileViewerPage {
 			for (int i = 0; i < Weight.DUNGEON_CLASS_NAMES.size(); i++) {
 				String className = Weight.DUNGEON_CLASS_NAMES.get(i);
 
-				classLevelSum += levelingInfo.get(className).level;
 				String colour = className.equalsIgnoreCase(activeClass) ? EnumChatFormatting.GREEN.toString() : EnumChatFormatting.WHITE.toString();
 				ProfileViewer.Level levelObj = levelingInfo.get("cosmetic_" + className);
+				classLevelSum += levelObj.level;
 
 				getInstance()
 					.renderXpBar(
