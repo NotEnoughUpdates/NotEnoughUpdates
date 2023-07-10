@@ -58,10 +58,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 public class ApiUtil {
@@ -251,7 +253,11 @@ public class ApiUtil {
 						if (shouldGunzip || "gzip".equals(conn.getContentEncoding())) {
 							inputStream = new GZIPInputStream(inputStream);
 						}
-						responseHeaders = conn.getHeaderFields();
+						responseHeaders = conn.getHeaderFields().entrySet().stream()
+																	.collect(Collectors.toMap(
+																		it -> it.getKey() == null ? null : it.getKey().toLowerCase(Locale.ROOT),
+																		it -> new ArrayList<>(it.getValue())
+																	));
 
 						// While the assumption of UTF8 isn't always true; it *should* always be true.
 						// Not in the sense that this will hold in most cases (although that as well),
