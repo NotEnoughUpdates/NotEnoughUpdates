@@ -736,14 +736,16 @@ public class SkyblockProfiles {
 						false
 					)
 				);
+				ProfileViewer.Level makeJaniHappy = ProfileViewerUtils.getLevel(
+					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
+					classExperience,
+					99,
+					false
+				);
+				makeJaniHappy.maxLevel = 50;
 				out.put(
-					"cosmetic_" + className,
-					ProfileViewerUtils.getLevel(
-						Utils.getElement(leveling, "catacombs").getAsJsonArray(),
-						classExperience,
-						99,
-						false
-					)
+					"make_jani_happy_" + className,
+					makeJaniHappy
 				);
 			}
 
