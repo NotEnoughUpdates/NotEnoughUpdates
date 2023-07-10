@@ -736,16 +736,16 @@ public class SkyblockProfiles {
 						false
 					)
 				);
-				ProfileViewer.Level makeJaniHappy = ProfileViewerUtils.getLevel(
+				ProfileViewer.Level cosmeticClass = ProfileViewerUtils.getLevel(
 					Utils.getElement(leveling, "catacombs").getAsJsonArray(),
 					classExperience,
 					99,
 					false
 				);
-				makeJaniHappy.maxLevel = 50;
+				cosmeticClass.maxLevel = 50; // So the dungeons page in PV shows funny rainbow bar 
 				out.put(
-					"make_jani_happy_" + className,
-					makeJaniHappy
+					"cosmetic_" + className,
+					cosmeticClass
 				);
 			}
 
