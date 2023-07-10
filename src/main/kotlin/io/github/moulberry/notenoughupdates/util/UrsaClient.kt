@@ -78,21 +78,21 @@ class UrsaClient(val apiUtil: ApiUtil) {
 
     private fun saveToken(usedUrsaRoot: String, connection: ApiUtil.Request) {
         logger.log("Attempting to save token")
-        val token = connection.responseHeaders["x-ursa-token"]?.firstOrNull()
-        val validUntil = connection.responseHeaders["x-ursa-expires"]?.firstOrNull()?.toLongOrNull()?.let { Instant.ofEpochMilli(it) } ?: (Instant.now() + Duration.ofMinutes(55))
+        val token =
+            connection.responseHeaders["x-ursa-token"]?.firstOrNull()
+        val validUntil = connection.responseHeaders["x-ursa-expires"]
+            ?.firstOrNull()
+            ?.toLongOrNull()
+            ?.let { Instant.ofEpochMilli(it) } ?: (Instant.now() + Duration.ofMinutes(55))
         if (token == null) {
             isPollingForToken = false
             logger.log("No token found. Marking as non polling")
-            return
-        }
-        synchronized(this) {
-            this.token = Token(validUntil, token, usedUrsaRoot)
-            isPollingForToken = false
-            logger.log("Token saving successful")
-        }
-        launchCoroutineOnCurrentThread {
-            continueOn(MinecraftExecutor.OnThread)
-            bumpRequests()
+        } else {
+            synchronized(this) {
+                this.token = Token(validUntil, token, usedUrsaRoot)
+                isPollingForToken = false
+                logger.log("Token saving successful")
+            }
         }
     }
 
@@ -107,9 +107,14 @@ class UrsaClient(val apiUtil: ApiUtil) {
             saveToken(usedUrsaRoot, apiRequest)
             request.consumer.complete(response)
         } catch (e: Exception) {
+            e.printStackTrace()
             logger.log("Request failed")
             isPollingForToken = false
             request.consumer.completeExceptionally(e)
+        }
+        launchCoroutineOnCurrentThread {
+            continueOn(MinecraftExecutor.OnThread)
+            bumpRequests()
         }
     }
 
