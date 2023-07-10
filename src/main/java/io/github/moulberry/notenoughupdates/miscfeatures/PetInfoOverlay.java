@@ -1145,7 +1145,7 @@ public class PetInfoOverlay extends TextOverlay {
 					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
 					if (PetInfoOverlay.config.selectedPet == -1) {
 						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
-						if (!"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
+						if (getCurrentPet() != null && !"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
 							PetInfoOverlay.config.selectedPet = -1;
 							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
 								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
