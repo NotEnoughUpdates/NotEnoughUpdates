@@ -743,7 +743,7 @@ public class SkyblockProfiles {
 						classExperience,
 						99,
 						false
-					);
+					)
 				);
 			}
 
