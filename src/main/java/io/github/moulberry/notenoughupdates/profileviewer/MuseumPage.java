@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
@@ -104,10 +105,13 @@ public class MuseumPage extends GuiProfileViewerPage {
 			xIndex++;
 		}
 
+		SkyblockProfiles.SkyblockProfile.MuseumData museumData = selectedProfile.getMuseumData();
+		long value = museumData.getValue();
+
 		// todo get values
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Museum Value",
-			EnumChatFormatting.WHITE + "X.XXB",
+			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(value),
 			guiLeft + 21,
 			guiTop + 25,
 			114
@@ -120,7 +124,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			guiTop + 45,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 55, 116, (float) 30 / 100);
+		getInstance().renderBar(guiLeft + 20, guiTop + 55, 116, 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Weapons Donated",
@@ -129,7 +133,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			guiTop + 70,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 80, 116, (float) 30 / 100);
+		getInstance().renderBar(guiLeft + 20, guiTop + 80, 116, 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Armor Donated",
@@ -138,7 +142,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			guiTop + 95,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 105, 116, (float) 101 / 100);
+		getInstance().renderBar(guiLeft + 20, guiTop + 105, 116, 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Rarities Donated",
@@ -147,7 +151,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			guiTop + 120,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 130, 116, (float) 100 / 100);
+		getInstance().renderBar(guiLeft + 20, guiTop + 130, 116, 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Special Items Donated",

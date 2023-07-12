@@ -484,6 +484,88 @@ public class SkyblockProfiles {
 		private PlayerStats.Stats stats;
 		private Long networth = null;
 		private SoopyNetworth soopyNetworth = null;
+		private MuseumData museumData = null;
+		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
+
+		public class MuseumData {
+			private long museumValue;
+			private final Map<String, JsonArray> museumItems = new HashMap<>();
+
+			private MuseumData(JsonObject museumJson) {
+				if (museumJson == null || museumJson.isJsonNull() || museumJson.get("members").isJsonNull()) {
+					museumValue = -2;
+					return;
+				}
+				JsonObject members = museumJson.get("members").getAsJsonObject();
+				if (members == null || members.isJsonNull() || !members.has(uuid)) {
+					museumValue = -2;
+					return;
+				}
+				JsonObject member = members.get(uuid).getAsJsonObject();
+				if (member == null || member.isJsonNull() || !member.has("value")) {
+					museumValue = -2;
+					return;
+				}
+				museumValue = member.get("value").getAsLong();
+
+				JsonObject museumItemsData = member.get("items").getAsJsonObject();
+				if (museumItemsData != null) {
+					for (Map.Entry<String, JsonElement> entry : museumItemsData.entrySet()) {
+						JsonArray contents = new JsonArray();
+						String itemName = entry.getKey();
+
+						JsonObject content = entry.getValue().getAsJsonObject();
+						JsonObject contentItems = content.get("items").getAsJsonObject();
+						String contentBytes = contentItems.get("data").getAsString();
+
+						try {
+							NBTTagList items = CompressedStreamTools.readCompressed(
+								new ByteArrayInputStream(Base64.getDecoder().decode(contentBytes))
+							).getTagList("i", 10);
+							for (int j = 0; j < items.tagCount(); j++) {
+								JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
+								contents.add(item);
+							}
+						} catch (IOException ignored) {
+						}
+						museumItems.put(itemName, contents);
+					}
+				}
+			}
+
+			private MuseumData asLoading() {
+				museumValue = -1;
+				return this;
+			}
+
+			public long getValue() {
+				return museumValue;
+			}
+			//todo special items, sorting
+			public Map<String, JsonArray> getMuseumItems() {
+				return museumItems;
+			}
+		}
+
+		private void loadMuseumData() {
+			if (updatingMuseumData.get()) {
+				return;
+			}
+
+			updatingMuseumData.set(true);
+			String profileId = getOuterProfileJson().get("profile_id").getAsString();
+			profileViewer.getManager().apiUtils.newHypixelApiRequest("skyblock/museum")
+			 .queryArgument("profile", profileId)
+			 .requestJson()
+			 .handle((museumJson, throwable) -> {
+				 if (museumJson != null && museumJson.has("success")
+					 && museumJson.get("success").getAsBoolean() && museumJson.has("members")) {
+					 museumData = new MuseumData(museumJson);
+					 return null;
+				 }
+				 return null;
+			 });
+		}
 
 		public SkyblockProfile(JsonObject outerProfileJson) {
 			this.outerProfileJson = outerProfileJson;
@@ -985,6 +1067,15 @@ public class SkyblockProfiles {
 
 			loadSoopyData(callback);
 			return new SoopyNetworth(null).asLoading();
+		}
+
+		public MuseumData getMuseumData() {
+			if (museumData != null) {
+				return museumData;
+			}
+
+			loadMuseumData();
+			return new MuseumData(null).asLoading();
 		}
 	}
 }
