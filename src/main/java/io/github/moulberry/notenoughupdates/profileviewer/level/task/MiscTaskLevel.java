@@ -112,7 +112,7 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			for (JsonElement completedTask : completedTasks) {
 				String name = completedTask.getAsString();
 				String harpName = name.substring(0, name.lastIndexOf("_"));
-				if(harpSongsNames.has(harpName))sbXpGainedHarp += harpSongsNames.get(harpName).getAsInt() / 4;
+				if (harpSongsNames.has(harpName)) sbXpGainedHarp += harpSongsNames.get(harpName).getAsInt() / 4;
 			}
 		}
 
@@ -157,6 +157,15 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			}
 		}
 
+		int sbXpTimeCharm = 0;
+		if (object.has("rift") &&
+			object.getAsJsonObject("rift").has("gallery") &&
+			object.getAsJsonObject("rift").getAsJsonObject("gallery").has("secured_trophies")) {
+			JsonArray timeCharms = object.getAsJsonObject("rift").getAsJsonObject("gallery").getAsJsonArray(
+				"secured_trophies");
+			sbXpTimeCharm += timeCharms.size() * miscellaneousTask.get("timecharm_xp").getAsInt();
+		}
+
 		List<String> lore = new ArrayList<>();
 
 		lore.add(levelPage.buildLore("Accessory Bag Upgrades",
@@ -165,14 +174,16 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		lore.add(levelPage.buildLore("Reaper Peppers",
 			sbXpReaperPeppers, miscellaneousTask.get("reaper_peppers").getAsInt(), false
 		));
+		lore.add(levelPage.buildLore("Timecharms",
+			sbXpTimeCharm, miscellaneousTask.get("timecharm").getAsInt(), false
+		));
 		lore.add(levelPage.buildLore("Unlocking Powers",
 			sbXpUnlockedPowers, 0, true
 		));
 		lore.add(levelPage.buildLore("The Dojo",
 			sbXpDojo, miscellaneousTask.get("the_dojo").getAsInt(), false
 		));
-		lore.add(levelPage.buildLore(
-			"Harp Songs",
+		lore.add(levelPage.buildLore("Harp Songs",
 			sbXpGainedHarp, miscellaneousTask.get("harp_songs").getAsInt(), false
 		));
 		lore.add(levelPage.buildLore("Abiphone Contacts",
@@ -186,7 +197,7 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		));
 
 		int totalXp = sbXpReaperPeppers + sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
-			sbXpCommunityUpgrade + sbXpPersonalBank;
+			sbXpCommunityUpgrade + sbXpPersonalBank + sbXpTimeCharm;
 		levelPage.renderLevelBar(
 			"Misc. Task",
 			new ItemStack(Items.map),

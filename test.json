@@ -1,0 +1,679 @@
+[
+  {
+    "internalname": "FAMILY_DOUBLOON",
+    "itemid": "minecraft:gold_nugget",
+    "displayname": "§9Doubloon of the Family",
+    "lore": [
+      "§7Worth §6100,000 coins §7in the",
+      "§7outside world.",
+      "",
+      "§7§8A precious trinket from a",
+      "§8powerful member of The Family",
+      "§8who doesn't really need it",
+      "§8anymore....",
+      "",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§9§lRARE"
+    ],
+    "damage": 0,
+    "nbttag": "{ench:[],HideFlags:254,display:{Lore:[0:\"§7Worth §6100,000 coins §7in the\",1:\"§7outside world.\",2:\"\",3:\"§7§8A precious trinket from a\",4:\"§8powerful member of The Family\",5:\"§8who doesn't really need it\",6:\"§8anymore....\",7:\"\",8:\"§5§kX§5 Rift-Transferable §kX\",9:\"§9§lRARE\"],Name:\"§9Doubloon of the Family\"},ExtraAttributes:{id:\"FAMILY_DOUBLOON\",uuid:\"c199f888-1154-498b-af48-ae0aab4e70fa\",timestamp:\"6/20/23 4:46 PM\"}}"
+  },
+  {
+    "internalname": "WILTED_BERBERIS",
+    "itemid": "minecraft:deadbush",
+    "displayname": "§fWilted Berberis",
+    "lore": [
+      "§7The plant equivalent of an alien",
+      "§7zombie.",
+      "",
+      "§f§lCOMMON"
+    ],
+    "damage": 0,
+    "count": 10,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7The plant equivalent of an alien\",1:\"§7zombie.\",2:\"\",3:\"§f§lCOMMON\"],Name:\"§fWilted Berberis\"},ExtraAttributes:{id:\"WILTED_BERBERIS\"}}"
+  },
+  {
+    "internalname": "MIRRORED_SLIME_BALL",
+    "itemid": "minecraft:slime_ball",
+    "displayname": "§fllabemilS",
+    "lore": [
+      "§f§lCOMMON"
+    ],
+    "damage": 0,
+    "count": 2,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§f§lCOMMON\"],Name:\"§fllabemilS\"},ExtraAttributes:{id:\"MIRRORED_SLIME_BALL\"}}"
+  },
+  {
+    "internalname": "DETECTIVE_SCANNER",
+    "itemid": "minecraft:skull",
+    "displayname": "§9Detective Scanner",
+    "lore": [
+      "§6Ability: Detect! §e§lRIGHT CLICK",
+      "§7Investigate a clue or",
+      "§7abnormality.",
+      "§8Mana Cost: §310",
+      "§8Cooldown: §a4s",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 3,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"f08d5ecf-d4c8-3033-a6ae-8df95a2ae8db\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTYxNjYzNjM5MDMzOSwKICAicHJvZmlsZUlkIiA6ICJjNTBhZmE4YWJlYjk0ZTQ1OTRiZjFiNDI1YTk4MGYwMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUd29FQmFlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQ1Nzg0OTNiNTY5N2FiMjlhMTk2ZDM1YWNmYTQ0MDU0YjQ0ZjNlNTQ5OGVmYTIyZWY1YjA4NTFiMjQ3N2UwOTAiCiAgICB9CiAgfQp9\"}]}},display:{Lore:[0:\"§6Ability: Detect! §e§lRIGHT CLICK\",1:\"§7Investigate a clue or\",2:\"§7abnormality.\",3:\"§8Mana Cost: §310\",4:\"§8Cooldown: §a4s\",5:\"\",6:\"§9§lRARE\"],Name:\"§9Detective Scanner\"},ExtraAttributes:{id:\"DETECTIVE_SCANNER\"}}"
+  },
+  {
+    "internalname": "KEY_TO_KAT_SOUL",
+    "itemid": "minecraft:gold_nugget",
+    "displayname": "§9Key to Infested House Soul",
+    "lore": [
+      "§7Hold this item in your inventory",
+      "§7to use the soul in the infested",
+      "§7house.",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 0,
+    "nbttag": "{ench:[],HideFlags:254,display:{Lore:[0:\"§7Hold this item in your inventory\",1:\"§7to use the soul in the infested\",2:\"§7house.\",3:\"\",4:\"§9§lRARE\"],Name:\"§9Key to Infested House Soul\"},ExtraAttributes:{id:\"KEY_TO_KAT_SOUL\",uuid:\"8bd6e4d2-7938-4246-a490-1b229a87be53\",timestamp:\"6/21/23 11:52 AM\"}}"
+  },
+  {
+    "internalname": "SHADOW_CRUX",
+    "itemid": "minecraft:skull",
+    "displayname": "§aShadow Crux",
+    "lore": [
+      "§7Trust no one.",
+      "§7Not even your own shadow.",
+      "§7It's always acting shady.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "count": 3,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"febc83be-f2cf-306a-876e-10f4efda68f6\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY0OTIzMzA1NzU4MCwKICAicHJvZmlsZUlkIiA6ICI3NTE0NDQ4MTkxZTY0NTQ2OGM5NzM5YTZlMzk1N2JlYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGFua3NNb2phbmciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NjYzhhNjkwYzg5ZWJmMDFhZGYwNDQwYzBhM2Q1NDBlMmRiODljZmM5N2FkM2I4ZTAxODEwYmYzMjg5ZjY3YSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9\"}]}},display:{Lore:[0:\"§7Trust no one.\",1:\"§7Not even your own shadow.\",2:\"§7It's always acting shady.\",3:\"\",4:\"§eRight-click to view recipes!\",5:\"\",6:\"§a§lUNCOMMON\"],Name:\"§aShadow Crux\"},ExtraAttributes:{id:\"SHADOW_CRUX\"}}"
+  },
+  {
+    "internalname": "MIRRORED_WOOD",
+    "itemid": "minecraft:planks",
+    "displayname": "§fknalP dooW kaO",
+    "lore": [
+      "§f§lCOMMON"
+    ],
+    "damage": 0,
+    "count": 6,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§f§lCOMMON\"],Name:\"§fknalP dooW kaO\"},ExtraAttributes:{id:\"MIRRORED_WOOD\"}}"
+  },
+  {
+    "internalname": "LIL_PAD",
+    "itemid": "minecraft:waterlily",
+    "displayname": "§aLil' Pad",
+    "lore": [
+      "§7Can be placed on water,",
+      "§7especially if you're scared of",
+      "§7said water.",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 11,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Can be placed on water,\",1:\"§7especially if you're scared of\",2:\"§7said water.\",3:\"\",4:\"§a§lUNCOMMON\"],Name:\"§aLil' Pad\"},ExtraAttributes:{id:\"LIL_PAD\"}}"
+  },
+  {
+    "internalname": "WAND_OF_WARDING",
+    "itemid": "minecraft:diamond",
+    "displayname": "§9§bWarding Diamathame",
+    "lore": [
+      "§7§7A powerful artifact ingrained",
+      "§7with protective properties.",
+      "",
+      "§6Ability: Glyph Incantation",
+      "§7Activate §5Glyphs §7to imbue",
+      "§7them with a §9Warding Spell§7.",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 0,
+    "nbttag": "{ench:[],HideFlags:254,display:{Lore:[0:\"§7§7A powerful artifact ingrained\",1:\"§7with protective properties.\",2:\"\",3:\"§6Ability: Glyph Incantation\",4:\"§7Activate §5Glyphs §7to imbue\",5:\"§7them with a §9Warding Spell§7.\",6:\"\",7:\"§9§lRARE\"],Name:\"§9§bWarding Diamathame\"},ExtraAttributes:{id:\"WAND_OF_WARDING\",uuid:\"51c14a80-648d-4381-bb9b-575e2efc383a\",timestamp:\"6/21/23 7:34 AM\"}}"
+  },
+  {
+    "internalname": "MIRRORED_STRING",
+    "itemid": "minecraft:string",
+    "displayname": "§fgnirtS",
+    "lore": [
+      "§f§lCOMMON"
+    ],
+    "damage": 0,
+    "count": 7,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§f§lCOMMON\"],Name:\"§fgnirtS\"},ExtraAttributes:{id:\"MIRRORED_STRING\"}}"
+  },
+  {
+    "internalname": "LARVA_HOOK",
+    "itemid": "minecraft:tripwire_hook",
+    "displayname": "§aLarva Hook",
+    "lore": [
+      "§7Click the §6larvas §7crawling",
+      "§7around tree branches to",
+      "§7tactfully extract their silk.",
+      "",
+      "§7§7You may harvest §62/8 larvas",
+      "§6§7with this hook.",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Click the §6larvas §7crawling\",1:\"§7around tree branches to\",2:\"§7tactfully extract their silk.\",3:\"\",4:\"§7§7You may harvest §62/8 larvas\",5:\"§6§7with this hook.\",6:\"\",7:\"§a§lUNCOMMON\"],Name:\"§aLarva Hook\"},ExtraAttributes:{larvas_collected:6,id:\"LARVA_HOOK\",uuid:\"df15f8a3-6024-4852-b716-f2d8dfb91034\",timestamp:\"6/21/23 7:22 AM\"}}"
+  },
+  {
+    "internalname": "LEECH_SUPREME_FRAGMENT",
+    "itemid": "minecraft:skull",
+    "displayname": "§9Leech Supreme Fragment",
+    "lore": [
+      "§eRight-click to view recipes!",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 3,
+    "count": 32,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"f3d2e272-e483-3543-bf09-0b793fccc804\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY0ODQ3NzgxMDAxOCwKICAicHJvZmlsZUlkIiA6ICI0M2NmNWJkNjUyMDM0YzU5ODVjMDIwYWI3NDE0OGQxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJrYW1pbDQ0NSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMzEzMjQzMDM0YmNiMWE1MjhlZmYxYzRiMGFkYjMyMDc0NTVjYWRmZDhjOWNjZDVhNzVhZjk3NTc5MGY3MDUyIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=\"}]}},display:{Lore:[0:\"§eRight-click to view recipes!\",1:\"\",2:\"§9§lRARE\"],Name:\"§9Leech Supreme Fragment\"},ExtraAttributes:{id:\"LEECH_SUPREME_FRAGMENT\"}}"
+  },
+  {
+    "internalname": "DARK_PEBBLE",
+    "itemid": "minecraft:flint",
+    "displayname": "§fDark Pebble",
+    "lore": [
+      "§5§kX§5 Rift-Transferable §kX",
+      "§f§lCOMMON"
+    ],
+    "damage": 0,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§5§kX§5 Rift-Transferable §kX\",1:\"§f§lCOMMON\"],Name:\"§fDark Pebble\"},ExtraAttributes:{id:\"DARK_PEBBLE\"}}"
+  },
+  {
+    "internalname": "WAND_OF_WARDING",
+    "itemid": "minecraft:diamond",
+    "displayname": "§9§bWarding Diamathame",
+    "lore": [
+      "§7§7A powerful artifact ingrained",
+      "§7with protective properties.",
+      "",
+      "§6Ability: Glyph Incantation",
+      "§7Activate §5Glyphs §7to imbue",
+      "§7them with a §9Warding Spell§7.",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 0,
+    "nbttag": "{ench:[],HideFlags:254,display:{Lore:[0:\"§7§7A powerful artifact ingrained\",1:\"§7with protective properties.\",2:\"\",3:\"§6Ability: Glyph Incantation\",4:\"§7Activate §5Glyphs §7to imbue\",5:\"§7them with a §9Warding Spell§7.\",6:\"\",7:\"§9§lRARE\"],Name:\"§9§bWarding Diamathame\"},ExtraAttributes:{id:\"WAND_OF_WARDING\",uuid:\"a453277a-8f64-42bc-9323-dc60dfaf9a69\",timestamp:\"6/21/23 9:16 AM\"}}"
+  },
+  {
+    "internalname": "LM_EGG_BOOTS",
+    "itemid": "minecraft:spawn_egg",
+    "displayname": "§9Living Metal Bootspawn",
+    "lore": [
+      "§6Ability: Spawn §e§lRIGHT CLICK",
+      "§7Spawns a living metal autoarmor",
+      "§7which can be assimilated into",
+      "§7your own armor.",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 58,
+    "count": 2,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§6Ability: Spawn §e§lRIGHT CLICK\",1:\"§7Spawns a living metal autoarmor\",2:\"§7which can be assimilated into\",3:\"§7your own armor.\",4:\"\",5:\"§9§lRARE\"],Name:\"§9Living Metal Bootspawn\"},ExtraAttributes:{id:\"LM_EGG_BOOTS\"}}"
+  },
+  {
+    "internalname": "MUTED_BARK",
+    "itemid": "minecraft:skull",
+    "displayname": "§aMuted Bark",
+    "lore": [
+      "§7No longer barking.",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "count": 7,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"e761bb77-076a-3f96-9ea0-e57648194b46\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY3ODIwMzI5NjgxMSwKICAicHJvZmlsZUlkIiA6ICI5MGQ1NDY0OGEzNWE0YmExYTI2Yjg1YTg4NTU4OGJlOSIsCiAgInByb2ZpbGVOYW1lIiA6ICJFdW4wbWlhIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY3MWUzNDQ2ZWZhYmYwZmQ1NDdhM2Q1NGU5M2ZhM2M3ODA0MGFiMzNmODhjNDBkOTE5YjRlZGQ3ZWE0YmI3NSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9\"}]}},display:{Lore:[0:\"§7No longer barking.\",1:\"\",2:\"§a§lUNCOMMON\"],Name:\"§aMuted Bark\"},ExtraAttributes:{id:\"MUTED_BARK\"}}"
+  },
+  {
+    "internalname": "HALF_EATEN_CARROT",
+    "itemid": "minecraft:carrot",
+    "displayname": "§fHalf-Eaten Carrot",
+    "lore": [
+      "§f§lCOMMON"
+    ],
+    "damage": 0,
+    "count": 5,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§f§lCOMMON\"],Name:\"§fHalf-Eaten Carrot\"},ExtraAttributes:{id:\"HALF_EATEN_CARROT\"}}"
+  },
+  {
+    "internalname": "LARVA_SILK",
+    "itemid": "minecraft:string",
+    "displayname": "§aLarva Silk",
+    "lore": [
+      "§7Click two ledge blocks with this",
+      "§7item to setup a §eSilkwire§7.",
+      "",
+      "§7§8May the larvas which died for",
+      "§8it rest in pieces.",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 7,
+    "nbttag": "{ench:[],HideFlags:254,display:{Lore:[0:\"§7Click two ledge blocks with this\",1:\"§7item to setup a §eSilkwire§7.\",2:\"\",3:\"§7§8May the larvas which died for\",4:\"§8it rest in pieces.\",5:\"\",6:\"§a§lUNCOMMON\"],Name:\"§aLarva Silk\"},ExtraAttributes:{id:\"LARVA_SILK\"}}"
+  },
+  {
+    "internalname": "FROZEN_WATER",
+    "itemid": "minecraft:ice",
+    "displayname": "§9Frozen Water",
+    "lore": [
+      "§7One could say it's... ice cold.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 0,
+    "count": 9,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7One could say it's... ice cold.\",1:\"\",2:\"§eRight-click to view recipes!\",3:\"\",4:\"§9§lRARE\"],Name:\"§9Frozen Water\"},ExtraAttributes:{id:\"FROZEN_WATER\"}}"
+  },
+  {
+    "internalname": "EMMETT_POINTER",
+    "itemid": "minecraft:blaze_rod",
+    "displayname": "§aEmmett Pointer",
+    "lore": [
+      "§6Ability: Lazer §e§lRIGHT CLICK",
+      "§7Point something.",
+      "§8Cooldown: §a2s",
+      "",
+      "§7§8He's not a vampire, he's a",
+      "§8scientist.",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§6Ability: Lazer §e§lRIGHT CLICK\",1:\"§7Point something.\",2:\"§8Cooldown: §a2s\",3:\"\",4:\"§7§8He's not a vampire, he's a\",5:\"§8scientist.\",6:\"\",7:\"§a§lUNCOMMON\"],Name:\"§aEmmett Pointer\"},ExtraAttributes:{id:\"EMMETT_POINTER\"}}"
+  },
+  {
+    "internalname": "NULLIFIED_METAL",
+    "itemid": "minecraft:carpet",
+    "displayname": "§aNullified Metal",
+    "lore": [
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 11,
+    "count": 16,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§eRight-click to view recipes!\",1:\"\",2:\"§a§lUNCOMMON\"],Name:\"§aNullified Metal\"},ExtraAttributes:{id:\"NULLIFIED_METAL\"}}"
+  },
+  {
+    "internalname": "TINY_HAMMER",
+    "itemid": "minecraft:iron_axe",
+    "displayname": "§aremmaH yniT",
+    "lore": [
+      "§7.wohemoS",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "nbttag": "{Unbreakable:1b,HideFlags:254,display:{Lore:[0:\"§7.wohemoS\",1:\"\",2:\"§a§lUNCOMMON\"],Name:\"§aremmaH yniT\"},ExtraAttributes:{id:\"TINY_HAMMER\"}}"
+  },
+  {
+    "internalname": "CADUCOUS_STEM",
+    "itemid": "minecraft:double_plant",
+    "displayname": "§fCaducous Stem",
+    "lore": [
+      "§7The color and shape of flowers",
+      "§7are a precise record of what",
+      "§7bees find attractive.",
+      "",
+      "§f§lCOMMON"
+    ],
+    "damage": 4,
+    "count": 10,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7The color and shape of flowers\",1:\"§7are a precise record of what\",2:\"§7bees find attractive.\",3:\"\",4:\"§f§lCOMMON\"],Name:\"§fCaducous Stem\"},ExtraAttributes:{id:\"CADUCOUS_STEM\"}}"
+  },
+  {
+    "internalname": "DEADGEHOG_SPINE",
+    "itemid": "minecraft:arrow",
+    "displayname": "§aDeadgehog Spine",
+    "lore": [
+      "§7Contrary to popular belief,",
+      "§7Deadgehogs aren't rodents.",
+      "§7",
+      "§7They are in fact mangled wraith",
+      "§7remnants of warriors who",
+      "§7couldn't find true love.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 9,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Contrary to popular belief,\",1:\"§7Deadgehogs aren't rodents.\",2:\"§7\",3:\"§7They are in fact mangled wraith\",4:\"§7remnants of warriors who\",5:\"§7couldn't find true love.\",6:\"\",7:\"§eRight-click to view recipes!\",8:\"\",9:\"§a§lUNCOMMON\"],Name:\"§aDeadgehog Spine\"},ExtraAttributes:{id:\"DEADGEHOG_SPINE\"}}"
+  },
+  {
+    "internalname": "TURBOMAX_VACUUM",
+    "itemid": "minecraft:hopper_minecart",
+    "displayname": "§9Turbomax Vacuum Cleaner",
+    "lore": [
+      "§7§7Lended to you by Kat the",
+      "§7Potentially Fake Neuroscientist.",
+      "",
+      "§6Ability: Vacuum §e§lHOLD RIGHT CLICK",
+      "§7Creates an air pressure",
+      "§7differential to efficiently",
+      "§7collect dust and vermin.",
+      "",
+      "§fVacuum Bag: §70 Silverfishes",
+      "§fVacuum Bag: §70 Spiders",
+      "§fVacuum Bag: §70 Flies",
+      "",
+      "§7§8It's not an industrial model,",
+      "§8but it should do the trick.",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 0,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7§7Lended to you by Kat the\",1:\"§7Potentially Fake Neuroscientist.\",2:\"\",3:\"§6Ability: Vacuum §e§lHOLD RIGHT CLICK\",4:\"§7Creates an air pressure\",5:\"§7differential to efficiently\",6:\"§7collect dust and vermin.\",7:\"\",8:\"§fVacuum Bag: §70 Silverfishes\",9:\"§fVacuum Bag: §70 Spiders\",10:\"§fVacuum Bag: §70 Flies\",11:\"\",12:\"§7§8It's not an industrial model,\",13:\"§8but it should do the trick.\",14:\"\",15:\"§9§lRARE\"],Name:\"§9Turbomax Vacuum Cleaner\"},ExtraAttributes:{vacuumed_spider:0,vacuumed_silverfish:0,vacuumed_mosquito:0,id:\"TURBOMAX_VACUUM\"}}"
+  },
+  {
+    "internalname": "LIVING_METAL",
+    "itemid": "minecraft:stained_glass",
+    "displayname": "§9Living Metal",
+    "lore": [
+      "§7It snakes around your blocky",
+      "§7hand as your hold it.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 11,
+    "count": 34,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7It snakes around your blocky\",1:\"§7hand as your hold it.\",2:\"\",3:\"§eRight-click to view recipes!\",4:\"\",5:\"§9§lRARE\"],Name:\"§9Living Metal\"},ExtraAttributes:{id:\"LIVING_METAL\"}}"
+  },
+  {
+    "internalname": "FROSTY_CRUX",
+    "itemid": "minecraft:skull",
+    "displayname": "§aFrosty Crux",
+    "lore": [
+      "§7The illest of the chillest.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "count": 6,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"00906080-c876-35b5-b103-6255ceefef62\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY3NTM2NDIxNTU2OSwKICAicHJvZmlsZUlkIiA6ICJlOWRlMDE0NjExZDI0NGY5OTVjNmNiMjhkMDk5MWExNSIsCiAgInByb2ZpbGVOYW1lIiA6ICJFbGl6YWJldGhUcnVzcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9lOGU4OWVjNTkyMjljZjUyYmQwY2ZkNWY3OWY3Yjc3NjhiNGM0OTZjMGU4NzE4NGI3OGIyZjdjNjY4NTYxOTliIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=\"}]}},display:{Lore:[0:\"§7The illest of the chillest.\",1:\"\",2:\"§eRight-click to view recipes!\",3:\"\",4:\"§a§lUNCOMMON\"],Name:\"§aFrosty Crux\"},ExtraAttributes:{id:\"FROSTY_CRUX\"}}"
+  },
+  {
+    "internalname": "SPLATTER_CRUX",
+    "itemid": "minecraft:skull",
+    "displayname": "§aSplatter Crux",
+    "lore": [
+      "§7How many vampires does it take",
+      "§7to change a light bulb?",
+      "§7",
+      "§7None... why would they need it?",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"ae014763-fba9-3ea6-8ecb-e2d1836e44e4\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY3NzE1NDA2Mzc5MiwKICAicHJvZmlsZUlkIiA6ICI3NTE0NDQ4MTkxZTY0NTQ2OGM5NzM5YTZlMzk1N2JlYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGFua3NNb2phbmciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI0NzVjMmExMTRmMzBmMGQ2NjA1Y2VmNzA4MTEwYTUzMzMzZjE3MjNiYzc2MjYyMmFiNGEyNWRjZmNkMGZkNCIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9\"}]}},display:{Lore:[0:\"§7How many vampires does it take\",1:\"§7to change a light bulb?\",2:\"§7\",3:\"§7None... why would they need it?\",4:\"\",5:\"§eRight-click to view recipes!\",6:\"\",7:\"§a§lUNCOMMON\"],Name:\"§aSplatter Crux\"},ExtraAttributes:{id:\"SPLATTER_CRUX\"}}"
+  },
+  {
+    "internalname": "LARVA_HOOK",
+    "itemid": "minecraft:tripwire_hook",
+    "displayname": "§aLarva Hook",
+    "lore": [
+      "§7Click the §6larvas §7crawling",
+      "§7around tree branches to",
+      "§7tactfully extract their silk.",
+      "",
+      "§7§7You may harvest §67/8 larvas",
+      "§6§7with this hook.",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Click the §6larvas §7crawling\",1:\"§7around tree branches to\",2:\"§7tactfully extract their silk.\",3:\"\",4:\"§7§7You may harvest §67/8 larvas\",5:\"§6§7with this hook.\",6:\"\",7:\"§a§lUNCOMMON\"],Name:\"§aLarva Hook\"},ExtraAttributes:{larvas_collected:1,id:\"LARVA_HOOK\",uuid:\"836e8f7a-0b15-4dc8-bc60-94f4b5f626fd\",timestamp:\"6/21/23 11:29 AM\"}}"
+  },
+  {
+    "internalname": "GLYPH_VALIDUS",
+    "itemid": "minecraft:filled_map",
+    "displayname": "§5§5Validus Glyph",
+    "lore": [
+      "§7§7§oA scroll ingrained with an",
+      "§7§oancient symbol.",
+      "",
+      "§7If the pattern is mimicked with",
+      "§7a §bpowerful artifact§7, it may",
+      "§7be possible to cast a §9Warding",
+      "§9Spell§7.",
+      "",
+      "§5§lEPIC"
+    ],
+    "damage": 30880,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7§7§oA scroll ingrained with an\",1:\"§7§oancient symbol.\",2:\"\",3:\"§7If the pattern is mimicked with\",4:\"§7a §bpowerful artifact§7, it may\",5:\"§7be possible to cast a §9Warding\",6:\"§9Spell§7.\",7:\"\",8:\"§5§lEPIC\"],Name:\"§5§5Validus Glyph\"},ExtraAttributes:{id:\"GLYPH_VALIDUS\"}}"
+  },
+  {
+    "internalname": "DEAD_CAT_DETECTOR",
+    "itemid": "minecraft:red_flower",
+    "displayname": "§9Dead Cat Detector",
+    "lore": [
+      "§6Ability: Meownar §e§lRIGHT CLICK",
+      "§7Ping the §5Rift §7for parts of",
+      "§7§9Montezuma§7's soul.",
+      "§8Mana Cost: §3100",
+      "§8Cooldown: §a9s",
+      "",
+      "§7Found: §99/9 Soul Pieces",
+      "",
+      "§9§lRARE"
+    ],
+    "damage": 7,
+    "nbttag": "{ench:[],HideFlags:254,display:{Lore:[0:\"§6Ability: Meownar §e§lRIGHT CLICK\",1:\"§7Ping the §5Rift §7for parts of\",2:\"§7§9Montezuma§7's soul.\",3:\"§8Mana Cost: §3100\",4:\"§8Cooldown: §a9s\",5:\"\",6:\"§7Found: §99/9 Soul Pieces\",7:\"\",8:\"§9§lRARE\"],Name:\"§9Dead Cat Detector\"},ExtraAttributes:{id:\"DEAD_CAT_DETECTOR\",dead_cats_found:9}}"
+  },
+  {
+    "internalname": "VOLT_CRUX",
+    "itemid": "minecraft:skull",
+    "displayname": "§aVolt Crux",
+    "lore": [
+      "§7Watt is this?",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"5160448c-e99e-36a0-ad58-6229b0761a60\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY3MzYzNjkyOTE0NiwKICAicHJvZmlsZUlkIiA6ICIwMGZiNTRiOWI4NDA0YTA0YTViMmJhMzBlYzBlYTAxMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJrbGxveWQ3MCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS82ZTAyYjdhY2IzY2NjMGE3MjI5YThkZWUyNGY1OWYzMTZkZjA1YzYxZTVlY2M3OWUyOWE1MzU4YWRiZDJmYmFlIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=\"}]}},display:{Lore:[0:\"§7Watt is this?\",1:\"\",2:\"§eRight-click to view recipes!\",3:\"\",4:\"§a§lUNCOMMON\"],Name:\"§aVolt Crux\"},ExtraAttributes:{id:\"VOLT_CRUX\"}}"
+  },
+  {
+    "internalname": "SCRIBE_CRUX",
+    "itemid": "minecraft:skull",
+    "displayname": "§aScribe Crux",
+    "lore": [
+      "§7What dinosaur is a scribe's best",
+      "§7friend?",
+      "§7Thesaurus.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"b8b2491c-595e-3997-820f-bfcabe97de9c\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY3NjkwOTc0MDA5NSwKICAicHJvZmlsZUlkIiA6ICI1MTY4ZjZlMjIyM2E0Y2FjYjdiN2QyZjYyZWMxZGFhOSIsCiAgInByb2ZpbGVOYW1lIiA6ICJkZWZfbm90X2FzaCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9lMGVlNzgxYjc5YjFmZGMxNGFjMDhiNTA0NDhjZDkxNzRmNzFlMTU1NTE2ZTNiZjU0MmEyZDZjNDY2ZWFjZjgyIiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=\"}]}},display:{Lore:[0:\"§7What dinosaur is a scribe's best\",1:\"§7friend?\",2:\"§7Thesaurus.\",3:\"\",4:\"§eRight-click to view recipes!\",5:\"\",6:\"§a§lUNCOMMON\"],Name:\"§aScribe Crux\"},ExtraAttributes:{id:\"SCRIBE_CRUX\"}}"
+  },
+  {
+    "internalname": "SHAME_CRUX",
+    "itemid": "minecraft:skull",
+    "displayname": "§aShy Crux",
+    "lore": [
+      "§7Rumors are that Argofays and",
+      "§7other creatures really like",
+      "§7this.",
+      "",
+      "§eRight-click to view recipes!",
+      "",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 3,
+    "count": 4,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"aae1e6c3-fddc-3748-8c47-09c40364f88c\",Properties:{textures:[0:{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1N2NmYzdjMTFiMWU2ZjEwMjhiODA0NjJkMWU0MzAyZGNhNWFiODU5MjIyNWVhOGM4Yjc2MzljNzBlNjFmOSJ9fX0=\"}]}},display:{Lore:[0:\"§7Rumors are that Argofays and\",1:\"§7other creatures really like\",2:\"§7this.\",3:\"\",4:\"§eRight-click to view recipes!\",5:\"\",6:\"§a§lUNCOMMON\"],Name:\"§aShy Crux\"},ExtraAttributes:{id:\"SHAME_CRUX\"}}"
+  },
+  null,
+  null,
+  {
+    "internalname": "RIFT_FERRET;3",
+    "itemid": "minecraft:skull",
+    "displayname": "§7[Lvl 1] §5Rift Ferret",
+    "lore": [
+      "§8Combat Pet",
+      "",
+      "§7Speed: §a+0.5",
+      "§7Intelligence: §a-0.02",
+      "",
+      "§6Orbs are Fun",
+      "§7§7Gain §a+10% §7experience from",
+      "§7§bXP Orbs§7.",
+      "",
+      "§7Progress to Level 2: §e0%",
+      "§f§l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §r §e0§6/§e440",
+      "",
+      "§7§eRight-click to add this pet to",
+      "§eyour pet menu!",
+      "",
+      "§8§l* §8Soulbound §8§l*",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§5§lEPIC"
+    ],
+    "damage": 3,
+    "nbttag": "{HideFlags:254,SkullOwner:{Id:\"b73ba979-5adc-379f-87f4-9c412db732e7\",Properties:{textures:[0:{Value:\"ewogICJ0aW1lc3RhbXAiIDogMTY1MTYzOTI2MTI5NywKICAicHJvZmlsZUlkIiA6ICIyMWUzNjdkNzI1Y2Y0ZTNiYjI2OTJjNGEzMDBhNGRlYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJHZXlzZXJNQyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9iNmIxMTM5OTQ0ODI2MDE4NWRhMWQxN2U1NGM5ODQ1MTVmYWFiNmQ4NTg1ZjAwOTcyNDUxZWMyYjQzZDQ2Zjk0IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=\"}]}},display:{Lore:[0:\"§8Combat Pet\",1:\"\",2:\"§7Speed: §a+0.5\",3:\"§7Intelligence: §a-0.02\",4:\"\",5:\"§6Orbs are Fun\",6:\"§7§7Gain §a+10% §7experience from\",7:\"§7§bXP Orbs§7.\",8:\"\",9:\"§7Progress to Level 2: §e0%\",10:\"§f§l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §r §e0§6/§e440\",11:\"\",12:\"§7§eRight-click to add this pet to\",13:\"§eyour pet menu!\",14:\"\",15:\"§8§l* §8Soulbound §8§l*\",16:\"§5§kX§5 Rift-Transferable §kX\",17:\"§5§lEPIC\"],Name:\"§7[Lvl 1] §5Rift Ferret\"},ExtraAttributes:{petInfo:\"{\\\"type\\\":\\\"RIFT_FERRET\\\",\\\"active\\\":false,\\\"exp\\\":0.0,\\\"tier\\\":\\\"EPIC\\\",\\\"hideInfo\\\":false,\\\"candyUsed\\\":0,\\\"hideRightClick\\\":false}\",id:\"PET\",uuid:\"2f3ea3f9-0ef1-4b68-9fbc-0860fa241720\",timestamp:\"6/21/23 11:46 AM\"}}"
+  },
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  {
+    "internalname": "HEMOVIBE",
+    "itemid": "minecraft:redstone_ore",
+    "displayname": "§aHemovibe",
+    "lore": [
+      "§7Dropped by vampires from the",
+      "§7multiverse coven.",
+      "",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 64,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Dropped by vampires from the\",1:\"§7multiverse coven.\",2:\"\",3:\"§5§kX§5 Rift-Transferable §kX\",4:\"§a§lUNCOMMON\"],Name:\"§aHemovibe\"},ExtraAttributes:{id:\"HEMOVIBE\"}}"
+  },
+  {
+    "internalname": "HEMOVIBE",
+    "itemid": "minecraft:redstone_ore",
+    "displayname": "§aHemovibe",
+    "lore": [
+      "§7Dropped by vampires from the",
+      "§7multiverse coven.",
+      "",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 64,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Dropped by vampires from the\",1:\"§7multiverse coven.\",2:\"\",3:\"§5§kX§5 Rift-Transferable §kX\",4:\"§a§lUNCOMMON\"],Name:\"§aHemovibe\"},ExtraAttributes:{id:\"HEMOVIBE\"}}"
+  },
+  {
+    "internalname": "HEMOVIBE",
+    "itemid": "minecraft:redstone_ore",
+    "displayname": "§aHemovibe",
+    "lore": [
+      "§7Dropped by vampires from the",
+      "§7multiverse coven.",
+      "",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 64,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Dropped by vampires from the\",1:\"§7multiverse coven.\",2:\"\",3:\"§5§kX§5 Rift-Transferable §kX\",4:\"§a§lUNCOMMON\"],Name:\"§aHemovibe\"},ExtraAttributes:{id:\"HEMOVIBE\"}}"
+  },
+  {
+    "internalname": "HEMOVIBE",
+    "itemid": "minecraft:redstone_ore",
+    "displayname": "§aHemovibe",
+    "lore": [
+      "§7Dropped by vampires from the",
+      "§7multiverse coven.",
+      "",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 64,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Dropped by vampires from the\",1:\"§7multiverse coven.\",2:\"\",3:\"§5§kX§5 Rift-Transferable §kX\",4:\"§a§lUNCOMMON\"],Name:\"§aHemovibe\"},ExtraAttributes:{id:\"HEMOVIBE\"}}"
+  },
+  {
+    "internalname": "HEMOVIBE",
+    "itemid": "minecraft:redstone_ore",
+    "displayname": "§aHemovibe",
+    "lore": [
+      "§7Dropped by vampires from the",
+      "§7multiverse coven.",
+      "",
+      "§5§kX§5 Rift-Transferable §kX",
+      "§a§lUNCOMMON"
+    ],
+    "damage": 0,
+    "count": 5,
+    "nbttag": "{HideFlags:254,display:{Lore:[0:\"§7Dropped by vampires from the\",1:\"§7multiverse coven.\",2:\"\",3:\"§5§kX§5 Rift-Transferable §kX\",4:\"§a§lUNCOMMON\"],Name:\"§aHemovibe\"},ExtraAttributes:{id:\"HEMOVIBE\"}}"
+  },
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+]
