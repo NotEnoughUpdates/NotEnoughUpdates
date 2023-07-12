@@ -69,8 +69,17 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		}
 
 		int sbXpDojo = 0;
+		int sbXpRelays = 0;
 		if (object.has("nether_island_player_data")) {
 			JsonObject netherIslandPlayerData = object.getAsJsonObject("nether_island_player_data");
+			JsonObject abiphoneObject = netherIslandPlayerData.getAsJsonObject("abiphone");
+
+			if (abiphoneObject.has("operator_chip") &&
+				abiphoneObject.getAsJsonObject("operator_chip").has("repaired_index")) {
+				int repairedIndex = abiphoneObject.getAsJsonObject("operator_chip").get("repaired_index").getAsInt();
+				sbXpRelays += (repairedIndex + 1) * miscellaneousTask.get("unlocking_relays_xp").getAsInt();
+			}
+
 			if (netherIslandPlayerData.has("dojo")) {
 				JsonObject dojoScoresObj = netherIslandPlayerData.getAsJsonObject("dojo");
 
@@ -95,8 +104,7 @@ public class MiscTaskLevel extends GuiTaskLevel {
 				JsonArray completedTask = leveling.get("completed_tasks").getAsJsonArray();
 				Stream<JsonElement> stream = StreamSupport.stream(completedTask.spliterator(), true);
 				long activeContacts = stream.map(JsonElement::getAsString).filter(s -> s.startsWith("ABIPHONE_")).count();
-				JsonObject abiphone = netherIslandPlayerData.getAsJsonObject("abiphone");
-				if (abiphone.has("active_contacts")) {
+				if (abiphoneObject.has("active_contacts")) {
 					sbXpAbiphone = (int) activeContacts * miscellaneousTask.get("abiphone_contacts_xp").getAsInt();
 				}
 			}
@@ -196,8 +204,12 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			sbXpPersonalBank, miscellaneousTask.get("personal_bank_upgrades").getAsInt(), false
 		));
 
+		lore.add(levelPage.buildLore("Upgraded Relays",
+			sbXpRelays, miscellaneousTask.get("unlocking_relays").getAsInt(), false
+		));
+
 		int totalXp = sbXpReaperPeppers + sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
-			sbXpCommunityUpgrade + sbXpPersonalBank + sbXpTimeCharm;
+			sbXpCommunityUpgrade + sbXpPersonalBank + sbXpTimeCharm + sbXpRelays;
 		levelPage.renderLevelBar(
 			"Misc. Task",
 			new ItemStack(Items.map),

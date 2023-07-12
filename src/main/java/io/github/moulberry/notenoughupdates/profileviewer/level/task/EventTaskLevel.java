@@ -69,11 +69,23 @@ public class EventTaskLevel extends GuiTaskLevel {
 			}
 		}
 
+		int sbXpUniqueMedals = 0;
+		if(object.has("jacob2") && object.getAsJsonObject("jacob2").has("unique_golds2")) {
+			int size = object.getAsJsonObject("jacob2").getAsJsonArray("unique_golds2").size();
+			sbXpUniqueMedals = size * eventTask.get("jacob_farming_contest_xp").getAsInt();
+		}
+
 		lore.add(levelPage.buildLore("Mining Fiesta", sbXpMiningFiesta, eventTask.get("mining_fiesta").getAsInt(), false));
 		lore.add(levelPage.buildLore(
 			"Fishing Festival",
 			sbXpFishingFestival,
 			eventTask.get("fishing_festival").getAsInt(),
+			false
+		));
+		lore.add(levelPage.buildLore(
+			"Jacob's Farming Contest",
+			sbXpUniqueMedals,
+			eventTask.get("jacob_farming_contest").getAsInt(),
 			false
 		));
 		lore.add(levelPage.buildLore(
@@ -84,7 +96,7 @@ public class EventTaskLevel extends GuiTaskLevel {
 		));
 
 		int totalXp = sbXpMiningFiesta + sbXpSpookyFestival +
-			sbXpFishingFestival;
+			sbXpFishingFestival + sbXpUniqueMedals;
 		levelPage.renderLevelBar(
 			"Event Task",
 			new ItemStack(Items.clock),

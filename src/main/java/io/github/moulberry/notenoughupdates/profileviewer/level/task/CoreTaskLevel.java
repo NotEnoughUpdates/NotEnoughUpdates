@@ -133,25 +133,30 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		}
 
 		int sbXpBankUpgrades = 0;
+		int sbXpTravelScroll = 0;
 		if (object.has("leveling") && object.getAsJsonObject("leveling").has("completed_tasks")) {
 			JsonArray completedTasks = object.getAsJsonObject("leveling").get("completed_tasks").getAsJsonArray();
 			JsonObject bankUpgradesXp = coreTask.getAsJsonObject("bank_upgrades_xp");
 			for (JsonElement completedTask : completedTasks) {
 				String name = completedTask.getAsString();
+				if (name.startsWith("FAST_TRAVEL_")) {
+					sbXpTravelScroll += coreTask.get("fast_travel_unlocked_xp").getAsInt();
+				}
 				if (bankUpgradesXp.has(name)) {
 					sbXpBankUpgrades += bankUpgradesXp.get(name).getAsInt();
 				}
 			}
 		}
 
+
 		List<String> lore = new ArrayList<>();
+
+		int totalXp = sbXpGainedSkillLVL + sbXpGainedFairy +
+			sbXpCollection + sbXpMinionTier + sbXpBankUpgrades + sbXpTravelScroll;
 
 		lore.add(levelPage.buildLore("Skill Level Up",
 			sbXpGainedSkillLVL, coreTask.get("skill_level_up").getAsInt(), false
 		));
-
-		int totalXp = sbXpGainedSkillLVL + sbXpGainedFairy +
-			sbXpCollection + sbXpMinionTier + sbXpBankUpgrades;
 
 		lore.add(levelPage.buildLore(
 			"Museum Progression",
@@ -177,6 +182,9 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		));
 		lore.add(levelPage.buildLore("Bank Upgrade",
 			sbXpBankUpgrades, coreTask.get("bank_upgrades").getAsInt(), false
+		));
+		lore.add(levelPage.buildLore("Fast Travel Scroll",
+			sbXpTravelScroll, coreTask.get("fast_travel_unlocked").getAsInt(), false
 		));
 
 		levelPage.renderLevelBar(

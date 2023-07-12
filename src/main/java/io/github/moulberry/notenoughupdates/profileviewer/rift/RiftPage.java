@@ -20,6 +20,7 @@
 package io.github.moulberry.notenoughupdates.profileviewer.rift;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
@@ -47,7 +48,6 @@ import org.lwjgl.opengl.GL11;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -94,16 +94,21 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
-		JsonObject riftArmor = riftInventory.getAsJsonObject("inv_armor");
-		JsonObject equipmentContents = riftInventory.getAsJsonObject("equippment_contents");
+		if (riftInventory != null) {
+			JsonObject riftArmor = riftInventory.getAsJsonObject("inv_armor");
+			if (riftArmor != null && riftArmor.has("data")) {
+				List<JsonObject> armorData = readBase64(riftArmor.get("data").getAsString());
+				drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
+			}
 
-		if (riftArmor.has("data")) {
-			List<JsonObject> armorData = readBase64(riftArmor.get("data").getAsString());
-			drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
-		}
-		if (equipmentContents.has("data")) {
-			List<JsonObject> equipmentData = readBase64(equipmentContents.get("data").getAsString());
-			drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
+			if (riftInventory.has("equippment_contents") &&
+				riftInventory.getAsJsonObject("equippment_contents").has("data")) {
+				List<JsonObject> equipmentData = readBase64(riftInventory
+					.getAsJsonObject("equippment_contents")
+					.get("data")
+					.getAsString());
+				drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
+			}
 		}
 
 		// pet
@@ -120,12 +125,12 @@ public class RiftPage extends GuiProfileViewerPage {
 		int manaRegen = size * 2;
 
 		JsonObject montezuma = deadCats.getAsJsonObject("montezuma");
-		String type = montezuma.get("type").getAsString();
+		String montezumaType = montezuma.get("type").getAsString();
 
 		PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
 		pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.get("exp").getAsInt());
 		pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
-		pet.petType = type;
+		pet.petType = montezumaType;
 		pet.candyUsed = montezuma.get("candyUsed").getAsInt();
 		ItemStack petItemstackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
 		Utils.drawItemStack(petItemstackFromPetInfo, guiLeft + 37, guiTop + 158, true);
@@ -144,7 +149,23 @@ public class RiftPage extends GuiProfileViewerPage {
 		if (profileInfo.has("motes_purse")) {
 			motesPurse = profileInfo.get("motes_purse").getAsInt();
 		}
-		Utils.drawStringF("§dMotes: §f" + Utils.shortNumberFormat(motesPurse, 0), guiLeft + 16, guiTop + 16, true, 0);
+		Utils.drawStringCenteredScaledMaxWidth(
+			"§dMotes: §f" + Utils.shortNumberFormat(motesPurse, 0),
+			guiLeft + 45,
+			guiTop + 16,
+			true,
+			84,
+			0
+		);
+
+		if ((mouseX > guiLeft + 3 && mouseX < guiLeft + 90) &&
+			(mouseY > guiTop + 3 && mouseY < guiTop + 25)) {
+			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			if (stats.has("rift_lifetime_motes_earned")) {
+				getInstance().tooltipToDisplay = Collections.singletonList(
+					"§dLifetime Motes: §f" + Utils.shortNumberFormat(stats.get("rift_lifetime_motes_earned").getAsInt(), 0));
+			}
+		}
 
 		// Timecharms
 
@@ -152,13 +173,29 @@ public class RiftPage extends GuiProfileViewerPage {
 		JsonArray timecharm = gallery.getAsJsonArray("secured_trophies");
 		// 346, 16
 
-		Utils.drawStringF(
+		Utils.drawStringScaled(
 			EnumChatFormatting.RED + "Timecharms: §f" + timecharm.size() + "/7",
-			guiLeft + 327,
-			guiTop + 16,
+			guiLeft + 339,
+			guiTop + 39,
 			true,
-			0
+			0,
+			1f
 		);
+
+		if ((mouseX > guiLeft + 339 && mouseX < guiLeft + 339 + 80) &&
+			(mouseY > guiTop + 39 && mouseY < guiTop + 39 + 15)) {
+
+			List<String> displayNames = new ArrayList<>();
+			for (JsonElement jsonElement : timecharm) {
+				String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
+				String displayName = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+					"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack().getDisplayName();
+				displayNames.add(displayName +  "§7: §a✔");
+			}
+			getInstance().tooltipToDisplay = displayNames;
+		}
+
+		renderItem("GLASS", 319, 36, guiLeft, guiTop);
 
 		JsonObject castleData = riftData.getAsJsonObject("castle");
 
@@ -167,22 +204,23 @@ public class RiftPage extends GuiProfileViewerPage {
 			grubberStacks = castleData.get("grubber_stacks").getAsInt();
 		}
 
-		Utils.drawStringF(
-			EnumChatFormatting.GOLD + "Grubber Stacks: §f" + grubberStacks + "/5",
-			guiLeft + 327,
-			guiTop + 90,
+		Utils.drawStringScaled(
+			EnumChatFormatting.GOLD + "Burger: §f" + grubberStacks + "/5",
+			guiLeft + 334,
+			guiTop + 87,
 			true,
-			0
+			0,
+			1f
 		);
-		renderItem("MCGRUBBER_BURGER", 309, +87, guiLeft, guiTop);
+		renderItem("MCGRUBBER_BURGER", 314, +84, guiLeft, guiTop);
 
 		ProfileViewer.Level vampire = selectedProfile.getLevelingInfo().get("vampire");
 		getInstance().renderXpBar(
 			"Vampire Slayer",
 			new ItemStack(Items.redstone),
-			guiLeft + 315,
-			guiTop + 60,
-			110,
+			guiLeft + 319,
+			guiTop + 63,
+			100,
 			vampire,
 			mouseX,
 			mouseY
@@ -194,15 +232,16 @@ public class RiftPage extends GuiProfileViewerPage {
 			foundSouls = enigma.getAsJsonArray("found_souls").size();
 		}
 
-		Utils.drawStringF(
+		Utils.drawStringScaled(
 			EnumChatFormatting.DARK_PURPLE + "Enigma Souls: §f" + foundSouls + "/42",
-			guiLeft + 327,
-			guiTop + 130,
+			guiLeft + 334,
+			guiTop + 110,
 			true,
-			0
+			0,
+			0.9f
 		);
 
-		renderItem("SKYBLOCK_ENIGMA_SOUL", 309, 127, guiLeft, guiTop);
+		renderItem("SKYBLOCK_ENIGMA_SOUL", 314, 106, guiLeft, guiTop);
 
 		// button
 
@@ -220,8 +259,16 @@ public class RiftPage extends GuiProfileViewerPage {
 		getInstance().drawTexturedModalRect(inventoryX, inventoryY, 0, 0, 176, inventoryRows * 18 + 17);
 		getInstance().drawTexturedModalRect(inventoryX, inventoryY + inventoryRows * 18 + 17, 0, 215, 176, 7);
 
+		Utils.drawStringF(
+			inInventory ? "Inventory" : "Ender Chest",
+			guiLeft + 122,
+			inInventory ? guiTop + 87 + 1 : guiTop + 79,
+			false,
+			4210752
+		);
+
 		if (!inInventory) {
-			if (!riftInventory.has("ender_chest_contents")) {
+			if (riftInventory == null || !riftInventory.has("ender_chest_contents")) {
 				Utils.drawStringF(
 					EnumChatFormatting.RED + "No rift inventory data available",
 					guiLeft + 203,
@@ -236,7 +283,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			List<JsonObject> jsonObjects = readBase64(data);
 			pages = (int) (Math.ceil(jsonObjects.size() / 45d));
 
-			drawArrows(onPage, pages);
+			drawArrows(onPage, pages, 190, 77);
 
 			for (int i = 0; i <= pages; i++) {
 				if (i != onPage) continue;
@@ -276,7 +323,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		} else {
 
-			if (!riftInventory.has("inv_contents")) {
+			if (riftInventory == null || !riftInventory.has("inv_contents")) {
 				Utils.drawStringF(
 					EnumChatFormatting.RED + "No rift inventory data available",
 					guiLeft + 203,
@@ -343,27 +390,35 @@ public class RiftPage extends GuiProfileViewerPage {
 		}
 	}
 
-	private void drawArrows(int page, int maxPages) {
-		ArrowPagesUtils.onDraw(guiLeft, guiTop, new int[]{180, 50}, page, maxPages);
+	private void drawArrows(int page, int maxPages, int x, int y) {
+		ArrowPagesUtils.onDraw(guiLeft, guiTop, new int[]{x, y}, page, maxPages);
 	}
 
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
 		if ((mouseX >= guiLeft + 156 - 1 && mouseX <= guiLeft + 156 + 20) &&
 			(mouseY >= guiTop + 16 && mouseY <= guiTop + 16 + 20)) {
 			inInventory = true;
 			Utils.playPressSound();
 		}
-		ArrowPagesUtils.onPageSwitchMouse(guiLeft, guiTop, new int[]{180, 50}, onPage, pages, pageChange -> {
-			onPage = pageChange;
-		});
+		ArrowPagesUtils.onPageSwitchMouse(
+			guiLeft,
+			guiTop,
+			new int[]{190, 77},
+			onPage,
+			pages,
+			pageChange -> {
+				onPage = pageChange;
+			}
+		);
 
 		if ((mouseX >= guiLeft + 222 - 1 && mouseX <= guiLeft + 222 + 20) &&
 			(mouseY >= guiTop + 16 && mouseY <= guiTop + 16 + 20)) {
 			inInventory = false;
 			Utils.playPressSound();
 		}
-		return true;
+		return false;
 	}
 
 	public void addInventoryButton(
