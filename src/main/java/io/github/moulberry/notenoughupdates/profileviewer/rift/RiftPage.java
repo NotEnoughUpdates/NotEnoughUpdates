@@ -43,6 +43,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.io.ByteArrayInputStream;
@@ -190,7 +191,7 @@ public class RiftPage extends GuiProfileViewerPage {
 				String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
 				String displayName = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
 					"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack().getDisplayName();
-				displayNames.add(displayName +  "§7: §a✔");
+				displayNames.add(displayName + "§7: §a✔");
 			}
 			getInstance().tooltipToDisplay = displayNames;
 		}
@@ -419,6 +420,23 @@ public class RiftPage extends GuiProfileViewerPage {
 			Utils.playPressSound();
 		}
 		return false;
+	}
+
+	@Override
+	public void keyTyped(char typedChar, int keyCode) throws IOException {
+		super.keyTyped(typedChar, keyCode);
+
+		if (getInstance().playerNameTextField.getFocus()) return;
+		switch (keyCode) {
+			case Keyboard.KEY_1:
+				inInventory = true;
+				Utils.playPressSound();
+				break;
+			case Keyboard.KEY_2:
+				inInventory = false;
+				Utils.playPressSound();
+				break;
+		}
 	}
 
 	public void addInventoryButton(

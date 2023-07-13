@@ -1205,7 +1205,7 @@ public class GuiProfileViewer extends GuiScreen {
 		TROPHY_FISH(8, Items.fishing_rod, "§3Trophy Fish"),
 		BESTIARY(9, Items.iron_sword, "§cBestiary"),
 		CRIMSON_ISLE(10, Item.getItemFromBlock(Blocks.netherrack), "§4Crimson Isle"),
-		RIFT(11, Item.getItemFromBlock(Blocks.double_plant), "§5Rift");
+		RIFT(11, Items.ender_eye, "§5Rift");
 
 		public final ItemStack stack;
 		public final int id;
