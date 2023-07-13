@@ -19,18 +19,27 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
@@ -43,16 +52,21 @@ public class MuseumPage extends GuiProfileViewerPage {
 			put("armor", Utils.createItemStack(Items.diamond_chestplate, EnumChatFormatting.GOLD + "Armor Sets"));
 			put(
 				"rarities", Utils.createSkull(
-				EnumChatFormatting.GOLD + "Rarities",
-				"b569ed03-94ae-3da9-a01d-9726633d5b8b",
-				"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhZGRiZDVkZWRhZDQwOTk5NDczYmU0YTdmNDhmNjIzNmE3OWEwZGNlOTcxYjVkYmQ3MzcyMDE0YWUzOTRkIn19fQ"
+					EnumChatFormatting.GOLD + "Rarities",
+					"b569ed03-94ae-3da9-a01d-9726633d5b8b",
+					"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhZGRiZDVkZWRhZDQwOTk5NDczYmU0YTdmNDhmNjIzNmE3OWEwZGNlOTcxYjVkYmQ3MzcyMDE0YWUzOTRkIn19fQ"
 				)
 			);
 			put("special", Utils.createItemStack(Items.cake, EnumChatFormatting.GOLD + "Special Items"));
 		}
 	};
-
+	private static final ResourceLocation CHEST_GUI_TEXTURE =
+		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static String selectedMuseumCategory = "weapons";
+	JsonObject museum = Constants.MUSEUM;
+	int pageArrowsHeight = 164;
+	int pages = 0;
+	int onPage = 0;
 
 	public MuseumPage(GuiProfileViewer instance) {super(instance);}
 
@@ -69,7 +83,26 @@ public class MuseumPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_museum);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
 
-		// todo api off warning
+		SkyblockProfiles.SkyblockProfile.MuseumData museumData = selectedProfile.getMuseumData();
+		long value = museumData.getValue();
+
+		if (value == -2) {
+			String message = EnumChatFormatting.RED + "Museum API Disabled!";
+			Utils.drawStringCentered(message, guiLeft + 250, guiTop + 101, true, 0);
+			return;
+		}
+		if (value == -1) {
+			String message = EnumChatFormatting.YELLOW + "Museum Data Loading!";
+			Utils.drawStringCentered(message, guiLeft + 250, guiTop + 101, true, 0);
+			return;
+		}
+
+		if (museum == null) {
+			Utils.showOutdatedRepoNotification();
+			String message = EnumChatFormatting.RED + "Missing Repo Data!";
+			Utils.drawStringCentered(message, guiLeft + 250, guiTop + 101, true, 0);
+			return;
+		}
 
 		int xIndex = 0;
 		for (Map.Entry<String, ItemStack> entry : museumCategories.entrySet()) {
@@ -105,10 +138,6 @@ public class MuseumPage extends GuiProfileViewerPage {
 			xIndex++;
 		}
 
-		SkyblockProfiles.SkyblockProfile.MuseumData museumData = selectedProfile.getMuseumData();
-		long value = museumData.getValue();
-
-		// todo get values
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Museum Value",
 			EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(value),
@@ -117,45 +146,55 @@ public class MuseumPage extends GuiProfileViewerPage {
 			114
 		);
 
+		int donated =
+			museumData.getWeaponItems().size() + museumData.getArmorItems().size() + museumData.getRaritiesItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Total Donations",
-			EnumChatFormatting.WHITE + "XXX",
+			EnumChatFormatting.WHITE + String.valueOf(donated),
 			guiLeft + 21,
 			guiTop + 45,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 55, 116, 0);
+		int maximum = getMaximum("total");
+		getInstance().renderBar(guiLeft + 20, guiTop + 55, 116, (float) donated / maximum);
 
+		donated = museumData.getWeaponItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Weapons Donated",
-			EnumChatFormatting.WHITE + "XXX",
+			EnumChatFormatting.WHITE + String.valueOf(donated),
 			guiLeft + 21,
 			guiTop + 70,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 80, 116, 0);
+		maximum = getMaximum("weapons");
+		getInstance().renderBar(guiLeft + 20, guiTop + 80, 116, (float) donated / maximum);
 
+		donated = museumData.getArmorItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Armor Donated",
-			EnumChatFormatting.WHITE + "XXX",
+			EnumChatFormatting.WHITE + String.valueOf(donated),
 			guiLeft + 21,
 			guiTop + 95,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 105, 116, 0);
+		maximum = getMaximum("armor");
+		getInstance().renderBar(guiLeft + 20, guiTop + 105, 116, (float) donated / maximum);
 
+		donated = museumData.getRaritiesItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Rarities Donated",
-			EnumChatFormatting.WHITE + "XXX",
+			EnumChatFormatting.WHITE + String.valueOf(donated),
 			guiLeft + 21,
 			guiTop + 120,
 			114
 		);
-		getInstance().renderBar(guiLeft + 20, guiTop + 130, 116, 0);
+		maximum = getMaximum("rarities");
+		getInstance().renderBar(guiLeft + 20, guiTop + 130, 116, (float) donated / maximum);
 
+		donated = museumData.getSpecialItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Special Items Donated",
-			EnumChatFormatting.WHITE + "XXX",
+			EnumChatFormatting.WHITE + String.valueOf(donated),
 			guiLeft + 21,
 			guiTop + 145,
 			114
@@ -163,8 +202,149 @@ public class MuseumPage extends GuiProfileViewerPage {
 
 		Utils.drawStringCentered(
 			museumCategories.get(selectedMuseumCategory).getDisplayName(),
-			guiLeft + 280, guiTop + 14, true, 4210752
+			guiLeft + 251, guiTop + 14, true, 4210752
 		);
+
+		if (pages == 0) {
+			setPage(selectedMuseumCategory);
+		}
+
+		boolean leftHovered = false;
+		boolean rightHovered = false;
+		if (Mouse.isButtonDown(0)) {
+			if (mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16) {
+				if (mouseX > guiLeft + 251 - 12 && mouseX < guiLeft + 251 + 12) {
+					if (mouseX < guiLeft + 251) {
+						leftHovered = true;
+					} else {
+						rightHovered = true;
+					}
+				}
+			}
+		}
+		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.resource_packs);
+
+		if (onPage > 0) {
+			Utils.drawTexturedRect(
+				guiLeft + 251 - 12,
+				guiTop + pageArrowsHeight,
+				12,
+				16,
+				29 / 256f,
+				53 / 256f,
+				!leftHovered ? 0 : 32 / 256f,
+				!leftHovered ? 32 / 256f : 64 / 256f,
+				GL11.GL_NEAREST
+			);
+		}
+		if (onPage < pages && pages > 1) {
+			Utils.drawTexturedRect(
+				guiLeft + 251,
+				guiTop + pageArrowsHeight,
+				12,
+				16,
+				5 / 256f,
+				29 / 256f,
+				!rightHovered ? 0 : 32 / 256f,
+				!rightHovered ? 32 / 256f : 64 / 256f,
+				GL11.GL_NEAREST
+			);
+		}
+
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
+
+		int inventoryRows = 4;
+		int invSizeY = inventoryRows * 18 + 17 + 7;
+
+		int inventoryX = guiLeft + 251 - 176 / 2;
+		int inventoryY = guiTop + 101 - invSizeY / 2;
+		getInstance().drawTexturedModalRect(inventoryX, inventoryY, 0, 0, 176, inventoryRows * 18 + 17);
+		getInstance().drawTexturedModalRect(inventoryX, inventoryY + inventoryRows * 18 + 17, 0, 215, 176, 7);
+
+		JsonArray categoryItems = new JsonArray();
+		Map<String, JsonArray> categoryDonated = new HashMap<>();
+		switch (selectedMuseumCategory) {
+			case "weapons":
+				categoryItems = museum.get("weapons").getAsJsonArray();
+				categoryDonated = museumData.getWeaponItems();
+				break;
+			case "armor":
+				categoryItems = museum.get("armor").getAsJsonArray();
+				categoryDonated = museumData.getArmorItems();
+				break;
+			case "rarities":
+				categoryItems = museum.get("rarities").getAsJsonArray();
+				categoryDonated = museumData.getRaritiesItems();
+				break;
+			case "special":
+				pages = (int) Math.floor(donated / 28.0);
+
+				List<JsonArray> specialItems = museumData.getSpecialItems();
+
+				int startIndex = onPage * 28;
+				int endIndex = Math.min(startIndex + 28, specialItems.size());
+
+				int row = 0;
+				int slot = 0;
+				for (int i = startIndex; i < endIndex; i++) {
+					JsonArray items = specialItems.get(i);
+					JsonObject item = (JsonObject) items.get(0);
+					ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+
+					if (slot % 7 == 0 && slot > 1) {
+						slot = 0;
+						row++;
+					}
+
+					int x = guiLeft + (inventoryX - guiLeft) + 8 + (slot * 18) + 18;
+					int y = guiTop + 71 + (row * 18);
+					slot++;
+
+					if ((mouseX >= x && mouseX <= x + 16) &&
+						(mouseY >= y && mouseY <= y + 16)) {
+						getInstance().tooltipToDisplay =
+							stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					}
+					Utils.drawItemStack(stack, x, y);
+				}
+				break;
+			default:
+		}
+
+		if (categoryItems != null) {
+			int row = 0;
+			int slot = 0;
+			int startIndex = onPage * 28;
+			int endIndex = Math.min(startIndex + 28, categoryItems.size());
+			for (int i = startIndex; i < endIndex; i++) {
+				JsonElement donatedItem = categoryItems.get(i);
+				String itemID = donatedItem.getAsString();
+
+				if (slot % 7 == 0 && slot > 1) {
+					slot = 0;
+					row++;
+				}
+
+				int x = guiLeft + (inventoryX - guiLeft) + 8 + (slot * 18) + 18;
+				int y = guiTop + 71 + (row * 18);
+				slot++;
+
+				ItemStack stack = Utils.createItemStack(Items.dye, "Not donated yet " + itemID, 8, "Donate this item");
+				if (categoryDonated.containsKey(itemID)) {
+					JsonArray items = categoryDonated.get(itemID);
+					JsonObject item = (JsonObject) items.get(0);
+					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+				}
+
+				if ((mouseX >= x && mouseX <= x + 16) &&
+					(mouseY >= y && mouseY <= y + 16)) {
+					getInstance().tooltipToDisplay =
+						stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+				}
+				Utils.drawItemStack(stack, x, y);
+			}
+		}
 	}
 
 	@Override
@@ -175,12 +355,22 @@ public class MuseumPage extends GuiProfileViewerPage {
 		for (Map.Entry<String, ItemStack> entry : museumCategories.entrySet()) {
 			if (mouseX > guiLeft + 16 + 34 * xIndex && mouseX < guiLeft + 16 + 34 * xIndex + 20) {
 				if (mouseY > guiTop + 172 && mouseY < guiTop + 172 + 20) {
-					selectedMuseumCategory = entry.getKey();
+					setPage(entry.getKey());
 					Utils.playPressSound();
 					return;
 				}
 			}
 			xIndex++;
+		}
+
+		if (mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16) {
+			if (mouseX > guiLeft + 251 - 12 && mouseX < guiLeft + 251 + 12) {
+				if (mouseX < guiLeft + 251) {
+					if (onPage > 0) onPage--;
+				} else {
+					if (onPage < pages) onPage++;
+				}
+			}
 		}
 	}
 
@@ -189,25 +379,39 @@ public class MuseumPage extends GuiProfileViewerPage {
 		switch (keyCode) {
 			case Keyboard.KEY_1:
 			case Keyboard.KEY_NUMPAD1:
-				selectedMuseumCategory = "weapons";
+				setPage("weapons");
 				break;
 			case Keyboard.KEY_2:
 			case Keyboard.KEY_NUMPAD2:
-				selectedMuseumCategory = "armor";
+				setPage("armor");
 				break;
 			case Keyboard.KEY_3:
 			case Keyboard.KEY_NUMPAD3:
-				selectedMuseumCategory = "rarities";
+				setPage("rarities");
 				break;
 			case Keyboard.KEY_4:
 			case Keyboard.KEY_NUMPAD4:
-				selectedMuseumCategory = "special";
+				setPage("special");
 				break;
 			default:
-				getInstance().inventoryTextField.keyTyped(typedChar, keyCode);
 				return;
 		}
 		Utils.playPressSound();
-		getInstance().inventoryTextField.keyTyped(typedChar, keyCode);
+	}
+
+	private void setPage(String pageName) {
+		selectedMuseumCategory = pageName;
+		onPage = 0;
+		pages = (int) Math.floor(getMaximum(pageName) / 28.0);
+	}
+
+	private int getMaximum(String name) {
+		if (museum != null && museum.has("max_values")) {
+			JsonObject maxValues = museum.get("max_values").getAsJsonObject();
+			if (maxValues.has(name)) {
+				return maxValues.get(name).getAsInt();
+			}
+		}
+		return 0;
 	}
 }

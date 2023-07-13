@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SkyblockProfiles {
@@ -489,7 +490,10 @@ public class SkyblockProfiles {
 
 		public class MuseumData {
 			private long museumValue;
-			private final Map<String, JsonArray> museumItems = new HashMap<>();
+			private final Map<String, JsonArray> weaponItems = new HashMap<>();
+			private final Map<String, JsonArray> armorItems = new HashMap<>();
+			private final Map<String, JsonArray> raritiesItems = new HashMap<>();
+			private final List<JsonArray> specialItems = new ArrayList<>();
 
 			private MuseumData(JsonObject museumJson) {
 				if (museumJson == null || museumJson.isJsonNull() || museumJson.get("members").isJsonNull()) {
@@ -507,28 +511,56 @@ public class SkyblockProfiles {
 					return;
 				}
 				museumValue = member.get("value").getAsLong();
+				JsonObject museum = Constants.MUSEUM;
 
 				JsonObject museumItemsData = member.get("items").getAsJsonObject();
-				if (museumItemsData != null) {
+				if (museumItemsData != null && museum != null) {
 					for (Map.Entry<String, JsonElement> entry : museumItemsData.entrySet()) {
-						JsonArray contents = new JsonArray();
+						JsonArray contents = parseNbt(entry.getValue().getAsJsonObject());
 						String itemName = entry.getKey();
 
-						JsonObject content = entry.getValue().getAsJsonObject();
-						JsonObject contentItems = content.get("items").getAsJsonObject();
-						String contentBytes = contentItems.get("data").getAsString();
+						JsonArray weapons = museum.get("weapons").getAsJsonArray();
+						JsonArray armorSets = museum.get("armor").getAsJsonArray();
+						JsonArray rarities = museum.get("rarities").getAsJsonArray();
 
-						try {
-							NBTTagList items = CompressedStreamTools.readCompressed(
-								new ByteArrayInputStream(Base64.getDecoder().decode(contentBytes))
-							).getTagList("i", 10);
-							for (int j = 0; j < items.tagCount(); j++) {
-								JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
-								contents.add(item);
-							}
-						} catch (IOException ignored) {
-						}
-						museumItems.put(itemName, contents);
+						processItems(weapons, itemName, weaponItems, contents);
+						processItems(armorSets, itemName, armorItems, contents);
+						processItems(rarities, itemName, raritiesItems, contents);
+					}
+				}
+
+				JsonArray specialItemsData = member.get("special").getAsJsonArray();
+
+				if (specialItemsData != null) {
+					for (JsonElement element : specialItemsData) {
+						JsonArray contents = parseNbt(element.getAsJsonObject());
+						specialItems.add(contents);
+					}
+				}
+			}
+
+			private JsonArray parseNbt(JsonObject nbt) {
+				JsonArray contents = new JsonArray();
+				JsonObject contentItems = nbt.get("items").getAsJsonObject();
+				String contentBytes = contentItems.get("data").getAsString();
+
+				try {
+					NBTTagList items = CompressedStreamTools.readCompressed(
+						new ByteArrayInputStream(Base64.getDecoder().decode(contentBytes))
+					).getTagList("i", 10);
+					for (int j = 0; j < items.tagCount(); j++) {
+						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
+						contents.add(item);
+					}
+				} catch (IOException ignored) {
+				}
+				return contents;
+			}
+
+			private void processItems(JsonArray items, String itemName, Map<String, JsonArray> itemMap, JsonArray contents) {
+				for (JsonElement item : items) {
+					if (Objects.equals(item.getAsString(), itemName)) {
+						itemMap.put(itemName, contents);
 					}
 				}
 			}
@@ -541,9 +573,17 @@ public class SkyblockProfiles {
 			public long getValue() {
 				return museumValue;
 			}
-			//todo special items, sorting
-			public Map<String, JsonArray> getMuseumItems() {
-				return museumItems;
+			public Map<String, JsonArray> getWeaponItems() {
+				return weaponItems;
+			}
+			public Map<String, JsonArray> getArmorItems() {
+				return armorItems;
+			}
+			public Map<String, JsonArray> getRaritiesItems() {
+				return raritiesItems;
+			}
+			public List<JsonArray> getSpecialItems() {
+				return specialItems;
 			}
 		}
 
