@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -21,16 +21,17 @@
 import neubs.NEUBuildFlags
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
+import java.net.URL
 
 plugins {
-		idea
-		java
-		id("gg.essential.loom") version "0.10.0.+"
-		id("dev.architectury.architectury-pack200") version "0.1.3"
-		id("com.github.johnrengelman.shadow") version "7.1.2"
-		id("io.github.juuxel.loom-quiltflower") version "1.7.3"
-		`maven-publish`
-		kotlin("jvm") version "1.8.21"
+	idea
+	java
+	id("gg.essential.loom") version "0.10.0.+"
+	id("dev.architectury.architectury-pack200") version "0.1.3"
+	id("com.github.johnrengelman.shadow") version "7.1.2"
+	id("io.github.juuxel.loom-quiltflower") version "1.7.3"
+	`maven-publish`
+	kotlin("jvm") version "1.8.21"
 	id("io.gitlab.arturbosch.detekt") version "1.23.0"
 	id("com.google.devtools.ksp") version "1.8.21-1.0.11"
 }
@@ -46,27 +47,27 @@ setVersionFromEnvironment("2.1.1")
 
 // Minecraft configuration:
 loom {
-		launchConfigs {
-				"client" {
-						property("mixin.debug", "true")
-						property("asmhelper.verbose", "true")
-						arg("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
-						arg("--mixin", "mixins.notenoughupdates.json")
-				}
+	launchConfigs {
+		"client" {
+			property("mixin.debug", "true")
+			property("asmhelper.verbose", "true")
+			arg("--tweakClass", "io.github.moulberry.notenoughupdates.loader.NEUDelegatingTweaker")
+			arg("--mixin", "mixins.notenoughupdates.json")
 		}
-		runConfigs {
-				"server" {
-						isIdeConfigGenerated = false
-				}
+	}
+	runConfigs {
+		"server" {
+			isIdeConfigGenerated = false
 		}
-		forge {
-				pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-				mixinConfig("mixins.notenoughupdates.json")
-		}
-		@Suppress("UnstableApiUsage")
-		mixin {
-				defaultRefmapName.set("mixins.notenoughupdates.refmap.json")
-		}
+	}
+	forge {
+		pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
+		mixinConfig("mixins.notenoughupdates.json")
+	}
+	@Suppress("UnstableApiUsage")
+	mixin {
+		defaultRefmapName.set("mixins.notenoughupdates.refmap.json")
+	}
 }
 
 
@@ -220,29 +221,45 @@ tasks.remapSourcesJar {
 /* Bypassing https://github.com/johnrengelman/shadow/issues/111 */
 // Use Zip instead of Jar as to not include META-INF
 val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
-		archiveFileName.set("kotlin-libraries-wrapped.jar")
-		destinationDirectory.set(project.layout.buildDirectory.dir("kotlinwrapper"))
-		from(kotlinDependencies)
-		into("neu-kotlin-libraries-wrapped")
+	archiveFileName.set("kotlin-libraries-wrapped.jar")
+	destinationDirectory.set(project.layout.buildDirectory.dir("kotlinwrapper"))
+	from(kotlinDependencies)
+	into("neu-kotlin-libraries-wrapped")
+}
+
+tasks.register("updateBackupRepo") {
+	doLast {
+		val url = URL("https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/archive/refs/heads/master.zip")
+		val destination = File(
+			project.layout.projectDirectory.asFile.absolutePath
+				.plus("/src/main/resources/assets/notenoughupdates/repo.zip")
+		)
+		destination.createNewFile()
+
+		destination.outputStream().use {
+			url.openStream().copyTo(it)
+		}
+		println("done downloading")
+	}
 }
 
 
 tasks.shadowJar {
-		archiveClassifier.set("dep-dev")
-		configurations = listOf(shadowImplementation, shadowApi, shadowOnly)
-		archiveBaseName.set("NotEnoughUpdates")
-		exclude("**/module-info.class", "LICENSE.txt")
-		dependencies {
-				exclude {
-						it.moduleGroup.startsWith("org.apache.") || it.moduleName in
-										listOf("logback-classic", "commons-logging", "commons-codec", "logback-core")
-				}
+	archiveClassifier.set("dep-dev")
+	configurations = listOf(shadowImplementation, shadowApi, shadowOnly)
+	archiveBaseName.set("NotEnoughUpdates")
+	exclude("**/module-info.class", "LICENSE.txt")
+	dependencies {
+		exclude {
+			it.moduleGroup.startsWith("org.apache.") || it.moduleName in
+				listOf("logback-classic", "commons-logging", "commons-codec", "logback-core")
 		}
-		from(oneconfigQuarantineSourceSet.output)
-		from(kotlinDependencyCollectionJar)
-		dependsOn(kotlinDependencyCollectionJar)
-		fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
-		relocate("com.mojang.brigadier")
+	}
+	from(oneconfigQuarantineSourceSet.output)
+	from(kotlinDependencyCollectionJar)
+	dependsOn(kotlinDependencyCollectionJar)
+	fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
+	relocate("com.mojang.brigadier")
 }
 
 tasks.assemble.get().dependsOn(remapJar)
