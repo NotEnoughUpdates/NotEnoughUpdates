@@ -118,25 +118,27 @@ public class ChatListener {
 
 	private IChatComponent replaceSocialControlsWithPV(IChatComponent chatComponent) {
 
+
 		if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 > 0 &&
-			((chatComponent.getChatStyle() != null &&
-			chatComponent.getChatStyle().getChatClickEvent() != null &&
-			chatComponent.getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
-				// Party and guild chat components are different from global chats, so need to check for them here
-			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
+			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() &&
+			((!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
 				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
-				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND)) &&
-			NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
+				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
+				// Party and guild chat components are different from global chats, so need to check for them here
+				// Party being 0 and global chat being 1
+			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().size() > 1 && chatComponent.getSiblings().get(1).getChatStyle() != null &&
+				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent() != null &&
+				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND))) {
 
 			String startsWith = null;
-			boolean partyOrGuildChat = false;
+			int partyOrPublic = 1;
 
 			List<IChatComponent> siblings = chatComponent.getSiblings();
 			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
-				partyOrGuildChat = true;
-			} else {
-				ClickEvent chatClickEvent = chatComponent.getChatStyle().getChatClickEvent();
+				partyOrPublic = 0;
+			} else if (!siblings.isEmpty() && siblings.size() > 1 && siblings.get(1).getChatStyle() != null) {
+				ClickEvent chatClickEvent = chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent();
 				if (chatClickEvent != null) {
 					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
 						startsWith = "/socialoptions";
@@ -145,18 +147,14 @@ public class ChatListener {
 			}
 
 			if (startsWith != null) {
-				String username = partyOrGuildChat ?
+				String username = partyOrPublic == 0 ?
 					Utils.getNameFromChatComponent(chatComponent) :
-					chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
+					chatComponent.getSiblings().get(partyOrPublic/* Should always be 1 in this case lol*/).getChatStyle().getChatClickEvent().getValue().substring(15);
 
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
 					ChatStyle pvClickStyle = getPVChatStyle(username);
-					if (partyOrGuildChat) {
-						chatComponent.getSiblings().get(0).setChatStyle(pvClickStyle);
-					} else {
-						chatComponent.setChatStyle(pvClickStyle);
-					}
+						chatComponent.getSiblings().get(partyOrPublic).setChatStyle(pvClickStyle);
 					return chatComponent;
 				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
 
@@ -167,11 +165,7 @@ public class ChatListener {
 							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
 					);
 
-					if (partyOrGuildChat) {
-						chatComponent.getSiblings().get(0).setChatStyle(ahClickStyle);
-					} else {
-						chatComponent.setChatStyle(ahClickStyle);
-					}
+						chatComponent.getSiblings().get(partyOrPublic).setChatStyle(ahClickStyle);
 					return chatComponent;
 				}
 			} // wanted to add this for guild but guild uses uuid :sad:
