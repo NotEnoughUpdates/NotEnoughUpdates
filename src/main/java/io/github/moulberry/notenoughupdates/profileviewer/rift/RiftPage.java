@@ -178,7 +178,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		JsonArray timecharm = gallery.getAsJsonArray("secured_trophies");
 		// 346, 16
 
-		if(timecharm != null) {
+		if (timecharm != null) {
 			Utils.drawStringScaled(
 				EnumChatFormatting.RED + "Timecharms: §f" + timecharm.size() + "/7",
 				guiLeft + 336,
