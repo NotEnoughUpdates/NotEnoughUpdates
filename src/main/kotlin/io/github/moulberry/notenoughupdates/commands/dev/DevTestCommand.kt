@@ -19,7 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev
 
+import com.google.gson.JsonObject
 import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType.string
 import io.github.moulberry.notenoughupdates.BuildFlags
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
@@ -36,7 +38,6 @@ import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.command.ICommandSender
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
@@ -199,6 +200,16 @@ class DevTestCommand {
                         reply("Fishing particles set to ${FishingHelper.type}")
                     }
                 }
+            }
+            thenLiteral("callUrsa") {
+                thenArgument("path", string()) { path ->
+                    thenExecute {
+                        NotEnoughUpdates.INSTANCE.manager.ursaClient.get(this[path], JsonObject::class.java)
+                            .thenAccept {
+                                reply(it.toString())
+                            }
+                    }
+                }.withHelp("Send an authenticated request to the current ursa server")
             }
             thenLiteralExecute("dev") {
                 NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev
