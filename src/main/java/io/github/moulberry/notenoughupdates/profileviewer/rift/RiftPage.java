@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage;
@@ -84,32 +85,35 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
 		if (selectedProfile == null) {
+			drawErorrMessage();
 			return;
 		}
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		if (!profileInfo.has("rift")) {
-			String message = EnumChatFormatting.RED + "No Rift data available!";
-			Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 101, true, 0);
+			drawErorrMessage();
 			return;
 		}
 
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
-		if (riftInventory != null) {
-			JsonObject riftArmor = riftInventory.getAsJsonObject("inv_armor");
-			if (riftArmor != null && riftArmor.has("data")) {
-				List<JsonObject> armorData = readBase64(riftArmor.get("data").getAsString());
-				drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
-			}
+		if (riftInventory == null) {
+			drawErorrMessage();
+			return;
+		}
 
-			if (riftInventory.has("equippment_contents") &&
-				riftInventory.getAsJsonObject("equippment_contents").has("data")) {
-				List<JsonObject> equipmentData = readBase64(riftInventory
-					.getAsJsonObject("equippment_contents")
-					.get("data")
-					.getAsString());
-				drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
-			}
+		JsonObject riftArmor = riftInventory.getAsJsonObject("inv_armor");
+		if (riftArmor != null && riftArmor.has("data")) {
+			List<JsonObject> armorData = readBase64(riftArmor.get("data").getAsString());
+			drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
+		}
+
+		if (riftInventory.has("equippment_contents") &&
+			riftInventory.getAsJsonObject("equippment_contents").has("data")) {
+			List<JsonObject> equipmentData = readBase64(riftInventory
+				.getAsJsonObject("equippment_contents")
+				.get("data")
+				.getAsString());
+			drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
 		}
 
 		// pet
@@ -117,33 +121,33 @@ public class RiftPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
 		JsonObject deadCats = riftData.getAsJsonObject("dead_cats");
-		if (deadCats.entrySet().isEmpty()) return;
+		if (!deadCats.entrySet().isEmpty()) {
+			JsonArray foundCats = deadCats.getAsJsonArray("found_cats");
 
-		JsonArray foundCats = deadCats.getAsJsonArray("found_cats");
+			int size = foundCats.size();
+			int riftTime = size * 15;
+			int manaRegen = size * 2;
 
-		int size = foundCats.size();
-		int riftTime = size * 15;
-		int manaRegen = size * 2;
+			JsonObject montezuma = deadCats.getAsJsonObject("montezuma");
+			String montezumaType = montezuma.get("type").getAsString();
 
-		JsonObject montezuma = deadCats.getAsJsonObject("montezuma");
-		String montezumaType = montezuma.get("type").getAsString();
+			PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
+			pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.get("exp").getAsInt());
+			pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
+			pet.petType = montezumaType;
+			pet.candyUsed = montezuma.get("candyUsed").getAsInt();
+			ItemStack petItemstackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
+			Utils.drawItemStack(petItemstackFromPetInfo, guiLeft + 37, guiTop + 158, true);
 
-		PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
-		pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.get("exp").getAsInt());
-		pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
-		pet.petType = montezumaType;
-		pet.candyUsed = montezuma.get("candyUsed").getAsInt();
-		ItemStack petItemstackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
-		Utils.drawItemStack(petItemstackFromPetInfo, guiLeft + 37, guiTop + 158, true);
+			if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
+				(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
+				List<String> tooltip = petItemstackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+				tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
+				tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
+				tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
 
-		if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
-			(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
-			List<String> tooltip = petItemstackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-			tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
-			tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
-			tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
-
-			getInstance().tooltipToDisplay = tooltip;
+				getInstance().tooltipToDisplay = tooltip;
+			}
 		}
 
 		int motesPurse = 0;
@@ -174,16 +178,18 @@ public class RiftPage extends GuiProfileViewerPage {
 		JsonArray timecharm = gallery.getAsJsonArray("secured_trophies");
 		// 346, 16
 
-		Utils.drawStringScaled(
-			EnumChatFormatting.RED + "Timecharms: §f" + timecharm.size() + "/7",
-			guiLeft + 339,
-			guiTop + 39,
-			true,
-			0,
-			1f
-		);
+		if(timecharm != null) {
+			Utils.drawStringScaled(
+				EnumChatFormatting.RED + "Timecharms: §f" + timecharm.size() + "/7",
+				guiLeft + 336,
+				guiTop + 39,
+				true,
+				0,
+				1f
+			);
+		}
 
-		if ((mouseX > guiLeft + 339 && mouseX < guiLeft + 339 + 80) &&
+		if ((mouseX > guiLeft + 336 && mouseX < guiLeft + 336 + 80) &&
 			(mouseY > guiTop + 39 && mouseY < guiTop + 39 + 15)) {
 
 			List<String> displayNames = new ArrayList<>();
@@ -196,7 +202,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			getInstance().tooltipToDisplay = displayNames;
 		}
 
-		renderItem("GLASS", 319, 36, guiLeft, guiTop);
+		renderItem("GLASS", 316, 36, guiLeft, guiTop);
 
 		JsonObject castleData = riftData.getAsJsonObject("castle");
 
@@ -207,7 +213,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		Utils.drawStringScaled(
 			EnumChatFormatting.GOLD + "Burger: §f" + grubberStacks + "/5",
-			guiLeft + 334,
+			guiLeft + 331,
 			guiTop + 87,
 			true,
 			0,
@@ -216,16 +222,42 @@ public class RiftPage extends GuiProfileViewerPage {
 		renderItem("MCGRUBBER_BURGER", 314, +84, guiLeft, guiTop);
 
 		ProfileViewer.Level vampire = selectedProfile.getLevelingInfo().get("vampire");
-		getInstance().renderXpBar(
-			"Vampire Slayer",
-			new ItemStack(Items.redstone),
-			guiLeft + 319,
-			guiTop + 63,
-			100,
-			vampire,
-			mouseX,
-			mouseY
+
+		Utils.renderAlignedString(
+			"§6Vampire",
+			EnumChatFormatting.WHITE.toString() + (int) vampire.level,
+			guiLeft + 336,
+			guiTop + 61,
+			60
 		);
+
+		if (vampire.maxed) {
+			getInstance().renderGoldBar(guiLeft + 320, guiTop + 69, 90);
+		} else {
+			getInstance().renderBar(guiLeft + 320, guiTop + 69, 90, vampire.level % 1);
+		}
+
+		if (mouseX > guiLeft + 300 && mouseX < guiLeft + 410) {
+			if (mouseY > guiTop + 58 && mouseY < guiTop + 80) {
+				getInstance().tooltipToDisplay = new ArrayList<>();
+				List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
+				tooltipToDisplay.add("§6Vampire Slayer");
+				if (vampire.maxed) {
+					tooltipToDisplay.add(
+						EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
+				} else {
+					int maxXp = (int) vampire.maxXpForLevel;
+					getInstance()
+						.tooltipToDisplay.add(
+							EnumChatFormatting.GRAY +
+								"Progress: " +
+								EnumChatFormatting.DARK_PURPLE +
+								StringUtils.shortNumberFormat(Math.round((vampire.level % 1) * maxXp)) +
+								"/" +
+								StringUtils.shortNumberFormat(maxXp));
+				}
+			}
+		}
 
 		JsonObject enigma = riftData.getAsJsonObject("enigma");
 		int foundSouls = 0;
@@ -235,7 +267,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		Utils.drawStringScaled(
 			EnumChatFormatting.DARK_PURPLE + "Enigma Souls: §f" + foundSouls + "/42",
-			guiLeft + 334,
+			guiLeft + 331,
 			guiTop + 110,
 			true,
 			0,
@@ -270,13 +302,7 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		if (!inInventory) {
 			if (riftInventory == null || !riftInventory.has("ender_chest_contents")) {
-				Utils.drawStringF(
-					EnumChatFormatting.RED + "No rift inventory data available",
-					guiLeft + 203,
-					guiTop + 93,
-					true,
-					0
-				);
+				drawErorrMessage();
 				return;
 			}
 			JsonObject enderChestContents = riftInventory.getAsJsonObject("ender_chest_contents");
@@ -325,13 +351,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		} else {
 
 			if (riftInventory == null || !riftInventory.has("inv_contents")) {
-				Utils.drawStringF(
-					EnumChatFormatting.RED + "No rift inventory data available",
-					guiLeft + 203,
-					guiTop + 93,
-					true,
-					0
-				);
+				drawErorrMessage();
 				return;
 			}
 			String invData = riftInventory.getAsJsonObject("inv_contents").get("data").getAsString();
@@ -450,8 +470,15 @@ public class RiftPage extends GuiProfileViewerPage {
 		String internalNameForItem
 	) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
-		Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
-		renderItem(internalNameForItem, x + 2, y + 1, guiLeft, guiTop);
+		if (internalNameForItem.equals("CHEST") && inInventory) {
+			Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20, 20 / 256f, 0, 20 / 256f, 0, GL11.GL_NEAREST);
+		} else if (internalNameForItem.equals("ENDER_CHEST") && !inInventory) {
+			Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20, 20 / 256f, 0, 20 / 256f, 0, GL11.GL_NEAREST);
+		} else {
+			// should never happen
+			Utils.drawTexturedRect(guiLeft + x, guiTop + y, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
+		}
+		renderItem(internalNameForItem, x + 2, y + 2, guiLeft, guiTop);
 
 		if ((mouseX >= guiLeft + x - 1 && mouseX <= guiLeft + x + 20) &&
 			(mouseY >= guiTop + y && mouseY <= guiTop + y + 20)) {
@@ -523,5 +550,10 @@ public class RiftPage extends GuiProfileViewerPage {
 		} catch (IOException ignored) {
 		}
 		return itemStacks;
+	}
+
+	public void drawErorrMessage() {
+		String message = EnumChatFormatting.RED + "No Rift data available!";
+		Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 101, true, 0);
 	}
 }

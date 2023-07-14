@@ -139,7 +139,7 @@ public class CoreTaskLevel extends GuiTaskLevel {
 			JsonObject bankUpgradesXp = coreTask.getAsJsonObject("bank_upgrades_xp");
 			for (JsonElement completedTask : completedTasks) {
 				String name = completedTask.getAsString();
-				if (name.startsWith("FAST_TRAVEL_")) {
+				if (name.startsWith("FAST_TRAVEL_") && coreTask.has("fast_travel_unlocked_xp")) {
 					sbXpTravelScroll += coreTask.get("fast_travel_unlocked_xp").getAsInt();
 				}
 				if (bankUpgradesXp.has(name)) {
