@@ -387,11 +387,11 @@ public class MuseumPage extends GuiProfileViewerPage {
 						guiLeft + 375,
 						guiTop + 100,
 						26,
-						31,
-						75 / 256f,
-						101 / 256f,
-						70 / 256f,
-						101 / 256f,
+						32,
+						75 / 101f,
+						1,
+						69 / 101f,
+						1,
 						GL11.GL_NEAREST
 					);
 					break;
@@ -400,11 +400,11 @@ public class MuseumPage extends GuiProfileViewerPage {
 						guiLeft + 375,
 						guiTop + 100,
 						26,
-						67,
-						75 / 256f,
-						101 / 256f,
+						68,
+						75 / 101f,
+						1,
 						0,
-						67 / 256f,
+						68 / 101f,
 						GL11.GL_NEAREST
 					);
 					break;
@@ -414,10 +414,10 @@ public class MuseumPage extends GuiProfileViewerPage {
 						guiTop + 100,
 						26,
 						86,
-						47 / 256f,
-						73 / 256f,
+						47 / 101f,
+						73 / 101f,
 						0,
-						86 / 256f,
+						86 / 101f,
 						GL11.GL_NEAREST
 					);
 					break;
@@ -428,9 +428,9 @@ public class MuseumPage extends GuiProfileViewerPage {
 						45,
 						86,
 						0,
-						45 / 256f,
+						45 / 101f,
 						0,
-						86 / 256f,
+						86 / 101f,
 						GL11.GL_NEAREST
 					);
 					break;
