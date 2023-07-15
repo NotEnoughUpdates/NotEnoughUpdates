@@ -227,19 +227,17 @@ val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
 	into("neu-kotlin-libraries-wrapped")
 }
 
-tasks.register("updateBackupRepo") {
+tasks.register("includeBackupRepo") {
 	doLast {
 		val url = URL("https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/archive/refs/heads/master.zip")
-		val destination = File(
-			project.layout.projectDirectory.asFile.absolutePath
-				.plus("/src/main/resources/assets/notenoughupdates/repo.zip")
-		)
+		val destinationFolder = project.buildDir.resolve("classes/java/main/assets/notenoughupdates/")
+		destinationFolder.mkdirs()
+		val destination = destinationFolder.resolve("repo.zip")
 		destination.createNewFile()
 
 		destination.outputStream().use {
 			url.openStream().copyTo(it)
 		}
-		println("done downloading")
 	}
 }
 
