@@ -134,7 +134,7 @@ public class ApiData {
 		desc = "§4Do §lNOT §r§4change this, unless you know exactly what you are doing"
 	)
 	@ConfigEditorText
-	public String ursaApi = "http://ursa.notenoughupdates.org";
+	public String ursaApi = "https://ursa.notenoughupdates.org/";
 
 	public String getCommitApiUrl() {
 		return String.format("https://api.github.com/repos/%s/%s/commits/%s", repoUser, repoName, repoBranch);
