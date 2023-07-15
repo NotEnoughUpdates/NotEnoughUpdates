@@ -41,10 +41,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
 
 public class MuseumPage extends GuiProfileViewerPage {
+	private static final ResourceLocation pv_inventories =
+		new ResourceLocation("notenoughupdates:pv_inventories.png");
 	private static final ResourceLocation pv_museum = new ResourceLocation("notenoughupdates:pv_museum.png");
 	private static final LinkedHashMap<String, ItemStack> museumCategories = new LinkedHashMap<String, ItemStack>() {
 		{
@@ -67,6 +70,8 @@ public class MuseumPage extends GuiProfileViewerPage {
 	int pageArrowsHeight = 164;
 	int pages = 0;
 	int onPage = 0;
+	String currentItemSelected = null;
+	JsonArray selectedItem = null;
 
 	public MuseumPage(GuiProfileViewer instance) {super(instance);}
 
@@ -150,7 +155,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			museumData.getWeaponItems().size() + museumData.getArmorItems().size() + museumData.getRaritiesItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Total Donations",
-			EnumChatFormatting.WHITE + String.valueOf(donated),
+			EnumChatFormatting.WHITE + "" + donated,
 			guiLeft + 21,
 			guiTop + 45,
 			114
@@ -161,7 +166,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		donated = museumData.getWeaponItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Weapons Donated",
-			EnumChatFormatting.WHITE + String.valueOf(donated),
+			EnumChatFormatting.WHITE + "" + donated,
 			guiLeft + 21,
 			guiTop + 70,
 			114
@@ -172,7 +177,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		donated = museumData.getArmorItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Armor Donated",
-			EnumChatFormatting.WHITE + String.valueOf(donated),
+			EnumChatFormatting.WHITE + "" + donated,
 			guiLeft + 21,
 			guiTop + 95,
 			114
@@ -183,7 +188,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		donated = museumData.getRaritiesItems().size();
 		Utils.renderAlignedString(
 			EnumChatFormatting.BLUE + "Rarities Donated",
-			EnumChatFormatting.WHITE + String.valueOf(donated),
+			EnumChatFormatting.WHITE + "" + donated,
 			guiLeft + 21,
 			guiTop + 120,
 			114
@@ -303,8 +308,12 @@ public class MuseumPage extends GuiProfileViewerPage {
 
 					if ((mouseX >= x && mouseX <= x + 16) &&
 						(mouseY >= y && mouseY <= y + 16)) {
-						getInstance().tooltipToDisplay =
-							stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+						getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+						String itemID = item.get("internalname").getAsString();
+						if (Mouse.isButtonDown(0) && museumData.getSavedItems().containsKey(itemID)) {
+							selectedItem = items;
+							currentItemSelected = itemID;
+						}
 					}
 					Utils.drawItemStack(stack, x, y);
 				}
@@ -318,6 +327,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			int startIndex = onPage * 28;
 			int endIndex = Math.min(startIndex + 28, categoryItems.size());
 			for (int i = startIndex; i < endIndex; i++) {
+				boolean actualItem = false;
 				JsonElement donatedItem = categoryItems.get(i);
 				String itemID = donatedItem.getAsString();
 
@@ -330,20 +340,108 @@ public class MuseumPage extends GuiProfileViewerPage {
 				int y = guiTop + 71 + (row * 18);
 				slot++;
 
-				ItemStack stack = Utils.createItemStack(Items.dye, "Not donated yet " + itemID, 8, "Donate this item");
+				JsonObject nameMappings = museum.get("armor_to_id").getAsJsonObject();
+				String mappedName = itemID;
+				if (nameMappings.has(itemID)) {
+					mappedName = nameMappings.get(itemID).getAsString();
+				}
+				String displayName = NotEnoughUpdates.INSTANCE.manager.getDisplayName(mappedName);
+
+				ItemStack stack = Utils.createItemStack(Items.dye, displayName, 8, EnumChatFormatting.RED + "Missing");
+				JsonArray items = new JsonArray();
 				if (categoryDonated.containsKey(itemID)) {
-					JsonArray items = categoryDonated.get(itemID);
-					JsonObject item = (JsonObject) items.get(0);
+					items = categoryDonated.get(itemID);
+					JsonObject item;
+					if (items.get(0).isJsonObject()) {
+						item = (JsonObject) items.get(0);
+					} else {
+						item = (JsonObject) items.get(1);
+					}
+					if (!Objects.equals(item.get("internalname").getAsString(), "_")) {
+						actualItem = true;
+					}
 					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
 				}
 
 				if ((mouseX >= x && mouseX <= x + 16) &&
 					(mouseY >= y && mouseY <= y + 16)) {
-					getInstance().tooltipToDisplay =
-						stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					if (Mouse.isButtonDown(0) && museumData.getSavedItems().containsKey(itemID) && actualItem) {
+						selectedItem = items;
+						currentItemSelected = itemID;
+					}
+					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
 				Utils.drawItemStack(stack, x, y);
 			}
+		}
+
+		if (currentItemSelected != null) {
+			int size = selectedItem.size();
+			if (!selectedItem.get(0).isJsonObject()) {
+				size--;
+			}
+			Minecraft.getMinecraft().getTextureManager().bindTexture(pv_inventories);
+			switch (size) {
+				case 1:
+					Utils.drawTexturedRect(
+						guiLeft + 375,
+						guiTop + 100,
+						26,
+						31,
+						75 / 256f,
+						101 / 256f,
+						70 / 256f,
+						101 / 256f,
+						GL11.GL_NEAREST
+					);
+					break;
+				case 3:
+					Utils.drawTexturedRect(
+						guiLeft + 375,
+						guiTop + 100,
+						26,
+						67,
+						75 / 256f,
+						101 / 256f,
+						0,
+						67 / 256f,
+						GL11.GL_NEAREST
+					);
+					break;
+				case 4:
+					Utils.drawTexturedRect(
+						guiLeft + 375,
+						guiTop + 100,
+						26,
+						86,
+						47 / 256f,
+						73 / 256f,
+						0,
+						86 / 256f,
+						GL11.GL_NEAREST
+					);
+					break;
+				case 8:
+					Utils.drawTexturedRect(
+						guiLeft + 365,
+						guiTop + 100,
+						45,
+						86,
+						0,
+						45 / 256f,
+						0,
+						86 / 256f,
+						GL11.GL_NEAREST
+					);
+					break;
+				default:
+			}
+
+			// get current amount of items, display that texture
+			// put items in
+			// good way to find the selected item? IDK
+			// then stats
+			// then done
 		}
 	}
 
