@@ -515,7 +515,6 @@ public class SkyblockProfiles {
 					return;
 				}
 				museumValue = member.get("value").getAsLong();
-
 				if (member.has("items")) {
 					JsonObject museumItemsData = member.get("items").getAsJsonObject();
 					if (museumItemsData != null) {
@@ -564,6 +563,10 @@ public class SkyblockProfiles {
 					).getTagList("i", 10);
 					for (int j = 0; j < items.tagCount(); j++) {
 						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
+						System.out.println(item);
+						if (item == null) {
+							continue;
+						}
 						contents.add(item);
 					}
 				} catch (IOException ignored) {

@@ -32,6 +32,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -351,12 +352,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 				JsonArray items = new JsonArray();
 				if (categoryDonated.containsKey(itemID)) {
 					items = categoryDonated.get(itemID);
-					JsonObject item;
-					if (items.get(0).isJsonObject()) {
-						item = (JsonObject) items.get(0);
-					} else {
-						item = (JsonObject) items.get(1);
-					}
+					JsonObject item = (JsonObject) items.get(0);
 					if (!Objects.equals(item.get("internalname").getAsString(), "_")) {
 						actualItem = true;
 					}
@@ -377,9 +373,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 
 		if (currentItemSelected != null) {
 			int size = selectedItem.size();
-			if (!selectedItem.get(0).isJsonObject()) {
-				size--;
-			}
+			int startX = guiLeft + 375 + 5;
 			Minecraft.getMinecraft().getTextureManager().bindTexture(pv_inventories);
 			switch (size) {
 				case 1:
@@ -433,15 +427,44 @@ public class MuseumPage extends GuiProfileViewerPage {
 						86 / 101f,
 						GL11.GL_NEAREST
 					);
+					startX = guiLeft + 365 + 5;
 					break;
 				default:
 			}
 
-			// get current amount of items, display that texture
-			// put items in
-			// good way to find the selected item? IDK
-			// then stats
-			// then done
+			int startY = guiTop + 100 + 8;
+			int row = 0;
+			int column = 0;
+			for (int i = 0; i < size; i++) {
+				JsonObject item = (JsonObject) selectedItem.get(i);
+
+				if (row % 4 == 0 && row > 1) {
+					column = 1;
+					row = 0;
+				}
+
+				int x = startX + (column * 18);
+				int y = startY + (row * 18);
+
+				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+				Utils.drawItemStack(stack, x, y);
+
+				if ((mouseX >= x && mouseX <= x + 16) &&
+					(mouseY >= y && mouseY <= y + 16)) {
+					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+				}
+				row++;
+			}
+
+			Pair<Long, Boolean> itemData = museumData.getSavedItems().get(currentItemSelected);
+			String donationStatus =
+				itemData.getRight() ? EnumChatFormatting.YELLOW + "Borrowing" : EnumChatFormatting.GREEN + "In Museum";
+			String donationTime = Utils.timeSinceMillisecond(itemData.getLeft());
+
+			Utils.drawStringCentered(EnumChatFormatting.BLUE + "Donated", guiLeft + 391, guiTop + 35, true, 4210752);
+			Utils.drawStringCentered(EnumChatFormatting.WHITE + donationTime, guiLeft + 391, guiTop + 47, true, 4210752);
+			Utils.drawStringCentered(EnumChatFormatting.BLUE + "Currently", guiLeft + 391, guiTop + 70, true, 4210752);
+			Utils.drawStringCentered(donationStatus, guiLeft + 391, guiTop + 82, true, 4210752);
 		}
 	}
 
