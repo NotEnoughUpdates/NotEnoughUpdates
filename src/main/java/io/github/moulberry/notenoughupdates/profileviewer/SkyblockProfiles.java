@@ -563,7 +563,6 @@ public class SkyblockProfiles {
 					).getTagList("i", 10);
 					for (int j = 0; j < items.tagCount(); j++) {
 						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
-						System.out.println(item);
 						if (item == null) {
 							continue;
 						}
