@@ -50,14 +50,14 @@ class UrsaClient(val apiUtil: ApiUtil) {
 
     private data class Request<T>(
         val path: String,
-        val objectMapping: Class<T>,
+        val objectMapping: Class<T>?,
         val consumer: CompletableFuture<T>,
     )
 
     private val queue = ConcurrentLinkedQueue<Request<*>>()
     private val ursaRoot
-        get() = NotEnoughUpdates.INSTANCE.config.apiData.ursaApi.takeIf { it.isNotBlank() }
-            ?: "https://ursa.notenoughupdates.org/"
+        get() = NotEnoughUpdates.INSTANCE.config.apiData.ursaApi.removeSuffix("/").takeIf { it.isNotBlank() }
+            ?: "https://ursa.notenoughupdates.org"
 
     private suspend fun authorizeRequest(usedUrsaRoot: String, connection: ApiUtil.Request) {
         val t = token
@@ -102,7 +102,11 @@ class UrsaClient(val apiUtil: ApiUtil) {
         try {
             logger.log("Ursa Request started")
             authorizeRequest(usedUrsaRoot, apiRequest)
-            val response = apiRequest.requestJson(request.objectMapping).await()
+            val response =
+                if (request.objectMapping == null)
+                    (apiRequest.requestString().await() as T)
+                else
+                    (apiRequest.requestJson(request.objectMapping).await() as T)
             logger.log("Request completed")
             saveToken(usedUrsaRoot, apiRequest)
             request.consumer.complete(response)
@@ -148,6 +152,14 @@ class UrsaClient(val apiUtil: ApiUtil) {
     fun <T> get(path: String, clazz: Class<T>): CompletableFuture<T> {
         val c = CompletableFuture<T>()
         queue.add(Request(path, clazz, c))
+        bumpRequests()
+        return c
+    }
+
+
+    fun getString(path: String): CompletableFuture<String> {
+        val c = CompletableFuture<String>()
+        queue.add(Request(path, null, c))
         bumpRequests()
         return c
     }

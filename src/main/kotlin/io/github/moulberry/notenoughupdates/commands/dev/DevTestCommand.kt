@@ -202,9 +202,9 @@ class DevTestCommand {
                 }
             }
             thenLiteral("callUrsa") {
-                thenArgument("path", string()) { path ->
+                thenArgument("path", RestArgumentType) { path ->
                     thenExecute {
-                        NotEnoughUpdates.INSTANCE.manager.ursaClient.get(this[path], JsonObject::class.java)
+                        NotEnoughUpdates.INSTANCE.manager.ursaClient.getString(this[path])
                             .thenAccept {
                                 reply(it.toString())
                             }
