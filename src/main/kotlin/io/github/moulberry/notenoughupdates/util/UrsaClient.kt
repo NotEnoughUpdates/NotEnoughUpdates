@@ -21,12 +21,14 @@ package io.github.moulberry.notenoughupdates.util
 
 import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.await
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.continueOn
 import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.launchCoroutine
-import io.github.moulberry.notenoughupdates.util.kotlin.Coroutines.launchCoroutineOnCurrentThread
 import net.minecraft.client.Minecraft
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -39,7 +41,7 @@ class UrsaClient(val apiUtil: ApiUtil) {
         val token: String,
         val obtainedFrom: String,
     ) {
-        val isValid get() = validUntil.minusSeconds(60) < Instant.now()
+        val isValid get() = Instant.now().plusSeconds(60) < validUntil
     }
 
     val logger = NEUDebugFlag.API_CACHE
@@ -59,9 +61,8 @@ class UrsaClient(val apiUtil: ApiUtil) {
         get() = NotEnoughUpdates.INSTANCE.config.apiData.ursaApi.removeSuffix("/").takeIf { it.isNotBlank() }
             ?: "https://ursa.notenoughupdates.org"
 
-    private suspend fun authorizeRequest(usedUrsaRoot: String, connection: ApiUtil.Request) {
-        val t = token
-        if (t != null && t.isValid && t.obtainedFrom == usedUrsaRoot) {
+    private suspend fun authorizeRequest(usedUrsaRoot: String, connection: ApiUtil.Request, t: Token?) {
+        if (t != null && t.obtainedFrom == usedUrsaRoot) {
             logger.log("Authorizing request using token")
             connection.header("x-ursa-token", t.token)
         } else {
@@ -76,7 +77,7 @@ class UrsaClient(val apiUtil: ApiUtil) {
         }
     }
 
-    private fun saveToken(usedUrsaRoot: String, connection: ApiUtil.Request) {
+    private suspend fun saveToken(usedUrsaRoot: String, connection: ApiUtil.Request) {
         logger.log("Attempting to save token")
         val token =
             connection.responseHeaders["x-ursa-token"]?.firstOrNull()
@@ -84,24 +85,23 @@ class UrsaClient(val apiUtil: ApiUtil) {
             ?.firstOrNull()
             ?.toLongOrNull()
             ?.let { Instant.ofEpochMilli(it) } ?: (Instant.now() + Duration.ofMinutes(55))
+        continueOn(MinecraftExecutor.OnThread)
         if (token == null) {
             isPollingForToken = false
             logger.log("No token found. Marking as non polling")
         } else {
-            synchronized(this) {
-                this.token = Token(validUntil, token, usedUrsaRoot)
-                isPollingForToken = false
-                logger.log("Token saving successful")
-            }
+            this.token = Token(validUntil, token, usedUrsaRoot)
+            isPollingForToken = false
+            logger.log("Token saving successful")
         }
     }
 
-    private suspend fun <T> performRequest(request: Request<T>) {
+    private suspend fun <T> performRequest(request: Request<T>, token: Token?) {
         val usedUrsaRoot = ursaRoot
         val apiRequest = apiUtil.request().url("$usedUrsaRoot/${request.path}")
         try {
             logger.log("Ursa Request started")
-            authorizeRequest(usedUrsaRoot, apiRequest)
+            authorizeRequest(usedUrsaRoot, apiRequest, token)
             val response =
                 if (request.objectMapping == null)
                     (apiRequest.requestString().await() as T)
@@ -113,35 +113,35 @@ class UrsaClient(val apiUtil: ApiUtil) {
         } catch (e: Exception) {
             e.printStackTrace()
             logger.log("Request failed")
+            continueOn(MinecraftExecutor.OnThread)
             isPollingForToken = false
             request.consumer.completeExceptionally(e)
-        }
-        launchCoroutineOnCurrentThread {
-            continueOn(MinecraftExecutor.OnThread)
-            bumpRequests()
         }
     }
 
     private fun bumpRequests() {
-        logger.log("Bumping ursa requests")
-        if (isPollingForToken) return
-        logger.log("Not currently polling for token")
-        val nextRequest = queue.poll()
-        if (nextRequest == null) {
-            logger.log("No request to bump found")
-            return
-        }
-        logger.log("Request found")
-        synchronized(this) {
-            val t = token
+        while (!queue.isEmpty()) {
+            if (isPollingForToken) return
+            val nextRequest = queue.poll()
+            if (nextRequest == null) {
+                logger.log("No request to bump found")
+                return
+            }
+            logger.log("Request found")
+            var t = token
             if (!(t != null && t.isValid && t.obtainedFrom == ursaRoot)) {
                 isPollingForToken = true
+                t = null
+                if (token != null) {
+                    logger.log("Disposing old invalid ursa token.")
+                    token = null
+                }
                 logger.log("No token saved. Marking this request as a token poll request")
             }
+            launchCoroutine { performRequest(nextRequest, t) }
         }
-        launchCoroutine { performRequest(nextRequest) }
-        bumpRequests()
     }
+
 
     fun clearToken() {
         synchronized(this) {
@@ -152,7 +152,6 @@ class UrsaClient(val apiUtil: ApiUtil) {
     fun <T> get(path: String, clazz: Class<T>): CompletableFuture<T> {
         val c = CompletableFuture<T>()
         queue.add(Request(path, clazz, c))
-        bumpRequests()
         return c
     }
 
@@ -160,7 +159,6 @@ class UrsaClient(val apiUtil: ApiUtil) {
     fun getString(path: String): CompletableFuture<String> {
         val c = CompletableFuture<String>()
         queue.add(Request(path, null, c))
-        bumpRequests()
         return c
     }
 
@@ -173,11 +171,21 @@ class UrsaClient(val apiUtil: ApiUtil) {
         inline fun <reified N> typed() = typed(N::class.java)
     }
 
+    @NEUAutoSubscribe
+    object TickHandler {
+        @SubscribeEvent
+        fun onTick(event: TickEvent) {
+            NotEnoughUpdates.INSTANCE.manager.ursaClient.bumpRequests()
+        }
+    }
+
     companion object {
         @JvmStatic
         fun profiles(uuid: UUID) = KnownRequest("v1/hypixel/profiles/${uuid}", JsonObject::class.java)
+
         @JvmStatic
         fun player(uuid: UUID) = KnownRequest("v1/hypixel/player/${uuid}", JsonObject::class.java)
+
         @JvmStatic
         fun guild(uuid: UUID) = KnownRequest("v1/hypixel/guild/${uuid}", JsonObject::class.java)
         @JvmStatic

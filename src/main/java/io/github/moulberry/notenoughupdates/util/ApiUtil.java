@@ -216,6 +216,7 @@ public class ApiUtil {
 		private CompletableFuture<String> requestString0() {
 			return buildUrl().thenApplyAsync(url -> {
 				InputStream inputStream = null;
+				int httpStatusCode = 200;
 				URLConnection conn = null;
 				try {
 					try {
@@ -248,7 +249,15 @@ public class ApiUtil {
 							}
 						}
 
-						inputStream = conn.getInputStream();
+						if (conn instanceof HttpURLConnection) {
+							HttpURLConnection httpConn = (HttpURLConnection) conn;
+							httpStatusCode = httpConn.getResponseCode();
+							if (httpStatusCode >= 400) {
+								inputStream = httpConn.getErrorStream();
+							}
+						}
+						if (inputStream == null)
+							inputStream = conn.getInputStream();
 
 						if (shouldGunzip || "gzip".equals(conn.getContentEncoding())) {
 							inputStream = new GZIPInputStream(inputStream);
@@ -262,7 +271,11 @@ public class ApiUtil {
 						// While the assumption of UTF8 isn't always true; it *should* always be true.
 						// Not in the sense that this will hold in most cases (although that as well),
 						// but in the sense that any violation of this better have a good reason.
-						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+						String response = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+						if (httpStatusCode >= 400) {
+							throw new HttpStatusCodeException(url, httpStatusCode, response);
+						}
+						return response;
 					} finally {
 						try {
 							if (inputStream != null) {
