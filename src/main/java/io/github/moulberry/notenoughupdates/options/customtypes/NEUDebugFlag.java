@@ -19,7 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.options.customtypes;
 
+import io.github.moulberry.notenoughupdates.util.MinecraftExecutor;
 import io.github.moulberry.notenoughupdates.util.NEUDebugLogger;
+import net.minecraft.client.Minecraft;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +48,7 @@ public enum NEUDebugFlag {
 	}
 
 	public void log(String message) {
-		NEUDebugLogger.log(this, message);
+			NEUDebugLogger.log(this, message);
 	}
 
 	public boolean isSet() {
