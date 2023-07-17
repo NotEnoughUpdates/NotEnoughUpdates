@@ -500,7 +500,12 @@ public class SkyblockProfiles {
 
 			private MuseumData(JsonObject museumJson) {
 				JsonObject museum = Constants.MUSEUM;
-				if (museumJson == null || museumJson.isJsonNull() || museumJson.get("members").isJsonNull() || museum == null) {
+				if (museum == null) {
+					Utils.showOutdatedRepoNotification();
+					museumValue = -3;
+					return;
+				}
+				if (museumJson == null || museumJson.isJsonNull() || museumJson.get("members").isJsonNull()) {
 					museumValue = -2;
 					return;
 				}

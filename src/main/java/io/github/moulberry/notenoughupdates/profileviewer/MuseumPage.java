@@ -102,9 +102,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 			Utils.drawStringCentered(message, guiLeft + 250, guiTop + 101, true, 0);
 			return;
 		}
-
-		if (museum == null) {
-			Utils.showOutdatedRepoNotification();
+		if (value == -3 || museum == null) {
 			String message = EnumChatFormatting.RED + "Missing Repo Data!";
 			Utils.drawStringCentered(message, guiLeft + 250, guiTop + 101, true, 0);
 			return;
