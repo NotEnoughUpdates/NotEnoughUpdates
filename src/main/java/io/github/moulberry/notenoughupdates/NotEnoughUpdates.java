@@ -243,6 +243,9 @@ public class NotEnoughUpdates {
 			if (config.profileViewer.pageLayout.size() == 10) {
 				config.profileViewer.pageLayout.add(10);
 			}
+			if (config.profileViewer.pageLayout.size() == 11) {
+				config.profileViewer.pageLayout.add(11);
+			}
 
 			// Remove after 2.1 ig
 			if ("dangerous".equals(config.apiData.repoBranch)) {
