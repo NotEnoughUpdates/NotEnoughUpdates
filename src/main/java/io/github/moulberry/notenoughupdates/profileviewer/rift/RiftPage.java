@@ -85,19 +85,19 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
 		if (selectedProfile == null) {
-			drawErorrMessage();
+			drawErrorMessage();
 			return;
 		}
 		JsonObject profileInfo = selectedProfile.getProfileJson();
 		if (!profileInfo.has("rift")) {
-			drawErorrMessage();
+			drawErrorMessage();
 			return;
 		}
 
 		JsonObject riftData = profileInfo.getAsJsonObject("rift");
 		JsonObject riftInventory = riftData.getAsJsonObject("inventory");
 		if (riftInventory == null) {
-			drawErorrMessage();
+			drawErrorMessage();
 			return;
 		}
 
@@ -187,22 +187,22 @@ public class RiftPage extends GuiProfileViewerPage {
 				0,
 				1f
 			);
-		}
 
-		if ((mouseX > guiLeft + 336 && mouseX < guiLeft + 336 + 80) &&
-			(mouseY > guiTop + 39 && mouseY < guiTop + 39 + 15)) {
+			if ((mouseX > guiLeft + 336 && mouseX < guiLeft + 336 + 80) &&
+				(mouseY > guiTop + 39 && mouseY < guiTop + 39 + 15)) {
 
-			List<String> displayNames = new ArrayList<>();
-			for (JsonElement jsonElement : timecharm) {
-				String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
-				String displayName = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
-					"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack().getDisplayName();
-				displayNames.add(displayName + "§7: §a✔");
+				List<String> displayNames = new ArrayList<>();
+				for (JsonElement jsonElement : timecharm) {
+					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
+					String displayName = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack().getDisplayName();
+					displayNames.add(displayName + "§7: §a✔");
+				}
+				getInstance().tooltipToDisplay = displayNames;
 			}
-			getInstance().tooltipToDisplay = displayNames;
-		}
 
-		renderItem("GLASS", 316, 36, guiLeft, guiTop);
+			renderItem("GLASS", 316, 36, guiLeft, guiTop);
+		}
 
 		JsonObject castleData = riftData.getAsJsonObject("castle");
 
@@ -301,8 +301,8 @@ public class RiftPage extends GuiProfileViewerPage {
 		);
 
 		if (!inInventory) {
-			if (riftInventory == null || !riftInventory.has("ender_chest_contents")) {
-				drawErorrMessage();
+			if (!riftInventory.has("ender_chest_contents")) {
+				drawErrorMessage();
 				return;
 			}
 			JsonObject enderChestContents = riftInventory.getAsJsonObject("ender_chest_contents");
@@ -351,7 +351,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		} else {
 
 			if (riftInventory == null || !riftInventory.has("inv_contents")) {
-				drawErorrMessage();
+				drawErrorMessage();
 				return;
 			}
 			String invData = riftInventory.getAsJsonObject("inv_contents").get("data").getAsString();
@@ -552,7 +552,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		return itemStacks;
 	}
 
-	public void drawErorrMessage() {
+	public void drawErrorMessage() {
 		String message = EnumChatFormatting.RED + "No Rift data available!";
 		Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 101, true, 0);
 	}
