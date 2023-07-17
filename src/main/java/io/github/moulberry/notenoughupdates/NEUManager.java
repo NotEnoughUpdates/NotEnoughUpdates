@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -72,6 +72,9 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -145,6 +148,8 @@ public class NEUManager {
 
 	public CraftingOverlay craftingOverlay;
 
+	private static boolean repoDownloadFailed = false;
+
 	public NEUManager(NotEnoughUpdates neu, File configLocation) {
 		this.neu = neu;
 		this.configLocation = configLocation;
@@ -198,15 +203,16 @@ public class NEUManager {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) return false;
+				if (latestRepoCommit == null || latestRepoCommit.isEmpty()) {
+					repoDownloadFailed = true;
+					return false;
+				}
 
 				if (new File(configLocation, "repo").exists() && new File(configLocation, "repo/items").exists()) {
 					if (currentCommitJSON != null && currentCommitJSON.get("sha").getAsString().equals(latestRepoCommit)) {
 						return false;
 					}
 				}
-				Utils.recursiveDelete(repoLocation);
-				repoLocation.mkdirs();
 
 				File itemsZip = new File(repoLocation, "neu-items-master.zip");
 				try {
@@ -220,11 +226,14 @@ public class NEUManager {
 				urlConnection.setConnectTimeout(15000);
 				urlConnection.setReadTimeout(30000);
 
+				Utils.recursiveDelete(repoLocation);
+				repoLocation.mkdirs();
 				try (InputStream is = urlConnection.getInputStream()) {
 					FileUtils.copyInputStreamToFile(is, itemsZip);
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.err.println("Failed to download NEU Repo! Please report this issue to the mod creator");
+					repoDownloadFailed = true;
 					return false;
 				}
 
@@ -250,10 +259,45 @@ public class NEUManager {
 	 * downloading of new/updated files. This then calls the "loadItem" method for every item in the local repository.
 	 */
 	public void loadItemInformation() {
-		if (NotEnoughUpdates.INSTANCE.config.apiData.autoupdate) {
-			fetchRepository().thenRun(this::reloadRepository);
+		if (NotEnoughUpdates.INSTANCE.config.apiData.autoupdate_new) {
+			fetchRepository().thenRun(() -> {
+				if (repoDownloadFailed) {
+					System.out.println("switching over to the backup repo");
+					switchToBackupRepo();
+				}
+			}).thenRun(this::reloadRepository);
 		} else {
 			reloadRepository();
+		}
+	}
+
+	/**
+	 * Copies the included backup repo to the location of the download, then pretends that the download worked and continues as normal
+	 */
+	public void switchToBackupRepo() {
+		Path destination = new File(repoLocation, "neu-items-master.zip").toPath();
+
+		try (
+			InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(
+				"assets/notenoughupdates/repo.zip")
+		) {
+			if (inputStream == null) {
+				System.out.println("Failed to copy backup repo");
+				return;
+			}
+			Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
+
+			unzipIgnoreFirstFolder(destination.toAbsolutePath().toString(), repoLocation.getAbsolutePath());
+			JsonObject newCurrentCommitJSON = new JsonObject();
+			newCurrentCommitJSON.addProperty("sha", "backuprepo");
+			try {
+				writeJson(newCurrentCommitJSON, new File(configLocation, "currentCommit.json"));
+			} catch (IOException ignored) {
+			}
+			System.out.println("Successfully switched to backup repo");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Failed to load backup repo");
 		}
 	}
 
