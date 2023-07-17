@@ -229,7 +229,7 @@ val kotlinDependencyCollectionJar by tasks.creating(Zip::class) {
 
 tasks.register("includeBackupRepo") {
 	doLast {
-		val url = URL("https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/archive/refs/heads/master.zip")
+		val url = URL("https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO/archive/refs/heads/prerelease.zip")
 		val destinationFolder = project.buildDir.resolve("classes/java/main/assets/notenoughupdates/")
 		destinationFolder.mkdirs()
 		val destination = destinationFolder.resolve("repo.zip")
