@@ -85,11 +85,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2256,5 +2261,26 @@ public class Utils {
 			windowId,
 			slot, 0, 0, Minecraft.getMinecraft().thePlayer
 		);
+	}
+
+	public static String timeSinceMillisecond(long time) {
+		Instant lastSave = Instant.ofEpochMilli(time);
+		LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
+		long timeDiff = System.currentTimeMillis() - lastSave.toEpochMilli();
+		LocalDateTime sinceOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeDiff), ZoneId.of("UTC"));
+		String renderText;
+
+		if (timeDiff < 60000L) {
+			renderText = sinceOnline.getSecond() + " seconds ago";
+		} else if (timeDiff < 3600000L) {
+			renderText = sinceOnline.getMinute() + " minutes ago";
+		} else if (timeDiff < 86400000L) {
+			renderText = sinceOnline.getHour() + " hours ago";
+		} else if (timeDiff < 31556952000L) {
+			renderText = sinceOnline.getDayOfYear() + " days ago";
+		} else {
+			renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+		}
+		return renderText;
 	}
 }

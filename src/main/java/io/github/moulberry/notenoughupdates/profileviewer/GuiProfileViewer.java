@@ -212,6 +212,7 @@ public class GuiProfileViewer extends GuiScreen {
 		pages.put(ProfileViewerPage.TROPHY_FISH, new TrophyFishPage(this));
 		pages.put(ProfileViewerPage.BESTIARY, new BestiaryPage(this));
 		pages.put(ProfileViewerPage.CRIMSON_ISLE, new CrimsonIslePage(this));
+		pages.put(ProfileViewerPage.MUSEUM, new MuseumPage(this));
 		pages.put(ProfileViewerPage.RIFT, new RiftPage(this));
 	}
 
@@ -909,7 +910,7 @@ public class GuiProfileViewer extends GuiScreen {
 		if (levelObj.maxed) {
 			renderGoldBar(x, y + 6, xSize);
 		} else {
-			if (skillName.contains("Catacombs") && levelObj.level >= 50) {
+			if ((skillName.contains("Catacombs") || Weight.DUNGEON_CLASS_NAMES.stream().anyMatch(e -> skillName.toLowerCase().contains(e))) && levelObj.level >= 50) {
 				renderGoldBar(x, y + 6, xSize);
 			} else {
 				renderBar(x, y + 6, xSize, level % 1);
@@ -1205,7 +1206,8 @@ public class GuiProfileViewer extends GuiScreen {
 		TROPHY_FISH(8, Items.fishing_rod, "§3Trophy Fish"),
 		BESTIARY(9, Items.iron_sword, "§cBestiary"),
 		CRIMSON_ISLE(10, Item.getItemFromBlock(Blocks.netherrack), "§4Crimson Isle"),
-		RIFT(11, Items.ender_eye, "§5Rift");
+		MUSEUM(11, Items.leather_chestplate, "§6Museum"),
+		RIFT(12, Items.ender_eye, "§5Rift");
 
 		public final ItemStack stack;
 		public final int id;

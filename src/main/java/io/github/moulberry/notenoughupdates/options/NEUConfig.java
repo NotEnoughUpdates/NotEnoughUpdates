@@ -540,6 +540,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public long commissionsCompleted = 0L;
 		@Expose
+		public long lastFreeRiftInfusionApplied = 0L;
+		@Expose
 		public long experimentsCompleted = 0L;
 		@Expose
 		public long cookieBuffRemaining = 0L;

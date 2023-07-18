@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.github.moulberry.notenoughupdates.overlays.FarmingSkillOverlay.CPS_WINDOW_SIZE;
+
 public class SkillOverlays {
 	@ConfigOption(
 		name = "Skill Overlay info",
@@ -49,12 +51,14 @@ public class SkillOverlays {
 		buttonText = ""
 	)
 	public boolean skillInfo = false;
+
 	@ConfigOption(
 		name = "Farming",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean farmingAccordion = false;
+
 	@Expose
 	@ConfigOption(
 		name = "Enable Farming Overlay",
@@ -73,7 +77,7 @@ public class SkillOverlays {
 	@ConfigEditorDraggableList(
 		exampleText = {
 			"\u00a7bCounter: \u00a7e37,547,860",
-			"\u00a7bCrops/m: \u00a7e38.29",
+			"\u00a7bCrops/s: \u00a7e732",
 			"\u00a7bFarming: \u00a7e12\u00a77 [\u00a7e|||||||||||||||||\u00a78||||||||\u00a77] \u00a7e67%",
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
@@ -83,7 +87,7 @@ public class SkillOverlays {
 			"\u00a7bPitch: \u00a7e69.42\u00a7l\u1D52",
 			"\u00a7bCultivating: \u00a7e10,137,945/20,000,000",
 			"\u00a7bCoins/m \u00a7e57,432",
-			"\u00a7bContest Estimate \u00a7e342,784"
+			"\u00a7bContest Estimate \u00a7e342,784",
 		}
 	)
 	@ConfigAccordionId(id = 0)
@@ -100,26 +104,8 @@ public class SkillOverlays {
 
 	@Expose
 	@ConfigOption(
-		name = "Use coins per hour",
-		desc = "Uses coins/h instead of coins/m"
-	)
-	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
-	public boolean coinsPerHour = false;
-
-	@Expose
-	@ConfigOption(
-		name = "Use crops per hour",
-		desc = "Uses crops/h instead of crops/m"
-	)
-	@ConfigEditorBoolean
-	@ConfigAccordionId(id = 0)
-	public boolean cropsPerHour = false;
-
-	@Expose
-	@ConfigOption(
 		name = "Pause Timer",
-		desc = "How many seconds does it wait before pausing"
+		desc = "How many seconds does it wait before pausing the XP/h timer"
 	)
 	@ConfigAccordionId(id = 0)
 	@ConfigEditorSlider(
@@ -128,6 +114,54 @@ public class SkillOverlays {
 		minStep = 1
 	)
 	public int farmingPauseTimer = 3;
+
+	@Expose
+	@ConfigOption(
+		name = "Crop rate time frame",
+		desc = "Defines the duration in seconds over which the average crop yield is calculated"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = CPS_WINDOW_SIZE - 2,
+		minStep = 1
+	)
+	public int farmingCropsPerSecondTimeFrame = 5;
+
+	@Expose
+	@ConfigOption(
+		name = "Crop rate unit",
+		desc = "Choose the unit for displaying the crop rate"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorDropdown(
+		values = {"/s", "/m", "/h"}
+	)
+	public int farmingCropRateUnit = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Coin rate unit",
+		desc = "Choose the unit for displaying the coin rate"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorDropdown(
+		values = {"/s", "/m", "/h"}
+	)
+	public int farmingCoinRateUnit = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Reset crop rate",
+		desc = "How many seconds does it wait before resetting the crop rate values when inactive"
+	)
+	@ConfigAccordionId(id = 0)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = CPS_WINDOW_SIZE - 2,
+		minStep = 1
+	)
+	public int farmingResetCPS = 5;
 
 	@Expose
 	public Position farmingPosition = new Position(10, 200);
@@ -142,12 +176,14 @@ public class SkillOverlays {
 	)
 	@ConfigAccordionId(id = 0)
 	public int farmingStyle = 0;
+
 	@ConfigOption(
 		name = "Mining",
 		desc = ""
 	)
 	@ConfigEditorAccordion(id = 1)
 	public boolean miningAccordion = false;
+
 	@Expose
 	@ConfigOption(
 		name = "Enable Mining Overlay",

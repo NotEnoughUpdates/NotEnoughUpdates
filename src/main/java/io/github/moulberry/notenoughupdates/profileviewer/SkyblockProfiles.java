@@ -31,11 +31,13 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import lombok.Getter;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -48,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SkyblockProfiles {
@@ -484,6 +487,180 @@ public class SkyblockProfiles {
 		private PlayerStats.Stats stats;
 		private Long networth = null;
 		private SoopyNetworth soopyNetworth = null;
+		private MuseumData museumData = null;
+		private final AtomicBoolean updatingMuseumData = new AtomicBoolean(false);
+
+		public class MuseumData {
+			private long museumValue;
+			private final Map<String, JsonArray> weaponItems = new HashMap<>();
+			private final Map<String, JsonArray> armorItems = new HashMap<>();
+			private final Map<String, JsonArray> raritiesItems = new HashMap<>();
+			private final List<JsonArray> specialItems = new ArrayList<>();
+			private final Map<String, Pair<Long, Boolean>> savedItems = new HashMap<>();
+
+			private MuseumData(JsonObject museumJson) {
+				JsonObject museum = Constants.MUSEUM;
+				if (museum == null) {
+					Utils.showOutdatedRepoNotification();
+					museumValue = -3;
+					return;
+				}
+				if (museumJson == null || museumJson.isJsonNull() || museumJson.get("members").isJsonNull()) {
+					museumValue = -2;
+					return;
+				}
+				JsonObject members = museumJson.get("members").getAsJsonObject();
+				if (members == null || members.isJsonNull() || !members.has(uuid)) {
+					museumValue = -2;
+					return;
+				}
+				JsonObject member = members.get(uuid).getAsJsonObject();
+				if (member == null || member.isJsonNull() || !member.has("value")) {
+					museumValue = -2;
+					return;
+				}
+				museumValue = member.get("value").getAsLong();
+				if (member.has("items")) {
+					JsonObject museumItemsData = member.get("items").getAsJsonObject();
+					if (museumItemsData != null) {
+						for (Map.Entry<String, JsonElement> entry : museumItemsData.entrySet()) {
+							JsonObject itemJson = entry.getValue().getAsJsonObject();
+							JsonArray contents = parseNbt(itemJson);
+							String itemName = entry.getKey();
+							Long donationTime = itemJson.get("donated_time").getAsLong();
+							boolean borrowing = false;
+							if (itemJson.has("borrowing")) {
+								borrowing = itemJson.get("borrowing").getAsBoolean();
+							}
+
+							getDataAndChildren(itemName, Pair.of(donationTime, borrowing));
+							processItems(itemName, contents);
+						}
+					}
+				}
+
+				if (member.has("special")) {
+					JsonArray specialItemsData = member.get("special").getAsJsonArray();
+					if (specialItemsData != null) {
+						for (JsonElement element : specialItemsData) {
+							JsonObject itemData = element.getAsJsonObject();
+							JsonArray contents = parseNbt(itemData);
+
+							long donationTime = itemData.get("donated_time").getAsLong();
+							JsonObject firstItem = contents.get(0).getAsJsonObject();
+							String itemID = firstItem.get("internalname").getAsString();
+							getDataAndChildren(itemID, Pair.of(donationTime, false));
+
+							specialItems.add(contents);
+						}
+					}
+				}
+			}
+
+			private JsonArray parseNbt(JsonObject nbt) {
+				JsonArray contents = new JsonArray();
+				JsonObject contentItems = nbt.get("items").getAsJsonObject();
+				String contentBytes = contentItems.get("data").getAsString();
+
+				try {
+					NBTTagList items = CompressedStreamTools.readCompressed(
+						new ByteArrayInputStream(Base64.getDecoder().decode(contentBytes))
+					).getTagList("i", 10);
+					for (int j = 0; j < items.tagCount(); j++) {
+						JsonObject item = profileViewer.getManager().getJsonFromNBTEntry(items.getCompoundTagAt(j));
+						if (item == null) {
+							continue;
+						}
+						contents.add(item);
+					}
+				} catch (IOException ignored) {
+				}
+				return contents;
+			}
+
+			private void processItems(String itemName, JsonArray contents) {
+				JsonObject museum = Constants.MUSEUM;
+				storeItem(itemName, contents, museum.get("weapons").getAsJsonArray(), weaponItems);
+				storeItem(itemName, contents, museum.get("armor").getAsJsonArray(), armorItems);
+				storeItem(itemName, contents, museum.get("rarities").getAsJsonArray(), raritiesItems);
+			}
+
+			private void storeItem(String itemName, JsonArray contents, JsonArray items, Map<String, JsonArray> itemMap) {
+				for (JsonElement item : items) {
+					if (Objects.equals(item.getAsString(), itemName)) {
+						itemMap.put(itemName, contents);
+						return;
+					}
+				}
+			}
+
+			private void getDataAndChildren(String name, Pair<Long, Boolean> itemData) {
+				JsonObject children = Constants.MUSEUM.get("children").getAsJsonObject();
+				if (savedItems.containsKey(name)) return;
+				savedItems.put(name, itemData);
+				if (children.has(name)) {
+					String childId = children.get(name).getAsString();
+					String childName = childId;
+					JsonObject nameMappings = Constants.MUSEUM.get("armor_to_id").getAsJsonObject();
+					if (nameMappings.has(childId)) {
+						childName = nameMappings.get(childId).getAsString();
+					}
+					String displayName = NotEnoughUpdates.INSTANCE.manager.getDisplayName(childName);
+					ItemStack stack = Utils.createItemStack(Items.dye, displayName, 10, "Donated as higher tier");
+					JsonObject item = profileViewer.getManager().getJsonForItem(stack);
+					item.add("internalname", new JsonPrimitive("_"));
+					JsonArray itemArray = new JsonArray();
+					itemArray.add(item);
+					processItems(childId, itemArray);
+
+					getDataAndChildren(childId, itemData);
+				}
+			}
+
+			private MuseumData asLoading() {
+				museumValue = -1;
+				return this;
+			}
+
+			public long getValue() {
+				return museumValue;
+			}
+			public Map<String, JsonArray> getWeaponItems() {
+				return weaponItems;
+			}
+			public Map<String, JsonArray> getArmorItems() {
+				return armorItems;
+			}
+			public Map<String, JsonArray> getRaritiesItems() {
+				return raritiesItems;
+			}
+			public List<JsonArray> getSpecialItems() {
+				return specialItems;
+			}
+			public Map<String, Pair<Long, Boolean>> getSavedItems() {
+				return savedItems;
+			}
+		}
+
+		private void loadMuseumData() {
+			if (updatingMuseumData.get()) {
+				return;
+			}
+
+			updatingMuseumData.set(true);
+			String profileId = getOuterProfileJson().get("profile_id").getAsString();
+			profileViewer.getManager().apiUtils.newHypixelApiRequest("skyblock/museum")
+			 .queryArgument("profile", profileId)
+			 .requestJson()
+			 .handle((museumJson, throwable) -> {
+				 if (museumJson != null && museumJson.has("success")
+					 && museumJson.get("success").getAsBoolean() && museumJson.has("members")) {
+					 museumData = new MuseumData(museumJson);
+					 return null;
+				 }
+				 return null;
+			 });
+		}
 
 		public SkyblockProfile(JsonObject outerProfileJson) {
 			this.outerProfileJson = outerProfileJson;
@@ -985,6 +1162,15 @@ public class SkyblockProfiles {
 
 			loadSoopyData(callback);
 			return new SoopyNetworth(null).asLoading();
+		}
+
+		public MuseumData getMuseumData() {
+			if (museumData != null) {
+				return museumData;
+			}
+
+			loadMuseumData();
+			return new MuseumData(null).asLoading();
 		}
 	}
 }

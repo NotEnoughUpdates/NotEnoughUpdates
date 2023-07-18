@@ -41,7 +41,6 @@ class HelpCommand {
         "§6/cata §b?{name} §2ⴵ §r§7- Opens the profile viewer's Catacombs page.",
         "§6/neulinks §r§7- Shows links to NEU/Moulberry.",
         "§6/neuoverlay §r§7- Opens GUI Editor for quickcommands and searchbar.",
-        "§6/neuah §r§7- Opens NEU's custom auction house GUI.",
         "§6/neucalendar §r§7- Opens NEU's custom calendar GUI.",
         "§6/neucalc §r§7- Run calculations.",
         "",

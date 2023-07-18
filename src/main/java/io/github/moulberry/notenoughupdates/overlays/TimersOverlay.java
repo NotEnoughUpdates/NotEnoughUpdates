@@ -21,9 +21,12 @@ package io.github.moulberry.notenoughupdates.overlays;
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
+import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -31,6 +34,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -77,6 +81,19 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern DAILY_SHOP_LIMIT = Pattern.compile(
 		"\u00a7r\u00a7cYou may only buy up to (640|6400) of this item each day!\u00a7r");
 
+	@SubscribeEvent
+	public void onClickItem(SlotClickEvent event) {
+		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+		if (hidden == null) return;
+
+		if (event.slot == null || !event.slot.getHasStack()) return;
+		var itemStack = event.slot.getStack();
+		if (itemStack.getItem() != Item.getItemFromBlock(Blocks.double_plant) || itemStack.getItemDamage() != 1) return;
+		if (ItemUtils.getLore(itemStack).contains("§a§lFREE! §a(Every 4 hours)")) {
+			hidden.lastFreeRiftInfusionApplied = System.currentTimeMillis();
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void onChatMessageReceived(ClientChatReceivedEvent event) {
 		NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
@@ -87,6 +104,10 @@ public class TimersOverlay extends TextTabOverlay {
 			Matcher cakeMatcher = CAKE_PATTERN.matcher(event.message.getFormattedText());
 			if (cakeMatcher.matches()) {
 				hidden.firstCakeAte = currentTime;
+				return;
+			}
+			if ("§r§d§lINFUSED! §r§7Used your free dimensional infusion!§r".equals(event.message.getFormattedText())) {
+				hidden.lastFreeRiftInfusionApplied = currentTime;
 				return;
 			}
 			Matcher puzzlerMatcher = PUZZLER_PATTERN.matcher(event.message.getFormattedText());
@@ -220,6 +241,9 @@ public class TimersOverlay extends TextTabOverlay {
 					.getItemInformation()
 					.get("HEAVY_PEARL"));
 				break;
+			case "Free Rift Infusion":
+				icon = new ItemStack(Blocks.double_plant, 1, 1);
+				break;
 			case "Crimson Isle Quests":
 				icon = QUEST_ICON;
 				break;
@@ -269,6 +293,18 @@ public class TimersOverlay extends TextTabOverlay {
 			String containerName = lower.getDisplayName().getUnformattedText();
 			ItemStack stack = lower.getStackInSlot(0);
 			switch (containerName.intern()) {
+				case "Dimensional Infusion":
+					if (lower.getSizeInventory() != 9 * 4) break;
+					var freeInfusionSlot = lower.getStackInSlot(13);
+					if (freeInfusionSlot == null || freeInfusionSlot.stackSize != 1 ||
+						freeInfusionSlot.getItem() != Item.getItemFromBlock(Blocks.double_plant) ||
+						freeInfusionSlot.getItemDamage() != 1) {
+						break;
+					}
+					if (ItemUtils.getLore(freeInfusionSlot).contains("§a§lFREE! §a(Every 4 hours)")) {
+						hidden.lastFreeRiftInfusionApplied = 0L;
+					}
+					break;
 				case "Commissions":
 					if (lower.getSizeInventory() < 18) {
 						break;
@@ -597,6 +633,26 @@ public class TimersOverlay extends TextTabOverlay {
 						Utils.prettyTime(hidden.godPotionDuration)
 				);
 			}
+		}
+
+		// Free Rift Infusion
+		var miscOverlay = NotEnoughUpdates.INSTANCE.config.miscOverlays;
+		long riftAvailableAgainIn = hidden.lastFreeRiftInfusionApplied + 1000 * 60 * 60 * 4 - currentTime;
+		if (riftAvailableAgainIn < 0) {
+			map.put(
+				12,
+				DARK_AQUA + "Free Rift Infusion: " +
+					EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour] + "Ready!"
+			);
+		} else if ((miscOverlay.freeRiftInfusionDisplay == 1 && riftAvailableAgainIn < TimeEnums.HALFANHOUR.time) ||
+			(miscOverlay.freeRiftInfusionDisplay == 2)) {
+			map.put(
+				12,
+				DARK_AQUA + "Free Rift Infusion: " +
+					EnumChatFormatting.values()[riftAvailableAgainIn < TimeEnums.HALFANHOUR.time
+						? miscOverlay.verySoonColour
+						: miscOverlay.defaultColour] + Utils.prettyTime(riftAvailableAgainIn)
+			);
 		}
 
 		long puzzlerEnd = hidden.puzzlerCompleted + 1000 * 60 * 60 * 24 - currentTime;
