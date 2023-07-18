@@ -218,14 +218,17 @@ public class ItemTooltipRngListener {
 			!leveling.has("slayer_boss_xp") ||
 			!leveling.has("slayer_highest_tier") ||
 			!leveling.has("slayer_tier_colors") ||
-			!leveling.has("rng_meter_dungeon_score")) {
+			!leveling.has("rng_meter_dungeon_score") ||
+			!leveling.has("fancy_name_to_slayer") ||
+			!leveling.has("slayer_boss_xp_type")) {
 			Utils.showOutdatedRepoNotification();
 			return;
 		}
 
-		List<Integer> slayerExp = new ArrayList<>();
+
+		List<Integer> defaultSlayerExp = new ArrayList<>();
 		for (JsonElement element : leveling.get("slayer_boss_xp").getAsJsonArray()) {
-			slayerExp.add(element.getAsInt());
+			defaultSlayerExp.add(element.getAsInt());
 		}
 
 		List<String> slayerColors = new ArrayList<>();
@@ -234,14 +237,23 @@ public class ItemTooltipRngListener {
 		}
 
 		for (Map.Entry<String, JsonElement> entry : leveling.get("slayer_highest_tier").getAsJsonObject().entrySet()) {
-			String slayerName = entry.getKey();
+			String slayerFancyName = entry.getKey();
+			String slayerName = leveling.get("fancy_name_to_slayer").getAsJsonObject().get(slayerFancyName).getAsString();
+
 			int maxTier = entry.getValue().getAsInt();
 			LinkedHashMap<String, Integer> singleSlayerData = new LinkedHashMap<>();
 			for (int i = 0; i < maxTier; i++) {
 				String name = slayerColors.get(i) + "Tier " + (i + 1);
-				singleSlayerData.put(name, slayerExp.get(i));
+				if (leveling.get("slayer_boss_xp_type").getAsJsonObject().get(slayerName) != null) {
+					singleSlayerData.put(
+						name,
+						leveling.get("slayer_boss_xp_type").getAsJsonObject().get(slayerName).getAsJsonArray().get(i).getAsInt()
+					);
+				} else {
+					singleSlayerData.put(name, defaultSlayerExp.get(i));
+				}
 			}
-			slayerData.put(slayerName, singleSlayerData);
+			slayerData.put(slayerFancyName, singleSlayerData);
 		}
 
 		for (Map.Entry<String, JsonElement> entry : leveling.get("rng_meter_dungeon_score").getAsJsonObject().entrySet()) {

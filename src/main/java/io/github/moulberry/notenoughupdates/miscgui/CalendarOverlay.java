@@ -29,6 +29,8 @@ import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import kotlin.Pair;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
@@ -37,6 +39,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemStack;
@@ -57,13 +60,16 @@ import org.lwjgl.opengl.GL11;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -249,6 +255,51 @@ public class CalendarOverlay {
 		}
 	}
 
+	public void populateDefaultEvents() {
+		if (eventMap.isEmpty() || eventMap.size() <= 20) {
+			fillRepeatingEvents(25 - eventMap.size());
+			fillSpecialMayors(4);
+			fillWeather();
+		}
+	}
+
+	private void fillWeather() {
+		long rainInterval = 4850 * 1000L;
+		long rainingTime = 1000 * 1000L;
+		long thunderStormEpoch = 1668551956000L - rainingTime;
+		long currentTime = System.currentTimeMillis();
+		long timeSinceLastThunderStart = (currentTime - thunderStormEpoch) % (rainInterval * 4);
+		long lastThunderStart = currentTime - timeSinceLastThunderStart;
+		for (int i = 0; i < 11; i++) {
+			long eventTimer = lastThunderStart + rainInterval * i;
+			if (i % 4 == 0) {
+				addEvent(SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(eventTimer)), new SBEvent(
+					"spiders_den_thunder",
+					"§9Spider's Den Thunder",
+					true,
+					new ItemStack(Blocks.slime_block),
+					Arrays.asList("§aIt will rain in the Spider's Den", "§aand Toxic Rain Slimes will spawn"),
+					rainingTime,
+					true
+				));
+			} else {
+				addEvent(
+					SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(eventTimer)),
+					new SBEvent(
+						"spiders_den_rain",
+						"§9Spider's Den Rain",
+						false,
+						new ItemStack(Items.slime_ball),
+						Arrays.asList("§aIt will rain in the Spider's Den", "§aand Rain Slimes will spawn"),
+						rainingTime,
+						true
+					)
+				);
+			}
+
+		}
+	}
+
 	@SubscribeEvent
 	public void tick(TickEvent.ClientTickEvent event) {
 		if (event.phase != TickEvent.Phase.START) return;
@@ -258,10 +309,7 @@ public class CalendarOverlay {
 
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
 			jfFavouriteSelect = null;
-			if (eventMap.isEmpty() || eventMap.size() <= 20) {
-				fillRepeatingEvents(25 - eventMap.size());
-				fillSpecialMayors(4);
-			}
+			populateDefaultEvents();
 			return;
 		}
 
@@ -274,10 +322,7 @@ public class CalendarOverlay {
 
 		if (!enabled) {
 			jfFavouriteSelect = null;
-			if (eventMap.isEmpty() || eventMap.size() <= 20) {
-				fillRepeatingEvents(25 - eventMap.size());
-				fillSpecialMayors(4);
-			}
+			populateDefaultEvents();
 			return;
 		}
 
@@ -288,13 +333,13 @@ public class CalendarOverlay {
 
 		eventMap.clear();
 
-		fillRepeatingEvents(25);
-		fillSpecialMayors(4);
+		populateDefaultEvents();
 		scrapeOverviewPage(cc);
 	}
 
 	public void addEvent(SkyBlockTime time, SBEvent event) {
-		if (time.toInstant().isBefore(Instant.now())) return;
+		if (time.toInstant().isBefore(Instant.now())&&
+			time.toInstant().plus(event.lastsFor, ChronoUnit.MILLIS).isBefore(Instant.now())) return;
 		getEventsAt(time.toMillis()).add(event);
 	}
 
@@ -316,7 +361,7 @@ public class CalendarOverlay {
 						"ba2cd37d-a0e4-4dc5-b15c-d79ee1051aae",
 						"ewogICJ0aW1lc3RhbXAiIDogMTU5Nzc4MTc1NzIxOSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYyNmZhMGM0NzUzNmU3OGUzMzcyNTdkODk4YWY4YjFlYmM4N2MwODk0NTAzMzc1MjM0MDM1ZmYyYzdlZjhmMCIKICAgIH0KICB9Cn0"
 					),
-					Arrays.asList("§eScorpius is a special Mayor candidate")
+					Arrays.asList("§eScorpius is a special Mayor candidate"), -1, true
 				)
 			);
 			addEvent(
@@ -330,7 +375,7 @@ public class CalendarOverlay {
 						"ab36a707-96d3-3db1-ab36-a70796d3adb1",
 						"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ1MGQxMjY5Mjg4NmM0N2IwNzhhMzhmNGQ0OTJhY2ZlNjEyMTZlMmQwMjM3YWI4MjQzMzQwOWIzMDQ2YjQ2NCJ9fX0"
 					),
-					Arrays.asList("§eDerpy is a special Mayor candidate")
+					Arrays.asList("§eDerpy is a special Mayor candidate"), -1, true
 				)
 			);
 			addEvent(
@@ -344,7 +389,7 @@ public class CalendarOverlay {
 						"0a9e8efb-9191-4c81-80f5-e27ca5433156",
 						"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODIyZDhlNzUxYzhmMmZkNGM4OTQyYzQ0YmRiMmY1Y2E0ZDhhZThlNTc1ZWQzZWIzNGMxOGE4NmU5M2IifX19"
 					),
-					Arrays.asList("§eJerry is a special Mayor candidate")
+					Arrays.asList("§eJerry is a special Mayor candidate"), -1, true
 				)
 			);
 		}
@@ -593,6 +638,10 @@ public class CalendarOverlay {
 						if (sbEvent.lastsFor >= 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 								prettyTime(sbEvent.lastsFor, true));
+							if (timeUntilMillis < 0) {
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
+									prettyTime(sbEvent.lastsFor + timeUntilMillis, true));
+							}
 						}
 						if (sbEvent.desc != null) {
 							tooltipToDisplay.add("");
@@ -689,6 +738,11 @@ public class CalendarOverlay {
 					if (nextEvent.lastsFor >= 0) {
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 							prettyTime(nextEvent.lastsFor, true));
+						if (timeUntilNext < 0) {
+							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
+								prettyTime(nextEvent.lastsFor + timeUntilNext, true));
+						}
+
 					}
 					if (nextEvent.desc != null) {
 						tooltipToDisplay.add("");
@@ -1028,6 +1082,43 @@ public class CalendarOverlay {
 		}
 	}
 
+	public Optional<Pair<SBEvent, Long>> getNextFavouriteEvent(boolean orGetFirst) {
+		populateDefaultEvents();
+		long currentTime = System.currentTimeMillis();
+		List<String> eventFavourites = NotEnoughUpdates.INSTANCE.config.hidden.eventFavourites;
+		SBEvent nextAnyEvent = null;
+		long timeUntilNextAny = 0L;
+		//Daily Events
+		for (Map.Entry<Long, Set<SBEvent>> sbEvents : eventMap.entrySet()) {
+			for (SBEvent sbEvent : sbEvents.getValue()) {
+				long timeUntilMillis = sbEvents.getKey() - currentTime;
+
+				if (timeUntilMillis < -10 * SECOND) {
+					continue;
+				}
+				if (nextAnyEvent == null) {
+					timeUntilNextAny = timeUntilMillis;
+					nextAnyEvent = sbEvent;
+				}
+
+				String[] split = sbEvent.id.split(":");
+				boolean containsId = false;
+				for (int i = 1; i < split.length; i++) {
+					if (eventFavourites.contains(split[0] + ":" + split[i])) {
+						containsId = true;
+						break;
+					}
+				}
+				if (eventFavourites.isEmpty() || eventFavourites.contains(split[0]) || containsId) {
+					return Optional.of(new Pair<>(sbEvent, timeUntilMillis));
+				}
+			}
+		}
+		if (orGetFirst && nextAnyEvent != null)
+			return Optional.of(new Pair<>(nextAnyEvent, timeUntilNextAny));
+		return Optional.empty();
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onGuiDraw(RenderGameOverlayEvent.Post event) {
 		if (NotEnoughUpdates.INSTANCE.config.calendar.eventNotifications &&
@@ -1036,49 +1127,10 @@ public class CalendarOverlay {
 			GlStateManager.translate(0, 0, 10);
 			if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer) &&
 				NotEnoughUpdates.INSTANCE.isOnSkyblock()) {
-				long currentTime = System.currentTimeMillis();
-
-				long timeUntilNext = 0;
-				SBEvent nextEvent = null;
-				long timeUntilFirst = 0;
-				SBEvent firstEvent = null;
-
-				List<String> eventFavourites = NotEnoughUpdates.INSTANCE.config.hidden.eventFavourites;
-
-				//Daily Events
-				out:
-				for (Map.Entry<Long, Set<SBEvent>> sbEvents : eventMap.entrySet()) {
-					for (SBEvent sbEvent : sbEvents.getValue()) {
-						long timeUntilMillis = sbEvents.getKey() - currentTime;
-
-						if (timeUntilMillis < -10 * SECOND) {
-							continue;
-						}
-
-						if (firstEvent == null) {
-							firstEvent = sbEvent;
-							timeUntilFirst = timeUntilMillis;
-						}
-
-						String[] split = sbEvent.id.split(":");
-						boolean containsId = false;
-						for (int i = 1; i < split.length; i++) {
-							if (eventFavourites.contains(split[0] + ":" + split[i])) {
-								containsId = true;
-								break;
-							}
-						}
-						if (eventFavourites.isEmpty() || eventFavourites.contains(split[0]) || containsId) {
-							nextEvent = sbEvent;
-							timeUntilNext = timeUntilMillis;
-							break out;
-						}
-					}
-				}
-
-				if (nextEvent != null) {
-					renderToast(nextEvent, timeUntilNext);
-				}
+				var nextFavouriteEvent = getNextFavouriteEvent(false);
+				nextFavouriteEvent.ifPresent((nextEvent) -> {
+					renderToast(nextEvent.component1(), nextEvent.component2());
+				});
 			}
 			GlStateManager.translate(0, 0, -10);
 			GlStateManager.popMatrix();
@@ -1211,6 +1263,7 @@ public class CalendarOverlay {
 			guiLeft = (width - xSize) / 2;
 			guiTop = 5;
 
+			populateDefaultEvents();
 			//Daily Events
 			out:
 			for (Map.Entry<Long, Set<SBEvent>> sbEvents : eventMap.entrySet()) {
@@ -1228,7 +1281,7 @@ public class CalendarOverlay {
 					}
 
 					if (nextMayorEvent == null && !sbEvent.id.split(":")[0].equals("jacob_farming") &&
-						!sbEvent.id.equals("dark_auction")) {
+						!sbEvent.id.equals("dark_auction") && !sbEvent.isArtificial) {
 						nextMayorEvent = sbEvent;
 						timeUntilMayor = timeUntilMillis;
 					}
@@ -1263,13 +1316,6 @@ public class CalendarOverlay {
 				}
 			}
 
-			if (nextEvent == null && firstEvent != null) {
-				String[] split = firstEvent.id.split(":");
-				if (eventFavourites.contains(split[0])) {
-					nextEvent = firstEvent;
-					timeUntilNext = timeUntilFirst;
-				}
-			}
 
 			if (nextEvent != null) {
 				GlStateManager.translate(0, 0, 50);
@@ -1334,6 +1380,10 @@ public class CalendarOverlay {
 								if (sbEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(sbEvent.lastsFor, true));
+									if (timeUntil < 0) {
+										tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
+											prettyTime(sbEvent.lastsFor + timeUntil, true));
+									}
 								}
 								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
 									tooltipToDisplay.addAll(sbEvent.desc);
@@ -1406,14 +1456,28 @@ public class CalendarOverlay {
 		List<String> desc;
 		long lastsFor;
 		boolean isSpecial;
+		boolean isArtificial;
 
 		public SBEvent(String id, String display, boolean isSpecial, ItemStack stack, List<String> desc) {
 			this(id, display, isSpecial, stack, desc, -1);
 		}
 
 		public SBEvent(String id, String display, boolean isSpecial, ItemStack stack, List<String> desc, long lastsFor) {
+			this(id, display, isSpecial, stack, desc, lastsFor, false);
+		}
+
+		public SBEvent(
+			String id,
+			String display,
+			boolean isSpecial,
+			ItemStack stack,
+			List<String> desc,
+			long lastsFor,
+			boolean isArtificial
+		) {
 			this.id = id;
 			this.isSpecial = isSpecial;
+			this.isArtificial = isArtificial;
 			this.display = display;
 			this.stack = stack;
 			this.desc = desc;

@@ -908,7 +908,7 @@ public class GuiProfileViewer extends GuiScreen {
 		if (levelObj.maxed) {
 			renderGoldBar(x, y + 6, xSize);
 		} else {
-			if (skillName.contains("Catacombs") && levelObj.level >= 50) {
+			if ((skillName.contains("Catacombs") || Weight.DUNGEON_CLASS_NAMES.stream().anyMatch(e -> skillName.toLowerCase().contains(e))) && levelObj.level >= 50) {
 				renderGoldBar(x, y + 6, xSize);
 			} else {
 				renderBar(x, y + 6, xSize, level % 1);
