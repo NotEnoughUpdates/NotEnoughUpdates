@@ -45,16 +45,11 @@ class ProfileViewerCommands {
                 reply("${RED}Some parts of the profile viewer do not work with OptiFine Fast Render. Go to ESC > Options > Video Settings > Performance > Fast Render to disable it.")
             }
 
-            if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isNullOrBlank()) {
-                reply("${RED}Can't view profile, an API key is not set. Run /api new and put the result in settings.")
-                return
-            }
-
             NotEnoughUpdates.profileViewer.loadPlayerByName(
                 name ?: Minecraft.getMinecraft().thePlayer.name
             ) { profile ->
                 if (profile == null) {
-                    reply("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.")
+                    reply("${RED}Invalid player name. Maybe the API is down? Try again later.")
                 } else {
                     profile.resetCache()
                     ProfileViewerUtils.saveSearch(name)
