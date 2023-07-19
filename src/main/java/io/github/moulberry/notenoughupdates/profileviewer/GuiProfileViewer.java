@@ -255,8 +255,6 @@ public class GuiProfileViewer extends GuiScreen {
 				profileName = profile.getLatestProfileName();
 			}
 
-			// Preload guild info
-			profile.getOrLoadGuildInformation(null);
 		}
 
 		this.sizeX = 431;
