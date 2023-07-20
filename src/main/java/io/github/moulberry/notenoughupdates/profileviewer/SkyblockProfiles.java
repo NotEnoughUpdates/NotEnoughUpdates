@@ -643,9 +643,7 @@ public class SkyblockProfiles {
 
 			updatingMuseumData.set(true);
 			String profileId = getOuterProfileJson().get("profile_id").getAsString();
-			profileViewer.getManager().apiUtils.newHypixelApiRequest("skyblock/museum")
-			 .queryArgument("profile", profileId)
-			 .requestJson()
+			profileViewer.getManager().ursaClient.get(UrsaClient.museumForProfile(profileId))
 			 .handle((museumJson, throwable) -> {
 				 if (museumJson != null && museumJson.has("success")
 					 && museumJson.get("success").getAsBoolean() && museumJson.has("members")) {
