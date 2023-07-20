@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -57,7 +57,7 @@ public class ApiData {
 	)
 	@ConfigEditorBoolean()
 	@ConfigAccordionId(id = 0)
-	public boolean autoupdate = true;
+	public boolean autoupdate_new = true;
 
 	@ConfigAccordionId(id = 0)
 	@ConfigOption(
