@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
