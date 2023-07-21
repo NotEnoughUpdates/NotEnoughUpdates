@@ -74,7 +74,7 @@ object TabSkillInfoParser {
                 val nextLevelProgress = nextLevelDiff * progress / 100
 
                 val totalXp = levelXp + nextLevelProgress
-                val existingLevel = XPInformation.getInstance().getSkillInfo(name)
+                val existingLevel = XPInformation.getInstance().getSkillInfo(name) ?: XPInformation.SkillInfo()
 
                 // Only update if the numbers are substantially different
                 if (!isWithinPercentageRange(totalXp, existingLevel.totalXp.toDouble(), 1.0)) {
