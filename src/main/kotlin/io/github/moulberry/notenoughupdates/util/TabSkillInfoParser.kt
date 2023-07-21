@@ -27,6 +27,7 @@ import kotlin.math.abs
 object TabSkillInfoParser {
     private val skillTabPattern: Pattern =
         Pattern.compile("^§r§e§lSkills: §r§a(?<type>\\w+) (?<level>\\d+): §r§3(?<progress>.+)%§r\$")
+    private var sentErrorOnce = false
 
     private fun calculateLevelXp(levelingArray: JsonArray, level: Int): Double {
         var totalXp = 0.0
@@ -42,6 +43,13 @@ object TabSkillInfoParser {
         return diff <= percentage
     }
 
+    private fun sendError() {
+        if (!sentErrorOnce) {
+            Utils.addChatMessage("${EnumChatFormatting.RED}[NEU] Error while parsing skill level from tab list")
+            sentErrorOnce = true
+        }
+    }
+
     @JvmStatic
     fun parseSkillInfo() {
         for (s in TabListUtils.getTabList()) {
@@ -52,7 +60,7 @@ object TabSkillInfoParser {
                 val level = matcher.group("level")!!.toInt()
                 val progress = matcher.group("progress")!!.toFloatOrNull()
                 if (progress == null) {
-                    Utils.addChatMessage("${EnumChatFormatting.RED}[NEU] Error while parsing skill level from tab list")
+                    sendError()
                     return
                 }
                 val runecrafting = name == "runecrafting"
