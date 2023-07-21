@@ -87,10 +87,11 @@ public class MiscOverlays {
 			"\u00a73Heavy Pearls: \u00a7e3h38m",
 			"\u00a73Crimson Isle Quests: \u00a7e3h38m",
 			"\u00a73NPC Buy Daily Limit: \u00a7e3h38m",
+			"§3Free Rift Infusion: §e3h38m",
 		}
 	)
 	@ConfigAccordionId(id = 0)
-	public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+	public List<Integer> todoText2 = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 
 	@ConfigOption(
 		name = "Show Only If Soon",
@@ -244,6 +245,20 @@ public class MiscOverlays {
 		values = {"Only when ready", "When very Soon", "When soon", "When Kinda Soon", "Always"}
 	)
 	public int shopLimitDisplay = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Free Rift Infusion Display",
+		desc = "Change the way the Free Rift infusion displays\n" +
+			"Only when ready, When very Soon,  or always."
+	)
+	@ConfigAccordionId(id = 1)
+	@ConfigEditorDropdown(
+		values = {"Only when ready", "When very Soon", "Always"}
+	)
+	public int freeRiftInfusionDisplay = 0;
+
+
 
 	@ConfigOption(
 		name = "Colours",

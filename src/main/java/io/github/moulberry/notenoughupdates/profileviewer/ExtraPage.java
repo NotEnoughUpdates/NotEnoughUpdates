@@ -38,10 +38,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -49,7 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeMap;
 
 public class ExtraPage extends GuiProfileViewerPage {
@@ -590,24 +585,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		JsonElement lastSaveElement = Utils.getElement(profileInfo, path);
 
 		if (lastSaveElement != null && lastSaveElement.isJsonPrimitive()) {
-			Instant lastSave = Instant.ofEpochMilli(lastSaveElement.getAsLong());
-			LocalDateTime lastSaveTime = LocalDateTime.ofInstant(lastSave, TimeZone.getDefault().toZoneId());
-			long timeDiff = System.currentTimeMillis() - lastSave.toEpochMilli();
-			LocalDateTime sinceOnline = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeDiff), ZoneId.of("UTC"));
-			String renderText;
-
-			if (timeDiff < 60000L) {
-				renderText = sinceOnline.getSecond() + " seconds ago.";
-			} else if (timeDiff < 3600000L) {
-				renderText = sinceOnline.getMinute() + " minutes ago.";
-			} else if (timeDiff < 86400000L) {
-				renderText = sinceOnline.getHour() + " hours ago.";
-			} else if (timeDiff < 31556952000L) {
-				renderText = sinceOnline.getDayOfYear() + " days ago.";
-			} else {
-				renderText = lastSaveTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-			}
-			return renderText;
+			return Utils.timeSinceMillisecond(lastSaveElement.getAsLong());
 		}
 		return null;
 	}

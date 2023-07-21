@@ -188,8 +188,13 @@ class UrsaClient(val apiUtil: ApiUtil) {
 
         @JvmStatic
         fun guild(uuid: UUID) = KnownRequest("v1/hypixel/guild/${uuid}", JsonObject::class.java)
+
         @JvmStatic
         fun bingo(uuid: UUID) = KnownRequest("v1/hypixel/bingo/${uuid}", JsonObject::class.java)
+
+        @JvmStatic
+        fun museumForProfile(profileUuid: String) = KnownRequest("v1/hypixel/museum/${profileUuid}", JsonObject::class.java)
+
         @JvmStatic
         fun status(uuid: UUID) = KnownRequest("v1/hypixel/status/${uuid}", JsonObject::class.java)
     }

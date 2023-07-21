@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.profileviewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -82,8 +83,8 @@ public class MiningPage extends GuiProfileViewerPage {
 		int sectionWidth = 110;
 
 		// Get stats
-		JsonObject miningCore = profileInfo.getAsJsonObject("mining_core");
-		JsonObject nodes = miningCore.getAsJsonObject("nodes");
+		JsonElement miningCore = profileInfo.get("mining_core");
+		JsonElement nodes = Utils.getElement(miningCore, "nodes");
 
 		float mithrilPowder = Utils.getElementAsFloat(Utils.getElement(miningCore, "powder_mithril"), 0);
 		float gemstonePowder = Utils.getElementAsFloat(Utils.getElement(miningCore, "powder_gemstone"), 0);

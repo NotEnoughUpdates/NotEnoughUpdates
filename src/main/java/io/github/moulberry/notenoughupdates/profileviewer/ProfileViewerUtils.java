@@ -110,6 +110,12 @@ public class ProfileViewerUtils {
 		// While there are several crab hats, only one of them counts towards the magical power
 		boolean countedCrabHat = false;
 		int powerAmount = 0;
+
+		if (profileInfo.has("rift") && profileInfo.getAsJsonObject("rift").has("access") && profileInfo.getAsJsonObject(
+			"rift").getAsJsonObject("access").has("consumed_prism")) { // should be true when existing ?
+			powerAmount += 11;
+		}
+
 		for (Map.Entry<String, Integer> entry : accessories.entrySet()) {
 			if (ignoredTalismans.contains(entry.getKey())) continue;
 
