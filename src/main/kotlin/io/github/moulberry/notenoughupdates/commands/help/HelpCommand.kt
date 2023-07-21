@@ -31,21 +31,21 @@ class HelpCommand {
     val neuHelpMessages = listOf(
         "§5§lNotEnoughUpdates commands",
         "§6/neu §7- Opens the main NEU GUI.",
-        "§6/pv §b?{name} §2ⴵ §r§7- Opens the profile viewer",
+        "§6/pv §b?{name} §r§7- Opens the profile viewer",
         "§6/neusouls {on/off/clear/unclear} §r§7- Shows waypoints to fairy souls.",
         "§6/neubuttons §r§7- Opens a GUI which allows you to customize inventory buttons.",
         "§6/neuec §r§7- Opens the enchant colour GUI.",
         "§6/join {floor} §r§7- Short Command to join a Dungeon. §lNeed a Party of 5 People§r§7 {4/f7/m5}.",
         "§6/neucosmetics §r§7- Opens the cosmetic GUI.",
         "§6/neurename §r§7- Opens the NEU Item Customizer.",
-        "§6/cata §b?{name} §2ⴵ §r§7- Opens the profile viewer's Catacombs page.",
+        "§6/cata §b?{name} §r§7- Opens the profile viewer's Catacombs page.",
         "§6/neulinks §r§7- Shows links to NEU/Moulberry.",
         "§6/neuoverlay §r§7- Opens GUI Editor for quickcommands and searchbar.",
         "§6/neucalendar §r§7- Opens NEU's custom calendar GUI.",
         "§6/neucalc §r§7- Run calculations.",
         "",
         "§6§lOld commands:",
-        "§6/peek §b?{user} §2ⴵ §r§7- Shows quick stats for a user.",
+        "§6/peek §b?{user} §r§7- Shows quick stats for a user.",
         "",
         "§6§lDebug commands:",
         "§6/neustats §r§7- Copies helpful info to the clipboard.",
@@ -62,8 +62,6 @@ class HelpCommand {
         "§6/neudungeonwintest §r§7- displays the dungeon win screen"
     )
     val helpInfo = listOf(
-        "",
-        "§7Commands marked with a §2\"ⴵ\"§7 require an api key. You can set your api key via \"/api new\" or by manually putting it in the api field in \"/neu\"",
         "",
         "§7Arguments marked with a §b\"?\"§7 are optional.",
         "",

@@ -25,7 +25,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CustomItemEffects;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
-import io.github.moulberry.notenoughupdates.miscfeatures.NewApiKeyHelper;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -128,7 +127,6 @@ public class MixinNetHandlerPlayClient {
 			StorageManager.getInstance().clientSendWindowClick((C0EPacketClickWindow) packet);
 		}
 		if (packet instanceof C01PacketChatMessage) {
-			NewApiKeyHelper.getInstance().hookPacketChatMessage((C01PacketChatMessage) packet);
 			if (AntiCoopAdd.getInstance().onPacketChatMessage((C01PacketChatMessage) packet)) {
 				ci.cancel();
 			}

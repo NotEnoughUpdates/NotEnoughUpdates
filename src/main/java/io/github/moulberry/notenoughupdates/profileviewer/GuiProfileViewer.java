@@ -433,7 +433,7 @@ public class GuiProfileViewer extends GuiScreen {
 					Utils.drawStringCentered(str, guiLeft + sizeX / 2f, guiTop + 101, true, 0);
 
 					//This is just here to inform the player what to do
-					//like typing /api new or telling them to go find a psychotherapist
+					//like telling them to go find a psychotherapist
 					long timeDiff = System.currentTimeMillis() - startTime;
 
 					if (timeDiff > 20000) {
@@ -442,12 +442,12 @@ public class GuiProfileViewer extends GuiScreen {
 							guiLeft + sizeX / 2f, guiTop + 111, true, 0
 						);
 						Utils.drawStringCentered(
-							EnumChatFormatting.YELLOW + "Try \"/api new\".",
+							EnumChatFormatting.YELLOW + "Might be hypixel's fault.",
 							guiLeft + sizeX / 2f, guiTop + 121, true, 0
 						);
 						if (timeDiff > 60000) {
 							Utils.drawStringCentered(
-								EnumChatFormatting.YELLOW + "Might be hypixel's fault.",
+								EnumChatFormatting.YELLOW + "Might be our fault :/.",
 								guiLeft + sizeX / 2f, guiTop + 131, true, 0
 							);
 							if (timeDiff > 180000) {

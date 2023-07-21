@@ -939,7 +939,7 @@ public class RenderListener {
 						Utils.playPressSound();
 						NotEnoughUpdates.profileViewer.loadPlayerByName(username, profile -> {
 							if (profile == null) {
-								Utils.addChatMessage("${RED}Invalid player name/API key. Maybe the API is down? Try /api new.");
+								Utils.addChatMessage("${RED}Invalid player name. Maybe the API is down?");
 							} else {
 								profile.resetCache();
 								ProfileViewerUtils.saveSearch(username);
