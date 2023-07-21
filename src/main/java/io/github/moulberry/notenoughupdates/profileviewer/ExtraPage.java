@@ -264,7 +264,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			EnumChatFormatting.GREEN + "Pronouns",
 			EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
 			guiLeft + xStart,
-			guiTop + yStartTop + yOffset * (shouldRenderGuild ? 4 : 3),
+			guiTop + yStartTop + yOffset * 4 + (shouldRenderGuild ? 0 : 5),
 			76
 		));
 
