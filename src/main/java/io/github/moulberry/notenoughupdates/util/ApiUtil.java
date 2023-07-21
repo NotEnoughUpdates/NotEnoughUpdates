@@ -58,10 +58,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 public class ApiUtil {
@@ -90,16 +92,17 @@ public class ApiUtil {
 		try {
 			KeyStore letsEncryptStore = KeyStore.getInstance("JKS");
 			letsEncryptStore.load(ApiUtil.class.getResourceAsStream("/neukeystore.jks"), "neuneu".toCharArray());
-			ctx = SSLContext.getInstance("TLS");
 			KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			kmf.init(letsEncryptStore, null);
 			tmf.init(letsEncryptStore);
+			ctx = SSLContext.getInstance("TLS");
 			ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 		} catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException |
 						 IOException | CertificateException e) {
 			System.out.println("Failed to load NEU keystore. A lot of API requests won't work");
 			e.printStackTrace();
+			ctx = null;
 		}
 	}
 
@@ -129,10 +132,17 @@ public class ApiUtil {
 		private Duration maxCacheAge = Duration.ofSeconds(500);
 		private String method = "GET";
 		private String postData = null;
+		private final Map<String, String> headers = new HashMap<>();
+		private Map<String, List<String>> responseHeaders = new HashMap<>();
 		private String postContentType = null;
 
 		public Request method(String method) {
 			this.method = method;
+			return this;
+		}
+
+		public Request header(String key, String value) {
+			this.headers.put(key, value);
 			return this;
 		}
 
@@ -196,9 +206,17 @@ public class ApiUtil {
 			return new ApiCache.CacheKey(baseUrl, queryArguments, shouldGunzip);
 		}
 
+		/**
+		 * Note: This map may be empty on cache hits.
+		 */
+		public Map<String, List<String>> getResponseHeaders() {
+			return responseHeaders;
+		}
+
 		private CompletableFuture<String> requestString0() {
 			return buildUrl().thenApplyAsync(url -> {
 				InputStream inputStream = null;
+				int httpStatusCode = 200;
 				URLConnection conn = null;
 				try {
 					try {
@@ -212,6 +230,9 @@ public class ApiUtil {
 						conn.setConnectTimeout(10000);
 						conn.setReadTimeout(10000);
 						conn.setRequestProperty("User-Agent", getUserAgent());
+						for (Map.Entry<String, String> header : headers.entrySet()) {
+							conn.setRequestProperty(header.getKey(), header.getValue());
+						}
 						if (this.postContentType != null) {
 							conn.setRequestProperty("Content-Type", this.postContentType);
 						}
@@ -228,16 +249,33 @@ public class ApiUtil {
 							}
 						}
 
-						inputStream = conn.getInputStream();
+						if (conn instanceof HttpURLConnection) {
+							HttpURLConnection httpConn = (HttpURLConnection) conn;
+							httpStatusCode = httpConn.getResponseCode();
+							if (httpStatusCode >= 400) {
+								inputStream = httpConn.getErrorStream();
+							}
+						}
+						if (inputStream == null)
+							inputStream = conn.getInputStream();
 
 						if (shouldGunzip || "gzip".equals(conn.getContentEncoding())) {
 							inputStream = new GZIPInputStream(inputStream);
 						}
+						responseHeaders = conn.getHeaderFields().entrySet().stream()
+																	.collect(Collectors.toMap(
+																		it -> it.getKey() == null ? null : it.getKey().toLowerCase(Locale.ROOT),
+																		it -> new ArrayList<>(it.getValue())
+																	));
 
 						// While the assumption of UTF8 isn't always true; it *should* always be true.
 						// Not in the sense that this will hold in most cases (although that as well),
 						// but in the sense that any violation of this better have a good reason.
-						return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+						String response = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+						if (httpStatusCode >= 400) {
+							throw new HttpStatusCodeException(url, httpStatusCode, response);
+						}
+						return response;
 					} finally {
 						try {
 							if (inputStream != null) {
@@ -298,13 +336,15 @@ public class ApiUtil {
 	}
 
 	public static void patchHttpsRequest(HttpsURLConnection connection) {
-		connection.setSSLSocketFactory(ctx.getSocketFactory());
+		if (ctx != null && connection != null)
+			connection.setSSLSocketFactory(ctx.getSocketFactory());
 	}
 
 	public Request request() {
 		return new Request();
 	}
 
+	@Deprecated
 	public Request newHypixelApiRequest(String apiPath) {
 		return newAnonymousHypixelApiRequest(apiPath)
 			.queryArgument("key", NotEnoughUpdates.INSTANCE.config.apiData.apiKey);

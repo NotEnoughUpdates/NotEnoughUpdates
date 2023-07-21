@@ -39,6 +39,7 @@ import io.github.moulberry.notenoughupdates.util.ApiUtil;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -130,6 +131,7 @@ public class NEUManager {
 	public long viewItemAttemptTime = 0;
 
 	public final ApiUtil apiUtils = new ApiUtil();
+	public final UrsaClient ursaClient = new UrsaClient(apiUtils);
 
 	private final Map<String, ItemStack> itemstackCache = new HashMap<>();
 

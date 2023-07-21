@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.util;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.function.Consumer;
@@ -34,7 +33,7 @@ public class NEUDebugLogger {
 	public static boolean allFlagsEnabled = false;
 
 	private static void chatLogger(String message) {
-		Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU DEBUG] " + message);
+		mc.addScheduledTask(() -> Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU DEBUG] " + message));
 	}
 
 	public static boolean isFlagEnabled(NEUDebugFlag flag) {

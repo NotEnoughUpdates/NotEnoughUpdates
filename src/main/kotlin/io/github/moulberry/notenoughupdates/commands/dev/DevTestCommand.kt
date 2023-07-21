@@ -19,7 +19,9 @@
 
 package io.github.moulberry.notenoughupdates.commands.dev
 
+import com.google.gson.JsonObject
 import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType.string
 import io.github.moulberry.notenoughupdates.BuildFlags
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
@@ -36,7 +38,6 @@ import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.command.ICommandSender
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
@@ -200,6 +201,16 @@ class DevTestCommand {
                     }
                 }
             }
+            thenLiteral("callUrsa") {
+                thenArgument("path", RestArgumentType) { path ->
+                    thenExecute {
+                        NotEnoughUpdates.INSTANCE.manager.ursaClient.getString(this[path])
+                            .thenAccept {
+                                reply(it.toString())
+                            }
+                    }
+                }.withHelp("Send an authenticated request to the current ursa server")
+            }
             thenLiteralExecute("dev") {
                 NotEnoughUpdates.INSTANCE.config.hidden.dev = !NotEnoughUpdates.INSTANCE.config.hidden.dev
                 reply("Dev mode " + if (NotEnoughUpdates.INSTANCE.config.hidden.dev) "§aenabled" else "§cdisabled")
@@ -210,7 +221,8 @@ class DevTestCommand {
             }.withHelp("Force sync the config to disk")
             thenLiteralExecute("clearapicache") {
                 ApiCache.clear()
-                reply("Cleared API cache")
+                NotEnoughUpdates.INSTANCE.manager.ursaClient.clearToken()
+                reply("Cleared API cache and reset ursa token")
             }.withHelp("Clear the API cache")
             thenLiteralExecute("searchmode") {
                 NotEnoughUpdates.INSTANCE.config.hidden.firstTimeSearchFocus = true

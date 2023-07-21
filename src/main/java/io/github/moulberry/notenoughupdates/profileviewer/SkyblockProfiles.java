@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import lombok.Getter;
@@ -84,6 +85,7 @@ public class SkyblockProfiles {
 		"social"
 	);
 	private final ProfileViewer profileViewer;
+	// TODO: replace with UUID type
 	private final String uuid;
 	private final AtomicBoolean updatingSkyblockProfilesState = new AtomicBoolean(false);
 	private final AtomicBoolean updatingGuildInfoState = new AtomicBoolean(false);
@@ -119,10 +121,8 @@ public class SkyblockProfiles {
 		lastStatusInfoState = currentTime;
 		updatingPlayerStatusState.set(true);
 
-		profileViewer.getManager().apiUtils
-			.newHypixelApiRequest("status")
-			.queryArgument("uuid", uuid)
-			.requestJson()
+		profileViewer.getManager().ursaClient
+			.get(UrsaClient.status(Utils.parseDashlessUUID(uuid)))
 			.handle((jsonObject, ex) -> {
 				updatingPlayerStatusState.set(false);
 
@@ -143,10 +143,8 @@ public class SkyblockProfiles {
 		lastBingoInfoState = currentTime;
 		updatingBingoInfo.set(true);
 
-		NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.newHypixelApiRequest("skyblock/bingo")
-			.queryArgument("uuid", uuid)
-			.requestJson()
+		NotEnoughUpdates.INSTANCE.manager.ursaClient
+			.get(UrsaClient.bingo(Utils.parseDashlessUUID(uuid)))
 			.handle(((jsonObject, throwable) -> {
 				updatingBingoInfo.set(false);
 
@@ -317,10 +315,8 @@ public class SkyblockProfiles {
 		lastPlayerInfoState = currentTime;
 		updatingSkyblockProfilesState.set(true);
 
-		profileViewer.getManager().apiUtils
-			.newHypixelApiRequest("skyblock/profiles")
-			.queryArgument("uuid", uuid)
-			.requestJson()
+		profileViewer.getManager().ursaClient
+			.get(UrsaClient.profiles(Utils.parseDashlessUUID(uuid)))
 			.handle((profilesJson, throwable) -> {
 				if (profilesJson != null && profilesJson.has("success")
 					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
@@ -388,10 +384,8 @@ public class SkyblockProfiles {
 		lastGuildInfoState = currentTime;
 		updatingGuildInfoState.set(true);
 
-		profileViewer.getManager().apiUtils
-			.newHypixelApiRequest("guild")
-			.queryArgument("player", uuid)
-			.requestJson()
+		profileViewer.getManager().ursaClient
+			.get(UrsaClient.guild(Utils.parseDashlessUUID(uuid)))
 			.handle((jsonObject, ex) -> {
 				updatingGuildInfoState.set(false);
 
@@ -649,9 +643,7 @@ public class SkyblockProfiles {
 
 			updatingMuseumData.set(true);
 			String profileId = getOuterProfileJson().get("profile_id").getAsString();
-			profileViewer.getManager().apiUtils.newHypixelApiRequest("skyblock/museum")
-			 .queryArgument("profile", profileId)
-			 .requestJson()
+			profileViewer.getManager().ursaClient.get(UrsaClient.museumForProfile(profileId))
 			 .handle((museumJson, throwable) -> {
 				 if (museumJson != null && museumJson.has("success")
 					 && museumJson.get("success").getAsBoolean() && museumJson.has("members")) {
