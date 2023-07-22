@@ -40,7 +40,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.util.Vec3i;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector3f;
@@ -329,7 +328,7 @@ public class RenderUtils {
 		GlStateManager.disableDepth();
 		GlStateManager.disableCull();
 		GlStateManager.disableTexture2D();
-		CustomItemEffects.drawFilledBoundingBox(bb, 1f, SpecialColour.special(0, 100, rgb));
+		CustomItemEffects.drawFilledBoundingBox(bb, 1f, SpecialColour.special(0, (rgb >> 24) & 0xFF, rgb));
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableCull();
 		GlStateManager.enableDepth();

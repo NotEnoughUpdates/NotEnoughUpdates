@@ -52,7 +52,7 @@ public class WorldConfig {
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
-	public String glowingMushroomColor = "0:255:142:88:36";
+	public String glowingMushroomColor = "0:100:142:88:36";
 
 	@Expose
 	@ConfigOption(
@@ -78,7 +78,7 @@ public class WorldConfig {
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
-	public String enderNodeColor = "0:255:0:255:0";
+	public String enderNodeColor = "0:100:0:255:0";
 
 	@Expose
 	@ConfigOption(
@@ -104,6 +104,6 @@ public class WorldConfig {
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 3)
-	public String frozenTreasuresColor = "0:255:0:255:0";
+	public String frozenTreasuresColor = "0:100:0:255:0";
 
 }
