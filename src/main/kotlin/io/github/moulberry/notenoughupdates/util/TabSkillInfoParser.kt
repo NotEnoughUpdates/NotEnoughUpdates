@@ -27,6 +27,8 @@ import kotlin.math.abs
 object TabSkillInfoParser {
     private val skillTabPattern: Pattern =
         Pattern.compile("^§r§e§lSkills: §r§a(?<type>\\w+) (?<level>\\d+): §r§3(?<progress>.+)%§r\$")
+    private val maxSkillTabPattern: Pattern =
+        Pattern.compile("^§r§e§lSkills: §r§a(?<type>\\w+) (?<level>\\d+): §r§c§lMAX§r\$")
     private var sentErrorOnce = false
 
     private fun calculateLevelXp(levelingArray: JsonArray, level: Int): Double {
@@ -50,10 +52,15 @@ object TabSkillInfoParser {
         }
     }
 
+    private fun levelArray(skillType: String) =
+        if (skillType == "runecrafting") Utils.getElement(Constants.LEVELING, "runecrafting_xp").asJsonArray
+        else Utils.getElement(Constants.LEVELING, "leveling_xp").asJsonArray
+
     @JvmStatic
     fun parseSkillInfo() {
         for (s in TabListUtils.getTabList()) {
             val matcher = skillTabPattern.matcher(s)
+            val maxLevelMatcher = maxSkillTabPattern.matcher(s)
             if (matcher.matches()) {
                 // All the groups are guaranteed to match
                 val name = matcher.group("type")!!.lowercase()
@@ -63,10 +70,7 @@ object TabSkillInfoParser {
                     sendError()
                     return
                 }
-                val runecrafting = name == "runecrafting"
-                val levelingArray =
-                    if (runecrafting) Utils.getElement(Constants.LEVELING, "runecrafting_xp").asJsonArray
-                    else Utils.getElement(Constants.LEVELING, "leveling_xp").asJsonArray
+                val levelingArray = levelArray(name)
 
                 val levelXp = calculateLevelXp(levelingArray, level - 1)
                 // This *should* not cause problems, since skills that are max Level won't be picked up
@@ -87,6 +91,18 @@ object TabSkillInfoParser {
 
                 // There is only one skill at a time in the tab list
                 break
+            } else if (maxLevelMatcher.matches()) {
+                val name = maxLevelMatcher.group("type")!!.lowercase()
+                val level = maxLevelMatcher.group("level")!!.toInt()
+
+                val existingLevel = XPInformation.getInstance().getSkillInfo(name) ?: XPInformation.SkillInfo()
+                if (existingLevel.level != level) {
+                    existingLevel.level = level
+                    val levelingArray = levelArray(name)
+
+                    val totalXp = calculateLevelXp(levelingArray, level - 1)
+                    existingLevel.totalXp = totalXp.toFloat()
+                }
             }
         }
     }
