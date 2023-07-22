@@ -398,7 +398,6 @@ public class SkyblockProfiles {
 					}
 
 					guildInformation = jsonObject.getAsJsonObject("guild");
-					System.out.println(guildInformation);
 
 					if (runnable != null) {
 						runnable.run();
