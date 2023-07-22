@@ -221,8 +221,15 @@ public class ExtraPage extends GuiProfileViewerPage {
 			}
 		}
 
-		JsonObject guildInfo =
-			clickedLoadGuildInfoButton ? GuiProfileViewer.getProfile().getOrLoadGuildInformation(null) : null;
+		JsonObject guildInfo;
+		if (GuiProfileViewer.getProfile().isPlayerInGuild()) {
+			guildInfo =
+				clickedLoadGuildInfoButton ? GuiProfileViewer.getProfile().getOrLoadGuildInformation(null) : null;
+		} else {
+			guildInfo = new JsonObject();
+			guildInfo.add("name", new JsonPrimitive("N/A"));
+		}
+
 		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
 
 		// Render the info when the button has been clicked
