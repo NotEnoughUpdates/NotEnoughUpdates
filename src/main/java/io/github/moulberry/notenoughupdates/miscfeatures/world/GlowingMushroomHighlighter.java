@@ -68,7 +68,7 @@ public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 
 	@Override
 	protected int getColor(BlockPos blockPos) {
-		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.glowingMushroomColor);
+		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.glowingMushroomColor2);
 	}
 
 }

@@ -121,6 +121,6 @@ public class FrozenTreasuresHighlighter extends GenericBlockHighlighter {
 
 	@Override
 	protected int getColor(BlockPos blockPos) {
-		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.frozenTreasuresColor);
+		return SpecialColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.world.frozenTreasuresColor2);
 	}
 }
