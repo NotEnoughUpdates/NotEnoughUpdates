@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.JsonToNBT;
@@ -242,6 +243,7 @@ public class ProfileViewerUtils {
 	}
 
 	public static ItemStack getPlayerData(String username) {
+		if (username == null) return new ItemStack(Blocks.stone);
 		String nameLower = username.toLowerCase();
 		if (!playerSkullCache.containsKey(nameLower)) {
 			playerSkullCache.put(nameLower, fallBackSkull());
