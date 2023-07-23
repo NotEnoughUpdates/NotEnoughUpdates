@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
@@ -320,6 +321,9 @@ public class SkyblockProfiles {
 		profileViewer.getManager().ursaClient
 			.get(UrsaClient.profiles(Utils.parseDashlessUUID(uuid)))
 			.handle((profilesJson, throwable) -> {
+				if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())) {
+					new ProfileDataLoadedEvent(uuid, profilesJson).post();
+				}
 				if (profilesJson != null && profilesJson.has("success")
 					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
 					Map<String, SkyblockProfile> nameToProfile = new HashMap<>();
