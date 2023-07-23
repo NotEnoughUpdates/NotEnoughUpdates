@@ -123,7 +123,7 @@ public class Mining {
 		minStep = 10
 	)
 	@ConfigAccordionId(id = 1)
-	public int drillFuelBarWidth = 200;
+	public int drillFuelBarWidth = 182;
 
 	@Expose
 	public Position drillFuelBarPosition = new Position(0, -100, true, false);

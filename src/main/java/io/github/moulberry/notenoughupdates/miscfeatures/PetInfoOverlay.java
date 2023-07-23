@@ -910,7 +910,7 @@ public class PetInfoOverlay extends TextOverlay {
 
 					float deltaXp = skillXp - skillXpLast;
 
-					float gain = getXpGain(currentPet, deltaXp, entry.getKey().toUpperCase());
+					float gain = getXpGain(currentPet, deltaXp, entry.getKey());
 					totalGain += gain;
 
 					skillInfoMapLast.put(entry.getKey(), skillXp);

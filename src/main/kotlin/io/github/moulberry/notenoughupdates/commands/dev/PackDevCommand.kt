@@ -39,6 +39,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 
 
 @NEUAutoSubscribe
@@ -169,7 +170,7 @@ class PackDevCommand {
                             it.append("Name: ")
                             it.appendLine(te.playerProfile.name)
                             it.append("Textures: ")
-                            it.appendLine(te.playerProfile.properties.get("textures")?.joinToString(", ", "[", "]") { p -> "${p.name}: ${p.value}" })
+                            it.appendLine(te.playerProfile.properties.get("textures")?.firstOrNull()?.value)
                         }
                     }.toString().trim()
 

@@ -72,9 +72,9 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 		return INSTANCE;
 	}
 
-	private final ResourceLocation atlas = new ResourceLocation("notenoughupdates:custom_skull_textures_atlas");
+	private final ResourceLocation atlas = new ResourceLocation("notenoughupdates", "custom_skull_textures_atlas");
 	private final ResourceLocation configuration = new ResourceLocation(
-		"notenoughupdates:custom_skull_textures/customskull.json");
+		"notenoughupdates", "custom_skull_textures/customskull.json");
 	protected final TextureMap textureMap = new TextureMap("custom_skull_textures");
 
 	public static ItemCameraTransforms.TransformType mostRecentTransformType = ItemCameraTransforms.TransformType.NONE;
@@ -116,7 +116,7 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 					JsonObject obj = entry.getValue().getAsJsonObject();
 					if (obj.has("model")) {
 						String location = obj.get("model").getAsString();
-						ResourceLocation loc = new ResourceLocation("notenoughupdates:custom_skull_textures/" + location + ".json");
+						ResourceLocation loc = new ResourceLocation("notenoughupdates", "custom_skull_textures/" + location + ".json");
 
 						CustomSkull skull;
 						if ((skull = skullCache.get(location)) == null) {
@@ -133,7 +133,7 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 						customSkulls.put(entry.getKey(), skull);
 					} else if (obj.has("texture")) {
 						String location = obj.get("texture").getAsString();
-						ResourceLocation loc = new ResourceLocation("notenoughupdates:custom_skull_textures/" + location + ".png");
+						ResourceLocation loc = new ResourceLocation("notenoughupdates", "custom_skull_textures/" + location + ".png");
 
 						CustomSkull skull = new CustomSkull();
 						skull.texture = loc;

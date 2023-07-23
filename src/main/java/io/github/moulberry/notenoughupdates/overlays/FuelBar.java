@@ -39,9 +39,11 @@ import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
+import static io.github.moulberry.notenoughupdates.NotEnoughUpdates.MODID;
+
 @NEUAutoSubscribe
 public class FuelBar {
-	public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");
+	public static final ResourceLocation FUEL_BAR = new ResourceLocation(MODID, "fuel_bar.png");
 
 	private float fuelAmount = -1;
 	private String fuelString = "";
@@ -107,7 +109,7 @@ public class FuelBar {
 
 			Position position = NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition;
 			int x = position.getAbsX(scaledResolution, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth);
-			int y = position.getAbsY(scaledResolution, 12);
+			int y = position.getAbsY(scaledResolution, 10);
 			x -= NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth / 2;
 			renderBar(x, y + 4, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, fuelAmount);
 
