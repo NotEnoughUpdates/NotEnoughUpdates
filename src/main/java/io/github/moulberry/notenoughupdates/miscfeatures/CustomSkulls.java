@@ -313,7 +313,7 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 		if (NotEnoughUpdates.INSTANCE.config.misc.disableSkullRetexturing) {
 			return false;
 		}
-		if (placedDirection != EnumFacing.UP || skullType != 3) {
+		if (skullType != 3) {
 			return false;
 		}
 		if (skullOwner == null || skullOwner.getId() == null) {
@@ -331,16 +331,42 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 			GlStateManager.disableCull();
 			GlStateManager.enableLighting();
 
-			GlStateManager.translate(xOffset + 0.5F, yOffset, zOffset + 0.5F);
+			final float rot;
+			switch (placedDirection) {
+				case NORTH: {
+					GlStateManager.translate(xOffset + 0.5f, yOffset + 0.25f, zOffset + 0.74f);
+					rot = 0f;
+					break;
+				}
+				case SOUTH: {
+					GlStateManager.translate(xOffset + 0.5f, yOffset + 0.25f, zOffset + 0.26f);
+					rot = 180.0f;
+					break;
+				}
+				case WEST: {
+					GlStateManager.translate(xOffset + 0.74f, yOffset + 0.25f, zOffset + 0.5f);
+					rot = 270.0f;
+					break;
+				}
+				case EAST: {
+					GlStateManager.translate(xOffset + 0.26f, yOffset + 0.25f, zOffset + 0.5f);
+					rot = 90.0f;
+					break;
+				}
+				default: {
+					GlStateManager.translate(xOffset + 0.5f, yOffset, zOffset + 0.5f);
+					rot = rotationDeg;
+				}
+			}
 
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.enableAlpha();
 
-			GlStateManager.rotate(rotationDeg, 0, 1, 0);
+			GlStateManager.rotate(rot, 0, 1, 0);
 
 			GlStateManager.translate(0, 0.25f, 0);
 
-			if (xOffset == -0.5 && yOffset == 0 && zOffset == -0.5 && rotationDeg == 180) {
+			if (placedDirection == EnumFacing.UP && xOffset == -0.5 && yOffset == 0 && zOffset == -0.5 && rotationDeg == 180) {
 				skull.model.getAllTransforms().applyTransform(ItemCameraTransforms.TransformType.HEAD);
 			} else {
 				skull.model.getAllTransforms().applyTransform(mostRecentTransformType);
