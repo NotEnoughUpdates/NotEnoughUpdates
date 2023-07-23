@@ -102,6 +102,7 @@ object TabSkillInfoParser {
 
                     val totalXp = calculateLevelXp(levelingArray, level - 1)
                     existingLevel.totalXp = totalXp.toFloat()
+                    XPInformation.getInstance().skillInfoMap[name] = existingLevel
                 }
             }
         }
