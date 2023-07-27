@@ -321,8 +321,11 @@ public class SkyblockProfiles {
 		profileViewer.getManager().ursaClient
 			.get(UrsaClient.profiles(Utils.parseDashlessUUID(uuid)))
 			.handle((profilesJson, throwable) -> {
-				if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())) {
-					new ProfileDataLoadedEvent(uuid, profilesJson).post();
+				try {
+					if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())) {
+						new ProfileDataLoadedEvent(uuid, profilesJson).post();
+					}
+				} catch (Exception ignored) {
 				}
 				if (profilesJson != null && profilesJson.has("success")
 					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
