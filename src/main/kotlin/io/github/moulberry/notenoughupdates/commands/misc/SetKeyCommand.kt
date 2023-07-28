@@ -19,11 +19,10 @@
 
 package io.github.moulberry.notenoughupdates.commands.misc
 
-import com.mojang.brigadier.arguments.StringArgumentType.string
-import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
-import io.github.moulberry.notenoughupdates.util.brigadier.*
+import io.github.moulberry.notenoughupdates.util.brigadier.reply
+import io.github.moulberry.notenoughupdates.util.brigadier.thenExecute
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @NEUAutoSubscribe
@@ -31,13 +30,10 @@ class SetKeyCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
         event.command("neusetkey") {
-            thenArgument("key", string()) { key ->
                 thenExecute {
-                    NotEnoughUpdates.INSTANCE.config.apiData.apiKey = this[key]
-                    reply("Set your key to ${this[key]}")
+                    reply("This command is no longer needed, NEU no longer uses API keys.")
 
-                }
-            }.withHelp("Set your API key found at https://developer.hypixel.net/")
+            }
         }
     }
 }
