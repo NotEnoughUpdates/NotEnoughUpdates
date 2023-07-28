@@ -20,8 +20,8 @@
 package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.common.reflect.TypeToken;
-import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
@@ -120,6 +120,7 @@ public class GardenNpcPrices {
 			double price = NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarOrBin(internalName, false) /item.price*amount;
 			prices.put(item.display, price);
 		}
+		if (prices.isEmpty()) return new net.minecraft.util.Tuple<String, Double>("NEU REPO error", 0d);
 		Map.Entry<String, Double> maxPrice = Collections.max(prices.entrySet(), Map.Entry.comparingByValue());
 		return new net.minecraft.util.Tuple<String, Double>(maxPrice.getKey(), maxPrice.getValue());
 	}
