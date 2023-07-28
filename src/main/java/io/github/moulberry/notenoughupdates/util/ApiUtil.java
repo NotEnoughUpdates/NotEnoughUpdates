@@ -286,8 +286,6 @@ public class ApiUtil {
 						}
 					}
 				} catch (IOException e) {
-					if (conn instanceof HttpURLConnection) {
-					}
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
 			}, executorService).handle((obj, t) -> {
