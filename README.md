@@ -52,8 +52,7 @@ Ever since Moulberry has stopped working on NEU, other contributors have been wo
    - If you have java installed, double click the file, click `install`
    - If not, press the windows key + R; type `%appdata%`; click on the folder called `.minecraft`; click on the folder called `mods` and drag the mods file in here.
 3. Open the Minecraft launcher and run your forge installation you set up earlier.
-4. Then, hop onto Skyblock and run the command `/api new`. Your api key is automatically filled out and all features should work.
-5. Type `/neu`. If you see the NotEnoughUpdates menu, you have done this correctly!
+4. Type `/neu`. If you see the NotEnoughUpdates menu, you have done this correctly!
 
 ## Features
 

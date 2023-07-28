@@ -42,8 +42,7 @@ public class SkillOverlays {
 	@ConfigOption(
 		name = "Skill Overlay info",
 		desc =
-			"The skill trackers need you to have an \u00A72api key\u00A77 set (if you don't have one set do \u00A72/api new\u00A77)\n" +
-				"For the overlays to show you need a \u00A7bmathematical hoe\u00A77 or an axe with \u00A7bcultivating\u00A77 " +
+			"For the overlays to show you need a \u00A7bmathematical hoe\u00A77 or an axe with \u00A7bcultivating\u00A77 " +
 				"enchant for farming, a pickaxe with \u00A7bcompact\u00A77 for mining or a rod with \u00A7bexpertise\u00A77"
 	)
 	@ConfigEditorFSR(

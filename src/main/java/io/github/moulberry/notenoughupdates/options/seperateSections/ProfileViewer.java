@@ -33,17 +33,6 @@ import java.util.List;
 
 public class ProfileViewer {
 
-	@ConfigOption(
-		name = "Profile Viewer info",
-		desc =
-			"The Profile Viewer requires you to have an \u00A72api key\u00A77 set (if you don't have one set do \u00A72/api new\u00A77)\n"
-	)
-	@ConfigEditorFSR(
-		runnableId = 12,
-		buttonText = ""
-	)
-	public boolean pvInfo = false;
-
 	@Expose
 	@ConfigOption(
 		name = "Open Profile Viewer",
