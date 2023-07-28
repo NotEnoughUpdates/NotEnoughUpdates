@@ -766,6 +766,9 @@ public class BasicPage extends GuiProfileViewerPage {
 		if (NotEnoughUpdates.INSTANCE.config.profileViewer.displayWeight) {
 			renderWeight(mouseX, mouseY, selectedProfile);
 		}
+
+		selectedProfile.updateTamingLevel();
+		selectedProfile.updateBeastMasterMultiplier();
 	}
 
 	private String getIcon(String gameModeType) {

@@ -111,6 +111,7 @@ public class ApiUtil {
 	}
 
 	public void updateProfileData(String playerUuid) {
+		if (true) return;
 		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
 
 		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");

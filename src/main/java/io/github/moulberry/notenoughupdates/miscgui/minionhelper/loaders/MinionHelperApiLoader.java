@@ -53,7 +53,7 @@ public class MinionHelperApiLoader {
 	private ApiData apiData = null;
 	private boolean notifyNoCollectionApi = false;
 	private long lastLoaded = 0;
-	private boolean invalidApiKey = false;
+	private boolean invalidApiKey = true;
 
 	public MinionHelperApiLoader(MinionHelperManager manager) {
 		this.manager = manager;
