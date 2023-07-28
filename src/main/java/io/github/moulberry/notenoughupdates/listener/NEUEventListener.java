@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -45,6 +45,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.TabSkillInfoParser;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -171,7 +172,7 @@ public class NEUEventListener {
 
 			CrystalOverlay.tick();
 			FairySouls.getInstance().tick();
-			XPInformation.getInstance().tick();
+			TabSkillInfoParser.parseSkillInfo();
 			ProfileApiSyncer.getInstance().tick();
 			ItemCustomizeManager.tick();
 			BackgroundBlur.markDirty();

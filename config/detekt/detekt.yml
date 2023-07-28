@@ -9,3 +9,7 @@ forge:
     active: true
   InvalidSubscribeEvent:
     active: true
+
+style:
+  MagicNumber:
+    active: false
