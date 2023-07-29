@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
@@ -413,7 +414,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 						GL11.GL_NEAREST
 					);
 					break;
-				case 8:
+				default:
 					Utils.drawTexturedRect(
 						guiLeft + 365,
 						guiTop + 100,
@@ -426,30 +427,38 @@ public class MuseumPage extends GuiProfileViewerPage {
 						GL11.GL_NEAREST
 					);
 					startX = guiLeft + 365 + 5;
-					break;
-				default:
 			}
 
 			int startY = guiTop + 100 + 8;
 			int row = 0;
 			int column = 0;
+			boolean is_five = false;
+			if (size == 5) {
+				size = 8;
+				is_five = true;
+			}
 			for (int i = 0; i < size; i++) {
-				JsonObject item = (JsonObject) selectedItem.get(i);
+				ItemStack stack = new ItemStack(Blocks.barrier);
+				if (!is_five || i < 5) {
+					JsonObject item = (JsonObject) selectedItem.get(i);
+					stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
+				}
 
 				if (row % 4 == 0 && row > 1) {
 					column = 1;
 					row = 0;
 				}
 
-				int x = startX + (column * 18);
+				int x = startX + (column * 19);
 				int y = startY + (row * 18);
 
-				ItemStack stack = NotEnoughUpdates.INSTANCE.manager.jsonToStack(item, true);
 				Utils.drawItemStack(stack, x, y);
 
 				if ((mouseX >= x && mouseX <= x + 16) &&
 					(mouseY >= y && mouseY <= y + 16)) {
-					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					if (!is_five || i < 5) {
+						getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					}
 				}
 				row++;
 			}
