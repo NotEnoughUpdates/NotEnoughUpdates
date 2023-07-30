@@ -637,10 +637,10 @@ public class FarmingSkillOverlay extends TextOverlay {
 		if (pitch > 180) pitch -= 360;
 
 		lineMap.put(6, EnumChatFormatting.AQUA + "Yaw: " + EnumChatFormatting.YELLOW +
-			String.format("%.2f", yaw) + EnumChatFormatting.BOLD + "\u1D52");
+			String.format("%.2f°", yaw));
 
 		lineMap.put(8, EnumChatFormatting.AQUA + "Pitch: " + EnumChatFormatting.YELLOW +
-			String.format("%.2f", pitch) + EnumChatFormatting.BOLD + "\u1D52");
+			String.format("%.2f°", pitch));
 	}
 
 	private void renderCropsPerSecond() {
