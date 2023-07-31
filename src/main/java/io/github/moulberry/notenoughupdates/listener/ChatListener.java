@@ -124,8 +124,8 @@ public class ChatListener {
 			((!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
 				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
 				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
-				// Party and guild chat components are different from global chats, so need to check for them here
-				// Party being 0 and global chat being 1
+				// Party/global chat with levels off components are different from global chat with levels on, so need to check for them here
+				// Party/global without levels being 0 and global with levels being 1
 			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().size() > 1 && chatComponent.getSiblings().get(1).getChatStyle() != null &&
 				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent() != null &&
 				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND))) {
