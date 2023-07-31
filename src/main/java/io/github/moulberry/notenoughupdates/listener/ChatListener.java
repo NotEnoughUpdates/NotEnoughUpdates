@@ -131,14 +131,14 @@ public class ChatListener {
 				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND))) {
 
 			String startsWith = null;
-			int partyOrPublic = 1;
-
 			List<IChatComponent> siblings = chatComponent.getSiblings();
+			int chatComponentsCount = siblings.size()-2;
+
 			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
-				partyOrPublic = 0;
 			} else if (!siblings.isEmpty() && siblings.size() > 1 && siblings.get(1).getChatStyle() != null) {
-				ClickEvent chatClickEvent = chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent();
+
+				ClickEvent chatClickEvent = chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent();
 				if (chatClickEvent != null) {
 					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
 						startsWith = "/socialoptions";
@@ -147,14 +147,14 @@ public class ChatListener {
 			}
 
 			if (startsWith != null) {
-				String username = partyOrPublic == 0 ?
+				String username = startsWith.equals("/viewprofile") ?
 					Utils.getNameFromChatComponent(chatComponent) :
-					chatComponent.getSiblings().get(partyOrPublic/* Should always be 1 in this case lol*/).getChatStyle().getChatClickEvent().getValue().substring(15);
+					chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent().getValue().substring(15);
 
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
 					ChatStyle pvClickStyle = getPVChatStyle(username);
-						chatComponent.getSiblings().get(partyOrPublic).setChatStyle(pvClickStyle);
+						chatComponent.getSiblings().get(chatComponentsCount).setChatStyle(pvClickStyle);
 					return chatComponent;
 				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
 
@@ -165,7 +165,7 @@ public class ChatListener {
 							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
 					);
 
-						chatComponent.getSiblings().get(partyOrPublic).setChatStyle(ahClickStyle);
+						chatComponent.getSiblings().get(chatComponentsCount).setChatStyle(ahClickStyle);
 					return chatComponent;
 				}
 			} // wanted to add this for guild but guild uses uuid :sad:
