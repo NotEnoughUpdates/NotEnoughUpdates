@@ -53,7 +53,7 @@ import javax.management.ObjectName
 class NEUStatsCommand {
     @SubscribeEvent
     fun onCommands(event: RegisterBrigadierCommandEvent) {
-        event.command("stats", "neustats") {
+        event.command( "neustats") {
             thenLiteralExecute("modlist") {
                 clipboardAndSendMessage(
                     DiscordMarkdownBuilder()
@@ -198,6 +198,7 @@ class NEUStatsCommand {
             builder.append("Last Commit", NotEnoughUpdates.INSTANCE.manager.latestRepoCommit)
             builder.append("Repo Location", "https://github.com/${apiData.repoUser}/${apiData.repoName}/tree/${apiData.repoBranch}")
         }
+        builder.append("On Backup Repo", NotEnoughUpdates.INSTANCE.manager.onBackupRepo)
         builder.append("Loaded Items", NotEnoughUpdates.INSTANCE.manager.itemInformation.size.toString())
         if (apiData.moulberryCodesApi.isEmpty()) {
             apiData.moulberryCodesApi = "moulberry.codes"
