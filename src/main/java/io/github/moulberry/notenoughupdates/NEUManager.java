@@ -1567,7 +1567,6 @@ public class NEUManager {
 	}
 
 	public CompletableFuture<List<String>> userFacingRepositoryReload() {
-		onBackupRepo = false;
 		String lastCommit = NotEnoughUpdates.INSTANCE.manager.latestRepoCommit;
 		NotEnoughUpdates.INSTANCE.manager.resetRepo();
 		return NotEnoughUpdates.INSTANCE.manager
