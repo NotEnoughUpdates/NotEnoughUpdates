@@ -2131,6 +2131,7 @@ public class StorageOverlay extends GuiElement {
 			for (Slot slot : container.inventorySlots.inventorySlots) {
 				if (slot != null && ((AccessorGuiContainer) container).doIsMouseOverSlot(slot, mouseX, mouseY)) {
 					String internalName = manager.createItemResolutionQuery().withItemStack(slot.getStack()).resolveInternalName();
+					if (internalName == null) continue;
 					JsonObject item = manager.getItemInformation().get(internalName);
 					if (Keyboard.getEventKey() == manager.keybindViewRecipe.getKeyCode()) manager.showRecipe(item);
 					if (Keyboard.getEventKey() == manager.keybindViewUsages.getKeyCode()) manager.displayGuiItemUsages(internalName);
