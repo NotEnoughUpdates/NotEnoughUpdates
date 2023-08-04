@@ -50,19 +50,6 @@ class DungeonCommands {
                 reply("Deez nuts lmao")
             }
         }.withHelp("Warps to the dungeon nuts")
-        event.command("join") {
-            thenArgument("floor", string()) { floor ->
-                suggestsList((1..7).flatMap { listOf("f$it", "m$it") })
-                thenExecute {
-                    val floor = this[floor]
-                    val prefix = if (floor.startsWith("m")) "master_catacombs" else "catacombs"
-                    val level = floor.lastOrNull()?.digitToIntOrNull()
-                    val cmd = "/joindungeon $prefix ${floor.lastOrNull()}"
-                    reply("Running command: $cmd")
-                    Minecraft.getMinecraft().thePlayer.sendChatMessage(cmd)
-                }
-            }.withHelp("Join a dungeon floor with a party of 5")
-        }
         event.command("neumap") {
             thenLiteral("reset") {
                 thenExecute {

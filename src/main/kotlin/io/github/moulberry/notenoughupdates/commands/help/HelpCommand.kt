@@ -35,7 +35,6 @@ class HelpCommand {
         "§6/neusouls {on/off/clear/unclear} §r§7- Shows waypoints to fairy souls.",
         "§6/neubuttons §r§7- Opens a GUI which allows you to customize inventory buttons.",
         "§6/neuec §r§7- Opens the enchant colour GUI.",
-        "§6/join {floor} §r§7- Short Command to join a Dungeon. §lNeed a Party of 5 People§r§7 {4/f7/m5}.",
         "§6/neucosmetics §r§7- Opens the cosmetic GUI.",
         "§6/neurename §r§7- Opens the NEU Item Customizer.",
         "§6/cata §b?{name} §2ⴵ §r§7- Opens the profile viewer's Catacombs page.",
