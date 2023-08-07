@@ -54,7 +54,7 @@ object TabSkillInfoParser {
 
     private fun levelArray(skillType: String) =
         if (skillType == "runecrafting") Utils.getElement(Constants.LEVELING, "runecrafting_xp").asJsonArray
-        else Utils.getElement(Constants.LEVELING, "leveling_xp").asJsonArray
+        else Utils.getElement(Constants.LEVELING, "leveling_xp").asJsonArray ?: JsonArray()
 
     @JvmStatic
     fun parseSkillInfo() {
@@ -70,7 +70,7 @@ object TabSkillInfoParser {
                     sendError()
                     return
                 }
-                val levelingArray = levelArray(name)
+                val levelingArray = levelArray(name) ?: return
 
                 val levelXp = calculateLevelXp(levelingArray, level - 1)
                 // This *should* not cause problems, since skills that are max Level won't be picked up
@@ -98,7 +98,7 @@ object TabSkillInfoParser {
                 val existingLevel = XPInformation.getInstance().getSkillInfo(name) ?: XPInformation.SkillInfo()
                 if (existingLevel.level != level) {
                     existingLevel.level = level
-                    val levelingArray = levelArray(name)
+                    val levelingArray = levelArray(name) ?: return
 
                     val totalXp = calculateLevelXp(levelingArray, level - 1)
                     existingLevel.totalXp = totalXp.toFloat()
