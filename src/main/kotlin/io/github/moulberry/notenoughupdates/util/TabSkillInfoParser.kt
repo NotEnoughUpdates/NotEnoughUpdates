@@ -45,19 +45,24 @@ object TabSkillInfoParser {
         return diff <= percentage
     }
 
-    private fun sendError() {
+    private fun sendError(message: String) {
         if (!sentErrorOnce) {
-            Utils.addChatMessage("${EnumChatFormatting.RED}[NEU] Error while parsing skill level from tab list")
+            Utils.addChatMessage(message)
             sentErrorOnce = true
         }
     }
 
     private fun levelArray(skillType: String) =
         if (skillType == "runecrafting") Utils.getElement(Constants.LEVELING, "runecrafting_xp").asJsonArray
-        else Utils.getElement(Constants.LEVELING, "leveling_xp").asJsonArray ?: JsonArray()
+        else Utils.getElement(Constants.LEVELING, "leveling_xp").asJsonArray
 
     @JvmStatic
     fun parseSkillInfo() {
+        if (Constants.LEVELING == null) {
+            sendError("${EnumChatFormatting.RED}[NEU] There is an error with your repo, please report this in the discord at ${EnumChatFormatting.AQUA}discord.gg/moulberry")
+            return
+        }
+
         for (s in TabListUtils.getTabList()) {
             val matcher = skillTabPattern.matcher(s)
             val maxLevelMatcher = maxSkillTabPattern.matcher(s)
@@ -67,11 +72,10 @@ object TabSkillInfoParser {
                 val level = matcher.group("level")!!.toInt()
                 val progress = matcher.group("progress")!!.toFloatOrNull()
                 if (progress == null) {
-                    sendError()
+                    sendError("${EnumChatFormatting.RED}[NEU] Error while parsing skill level from tab list")
                     return
                 }
-                val levelingArray = levelArray(name) ?: return
-
+                val levelingArray = levelArray(name)
                 val levelXp = calculateLevelXp(levelingArray, level - 1)
                 // This *should* not cause problems, since skills that are max Level won't be picked up
                 val nextLevelDiff = levelingArray[level].asDouble
@@ -98,7 +102,7 @@ object TabSkillInfoParser {
                 val existingLevel = XPInformation.getInstance().getSkillInfo(name) ?: XPInformation.SkillInfo()
                 if (existingLevel.level != level) {
                     existingLevel.level = level
-                    val levelingArray = levelArray(name) ?: return
+                    val levelingArray = levelArray(name)
 
                     val totalXp = calculateLevelXp(levelingArray, level - 1)
                     existingLevel.totalXp = totalXp.toFloat()
