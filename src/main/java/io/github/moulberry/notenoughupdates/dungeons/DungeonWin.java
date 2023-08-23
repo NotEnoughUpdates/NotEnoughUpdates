@@ -92,6 +92,8 @@ public class DungeonWin {
 	public static List<String> text = new ArrayList<>();
 	public static long startTime = 0;
 
+	private static boolean seenDungeonWinOverlayThisRun = false;
+
 	static {
 		for (int i = 0; i < 10; i++) {
 			text.add("{PLACEHOLDER DUNGEON STAT #" + i + "}");
@@ -211,6 +213,7 @@ public class DungeonWin {
 					}
 
 					SES.schedule(() -> NotEnoughUpdates.INSTANCE.sendChatMessage("/showextrastats"), 100L, TimeUnit.MILLISECONDS);
+					seenDungeonWinOverlayThisRun = false;
 				}
 			}
 		}
@@ -222,8 +225,9 @@ public class DungeonWin {
 					e.setCanceled(true);
 					hideChat = false;
 					displayWin();
+					seenDungeonWinOverlayThisRun = true;
 				} else {
-					if (unformatted.trim().length() > 0) {
+					if (unformatted.trim().length() > 0 && !seenDungeonWinOverlayThisRun) {
 						if (unformatted.contains("The Catacombs") || unformatted.contains("Master Mode Catacombs") ||
 							unformatted.contains("Team Score") || unformatted.contains("Defeated") || unformatted.contains(
 							"Total Damage")
@@ -241,7 +245,7 @@ public class DungeonWin {
 					}
 				}
 			} else {
-				if (unformatted.contains("\u25AC")) {
+				if (unformatted.contains("\u25AC") && !seenDungeonWinOverlayThisRun) {
 					hideChat = true;
 					text.clear();
 					e.setCanceled(true);
