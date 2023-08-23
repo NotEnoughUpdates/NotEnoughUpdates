@@ -28,6 +28,7 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import kotlin.Pair;
@@ -91,6 +92,7 @@ public class CalendarOverlay {
 	long rainInterval = 3600000L;
 	long thunderFrequency = 3;
 	long rainDuration = 1200 * 1000L;
+	List<Pair<Long, SBEvent>> externalEvents = new ArrayList<>();
 
 	public static void setEnabled(boolean enabled) {
 		CalendarOverlay.enabled = enabled;
@@ -264,6 +266,16 @@ public class CalendarOverlay {
 			fillRepeatingEvents(25 - eventMap.size());
 			fillSpecialMayors(4);
 			fillWeather();
+			fillRepoMandatedEvents();
+		}
+	}
+
+	public void fillRepoMandatedEvents() {
+		for (Pair<Long, SBEvent> externalEvent : externalEvents) {
+			addEvent(
+				SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(externalEvent.component1())),
+				externalEvent.component2()
+			);
 		}
 	}
 
@@ -321,6 +333,28 @@ public class CalendarOverlay {
 		if (calendarJson.has("rainDuration")) {
 			rainDuration = calendarJson.get("rainDuration").getAsLong();
 		}
+		if (calendarJson.has("external")) {
+			List<Pair<Long, SBEvent>> externalEvents = new ArrayList<>();
+			for (JsonElement external : calendarJson.getAsJsonArray("external")) {
+				if (!(external instanceof JsonObject)) continue;
+				SBEvent sbEvent = new SBEvent(
+					Utils.getElementAsString(Utils.getElement(external, "id"), "external"),
+					Utils.getElementAsString(Utils.getElement(external, "display"), "§aExternal Event"),
+					Utils.getElementAsBool(Utils.getElement(external, "special"), false),
+					NotEnoughUpdates.INSTANCE.manager.createItem(Utils.getElementAsString(Utils.getElement(
+						external,
+						"itemStack"
+					), "painting")),
+					JsonUtils.getJsonArrayOrEmpty((JsonObject) external, "description", it -> Utils.getElementAsString(it, "")),
+					Utils.getElementAsInt(Utils.getElement(external, "duration"), -1),
+					true
+				);
+				long start = Utils.getElementAsLong(Utils.getElement(external, "start"), 0);
+				externalEvents.add(new Pair<>(start, sbEvent));
+			}
+			this.externalEvents = externalEvents;
+		}
+		eventMap.clear();
 	}
 
 	@SubscribeEvent
