@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,9 +17,9 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.core.config.struct;
+package io.github.moulberry.notenoughupdates.core.config;
 
-import io.github.moulberry.notenoughupdates.core.config.gui.GuiOptionEditor;
+import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import lombok.var;
@@ -34,7 +34,7 @@ public class GuiOptionEditorBlocked extends GuiOptionEditor {
 	private final GuiOptionEditor base;
 
 	public GuiOptionEditorBlocked(GuiOptionEditor base) {
-		super(base.option);
+		super(base.getOption());
 		this.base = base;
 	}
 

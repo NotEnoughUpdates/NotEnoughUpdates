@@ -21,13 +21,7 @@ package io.github.moulberry.notenoughupdates.compat.oneconfig;
 
 import cc.polyfrost.oneconfig.config.data.Mod;
 import cc.polyfrost.oneconfig.config.data.ModType;
-import io.github.moulberry.notenoughupdates.core.config.Config;
 import io.github.moulberry.notenoughupdates.oneconfig.IOneConfigCompat;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 public class OneConfigCompat extends IOneConfigCompat {
 

@@ -21,14 +21,14 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,8 +49,7 @@ public class Mining {
 			"Use \"Commissions Only\" to only show active commission locations"
 	)
 	@ConfigEditorDropdown(
-		values = {"Hide", "Commissions Only", "Always"},
-		initialIndex = 1
+		values = {"Hide", "Commissions Only", "Always"}
 	)
 	@ConfigAccordionId(id = 0)
 	public int locWaypoints = 1;
@@ -72,8 +71,7 @@ public class Mining {
 			"Use \"Commission End\" to only show after finishing commissions"
 	)
 	@ConfigEditorDropdown(
-		values = {"Hide", "Commission End", "Always"},
-		initialIndex = 1
+		values = {"Hide", "Commission End", "Always"}
 	)
 	@ConfigAccordionId(id = 0)
 	public int emissaryWaypoints = 1;
@@ -421,8 +419,7 @@ public class Mining {
 
 	@ConfigOption(
 		name = "Colours",
-		desc = "",
-		searchTags = "color"
+		desc = ""
 	)
 	@ConfigEditorAccordion(id = 6)
 	@ConfigAccordionId(id = 4)
@@ -460,9 +457,7 @@ public class Mining {
 	@Expose
 	@ConfigOption(
 		name = "Done Color",
-		desc = "Change the colour when the part is given to the NPC.",
-		searchTags = "color"
-
+		desc = "Change the colour when the part is given to the NPC."
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -804,8 +799,7 @@ public class Mining {
 		desc = "When the Powder Grinding Tracker should be reset"
 	)
 	@ConfigEditorDropdown(
-		values = {"On World Change", "On Restart", "Never"},
-		initialIndex = 2
+		values = {"On World Change", "On Restart", "Never"}
 	)
 	@ConfigAccordionId(id = 9)
 	public int powderGrindingTrackerResetMode = 2;

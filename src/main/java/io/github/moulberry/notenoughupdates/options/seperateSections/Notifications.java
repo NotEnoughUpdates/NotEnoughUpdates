@@ -20,13 +20,13 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Notifications {
 	@Expose

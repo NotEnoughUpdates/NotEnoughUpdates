@@ -20,16 +20,16 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +38,7 @@ import java.util.List;
 public class ItemOverlays {
 	@ConfigOption(
 		name = "Treecapitator Overlay",
-		desc = "",
-		searchTags = "jungle"
+		desc = "Jungle Axe"
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean treecapAccordion = false;
@@ -65,8 +64,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the overlay",
-		searchTags = "color"
+		desc = "Change the colour of the overlay"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 0)
@@ -109,8 +107,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the ghost block outline",
-		searchTags = "color"
+		desc = "Change the colour of the ghost block outline"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -135,8 +132,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Overlay Colour",
-		desc = "Change the colour of the ghost block outline",
-		searchTags = "color"
+		desc = "Change the colour of the ghost block outline"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -248,8 +244,7 @@ public class ItemOverlays {
 	@Expose
 	@ConfigOption(
 		name = "Highlight Colour",
-		desc = "Change the colour of the etherwarp target block outline",
-		searchTags = "color"
+		desc = "Change the colour of the etherwarp target block outline"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 4)
@@ -464,9 +459,7 @@ public class ItemOverlays {
 		name = "\u00A7aInspiration:",
 		desc = "\u00A76u/Sori0612 \u00A77on \u00A7cReddit\n\n\u00A78https://tinyurl.com/creeperveil"
 	)
-	@ConfigEditorFSR(
-		runnableId = 12
-	)
+	@ConfigEditorInfoText()
 	public boolean customWitherCloakCredit = false;
 
 	@Expose

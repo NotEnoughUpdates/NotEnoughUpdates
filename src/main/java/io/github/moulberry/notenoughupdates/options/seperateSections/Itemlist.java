@@ -20,11 +20,11 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Itemlist {
 	@Expose
@@ -119,8 +119,7 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Foreground Colour",
-		desc = "Change the colour of foreground elements in the Itemlist",
-		searchTags = "color"
+		desc = "Change the colour of foreground elements in the Itemlist"
 	)
 	@ConfigEditorColour
 	public String foregroundColour = "00:255:100:100:100";
@@ -128,8 +127,7 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Favourite Colour",
-		desc = "Change the colour of favourited elements in the Itemlist",
-		searchTags = "color"
+		desc = "Change the colour of favourited elements in the Itemlist"
 	)
 	@ConfigEditorColour
 	public String favouriteColour = "00:255:200:150:50";
@@ -137,8 +135,7 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Pane Background Colour",
-		desc = "Change the colour of the Itemlist background",
-		searchTags = "color"
+		desc = "Change the colour of the Itemlist background"
 	)
 	@ConfigEditorColour
 	public String backgroundColour = "15:6:0:0:255";
@@ -146,8 +143,7 @@ public class Itemlist {
 	@Expose
 	@ConfigOption(
 		name = "Always show Monsters",
-		desc = "Always show Monster Items in the item list",
-		searchTags = "mob"
+		desc = "Always show Monster Items in the item list"
 	)
 	@ConfigEditorBoolean(
 		runnableId = 21

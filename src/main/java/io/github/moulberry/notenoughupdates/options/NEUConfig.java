@@ -22,12 +22,13 @@ package io.github.moulberry.notenoughupdates.options;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
+import io.github.moulberry.moulconfig.Config;
+import io.github.moulberry.moulconfig.Social;
+import io.github.moulberry.moulconfig.annotations.Category;
+import io.github.moulberry.moulconfig.gui.MoulConfigEditor;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
-import io.github.moulberry.notenoughupdates.core.config.Config;
+import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.Category;
-import io.github.moulberry.notenoughupdates.core.config.gui.GuiPositionEditor;
 import io.github.moulberry.notenoughupdates.dungeons.GuiDungeonMapEditor;
 import io.github.moulberry.notenoughupdates.miscfeatures.FairySouls;
 import io.github.moulberry.notenoughupdates.miscfeatures.IQTest;
@@ -74,11 +75,14 @@ import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,12 +103,78 @@ public class NEUConfig extends Config {
 	}
 
 	@Override
+	public void saveNow() {
+		NotEnoughUpdates.INSTANCE.saveConfig();
+	}
+
+	private Social social(String name, String iconName, String link) {
+		return new Social() {
+			@Override
+			public void onClick() {
+				Utils.openUrl(link);
+			}
+
+			@Override
+			public List<String> getTooltip() {
+				return Arrays.asList(name, "§7Open " + link);
+			}
+
+			@Override
+			public ResourceLocation getIcon() {
+				return new ResourceLocation("notenoughupdates:social/" + iconName + ".png");
+			}
+		};
+	}
+
+	@Override
+	public List<Social> getSocials() {
+		return Arrays.asList(
+			social(
+				"Twitch",
+				"twitch",
+				"https://twitch.tv/moulberry2"
+			),
+			social(
+				"Patreon",
+				"patreon",
+				"https://patreon.com/moulberry"
+			),
+			social(
+				"YouTube",
+				"youtube",
+				"https://www.youtube.com/channel/UCPh-OKmRSS3IQi9p6YppLcw"
+			),
+			social(
+				"Twitter",
+				"twitter",
+				"https://twitter.com/moulberry/"
+			),
+			social(
+				"GitHub",
+				"github",
+				"https://github.com/NotEnoughUpdates/NotEnoughUpdates"
+			),
+			social(
+				"Discord",
+				"discord",
+				"https://discord.gg/moulberry"
+			)
+		);
+	}
+
+	@Override
+	public String getTitle() {
+		return "§7NotEnoughUpdates by §5Moulberry";
+	}
+
+	@Override
 	public void executeRunnable(int runnableId) {
 		String activeConfigCategory = null;
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiScreenElementWrapper) {
-			GuiScreenElementWrapper wrapper = (GuiScreenElementWrapper) Minecraft.getMinecraft().currentScreen;
-			if (wrapper.element instanceof NEUConfigEditor) {
-				activeConfigCategory = ((NEUConfigEditor) wrapper.element).getSelectedCategoryName();
+		if (Minecraft.getMinecraft().currentScreen instanceof io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper) {
+			io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper wrapper =
+				(io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper) Minecraft.getMinecraft().currentScreen;
+			if (wrapper.element instanceof MoulConfigEditor) {
+				activeConfigCategory = ((MoulConfigEditor) wrapper.element).getSelectedCategory();
 			}
 		}
 
@@ -163,8 +233,6 @@ public class NEUConfig extends Config {
 				NotEnoughUpdates.INSTANCE.config.apiData.repoUser = "NotEnoughUpdates";
 				NotEnoughUpdates.INSTANCE.config.apiData.repoName = "NotEnoughUpdates-REPO";
 				NotEnoughUpdates.INSTANCE.config.apiData.repoBranch = "master";
-				NotEnoughUpdates.INSTANCE.openGui =
-					new GuiScreenElementWrapper(new NEUConfigEditor(NotEnoughUpdates.INSTANCE.config, "apis"));
 				return;
 			case 26:
 				OverlayManager.powderGrindingOverlay.reset();

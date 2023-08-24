@@ -20,16 +20,16 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -45,10 +45,7 @@ public class SkillOverlays {
 			"For the overlays to show you need a \u00A7bmathematical hoe\u00A77 or an axe with \u00A7bcultivating\u00A77 " +
 				"enchant for farming, a pickaxe with \u00A7bcompact\u00A77 for mining or a rod with \u00A7bexpertise\u00A77"
 	)
-	@ConfigEditorFSR(
-		runnableId = 12,
-		buttonText = ""
-	)
+	@ConfigEditorInfoText()
 	public boolean skillInfo = false;
 
 	@ConfigOption(
@@ -341,18 +338,14 @@ public class SkillOverlays {
 		name = "\u00A7cWarning",
 		desc = "The combat display will only show if you have a Book of Stats or the Champion enchant"
 	)
-	@ConfigEditorFSR(
-		runnableId = 12,
-		buttonText = ""
-	)
+	@ConfigEditorInfoText()
 	@ConfigAccordionId(id = 4)
 	public boolean combatInfo = false;
 
 	@Expose
 	@ConfigOption(
 		name = "Enable Combat Overlay",
-		desc = "Show an overlay while Combat with useful information",
-		searchTags = "champion"
+		desc = "Show an overlay while Combat with useful information"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 4)

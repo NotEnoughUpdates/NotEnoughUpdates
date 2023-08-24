@@ -20,17 +20,16 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Enchanting {
 	@ConfigOption(
 		name = "Enchant Table / Hex GUI",
-		desc = "",
-		searchTags = "et"
+		desc = ""
 	)
 	@ConfigEditorAccordion(id = 1)
 	public boolean tableGUIAccordion = false;
@@ -160,8 +159,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Ultrasequencer Next",
-		desc = "Set the colour of the glass pane shown behind the element in the ultrasequencer which is next",
-		searchTags = "color"
+		desc = "Set the colour of the glass pane shown behind the element in the ultrasequencer which is next"
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -175,8 +173,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Ultrasequencer Upcoming",
-		desc = "Set the colour of the glass pane shown behind the element in the ultrasequencer which is coming after \"next\"",
-		searchTags = "color"
+		desc = "Set the colour of the glass pane shown behind the element in the ultrasequencer which is coming after \"next\""
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -190,8 +187,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Superpairs Matched",
-		desc = "Set the colour of the glass pane shown behind successfully matched pairs",
-		searchTags = "color"
+		desc = "Set the colour of the glass pane shown behind successfully matched pairs"
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -205,8 +201,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Superpairs Possible",
-		desc = "Set the colour of the glass pane shown behind pairs which can be matched, but have not yet",
-		searchTags = "color"
+		desc = "Set the colour of the glass pane shown behind pairs which can be matched, but have not yet"
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -220,8 +215,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Superpairs Unmatched",
-		desc = "Set the colour of the glass pane shown behind pairs which have been previously uncovered",
-		searchTags = "color"
+		desc = "Set the colour of the glass pane shown behind pairs which have been previously uncovered"
 	)
 	@ConfigEditorDropdown(
 		values = {
@@ -235,8 +229,7 @@ public class Enchanting {
 	@Expose
 	@ConfigOption(
 		name = "Superpairs Powerups",
-		desc = "Set the colour of the glass pane shown behind powerups",
-		searchTags = "color"
+		desc = "Set the colour of the glass pane shown behind powerups"
 	)
 	@ConfigEditorDropdown(
 		values = {

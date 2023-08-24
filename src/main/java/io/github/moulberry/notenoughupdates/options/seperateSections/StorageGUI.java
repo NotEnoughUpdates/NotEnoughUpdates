@@ -20,22 +20,21 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import org.lwjgl.input.Keyboard;
 
 public class StorageGUI {
 	@ConfigOption(
 		name = "Storage Overlay",
-		desc = "",
-		searchTags = {"ec", "enderchest", "st", "backpack"}
+		desc = "Ender Chest / Backpack"
 	)
 	@ConfigEditorAccordion(id = 1)
 	public boolean storageOverlayAccordion = false;
@@ -47,10 +46,7 @@ public class StorageGUI {
 		desc = "You need Fast Render and Antialiasing off for these settings to work\n" +
 			"You can find these in your video settings"
 	)
-	@ConfigEditorFSR(
-		runnableId = 12,
-		buttonText = ""
-	)
+	@ConfigEditorInfoText()
 	@ConfigAccordionId(id = 1)
 	public boolean storageGUIWarning = false;
 	@Expose
@@ -146,8 +142,7 @@ public class StorageGUI {
 	@Expose
 	@ConfigOption(
 		name = "Selected Storage Colour",
-		desc = "Change the colour used to draw the selected backpack border",
-		searchTags = "color"
+		desc = "Change the colour used to draw the selected backpack border"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -156,8 +151,7 @@ public class StorageGUI {
 	@Expose
 	@ConfigOption(
 		name = "Custom Text Colour",
-		desc = "Use a custom default text colour.\nOverrides the colour set by the overlay style.\nCan be overridden by using colour codes in the page title.",
-		searchTags = "color"
+		desc = "Use a custom default text colour.\nOverrides the colour set by the overlay style.\nCan be overridden by using colour codes in the page title."
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 1)
@@ -166,8 +160,7 @@ public class StorageGUI {
 	@Expose
 	@ConfigOption(
 		name = "Custom Text Colour",
-		desc = "Requires the above option to be set to true",
-		searchTags = "color"
+		desc = "Requires the above option to be set to true"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -194,8 +187,7 @@ public class StorageGUI {
 
 	@ConfigOption(
 		name = "Inventory Backpacks",
-		desc = "",
-		searchTags = "hotbar"
+		desc = ""
 	)
 	@ConfigEditorAccordion(id = 0)
 	public boolean inventorySlotAccordion = false;

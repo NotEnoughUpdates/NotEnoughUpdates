@@ -20,15 +20,15 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorButton;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorFSR;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorButton;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Dungeons {
 
@@ -162,18 +162,14 @@ public class Dungeons {
 		desc = "You need Fast Render and Antialiasing off for these settings to work\n" +
 			"You can find these in your video settings"
 	)
-	@ConfigEditorFSR(
-		runnableId = 12,
-		buttonText = ""
-	)
+	@ConfigEditorInfoText()
 	@ConfigAccordionId(id = 2)
 	public boolean dungeonBlockWarning = false;
 
 	@Expose
 	@ConfigOption(
 		name = "Enable Block Overlay",
-		desc = "Change the colour of certain blocks / entities while inside dungeons, but keeps the normal texture outside of dungeons",
-		searchTags = "color"
+		desc = "Change the colour of certain blocks / entities while inside dungeons, but keeps the normal texture outside of dungeons"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -193,8 +189,7 @@ public class Dungeons {
 		name = "Slow Update",
 		desc = "Updates the colour every second instead of every tick.\n" +
 			"\u00A7cWARNING: This will cause all texture animations (eg. flowing water) to update slowly.\n" +
-			"This should only be used on low-end machines",
-		searchTags = "color"
+			"This should only be used on low-end machines"
 	)
 	@ConfigEditorBoolean
 	@ConfigAccordionId(id = 2)
@@ -203,8 +198,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Cracked Bricks",
-		desc = "Change the colour of: Cracked Bricks",
-		searchTags = "color"
+		desc = "Change the colour of: Cracked Bricks"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -213,8 +207,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Dispensers",
-		desc = "Change the colour of: Dispensers",
-		searchTags = "color"
+		desc = "Change the colour of: Dispensers"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -223,8 +216,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Levers",
-		desc = "Change the colour of: Levers",
-		searchTags = "color"
+		desc = "Change the colour of: Levers"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -233,8 +225,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Tripwire String",
-		desc = "Change the colour of: Tripwire String",
-		searchTags = "color"
+		desc = "Change the colour of: Tripwire String"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -243,8 +234,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Normal Chests",
-		desc = "Change the colour of: Normal Chests",
-		searchTags = "color"
+		desc = "Change the colour of: Normal Chests"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -253,8 +243,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Trapped Chests",
-		desc = "Change the colour of: Trapped Chests",
-		searchTags = "color"
+		desc = "Change the colour of: Trapped Chests"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -263,8 +252,7 @@ public class Dungeons {
 	@Expose
 	@ConfigOption(
 		name = "Bats",
-		desc = "Change the colour of: Bats",
-		searchTags = "color"
+		desc = "Change the colour of: Bats"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)

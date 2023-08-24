@@ -20,13 +20,13 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigAccordionId;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorAccordion;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class Fishing {
 	@Expose
@@ -144,8 +144,7 @@ public class Fishing {
 		name = "Particle Type",
 		desc = "Change the type of the particle that is spawned\n" +
 			"Particle types with (RGB) support custom colours\n" +
-			"Set to 'NONE' to disable particles",
-		searchTags = "color"
+			"Set to 'NONE' to disable particles"
 	)
 	@ConfigEditorDropdown(
 		values = {"Default", "None", "Spark (RGB)", "Swirl (RGB)", "Dust (RGB)", "Flame", "Crit", "Magic Crit"}
@@ -157,8 +156,7 @@ public class Fishing {
 	@ConfigOption(
 		name = "Custom Colour",
 		desc = "Set a custom colour for the particle\n" +
-			"Only works for particle types with (RGB)",
-		searchTags = "color"
+			"Only works for particle types with (RGB)"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
@@ -177,8 +175,7 @@ public class Fishing {
 		name = "Particle Type",
 		desc = "Change the type of the particle that is spawned\n" +
 			"Particle types with (RGB) support custom colours\n" +
-			"Set to 'NONE' to disable particles",
-		searchTags = "color"
+			"Set to 'NONE' to disable particles"
 	)
 	@ConfigEditorDropdown(
 		values = {"Default", "None", "Spark (RGB)", "Swirl (RGB)", "Dust (RGB)", "Flame", "Crit", "Magic Crit"}
@@ -190,8 +187,7 @@ public class Fishing {
 	@ConfigOption(
 		name = "Custom Colour",
 		desc = "Set a custom colour for the particle\n" +
-			"Only works for particle types with (RGB)",
-		searchTags = "color"
+			"Only works for particle types with (RGB)"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
@@ -199,8 +195,7 @@ public class Fishing {
 
 	@ConfigOption(
 		name = "Rod Line Colours",
-		desc = "",
-		searchTags = "color"
+		desc = ""
 	)
 	@ConfigEditorAccordion(id = 4)
 	public boolean rodAccordion = false;
@@ -254,8 +249,7 @@ public class Fishing {
 	@Expose
 	@ConfigOption(
 		name = "Fishing timer colour",
-		desc = "Colour of the fishing timer",
-		searchTags = "color"
+		desc = "Colour of the fishing timer"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 6)
@@ -264,8 +258,7 @@ public class Fishing {
 	@Expose
 	@ConfigOption(
 		name = "Fishing timer colour (20s)",
-		desc = "Colour of the fishing timer after 20 seconds or more have passed",
-		searchTags = "color"
+		desc = "Colour of the fishing timer after 20 seconds or more have passed"
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 6)

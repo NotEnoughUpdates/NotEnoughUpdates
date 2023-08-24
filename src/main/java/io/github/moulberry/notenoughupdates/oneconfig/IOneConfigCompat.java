@@ -19,7 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.oneconfig;
 
-import io.github.moulberry.notenoughupdates.core.config.Config;
+import io.github.moulberry.moulconfig.Config;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.Optional;

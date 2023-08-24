@@ -20,21 +20,20 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorColour;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorKeybind;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorText;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorKeybind;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorText;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import org.lwjgl.input.Keyboard;
 
 public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Enable AH/BZ Price Graph",
-		desc = "Enable or disable the graph.",
-		searchTags = {"auction", "bazaar"}
+		desc = "Enable or disable the graph."
 	)
 	@ConfigEditorBoolean
 	public boolean graphEnabled = true;
@@ -70,8 +69,7 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Graph Colour",
-		desc = "Set a custom colour for the graph.",
-		searchTags = "color"
+		desc = "Set a custom colour for the graph."
 	)
 	@ConfigEditorColour
 	public String graphColor = "0:255:0:255:0";
@@ -79,8 +77,7 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Secondary Graph Colour",
-		desc = "Set a custom colour for the second graph line.",
-		searchTags = "color"
+		desc = "Set a custom colour for the second graph line."
 	)
 	@ConfigEditorColour
 	public String graphColor2 = "0:255:255:255:0";
@@ -109,8 +106,7 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Moving Average Colour",
-		desc = "Set a custom colour for the graph's moving average line.",
-		searchTags = "color"
+		desc = "Set a custom colour for the graph's moving average line."
 	)
 	@ConfigEditorColour
 	public String movingAverageColor = "0:255:0:255:171";
@@ -118,8 +114,7 @@ public class AHGraph {
 	@Expose
 	@ConfigOption(
 		name = "Secondary Moving Average Colour",
-		desc = "Set a custom colour for the second graph's secondary moving average line line.",
-		searchTags = "color"
+		desc = "Set a custom colour for the second graph's secondary moving average line line."
 	)
 	@ConfigEditorColour
 	public String movingAverageColor2 = "0:255:255:109:0";

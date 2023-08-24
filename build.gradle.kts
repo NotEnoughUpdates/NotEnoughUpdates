@@ -75,11 +75,11 @@ loom {
 repositories {
 		mavenCentral()
 		mavenLocal()
+		maven("https://maven.notenoughupdates.org/releases")
 		maven("https://repo.spongepowered.org/maven/")
 		maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 		maven("https://jitpack.io")
 		maven("https://repo.polyfrost.cc/releases")
-		maven("https://maven.notenoughupdates.org/releases")
 }
 
 val shadowImplementation: Configuration by configurations.creating {
@@ -154,11 +154,13 @@ dependencies {
 		annotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
 		compileOnly("org.jetbrains:annotations:24.0.1")
 
+		modImplementation(libs.moulconfig)
+		shadowOnly(libs.moulconfig)
+
 		@Suppress("VulnerableLibrariesLocal")
 		shadowApi("info.bliki.wiki:bliki-core:3.1.0")
 		testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 		testAnnotationProcessor("net.fabricmc:sponge-mixin:0.11.4+mixin.0.8.5")
-		//	modImplementation("io.github.notenoughupdates:MoulConfig:0.0.1")
 		detektPlugins("org.notenoughupdates:detektrules:1.0.0")
 		devEnv("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 }
@@ -167,7 +169,7 @@ dependencies {
 
 java {
 		withSourcesJar()
-//		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+		toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 // Tasks:
@@ -175,8 +177,6 @@ java {
 tasks.withType(JavaCompile::class) {
 		options.encoding = "UTF-8"
 		options.isFork = true
-		if (JavaVersion.current().isJava9Compatible)
-				options.release.set(8)
 }
 tasks.named("compileOneconfigJava", JavaCompile::class) {
 		doFirst {

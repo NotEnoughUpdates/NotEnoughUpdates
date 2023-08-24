@@ -21,10 +21,10 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDraggableList;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,8 +99,7 @@ public class PetOverlay {
 	@Expose
 	@ConfigOption(
 		name = "GUI Style",
-		desc = "Change the colour of the GUI",
-		searchTags = "color"
+		desc = "Change the colour of the GUI"
 	)
 	@ConfigEditorDropdown(
 		values = {"Minecraft", "Grey", "PacksHQ Dark", "Transparent", "FSR"}

@@ -20,9 +20,9 @@
 package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorBoolean;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorDropdown;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class CustomArmour {
 
@@ -30,8 +30,7 @@ public class CustomArmour {
 	@ConfigOption(
 		name = "Enable Equipment Hud",
 		desc = "Shows an overlay in your inventory showing your 4 extra armour slots\n" +
-			"\u00A7cRequires Hide Potion Effects to be enabled",
-		searchTags = "armor"
+			"\u00A7cRequires Hide Potion Effects to be enabled"
 	)
 	@ConfigEditorBoolean
 	public boolean enableArmourHud = true;
@@ -47,8 +46,7 @@ public class CustomArmour {
 	@Expose
 	@ConfigOption(
 		name = "GUI Style",
-		desc = "Change the colour of the GUI",
-		searchTags = "color"
+		desc = "Change the colour of the GUI"
 	)
 	@ConfigEditorDropdown(
 		values = {"Minecraft", "Grey", "PacksHQ Dark", "Transparent", "FSR"}

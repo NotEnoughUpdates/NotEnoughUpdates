@@ -21,8 +21,8 @@ package io.github.moulberry.notenoughupdates.options.seperateSections;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.notenoughupdates.core.config.Position;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigEditorSlider;
-import io.github.moulberry.notenoughupdates.core.config.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
 public class DungeonMapConfig {
 	@Expose
@@ -127,16 +127,14 @@ public class DungeonMapConfig {
 	@Expose
 	@ConfigOption(
 		name = "Background Colour",
-		desc = "Colour of the map background. Supports opacity & chroma",
-		searchTags = "color"
+		desc = "Colour of the map background. Supports opacity & chroma"
 	)
 	public String dmBackgroundColour = "00:170:75:75:75";
 
 	@Expose
 	@ConfigOption(
 		name = "Border Colour",
-		desc = "Colour of the map border. Supports opacity & chroma. Turn off custom borders to see",
-		searchTags = "color"
+		desc = "Colour of the map border. Supports opacity & chroma. Turn off custom borders to see"
 	)
 	public String dmBorderColour = "00:0:0:0:0";
 
