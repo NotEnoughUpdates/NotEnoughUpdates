@@ -59,10 +59,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class CustomSkulls implements IResourceManagerReloadListener {
@@ -75,6 +77,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 	private final ResourceLocation atlas = new ResourceLocation("notenoughupdates", "custom_skull_textures_atlas");
 	private final ResourceLocation configuration = new ResourceLocation(
 		"notenoughupdates", "custom_skull_textures/customskull.json");
+	private final ResourceLocation configuration2 = new ResourceLocation(
+		"notenoughupdates", "custom_skull_textures/customskull2.json");
 	protected final TextureMap textureMap = new TextureMap("custom_skull_textures");
 
 	public static ItemCameraTransforms.TransformType mostRecentTransformType = ItemCameraTransforms.TransformType.NONE;
@@ -85,6 +89,7 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 	private final ModelSkeletonHead humanoidHead = new ModelHumanoidHead();
 
 	private final HashMap<String, CustomSkull> customSkulls = new HashMap<>();
+	private final HashMap<String, CustomSkull> customSkulls2 = new HashMap<>();
 
 	private final Gson gson = new GsonBuilder().create();
 
@@ -95,13 +100,12 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 		private ResourceLocation texture;
 	}
 
-	@Override
-	public void onResourceManagerReload(IResourceManager resourceManager) {
-		customSkulls.clear();
+	private void processConfig(ResourceLocation config, Map<String, CustomSkull> map, Map<String, CustomSkull> cache) {
+		map.clear();
 
 		try (
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Minecraft.getMinecraft().getResourceManager().getResource(configuration).getInputStream(),
+				Minecraft.getMinecraft().getResourceManager().getResource(config).getInputStream(),
 				StandardCharsets.UTF_8
 			))
 		) {
@@ -109,17 +113,18 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 			if (json == null) return;
 
-			final Map<String, CustomSkull> skullCache = new HashMap<>();
-
 			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
 				if (entry.getValue().isJsonObject()) {
 					JsonObject obj = entry.getValue().getAsJsonObject();
+					CustomSkull skull;
 					if (obj.has("model")) {
-						String location = obj.get("model").getAsString();
-						ResourceLocation loc = new ResourceLocation("notenoughupdates", "custom_skull_textures/" + location + ".json");
+						ResourceLocation loc = new ResourceLocation(
+							"notenoughupdates",
+							"custom_skull_textures/" + obj.get("model").getAsString() + ".json"
+						);
 
-						CustomSkull skull;
-						if ((skull = skullCache.get(location)) == null) {
+
+						if ((skull = cache.get(loc.toString())) == null) {
 							skull = new CustomSkull();
 							skull.model = ModelBlock.deserialize(new InputStreamReader(Minecraft
 								.getMinecraft()
@@ -127,27 +132,44 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 								.getResource(loc)
 								.getInputStream()));
 
-							skullCache.put(location, skull);
+							cache.put(loc.toString(), skull);
 						}
 
-						customSkulls.put(entry.getKey(), skull);
+						map.put(entry.getKey(), skull);
 					} else if (obj.has("texture")) {
 						String location = obj.get("texture").getAsString();
-						ResourceLocation loc = new ResourceLocation("notenoughupdates", "custom_skull_textures/" + location + ".png");
+						ResourceLocation loc = new ResourceLocation(
+							"notenoughupdates",
+							"custom_skull_textures/" + location + ".png"
+						);
 
-						CustomSkull skull = new CustomSkull();
-						skull.texture = loc;
+						if ((skull = cache.get(loc.toString())) == null) {
+							skull = new CustomSkull();
+							skull.texture = loc;
+							Minecraft.getMinecraft().getTextureManager().deleteTexture(skull.texture);
 
-						Minecraft.getMinecraft().getTextureManager().deleteTexture(skull.texture);
+							cache.put(loc.toString(), skull);
+						}
 
-						customSkulls.put(entry.getKey(), skull);
+						map.put(entry.getKey(), skull);
 					}
 				}
 			}
+		} catch (Exception ignored) {}
+	}
 
-			loadSprites();
+	@Override
+	public void onResourceManagerReload(IResourceManager resourceManager) {
+		Map<String, CustomSkull> skullCache = new HashMap<>();
+		processConfig(configuration, customSkulls, skullCache);
+		processConfig(configuration2, customSkulls2, skullCache);
 
-			customSkulls.values().stream().distinct().forEach(
+		if (customSkulls.isEmpty() && customSkulls2.isEmpty()) return;
+
+		try {
+			loadSprites(skullCache.values());
+
+			skullCache.values().forEach(
 				(CustomSkull skull) -> {
 					if (skull.model != null) {
 						skull.modelBaked = bakeModel(skull.model, ModelRotation.X0_Y0, false);
@@ -159,8 +181,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 		} catch (Exception ignored) {}
 	}
 
-	private void loadSprites() {
-		final Set<ResourceLocation> set = this.getAllTextureLocations();
+	private void loadSprites(Collection<CustomSkull> models) {
+		final Set<ResourceLocation> set = this.getAllTextureLocations(models);
 		set.remove(TextureMap.LOCATION_MISSING_TEXTURE);
 		IIconCreator iiconcreator = iconRegistry -> {
 			for (ResourceLocation resourcelocation : set) {
@@ -172,10 +194,10 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 		this.sprites.put(new ResourceLocation("missingno"), this.textureMap.getMissingSprite());
 	}
 
-	protected Set<ResourceLocation> getAllTextureLocations() {
+	protected Set<ResourceLocation> getAllTextureLocations(Collection<CustomSkull> models) {
 		Set<ResourceLocation> set = new HashSet<>();
 
-		for (CustomSkull skull : customSkulls.values()) {
+		for (CustomSkull skull : models) {
 			if (skull.model != null) {
 				set.addAll(getTextureLocations(skull.model));
 			}
@@ -296,13 +318,8 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 	}
 
 	private void renderQuads(WorldRenderer renderer, List<BakedQuad> quads, int color) {
-		int i = 0;
-
-		for (int j = quads.size(); i < j; ++i) {
-			BakedQuad bakedquad = quads.get(i);
-			int k = color;
-
-			net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
+		for (BakedQuad quad : quads) {
+			net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, quad, color);
 		}
 	}
 
@@ -322,7 +339,12 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 		CustomSkull skull = customSkulls.get(skullOwner.getId().toString());
 		if (skull == null) {
-			return false;
+			try {
+				skull = customSkulls2.get(skullOwner.getProperties().get("textures").iterator().next().getValue());
+				if (skull == null) return false;
+			} catch (NoSuchElementException e) {
+				return false;
+			}
 		}
 
 		if (skull.modelBaked != null && skull.model != null) {
@@ -409,11 +431,10 @@ public class CustomSkulls implements IResourceManagerReloadListener {
 
 			GlStateManager.translate(xOffset + 0.5F, yOffset, zOffset + 0.5F);
 
-			float f = 0.0625F;
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.scale(-1.0F, -1.0F, 1.0F);
 			GlStateManager.enableAlpha();
-			humanoidHead.render(null, 0.0F, 0.0F, 0.0F, rotationDeg, 0.0F, f);
+			humanoidHead.render(null, 0.0F, 0.0F, 0.0F, rotationDeg, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 		} else {
 			return false;
