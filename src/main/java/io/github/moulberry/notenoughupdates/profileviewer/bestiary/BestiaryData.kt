@@ -86,7 +86,7 @@ object BestiaryData {
      */
     @JvmStatic
     fun parseBestiaryData(profileInfo: JsonObject): MutableList<Category> {
-        if (!hasMigrated(profileInfo)) {
+        if (!hasMigrated(profileInfo) || Constants.BESTIARY == null) {
             return mutableListOf()
         }
 

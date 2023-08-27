@@ -87,7 +87,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
             )
             return
         }
-        // Do the initial parsing only oncel
+        // Do the initial parsing only once
         if (computedCategories.isEmpty()) {
             computedCategories = parseBestiaryData(profileInfo)
             bestiaryLevel = calculateTotalBestiaryLevel(computedCategories)
