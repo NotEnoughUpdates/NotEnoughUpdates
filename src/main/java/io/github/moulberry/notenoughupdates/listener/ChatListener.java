@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSol
 import io.github.moulberry.notenoughupdates.miscfeatures.EnderNodes;
 import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
+import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TimersOverlay;
@@ -301,6 +302,36 @@ public class ChatListener {
 
 		if (unformatted.equals("ENDER NODE! You found Endermite Nest!"))
 			EnderNodes.displayEndermiteNotif();
+
+		checkHeavyPearls(e.message);
+	}
+
+	private static void checkHeavyPearls(IChatComponent component) {
+		if (component.toString().equals(
+			"{\"strikethrough\":false,\"color\":\"gold\",\"extra\":[{\"strikethrough\":false,\"color\":\"green\"," +
+				"\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"strikethrough\":false,\"color\":\"green\"," +
+				"\"extra\":[{\"strikethrough\":false,\"color\":\"green\",\"text\":\"  +3 \"},{\"strikethrough\":false," +
+				"\"color\":\"yellow\",\"text\":\"Heavy Pearl\"},{\"strikethrough\":false,\"color\":\"dark_gray\"," +
+				"\"text\":\" (Nether Sack)\"},{\"strikethrough\":false,\"text\":\"\\n" +
+				"\\n" +
+				"\"},{\"strikethrough\":false,\"color\":\"dark_gray\",\"text\":\"This message can be disabled in " +
+				"the settings.\"}],\"text\":\"Added items:\\n" +
+				"\"}},\"text\":\"+3\"},{\"strikethrough\":false,\"color\":\"yellow\",\"hoverEvent\":{\"action\":" +
+				"\"show_text\",\"value\":{\"strikethrough\":false,\"color\":\"green\",\"extra\":[{\"strikethrough" +
+				"\":false,\"color\":\"green\",\"text\":\"  +3 \"},{\"strikethrough\":false,\"color\":\"yellow\"," +
+				"\"text\":\"Heavy Pearl\"},{\"strikethrough\":false,\"color\":\"dark_gray\",\"text\":\" (Nether Sack)" +
+				"\"},{\"strikethrough\":false,\"text\":\"\\n" +
+				"\\n" +
+				"\"},{\"strikethrough\":false,\"color\":\"dark_gray\",\"text\":\"This message can be disabled in " +
+				"the settings.\"}],\"text\":\"Added items:\\n" +
+				"\"}},\"text\":\" items\"},{\"strikethrough\":false,\"color\":\"yellow\",\"text\":\".\"},{\"strikethrough" +
+				"\":false,\"color\":\"dark_gray\",\"text\":\" (Last 5s.)\"}],\"text\":\"[Sacks] \"}")) {
+			System.out.println("heavy pearls detected");
+			NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+			if (profileSpecific != null) {
+				profileSpecific.dailyHeavyPearlCompleted = System.currentTimeMillis();
+			}
+		}
 	}
 
 	private IChatComponent dungeonPartyJoinPV(IChatComponent message) {
