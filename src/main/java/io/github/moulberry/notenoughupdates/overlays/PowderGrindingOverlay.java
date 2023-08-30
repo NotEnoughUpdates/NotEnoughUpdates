@@ -172,6 +172,7 @@ public class PowderGrindingOverlay extends TextTabOverlay {
 			Matcher matcher = POWDER_PATTERN.matcher(message);
 			if (matcher.matches()) {
 				String rawNumber = matcher.group(1).replace(",", "");
+				this.openedChestCount++;
 				try {
 					int amount = Integer.parseInt(rawNumber);
 					String type = matcher.group(2);
