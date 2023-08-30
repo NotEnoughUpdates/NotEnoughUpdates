@@ -26,7 +26,9 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
+import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import kotlin.Pair;
@@ -87,6 +89,11 @@ public class CalendarOverlay {
 	private static boolean enabled = false;
 
 	public static boolean ableToClickCalendar = true;
+	long thunderStormEpoch = 1692826500000L;
+	long rainInterval = 3600000L;
+	long thunderFrequency = 3;
+	long rainDuration = 1200 * 1000L;
+	List<Pair<Long, SBEvent>> externalEvents = new ArrayList<>();
 
 	public static void setEnabled(boolean enabled) {
 		CalendarOverlay.enabled = enabled;
@@ -261,11 +268,21 @@ public class CalendarOverlay {
 	}
 
 	public void populateDefaultEvents() {
-		if (eventMap.isEmpty() || eventMap.size() <= 20) {
+		if (eventMap.size() <= 20) {
 			fillRepeatingEvents(25 - eventMap.size());
 			fillSpecialMayors(4);
 			fillWeather();
+			fillRepoMandatedEvents();
 			fillStarCult();
+		}
+	}
+
+	public void fillRepoMandatedEvents() {
+		for (Pair<Long, SBEvent> externalEvent : externalEvents) {
+			addEvent(
+				SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(externalEvent.component1())),
+				externalEvent.component2()
+			);
 		}
 	}
 
@@ -301,22 +318,20 @@ public class CalendarOverlay {
 	}
 
 	private void fillWeather() {
-		long rainInterval = 4850 * 1000L;
-		long rainingTime = 1000 * 1000L;
-		long thunderStormEpoch = 1668551956000L - rainingTime;
+
 		long currentTime = System.currentTimeMillis();
-		long timeSinceLastThunderStart = (currentTime - thunderStormEpoch) % (rainInterval * 4);
+		long timeSinceLastThunderStart = (currentTime - thunderStormEpoch) % (rainInterval * thunderFrequency);
 		long lastThunderStart = currentTime - timeSinceLastThunderStart;
 		for (int i = 0; i < 11; i++) {
 			long eventTimer = lastThunderStart + rainInterval * i;
-			if (i % 4 == 0) {
+			if (i % thunderFrequency == 0) {
 				addEvent(SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(eventTimer)), new SBEvent(
 					"spiders_den_thunder",
 					"§9Spider's Den Thunder",
 					true,
 					new ItemStack(Blocks.slime_block),
 					Arrays.asList("§aIt will rain in the Spider's Den", "§aand Toxic Rain Slimes will spawn"),
-					rainingTime,
+					rainDuration,
 					true
 				));
 			} else {
@@ -328,13 +343,56 @@ public class CalendarOverlay {
 						false,
 						new ItemStack(Items.slime_ball),
 						Arrays.asList("§aIt will rain in the Spider's Den", "§aand Rain Slimes will spawn"),
-						rainingTime,
+						rainDuration,
 						true
 					)
 				);
 			}
 
 		}
+	}
+
+	@SubscribeEvent
+	public void tick(RepositoryReloadEvent event) {
+		JsonObject calendarJson = NotEnoughUpdates.INSTANCE.manager.getJsonFromFile(new File(
+			event.getRepositoryRoot(),
+			"constants/calendar.json"
+		));
+		if (calendarJson == null) return;
+		if (calendarJson.has("thunderEpochStart")) {
+			thunderStormEpoch = calendarJson.get("thunderEpochStart").getAsLong();
+		}
+		if (calendarJson.has("rainInterval")) {
+			rainInterval = calendarJson.get("rainInterval").getAsLong();
+		}
+		if (calendarJson.has("thunderFrequency")) {
+			thunderFrequency = calendarJson.get("thunderFrequency").getAsLong();
+		}
+		if (calendarJson.has("rainDuration")) {
+			rainDuration = calendarJson.get("rainDuration").getAsLong();
+		}
+		if (calendarJson.has("external")) {
+			List<Pair<Long, SBEvent>> externalEvents = new ArrayList<>();
+			for (JsonElement external : calendarJson.getAsJsonArray("external")) {
+				if (!(external instanceof JsonObject)) continue;
+				SBEvent sbEvent = new SBEvent(
+					Utils.getElementAsString(Utils.getElement(external, "id"), "external"),
+					Utils.getElementAsString(Utils.getElement(external, "display"), "§aExternal Event"),
+					Utils.getElementAsBool(Utils.getElement(external, "special"), false),
+					NotEnoughUpdates.INSTANCE.manager.createItem(Utils.getElementAsString(Utils.getElement(
+						external,
+						"itemStack"
+					), "painting")),
+					JsonUtils.getJsonArrayOrEmpty((JsonObject) external, "description", it -> Utils.getElementAsString(it, "")),
+					Utils.getElementAsInt(Utils.getElement(external, "duration"), -1),
+					true
+				);
+				long start = Utils.getElementAsLong(Utils.getElement(external, "start"), 0);
+				externalEvents.add(new Pair<>(start, sbEvent));
+			}
+			this.externalEvents = externalEvents;
+		}
+		eventMap.clear();
 	}
 
 	@SubscribeEvent
