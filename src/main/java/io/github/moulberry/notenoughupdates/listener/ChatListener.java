@@ -124,21 +124,21 @@ public class ChatListener {
 			((!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().get(0).getChatStyle() != null &&
 				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent() != null &&
 				chatComponent.getSiblings().get(0).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND) ||
-				// Party and guild chat components are different from global chats, so need to check for them here
-				// Party being 0 and global chat being 1
+				// Party/global chat with levels off components are different from global chat with levels on, so need to check for them here
+				// Party/global without levels being 0 and global with levels being 1
 			(!chatComponent.getSiblings().isEmpty() && chatComponent.getSiblings().size() > 1 && chatComponent.getSiblings().get(1).getChatStyle() != null &&
 				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent() != null &&
 				chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent().getAction() == ClickEvent.Action.RUN_COMMAND))) {
 
 			String startsWith = null;
-			int partyOrPublic = 1;
-
 			List<IChatComponent> siblings = chatComponent.getSiblings();
+			int chatComponentsCount = siblings.size()-2;
+
 			if (!siblings.isEmpty() && siblings.get(0).getChatStyle() != null && siblings.get(0).getChatStyle().getChatClickEvent() != null && siblings.get(0).getChatStyle().getChatClickEvent().getValue().startsWith("/viewprofile")) {
 				startsWith = "/viewprofile";
-				partyOrPublic = 0;
 			} else if (!siblings.isEmpty() && siblings.size() > 1 && siblings.get(1).getChatStyle() != null) {
-				ClickEvent chatClickEvent = chatComponent.getSiblings().get(1).getChatStyle().getChatClickEvent();
+
+				ClickEvent chatClickEvent = chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent();
 				if (chatClickEvent != null) {
 					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
 						startsWith = "/socialoptions";
@@ -147,14 +147,14 @@ public class ChatListener {
 			}
 
 			if (startsWith != null) {
-				String username = partyOrPublic == 0 ?
+				String username = startsWith.equals("/viewprofile") ?
 					Utils.getNameFromChatComponent(chatComponent) :
-					chatComponent.getSiblings().get(partyOrPublic/* Should always be 1 in this case lol*/).getChatStyle().getChatClickEvent().getValue().substring(15);
+					chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent().getValue().substring(15);
 
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
 					ChatStyle pvClickStyle = getPVChatStyle(username);
-						chatComponent.getSiblings().get(partyOrPublic).setChatStyle(pvClickStyle);
+						chatComponent.getSiblings().get(chatComponentsCount).setChatStyle(pvClickStyle);
 					return chatComponent;
 				} else if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 2) {
 
@@ -165,7 +165,7 @@ public class ChatListener {
 							username + EnumChatFormatting.RESET + EnumChatFormatting.YELLOW + "'s /ah page"
 					);
 
-						chatComponent.getSiblings().get(partyOrPublic).setChatStyle(ahClickStyle);
+						chatComponent.getSiblings().get(chatComponentsCount).setChatStyle(ahClickStyle);
 					return chatComponent;
 				}
 			} // wanted to add this for guild but guild uses uuid :sad:
@@ -216,14 +216,6 @@ public class ChatListener {
 			SBInfo.getInstance().setCurrentProfile(unformatted
 				.substring("Your profile was changed to: ".length())
 				.split(" ")[0].trim());
-		} else if (unformatted.startsWith("Your new API key is ")) {
-			NotEnoughUpdates.INSTANCE.config.apiData.apiKey =
-				unformatted.substring("Your new API key is ".length()).substring(
-					0,
-					36
-				);
-			Utils.addChatMessage(EnumChatFormatting.YELLOW + "[NEU] API Key automatically configured");
-			NotEnoughUpdates.INSTANCE.saveConfig();
 		} else if (unformatted.startsWith("Player List Info is now disabled!")) {
 			SBInfo.getInstance().hasNewTab = false;
 		} else if (unformatted.startsWith("Player List Info is now enabled!")) {

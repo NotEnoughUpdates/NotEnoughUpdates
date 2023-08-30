@@ -46,7 +46,7 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 		JsonObject categoryXp = levelPage.getConstant().get("category_xp").getAsJsonObject();
 		JsonObject essenceShopTask = levelPage.getConstant().get("essence_shop_task").getAsJsonObject();
 		JsonArray essenceSteps = essenceShopTask.get("essence_shop_xp").getAsJsonArray();
-		JsonObject essencePerks = object.get("perks").getAsJsonObject();
+		JsonObject essencePerks = object.has("perks") ? object.get("perks").getAsJsonObject() : new JsonObject();
 
 		Map<String, EssenceShop> loreMap = new HashMap<>();
 		for (Map.Entry<String, JsonElement> stringJsonElementEntry : Constants.ESSENCESHOPS.entrySet()) {

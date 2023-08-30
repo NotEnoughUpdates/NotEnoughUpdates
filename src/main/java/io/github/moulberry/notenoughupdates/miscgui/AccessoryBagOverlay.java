@@ -428,7 +428,16 @@ public class AccessoryBagOverlay {
 			missing = new ArrayList<>();
 
 			List<String> missingInternal = new ArrayList<>();
+
+			List<String> ignoredTalisman = new ArrayList<>();
+			if (misc.has("ignored_talisman")) {
+				for (JsonElement jsonElement : misc.getAsJsonArray("ignored_talisman")) {
+					ignoredTalisman.add(jsonElement.getAsString());
+				}
+			}
+
 			for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager.getItemInformation().entrySet()) {
+				if (ignoredTalisman.contains(entry.getValue().get("internalname").getAsString())) continue;
 				if (entry.getValue().has("lore")) {
 					if (checkItemType(
 						entry.getValue().get("lore").getAsJsonArray(),

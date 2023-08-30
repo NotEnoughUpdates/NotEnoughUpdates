@@ -2112,6 +2112,10 @@ public class Utils {
 			top <= y && y < top + height;
 	}
 
+	public static boolean isWithinRect(int x, int y, Rectangle rectangle) {
+		return isWithinRect(x, y, rectangle.getLeft(), rectangle.getTop(), rectangle.getWidth(), rectangle.getHeight());
+	}
+
 	public static int getNumberOfStars(ItemStack stack) {
 		if (stack != null && stack.hasTagCompound()) {
 			NBTTagCompound tag = stack.getTagCompound();

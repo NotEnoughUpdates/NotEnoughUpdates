@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumChatFormatting;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -53,7 +52,6 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -288,29 +286,6 @@ public class ApiUtil {
 						}
 					}
 				} catch (IOException e) {
-					if (conn instanceof HttpURLConnection) {
-						try {
-							int code = ((HttpURLConnection) conn).getResponseCode();
-							if (code == 403 && baseUrl != null && baseUrl.startsWith("https://api.hypixel.net/")) {
-								if (!notifiedOfInvalidApiKey) {
-									NotificationHandler.displayNotification(Arrays.asList(
-										EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "API request failed",
-										EnumChatFormatting.RED + "A Request failed because your API key is invalid/not present",
-										EnumChatFormatting.RED + "Please run " + EnumChatFormatting.BOLD + EnumChatFormatting.GOLD +
-											"/api new " +
-											EnumChatFormatting.RESET + EnumChatFormatting.RED + "to fix this.",
-										EnumChatFormatting.RED +
-											"If you don't do this, several API related features, such as the profile viewer, will not work.",
-										EnumChatFormatting.GRAY+"Press X on your keyboard to close this notification."
-									), true, false);
-									notifiedOfInvalidApiKey = true;
-								}
-								return "";
-							}
-						} catch (IOException ex) {
-							throw new RuntimeException(ex);
-						}
-					}
 					throw new RuntimeException(e); // We can rethrow, since supplyAsync catches exceptions.
 				}
 			}, executorService).handle((obj, t) -> {

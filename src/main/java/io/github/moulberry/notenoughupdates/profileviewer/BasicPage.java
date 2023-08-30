@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,12 +25,14 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.lily.LilyWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PronounDB;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -121,6 +123,7 @@ public class BasicPage extends GuiProfileViewerPage {
 	private boolean onSecondPage;
 
 	private final LevelPage levelPage;
+	private boolean clickedLoadStatusButton = false;
 
 	public BasicPage(GuiProfileViewer instance) {
 		super(instance);
@@ -141,7 +144,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		}
 
 		String location = null;
-		JsonObject status = profile.getPlayerStatus();
+		JsonObject status = clickedLoadStatusButton ? profile.getPlayerStatus() : null;
 		if (status != null && status.has("mode")) {
 			location = status.get("mode").getAsString();
 		}
@@ -438,6 +441,29 @@ public class BasicPage extends GuiProfileViewerPage {
 			}
 
 			Utils.drawStringCentered(statusStr, guiLeft + 63, guiTop + 160, true, 0);
+		} else {
+			Rectangle buttonRect = new Rectangle(
+				guiLeft + 24,
+				guiTop + 155,
+				80,
+				12
+			);
+
+			RenderUtils.drawFloatingRectWithAlpha(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(),
+				buttonRect.getHeight(), 100, true
+			);
+			Utils.renderShadowedString(
+				clickedLoadStatusButton
+					? EnumChatFormatting.AQUA + "Loading..."
+					: EnumChatFormatting.WHITE + "Load Status",
+				guiLeft + 63,
+				guiTop + 157,
+				79
+			);
+
+			if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
+				clickedLoadStatusButton = true;
+			}
 		}
 
 		if (entityPlayer == null) {

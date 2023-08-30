@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -25,8 +25,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Rectangle;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
@@ -63,6 +65,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 	private TreeMap<Integer, Set<String>> topDeaths = null;
 	private int deathScroll = 0;
 	private int killScroll = 0;
+	private boolean clickedLoadGuildInfoButton = false;
 
 	public ExtraPage(GuiProfileViewer instance) {
 		super(instance);
@@ -217,28 +220,60 @@ public class ExtraPage extends GuiProfileViewerPage {
 				);
 			}
 		}
-		JsonObject guildInfo = GuiProfileViewer.getProfile().getOrLoadGuildInformation(null);
+
+		JsonObject guildInfo;
+		if (GuiProfileViewer.getProfile().isPlayerInGuild()) {
+			guildInfo =
+				clickedLoadGuildInfoButton ? GuiProfileViewer.getProfile().getOrLoadGuildInformation(null) : null;
+		} else {
+			guildInfo = new JsonObject();
+			guildInfo.add("name", new JsonPrimitive("N/A"));
+		}
+
 		boolean shouldRenderGuild = guildInfo != null && guildInfo.has("name");
-		{
-			if (shouldRenderGuild) {
-				Utils.renderAlignedString(
-					EnumChatFormatting.AQUA + "Guild",
-					EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
-					guiLeft + xStart,
-					guiTop + yStartTop + yOffset * 3,
-					76
-				);
+
+		// Render the info when the button has been clicked
+		if (shouldRenderGuild) {
+			Utils.renderAlignedString(
+				EnumChatFormatting.AQUA + "Guild",
+				EnumChatFormatting.WHITE + guildInfo.get("name").getAsString(),
+				guiLeft + xStart,
+				guiTop + yStartTop + yOffset * 3,
+				76
+			);
+		} else {
+			// Render a button to click to load the guild info
+			Rectangle buttonRect = new Rectangle(
+				(int) (guiLeft + xStart - 1),
+				(int) (guiTop + yStartTop + yOffset * 3),
+				78,
+				12
+			);
+
+			RenderUtils.drawFloatingRectWithAlpha(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(),
+				buttonRect.getHeight(), 100, true
+			);
+			Utils.renderShadowedString(
+				clickedLoadGuildInfoButton
+					? EnumChatFormatting.AQUA + "Loading..."
+					: EnumChatFormatting.WHITE + "Load Guild Info",
+				guiLeft + xStart + 38,
+				guiTop + yStartTop + yOffset * 3 + 2,
+				70
+			);
+
+			if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
+				clickedLoadGuildInfoButton = true;
 			}
 		}
-		{
-			GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
-				EnumChatFormatting.GREEN + "Pronouns",
-				EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
-				guiLeft + xStart,
-				guiTop + yStartTop + yOffset * (shouldRenderGuild ? 4 : 3),
-				76
-			));
-		}
+
+		GuiProfileViewer.pronouns.peekValue().flatMap(it -> it).ifPresent(choice -> Utils.renderAlignedString(
+			EnumChatFormatting.GREEN + "Pronouns",
+			EnumChatFormatting.WHITE + String.join(" / ", choice.render()),
+			guiLeft + xStart,
+			guiTop + yStartTop + yOffset * 4 + (shouldRenderGuild ? 0 : 5),
+			76
+		));
 
 		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_souls_collected"), 0);
 

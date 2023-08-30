@@ -55,39 +55,7 @@ public class StarCultCalculator {
 	private static long activeTill = 0;
 
 	public static String getNextStarCult() {
-		Instant instantNow = Instant.now();
-		long nowEpoch = instantNow.toEpochMilli();
-		long currentOffset = (nowEpoch - YEAR_0) % YEAR_MS;
-
-		int currentMonth = (int) Math.floorDiv(currentOffset, MONTH_MS);
-		int currentDay = (int) Math.floorDiv((currentOffset - (long) currentMonth * MONTH_MS) % MONTH_MS, DAY_MS) + 1;
-
-		int out = 7;
-		if (currentDay > 21) {
-			out = 28;
-		} else if (currentDay > 14) {
-			out = 21;
-		} else if (currentDay > 7) {
-			out = 14;
-		}
-		Instant cultStart = Instant.ofEpochMilli(
-			YEAR_0 + (getSkyblockYear() - 1) * YEAR_MS + currentMonth * MONTH_MS + (out - 1) * DAY_MS);
-		if (cultStart.isBefore(instantNow)) {
-			int curYearCult = getSkyblockYear() - 1;
-			if (out == 28) {
-				out = 7;
-				if (currentMonth == 12) {
-					currentMonth = 1;
-					curYearCult++;
-				} else {
-					currentMonth++;
-				}
-			} else {
-				out += 7;
-			}
-			out--;
-			cultStart = Instant.ofEpochMilli(YEAR_0 + (curYearCult) * YEAR_MS + currentMonth * MONTH_MS + out * DAY_MS);
-		}
+		Instant cultStart = getNextStarCultTime();
 
 		long l = System.currentTimeMillis();
 		if (cultStart.toEpochMilli() - l <= 1000) {
@@ -105,6 +73,46 @@ public class StarCultCalculator {
 		}
 
 		return Utils.prettyTime(cultStart.toEpochMilli() - l);
+	}
+
+	public static Instant getNextStarCultTime() {
+		return getNextStarCultTime(Instant.now());
+	}
+
+	public static Instant getNextStarCultTime(Instant after) {
+		long nowEpoch = after.toEpochMilli();
+		long currentOffset = (nowEpoch - YEAR_0) % YEAR_MS;
+
+		int currentMonth = (int) Math.floorDiv(currentOffset, MONTH_MS);
+		int currentDay = (int) Math.floorDiv((currentOffset - (long) currentMonth * MONTH_MS) % MONTH_MS, DAY_MS) + 1;
+
+		int out = 7;
+		if (currentDay > 21) {
+			out = 28;
+		} else if (currentDay > 14) {
+			out = 21;
+		} else if (currentDay > 7) {
+			out = 14;
+		}
+		Instant cultStart = Instant.ofEpochMilli(
+			YEAR_0 + (getSkyblockYear() - 1) * YEAR_MS + currentMonth * MONTH_MS + (out - 1) * DAY_MS);
+		if (cultStart.isBefore(after)) {
+			int curYearCult = getSkyblockYear() - 1;
+			if (out == 28) {
+				out = 7;
+				if (currentMonth == 12) {
+					currentMonth = 1;
+					curYearCult++;
+				} else {
+					currentMonth++;
+				}
+			} else {
+				out += 7;
+			}
+			out--;
+			cultStart = Instant.ofEpochMilli(YEAR_0 + (curYearCult) * YEAR_MS + currentMonth * MONTH_MS + out * DAY_MS);
+		}
+		return cultStart;
 	}
 }
 

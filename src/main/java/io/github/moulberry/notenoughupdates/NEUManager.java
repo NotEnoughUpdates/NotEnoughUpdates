@@ -151,6 +151,7 @@ public class NEUManager {
 	public CraftingOverlay craftingOverlay;
 
 	private static boolean repoDownloadFailed = false;
+	public boolean onBackupRepo = false;
 
 	public NEUManager(NotEnoughUpdates neu, File configLocation) {
 		this.neu = neu;
@@ -278,6 +279,7 @@ public class NEUManager {
 	 */
 	public void switchToBackupRepo() {
 		Path destination = new File(repoLocation, "neu-items-master.zip").toPath();
+		onBackupRepo = true;
 
 		try (
 			InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(
@@ -1584,6 +1586,8 @@ public class NEUManager {
 			})
 			.exceptionally(ex -> {
 				ex.printStackTrace();
+				System.out.println("switching over to the backup repo");
+				switchToBackupRepo();
 				return Arrays.asList(
 					"§cRepository not fully reloaded.",
 					"§cThere was an error reloading your repository.",

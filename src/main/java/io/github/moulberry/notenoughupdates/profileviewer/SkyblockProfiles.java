@@ -100,6 +100,8 @@ public class SkyblockProfiles {
 	private long soopyNetworthLeaderboardPosition = -1; // -1 = default, -2 = loading, -3 = error
 	private long soopyWeightLeaderboardPosition = -1; // -1 = default, -2 = loading, -3 = error
 	private JsonObject guildInformation = null;
+	// Assume the player is in a guild until proven otherwise
+	private boolean isInGuild = true;
 	private JsonObject playerStatus = null;
 	private JsonObject bingoInformation = null;
 	private long lastPlayerInfoState = 0;
@@ -390,7 +392,8 @@ public class SkyblockProfiles {
 				updatingGuildInfoState.set(false);
 
 				if (jsonObject != null && jsonObject.has("success") && jsonObject.get("success").getAsBoolean()) {
-					if (!jsonObject.has("guild")) {
+					if (jsonObject.get("guild").isJsonNull()) {
+						isInGuild = false;
 						return null;
 					}
 
@@ -404,6 +407,10 @@ public class SkyblockProfiles {
 			});
 
 		return null;
+	}
+
+	public boolean isPlayerInGuild() {
+		return isInGuild;
 	}
 
 	public List<String> getProfileNames() {
@@ -935,37 +942,7 @@ public class SkyblockProfiles {
 		}
 
 		public int getBestiaryLevel() {
-			int beLevel = 0;
-			for (ItemStack items : BestiaryData.getBestiaryLocations().keySet()) {
-				List<String> mobs = BestiaryData.getBestiaryLocations().get(items);
-				if (mobs != null) {
-					for (String mob : mobs) {
-						if (mob != null) {
-							float kills = Utils.getElementAsFloat(Utils.getElement(getProfileJson(), "bestiary.kills_" + mob), 0);
-							String type;
-							if (BestiaryData.getMobType().get(mob) != null) {
-								type = BestiaryData.getMobType().get(mob);
-							} else {
-								type = "MOB";
-							}
-							JsonObject leveling = Constants.LEVELING;
-							ProfileViewer.Level level = null;
-							if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
-								JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
-								int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-								level = ProfileViewerUtils.getLevel(levelingArray, kills, levelCap, false);
-							}
-
-							float levelNum = 0;
-							if (level != null) {
-								levelNum = level.level;
-							}
-							beLevel += (int) Math.floor(levelNum);
-						}
-					}
-				}
-			}
-			return beLevel;
+			return BestiaryData.calculateTotalBestiaryLevel(BestiaryData.parseBestiaryData(getProfileJson()));
 		}
 
 		public JsonObject getPetsInfo() {

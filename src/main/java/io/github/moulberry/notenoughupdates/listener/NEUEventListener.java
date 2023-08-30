@@ -173,7 +173,6 @@ public class NEUEventListener {
 			CrystalOverlay.tick();
 			FairySouls.getInstance().tick();
 			TabSkillInfoParser.parseSkillInfo();
-			ProfileApiSyncer.getInstance().tick();
 			ItemCustomizeManager.tick();
 			BackgroundBlur.markDirty();
 			NPCRetexturing.getInstance().tick();

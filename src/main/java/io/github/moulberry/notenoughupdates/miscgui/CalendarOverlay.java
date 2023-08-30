@@ -53,6 +53,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -63,13 +64,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -127,6 +127,11 @@ public class CalendarOverlay {
 
 	private static final ItemStack DA_STACK; // Dark Auction
 	private static final ItemStack JF_STACK; // Jacob's Farming Contest
+	private static final ItemStack STAR_CULT_STACK = Utils.createItemStack(
+		Items.nether_star,
+		"Cult of the Fallen Star",
+		"NEU Calendar Item"
+	); // Star Cult Stack
 
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -209,7 +214,7 @@ public class CalendarOverlay {
 	}
 
 	public Set<SBEvent> getEventsAt(long timestamp) {
-		return eventMap.computeIfAbsent(timestamp, k -> new HashSet<>());
+		return eventMap.computeIfAbsent(timestamp, k -> new TreeSet<>());
 	}
 
 	JsonObject getFarmingEventTypes() {
@@ -260,6 +265,38 @@ public class CalendarOverlay {
 			fillRepeatingEvents(25 - eventMap.size());
 			fillSpecialMayors(4);
 			fillWeather();
+			fillStarCult();
+		}
+	}
+
+	public void fillStarCult() {
+		SkyBlockTime now = SkyBlockTime.now();
+
+		long STAR_CULT_DURATION = 60 * 1000L * 6;
+		List<SkyBlockTime> allTimes = new ArrayList<>();
+		allTimes.add(new SkyBlockTime(now.getYear() - 1, 12, 28, 0, 0, 0));
+		for (int i = 1; i <= 12; i++) {
+			for (int d = 7; d < 30; d += 7) {
+				allTimes.add(new SkyBlockTime(now.getYear(), i, d, 0, 0, 0));
+			}
+		}
+		for (SkyBlockTime allTime : allTimes) {
+			addEvent(
+				allTime,
+				new SBEvent(
+					"starcult",
+					"§3Cult of the Fallen Star",
+					false,
+					STAR_CULT_STACK,
+					Arrays.asList(
+						"§3The Cult of the Fallen Star meets then.",
+						"§3Attending may give a reward",
+						"§3You can find them near the Star in the Dwarven Mines"
+					),
+					STAR_CULT_DURATION,
+					true
+				)
+			);
 		}
 	}
 
@@ -338,7 +375,7 @@ public class CalendarOverlay {
 	}
 
 	public void addEvent(SkyBlockTime time, SBEvent event) {
-		if (time.toInstant().isBefore(Instant.now())&&
+		if (time.toInstant().isBefore(Instant.now()) &&
 			time.toInstant().plus(event.lastsFor, ChronoUnit.MILLIS).isBefore(Instant.now())) return;
 		getEventsAt(time.toMillis()).add(event);
 	}
@@ -1316,7 +1353,6 @@ public class CalendarOverlay {
 				}
 			}
 
-
 			if (nextEvent != null) {
 				GlStateManager.translate(0, 0, 50);
 				boolean toastRendered = renderToast(nextEvent, timeUntilNext);
@@ -1449,7 +1485,7 @@ public class CalendarOverlay {
 		GlStateManager.color(1, 1, 1, 1);
 	}
 
-	private static class SBEvent {
+	private static class SBEvent implements Comparable<SBEvent> {
 		String id;
 		String display;
 		ItemStack stack;
@@ -1490,6 +1526,18 @@ public class CalendarOverlay {
 				tag.setString("event_id", id);
 			}
 			return stack;
+		}
+
+		@Override
+		public int compareTo(@NotNull CalendarOverlay.SBEvent o) {
+			int i;
+			if ((i = id.compareTo(o.id)) != 0) return i;
+			if ((i = display.compareTo(o.display)) != 0) return i;
+			if ((i = Long.compare(lastsFor, o.lastsFor)) != 0) return i;
+			if ((i = Boolean.compare(isSpecial, o.isSpecial)) != 0) return i;
+			if ((i = Boolean.compare(isArtificial, o.isArtificial)) != 0) return i;
+
+			return 0;
 		}
 	}
 

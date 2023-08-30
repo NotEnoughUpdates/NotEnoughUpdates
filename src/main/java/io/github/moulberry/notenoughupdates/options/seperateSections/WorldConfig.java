@@ -52,7 +52,7 @@ public class WorldConfig {
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 1)
-	public String glowingMushroomColor = "0:255:142:88:36";
+	public String glowingMushroomColor2 = "0:100:142:88:36";
 
 	@Expose
 	@ConfigOption(
@@ -78,7 +78,7 @@ public class WorldConfig {
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 2)
-	public String enderNodeColor = "0:255:0:255:0";
+	public String enderNodeColor2 = "0:100:0:255:0";
 
 	@Expose
 	@ConfigOption(
@@ -104,6 +104,31 @@ public class WorldConfig {
 	)
 	@ConfigEditorColour
 	@ConfigAccordionId(id = 3)
-	public String frozenTreasuresColor = "0:255:0:255:0";
+	public String frozenTreasuresColor2 = "0:100:0:255:0";
 
+	@Expose
+	@ConfigOption(
+		name = "Crystal Hollow Chests",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 4)
+	public boolean crystalHollowChestsAccordion = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Crystal Hollow Chest Highlighter",
+		desc = "Highlights chests found in the crystal hollows whilst powder mining"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean highlightCrystalHollowChests = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Chest Highlight Color",
+		desc = "In which color should chests be highlighted"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 4)
+	public String crystalHollowChestColor = "0:66:255:0:41";
 }

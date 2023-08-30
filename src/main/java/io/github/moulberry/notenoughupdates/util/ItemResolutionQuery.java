@@ -110,6 +110,7 @@ public class ItemResolutionQuery {
 					resolvedName = resolvePetName();
 					break;
 				case "RUNE":
+				case "UNIQUE_RUNE":
 					resolvedName = resolveRuneName();
 					break;
 				case "ENCHANTED_BOOK":
