@@ -29,6 +29,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -40,7 +41,6 @@ import net.minecraft.util.MathHelper;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -467,6 +467,17 @@ public class ItemUtils {
 		if (id.equals("ENDER_LEGGINGS")) return "END_LEGGINGS";
 		if (id.equals("ENDER_BOOTS")) return "END_BOOTS";
 		return id;
+	}
+
+	public static ItemStack createItemStackFromId(String id, String displayname) {
+		Item item = Item.getByNameOrId(id);
+		if (item == null) {
+			return null;
+		}
+
+		ItemStack itemStack = new ItemStack(item);
+		itemStack.setStackDisplayName(displayname);
+		return itemStack;
 	}
 
 }

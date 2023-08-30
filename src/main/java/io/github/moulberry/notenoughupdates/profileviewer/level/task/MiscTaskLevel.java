@@ -166,12 +166,28 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		}
 
 		int sbXpTimeCharm = 0;
-		if (object.has("rift") &&
-			object.getAsJsonObject("rift").has("gallery") &&
-			object.getAsJsonObject("rift").getAsJsonObject("gallery").has("secured_trophies")) {
-			JsonArray timeCharms = object.getAsJsonObject("rift").getAsJsonObject("gallery").getAsJsonArray(
-				"secured_trophies");
-			sbXpTimeCharm += timeCharms.size() * miscellaneousTask.get("timecharm_xp").getAsInt();
+		int sbXpBurger = 0;
+		if (object.has("rift")) {
+			JsonObject rift = object.getAsJsonObject("rift");
+			if (rift.has("gallery") &&
+				rift.getAsJsonObject("gallery").has("secured_trophies")) {
+				JsonArray timeCharms = rift.getAsJsonObject("gallery").getAsJsonArray(
+					"secured_trophies");
+				sbXpTimeCharm += timeCharms.size() * miscellaneousTask.get("timecharm_xp").getAsInt();
+			}
+
+
+			if (rift.has("castle") && rift.getAsJsonObject("castle").has("grubber_stacks") && miscellaneousTask.has("mcgrubber_burger_xp")) {
+				sbXpBurger = miscellaneousTask.get("mcgrubber_burger_xp").getAsInt()
+					* rift.getAsJsonObject("castle").get("grubber_stacks").getAsInt();
+			}
+		}
+
+		int sbXpSerum = 0;
+		if (object.has("experimentation") &&
+			object.getAsJsonObject("experimentation").has("serums_drank")
+		 && miscellaneousTask.has("metaphysical_serum_xp")) {
+			sbXpSerum = miscellaneousTask.get("metaphysical_serum_xp").getAsInt() * object.getAsJsonObject("experimentation").get("serums_drank").getAsInt();
 		}
 
 		List<String> lore = new ArrayList<>();
@@ -179,8 +195,9 @@ public class MiscTaskLevel extends GuiTaskLevel {
 		lore.add(levelPage.buildLore("Accessory Bag Upgrades",
 			sbXpAccessoryUpgrade, 0, true
 		));
-		lore.add(levelPage.buildLore("Reaper Peppers",
-			sbXpReaperPeppers, miscellaneousTask.get("reaper_peppers").getAsInt(), false
+		int xpConsumableItems = sbXpReaperPeppers + sbXpBurger + sbXpSerum;
+		lore.add(levelPage.buildLore("Consumable Items",
+			xpConsumableItems, miscellaneousTask.get("consumable_items").getAsInt(), false
 		));
 		lore.add(levelPage.buildLore("Timecharms",
 			sbXpTimeCharm, miscellaneousTask.get("timecharm").getAsInt(), false
@@ -208,8 +225,9 @@ public class MiscTaskLevel extends GuiTaskLevel {
 			sbXpRelays, miscellaneousTask.get("unlocking_relays").getAsInt(), false
 		));
 
-		int totalXp = sbXpReaperPeppers + sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
-			sbXpCommunityUpgrade + sbXpPersonalBank + sbXpTimeCharm + sbXpRelays;
+
+		int totalXp =sbXpDojo + sbXpGainedHarp + sbXpAbiphone +
+			sbXpCommunityUpgrade + sbXpPersonalBank + sbXpTimeCharm + sbXpRelays + xpConsumableItems;
 		levelPage.renderLevelBar(
 			"Misc. Task",
 			new ItemStack(Items.map),

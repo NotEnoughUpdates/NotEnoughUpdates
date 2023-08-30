@@ -943,37 +943,7 @@ public class SkyblockProfiles {
 		}
 
 		public int getBestiaryLevel() {
-			int beLevel = 0;
-			for (ItemStack items : BestiaryData.getBestiaryLocations().keySet()) {
-				List<String> mobs = BestiaryData.getBestiaryLocations().get(items);
-				if (mobs != null) {
-					for (String mob : mobs) {
-						if (mob != null) {
-							float kills = Utils.getElementAsFloat(Utils.getElement(getProfileJson(), "bestiary.kills_" + mob), 0);
-							String type;
-							if (BestiaryData.getMobType().get(mob) != null) {
-								type = BestiaryData.getMobType().get(mob);
-							} else {
-								type = "MOB";
-							}
-							JsonObject leveling = Constants.LEVELING;
-							ProfileViewer.Level level = null;
-							if (leveling != null && Utils.getElement(leveling, "bestiary." + type) != null) {
-								JsonArray levelingArray = Utils.getElement(leveling, "bestiary." + type).getAsJsonArray();
-								int levelCap = Utils.getElementAsInt(Utils.getElement(leveling, "bestiary.caps." + type), 0);
-								level = ProfileViewerUtils.getLevel(levelingArray, kills, levelCap, false);
-							}
-
-							float levelNum = 0;
-							if (level != null) {
-								levelNum = level.level;
-							}
-							beLevel += (int) Math.floor(levelNum);
-						}
-					}
-				}
-			}
-			return beLevel;
+			return BestiaryData.calculateTotalBestiaryLevel(BestiaryData.parseBestiaryData(getProfileJson()));
 		}
 
 		public JsonObject getPetsInfo() {
