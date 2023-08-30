@@ -22,8 +22,6 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -36,11 +34,8 @@ import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlayStyle;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.PetLeveling;
-import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
@@ -54,7 +49,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -155,6 +149,10 @@ public class PetInfoOverlay extends TextOverlay {
 
 	private static long lastPetSelect = -1;
 	private static PetConfig config = new PetConfig();
+
+	public static PetConfig getConfig() {
+		return config;
+	}
 
 	private static long lastUpdate = 0;
 	private static float levelXpLast = 0;
@@ -279,110 +277,6 @@ public class PetInfoOverlay extends TextOverlay {
 		} else {
 			return getIdForPet(pet);
 		}
-	}
-
-	private static void getAndSetPet(SkyblockProfiles profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
-		Map<String, JsonArray> invInfo = profile.getLatestProfile().getInventoryInfo();
-		JsonObject profileInfo = profile.getLatestProfile().getProfileJson();
-		if (invInfo != null && profileInfo != null) {
-			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
-			boolean hasBeastmasterCrest = false;
-			Rarity currentBeastRarity = Rarity.COMMON;
-			for (JsonElement talisman : invInfo.get("talisman_bag")) {
-				if (talisman.isJsonNull()) continue;
-				String internalName = talisman.getAsJsonObject().get("internalname").getAsString();
-				if (internalName.startsWith("BEASTMASTER_CREST")) {
-					hasBeastmasterCrest = true;
-					try {
-						Rarity talismanRarity = Rarity.valueOf(internalName.replace("BEASTMASTER_CREST_", ""));
-						if (talismanRarity.beastcreatMultiplyer > currentBeastRarity.beastcreatMultiplyer)
-							currentBeastRarity = talismanRarity;
-					} catch (Exception ignored) {
-					}
-				}
-			}
-			if (hasBeastmasterCrest) {
-				if (stats.has("mythos_kills")) {
-					int mk = stats.get("mythos_kills").getAsInt();
-					float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
-						mk > 1000
-							? 0.6f
-							: mk > 500
-								? 0.5f
-								: mk > 250
-									? 0.4f
-									: mk > 100
-										? 0.3f
-										: mk > 25 ? 0.2f : 0.1f;
-					config.beastMultiplier = petXpBoost * currentBeastRarity.beastcreatMultiplyer;
-				} else {
-					config.beastMultiplier = 0.1f * currentBeastRarity.beastcreatMultiplyer;
-				}
-			}
-		}
-		if (skyblockInfo != null && profile.getLatestProfile().skillsApiEnabled()) {
-			config.tamingLevel = (int) skyblockInfo.get("taming").level;
-		}
-
-		//JsonObject petObject = profile.getPetsInfo(profile.getLatestProfile());
-        /*JsonObject petsJson = Constants.PETS;
-        if(petsJson != null) {
-            if(petObject != null) {
-                boolean forceUpdateLevels = System.currentTimeMillis() - lastXpGain > 30000;
-                Set<String> foundPets = new HashSet<>();
-                Set<Pet> addedPets = new HashSet<>();
-                for(int i = 0; i < petObject.getAsJsonArray("pets").size(); i++) {
-                    JsonElement petElement = petObject.getAsJsonArray("pets").get(i);
-                    JsonObject petObj = petElement.getAsJsonObject();
-                    Pet pet = new Pet();
-                    pet.petType = petObj.get("type").getAsString();
-                    Rarity rarity;
-                    try {
-                        rarity = Rarity.valueOf(petObj.get("tier").getAsString());
-                    } catch(Exception ignored) {
-                        rarity = Rarity.COMMON;
-                    }
-                    pet.rarity = rarity;
-                    pet.petLevel = GuiProfileViewer.getPetLevel(petsJson.get("pet_levels").getAsJsonArray(), rarity.petOffset, petObj.get("exp").getAsFloat());
-                    JsonElement heldItem = petObj.get("heldItem");
-                    pet.petItem = heldItem.isJsonNull() ? null : heldItem.getAsString();
-                    if(rarity != Rarity.MYTHIC && pet.petItem != null && pet.petItem.equals("PET_ITEM_TIER_BOOST")) {
-                        rarity = Rarity.values()[rarity.ordinal()+1];
-                    }
-                    JsonObject petTypes = petsJson.get("pet_types").getAsJsonObject();
-                    pet.petXpType = petTypes.has(pet.petType) ? petTypes.get(pet.petType.toUpperCase()).getAsString().toLowerCase() : "unknown";
-
-                    Pet closest = null;
-                    if(petList.containsKey(pet.petType + ";" + pet.rarity.petId)) {
-                        closest = getClosestPet(pet);
-                        if(addedPets.contains(closest)) {
-                            closest = null;
-                        }
-
-                        if(closest != null) {
-                            if(!forceUpdateLevels || Math.floor(pet.petLevel.level) < Math.floor(closest.petLevel.level)) {
-                                pet.petLevel = closest.petLevel;
-                            }
-                            petList.get(pet.petType + ";" + pet.rarity.petId).remove(closest);
-                        }
-                    }
-                    foundPets.add(pet.petType + ";" + pet.rarity.petId);
-                    petList.computeIfAbsent(pet.petType + ";" + pet.rarity.petId, k->new HashSet<>()).add(pet);
-                    addedPets.add(pet);
-
-                    if(petObj.get("active").getAsBoolean()) {
-                        if(currentPet == null && !setActivePet) {
-                            currentPet = pet;
-                        } else if(closest == currentPet) {
-                            currentPet = pet;
-                        }
-                    }
-                }
-                petList.keySet().retainAll(foundPets);
-                setActivePet = true;
-            }
-        }*/
 	}
 
 	private float interp(float now, float last) {
@@ -657,12 +551,6 @@ public class PetInfoOverlay extends TextOverlay {
 			!NotEnoughUpdates.INSTANCE.config.itemOverlays.enableMonkeyCheck) {
 			overlayStrings = null;
 			return;
-		}
-
-		int updateTime = 60000;
-
-		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			ProfileApiSyncer.getInstance().requestResync("petinfo", updateTime, () -> {}, PetInfoOverlay::getAndSetPet);
 		}
 
 		Pet currentPet = getCurrentPet();
@@ -1094,13 +982,6 @@ public class PetInfoOverlay extends TextOverlay {
 			} else {
 				return s;
 			}
-		}
-	}
-
-	@SubscribeEvent
-	public void switchWorld(WorldEvent.Load event) {
-		if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			ProfileApiSyncer.getInstance().requestResync("petinfo_quick", 10000, () -> {}, PetInfoOverlay::getAndSetPet);
 		}
 	}
 

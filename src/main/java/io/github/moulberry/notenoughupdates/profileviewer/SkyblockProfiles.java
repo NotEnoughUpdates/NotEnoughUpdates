@@ -24,6 +24,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
+import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.senither.SenitherWeight;
 import io.github.moulberry.notenoughupdates.profileviewer.weight.weight.Weight;
@@ -32,6 +34,7 @@ import io.github.moulberry.notenoughupdates.util.UrsaClient;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -320,6 +323,12 @@ public class SkyblockProfiles {
 		profileViewer.getManager().ursaClient
 			.get(UrsaClient.profiles(Utils.parseDashlessUUID(uuid)))
 			.handle((profilesJson, throwable) -> {
+				try {
+					if (Utils.parseDashlessUUID(uuid).toString().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString())) {
+						new ProfileDataLoadedEvent(uuid, profilesJson).post();
+					}
+				} catch (Exception ignored) {
+				}
 				if (profilesJson != null && profilesJson.has("success")
 					&& profilesJson.get("success").getAsBoolean() && profilesJson.has("profiles")) {
 					Map<String, SkyblockProfile> nameToProfile = new HashMap<>();
@@ -1140,6 +1149,51 @@ public class SkyblockProfiles {
 
 			loadMuseumData();
 			return new MuseumData(null).asLoading();
+		}
+
+		public void updateBeastMasterMultiplier() {
+			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
+			JsonObject stats = getProfileJson().get("stats").getAsJsonObject();
+			boolean hasBeastmasterCrest = false;
+			PetInfoOverlay.Rarity currentBeastRarity = PetInfoOverlay.Rarity.COMMON;
+			for (JsonElement talisman : getInventoryInfo().get("talisman_bag")) {
+				if (talisman.isJsonNull()) continue;
+				String internalName = talisman.getAsJsonObject().get("internalname").getAsString();
+				if (internalName.startsWith("BEASTMASTER_CREST")) {
+					hasBeastmasterCrest = true;
+					try {
+						PetInfoOverlay.Rarity talismanRarity = PetInfoOverlay.Rarity.valueOf(internalName.replace("BEASTMASTER_CREST_", ""));
+						if (talismanRarity.beastcreatMultiplyer > currentBeastRarity.beastcreatMultiplyer)
+							currentBeastRarity = talismanRarity;
+					} catch (Exception ignored) {
+					}
+				}
+			}
+			if (hasBeastmasterCrest) {
+				if (stats.has("mythos_kills")) {
+					int mk = stats.get("mythos_kills").getAsInt();
+					float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
+						mk > 1000
+							? 0.6f
+							: mk > 500
+								? 0.5f
+								: mk > 250
+									? 0.4f
+									: mk > 100
+										? 0.3f
+										: mk > 25 ? 0.2f : 0.1f;
+					PetInfoOverlay.getConfig().beastMultiplier = petXpBoost * currentBeastRarity.beastcreatMultiplyer;
+				} else {
+					PetInfoOverlay.getConfig().beastMultiplier = 0.1f * currentBeastRarity.beastcreatMultiplyer;
+				}
+			}
+		}
+
+		public void updateTamingLevel() {
+			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
+			if (!getLatestProfile().skillsApiEnabled()) return;
+
+			PetInfoOverlay.getConfig().tamingLevel = (int) getLevelingInfo().get("taming").level;
 		}
 	}
 }
