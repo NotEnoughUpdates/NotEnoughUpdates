@@ -50,6 +50,7 @@ public class CrystalHollowChestHighlighter extends GenericBlockHighlighter {
 
 	public static void processBlockChangePacket(S23PacketBlockChange packetIn) {
 		BlockPos pos = packetIn.getBlockPosition();
+		if (packetIn.blockState == null) return;
 		checkForChest(pos, packetIn.blockState);
 	}
 
