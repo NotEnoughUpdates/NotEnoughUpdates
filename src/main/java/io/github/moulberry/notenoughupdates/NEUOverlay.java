@@ -85,10 +85,10 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -116,7 +116,8 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:supersecretassets/lunar.png");
 	private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
-	private static final ResourceLocation SEARCH_MODE_BUTTON = new ResourceLocation("notenoughupdates:search_mode_button.png");
+	private static final ResourceLocation SEARCH_MODE_BUTTON = new ResourceLocation(
+		"notenoughupdates:search_mode_button.png");
 
 	private final NEUManager manager;
 
@@ -1068,7 +1069,12 @@ public class NEUOverlay extends Gui {
 				try {
 					BigDecimal calculate = Calculator.calculate(textField.getText(), PROVIDE_LOWEST_BIN);
 					textField.setText(calculate.toPlainString());
-				} catch (Calculator.CalculatorException ignored) {
+					if (NotEnoughUpdates.INSTANCE.config.toolbar.copyToClipboardWhenGettingResult) {
+						Toolkit.getDefaultToolkit().getSystemClipboard()
+									 .setContents(new StringSelection(calculate.toPlainString()), null);
+
+					}
+				} catch (Calculator.CalculatorException | IllegalStateException | HeadlessException ignored) {
 				}
 			}
 
@@ -1163,7 +1169,8 @@ public class NEUOverlay extends Gui {
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
 							manager.showRecipe(item);
 							return true;
-						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint && NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint &&
+							NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
 							NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(item);
 						} else if (keyPressed == manager.keybindGive.getKeyCode()) {
 							if (Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode) {
@@ -1847,6 +1854,7 @@ public class NEUOverlay extends Gui {
 
 	int guiScaleLast = 0;
 	private boolean showVanillaLast = false;
+
 	/**
 	 * Renders the search bar, quick commands, item selection (right), item info (left) and armor hud gui elements.
 	 */
@@ -2268,7 +2276,6 @@ public class NEUOverlay extends Gui {
 			searchMode = false;
 		}
 	}
-
 
 	/**
 	 * Used in SettingsInfoPane to redraw the items when a setting changes.
