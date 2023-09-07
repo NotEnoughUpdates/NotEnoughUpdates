@@ -23,6 +23,7 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.util.BlockPos;
@@ -67,9 +68,23 @@ public class ItemCooldowns {
 	private static long bonzoMaskCooldown = -1;
 	private static long spiritMaskCooldown = -1;
 
-	public static TreeMap<Long, BlockPos> blocksClicked = new TreeMap<>();
+	public static TreeMap<Long, BlockData> blocksClicked = new TreeMap<>();
 
 	private static int tickCounter = 0;
+
+	/**
+	 * Class to store the block state at a position, the moment the position is passed
+	 */
+	public static class BlockData {
+
+		public BlockPos blockPos;
+		public IBlockState blockState;
+
+		public BlockData(BlockPos pos) {
+			this.blockPos = pos;
+			this.blockState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
+		}
+	}
 
 	enum Item {
 		PICKAXES,
@@ -144,15 +159,25 @@ public class ItemCooldowns {
 
 	public static void blockClicked(BlockPos pos) {
 		long currentTime = System.currentTimeMillis();
-		blocksClicked.put(currentTime, pos);
+		blocksClicked.put(currentTime, new BlockData(pos));
 	}
 
 	public static void processBlockChangePacket(S23PacketBlockChange packetIn) {
 		BlockPos pos = packetIn.getBlockPosition();
+		checkForBlockChange(pos, packetIn.blockState);
+	}
 
-		if (blocksClicked.containsValue(pos)) {
-			IBlockState oldState = Minecraft.getMinecraft().theWorld.getBlockState(pos);
-			if (oldState.getBlock() != packetIn.getBlockState().getBlock()) {
+	public static void checkForBlockChange(BlockPos pos, IBlockState blockState) {
+		BlockData oldBlockData = null;
+
+		for (BlockData value : blocksClicked.values()) {
+			if (value.blockPos.equals(pos)) oldBlockData = value;
+		}
+
+		if (oldBlockData != null) {
+			IBlockState oldState = oldBlockData.blockState;
+			if ((oldState.getBlock() == Blocks.log || oldState.getBlock() == Blocks.log2) &&
+				blockState.getBlock() == Blocks.air) {
 				onBlockMined();
 			}
 		}
