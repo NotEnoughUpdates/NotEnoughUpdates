@@ -21,13 +21,22 @@ package io.github.moulberry.notenoughupdates.miscfeatures;
 
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.util.Utils;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@NEUAutoSubscribe
 public class DefaultArmorColour {
 
-	private static boolean shownError = false;
+	private static Map<String, Integer> armorCache = new HashMap<>();
 
 	public static int getDefaultArmorColour(ItemArmor item, ItemStack stack) {
 		JsonObject itemJson = NotEnoughUpdates.INSTANCE.manager
@@ -35,28 +44,39 @@ public class DefaultArmorColour {
 			.withItemStack(stack)
 			.resolveToItemListJson();
 
-		if (itemJson != null && itemJson.has("nbttag")) {
-			String[] nbttag = itemJson.get("nbttag").getAsString().split(",");
+		String internalname = null;
 
-			for (String tag : nbttag) {
-				if (tag.contains("color")) {
+		if (itemJson != null) {
+			if (itemJson.has("internalname") &&
+				armorCache.containsKey((internalname = itemJson.get("internalname").getAsString()))) {
+				return armorCache.get(internalname);
+			}
 
-					try {
-						return Integer.parseInt(tag.split(":")[1]);
-					} catch (NumberFormatException exception) {
-						if (!shownError) {
-							Utils.addChatMessage("§e[NEU] §cNEU ran into an error trying to parse an integer! " +
-								"Report this in the discord along with the latest.txt log file.");
-							shownError = true;
+			if (itemJson.has("nbttag")) {
+				try {
+					NBTTagCompound nbt = JsonToNBT.getTagFromJson(itemJson.get("nbttag").getAsString());
+					NBTTagCompound display;
+
+					if (nbt.hasKey("display") && (display = nbt.getCompoundTag("display")).hasKey("color")) {
+						int colour = display.getInteger("color");
+
+						if (internalname != null && colour != 0) {
+							armorCache.put(internalname, colour);
+							return colour;
 						}
-
-						System.err.println("[NEU] Tried parsing: " + tag.split(":")[1] + " to Integer");
-						exception.printStackTrace();
 					}
+				} catch (NBTException exception) {
+					System.out.println("[NEU] Ran into NBTException whilst converting Json into NBT with the JsonObject: " + itemJson);
+					exception.printStackTrace();
 				}
 			}
 		}
 
 		return item.getColor(stack);
+	}
+
+	@SubscribeEvent
+	public void onWorldChange(WorldEvent.Unload event) {
+		armorCache.clear();
 	}
 }
