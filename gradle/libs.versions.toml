@@ -1,5 +1,5 @@
 [versions]
-moulconfig = "1.2.0"
+moulconfig = "1.2.1"
 
 [libraries]
 moulconfig = { module = "org.notenoughupdates.moulconfig:MoulConfig", version.ref = "moulconfig" }
