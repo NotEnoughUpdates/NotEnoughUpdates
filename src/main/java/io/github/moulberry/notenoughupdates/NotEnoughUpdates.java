@@ -274,7 +274,7 @@ public class NotEnoughUpdates {
 			if (config.mining.powderGrindingTrackerResetMode == 2)
 				OverlayManager.powderGrindingOverlay.load();
 
-		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config, this::saveConfig));
+		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config));
 
 		MinecraftForge.EVENT_BUS.register(new NEUEventListener(this));
 		MinecraftForge.EVENT_BUS.register(new RecipeGenerator(this));

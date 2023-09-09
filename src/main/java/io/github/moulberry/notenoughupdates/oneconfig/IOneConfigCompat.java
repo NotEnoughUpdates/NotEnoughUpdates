@@ -47,6 +47,6 @@ public abstract class IOneConfigCompat {
 		return Optional.ofNullable((IOneConfigCompat) INSTANCE);
 	}
 
-	public abstract void initConfig(Config moulConfig, Runnable saveCallback);
+	public abstract void initConfig(Config moulConfig);
 
 }

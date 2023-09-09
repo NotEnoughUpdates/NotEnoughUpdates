@@ -52,7 +52,7 @@ object IQTest {
         } else {
             wrongAnswer()
         }
-        SettingsCommand.lastEditor?.updateSearchResults()
+        SettingsCommand.lastEditor?.updateSearchResults(true)
     }
 
     private fun wrongAnswer() {
