@@ -93,7 +93,7 @@ object BestiaryData {
         val parsedCategories = mutableListOf<Category>()
 
         val apiKills = profileInfo.getAsJsonObject("bestiary")!!.getAsJsonObject("kills") ?: return mutableListOf()
-        val apiDeaths = profileInfo.getAsJsonObject("bestiary").getAsJsonObject("deaths")
+        val apiDeaths = profileInfo.getAsJsonObject("bestiary").getAsJsonObject("deaths") ?: return mutableListOf()
         val killsMap: HashMap<String, Int> = HashMap()
         for (entry in apiKills.entrySet()) {
             killsMap[entry.key] = entry.value.asInt
