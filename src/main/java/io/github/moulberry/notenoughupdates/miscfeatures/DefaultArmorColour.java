@@ -30,42 +30,41 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 @NEUAutoSubscribe
 public class DefaultArmorColour {
 
-	private static Map<String, Integer> armorCache = new HashMap<>();
+	private static Map<ItemStack, Integer> armorColourCache = new IdentityHashMap<>();
+	private static Set<String> erroredItems = new HashSet<>();
 
 	public static int getDefaultArmorColour(ItemArmor item, ItemStack stack) {
+		if (armorColourCache.containsKey(stack)) return armorColourCache.get(stack);
+
 		JsonObject itemJson = NotEnoughUpdates.INSTANCE.manager
 			.createItemResolutionQuery()
 			.withItemStack(stack)
 			.resolveToItemListJson();
 
-		String internalname = null;
+		if (itemJson != null && itemJson.has("nbttag")) {
+			try {
+				NBTTagCompound nbt = JsonToNBT.getTagFromJson(itemJson.get("nbttag").getAsString());
+				NBTTagCompound display;
 
-		if (itemJson != null) {
-			if (itemJson.has("internalname") &&
-				armorCache.containsKey((internalname = itemJson.get("internalname").getAsString()))) {
-				return armorCache.get(internalname);
-			}
+				if (nbt.hasKey("display") && (display = nbt.getCompoundTag("display")).hasKey("color")) {
+					int colour = display.getInteger("color");
 
-			if (itemJson.has("nbttag")) {
-				try {
-					NBTTagCompound nbt = JsonToNBT.getTagFromJson(itemJson.get("nbttag").getAsString());
-					NBTTagCompound display;
-
-					if (nbt.hasKey("display") && (display = nbt.getCompoundTag("display")).hasKey("color")) {
-						int colour = display.getInteger("color");
-
-						if (internalname != null && colour != 0) {
-							armorCache.put(internalname, colour);
-							return colour;
-						}
+					if (colour != 0) {
+						armorColourCache.put(stack, colour);
+						return colour;
 					}
-				} catch (NBTException exception) {
+				}
+			} catch (NBTException exception) {
+				if (!erroredItems.contains(itemJson.get("internalname").getAsString())) {
+					erroredItems.add(itemJson.get("internalname").getAsString());
 					System.out.println("[NEU] Ran into NBTException whilst converting Json into NBT with the JsonObject: " + itemJson);
 					exception.printStackTrace();
 				}
@@ -77,6 +76,6 @@ public class DefaultArmorColour {
 
 	@SubscribeEvent
 	public void onWorldChange(WorldEvent.Unload event) {
-		armorCache.clear();
+		armorColourCache.clear();
 	}
 }
