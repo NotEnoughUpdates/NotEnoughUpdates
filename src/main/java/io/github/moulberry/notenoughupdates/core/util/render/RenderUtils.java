@@ -311,27 +311,29 @@ public class RenderUtils {
 	public static void renderBoundingBox(
 		BlockPos worldPos,
 		int rgb,
-		float partialTicks
+		float partialTicks,
+		boolean disableDepth
 	) {
 		Vector3f interpolatedPlayerPosition = getInterpolatedPlayerPosition(partialTicks);
 		renderBoundingBoxInViewSpace(
 			worldPos.getX() - interpolatedPlayerPosition.x,
 			worldPos.getY() - interpolatedPlayerPosition.y,
 			worldPos.getZ() - interpolatedPlayerPosition.z,
-			rgb
+			rgb,
+			disableDepth
 		);
 	}
 
-	private static void renderBoundingBoxInViewSpace(double x, double y, double z, int rgb) {
+	private static void renderBoundingBoxInViewSpace(double x, double y, double z, int rgb, boolean disableDepth) {
 		AxisAlignedBB bb = new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
 
-		GlStateManager.disableDepth();
+		if (disableDepth) GlStateManager.disableDepth();
 		GlStateManager.disableCull();
 		GlStateManager.disableTexture2D();
 		CustomItemEffects.drawFilledBoundingBox(bb, 1f, SpecialColour.special(0, (rgb >> 24) & 0xFF, rgb));
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableCull();
-		GlStateManager.enableDepth();
+		if (disableDepth) GlStateManager.enableDepth();
 	}
 
 	public static void renderBeaconBeam(BlockPos block, int rgb, float alphaMult, float partialTicks) {
@@ -395,7 +397,7 @@ public class RenderUtils {
 		if (distSq > 10 * 10) {
 			RenderUtils.renderBeaconBeam(x, y, z, rgb, 1.0f, partialTicks, true);
 		} else {
-			RenderUtils.renderBoundingBoxInViewSpace(x, y, z, rgb);
+			RenderUtils.renderBoundingBoxInViewSpace(x, y, z, rgb, true);
 		}
 	}
 

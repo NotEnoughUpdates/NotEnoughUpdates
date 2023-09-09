@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
+import io.github.moulberry.notenoughupdates.miscfeatures.world.CrystalHollowChestHighlighter;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -33,6 +34,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
+import net.minecraft.network.play.server.S22PacketMultiBlockChange;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.network.play.server.S2DPacketOpenWindow;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
@@ -119,6 +121,12 @@ public class MixinNetHandlerPlayClient {
 	public void handleBlockChange(S23PacketBlockChange packetIn, CallbackInfo ci) {
 		MiningStuff.processBlockChangePacket(packetIn);
 		ItemCooldowns.processBlockChangePacket(packetIn);
+		CrystalHollowChestHighlighter.processBlockChangePacket(packetIn);
+	}
+
+	@Inject(method = "handleMultiBlockChange", at = @At("HEAD"))
+	public void handleMultiBlockChange(S22PacketMultiBlockChange packetIn, CallbackInfo ci) {
+		 CrystalHollowChestHighlighter.processMultiBlockChangePacket(packetIn);
 	}
 
 	@Inject(method = "addToSendQueue", at = @At("HEAD"), cancellable = true)

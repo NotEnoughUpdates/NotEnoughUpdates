@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,15 +24,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
-import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
-import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -209,47 +206,5 @@ public class XPInformation {
 			}
 		}
 		updateWithPercentage.clear();
-	}
-
-	public void tick() {
-		ProfileApiSyncer.getInstance().requestResync("xpinformation", 5 * 60 * 1000,
-			() -> {
-			}, this::onApiUpdated
-		);
-	}
-
-	private static final String[] skills = {
-		"taming",
-		"mining",
-		"foraging",
-		"enchanting",
-		"carpentry",
-		"farming",
-		"combat",
-		"fishing",
-		"alchemy",
-		"runecrafting"
-	};
-
-	private void onApiUpdated(SkyblockProfiles profile) {
-		Map<String, ProfileViewer.Level> skyblockInfo = profile.getLatestProfile().getLevelingInfo();
-		if (skyblockInfo == null) {
-			return;
-		}
-
-		for (String skill : skills) {
-			SkillInfo info = new SkillInfo();
-
-			ProfileViewer.Level levelInfo = skyblockInfo.get(skill);
-			float level = levelInfo.level;
-
-			info.totalXp = levelInfo.totalXp;
-			info.currentXpMax = levelInfo.maxXpForLevel;
-			info.level = (int) level;
-			info.currentXp = (level % 1) * info.currentXpMax;
-			info.fromApi = true;
-
-			skillInfoMap.put(skill.toLowerCase(), info);
-		}
 	}
 }

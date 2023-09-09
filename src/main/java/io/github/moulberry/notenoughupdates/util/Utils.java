@@ -1571,6 +1571,13 @@ public class Utils {
 		if (!prim.isNumber()) return def;
 		return prim.getAsInt();
 	}
+	public static long getElementAsLong(JsonElement element, long def) {
+		if (element == null) return def;
+		if (!element.isJsonPrimitive()) return def;
+		JsonPrimitive prim = element.getAsJsonPrimitive();
+		if (!prim.isNumber()) return def;
+		return prim.getAsLong();
+	}
 
 	public static String getElementAsString(JsonElement element, String def) {
 		if (element == null) return def;
@@ -1578,6 +1585,14 @@ public class Utils {
 		JsonPrimitive prim = element.getAsJsonPrimitive();
 		if (!prim.isString()) return def;
 		return prim.getAsString();
+	}
+
+	public static boolean getElementAsBool(JsonElement element, boolean def) {
+		if (element == null) return def;
+		if (!element.isJsonPrimitive()) return def;
+		JsonPrimitive prim = element.getAsJsonPrimitive();
+		if (!prim.isBoolean()) return def;
+		return prim.getAsBoolean();
 	}
 
 	public static JsonElement getElement(JsonElement element, String path) {

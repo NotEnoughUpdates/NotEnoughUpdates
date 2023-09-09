@@ -106,4 +106,29 @@ public class WorldConfig {
 	@ConfigAccordionId(id = 3)
 	public String frozenTreasuresColor2 = "0:100:0:255:0";
 
+	@Expose
+	@ConfigOption(
+		name = "Crystal Hollow Chests",
+		desc = ""
+	)
+	@ConfigEditorAccordion(id = 4)
+	public boolean crystalHollowChestsAccordion = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Crystal Hollow Chest Highlighter",
+		desc = "Highlights chests found in the crystal hollows whilst powder mining"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 4)
+	public boolean highlightCrystalHollowChests = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Chest Highlight Color",
+		desc = "In which color should chests be highlighted"
+	)
+	@ConfigEditorColour
+	@ConfigAccordionId(id = 4)
+	public String crystalHollowChestColor = "0:66:255:0:41";
 }

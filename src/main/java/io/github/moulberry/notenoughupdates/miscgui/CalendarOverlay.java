@@ -26,7 +26,9 @@ import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
+import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
+import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import kotlin.Pair;
@@ -53,6 +55,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -63,13 +66,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -87,6 +89,11 @@ public class CalendarOverlay {
 	private static boolean enabled = false;
 
 	public static boolean ableToClickCalendar = true;
+	long thunderStormEpoch = 1692826500000L;
+	long rainInterval = 3600000L;
+	long thunderFrequency = 3;
+	long rainDuration = 1200 * 1000L;
+	List<Pair<Long, SBEvent>> externalEvents = new ArrayList<>();
 
 	public static void setEnabled(boolean enabled) {
 		CalendarOverlay.enabled = enabled;
@@ -127,6 +134,11 @@ public class CalendarOverlay {
 
 	private static final ItemStack DA_STACK; // Dark Auction
 	private static final ItemStack JF_STACK; // Jacob's Farming Contest
+	private static final ItemStack STAR_CULT_STACK = Utils.createItemStack(
+		Items.nether_star,
+		"Cult of the Fallen Star",
+		"NEU Calendar Item"
+	); // Star Cult Stack
 
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -209,7 +221,7 @@ public class CalendarOverlay {
 	}
 
 	public Set<SBEvent> getEventsAt(long timestamp) {
-		return eventMap.computeIfAbsent(timestamp, k -> new HashSet<>());
+		return eventMap.computeIfAbsent(timestamp, k -> new TreeSet<>());
 	}
 
 	JsonObject getFarmingEventTypes() {
@@ -256,30 +268,70 @@ public class CalendarOverlay {
 	}
 
 	public void populateDefaultEvents() {
-		if (eventMap.isEmpty() || eventMap.size() <= 20) {
+		if (eventMap.size() <= 20) {
 			fillRepeatingEvents(25 - eventMap.size());
 			fillSpecialMayors(4);
 			fillWeather();
+			fillRepoMandatedEvents();
+			fillStarCult();
+		}
+	}
+
+	public void fillRepoMandatedEvents() {
+		for (Pair<Long, SBEvent> externalEvent : externalEvents) {
+			addEvent(
+				SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(externalEvent.component1())),
+				externalEvent.component2()
+			);
+		}
+	}
+
+	public void fillStarCult() {
+		SkyBlockTime now = SkyBlockTime.now();
+
+		long STAR_CULT_DURATION = 60 * 1000L * 6;
+		List<SkyBlockTime> allTimes = new ArrayList<>();
+		allTimes.add(new SkyBlockTime(now.getYear() - 1, 12, 28, 0, 0, 0));
+		for (int i = 1; i <= 12; i++) {
+			for (int d = 7; d < 30; d += 7) {
+				allTimes.add(new SkyBlockTime(now.getYear(), i, d, 0, 0, 0));
+			}
+		}
+		for (SkyBlockTime allTime : allTimes) {
+			addEvent(
+				allTime,
+				new SBEvent(
+					"starcult",
+					"§3Cult of the Fallen Star",
+					false,
+					STAR_CULT_STACK,
+					Arrays.asList(
+						"§3The Cult of the Fallen Star meets then.",
+						"§3Attending may give a reward",
+						"§3You can find them near the Star in the Dwarven Mines"
+					),
+					STAR_CULT_DURATION,
+					true
+				)
+			);
 		}
 	}
 
 	private void fillWeather() {
-		long rainInterval = 4850 * 1000L;
-		long rainingTime = 1000 * 1000L;
-		long thunderStormEpoch = 1668551956000L - rainingTime;
+
 		long currentTime = System.currentTimeMillis();
-		long timeSinceLastThunderStart = (currentTime - thunderStormEpoch) % (rainInterval * 4);
+		long timeSinceLastThunderStart = (currentTime - thunderStormEpoch) % (rainInterval * thunderFrequency);
 		long lastThunderStart = currentTime - timeSinceLastThunderStart;
 		for (int i = 0; i < 11; i++) {
 			long eventTimer = lastThunderStart + rainInterval * i;
-			if (i % 4 == 0) {
+			if (i % thunderFrequency == 0) {
 				addEvent(SkyBlockTime.Companion.fromInstant(Instant.ofEpochMilli(eventTimer)), new SBEvent(
 					"spiders_den_thunder",
 					"§9Spider's Den Thunder",
 					true,
 					new ItemStack(Blocks.slime_block),
 					Arrays.asList("§aIt will rain in the Spider's Den", "§aand Toxic Rain Slimes will spawn"),
-					rainingTime,
+					rainDuration,
 					true
 				));
 			} else {
@@ -291,13 +343,56 @@ public class CalendarOverlay {
 						false,
 						new ItemStack(Items.slime_ball),
 						Arrays.asList("§aIt will rain in the Spider's Den", "§aand Rain Slimes will spawn"),
-						rainingTime,
+						rainDuration,
 						true
 					)
 				);
 			}
 
 		}
+	}
+
+	@SubscribeEvent
+	public void tick(RepositoryReloadEvent event) {
+		JsonObject calendarJson = NotEnoughUpdates.INSTANCE.manager.getJsonFromFile(new File(
+			event.getRepositoryRoot(),
+			"constants/calendar.json"
+		));
+		if (calendarJson == null) return;
+		if (calendarJson.has("thunderEpochStart")) {
+			thunderStormEpoch = calendarJson.get("thunderEpochStart").getAsLong();
+		}
+		if (calendarJson.has("rainInterval")) {
+			rainInterval = calendarJson.get("rainInterval").getAsLong();
+		}
+		if (calendarJson.has("thunderFrequency")) {
+			thunderFrequency = calendarJson.get("thunderFrequency").getAsLong();
+		}
+		if (calendarJson.has("rainDuration")) {
+			rainDuration = calendarJson.get("rainDuration").getAsLong();
+		}
+		if (calendarJson.has("external")) {
+			List<Pair<Long, SBEvent>> externalEvents = new ArrayList<>();
+			for (JsonElement external : calendarJson.getAsJsonArray("external")) {
+				if (!(external instanceof JsonObject)) continue;
+				SBEvent sbEvent = new SBEvent(
+					Utils.getElementAsString(Utils.getElement(external, "id"), "external"),
+					Utils.getElementAsString(Utils.getElement(external, "display"), "§aExternal Event"),
+					Utils.getElementAsBool(Utils.getElement(external, "special"), false),
+					NotEnoughUpdates.INSTANCE.manager.createItem(Utils.getElementAsString(Utils.getElement(
+						external,
+						"itemStack"
+					), "painting")),
+					JsonUtils.getJsonArrayOrEmpty((JsonObject) external, "description", it -> Utils.getElementAsString(it, "")),
+					Utils.getElementAsInt(Utils.getElement(external, "duration"), -1),
+					true
+				);
+				long start = Utils.getElementAsLong(Utils.getElement(external, "start"), 0);
+				externalEvents.add(new Pair<>(start, sbEvent));
+			}
+			this.externalEvents = externalEvents;
+		}
+		eventMap.clear();
 	}
 
 	@SubscribeEvent
@@ -338,7 +433,7 @@ public class CalendarOverlay {
 	}
 
 	public void addEvent(SkyBlockTime time, SBEvent event) {
-		if (time.toInstant().isBefore(Instant.now())&&
+		if (time.toInstant().isBefore(Instant.now()) &&
 			time.toInstant().plus(event.lastsFor, ChronoUnit.MILLIS).isBefore(Instant.now())) return;
 		getEventsAt(time.toMillis()).add(event);
 	}
@@ -1316,7 +1411,6 @@ public class CalendarOverlay {
 				}
 			}
 
-
 			if (nextEvent != null) {
 				GlStateManager.translate(0, 0, 50);
 				boolean toastRendered = renderToast(nextEvent, timeUntilNext);
@@ -1449,7 +1543,7 @@ public class CalendarOverlay {
 		GlStateManager.color(1, 1, 1, 1);
 	}
 
-	private static class SBEvent {
+	private static class SBEvent implements Comparable<SBEvent> {
 		String id;
 		String display;
 		ItemStack stack;
@@ -1490,6 +1584,18 @@ public class CalendarOverlay {
 				tag.setString("event_id", id);
 			}
 			return stack;
+		}
+
+		@Override
+		public int compareTo(@NotNull CalendarOverlay.SBEvent o) {
+			int i;
+			if ((i = id.compareTo(o.id)) != 0) return i;
+			if ((i = display.compareTo(o.display)) != 0) return i;
+			if ((i = Long.compare(lastsFor, o.lastsFor)) != 0) return i;
+			if ((i = Boolean.compare(isSpecial, o.isSpecial)) != 0) return i;
+			if ((i = Boolean.compare(isArtificial, o.isArtificial)) != 0) return i;
+
+			return 0;
 		}
 	}
 
