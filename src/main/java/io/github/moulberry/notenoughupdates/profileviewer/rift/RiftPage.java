@@ -37,7 +37,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -129,24 +128,29 @@ public class RiftPage extends GuiProfileViewerPage {
 			int manaRegen = size * 2;
 
 			JsonObject montezuma = deadCats.getAsJsonObject("montezuma");
-			String montezumaType = montezuma.get("type").getAsString();
+			if (montezuma != null) {
+				String montezumaType = montezuma.get("type").getAsString();
 
-			PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
-			pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.get("exp").getAsInt());
-			pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
-			pet.petType = montezumaType;
-			pet.candyUsed = montezuma.get("candyUsed").getAsInt();
-			ItemStack petItemstackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
-			Utils.drawItemStack(petItemstackFromPetInfo, guiLeft + 37, guiTop + 158, true);
+				PetInfoOverlay.Pet pet = new PetInfoOverlay.Pet();
+				pet.petLevel = new PetLeveling.PetLevel(100, 100, 0, 0, 0, montezuma.get("exp").getAsInt());
+				pet.rarity = PetInfoOverlay.Rarity.valueOf(montezuma.get("tier").getAsString().toUpperCase());
+				pet.petType = montezumaType;
+				pet.candyUsed = montezuma.get("candyUsed").getAsInt();
+				ItemStack petItemstackFromPetInfo = ItemUtils.createPetItemstackFromPetInfo(pet);
+				Utils.drawItemStack(petItemstackFromPetInfo, guiLeft + 37, guiTop + 158, true);
 
-			if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
-				(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
-				List<String> tooltip = petItemstackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-				tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
-				tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
-				tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
+				if ((mouseX > guiLeft + 37 && mouseX < guiLeft + 37 + 20) &&
+					(mouseY > guiTop + 158 && mouseY < guiTop + 158 + 20)) {
+					List<String> tooltip = petItemstackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+					tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
+					tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
+					tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
 
-				getInstance().tooltipToDisplay = tooltip;
+					getInstance().tooltipToDisplay = tooltip;
+				}
+			} else if (size > 0) {
+				String montezumaError = EnumChatFormatting.RED + "Could not get pet";
+				Utils.drawStringCentered(montezumaError, guiLeft + 91 / 2f, guiTop + 158 + 10, true, 0);
 			}
 		}
 
