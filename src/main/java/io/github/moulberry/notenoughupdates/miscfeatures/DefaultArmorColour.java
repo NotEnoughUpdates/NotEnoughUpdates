@@ -30,26 +30,30 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
 @NEUAutoSubscribe
 public class DefaultArmorColour {
 
-	private static Map<ItemStack, Integer> armorColourCache = new IdentityHashMap<>();
+	private static Map<String, Integer> armorColourCache = new HashMap<>();
 	private static Set<String> erroredItems = new HashSet<>();
 
 	public static int getDefaultArmorColour(ItemArmor item, ItemStack stack) {
-		if (armorColourCache.containsKey(stack)) return armorColourCache.get(stack);
-
 		JsonObject itemJson = NotEnoughUpdates.INSTANCE.manager
 			.createItemResolutionQuery()
 			.withItemStack(stack)
 			.resolveToItemListJson();
 
-		if (itemJson != null && itemJson.has("nbttag")) {
+		if (itemJson == null) return item.getColor(stack);
+
+		String internalname = itemJson.get("internalname").getAsString();
+		if (armorColourCache.containsKey(internalname)) return armorColourCache.get(internalname);
+		if (erroredItems.contains(internalname)) return item.getColor(stack);
+
+		if (itemJson.has("nbttag")) {
 			try {
 				NBTTagCompound nbt = JsonToNBT.getTagFromJson(itemJson.get("nbttag").getAsString());
 				NBTTagCompound display;
@@ -58,16 +62,14 @@ public class DefaultArmorColour {
 					int colour = display.getInteger("color");
 
 					if (colour != 0) {
-						armorColourCache.put(stack, colour);
+						armorColourCache.put(internalname, colour);
 						return colour;
 					}
 				}
 			} catch (NBTException exception) {
-				if (!erroredItems.contains(itemJson.get("internalname").getAsString())) {
-					erroredItems.add(itemJson.get("internalname").getAsString());
-					System.out.println("[NEU] Ran into NBTException whilst converting Json into NBT with the JsonObject: " + itemJson);
-					exception.printStackTrace();
-				}
+				erroredItems.add(internalname);
+				System.out.println("[NEU] Ran into NBTException whilst converting Json into NBT with the JsonObject: " + itemJson);
+				exception.printStackTrace();
 			}
 		}
 
