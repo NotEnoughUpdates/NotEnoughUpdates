@@ -249,7 +249,7 @@ public class ItemCooldowns {
 						if (internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) bonzoMaskCooldown = setCooldown(stack);
 						break;
 					case SPIRIT_MASK:
-						if (internalname.equals("SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
+						if (internalname.equals("SPIRIT_MASK") || internalname.equals("STARRED_SPIRIT_MASK")) spiritMaskCooldown = setCooldown(stack);
 						break;
 				}
 			}
