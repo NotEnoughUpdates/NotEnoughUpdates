@@ -21,7 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.bestiary
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
-import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.calculateTotalBestiaryLevel
+import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.calculateTotalBestiaryTiers
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.hasMigrated
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.parseBestiaryData
 import io.github.moulberry.notenoughupdates.util.Constants
@@ -61,7 +61,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
     private var lastSelectedCategory = ""
     private var selectedSubCategory = ""
     private var tooltipToDisplay: MutableList<String> = mutableListOf()
-    private var bestiaryLevel = 0
+    private var bestiaryLevel = 0.0
     private var computedCategories: MutableList<Category> = mutableListOf()
 
     private val bestiaryTexture = ResourceLocation("notenoughupdates:pv_bestiary_tab.png")
@@ -90,7 +90,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
         // Do the initial parsing only once
         if (computedCategories.isEmpty()) {
             computedCategories = parseBestiaryData(profileInfo)
-            bestiaryLevel = calculateTotalBestiaryLevel(computedCategories)
+            bestiaryLevel = calculateTotalBestiaryTiers(computedCategories).toDouble()
         }
         val bestiarySize = computedCategories.size
         val bestiaryXSize = (350f / (bestiarySize - 1 + 0.0000001f)).toInt()
@@ -150,7 +150,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
         val color = Color(128, 128, 128, 255)
         Utils.renderAlignedString(
             EnumChatFormatting.RED.toString() + "Milestone: ",
-            "${EnumChatFormatting.GRAY}${(bestiaryLevel / 10) - 1}",
+            "${EnumChatFormatting.GRAY}${(bestiaryLevel / 10)}",
             (guiLeft + 280).toFloat(),
             (guiTop + 50).toFloat(),
             110

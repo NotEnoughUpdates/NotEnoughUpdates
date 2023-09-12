@@ -950,8 +950,13 @@ public class SkyblockProfiles {
 			return levelingInfo = out;
 		}
 
-		public int getBestiaryLevel() {
-			return BestiaryData.calculateTotalBestiaryLevel(BestiaryData.parseBestiaryData(getProfileJson()));
+		/**
+		 * Get the Skyblock XP provided by the bestiary progress for this profile
+		 *
+		 * @return skyblock xp
+		 */
+		public int getBestiaryXp() {
+			return BestiaryData.calculateBestiarySkyblockXp(getProfileJson());
 		}
 
 		public JsonObject getPetsInfo() {
