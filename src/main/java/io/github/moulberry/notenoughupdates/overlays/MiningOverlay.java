@@ -535,14 +535,14 @@ public class MiningOverlay extends TextTabOverlay {
 			if (name.equals("Star Sentry Puncher")) return "Damage Star Sentries 10 times (anywhere)";
 
 			// Mining
-			if (name.equals("Mithril Miner")) return "Break 500 Mithril (anywhere)";
+			if (name.equals("Mithril Miner")) return "Break 350 Mithril (anywhere)";
 			if (name.equals("Titanium Miner")) return "Break 15 Titanium (anywhere)";
 
-			if (name.equals("Cliffside Veins Mithril")) return "Break 350 Mithril §b(Cliffside Veins)";
-			if (name.equals("Royal Mines Mithril")) return "Break 350 Mithril §b(Royal Mines)";
-			if (name.equals("Lava Springs Mithril")) return "Break 350 Mithril §b(Lava Springs)";
-			if (name.equals("Rampart's Quarry Mithril")) return "Break 350 Mithril §b(Rampart's Quarry)";
-			if (name.equals("Upper Mines Mithril")) return "Break 350 Mithril §b(Upper Mines)";
+			if (name.equals("Cliffside Veins Mithril")) return "Break 250 Mithril §b(Cliffside Veins)";
+			if (name.equals("Royal Mines Mithril")) return "Break 250 Mithril §b(Royal Mines)";
+			if (name.equals("Lava Springs Mithril")) return "Break 250 Mithril §b(Lava Springs)";
+			if (name.equals("Rampart's Quarry Mithril")) return "Break 250 Mithril §b(Rampart's Quarry)";
+			if (name.equals("Upper Mines Mithril")) return "Break 250 Mithril §b(Upper Mines)";
 
 			if (name.equals("Cliffside Veins Titanium")) return "Break 10 Titanium §b(Cliffside Veins)";
 			if (name.equals("Lava Springs Titanium")) return "Break 10 Titanium §b(Lava Springs)";
