@@ -39,6 +39,8 @@ class WardrobeMouseButtons {
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot7,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot8,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot9,
+        NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePagePrevious,
+        NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageNext,
     )
     private var lastClick = -1L
 
@@ -57,11 +59,22 @@ class WardrobeMouseButtons {
         if (!NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.enableWardrobeKeybinds || !NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return
         val gui = event.gui as? GuiChest ?: return
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
+        val chestName = Utils.getOpenChestName()
+        val totalPages = chestName.trim().split(" ").last().replace(")","").replace("(","").split("/").last().toInt()
+        val currentPage = chestName.trim().split(" ").last().replace(")","").replace("(","").split("/").first().toInt()
 
         for (i in keybinds.indices) {
             if (KeybindHelper.isKeyDown(keybinds[i])) {
                 if (System.currentTimeMillis() - lastClick > 300) {
-                    Utils.sendLeftMouseClick(gui.inventorySlots.windowId, 36 + i)
+                    var slotNum = 0
+                    if ((currentPage != totalPages) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageNext)) {
+                        slotNum = 53
+                    } else if ((currentPage != 1) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePagePrevious)) {
+                        slotNum = 45
+                    } else {
+                        slotNum = (36 + i)
+                    }
+                    Utils.sendLeftMouseClick(gui.inventorySlots.windowId, slotNum)
                     lastClick = System.currentTimeMillis()
                     event.isCanceled = true
                 }

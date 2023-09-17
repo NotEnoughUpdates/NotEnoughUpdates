@@ -123,4 +123,22 @@ public class WardrobeKeybinds {
 	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_9)
 	@ConfigAccordionId(id = 2)
 	public int wardrobeSlot9 = Keyboard.KEY_9;
+
+	@Expose
+	@ConfigOption(
+		name = "Previous Page",
+		desc = "Keybind to open the previous page in your wardrobe"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_MINUS)
+	@ConfigAccordionId(id = 2)
+	public int wardrobePagePrevious = Keyboard.KEY_MINUS;
+
+	@Expose
+	@ConfigOption(
+		name = "Next Page",
+		desc = "Keybind to open the next page in your wardrobe"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_EQUALS)
+	@ConfigAccordionId(id = 2)
+	public int wardrobePageNext = Keyboard.KEY_EQUALS;
 }
