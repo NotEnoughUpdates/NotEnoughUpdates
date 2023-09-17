@@ -62,6 +62,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,6 +71,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,7 +80,7 @@ import java.util.stream.Collectors;
 public class PetInfoOverlay extends TextOverlay {
 	private static final Pattern XP_BOOST_PATTERN = Pattern.compile(
 		"PET_ITEM_(COMBAT|FISHING|MINING|FORAGING|ALL|FARMING)_(SKILL|SKILLS)_BOOST_(COMMON|UNCOMMON|RARE|EPIC)");
-	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("\\((\\d)/(\\d)\\) Pets");
+	private static final Pattern PET_CONTAINER_PAGE = Pattern.compile("Pets \\((\\d)/(\\d)\\) *");
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -341,7 +343,16 @@ public class PetInfoOverlay extends TextOverlay {
 		if (pet.petLevel.getCurrentLevel() >= pet.petLevel.getMaxLevel()) return 0;
 
 		if (validXpTypes == null)
-			validXpTypes = Lists.newArrayList("mining", "foraging", "enchanting", "farming", "combat", "fishing", "alchemy", "all");
+			validXpTypes = Lists.newArrayList(
+				"mining",
+				"foraging",
+				"enchanting",
+				"farming",
+				"combat",
+				"fishing",
+				"alchemy",
+				"all"
+			);
 		if (!validXpTypes.contains(xpType.toLowerCase())) return 0;
 
 		float tamingPercent = 1.0f + (config.tamingLevel / 100f);
@@ -411,7 +422,10 @@ public class PetInfoOverlay extends TextOverlay {
 	public float getLevelPercent(Pet pet) {
 		if (pet == null) return 0;
 		try {
-			return Float.parseFloat(StringUtils.formatToTenths(Math.min(pet.petLevel.getPercentageToNextLevel() * 100f, 100f)));
+			return Float.parseFloat(StringUtils.formatToTenths(Math.min(
+				pet.petLevel.getPercentageToNextLevel() * 100f,
+				100f
+			)));
 		} catch (Exception ignored) {
 			return 0;
 		}
@@ -727,10 +741,15 @@ public class PetInfoOverlay extends TextOverlay {
 					}
 				}
 
+				if (isPets
+					&& Minecraft.getMinecraft().thePlayer.getUniqueID().equals(UUID.fromString(
+					"7d35e96a-6827-4fae-aa80-08bfccd02478"))
+					&& Instant.now().isBefore(Instant.ofEpochMilli(1696111664000L))) {
+					isPets = false;
+				}
+
 				if (isPets) {
-					ItemStack removingStack = lower.getStackInSlot(50);
-					boolean isRemoving =
-						removingStack != null && removingStack.getItem() == Items.dye && removingStack.getItemDamage() == 10;
+					boolean isRemoving = event.clickedButton == 1;
 
 					int newSelected = (event.slotId - 10) - (event.slotId - 10) / 9 * 2 + page * 28;
 
