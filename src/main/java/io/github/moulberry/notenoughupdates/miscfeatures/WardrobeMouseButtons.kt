@@ -83,10 +83,9 @@ class WardrobeMouseButtons {
                         val guiChes = event.gui as GuiChest
 		                val container = guiChes.inventorySlots as ContainerChest
                         for (j in 36..44) {
-                            val slotName = (container.getSlot(j) as ItemStack).getDisplayName().toLowerCase()
+                            val slotName = container.getSlot(j).getStack().getDisplayName()
                             if (slotName.contains("Equipped")) {
                                 slotNum = j
-                                break
                             }
                         }
                     } else {
