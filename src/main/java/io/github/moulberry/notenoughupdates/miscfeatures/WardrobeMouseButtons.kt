@@ -60,8 +60,11 @@ class WardrobeMouseButtons {
         val gui = event.gui as? GuiChest ?: return
         if (!Utils.getOpenChestName().contains("Wardrobe")) return
         val chestName = Utils.getOpenChestName()
-        val totalPages = chestName.trim().split(" ").last().replace(")","").replace("(","").split("/").last().toInt()
-        val currentPage = chestName.trim().split(" ").last().replace(")","").replace("(","").split("/").first().toInt()
+        val chestNameRegex = "Wardrobe (\\((?<current>[0-9]+)\\/(?<total>[0-9]+)\\))".toRegex()
+        val chestNameMatch = chestNameRegex.matchEntire(chestName)
+        if (chestNameMatch == null) return
+        val totalPages = chestNameMatch.groups["total"]!!.value.toInt()
+        val currentPage = chestNameMatch.groups["current"]!!.value.toInt()
 
         for (i in keybinds.indices) {
             if (KeybindHelper.isKeyDown(keybinds[i])) {
