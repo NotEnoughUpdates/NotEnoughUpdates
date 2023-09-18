@@ -22,7 +22,11 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper
 import io.github.moulberry.notenoughupdates.util.Utils
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -39,6 +43,7 @@ class WardrobeMouseButtons {
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot7,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot8,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobeSlot9,
+        NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePagePrevious,
         NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageNext,
     )
@@ -74,6 +79,16 @@ class WardrobeMouseButtons {
                         slotNum = 53
                     } else if ((currentPage != 1) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePagePrevious)) {
                         slotNum = 45
+                    } else if (KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip)) {
+                        val guiChes = event.gui as GuiChest
+		                val container = guiChes.inventorySlots as ContainerChest
+                        for (j in 36..44) {
+                            val slotName = (container.getSlot(j) as ItemStack).getDisplayName().toLowerCase()
+                            if (slotName.contains("Equipped")) {
+                                slotNum = j
+                                break
+                            }
+                        }
                     } else {
                         slotNum = (36 + i)
                     }

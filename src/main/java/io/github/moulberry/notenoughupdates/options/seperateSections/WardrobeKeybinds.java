@@ -126,6 +126,15 @@ public class WardrobeKeybinds {
 
 	@Expose
 	@ConfigOption(
+		name = "Unequip Wardrobe Slot",
+		desc = "Keybind to unequip the currently active set in your wardrobe"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_0)
+	@ConfigAccordionId(id = 2)
+	public int wardrobePageUnequip = Keyboard.KEY_0;
+
+	@Expose
+	@ConfigOption(
 		name = "Previous Page",
 		desc = "Keybind to open the previous page in your wardrobe"
 	)
