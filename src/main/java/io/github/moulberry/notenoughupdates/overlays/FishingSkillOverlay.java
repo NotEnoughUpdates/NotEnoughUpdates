@@ -385,7 +385,7 @@ public class FishingSkillOverlay
             if(yaw > 180) yaw -= 360;
 
             lineMap.put(6, EnumChatFormatting.AQUA+"Yaw: "+EnumChatFormatting.YELLOW+
-                    String.format("%.2f", yaw)+EnumChatFormatting.BOLD+"\u1D52");*/
+                    String.format("%.2f", yaw)+EnumChatFormatting.BOLD+"\u00b0");*/
 			int key = NotEnoughUpdates.INSTANCE.config.skillOverlays.fishKey;
 
 			ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{
