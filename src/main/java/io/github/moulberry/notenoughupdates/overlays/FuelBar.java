@@ -43,7 +43,7 @@ import static io.github.moulberry.notenoughupdates.NotEnoughUpdates.MODID;
 
 @NEUAutoSubscribe
 public class FuelBar {
-	public static final ResourceLocation FUEL_BAR = new ResourceLocation(MODID, "fuel_bar.png");
+	public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");
 
 	private float fuelAmount = -1;
 	private String fuelString = "";
