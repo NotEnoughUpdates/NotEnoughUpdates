@@ -28,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -292,7 +291,6 @@ public class ItemCooldowns {
 				return durabilityOverride(pickaxeUseCooldownMillisRemaining, pickaxeCooldown, stack);
 			} else return -1;
 		}
-
 		// Treecapitator / Jungle Axe
 		if (internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE")) {
 			if (treecapitatorCooldownMillisRemaining < 0) {

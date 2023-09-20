@@ -722,7 +722,7 @@ public class ItemTooltipListener {
 				}
 			}
 
-			copied = k || m || n || f;
+			copied = k || m || n || f || b;
 		}
 	}
 }

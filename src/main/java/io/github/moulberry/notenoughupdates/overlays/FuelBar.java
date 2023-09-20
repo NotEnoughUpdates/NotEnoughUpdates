@@ -39,8 +39,6 @@ import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
-import static io.github.moulberry.notenoughupdates.NotEnoughUpdates.MODID;
-
 @NEUAutoSubscribe
 public class FuelBar {
 	public static final ResourceLocation FUEL_BAR = new ResourceLocation("notenoughupdates:fuel_bar.png");

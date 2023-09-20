@@ -174,7 +174,7 @@ public class Utils {
 	}
 
 	public static ScaledResolution pushGuiScale(int scale) {
-		if (guiScales.size() == 0) {
+		if (guiScales.isEmpty()) {
 			if (Loader.isModLoaded("labymod")) {
 				GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionMatrixOld);
 				GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrixOld);
@@ -182,7 +182,7 @@ public class Utils {
 		}
 
 		if (scale < 0) {
-			if (guiScales.size() > 0) {
+			if (!guiScales.isEmpty()) {
 				guiScales.pop();
 			}
 		} else {
@@ -193,7 +193,7 @@ public class Utils {
 			}
 		}
 
-		int newScale = guiScales.size() > 0
+		int newScale = !guiScales.isEmpty()
 			? Math.max(0, guiScales.peek())
 			: Minecraft.getMinecraft().gameSettings.guiScale;
 		if (newScale == 0) newScale = Minecraft.getMinecraft().gameSettings.guiScale;
@@ -203,7 +203,7 @@ public class Utils {
 		ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
 		Minecraft.getMinecraft().gameSettings.guiScale = oldScale;
 
-		if (guiScales.size() > 0) {
+		if (!guiScales.isEmpty()) {
 			GlStateManager.viewport(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight);
 			GlStateManager.matrixMode(GL11.GL_PROJECTION);
 			GlStateManager.loadIdentity();
@@ -496,9 +496,9 @@ public class Utils {
 		Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(true, true);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(770, 771);
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		setupGuiTransform(x, y, ibakedmodel.isGui3d());
 		ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(
@@ -590,7 +590,7 @@ public class Utils {
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
 		int x = guiLeft - 28;
 		int y = guiTop + yIndex * 28;
@@ -631,7 +631,7 @@ public class Utils {
 		GlStateManager.enableBlend();
 		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 
@@ -870,7 +870,7 @@ public class Utils {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		worldrenderer
 			.pos(x, y + height, 0.0D)
 			.tex(uMin, vMax).endVertex();
@@ -909,7 +909,7 @@ public class Utils {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		worldrenderer
 			.pos(x, y + height, 0.0D)
 			.tex(uMin, vMax).endVertex();
@@ -1471,17 +1471,17 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.shadeModel(7425);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		worldrenderer.pos(right, top, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(left, top, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(left, bottom, 0).color(f5, f6, f7, f4).endVertex();
 		worldrenderer.pos(right, bottom, 0).color(f5, f6, f7, f4).endVertex();
 		tessellator.draw();
-		GlStateManager.shadeModel(7424);
+		GlStateManager.shadeModel(GL11.GL_FLAT);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
@@ -1499,17 +1499,17 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.shadeModel(7425);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		worldrenderer.pos(right, top, 0).color(f5, f6, f7, f4).endVertex();
 		worldrenderer.pos(left, top, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(left, bottom, 0).color(f1, f2, f3, f).endVertex();
 		worldrenderer.pos(right, bottom, 0).color(f5, f6, f7, f4).endVertex();
 		tessellator.draw();
-		GlStateManager.shadeModel(7424);
+		GlStateManager.shadeModel(GL11.GL_FLAT);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
@@ -1548,8 +1548,7 @@ public class Utils {
 					StandardCharsets.UTF_8
 				))
 			) {
-				T obj = gson.fromJson(reader, clazz);
-				return obj;
+				return gson.fromJson(reader, clazz);
 			} catch (Exception e) {
 				return null;
 			}
@@ -1690,7 +1689,7 @@ public class Utils {
 		if (!textLines.isEmpty()) {
 			int borderColorStart = 0x505000FF;
 			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
-				if (textLines.size() > 0) {
+				if (!textLines.isEmpty()) {
 					String first = textLines.get(0);
 					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
 						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
@@ -1931,19 +1930,19 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.shadeModel(7425);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		worldrenderer.pos(right, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
 		worldrenderer.pos(left, top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
 		worldrenderer.pos(left, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
 		worldrenderer.pos(right, bottom, zLevel).color(endRed, endGreen, endBlue, endAlpha).endVertex();
 		tessellator.draw();
 
-		GlStateManager.shadeModel(7424);
+		GlStateManager.shadeModel(GL11.GL_FLAT);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 		GlStateManager.enableTexture2D();
@@ -1970,7 +1969,7 @@ public class Utils {
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		GlStateManager.disableTexture2D();
 		GlStateManager.color(f, f1, f2, f3);
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 		worldrenderer.pos(left, bottom, 0.0D).endVertex();
 		worldrenderer.pos(right, bottom, 0.0D).endVertex();
 		worldrenderer.pos(right, top, 0.0D).endVertex();
@@ -2003,9 +2002,9 @@ public class Utils {
 		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 		GlStateManager.enableBlend();
 		GlStateManager.disableTexture2D();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 		GlStateManager.color(g, h, j, f);
-		worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+		worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 		worldRenderer.pos(left, bottom, 0.0).endVertex();
 		worldRenderer.pos(right, bottom, 0.0).endVertex();
 		worldRenderer.pos(right, top, 0.0).endVertex();
@@ -2013,6 +2012,35 @@ public class Utils {
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
 		GlStateManager.disableBlend();
+	}
+
+
+	/**
+	 * Draws a default-size 16 by 16 item-overlay at <i>x</i> and <i>y</i>.
+	 *
+	 * @param x position of the overlay
+	 * @param y position of the overlay
+	 */
+	public static void drawHoverOverlay(int x, int y) {
+		drawHoverOverlay(x, y, 16, 16);
+	}
+
+	/**
+	 * Draws an item-overlay of given <i>width</i> and <i>height</i> at <i>x</i> and <i>y</i>.
+	 *
+	 * @param x position of the overlay
+	 * @param y position of the overlay
+	 * @param width width of the overlay
+	 * @param height height of the overlay
+	 */
+	public static void drawHoverOverlay(int x, int y, int width, int height) {
+		GlStateManager.disableLighting();
+		GlStateManager.disableDepth();
+		GlStateManager.colorMask(true, true, true, false);
+		Utils.drawGradientRect(x, y, x + 16, y + 16, 0x80ffffff, 0x80ffffff);
+		GlStateManager.colorMask(true, true, true, true);
+		GlStateManager.enableLighting();
+		GlStateManager.enableDepth();
 	}
 
 	public static String prettyTime(Duration time) {
@@ -2054,7 +2082,7 @@ public class Utils {
 		GlStateManager.disableTexture2D();
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 		GlStateManager.color(f1, f2, f3, f);
 		GL11.glLineWidth(width);
 		GL11.glBegin(GL11.GL_LINES);
@@ -2095,7 +2123,7 @@ public class Utils {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		worldrenderer
 			.pos(x1, y1, 0.0D)
 			.tex(uMin, vMax).endVertex();

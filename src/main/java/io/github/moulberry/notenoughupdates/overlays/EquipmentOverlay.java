@@ -58,6 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static io.github.moulberry.notenoughupdates.util.Utils.drawHoverOverlay;
+
 @NEUAutoSubscribe
 public class EquipmentOverlay {
 	public static EquipmentOverlay INSTANCE = new EquipmentOverlay();
@@ -205,7 +207,21 @@ public class EquipmentOverlay {
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
-		// Draw Backgrounds
+		// Draw Backgrounds before anything, so hover overlay isn't occluded by the background
+		renderHudBackground(inventory);
+
+		// Draw foregrounds
+		if (shouldRenderArmorHud) {
+			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
+		}
+
+		if (shouldRenderPets) {
+			renderPets(inventory, mouseX, mouseY, width, height);
+		}
+	}
+
+	// Draws Backgrounds
+	public void renderHudBackground(GuiScreen inventory) {
 		GL11.glColor4f(1F, 1F, 1F, 1F);
 		AccessorGuiContainer container = ((AccessorGuiContainer) inventory);
 		final int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
@@ -225,15 +241,6 @@ public class EquipmentOverlay {
 			Utils.drawTexturedRect(overlayLeft, overlayTop + PET_OVERLAY_OFFSET_Y, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 		}
 		GlStateManager.bindTexture(0);
-
-		// Draw foregrounds
-		if (shouldRenderArmorHud) {
-			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
-		}
-
-		if (shouldRenderPets) {
-			renderPets(inventory, mouseX, mouseY, width, height);
-		}
 	}
 
 	public void renderEquipmentGui(GuiInventory guiScreen, int mouseX, int mouseY, int width, int height) {
@@ -266,7 +273,7 @@ public class EquipmentOverlay {
 			}
 
 		}
-		if (tooltipToDisplay.size() > 0 &&
+		if (!tooltipToDisplay.isEmpty() &&
 			Utils.isWithinRect(
 				mouseX, mouseY,
 				overlayLeft, overlayTop,
@@ -323,13 +330,7 @@ public class EquipmentOverlay {
 		Utils.drawItemStack(stack, x, y, true);
 		if (Utils.isWithinRect(mouseX, mouseY, x, y, 16, 16)) {
 			// draw the slot overlay
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepth();
-			GlStateManager.colorMask(true, true, true, false);
-			Utils.drawGradientRect(x, y, x + 16, y + 16, -2130706433, -2130706433);
-			GlStateManager.colorMask(true, true, true, true);
-			GlStateManager.enableLighting();
-			GlStateManager.enableDepth();
+			drawHoverOverlay(x, y);
 
 			List<String> tt = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			if (shouldShowEquipmentTooltip(tt))
@@ -366,13 +367,7 @@ public class EquipmentOverlay {
 			}
 
 			// draw the slot overlay
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepth();
-			GlStateManager.colorMask(true, true, true, false);
-			Utils.drawGradientRect(overlayLeft + 8, overlayTop + 8, overlayLeft + 24, overlayTop + 24, -2130706433, -2130706433);
-			GlStateManager.colorMask(true, true, true, true);
-			GlStateManager.enableLighting();
-			GlStateManager.enableDepth();
+			drawHoverOverlay(overlayLeft + 8, overlayTop + 8);
 
 			tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			Utils.drawHoveringText(
