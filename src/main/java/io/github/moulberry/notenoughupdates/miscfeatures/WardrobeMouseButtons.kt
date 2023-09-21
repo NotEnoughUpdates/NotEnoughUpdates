@@ -70,41 +70,41 @@ class WardrobeMouseButtons {
         if (chestNameMatch == null) return
         val totalPages = chestNameMatch.groups["total"]!!.value.toInt()
         val currentPage = chestNameMatch.groups["current"]!!.value.toInt()
+        val guiChes = event.gui as GuiChest
+        val container = guiChes.inventorySlots as ContainerChest
+        var slotNum = 0
 
-        for (i in keybinds.indices) {
-            if (KeybindHelper.isKeyDown(keybinds[i])) {
-                if (System.currentTimeMillis() - lastClick > 300) {
-                    val guiChes = event.gui as GuiChest
-                    val container = guiChes.inventorySlots as ContainerChest
-                    var slotNum = 0
-                    if ((currentPage != totalPages) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageNext)) {
-                        slotNum = 53
-                    } else if ((currentPage != 1) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePagePrevious)) {
-                        slotNum = 45
-                    } else if (KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip)) {
-                        var notEquipped = 0
-                        for (j in 36..44) {
-                            val slotName = container.getSlot(j).getStack().getDisplayName()
-                            if (slotName.contains("Equipped")) {
-                                slotNum = j
-                            }
-                            else {
-                                notEquipped++
-                            }
-                        }
-                        if (notEquipped == 9) return
-                    } else {
-                        slotNum = (36 + i)
-                    }
-                    if (container.getSlot(slotNum).getStack().getDisplayName().isEmpty()) return
-                    if (slotNum < 36 || ((slotNum > 45) && (slotNum != 53))) return
-                    Utils.sendLeftMouseClick(gui.inventorySlots.windowId, slotNum)
-                    lastClick = System.currentTimeMillis()
-                    event.isCanceled = true
+        if ((currentPage != totalPages) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageNext)) {
+            slotNum = 53
+        } else if ((currentPage != 1) && KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePagePrevious)) {
+            slotNum = 45
+        } else if (KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip)) {
+            var notEquipped = 0
+            for (j in 36..44) {
+                val slotName = container.getSlot(j).getStack().getDisplayName()
+                if (slotName.contains("Equipped")) {
+                    slotNum = j
                 }
-                break
+                else {
+                    notEquipped++
+                }
+            }
+            if (notEquipped == 9) return
+        } else {
+            for (i in keybinds.indices) {
+                if (KeybindHelper.isKeyDown(keybinds[i])) {
+                    if (System.currentTimeMillis() - lastClick > 300) {
+                            slotNum = (36 + i)
+                    }
+                }
             }
         }
+
+        if (container.getSlot(slotNum).getStack().getDisplayName().isEmpty()) return
+        if (slotNum < 36 || ((slotNum > 45) && (slotNum != 53))) return
+        Utils.sendLeftMouseClick(gui.inventorySlots.windowId, slotNum)
+        lastClick = System.currentTimeMillis()
+        event.isCanceled = true
     }
 
 }
