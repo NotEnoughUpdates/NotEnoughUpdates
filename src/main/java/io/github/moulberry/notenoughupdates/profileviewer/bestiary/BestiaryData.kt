@@ -69,7 +69,7 @@ object BestiaryData {
         var skyblockXp = 0
 
         val slayingTask = Constants.SBLEVELS.getAsJsonObject("slaying_task") ?: return 0
-        val xpPerTier = slayingTask.get("bestiary_family_xp").asInt
+        val xpPerTier = (slayingTask.get("bestiary_family_xp") ?: return 0).asInt
         val xpPerMilestone = slayingTask.get("bestiary_milestone_xp").asInt
         val maxXp = slayingTask.get("bestiary_progress").asInt
 
