@@ -39,7 +39,7 @@ class JoinCommand {
         return lf
     }
 
-    val kuudraLevelNames = listOf("BASIC", "HOT", "BURNING", "FIERY", "INFERNAL")
+    val kuudraLevelNames = listOf("NORMAL", "HOT", "BURNING", "FIERY", "INFERNAL")
     val dungeonLevelNames = listOf("ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN")
 
     @SubscribeEvent
