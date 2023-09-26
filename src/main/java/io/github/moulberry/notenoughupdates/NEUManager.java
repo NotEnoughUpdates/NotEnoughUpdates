@@ -217,6 +217,7 @@ public class NEUManager {
 					}
 				}
 
+				repoLocation.mkdirs();
 				File itemsZip = new File(repoLocation, "neu-items-master.zip");
 				try {
 					itemsZip.createNewFile();
