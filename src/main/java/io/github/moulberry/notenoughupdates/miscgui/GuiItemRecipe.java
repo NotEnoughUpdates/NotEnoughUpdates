@@ -336,6 +336,11 @@ public class GuiItemRecipe extends GuiScreen {
 		int mouseY = scaledResolution.getScaledHeight() -
 			Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
 		getCurrentRecipe().genericMouseInput(mouseX, mouseY);
+
+		// Allow Paging with Scroll-Wheel
+		if (Mouse.getEventDWheel() != 0) {
+			ArrowPagesUtils.onPageSwitchScroll(currentIndex, getCurrentRecipeList().size(), pageChange -> changeRecipe(currentTab, pageChange));
+		}
 	}
 
 	public void arrowKeyboardInput() {
