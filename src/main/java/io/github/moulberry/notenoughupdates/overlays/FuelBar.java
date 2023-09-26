@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
@@ -106,23 +107,21 @@ public class FuelBar {
 			ScaledResolution scaledResolution = Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
 
 			Position position = NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarPosition;
-			int x = position.getAbsX(scaledResolution, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth);
-			int y = position.getAbsY(scaledResolution, 10);
-			x -= NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth / 2;
-			renderBar(x, y + 4, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, fuelAmount);
+			int x = position.getAbsX(scaledResolution, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2);
+			int y = position.getAbsY(scaledResolution, 5);
+			x -= NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth / 2 - 1;
+			renderBar(x, y + 6, NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2, fuelAmount);
 
 			String str = fuelString.replace("\u00A77", EnumChatFormatting.DARK_GREEN.toString()) +
 				EnumChatFormatting.GOLD + String.format(" (%d%%)", (int) (fuelAmount * 100));
 
 			GlStateManager.enableBlend();
-			GL14.glBlendFuncSeparate(
-				GL11.GL_SRC_ALPHA,
+			GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA,
 				GL11.GL_ONE_MINUS_SRC_ALPHA,
 				GL11.GL_ONE,
 				GL11.GL_ONE_MINUS_SRC_ALPHA
 			);
-			GlStateManager.tryBlendFuncSeparate(
-				GL11.GL_SRC_ALPHA,
+			GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA,
 				GL11.GL_ONE_MINUS_SRC_ALPHA,
 				GL11.GL_ONE,
 				GL11.GL_ONE_MINUS_SRC_ALPHA
@@ -133,52 +132,18 @@ public class FuelBar {
 				for (int yO = -2; yO <= 2; yO++) {
 					if (Math.abs(xO) != Math.abs(yO)) {
 						Minecraft.getMinecraft().fontRendererObj.drawString(clean,
-							x + 2 + xO / 2f, y + yO / 2f,
-							new Color(0, 0, 0, 200 / Math.max(Math.abs(xO), Math.abs(yO))).getRGB(), false
+							x + 2 + xO / 2f,
+							y + yO / 2f,
+							new Color(0, 0, 0, 200 / Math.max(Math.abs(xO), Math.abs(yO))).getRGB(),
+							false
 						);
 					}
 				}
 			}
-			Minecraft.getMinecraft().fontRendererObj.drawString(str,
-				x + 2, y, 0xffffff, false
-			);
+			Minecraft.getMinecraft().fontRendererObj.drawString(str, x + 2, y, 0xffffff, false);
 			Utils.pushGuiScale(0);
 			GlStateManager.popMatrix();
 		}
-	}
-
-	private void renderBarCap(float x, float y, boolean left, float rCapSize, float completion) {
-		float size = left ? 10 : rCapSize;
-		int startTexX = left ? 0 : (170 + 11 - (int) Math.ceil(rCapSize));
-
-		if (completion < 1) {
-			Utils.drawTexturedRect(x, y, size, 5,
-				startTexX / 181f, 1, 0 / 10f, 5 / 10f, GL11.GL_NEAREST
-			);
-		}
-		if (completion > 0) {
-			Utils.drawTexturedRect(x, y, size * completion, 5,
-				startTexX / 181f, (startTexX + size * completion) / 181f, 5 / 10f, 10 / 10f, GL11.GL_NEAREST
-			);
-		}
-	}
-
-	private void renderBarNotch(float x, float y, int id, float completion) {
-		id = id % 16;
-
-		int startTexX = 10 + id * 10;
-
-		if (completion < 1) {
-			Utils.drawTexturedRect(x, y, 10, 5,
-				startTexX / 181f, (startTexX + 10) / 181f, 0 / 10f, 5 / 10f, GL11.GL_NEAREST
-			);
-		}
-		if (completion > 0) {
-			Utils.drawTexturedRect(x, y, 10 * completion, 5,
-				startTexX / 181f, (startTexX + 10 * completion) / 181f, 5 / 10f, 10 / 10f, GL11.GL_NEAREST
-			);
-		}
-
 	}
 
 	private void renderBar(float x, float y, float xSize, float completed) {
@@ -186,26 +151,21 @@ public class FuelBar {
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x, y, 0);
-		xSize = xSize / 1.5f;
-		GlStateManager.scale(1.5f, 1.5f, 1);
 
 		Color c = Color.getHSBColor(148 / 360f * completed - 20 / 360f, 0.9f, 1 - 0.5f * completed);
 		GlStateManager.color(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, 1);
 
-		float offsetCompleteX = xSize * completed;
-		for (int xOffset = 0; xOffset < xSize; xOffset += 10) {
-			float notchCompl = 1;
-			if (xOffset > offsetCompleteX) {
-				notchCompl = 0;
-			} else if (xOffset + 10 > offsetCompleteX) {
-				notchCompl = (offsetCompleteX - xOffset) / 10f;
-			}
-			if (xOffset == 0) {
-				renderBarCap(0, 0, true, 0, notchCompl);
-			} else if (xOffset + 11 > xSize) {
-				renderBarCap(xOffset, 0, false, xSize - xOffset, notchCompl);
-			} else {
-				renderBarNotch(xOffset, 0, xOffset / 10, notchCompl);
+		Utils.pushGuiScale(NotEnoughUpdates.INSTANCE.config.locationedit.guiScale);
+
+		int w = (int) xSize;
+		int w_2 = w / 2;
+		int k = (int) Math.min(w, Math.ceil(completed * w));
+		Utils.drawTexturedRect(x, y, w_2, 5, 0, w_2 / 181f, 0, 0.5f, GL11.GL_NEAREST);
+		Utils.drawTexturedRect(x + w_2, y, w_2, 5, 1 - w_2 / 181f, 1f, 0, 0.5f, GL11.GL_NEAREST);
+		if (k > 0) {
+			Utils.drawTexturedRect(x, y, Math.min(w_2, k), 5, 0, Math.min(w_2, k) / 181f, 0.5f, 1, GL11.GL_NEAREST);
+			if (completed > 0.5f) {
+				Utils.drawTexturedRect(x + w_2, y, k - w_2, 5, 1 - w_2 / 181f, 1 + (k - w) / 181f, 0.5f, 1, GL11.GL_NEAREST);
 			}
 		}
 
