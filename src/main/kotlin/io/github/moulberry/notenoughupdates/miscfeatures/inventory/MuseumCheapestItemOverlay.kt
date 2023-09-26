@@ -415,7 +415,7 @@ object MuseumCheapestItemOverlay {
                     if (line.internalNames.isEmpty()) {
                         tooltip.add("${EnumChatFormatting.RED}Could not determine item!")
                     }
-                    if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
+                    else if (NotEnoughUpdates.INSTANCE.manager.getRecipesFor(line.internalNames[0]).isNotEmpty()) {
                         tooltip.add("${EnumChatFormatting.YELLOW}${EnumChatFormatting.BOLD}Click to open recipe!")
                     } else {
                         tooltip.add("${EnumChatFormatting.RED}${EnumChatFormatting.BOLD}No recipe available!")
