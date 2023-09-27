@@ -39,6 +39,8 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
+import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
+import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
 import io.github.moulberry.notenoughupdates.util.LerpingFloat;
@@ -84,8 +86,10 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -103,6 +107,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator.PROVIDE_LOWEST_BIN;
+
 public class NEUOverlay extends Gui {
 	private static final ResourceLocation SUPERGEHEIMNISVERMOGEN = new ResourceLocation(
 		"notenoughupdates:supersecretassets/bald.png");
@@ -111,7 +117,8 @@ public class NEUOverlay extends Gui {
 		"notenoughupdates:supersecretassets/lunar.png");
 	private static final ResourceLocation SEARCH_BAR = new ResourceLocation("notenoughupdates:search_bar.png");
 	private static final ResourceLocation SEARCH_BAR_GOLD = new ResourceLocation("notenoughupdates:search_bar_gold.png");
-	private static final ResourceLocation SEARCH_MODE_BUTTON = new ResourceLocation("notenoughupdates:search_mode_button.png");
+	private static final ResourceLocation SEARCH_MODE_BUTTON = new ResourceLocation(
+		"notenoughupdates:search_mode_button.png");
 
 	private final NEUManager manager;
 
@@ -1059,6 +1066,19 @@ public class NEUOverlay extends Gui {
 				return true;
 			}
 
+			if (Keyboard.getEventKey() == Keyboard.KEY_RETURN && searchBarHasFocus) {
+				try {
+					BigDecimal calculate = Calculator.calculate(textField.getText(), PROVIDE_LOWEST_BIN);
+					textField.setText(calculate.toPlainString());
+					if (NotEnoughUpdates.INSTANCE.config.toolbar.copyToClipboardWhenGettingResult) {
+						Toolkit.getDefaultToolkit().getSystemClipboard()
+									 .setContents(new StringSelection(calculate.toPlainString()), null);
+
+					}
+				} catch (Calculator.CalculatorException | IllegalStateException | HeadlessException ignored) {
+				}
+			}
+
 			if (searchBarHasFocus) {
 				if (keyPressed == 1) {
 					searchBarHasFocus = false;
@@ -1150,7 +1170,8 @@ public class NEUOverlay extends Gui {
 						} else if (keyPressed == manager.keybindViewRecipe.getKeyCode()) {
 							manager.showRecipe(item);
 							return true;
-						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint && NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.keybindWaypoint &&
+							NotEnoughUpdates.INSTANCE.navigation.isValidWaypoint(item)) {
 							NotEnoughUpdates.INSTANCE.navigation.trackWaypoint(item);
 						} else if (keyPressed == manager.keybindGive.getKeyCode()) {
 							if (Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode) {
@@ -1834,6 +1855,7 @@ public class NEUOverlay extends Gui {
 
 	int guiScaleLast = 0;
 	private boolean showVanillaLast = false;
+
 	/**
 	 * Renders the search bar, quick commands, item selection (right), item info (left) and armor hud gui elements.
 	 */
@@ -2255,7 +2277,6 @@ public class NEUOverlay extends Gui {
 			searchMode = false;
 		}
 	}
-
 
 	/**
 	 * Used in SettingsInfoPane to redraw the items when a setting changes.

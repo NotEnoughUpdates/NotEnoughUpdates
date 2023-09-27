@@ -23,6 +23,7 @@ import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
+import kotlin.math.min
 
 object BestiaryData {
     private val categoriesToParse = listOf(
@@ -51,12 +52,33 @@ object BestiaryData {
      * @see BestiaryPage.parseBestiaryData
      */
     @JvmStatic
-    fun calculateTotalBestiaryLevel(computedCategories: List<Category>): Int {
-        var level = 0.0
+    fun calculateTotalBestiaryTiers(computedCategories: List<Category>): Int {
+        var tiers = 0.0
         computedCategories.forEach {
-            level += countTotalLevels(it)
+            tiers += countTotalLevels(it)
         }
-        return level.toInt() - 1
+        return tiers.toInt()
+    }
+
+    /**
+     * Calculate the skyblock xp awarded for the given bestiary progress
+     */
+    @JvmStatic
+    fun calculateBestiarySkyblockXp(profileInfo: JsonObject): Int {
+        val totalTiers = calculateTotalBestiaryTiers(parseBestiaryData(profileInfo))
+        var skyblockXp = 0
+
+        val slayingTask = Constants.SBLEVELS.getAsJsonObject("slaying_task") ?: return 0
+        val xpPerTier = (slayingTask.get("bestiary_family_xp") ?: return 0).asInt
+        val xpPerMilestone = slayingTask.get("bestiary_milestone_xp").asInt
+        val maxXp = slayingTask.get("bestiary_progress").asInt
+
+        skyblockXp += totalTiers * xpPerTier
+
+        val milestones = (totalTiers / 100)
+        skyblockXp += milestones * xpPerMilestone
+
+        return min(skyblockXp, maxXp)
     }
 
     private fun countTotalLevels(category: Category): Int {

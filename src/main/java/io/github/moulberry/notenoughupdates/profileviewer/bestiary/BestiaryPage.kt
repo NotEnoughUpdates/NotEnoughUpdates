@@ -21,7 +21,7 @@ package io.github.moulberry.notenoughupdates.profileviewer.bestiary
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
-import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.calculateTotalBestiaryLevel
+import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.calculateTotalBestiaryTiers
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.hasMigrated
 import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.parseBestiaryData
 import io.github.moulberry.notenoughupdates.util.Constants
@@ -58,11 +58,11 @@ data class MobLevelData(val level: Int, val maxLevel: Boolean)
 
 class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance) {
     private var selectedCategory = "dynamic"
-    private var lastSelectedCategory = ""
     private var selectedSubCategory = ""
     private var tooltipToDisplay: MutableList<String> = mutableListOf()
-    private var bestiaryLevel = 0
+    private var bestiaryLevel = 0.0
     private var computedCategories: MutableList<Category> = mutableListOf()
+    private var lastProfileName = ""
 
     private val bestiaryTexture = ResourceLocation("notenoughupdates:pv_bestiary_tab.png")
     private val mobListXCount = 9
@@ -74,8 +74,9 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
         val guiLeft = GuiProfileViewer.getGuiLeft()
         val guiTop = GuiProfileViewer.getGuiTop()
 
-        val selectedProfile = selectedProfile ?: return
+        val selectedProfile = GuiProfileViewer.getSelectedProfile() ?: return
         val profileInfo = selectedProfile.profileJson
+        val profileName = GuiProfileViewer.getProfileName()
 
         if (!hasMigrated(profileInfo) || Constants.BESTIARY == null) {
             Utils.drawStringCentered(
@@ -85,13 +86,28 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                 true,
                 0
             )
+            lastProfileName = profileName
             return
         }
-        // Do the initial parsing only once
-        if (computedCategories.isEmpty()) {
+        // Do the initial parsing only once or on profile switch
+        if (computedCategories.isEmpty() || lastProfileName != profileName) {
             computedCategories = parseBestiaryData(profileInfo)
-            bestiaryLevel = calculateTotalBestiaryLevel(computedCategories)
+            bestiaryLevel = calculateTotalBestiaryTiers(computedCategories).toDouble()
         }
+
+        if (computedCategories.isEmpty() || Constants.BESTIARY == null) {
+            Utils.drawStringCentered(
+                "${EnumChatFormatting.RED}No valid bestiary data!",
+                guiLeft + 431 / 2f,
+                (guiTop + 101).toFloat(),
+                true,
+                0
+            )
+            lastProfileName = profileName
+            return
+        }
+        lastProfileName = profileName
+
         val bestiarySize = computedCategories.size
         val bestiaryXSize = (350f / (bestiarySize - 1 + 0.0000001f)).toInt()
 
@@ -150,7 +166,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
         val color = Color(128, 128, 128, 255)
         Utils.renderAlignedString(
             EnumChatFormatting.RED.toString() + "Milestone: ",
-            "${EnumChatFormatting.GRAY}${(bestiaryLevel / 10) - 1}",
+            "${EnumChatFormatting.GRAY}${(bestiaryLevel / 10)}",
             (guiLeft + 280).toFloat(),
             (guiTop + 50).toFloat(),
             110

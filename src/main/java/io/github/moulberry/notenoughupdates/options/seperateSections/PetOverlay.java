@@ -91,7 +91,8 @@ public class PetOverlay {
 	@Expose
 	@ConfigOption(
 		name = "Pet Inventory Display",
-		desc = "Shows an overlay in your inventory showing your current pet"
+		desc = "Shows an overlay in your inventory showing your current pet\n" +
+			"\u00A7cRequires Hide Potion Effects to be enabled"
 	)
 	@ConfigEditorBoolean
 	public boolean petInvDisplay = false;
