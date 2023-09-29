@@ -319,4 +319,12 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean oldSkyBlockMenu = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Default Armor Colour",
+		desc = "Changes all armor, on self and others, to the default item colour. Overwrites any /neucustomize changes also."
+	)
+	@ConfigEditorBoolean
+	public boolean defaultArmorColour = false;
 }

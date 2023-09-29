@@ -132,7 +132,7 @@ public class OverlayManager {
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52"
+			"\u00a7bYaw: \u00a7e68.25\u00a7l\u00b0"
 		);
 		farmingOverlay = new FarmingSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.farmingPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -154,7 +154,7 @@ public class OverlayManager {
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129",
-			"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52"
+			"\u00a7bYaw: \u00a7e68.25\u00a7l\u00b0"
 		);
 		miningSkillOverlay = new MiningSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.miningPosition, () -> {
 			List<String> strings = new ArrayList<>();
@@ -176,7 +176,7 @@ public class OverlayManager {
 			"\u00a7bCurrent XP: \u00a7e6,734",
 			"\u00a7bRemaining XP: \u00a7e3,265",
 			"\u00a7bXP/h: \u00a7e238,129"
-			//"\u00a7bYaw: \u00a7e68.25\u00a7l\u1D52"
+			//"\u00a7bYaw: \u00a7e68.25\u00a7l\u00b0"
 		);
 		fishingSkillOverlay =
 			new FishingSkillOverlay(NotEnoughUpdates.INSTANCE.config.skillOverlays.fishingPosition, () -> {

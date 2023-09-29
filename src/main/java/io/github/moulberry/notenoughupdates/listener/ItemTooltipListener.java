@@ -673,6 +673,7 @@ public class ItemTooltipListener {
 			boolean m = Keyboard.isKeyDown(Keyboard.KEY_M);
 			boolean n = Keyboard.isKeyDown(Keyboard.KEY_N);
 			boolean f = Keyboard.isKeyDown(Keyboard.KEY_F);
+			boolean b = Keyboard.isKeyDown(Keyboard.KEY_B);
 
 			if (!copied && f && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				MiscUtils.copyToClipboard(NotEnoughUpdates.INSTANCE.manager.getSkullValueForItem(event.itemStack));
@@ -687,6 +688,12 @@ public class ItemTooltipListener {
 
 			if (event.itemStack.getTagCompound() != null) {
 				NBTTagCompound tag = event.itemStack.getTagCompound();
+
+				event.toolTip.add(EnumChatFormatting.AQUA + "NBT: " + EnumChatFormatting.GRAY + "[...]" +
+					EnumChatFormatting.GOLD + " [B]");
+				if (!copied && b) {
+					MiscUtils.copyToClipboard(tag.toString());
+				}
 
 				if (tag.hasKey("SkullOwner", 10)) {
 					GameProfile gameprofile = NBTUtil.readGameProfileFromNBT(tag.getCompoundTag("SkullOwner"));
@@ -715,7 +722,7 @@ public class ItemTooltipListener {
 				}
 			}
 
-			copied = k || m || n || f;
+			copied = k || m || n || f || b;
 		}
 	}
 }

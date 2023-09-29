@@ -119,14 +119,14 @@ public class Mining {
 	)
 	@ConfigEditorSlider(
 		minValue = 50,
-		maxValue = 400,
+		maxValue = 350,
 		minStep = 10
 	)
 	@ConfigAccordionId(id = 1)
-	public int drillFuelBarWidth = 200;
+	public int drillFuelBarWidth = 180;
 
 	@Expose
-	public Position drillFuelBarPosition = new Position(0, -100, true, false);
+	public Position drillFuelBarPosition = new Position(0, -91, true, false);
 
 	@ConfigOption(
 		name = "Dwarven Overlay",

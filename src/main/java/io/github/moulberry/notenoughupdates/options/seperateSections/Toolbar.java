@@ -82,6 +82,15 @@ public class Toolbar {
 
 	@Expose
 	@ConfigOption(
+		name = "Copy calculation result to clipboard",
+		desc = "Copy the calculation result to clipboard when pressing ENTER in the search bar while calculating"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 0)
+	public boolean copyToClipboardWhenGettingResult = true;
+
+	@Expose
+	@ConfigOption(
 		name = "Search Bar Width",
 		desc = "Change the width of the search bar"
 	)
