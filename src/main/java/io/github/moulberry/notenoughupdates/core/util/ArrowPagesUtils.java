@@ -181,6 +181,24 @@ public class ArrowPagesUtils {
 		return false;
 	}
 
+	public static boolean onPageSwitchScroll(
+		int currentPage,
+		int totalPages,
+		Consumer<Integer> pageChange
+	) {
+		if (Mouse.getEventDWheel() > 0) {
+			int newPage = currentPage - 1;
+			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
+			return true;
+		} else if (Mouse.getEventDWheel() < 0) {
+			int newPage = currentPage + 1;
+			pageChange.accept(MathHelper.clamp_int(newPage, 0, totalPages - 1));
+			return true;
+		}
+
+		return false;
+	}
+
 	private static boolean isWithinRect(int x, int y, int topLeftX, int topLeftY, int width, int height) {
 		return topLeftX <= x && x < topLeftX + width
 			&& topLeftY <= y && y < topLeftY + height;
