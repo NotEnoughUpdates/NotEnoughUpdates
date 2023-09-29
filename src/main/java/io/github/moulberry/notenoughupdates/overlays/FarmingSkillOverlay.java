@@ -362,7 +362,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 		} else if (cultivating < 100000000) {
 			cultivatingTier = 9;
 			cultivatingTierAmount = "100,000,000";
-		} else if (cultivating > 100000000) {
+		} else {
 			cultivatingTier = 10;
 			cultivatingTierAmount = "Maxed";
 		}

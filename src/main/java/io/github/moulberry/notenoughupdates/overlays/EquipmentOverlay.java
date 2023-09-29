@@ -58,6 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static io.github.moulberry.notenoughupdates.util.Utils.drawHoverOverlay;
+
 @NEUAutoSubscribe
 public class EquipmentOverlay {
 	public static EquipmentOverlay INSTANCE = new EquipmentOverlay();
@@ -205,7 +207,10 @@ public class EquipmentOverlay {
 		int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
 		int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
-		GL11.glColor4f(1F, 1F, 1F, 1F);
+		// Draw Backgrounds before anything, so hover overlay isn't occluded by the background
+		renderHudBackground(inventory);
+
+		// Draw foregrounds
 		if (shouldRenderArmorHud) {
 			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
 		}
@@ -215,16 +220,34 @@ public class EquipmentOverlay {
 		}
 	}
 
+	// Draws Backgrounds
+	public void renderHudBackground(GuiScreen inventory) {
+		GL11.glColor4f(1F, 1F, 1F, 1F);
+		AccessorGuiContainer container = ((AccessorGuiContainer) inventory);
+		final int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		final int overlayTop = container.getGuiTop();
+		if (shouldRenderArmorHud) {
+			ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
+
+			Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
+		}
+
+		if (shouldRenderPets) {
+			ResourceLocation customPetTexture = getCustomPetTexture(shouldRenderArmorHud);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(customPetTexture);
+			GlStateManager.color(1, 1, 1, 1);
+
+			Utils.drawTexturedRect(overlayLeft, overlayTop + PET_OVERLAY_OFFSET_Y, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
+		}
+		GlStateManager.bindTexture(0);
+	}
+
 	public void renderEquipmentGui(GuiInventory guiScreen, int mouseX, int mouseY, int width, int height) {
-		AccessorGuiContainer container = ((AccessorGuiContainer) guiScreen);
+		AccessorGuiContainer container = (AccessorGuiContainer) guiScreen;
 
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop();
-
-		ResourceLocation equipmentTexture = getCustomEquipmentTexture(shouldRenderPets);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(equipmentTexture);
-
-		Utils.drawTexturedRect(overlayLeft, overlayTop, ARMOR_OVERLAY_WIDTH, ARMOR_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 
 		List<String> tooltipToDisplay = new ArrayList<>();
 		drawSlot(slot1, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, mouseX, mouseY, tooltipToDisplay);
@@ -250,7 +273,7 @@ public class EquipmentOverlay {
 			}
 
 		}
-		if (tooltipToDisplay.size() > 0 &&
+		if (!tooltipToDisplay.isEmpty() &&
 			Utils.isWithinRect(
 				mouseX, mouseY,
 				overlayLeft, overlayTop,
@@ -303,8 +326,12 @@ public class EquipmentOverlay {
 
 	private void drawSlot(ItemStack stack, int x, int y, int mouseX, int mouseY, List<String> tooltip) {
 		if (stack == null) return;
+
 		Utils.drawItemStack(stack, x, y, true);
 		if (Utils.isWithinRect(mouseX, mouseY, x, y, 16, 16)) {
+			// draw the slot overlay
+			drawHoverOverlay(x, y);
+
 			List<String> tt = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			if (shouldShowEquipmentTooltip(tt))
 				tooltip.addAll(tt);
@@ -322,16 +349,11 @@ public class EquipmentOverlay {
 		);
 		ItemStack petInfo = petStack;
 
-		ResourceLocation customPetTexture = getCustomPetTexture(isRenderingArmorHud());
-		Minecraft.getMinecraft().getTextureManager().bindTexture(customPetTexture);
-		GlStateManager.color(1, 1, 1, 1);
-
 		AccessorGuiContainer container = ((AccessorGuiContainer) inventory);
 
 		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
 		int overlayTop = container.getGuiTop() + PET_OVERLAY_OFFSET_Y;
 
-		Utils.drawTexturedRect(overlayLeft, overlayTop, PET_OVERLAY_WIDTH, PET_OVERLAY_HEIGHT, GL11.GL_NEAREST);
 		GlStateManager.bindTexture(0);
 
 		Utils.drawItemStack(petInfo, overlayLeft + 8, overlayTop + 8, true);
@@ -343,6 +365,10 @@ public class EquipmentOverlay {
 				&& Mouse.getEventButtonState()) {
 				NotEnoughUpdates.INSTANCE.trySendCommand("/pets");
 			}
+
+			// draw the slot overlay
+			drawHoverOverlay(overlayLeft + 8, overlayTop + 8);
+
 			tooltipToDisplay = petInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			Utils.drawHoveringText(
 				tooltipToDisplay,

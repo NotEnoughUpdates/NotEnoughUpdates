@@ -49,6 +49,6 @@ public class FuelBarDummy extends TextOverlay {
 
 	@Override
 	public Vector2f getDummySize() {
-		return new Vector2f(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth, 12);
+		return new Vector2f(NotEnoughUpdates.INSTANCE.config.mining.drillFuelBarWidth + 2, 12);
 	}
 }

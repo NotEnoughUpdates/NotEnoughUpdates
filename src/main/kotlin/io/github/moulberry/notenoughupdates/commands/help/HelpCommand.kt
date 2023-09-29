@@ -42,6 +42,7 @@ class HelpCommand {
         "§6/neuoverlay §r§7- Opens GUI Editor for quickcommands and searchbar.",
         "§6/neucalendar §r§7- Opens NEU's custom calendar GUI.",
         "§6/neucalc §r§7- Run calculations.",
+        "§6/join §r7- Join instance like k1/f1/m7/fe/kuudra inf",
         "",
         "§6§lOld commands:",
         "§6/peek §b?{user} §r§7- Shows quick stats for a user.",
