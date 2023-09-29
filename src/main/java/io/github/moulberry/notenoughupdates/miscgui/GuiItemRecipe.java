@@ -338,7 +338,10 @@ public class GuiItemRecipe extends GuiScreen {
 			Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
 		getCurrentRecipe().genericMouseInput(mouseX, mouseY);
 
+		
 		// Allow Paging with Scroll-Wheel
+
+		// Block scrolling while Tooltip is displayed
 		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips &&
 			TooltipTextScrolling.didRenderTooltip) return;
 
