@@ -100,7 +100,8 @@ class WardrobeMouseButtons {
             }
         }
 
-        if (container.getSlot(slotNum).getStack().getDisplayName().isEmpty()) return
+        val thatItemStack = container.getSlot(slotNum).getStack() ?: return
+        if (thatItemStack.getDisplayName().isEmpty()) return
         if (slotNum < 36 || ((slotNum > 45) && (slotNum != 53))) return
         Utils.sendLeftMouseClick(gui.inventorySlots.windowId, slotNum)
         lastClick = System.currentTimeMillis()
