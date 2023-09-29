@@ -30,17 +30,19 @@ import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.time.ZoneId;
@@ -1060,40 +1062,32 @@ public class TimersOverlay extends TextTabOverlay {
 		return false;
 	}
 
-	public static int beforePearls = -1;
-	public static int afterPearls = -1;
-	public static int availablePearls = -1;
+	AxisAlignedBB matriarchArea = new AxisAlignedBB(-555, 36, -904, -532, 52, -870);
 
-	public static int heavyPearlCount() {
-		int heavyPearls = 0;
-
-		List<ItemStack> inventory = Minecraft.getMinecraft().thePlayer.inventoryContainer.getInventory();
-		for (ItemStack item : inventory) {
-			if (item == null) {
-				continue;
-			} else if (!item.hasTagCompound()) {
-				continue;
-			}
-			NBTTagCompound itemData = item.getSubCompound("ExtraAttributes", false);
-			if (itemData == null) {
-				continue;
-			}
-			if (itemData.getString("id").equals("HEAVY_PEARL")) {
-				heavyPearls += item.stackSize;
+	@SubscribeEvent
+	public void onMatriarchTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.END) return;
+		if (!"crimson_isle".equals(SBInfo.getInstance().getLocation())) return;
+		var player = Minecraft.getMinecraft().thePlayer;
+		if (player == null) return;
+		if (!matriarchArea.isVecInside(player.getPositionVector())) return;
+		var matriarchRelevantArmorStands = Minecraft.getMinecraft().theWorld.getEntitiesWithinAABB(
+			EntityArmorStand.class,
+			matriarchArea
+		);
+		boolean noMorePearlsAvailable = false;
+		for (var entityArmorStand : matriarchRelevantArmorStands) {
+			if (entityArmorStand.hasCustomName() &&
+				entityArmorStand.getCustomNameTag().contains("Heavy Pearls Available: 0")) {
+				noMorePearlsAvailable = true;
+				break;
 			}
 		}
-		return heavyPearls;
-	}
-
-	public static void processActionBar(String msg) {
-		if (SBInfo.getInstance().location.equals("Belly of the Beast") && msg.contains("Pearls Collected")) {
-			try {
-				msg = Utils.cleanColour(msg);
-				msg = msg.substring(msg.indexOf("Pearls Collected: ") + 18);
-				availablePearls = Integer.parseInt(msg.substring(msg.indexOf("/") + 1));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		if (noMorePearlsAvailable) {
+			var profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
+			if (profileSpecific != null)
+				profileSpecific.dailyHeavyPearlCompleted
+					= System.currentTimeMillis();
 		}
 	}
 
