@@ -81,7 +81,11 @@ class WardrobeMouseButtons {
         } else if (KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip)) {
             var notEquipped = 0
             for (j in 36..44) {
-                val stackItem = container.getSlot(j).getStack() ?: return
+                val stackItem = container.getSlot(j).getStack()
+                if (stackItem == null) {
+                    event.isCanceled = true
+                    return
+                }
                 if (stackItem.getDisplayName().contains("Equipped")) {
                     slotNum = j
                 }
@@ -100,7 +104,11 @@ class WardrobeMouseButtons {
             }
         }
 
-        val thatItemStack = container.getSlot(slotNum).getStack() ?: return
+        val thatItemStack = container.getSlot(slotNum).getStack()
+        if (thatItemStack == null) {
+            event.isCanceled = true
+            return
+        }
         if (thatItemStack.getDisplayName().isEmpty()) return
         if (slotNum < 36 || ((slotNum > 45) && (slotNum != 53))) return
         Utils.sendLeftMouseClick(gui.inventorySlots.windowId, slotNum)
