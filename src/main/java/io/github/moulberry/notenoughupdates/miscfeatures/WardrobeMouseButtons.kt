@@ -103,10 +103,7 @@ class WardrobeMouseButtons {
             }
         }
 
-        val thatItemStack{
-                    event.isCanceled = true
-                    return
-        } = container.getSlot(slotNum).getStack() ?: {
+        val thatItemStack = container.getSlot(slotNum).getStack() ?: {
                     event.isCanceled = true
                     return
                 }
