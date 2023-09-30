@@ -81,7 +81,7 @@ class WardrobeMouseButtons {
         } else if (KeybindHelper.isKeyDown(NotEnoughUpdates.INSTANCE.config.wardrobeKeybinds.wardrobePageUnequip)) {
             var notEquipped = 0
             for (j in 36..44) {
-                val slotName = container.getSlot(j).getStack().getDisplayName()
+                val slotName = container.getSlot(j).getStack().getDisplayName() ?: return
                 if (slotName.contains("Equipped")) {
                     slotNum = j
                 }
