@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -282,6 +283,7 @@ public class DungeonNpcProfitOverlay {
 			lore = new ArrayList<>();
 			lore.add(name);
 			for (SkyblockItem item : items) {
+
 				double cost = item.calculateCost();
 				profit += cost;
 				lore.add(
@@ -366,6 +368,7 @@ public class DungeonNpcProfitOverlay {
 					ItemResolutionQuery.filterInternalNameCandidates(ItemResolutionQuery.findInternalNameCandidatesForDisplayName(
 						trimmedLine.replace("Book", "")), trimmedLine, true);
 				if (id == null) return null;
+				if (id.equals("DUNGEON_CHEST_KEY")) return null;
 				return new SkyblockItem(id, 1);
 			}
 		}
