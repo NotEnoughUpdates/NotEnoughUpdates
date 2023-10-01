@@ -159,7 +159,7 @@ public class AutoUpdater {
 			"",
 			"§eThere is a new version of NotEnoughUpdates available.",
 			"§eCheck the chat for more information"
-		), true);
+		), false);
 		try {
 			if (directDownload != null)
 				updateFromURL(new URL(directDownload));
