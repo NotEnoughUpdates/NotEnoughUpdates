@@ -92,7 +92,6 @@ public class SlotLocking {
 	}
 
 	public static class SlotLockProfile {
-		int currentProfile = 0;
 
 		public SlotLockData[] slotLockData = new SlotLockData[1];
 	}
