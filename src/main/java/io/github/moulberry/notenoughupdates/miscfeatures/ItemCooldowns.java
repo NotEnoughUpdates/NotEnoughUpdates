@@ -32,8 +32,10 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -68,7 +70,7 @@ public class ItemCooldowns {
 	private static long bonzoMaskCooldown = -1;
 	private static long spiritMaskCooldown = -1;
 
-	public static TreeMap<Long, BlockData> blocksClicked = new TreeMap<>();
+	public static final NavigableMap<Long, BlockData> blocksClicked = Collections.synchronizedNavigableMap(new TreeMap<>());
 
 	private static int tickCounter = 0;
 
@@ -170,8 +172,10 @@ public class ItemCooldowns {
 	public static void checkForBlockChange(BlockPos pos, IBlockState blockState) {
 		BlockData oldBlockData = null;
 
-		for (BlockData value : blocksClicked.values()) {
-			if (value.blockPos.equals(pos)) oldBlockData = value;
+		synchronized (blocksClicked) {
+			for (BlockData value : blocksClicked.values()) {
+				if (value.blockPos.equals(pos)) oldBlockData = value;
+			}
 		}
 
 		if (oldBlockData != null) {
