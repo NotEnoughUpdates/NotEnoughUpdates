@@ -269,6 +269,16 @@ class DevTestCommand {
                     NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = null
                 }
             }.withHelp("Reset the custom user agent")
+            thenLiteral("crash") {
+                thenExecute {
+                    throw object : Error("L") {
+                        @Override
+                        fun printStackTrace() {
+                            throw Error("L")
+                        }
+                    }
+                }
+            }.withHelp("Crash the game")
         }
         hook.beforeCommand = Predicate {
             if (!canPlayerExecute(it.context.source)) {
