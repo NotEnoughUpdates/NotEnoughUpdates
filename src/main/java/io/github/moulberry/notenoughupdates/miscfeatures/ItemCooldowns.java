@@ -33,7 +33,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -170,8 +172,16 @@ public class ItemCooldowns {
 	public static void checkForBlockChange(BlockPos pos, IBlockState blockState) {
 		BlockData oldBlockData = null;
 
-		for (BlockData value : blocksClicked.values()) {
-			if (value.blockPos.equals(pos)) oldBlockData = value;
+		// Create a copy of the key set of 'blocksClicked'
+		Set<Long> keysCopy = new HashSet<>(blocksClicked.keySet());
+
+		for (Long key : keysCopy) {
+			BlockData value = blocksClicked.get(key);
+
+			if (value.blockPos.equals(pos)) {
+				oldBlockData = value;
+				blocksClicked.remove(key); // Modify the original map safely
+			}
 		}
 
 		if (oldBlockData != null) {
