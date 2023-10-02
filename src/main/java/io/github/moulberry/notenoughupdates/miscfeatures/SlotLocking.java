@@ -191,18 +191,16 @@ public class SlotLocking {
 			k -> new SlotLockProfile()
 		);
 
-		if (profile.currentProfile < 0) profile.currentProfile = 0;
-		if (profile.currentProfile >= 9) profile.currentProfile = 8;
 
-		if (profile.slotLockData[profile.currentProfile] == null) {
-			profile.slotLockData[profile.currentProfile] = new SlotLockData();
+		if (profile.slotLockData[0] == null) {
+			profile.slotLockData[0] = new SlotLockData();
 		}
 
 
 		if (!"rift".equals(SBInfo.getInstance().getLocation())) {
-			return profile.slotLockData[profile.currentProfile].lockedSlots;
+			return profile.slotLockData[0].lockedSlots;
 		} else {
-			return profile.slotLockData[profile.currentProfile].riftLockedSlots;
+			return profile.slotLockData[0].riftLockedSlots;
 		}
 	}
 
