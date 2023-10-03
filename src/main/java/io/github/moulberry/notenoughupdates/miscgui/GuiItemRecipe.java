@@ -39,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -342,7 +343,7 @@ public class GuiItemRecipe extends GuiScreen {
 		// Allow Paging with Scroll-Wheel
 
 		// Block scrolling while Tooltip is displayed
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips &&
+		if ((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips || Loader.isModLoaded("text_overflow_scroll")) &&
 			TooltipTextScrolling.didRenderTooltip) return;
 
 		if (Mouse.getEventDWheel() != 0) {
