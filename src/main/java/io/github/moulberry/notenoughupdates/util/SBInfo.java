@@ -23,6 +23,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.events.SidebarChangeEvent;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -310,6 +311,7 @@ public class SBInfo {
 	public ArrayList<String> completedQuests = new ArrayList<>();
 
 	private static final Pattern SKILL_LEVEL_PATTERN = Pattern.compile("([^0-9:]+) (\\d{1,2})");
+	private static List<String> lastLines = new ArrayList<>();
 
 	public void tick() {
 
@@ -364,6 +366,11 @@ public class SBInfo {
 
 		try {
 			List<String> lines = SidebarUtil.readSidebarLines(true, false);
+
+			if (lines.equals(lastLines)) return;
+			new SidebarChangeEvent(lines, lastLines).post();
+			lastLines = lines;
+
 			boolean tempIsInDungeon = false;
 			for (String line : lines) {
 				if (line.contains("Cleared:") && line.contains("%")) {
