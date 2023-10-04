@@ -366,6 +366,7 @@ public class DungeonNpcProfitOverlay {
 					ItemResolutionQuery.filterInternalNameCandidates(ItemResolutionQuery.findInternalNameCandidatesForDisplayName(
 						trimmedLine.replace("Book", "")), trimmedLine, true);
 				if (id == null) return null;
+				if (id.equals("DUNGEON_CHEST_KEY")) return null;
 				return new SkyblockItem(id, 1);
 			}
 		}
