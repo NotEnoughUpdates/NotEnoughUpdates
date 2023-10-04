@@ -342,8 +342,7 @@ public class GuiItemRecipe extends GuiScreen {
 		// Allow Paging with Scroll-Wheel
 
 		// Block scrolling while Tooltip is displayed
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.scrollableTooltips &&
-			TooltipTextScrolling.didRenderTooltip) return;
+		if (TooltipTextScrolling.didRenderTooltip) return;
 
 		if (Mouse.getEventDWheel() != 0) {
 			ArrowPagesUtils.onPageSwitchScroll(currentIndex, getCurrentRecipeList().size(), pageChange -> changeRecipe(currentTab, pageChange));
