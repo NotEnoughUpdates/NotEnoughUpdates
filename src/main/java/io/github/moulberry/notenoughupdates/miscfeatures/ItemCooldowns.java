@@ -168,19 +168,21 @@ public class ItemCooldowns {
 	}
 
 	public static void checkForBlockChange(BlockPos pos, IBlockState blockState) {
-		BlockData oldBlockData = null;
+		Minecraft.getMinecraft().addScheduledTask(() -> {
+			BlockData oldBlockData = null;
 
-		for (BlockData value : blocksClicked.values()) {
-			if (value.blockPos.equals(pos)) oldBlockData = value;
-		}
-
-		if (oldBlockData != null) {
-			IBlockState oldState = oldBlockData.blockState;
-			if ((oldState.getBlock() == Blocks.log || oldState.getBlock() == Blocks.log2) &&
-				blockState.getBlock() == Blocks.air) {
-				onBlockMined();
+			for (BlockData value : blocksClicked.values()) {
+				if (value.blockPos.equals(pos)) oldBlockData = value;
 			}
-		}
+
+			if (oldBlockData != null) {
+				IBlockState oldState = oldBlockData.blockState;
+				if ((oldState.getBlock() == Blocks.log || oldState.getBlock() == Blocks.log2) &&
+					blockState.getBlock() == Blocks.air) {
+					onBlockMined();
+				}
+			}
+		});
 	}
 
 	public static void onBlockMined() {
