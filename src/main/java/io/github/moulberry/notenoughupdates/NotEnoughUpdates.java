@@ -270,9 +270,8 @@ public class NotEnoughUpdates {
 			saveConfig();
 		}
 
-		if (config != null)
-			if (config.mining.powderGrindingTrackerResetMode == 2)
-				OverlayManager.powderGrindingOverlay.load();
+		if (config != null && config.mining.powderGrindingTrackerResetMode == 2)
+			OverlayManager.powderGrindingOverlay.load();
 
 		IOneConfigCompat.getInstance().ifPresent(it -> it.initConfig(config));
 
