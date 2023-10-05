@@ -104,26 +104,24 @@ public abstract class MixinRenderItem {
 		GL11.glPopMatrix();
 
 		ItemCustomizeManager.ItemData data = ItemCustomizeManager.getDataForItem(stack);
-		if (data != null) {
-			if (data.overrideEnchantGlint && data.enchantGlintValue) {
-				ItemCustomizeManager.renderEffectHook(data.customGlintColour, (color) -> {
-					float red = ((color >> 16) & 0xFF) / 255f;
-					float green = ((color >> 8) & 0xFF) / 255f;
-					float blue = (color & 0xFF) / 255f;
-					float alpha = ((color >> 24) & 0xFF) / 255f;
+		if (data != null && data.overrideEnchantGlint && data.enchantGlintValue) {
+			ItemCustomizeManager.renderEffectHook(data.customGlintColour, (color) -> {
+				float red = ((color >> 16) & 0xFF) / 255f;
+				float green = ((color >> 8) & 0xFF) / 255f;
+				float blue = (color & 0xFF) / 255f;
+				float alpha = ((color >> 24) & 0xFF) / 255f;
 
-					GlStateManager.color(red, green, blue, alpha);
+				GlStateManager.color(red, green, blue, alpha);
 
-					GlStateManager.scale(1 / 8f, 1 / 8f, 1 / 8f);
-					GlStateManager.matrixMode(GL11.GL_MODELVIEW);
-					GL11.glPushMatrix();
-					ItemCustomizeManager.disableTextureBinding = true;
-					tileEntityItemStackRenderer.renderByItem(stack);
-					ItemCustomizeManager.disableTextureBinding = false;
-					GL11.glPopMatrix();
+				GlStateManager.scale(1 / 8f, 1 / 8f, 1 / 8f);
+				GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+				GL11.glPushMatrix();
+				ItemCustomizeManager.disableTextureBinding = true;
+				tileEntityItemStackRenderer.renderByItem(stack);
+				ItemCustomizeManager.disableTextureBinding = false;
+				GL11.glPopMatrix();
 
-				});
-			}
+			});
 		}
 	}
 
@@ -212,27 +210,27 @@ public abstract class MixinRenderItem {
 		String text,
 		CallbackInfo ci
 	) {
-		if (stack != null && stack.stackSize != 1) {
-			if (NotEnoughUpdates.INSTANCE.overlay.searchMode && RenderListener.drawingGuiScreen && NotEnoughUpdates.INSTANCE.isOnSkyblock() && !(Minecraft.getMinecraft().currentScreen instanceof GuiProfileViewer)) {
-				boolean matches = false;
+		if (stack != null && stack.stackSize != 1 && NotEnoughUpdates.INSTANCE.overlay.searchMode &&
+			RenderListener.drawingGuiScreen && NotEnoughUpdates.INSTANCE.isOnSkyblock() &&
+			!(Minecraft.getMinecraft().currentScreen instanceof GuiProfileViewer)) {
+			boolean matches = false;
 
-				GuiTextField textField = NEUOverlay.getTextField();
+			GuiTextField textField = NEUOverlay.getTextField();
 
-				if (textField.getText().trim().isEmpty()) {
-					matches = true;
-				} else {
-					for (String search : textField.getText().split("\\|")) {
-						matches |= NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(stack, search.trim());
-					}
+			if (textField.getText().trim().isEmpty()) {
+				matches = true;
+			} else {
+				for (String search : textField.getText().split("\\|")) {
+					matches |= NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(stack, search.trim());
 				}
-				if (!matches) {
-					GlStateManager.pushMatrix();
-					GlStateManager.translate(0, 0, 110 + Minecraft.getMinecraft().getRenderItem().zLevel);
-					GlStateManager.disableDepth();
-					Gui.drawRect(xPosition, yPosition, xPosition + 16, yPosition + 16, NEUOverlay.overlayColourDark);
-					GlStateManager.enableDepth();
-					GlStateManager.popMatrix();
-				}
+			}
+			if (!matches) {
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(0, 0, 110 + Minecraft.getMinecraft().getRenderItem().zLevel);
+				GlStateManager.disableDepth();
+				Gui.drawRect(xPosition, yPosition, xPosition + 16, yPosition + 16, NEUOverlay.overlayColourDark);
+				GlStateManager.enableDepth();
+				GlStateManager.popMatrix();
 			}
 		}
 
