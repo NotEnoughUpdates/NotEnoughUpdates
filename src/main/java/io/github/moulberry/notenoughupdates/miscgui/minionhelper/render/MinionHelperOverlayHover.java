@@ -209,28 +209,26 @@ public class MinionHelperOverlayHover {
 			description += " §cAPI DISABLED! §7";
 		}
 
-		if (!meetRequirement) {
-			if (requirement instanceof ReputationRequirement) {
-				ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
-				String reputationType = reputationRequirement.getReputationType();
-				ApiData apiData = manager.getApi().getApiData();
-				int having;
-				if (reputationType.equals("BARBARIAN")) {
-					having = apiData.getBarbariansReputation();
-				} else if (reputationType.equals("MAGE")) {
-					having = apiData.getMagesReputation();
-				} else {
-					Utils.addChatMessage("§c[NEU] Minion Helper: Unknown reputation type: '" + reputationType + "'");
-					return null;
-				}
-				int need = reputationRequirement.getReputation();
-				if (having < 0) having = 0;
-
-				String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
-				String havingFormat = Utils.formatNumberWithDots(having);
-				String needFormat = Utils.formatNumberWithDots(need);
-				description = "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";
+		if (!meetRequirement && requirement instanceof ReputationRequirement) {
+			ReputationRequirement reputationRequirement = (ReputationRequirement) requirement;
+			String reputationType = reputationRequirement.getReputationType();
+			ApiData apiData = manager.getApi().getApiData();
+			int having;
+			if (reputationType.equals("BARBARIAN")) {
+				having = apiData.getBarbariansReputation();
+			} else if (reputationType.equals("MAGE")) {
+				having = apiData.getMagesReputation();
+			} else {
+				Utils.addChatMessage("§c[NEU] Minion Helper: Unknown reputation type: '" + reputationType + "'");
+				return null;
 			}
+			int need = reputationRequirement.getReputation();
+			if (having < 0) having = 0;
+
+			String reputationName = StringUtils.firstUpperLetter(reputationType.toLowerCase());
+			String havingFormat = Utils.formatNumberWithDots(having);
+			String needFormat = Utils.formatNumberWithDots(need);
+			description = "Reputation: §c" + havingFormat + "§8/§c" + needFormat + " §7" + reputationName + " Reputation";
 		}
 
 		return " §8- §7" + description;
