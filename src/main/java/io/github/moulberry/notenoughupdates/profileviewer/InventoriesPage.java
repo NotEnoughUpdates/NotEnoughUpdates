@@ -148,31 +148,29 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 			Utils.drawItemStackWithText(entry.getValue(), guiLeft + x, guiTop + y, String.valueOf(invNameIndex + 1), true);
 
-			if (mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16) {
-				if (mouseY >= guiTop + y && mouseY <= guiTop + y + 16) {
-					getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
-					if (Objects.equals(entry.getKey(), "talisman_bag")) {
-						StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
-						int magicalPower = getSelectedProfile().getMagicalPower();
-						getInstance()
-							.tooltipToDisplay.add(
-								magicalPower == -1
-									? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
-									: magicalPowerString
-										.append(EnumChatFormatting.GOLD)
-										.append(StringUtils.formatNumber(magicalPower))
-										.toString()
-							);
+			if (mouseX >= guiLeft + x && mouseX <= guiLeft + x + 16 && mouseY >= guiTop + y && mouseY <= guiTop + y + 16) {
+				getInstance().tooltipToDisplay = entry.getValue().getTooltip(Minecraft.getMinecraft().thePlayer, false);
+				if (Objects.equals(entry.getKey(), "talisman_bag")) {
+					StringBuilder magicalPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Magical Power: ");
+					int magicalPower = getSelectedProfile().getMagicalPower();
+					getInstance()
+						.tooltipToDisplay.add(
+							magicalPower == -1
+								? magicalPowerString.append(EnumChatFormatting.RED).append("Error while calculating!").toString()
+								: magicalPowerString
+									.append(EnumChatFormatting.GOLD)
+									.append(StringUtils.formatNumber(magicalPower))
+									.toString()
+						);
 
-						StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
-						String selectedPower = PlayerStats.getSelectedMagicalPower(getSelectedProfile().getProfileJson());
-						getInstance()
-							.tooltipToDisplay.add(
-								selectedPower == null
-									? selectedPowerString.append(EnumChatFormatting.RED).append("None!").toString()
-									: selectedPowerString.append(EnumChatFormatting.GREEN).append(selectedPower).toString()
-							);
-					}
+					StringBuilder selectedPowerString = new StringBuilder(EnumChatFormatting.DARK_GRAY + "Selected Power: ");
+					String selectedPower = PlayerStats.getSelectedMagicalPower(getSelectedProfile().getProfileJson());
+					getInstance()
+						.tooltipToDisplay.add(
+							selectedPower == null
+								? selectedPowerString.append(EnumChatFormatting.RED).append("None!").toString()
+								: selectedPowerString.append(EnumChatFormatting.GREEN).append(selectedPower).toString()
+						);
 				}
 			}
 
@@ -195,15 +193,13 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			ItemStack stack = armorItems[i];
 			if (stack != null) {
 				Utils.drawItemStack(stack, guiLeft + 173, guiTop + 67 - 18 * i, true);
-				if (stack != fillerStack) {
-					if (mouseX >= guiLeft + 173 - 1 && mouseX <= guiLeft + 173 + 16 + 1) {
-						if (mouseY >= guiTop + 67 - 18 * i - 1 && mouseY <= guiTop + 67 - 18 * i + 16 + 1) {
-							getInstance().tooltipToDisplay =
-								stack.getTooltip(
-									Minecraft.getMinecraft().thePlayer,
-									Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-								);
-						}
+				if (stack != fillerStack && mouseX >= guiLeft + 173 - 1 && mouseX <= guiLeft + 173 + 16 + 1) {
+					if (mouseY >= guiTop + 67 - 18 * i - 1 && mouseY <= guiTop + 67 - 18 * i + 16 + 1) {
+						getInstance().tooltipToDisplay =
+							stack.getTooltip(
+								Minecraft.getMinecraft().thePlayer,
+								Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+							);
 					}
 				}
 			}
@@ -223,15 +219,13 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			ItemStack stack = equipmentItems[i];
 			if (stack != null) {
 				Utils.drawItemStack(stack, guiLeft + 192, guiTop + 13 + 18 * i, true);
-				if (stack != fillerStack) {
-					if (mouseX >= guiLeft + 192 - 1 && mouseX <= guiLeft + 192 + 16 + 1) {
-						if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
-							getInstance().tooltipToDisplay =
-								stack.getTooltip(
-									Minecraft.getMinecraft().thePlayer,
-									Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-								);
-						}
+				if (stack != fillerStack && mouseX >= guiLeft + 192 - 1 && mouseX <= guiLeft + 192 + 16 + 1) {
+					if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
+						getInstance().tooltipToDisplay =
+							stack.getTooltip(
+								Minecraft.getMinecraft().thePlayer,
+								Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+							);
 					}
 				}
 			}
@@ -267,10 +261,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			if (bestWeapons[i] == null) continue;
 			ItemStack stack = bestWeapons[i];
 			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 13 + 18 * i, true);
-			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1) {
-				if (mouseY >= guiTop + 13 + 18 * i - 1 && mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
-					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-				}
+			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1 && mouseY >= guiTop + 13 + 18 * i - 1 &&
+				mouseY <= guiTop + 13 + 18 * i + 16 + 1) {
+				getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			}
 		}
 
@@ -278,10 +271,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			if (bestRods[i] == null) continue;
 			ItemStack stack = bestRods[i];
 			Utils.drawItemStack(stack, guiLeft + 143, guiTop + 137 + 18 * i, true);
-			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1) {
-				if (mouseY >= guiTop + 137 + 18 * i - 1 && mouseY <= guiTop + 137 + 18 * i + 16 + 1) {
-					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-				}
+			if (mouseX >= guiLeft + 143 - 1 && mouseX <= guiLeft + 143 + 16 + 1 && mouseY >= guiTop + 137 + 18 * i - 1 &&
+				mouseY <= guiTop + 137 + 18 * i + 16 + 1) {
+				getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 			}
 		}
 
@@ -322,25 +314,23 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			String.valueOf(purpleCandyCount),
 			true
 		);
-		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16) {
-			if (mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
-				if (mouseY < guiTop + 101 + 17) {
-					QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, getSelectedProfile().getProfileJson());
-					if (quiverInfo == null) {
-						getInstance().tooltipToDisplay = Utils.createList(EnumChatFormatting.RED + "Error checking Quiver");
-					} else {
-						getInstance().tooltipToDisplay = quiverInfo.generateProfileViewerTooltip();
-					}
-				} else if (mouseY < guiTop + 119 + 17) {
-					getInstance().tooltipToDisplay =
-						Utils.createList(
-							EnumChatFormatting.GREEN + "Green Candy " + EnumChatFormatting.GRAY + "x" + greenCandyCount);
+		if (mouseX > guiLeft + 173 && mouseX < guiLeft + 173 + 16 && mouseY > guiTop + 101 && mouseY < guiTop + 137 + 16) {
+			if (mouseY < guiTop + 101 + 17) {
+				QuiverInfo quiverInfo = PlayerStats.getQuiverInfo(inventoryInfo, getSelectedProfile().getProfileJson());
+				if (quiverInfo == null) {
+					getInstance().tooltipToDisplay = Utils.createList(EnumChatFormatting.RED + "Error checking Quiver");
 				} else {
-					getInstance().tooltipToDisplay =
-						Utils.createList(
-							EnumChatFormatting.DARK_PURPLE + "Purple Candy " + EnumChatFormatting.GRAY + "x" + purpleCandyCount
-						);
+					getInstance().tooltipToDisplay = quiverInfo.generateProfileViewerTooltip();
 				}
+			} else if (mouseY < guiTop + 119 + 17) {
+				getInstance().tooltipToDisplay =
+					Utils.createList(
+						EnumChatFormatting.GREEN + "Green Candy " + EnumChatFormatting.GRAY + "x" + greenCandyCount);
+			} else {
+				getInstance().tooltipToDisplay =
+					Utils.createList(
+						EnumChatFormatting.DARK_PURPLE + "Purple Candy " + EnumChatFormatting.GRAY + "x" + purpleCandyCount
+					);
 			}
 		}
 
@@ -375,14 +365,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		boolean leftHovered = false;
 		boolean rightHovered = false;
-		if (Mouse.isButtonDown(0)) {
-			if (mouseY > staticSelectorHeight && mouseY < staticSelectorHeight + 16) {
-				if (mouseX > guiLeft + 320 - 12 && mouseX < guiLeft + 320 + 12) {
-					if (mouseX < guiLeft + 320) {
-						leftHovered = true;
-					} else {
-						rightHovered = true;
-					}
+		if (Mouse.isButtonDown(0) && mouseY > staticSelectorHeight && mouseY < staticSelectorHeight + 16) {
+			if (mouseX > guiLeft + 320 - 12 && mouseX < guiLeft + 320 + 12) {
+				if (mouseX < guiLeft + 320) {
+					leftHovered = true;
+				} else {
+					rightHovered = true;
 				}
 			}
 		}
@@ -458,10 +446,9 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 				if (stack == null || stack == fillerStack) continue;
 
-				if (mouseX >= x + 8 + xIndex * 18 && mouseX <= x + 8 + xIndex * 18 + 16) {
-					if (mouseY >= y + 18 + yIndex * 18 && mouseY <= y + 18 + yIndex * 18 + 16) {
-						stackToRender = stack;
-					}
+				if (mouseX >= x + 8 + xIndex * 18 && mouseX <= x + 8 + xIndex * 18 + 16 && mouseY >= y + 18 + yIndex * 18 &&
+					mouseY <= y + 18 + yIndex * 18 + 16) {
+					stackToRender = stack;
 				}
 			}
 		}
@@ -476,12 +463,11 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 
 		getInstance().inventoryTextField.setSize(88, 20);
-		if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
-			if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
-				getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
-				getInstance().playerNameTextField.otherComponentClick();
-				return true;
-			}
+		if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88 && mouseY > guiTop + getInstance().sizeY - 26 - 20 &&
+			mouseY < guiTop + getInstance().sizeY - 26) {
+			getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
+			getInstance().playerNameTextField.otherComponentClick();
+			return true;
 		}
 		return false;
 	}
@@ -500,12 +486,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 				int x = guiLeft + 19 + 34 * xIndex;
 				int y = guiTop + 26 + 34 * yIndex;
 
-				if (mouseX >= x && mouseX <= x + 16) {
-					if (mouseY >= y && mouseY <= y + 16) {
-						if (!selectedInventory.equals(entry.getKey())) Utils.playPressSound();
-						selectedInventory = entry.getKey();
-						return;
-					}
+				if (mouseX >= x && mouseX <= x + 16 && mouseY >= y && mouseY <= y + 16) {
+					if (!selectedInventory.equals(entry.getKey())) Utils.playPressSound();
+					selectedInventory = entry.getKey();
+					return;
 				}
 
 				i++;
@@ -528,13 +512,12 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 			int staticSelectorHeight = guiTop + 177;
 
-			if (mouseY > staticSelectorHeight && mouseY < staticSelectorHeight + 16) {
-				if (mouseX > guiLeft + 320 - 12 && mouseX < guiLeft + 320 + 12) {
-					if (mouseX < guiLeft + 320) {
-						currentInventoryIndex--;
-					} else {
-						currentInventoryIndex++;
-					}
+			if (mouseY > staticSelectorHeight && mouseY < staticSelectorHeight + 16 && mouseX > guiLeft + 320 - 12 &&
+				mouseX < guiLeft + 320 + 12) {
+				if (mouseX < guiLeft + 320) {
+					currentInventoryIndex--;
+				} else {
+					currentInventoryIndex++;
 				}
 			}
 		}
