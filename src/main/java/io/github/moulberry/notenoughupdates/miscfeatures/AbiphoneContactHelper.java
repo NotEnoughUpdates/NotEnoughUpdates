@@ -63,35 +63,31 @@ public class AbiphoneContactHelper {
 		JsonObject data = getJsonData(npcName);
 		if (data == null) return;
 
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.abiphoneContactRequirements) {
-			if (data.has("requirement")) {
-				JsonArray requirements = data.get("requirement").getAsJsonArray();
-				if (requirements.size() > 0) {
-					list.add(" ");
-					list.add("§e§lRequirements:");
+		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.abiphoneContactRequirements && data.has("requirement")) {
+			JsonArray requirements = data.get("requirement").getAsJsonArray();
+			if (requirements.size() > 0) {
+				list.add(" ");
+				list.add("§e§lRequirements:");
 
-					for (JsonElement requirementObject : requirements) {
-						String requirement = requirementObject.getAsString();
-						list.add(requirement);
-					}
+				for (JsonElement requirementObject : requirements) {
+					String requirement = requirementObject.getAsString();
+					list.add(requirement);
 				}
 			}
 		}
 
-		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.abiphoneContactMarker) {
-			if (data.has("x")) {
-				if (selectedWaypointName.equals(npcName)) {
-					list.set(0, npcName + " §f- §aMarker set!");
-				}
-
-				list.add(" ");
-				if (selectedWaypointName.equals(npcName)) {
-					list.add("§eClick to remove the marker!");
-				} else {
-					list.add("§eClick to set a marker!");
-				}
-				list.add("§eShift-Click to teleport to the nearest waypoint!");
+		if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.abiphoneContactMarker && data.has("x")) {
+			if (selectedWaypointName.equals(npcName)) {
+				list.set(0, npcName + " §f- §aMarker set!");
 			}
+
+			list.add(" ");
+			if (selectedWaypointName.equals(npcName)) {
+				list.add("§eClick to remove the marker!");
+			} else {
+				list.add("§eClick to set a marker!");
+			}
+			list.add("§eShift-Click to teleport to the nearest waypoint!");
 		}
 	}
 
