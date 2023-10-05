@@ -90,11 +90,9 @@ public class PetsPage extends GuiProfileViewerPage {
 		getInstance().backgroundRotation %= 360;
 
 		String panoramaIdentifier = "day";
-		if (SBInfo.getInstance().currentTimeDate != null) {
-			if (SBInfo.getInstance().currentTimeDate.getHours() <= 6 ||
-				SBInfo.getInstance().currentTimeDate.getHours() >= 20) {
-				panoramaIdentifier = "night";
-			}
+		if (SBInfo.getInstance().currentTimeDate != null && (SBInfo.getInstance().currentTimeDate.getHours() <= 6 ||
+			SBInfo.getInstance().currentTimeDate.getHours() >= 20)) {
+			panoramaIdentifier = "night";
 		}
 
 		JsonArray pets = petsInfo.get("pets").getAsJsonArray();
@@ -172,13 +170,11 @@ public class PetsPage extends GuiProfileViewerPage {
 
 		boolean leftHovered = false;
 		boolean rightHovered = false;
-		if (Mouse.isButtonDown(0)) {
-			if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
-				if (mouseX > guiLeft + 100 - 20 - 12 && mouseX < guiLeft + 100 - 20) {
-					leftHovered = true;
-				} else if (mouseX > guiLeft + 100 + 20 && mouseX < guiLeft + 100 + 20 + 12) {
-					rightHovered = true;
-				}
+		if (Mouse.isButtonDown(0) && mouseY > guiTop + 6 && mouseY < guiTop + 22) {
+			if (mouseX > guiLeft + 100 - 20 - 12 && mouseX < guiLeft + 100 - 20) {
+				leftHovered = true;
+			} else if (mouseX > guiLeft + 100 + 20 && mouseX < guiLeft + 100 + 20 + 12) {
+				rightHovered = true;
 			}
 		}
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.resource_packs);
@@ -240,10 +236,8 @@ public class PetsPage extends GuiProfileViewerPage {
 
 				Utils.drawItemStack(stack, guiLeft + (int) x + 2, guiTop + (int) y + 2, true);
 
-				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 20) {
-					if (mouseY > guiTop + y && mouseY < guiTop + y + 20) {
-						getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-					}
+				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 20 && mouseY > guiTop + y && mouseY < guiTop + y + 20) {
+					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
 			}
 		}
@@ -352,11 +346,9 @@ public class PetsPage extends GuiProfileViewerPage {
 
 			int guiLeft = GuiProfileViewer.getGuiLeft();
 			int guiTop = GuiProfileViewer.getGuiTop();
-			if (mouseX > guiLeft + x && mouseX < guiLeft + x + 20) {
-				if (mouseY > guiTop + y && mouseY < guiTop + y + 20) {
-					selectedPet = i;
-					return true;
-				}
+			if (mouseX > guiLeft + x && mouseX < guiLeft + x + 20 && mouseY > guiTop + y && mouseY < guiTop + y + 20) {
+				selectedPet = i;
+				return true;
 			}
 		}
 		return false;
@@ -372,10 +364,9 @@ public class PetsPage extends GuiProfileViewerPage {
 				if (petsPage > 0) {
 					petsPage--;
 				}
-			} else if (mouseX > guiLeft + 100 + 15 && mouseX < guiLeft + 100 + 20 + 12) {
-				if (sortedPets != null && petsPage < Math.ceil(sortedPets.size() / 20f) - 1) {
-					petsPage++;
-				}
+			} else if (mouseX > guiLeft + 100 + 15 && mouseX < guiLeft + 100 + 20 + 12 && sortedPets != null &&
+				petsPage < Math.ceil(sortedPets.size() / 20f) - 1) {
+				petsPage++;
 			}
 		}
 	}
