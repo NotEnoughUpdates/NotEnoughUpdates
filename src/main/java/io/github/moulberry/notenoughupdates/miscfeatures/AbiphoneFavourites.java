@@ -88,11 +88,9 @@ public class AbiphoneFavourites {
 		String rawName = stack.getDisplayName();
 		String name = StringUtils.cleanColour(rawName);
 
-		if (isAbiphoneShowOnlyFavourites()) {
-			if (!getFavouriteContacts().contains(name)) {
-				list.clear();
-				return;
-			}
+		if (isAbiphoneShowOnlyFavourites() && !getFavouriteContacts().contains(name)) {
+			list.clear();
+			return;
 		}
 
 		if (isAbiphoneShowOnlyFavourites()) {
@@ -108,11 +106,10 @@ public class AbiphoneFavourites {
 			list.add(index, "§eShift-click to add to the favourites!");
 		}
 
-		if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.manager.keybindFavourite.getKeyCode())) {
-			if (System.currentTimeMillis() > lastClick + 500) {
-				toggleFavouriteContact(rawName, name);
-				lastClick = System.currentTimeMillis();
-			}
+		if (KeybindHelper.isKeyPressed(NotEnoughUpdates.INSTANCE.manager.keybindFavourite.getKeyCode()) &&
+			System.currentTimeMillis() > lastClick + 500) {
+			toggleFavouriteContact(rawName, name);
+			lastClick = System.currentTimeMillis();
 		}
 	}
 
@@ -142,26 +139,21 @@ public class AbiphoneFavourites {
 		int clickedButton = event.clickedButton;
 
 		//allows removing the contact
-		if (clickType == 0 && clickedButton == 1) {
-			if (!isAbiphoneShowOnlyFavourites()) {
-				return;
-			}
+		if (clickType == 0 && clickedButton == 1 && !isAbiphoneShowOnlyFavourites()) {
+			return;
 		}
 		String rawName = stack.getDisplayName();
 		String name = StringUtils.cleanColour(rawName);
 
 		//allows calling
-		if (clickType == 0 && clickedButton == 0) {
-			if (!isAbiphoneShowOnlyFavourites() || getFavouriteContacts().contains(name)) {
-				return;
-			}
+		if (clickType == 0 && clickedButton == 0 &&
+			(!isAbiphoneShowOnlyFavourites() || getFavouriteContacts().contains(name))) {
+			return;
 		}
 
 		//toggle favourite contact
-		if (clickType == 1) {
-			if (!isAbiphoneShowOnlyFavourites()) {
-				toggleFavouriteContact(rawName, name);
-			}
+		if (clickType == 1 && !isAbiphoneShowOnlyFavourites()) {
+			toggleFavouriteContact(rawName, name);
 		}
 
 		event.setCanceled(true);
@@ -219,10 +211,8 @@ public class AbiphoneFavourites {
 			String rawName = stack.getDisplayName();
 			String name = StringUtils.cleanColour(rawName);
 
-			if (!isAbiphoneShowOnlyFavourites()) {
-				if (getFavouriteContacts().contains(name)) {
-					RenderUtils.highlightSlot(slot, Color.ORANGE);
-				}
+			if (!isAbiphoneShowOnlyFavourites() && getFavouriteContacts().contains(name)) {
+				RenderUtils.highlightSlot(slot, Color.ORANGE);
 			}
 		}
 	}
