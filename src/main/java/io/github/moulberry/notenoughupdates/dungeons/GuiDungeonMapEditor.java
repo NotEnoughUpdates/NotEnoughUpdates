@@ -574,38 +574,36 @@ public class GuiDungeonMapEditor extends GuiScreen {
 				blurField.mouseClicked(mouseX, mouseY, mouseButton);
 				return;
 			}
-		} else if (mouseY > guiTop + 215 && mouseY < guiTop + 215 + 16) {
-			if (mouseX > guiLeft + 52 && mouseX < guiLeft + 100) {
-				int size = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
+		} else if (mouseY > guiTop + 215 && mouseY < guiTop + 215 + 16 && mouseX > guiLeft + 52 && mouseX < guiLeft + 100) {
+			int size = 80 + Math.round(40 * NotEnoughUpdates.INSTANCE.config.dungeonMap.dmBorderSize);
 
-				Map<String, Vec4b> decorations = new HashMap<>();
-				Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
-				decorations.put(Minecraft.getMinecraft().thePlayer.getName(), vec4b);
+			Map<String, Vec4b> decorations = new HashMap<>();
+			Vec4b vec4b = new Vec4b((byte) 3, (byte) (((50) - 64) * 2), (byte) (((40) - 64) * 2), (byte) ((60) * 16 / 360));
+			decorations.put(Minecraft.getMinecraft().thePlayer.getName(), vec4b);
 
-				HashSet<String> players = new HashSet<>();
-				players.add(Minecraft.getMinecraft().thePlayer.getName());
-				GlStateManager.color(1, 1, 1, 1);
-				Runnable runnable = this.closedCallback;
-				this.closedCallback = null;
-				Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditorButForTheDungeonMap(
-					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition,
-					size, size, () -> {
-					ScaledResolution scaledResolution = Utils.pushGuiScale(2);
-					demoMap.renderMap(
-						NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, size) + size / 2,
-						NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, size) + size / 2,
-						NotEnoughUpdates.INSTANCE.colourMap,
-						decorations,
-						0,
-						players,
-						false,
-						0
-					);
-					Utils.pushGuiScale(-1);
-				}, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(runnable)
-				).withScale(2));
-				return;
-			}
+			HashSet<String> players = new HashSet<>();
+			players.add(Minecraft.getMinecraft().thePlayer.getName());
+			GlStateManager.color(1, 1, 1, 1);
+			Runnable runnable = this.closedCallback;
+			this.closedCallback = null;
+			Minecraft.getMinecraft().displayGuiScreen(new GuiPositionEditorButForTheDungeonMap(
+				NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition,
+				size, size, () -> {
+				ScaledResolution scaledResolution = Utils.pushGuiScale(2);
+				demoMap.renderMap(
+					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsX(scaledResolution, size) + size / 2,
+					NotEnoughUpdates.INSTANCE.config.dungeonMap.dmPosition.getAbsY(scaledResolution, size) + size / 2,
+					NotEnoughUpdates.INSTANCE.colourMap,
+					decorations,
+					0,
+					players,
+					false,
+					0
+				);
+				Utils.pushGuiScale(-1);
+			}, () -> {}, () -> NotEnoughUpdates.INSTANCE.openGui = new GuiDungeonMapEditor(runnable)
+			).withScale(2));
+			return;
 		}
 
 		blurField.otherComponentClick();
