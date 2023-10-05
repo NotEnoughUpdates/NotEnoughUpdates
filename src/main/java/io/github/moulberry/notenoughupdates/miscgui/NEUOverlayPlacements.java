@@ -159,37 +159,36 @@ public class NEUOverlayPlacements extends GuiScreen {
 			MBAnchorPoint anchorPoint = mainGroup.getChildrenMap().get(element);
 			Vector2f position = mainGroup.getChildrenPosition().get(element);
 
-			if (mouseX > position.x && mouseX < position.x + element.getWidth()) {
-				if (mouseY > position.y && mouseY < position.y + element.getHeight()) {
-					if (mouseButton == 0) {
-						clickedElement = element;
-						clickedX = mouseX;
-						clickedY = mouseY;
-						clickedAnchorX = (int) anchorPoint.offset.x;
-						clickedAnchorY = (int) anchorPoint.offset.y;
+			if (mouseX > position.x && mouseX < position.x + element.getWidth() && mouseY > position.y &&
+				mouseY < position.y + element.getHeight()) {
+				if (mouseButton == 0) {
+					clickedElement = element;
+					clickedX = mouseX;
+					clickedY = mouseY;
+					clickedAnchorX = (int) anchorPoint.offset.x;
+					clickedAnchorY = (int) anchorPoint.offset.y;
+				} else {
+					if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+						anchorPoint.inventoryRelative = !anchorPoint.inventoryRelative;
 					} else {
-						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-							anchorPoint.inventoryRelative = !anchorPoint.inventoryRelative;
-						} else {
-							MBAnchorPoint.AnchorPoint[] vals = MBAnchorPoint.AnchorPoint.values();
-							anchorPoint.anchorPoint = vals[(anchorPoint.anchorPoint.ordinal() + 1) % vals.length];
+						MBAnchorPoint.AnchorPoint[] vals = MBAnchorPoint.AnchorPoint.values();
+						anchorPoint.anchorPoint = vals[(anchorPoint.anchorPoint.ordinal() + 1) % vals.length];
 
-							mainGroup.recalculate();
+						mainGroup.recalculate();
 
-							anchorPoint.offset.x += position.x - mainGroup.getChildrenPosition().get(element).x;
-							anchorPoint.offset.y += position.y - mainGroup.getChildrenPosition().get(element).y;
+						anchorPoint.offset.x += position.x - mainGroup.getChildrenPosition().get(element).x;
+						anchorPoint.offset.y += position.y - mainGroup.getChildrenPosition().get(element).y;
 
-							mainGroup.recalculate();
+						mainGroup.recalculate();
 
-							if (index == 0) {
-								NotEnoughUpdates.INSTANCE.config.hidden.overlaySearchBar = anchorPoint.toString();
-							} else if (index == 1) {
-								NotEnoughUpdates.INSTANCE.config.hidden.overlayQuickCommand = anchorPoint.toString();
-							}
+						if (index == 0) {
+							NotEnoughUpdates.INSTANCE.config.hidden.overlaySearchBar = anchorPoint.toString();
+						} else if (index == 1) {
+							NotEnoughUpdates.INSTANCE.config.hidden.overlayQuickCommand = anchorPoint.toString();
 						}
 					}
-					return;
 				}
+				return;
 			}
 			index++;
 		}
