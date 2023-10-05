@@ -152,13 +152,11 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		if (maxPage != 0) {
 			boolean leftHovered = false;
 			boolean rightHovered = false;
-			if (Mouse.isButtonDown(0)) {
-				if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
-					if (mouseX > guiLeft + 100 - 20 - 12 && mouseX < guiLeft + 100 - 20) {
-						leftHovered = true;
-					} else if (mouseX > guiLeft + 100 + 20 + 250 && mouseX < guiLeft + 100 + 20 + 12 + 250) {
-						rightHovered = true;
-					}
+			if (Mouse.isButtonDown(0) && mouseY > guiTop + 6 && mouseY < guiTop + 22) {
+				if (mouseX > guiLeft + 100 - 20 - 12 && mouseX < guiLeft + 100 - 20) {
+					leftHovered = true;
+				} else if (mouseX > guiLeft + 100 + 20 + 250 && mouseX < guiLeft + 100 + 20 + 12 + 250) {
+					rightHovered = true;
 				}
 			}
 			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.resource_packs);
@@ -268,20 +266,19 @@ public class CollectionsPage extends GuiProfileViewerPage {
 				);
 				Utils.drawItemStack(collectionItem, guiLeft + (int) x + 2, guiTop + (int) y + 2);
 
-				if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
-					if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
-						tooltipToDisplay = new ArrayList<>();
-						tooltipToDisplay.add(
-							collectionItem.getDisplayName() +
-								" " +
-								(completedness >= 1 ? EnumChatFormatting.GOLD : EnumChatFormatting.GRAY) +
-								tierString
-						);
-						tooltipToDisplay.add(
-							"Collected: " + StringUtils.formatNumber(thisCollection.getPersonalCollectionCount())
-						);
-						tooltipToDisplay.add("Total Collected: " + StringUtils.formatNumber(amount));
-					}
+				if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18 && mouseY > guiTop + (int) y + 2 &&
+					mouseY < guiTop + (int) y + 18) {
+					tooltipToDisplay = new ArrayList<>();
+					tooltipToDisplay.add(
+						collectionItem.getDisplayName() +
+							" " +
+							(completedness >= 1 ? EnumChatFormatting.GOLD : EnumChatFormatting.GRAY) +
+							tierString
+					);
+					tooltipToDisplay.add(
+						"Collected: " + StringUtils.formatNumber(thisCollection.getPersonalCollectionCount())
+					);
+					tooltipToDisplay.add("Total Collected: " + StringUtils.formatNumber(amount));
 				}
 
 				GlStateManager.color(1, 1, 1, 1);
@@ -371,13 +368,12 @@ public class CollectionsPage extends GuiProfileViewerPage {
 					guiTop + (int) y + 2
 				);
 
-				if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18) {
-					if (mouseY > guiTop + (int) y + 2 && mouseY < guiTop + (int) y + 18) {
-						tooltipToDisplay =
-							NotEnoughUpdates.INSTANCE.manager
-								.jsonToStack(minionJson)
-								.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-					}
+				if (mouseX > guiLeft + (int) x + 2 && mouseX < guiLeft + (int) x + 18 && mouseY > guiTop + (int) y + 2 &&
+					mouseY < guiTop + (int) y + 18) {
+					tooltipToDisplay =
+						NotEnoughUpdates.INSTANCE.manager
+							.jsonToStack(minionJson)
+							.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
 
 				GlStateManager.color(1, 1, 1, 1);
@@ -433,18 +429,16 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		if (maxPage != 0) {
-			if (mouseY > guiTop + 6 && mouseY < guiTop + 22) {
-				if (mouseX > guiLeft + 100 - 15 - 12 && mouseX < guiLeft + 100 - 20) {
-					if (page > 0) {
-						page--;
-						return;
-					}
-				} else if (mouseX > guiLeft + 100 + 15 + 250 && mouseX < guiLeft + 100 + 20 + 12 + 250) {
-					if (page < 1) {
-						page++;
-						return;
-					}
+		if (maxPage != 0 && mouseY > guiTop + 6 && mouseY < guiTop + 22) {
+			if (mouseX > guiLeft + 100 - 15 - 12 && mouseX < guiLeft + 100 - 20) {
+				if (page > 0) {
+					page--;
+					return;
+				}
+			} else if (mouseX > guiLeft + 100 + 15 + 250 && mouseX < guiLeft + 100 + 20 + 12 + 250) {
+				if (page < 1) {
+					page++;
+					return;
 				}
 			}
 		}
@@ -453,13 +447,12 @@ public class CollectionsPage extends GuiProfileViewerPage {
 		int collectionCatYSize = (int) (162f / (collectionCatSize - 1 + 0.0000001f));
 		int yIndex = 0;
 		for (ItemStack stack : ProfileViewer.getCollectionCatToCollectionMap().keySet()) {
-			if (mouseX > guiLeft + 7 && mouseX < guiLeft + 7 + 20) {
-				if (mouseY > guiTop + 10 + collectionCatYSize * yIndex && mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
-					selectedCollectionCategory = stack;
-					page = 0;
-					Utils.playPressSound();
-					return;
-				}
+			if (mouseX > guiLeft + 7 && mouseX < guiLeft + 7 + 20 && mouseY > guiTop + 10 + collectionCatYSize * yIndex &&
+				mouseY < guiTop + 10 + collectionCatYSize * yIndex + 20) {
+				selectedCollectionCategory = stack;
+				page = 0;
+				Utils.playPressSound();
+				return;
 			}
 			yIndex++;
 		}
