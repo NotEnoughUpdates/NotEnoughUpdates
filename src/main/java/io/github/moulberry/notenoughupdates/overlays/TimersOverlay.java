@@ -332,13 +332,9 @@ public class TimersOverlay extends TextTabOverlay {
 						break;
 					}
 					stack = lower.getStackInSlot(31);
-					if (stack != null) {
-						if (stack.getItem() == Items.blaze_powder) {
-							if (hidden.experimentsCompleted == 0) {
-								hidden.experimentsCompleted = currentTime;
-								return;
-							}
-						}
+					if (stack != null && stack.getItem() == Items.blaze_powder && hidden.experimentsCompleted == 0) {
+						hidden.experimentsCompleted = currentTime;
+						return;
 					}
 					ItemStack stackSuperPairs = lower.getStackInSlot(22);
 					if (stackSuperPairs != null && stackSuperPairs.getItem() == Items.skull &&
