@@ -195,14 +195,13 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 				110
 			);
 
-			if (highestWaveCompleted == 0) {
-				if (mouseX > guiLeft + 23 && mouseX < guiLeft + 133 && mouseY < guiTop + 50 + (i * 30) &&
-					mouseY > guiTop + 42 + (i * 30)) {
-					getInstance().tooltipToDisplay = new ArrayList<>();
-					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "N/A will only show for highest wave");
-					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "if you have not completed a run for");
-					getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "this tier since Infernal tier was released.");
-				}
+			if (highestWaveCompleted == 0 && mouseX > guiLeft + 23 && mouseX < guiLeft + 133 &&
+				mouseY < guiTop + 50 + (i * 30) &&
+				mouseY > guiTop + 42 + (i * 30)) {
+				getInstance().tooltipToDisplay = new ArrayList<>();
+				getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "N/A will only show for highest wave");
+				getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "if you have not completed a run for");
+				getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "this tier since Infernal tier was released.");
 			}
 		}
 
