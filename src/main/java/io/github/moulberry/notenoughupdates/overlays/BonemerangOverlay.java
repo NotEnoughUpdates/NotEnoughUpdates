@@ -120,10 +120,9 @@ public class BonemerangOverlay extends TextOverlay {
 					bb
 				);
 				for (Entity entity : entities) {
-					if (entity instanceof EntityLivingBase && !(entity instanceof EntityArmorStand) && !entity.isInvisible()) {
-						if (!bonemeragedEntities.contains(entity)) {
-							bonemeragedEntities.add((EntityLivingBase) entity);
-						}
+					if (entity instanceof EntityLivingBase && !(entity instanceof EntityArmorStand) && !entity.isInvisible() &&
+						!bonemeragedEntities.contains(entity)) {
+						bonemeragedEntities.add((EntityLivingBase) entity);
 					}
 				}
 
