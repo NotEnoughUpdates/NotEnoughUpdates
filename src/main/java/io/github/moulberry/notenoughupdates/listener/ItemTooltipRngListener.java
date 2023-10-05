@@ -80,11 +80,9 @@ public class ItemTooltipRngListener {
 		boolean nextLineProgress = false;
 		for (String line : event.toolTip) {
 
-			if (line.contains("Odds:")) {
-				if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterFractionDisplay) {
-					fractionDisplay(newToolTip, line);
-					continue;
-				}
+			if (line.contains("Odds:") && NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterFractionDisplay) {
+				fractionDisplay(newToolTip, line);
+				continue;
 			}
 
 			if (nextLineProgress || line.contains("Dungeon Score:") || line.contains("Slayer XP:")) {
@@ -115,15 +113,14 @@ public class ItemTooltipRngListener {
 						runsRequired(newToolTip, having, needed, nextLineProgress, event.itemStack);
 					}
 
-					if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterProfitPerUnit) {
-						if (!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterRunsNeeded) {
-							String name = Utils.getOpenChestName().contains("Catacombs") ? "Score" : "XP";
-							String formatCoinsPer = getFormatCoinsPer(event.itemStack, needed, 1, 1, 0, name);
-							if (formatCoinsPer != null) {
-								newToolTip.add(line);
-								newToolTip.add(formatCoinsPer);
-								continue;
-							}
+					if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterProfitPerUnit &&
+						!NotEnoughUpdates.INSTANCE.config.tooltipTweaks.rngMeterRunsNeeded) {
+						String name = Utils.getOpenChestName().contains("Catacombs") ? "Score" : "XP";
+						String formatCoinsPer = getFormatCoinsPer(event.itemStack, needed, 1, 1, 0, name);
+						if (formatCoinsPer != null) {
+							newToolTip.add(line);
+							newToolTip.add(formatCoinsPer);
+							continue;
 						}
 					}
 				}
