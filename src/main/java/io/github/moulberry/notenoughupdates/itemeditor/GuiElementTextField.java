@@ -384,19 +384,17 @@ public class GuiElementTextField extends GuiElement {
 			textField.setFocused(true);
 			textField.textboxKeyTyped(typedChar, keyCode);
 
-			if ((options & COLOUR) != 0) {
-				if (typedChar == '&') {
-					int pos = textField.getCursorPosition() - 2;
-					if (pos >= 0 && pos < textField.getText().length()) {
-						if (textField.getText().charAt(pos) == '&') {
-							String before = textField.getText().substring(0, pos);
-							String after = "";
-							if (pos + 2 < textField.getText().length()) {
-								after = textField.getText().substring(pos + 2);
-							}
-							textField.setText(before + "\u00A7" + after);
-							textField.setCursorPosition(pos + 1);
+			if ((options & COLOUR) != 0 && typedChar == '&') {
+				int pos = textField.getCursorPosition() - 2;
+				if (pos >= 0 && pos < textField.getText().length()) {
+					if (textField.getText().charAt(pos) == '&') {
+						String before = textField.getText().substring(0, pos);
+						String after = "";
+						if (pos + 2 < textField.getText().length()) {
+							after = textField.getText().substring(pos + 2);
 						}
+						textField.setText(before + "\u00A7" + after);
+						textField.setCursorPosition(pos + 1);
 					}
 				}
 			}
@@ -536,13 +534,11 @@ public class GuiElementTextField extends GuiElement {
 			boolean bold = false;
 			for (int i = 0; i < textNoColor.length(); i++) {
 				char c = textNoColor.charAt(i);
-				if (sectionSignPrev) {
-					if (c != 'k' && c != 'K'
-						&& c != 'm' && c != 'M'
-						&& c != 'n' && c != 'N'
-						&& c != 'o' && c != 'O') {
-						bold = c == 'l' || c == 'L';
-					}
+				if (sectionSignPrev && c != 'k' && c != 'K'
+					&& c != 'm' && c != 'M'
+					&& c != 'n' && c != 'N'
+					&& c != 'o' && c != 'O') {
+					bold = c == 'l' || c == 'L';
 				}
 				sectionSignPrev = c == '\u00B6';
 
