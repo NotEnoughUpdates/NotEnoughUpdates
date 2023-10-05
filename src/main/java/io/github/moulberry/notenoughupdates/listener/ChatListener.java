@@ -139,10 +139,8 @@ public class ChatListener {
 			} else if (!siblings.isEmpty() && siblings.size() > 1 && siblings.get(1).getChatStyle() != null) {
 
 				ClickEvent chatClickEvent = chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent();
-				if (chatClickEvent != null) {
-					if (chatClickEvent.getValue().startsWith("/socialoptions")) {
-						startsWith = "/socialoptions";
-					}
+				if (chatClickEvent != null && chatClickEvent.getValue().startsWith("/socialoptions")) {
+					startsWith = "/socialoptions";
 				}
 			}
 
@@ -252,14 +250,13 @@ public class ChatListener {
 			SlayerOverlay.unloadOverlayTimer = System.currentTimeMillis();
 		} else if (unformatted.startsWith("You consumed a Booster Cookie!")) {
 			CookieWarning.resetNotification();
-		} else if (unformatted.startsWith("QUICK MATHS! Solve:") && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) {
-			if (Math.random() < 0.2) {
-				if (NotEnoughUpdates.INSTANCE.config.misc.calculationMode == 2) {
-					ClientCommandHandler.instance.executeCommand(
-						Minecraft.getMinecraft().thePlayer,
-						"/neucalc " + unformatted.substring("QUICK MATHS! Solve: ".length())
-					);
-				}
+		} else if (unformatted.startsWith("QUICK MATHS! Solve:") && NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard() &&
+			Math.random() < 0.2) {
+			if (NotEnoughUpdates.INSTANCE.config.misc.calculationMode == 2) {
+				ClientCommandHandler.instance.executeCommand(
+					Minecraft.getMinecraft().thePlayer,
+					"/neucalc " + unformatted.substring("QUICK MATHS! Solve: ".length())
+				);
 			}
 		}
 		if (r != null) {
@@ -286,11 +283,10 @@ public class ChatListener {
 			OverlayManager.crystalHollowOverlay.message(unformatted);
 
 		Matcher LvlMatcher = SKY_BLOCK_LEVEL_PATTERN.matcher(unformatted);
-		if (LvlMatcher.matches()) {
-			if (Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
-				NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
-				e.setCanceled(true);
-			}
+		if (LvlMatcher.matches() &&
+			Integer.parseInt(LvlMatcher.group(1)) < NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel &&
+			NotEnoughUpdates.INSTANCE.config.misc.filterChatLevel != 0) {
+			e.setCanceled(true);
 		}
 
 		OverlayManager.powderGrindingOverlay.onMessage(unformatted);
