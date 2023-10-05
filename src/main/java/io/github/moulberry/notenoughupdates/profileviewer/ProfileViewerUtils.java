@@ -138,13 +138,11 @@ public class ProfileViewerUtils {
 				}
 			}
 
-			if (entry.getKey().equals("ABICASE")) {
-				if (profileInfo != null && profileInfo.has("nether_island_player_data")) {
-					JsonObject data = profileInfo.get("nether_island_player_data").getAsJsonObject();
-					if (data.has("abiphone") && data.get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
-						int contact = data.get("abiphone").getAsJsonObject().get("active_contacts").getAsJsonArray().size();
-						powerAmount += Math.floor(contact / 2);
-					}
+			if (entry.getKey().equals("ABICASE") && profileInfo != null && profileInfo.has("nether_island_player_data")) {
+				JsonObject data = profileInfo.get("nether_island_player_data").getAsJsonObject();
+				if (data.has("abiphone") && data.get("abiphone").getAsJsonObject().has("active_contacts")) { // BatChest
+					int contact = data.get("abiphone").getAsJsonObject().get("active_contacts").getAsJsonArray().size();
+					powerAmount += Math.floor(contact / 2);
 				}
 			}
 
