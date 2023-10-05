@@ -40,14 +40,10 @@ public class GlowingMushroomHighlighter extends GenericBlockHighlighter {
 	@SubscribeEvent
 	public void onParticleSpawn(SpawnParticleEvent event) {
 		if (!isEnabled()) return;
-		if (event.getParticleTypes() == EnumParticleTypes.SPELL_MOB) {
-			if (
-				isDecimalPartApproximately(event.getXCoord(), 0.5)
-					&& isDecimalPartApproximately(event.getYCoord(), 0.1)
-					&& isDecimalPartApproximately(event.getZCoord(), 0.5)
-			) {
-				tryRegisterInterest(event.getXCoord(), event.getYCoord(), event.getZCoord());
-			}
+		if (event.getParticleTypes() == EnumParticleTypes.SPELL_MOB && isDecimalPartApproximately(event.getXCoord(), 0.5)
+			&& isDecimalPartApproximately(event.getYCoord(), 0.1)
+			&& isDecimalPartApproximately(event.getZCoord(), 0.5)) {
+			tryRegisterInterest(event.getXCoord(), event.getYCoord(), event.getZCoord());
 		}
 	}
 
