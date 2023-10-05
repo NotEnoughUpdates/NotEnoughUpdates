@@ -134,10 +134,9 @@ public class MixinNetHandlerPlayClient {
 		if (packet instanceof C0EPacketClickWindow) {
 			StorageManager.getInstance().clientSendWindowClick((C0EPacketClickWindow) packet);
 		}
-		if (packet instanceof C01PacketChatMessage) {
-			if (AntiCoopAdd.getInstance().onPacketChatMessage((C01PacketChatMessage) packet)) {
-				ci.cancel();
-			}
+		if (packet instanceof C01PacketChatMessage &&
+			AntiCoopAdd.getInstance().onPacketChatMessage((C01PacketChatMessage) packet)) {
+			ci.cancel();
 		}
 	}
 
