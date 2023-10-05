@@ -1059,11 +1059,10 @@ public class DungeonMap {
 				int x = startRoomX + neighbor.x * (roomSize + connectorSize);
 				int y = startRoomY + neighbor.y * (roomSize + connectorSize);
 
-				if (x >= 0 && y >= 0 && x + roomSize < colourMap.length && y + roomSize < colourMap[x].length) {
-					if (colourMap[x][y].getAlpha() > 100) {
-						roomMap.put(neighbor, new Room());
-						loadNeighbors(neighbor);
-					}
+				if (x >= 0 && y >= 0 && x + roomSize < colourMap.length && y + roomSize < colourMap[x].length &&
+					colourMap[x][y].getAlpha() > 100) {
+					roomMap.put(neighbor, new Room());
+					loadNeighbors(neighbor);
 				}
 			}
 		}
@@ -1188,27 +1187,26 @@ public class DungeonMap {
 			for (int x = 0; x < colourMap.length; x++) {
 				for (int y = 0; y < colourMap[x].length; y++) {
 					Color c = colourMap[x][y];
-					if (c.getAlpha() > 80) {
-						if (startRoomX < 0 && startRoomY < 0 && c.getRed() == 0 && c.getGreen() == 124 && c.getBlue() == 0) {
-							roomSize = 0;
-							out:
-							for (int xd = 0; xd <= 20; xd++) {
-								for (int yd = 0; yd <= 20; yd++) {
-									if (x + xd >= colourMap.length || y + yd >= colourMap[x + xd].length) continue;
-									Color c2 = colourMap[x + xd][y + yd];
+					if (c.getAlpha() > 80 && startRoomX < 0 && startRoomY < 0 && c.getRed() == 0 && c.getGreen() == 124 &&
+						c.getBlue() == 0) {
+						roomSize = 0;
+						out:
+						for (int xd = 0; xd <= 20; xd++) {
+							for (int yd = 0; yd <= 20; yd++) {
+								if (x + xd >= colourMap.length || y + yd >= colourMap[x + xd].length) continue;
+								Color c2 = colourMap[x + xd][y + yd];
 
-									if (c2.getGreen() != 124 || c2.getAlpha() <= 80) {
-										if (xd < 10 && yd < 10) {
-											break out;
-										}
-									} else {
-										roomSize = Math.max(roomSize, Math.min(xd + 1, yd + 1));
+								if (c2.getGreen() != 124 || c2.getAlpha() <= 80) {
+									if (xd < 10 && yd < 10) {
+										break out;
 									}
-									if (xd == 20 && yd == 20) {
-										if (roomSize == 0) roomSize = 20;
-										startRoomX = x;
-										startRoomY = y;
-									}
+								} else {
+									roomSize = Math.max(roomSize, Math.min(xd + 1, yd + 1));
+								}
+								if (xd == 20 && yd == 20) {
+									if (roomSize == 0) roomSize = 20;
+									startRoomX = x;
+									startRoomY = y;
 								}
 							}
 						}
@@ -1243,13 +1241,11 @@ public class DungeonMap {
 							y = startRoomY + i;
 						}
 
-						if (x > 0 && y > 0 && x < colourMap.length && y < colourMap[x].length) {
-							if (colourMap[x][y].getAlpha() > 80) {
-								if (j == 1) {
-									break;
-								}
-								connectorSize = Math.min(connectorSize, j - 1);
+						if (x > 0 && y > 0 && x < colourMap.length && y < colourMap[x].length && colourMap[x][y].getAlpha() > 80) {
+							if (j == 1) {
+								break;
 							}
+							connectorSize = Math.min(connectorSize, j - 1);
 						}
 					}
 				}
@@ -1452,11 +1448,10 @@ public class DungeonMap {
 							int smallestIndex = -1;
 							float smallestDist = 0;
 							for (Map.Entry<Integer, Float> entry : distanceMap.get(player).entrySet()) {
-								if (!usedIndexes.containsValue(entry.getKey())) {
-									if (smallestIndex == -1 || entry.getValue() < smallestDist) {
-										smallestIndex = entry.getKey();
-										smallestDist = entry.getValue();
-									}
+								if (!usedIndexes.containsValue(entry.getKey()) &&
+									(smallestIndex == -1 || entry.getValue() < smallestDist)) {
+									smallestIndex = entry.getKey();
+									smallestDist = entry.getValue();
 								}
 							}
 							if (smallestIndex != -1) {
