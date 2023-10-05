@@ -146,13 +146,10 @@ public class ItemCooldowns {
 		}
 
 		PetInfoOverlay.Pet pet = PetInfoOverlay.getCurrentPet();
-		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableMonkeyCheck && pet != null) {
-			if (pet.petLevel != null &&
-				pet.petType.equalsIgnoreCase("monkey") &&
-				pet.rarity.equals(PetInfoOverlay.Rarity.LEGENDARY)
-			) {
-				return 2000 - (int) (2000 * (0.005 * pet.petLevel.getCurrentLevel()));
-			}
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableMonkeyCheck && pet != null && pet.petLevel != null &&
+			pet.petType.equalsIgnoreCase("monkey") &&
+			pet.rarity.equals(PetInfoOverlay.Rarity.LEGENDARY)) {
+			return 2000 - (int) (2000 * (0.005 * pet.petLevel.getCurrentLevel()));
 		}
 		return 2000;
 	}
@@ -186,11 +183,9 @@ public class ItemCooldowns {
 	public static void onBlockMined() {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String internalname = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(held).resolveInternalName();
-		if (internalname != null) {
-			if (treecapitatorCooldownMillisRemaining < 0 &&
-				(internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE"))) {
-				treecapitatorCooldownMillisRemaining = getTreecapCooldownWithPet();
-			}
+		if (internalname != null && treecapitatorCooldownMillisRemaining < 0 &&
+			(internalname.equals("TREECAPITATOR_AXE") || internalname.equals("JUNGLE_AXE"))) {
+			treecapitatorCooldownMillisRemaining = getTreecapCooldownWithPet();
 		}
 	}
 
