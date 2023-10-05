@@ -161,15 +161,13 @@ public class GuiPositionEditor extends GuiScreen {
 				int y = position.getAbsY(scaledResolution, elementHeight);
 				if (position.isCenterX()) x -= elementWidth / 2;
 				if (position.isCenterY()) y -= elementHeight / 2;
-				if (!position.getClicked()) {
-					if (mouseX >= x && mouseY >= y &&
-						mouseX <= x + elementWidth && mouseY <= y + elementHeight) {
-						clickedPos = i;
-						position.setClicked(true);
-						grabbedX = mouseX;
-						grabbedY = mouseY;
-						break;
-					}
+				if (!position.getClicked() && mouseX >= x && mouseY >= y &&
+					mouseX <= x + elementWidth && mouseY <= y + elementHeight) {
+					clickedPos = i;
+					position.setClicked(true);
+					grabbedX = mouseX;
+					grabbedY = mouseY;
+					break;
 				}
 
 			}
