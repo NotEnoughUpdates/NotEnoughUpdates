@@ -135,10 +135,9 @@ public class RenderListener {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onRenderEntitySpecials(RenderLivingEvent.Specials.Pre<EntityPlayer> event) {
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiProfileViewer) {
-			if (((GuiProfileViewer) Minecraft.getMinecraft().currentScreen).getEntityPlayer() == event.entity) {
-				event.setCanceled(true);
-			}
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiProfileViewer &&
+			((GuiProfileViewer) Minecraft.getMinecraft().currentScreen).getEntityPlayer() == event.entity) {
+			event.setCanceled(true);
 		}
 	}
 
@@ -252,54 +251,104 @@ public class RenderListener {
 		//OPEN
 		if (Minecraft.getMinecraft().currentScreen == null && event.gui instanceof GuiContainer) {
 			neu.overlay.reset();
-		}
-		if (event.gui != null && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-			if (event.gui instanceof GuiChest) {
-				GuiChest eventGui = (GuiChest) event.gui;
-				ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
-				IInventory lower = cc.getLowerChestInventory();
-				ses.schedule(() -> {
-					if (Minecraft.getMinecraft().currentScreen != event.gui) {
-						return;
-					}
-					if (lower.getStackInSlot(23).getDisplayName().endsWith("Crafting Table")) {
-						try {
-							ItemStack res = lower.getStackInSlot(25);
-							String resInternalname = neu.manager.getInternalNameForItem(res);
-
-							if (lower.getStackInSlot(48) != null) {
-								String backName = null;
-								NBTTagCompound tag = lower.getStackInSlot(48).getTagCompound();
-								if (tag.hasKey("display", 10)) {
-									NBTTagCompound nbttagcompound = tag.getCompoundTag("display");
-									if (nbttagcompound.getTagId("Lore") == 9) {
-										NBTTagList nbttaglist1 = nbttagcompound.getTagList("Lore", 8);
-										backName = nbttaglist1.getStringTagAt(0);
-									}
-								}
-
-								if (backName != null) {
-									String[] split = backName.split(" ");
-									if (split[split.length - 1].contains("Rewards")) {
-										String col = backName.substring(
-											split[0].length() + 1,
-											backName.length() - split[split.length - 1].length() - 1
-										);
-
-										JsonObject json = neu.manager.getItemInformation().get(resInternalname);
-										json.addProperty("crafttext", "Requires: " + col);
-
-										Utils.addChatMessage("Added: " + resInternalname);
-										neu.manager.writeJsonDefaultDir(json, resInternalname + ".json");
-										neu.manager.loadItem(resInternalname);
-									}
-								}
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
+			if (event.gui != null && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+				if (event.gui instanceof GuiChest) {
+					GuiChest eventGui = (GuiChest) event.gui;
+					ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+					IInventory lower = cc.getLowerChestInventory();
+					ses.schedule(() -> {
+						if (Minecraft.getMinecraft().currentScreen != event.gui) {
+							return;
 						}
-					}
-				}, 200, TimeUnit.MILLISECONDS);
+						if (lower.getStackInSlot(23).getDisplayName().endsWith("Crafting Table")) {
+							try {
+								ItemStack res = lower.getStackInSlot(25);
+								String resInternalname = neu.manager.getInternalNameForItem(res);
+
+								if (lower.getStackInSlot(48) != null) {
+									String backName = null;
+									NBTTagCompound tag = lower.getStackInSlot(48).getTagCompound();
+									if (tag.hasKey("display", 10)) {
+										NBTTagCompound nbttagcompound = tag.getCompoundTag("display");
+										if (nbttagcompound.getTagId("Lore") == 9) {
+											NBTTagList nbttaglist1 = nbttagcompound.getTagList("Lore", 8);
+											backName = nbttaglist1.getStringTagAt(0);
+										}
+									}
+
+									if (backName != null) {
+										String[] split = backName.split(" ");
+										if (split[split.length - 1].contains("Rewards")) {
+											String col = backName.substring(
+												split[0].length() + 1,
+												backName.length() - split[split.length - 1].length() - 1
+											);
+
+											JsonObject json = neu.manager.getItemInformation().get(resInternalname);
+											json.addProperty("crafttext", "Requires: " + col);
+
+											Utils.addChatMessage("Added: " + resInternalname);
+											neu.manager.writeJsonDefaultDir(json, resInternalname + ".json");
+											neu.manager.loadItem(resInternalname);
+										}
+									}
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}, 200, TimeUnit.MILLISECONDS);
+				}
+			}
+		} else {
+			if (event.gui != null && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+				if (event.gui instanceof GuiChest) {
+					GuiChest eventGui = (GuiChest) event.gui;
+					ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
+					IInventory lower = cc.getLowerChestInventory();
+					ses.schedule(() -> {
+						if (Minecraft.getMinecraft().currentScreen != event.gui) {
+							return;
+						}
+						if (lower.getStackInSlot(23).getDisplayName().endsWith("Crafting Table")) {
+							try {
+								ItemStack res = lower.getStackInSlot(25);
+								String resInternalname = neu.manager.getInternalNameForItem(res);
+
+								if (lower.getStackInSlot(48) != null) {
+									String backName = null;
+									NBTTagCompound tag = lower.getStackInSlot(48).getTagCompound();
+									if (tag.hasKey("display", 10)) {
+										NBTTagCompound nbttagcompound = tag.getCompoundTag("display");
+										if (nbttagcompound.getTagId("Lore") == 9) {
+											NBTTagList nbttaglist1 = nbttagcompound.getTagList("Lore", 8);
+											backName = nbttaglist1.getStringTagAt(0);
+										}
+									}
+
+									if (backName != null) {
+										String[] split = backName.split(" ");
+										if (split[split.length - 1].contains("Rewards")) {
+											String col = backName.substring(
+												split[0].length() + 1,
+												backName.length() - split[split.length - 1].length() - 1
+											);
+
+											JsonObject json = neu.manager.getItemInformation().get(resInternalname);
+											json.addProperty("crafttext", "Requires: " + col);
+
+											Utils.addChatMessage("Added: " + resInternalname);
+											neu.manager.writeJsonDefaultDir(json, resInternalname + ".json");
+											neu.manager.loadItem(resInternalname);
+										}
+									}
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}, 200, TimeUnit.MILLISECONDS);
+				}
 			}
 		}
 	}
@@ -537,16 +586,15 @@ public class RenderListener {
 
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
-		if (!(tradeWindowActive || storageOverlayActive)) {
-			if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock()) {
-				GlStateManager.pushMatrix();
-				if (!focusInv) {
-					GL11.glTranslatef(0, 0, 300);
-					neu.overlay.render(hoverInv && focusInv);
-					GL11.glTranslatef(0, 0, -300);
-				}
-				GlStateManager.popMatrix();
+		if (!(tradeWindowActive || storageOverlayActive) && NotificationHandler.shouldRenderOverlay(event.gui) &&
+			neu.isOnSkyblock()) {
+			GlStateManager.pushMatrix();
+			if (!focusInv) {
+				GL11.glTranslatef(0, 0, 300);
+				neu.overlay.render(hoverInv && focusInv);
+				GL11.glTranslatef(0, 0, -300);
 			}
+			GlStateManager.popMatrix();
 		}
 
 		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock() && !hoverInv) {
@@ -979,15 +1027,14 @@ public class RenderListener {
 			return;
 		}
 
-		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock()) {
-			if (!NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay || !AccessoryBagOverlay.mouseClick()) {
-				if (!(hoverInv && focusInv)) {
-					if (neu.overlay.mouseInput()) {
-						event.setCanceled(true);
-					}
-				} else {
-					neu.overlay.mouseInputInv();
+		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock() &&
+			(!NotEnoughUpdates.INSTANCE.config.accessoryBag.enableOverlay || !AccessoryBagOverlay.mouseClick())) {
+			if (!(hoverInv && focusInv)) {
+				if (neu.overlay.mouseInput()) {
+					event.setCanceled(true);
 				}
+			} else {
+				neu.overlay.mouseInputInv();
 			}
 		}
 		if (event.isCanceled()) return;
@@ -1115,11 +1162,9 @@ public class RenderListener {
 		boolean tradeWindowActive = TradeWindow.tradeWindowActive(containerName);
 		boolean storageOverlayActive = StorageManager.getInstance().shouldRenderStorageOverlay(containerName);
 
-		if (storageOverlayActive) {
-			if (StorageOverlay.getInstance().keyboardInput()) {
-				event.setCanceled(true);
-				return;
-			}
+		if (storageOverlayActive && StorageOverlay.getInstance().keyboardInput()) {
+			event.setCanceled(true);
+			return;
 		}
 
 		if (tradeWindowActive) {
@@ -1132,10 +1177,9 @@ public class RenderListener {
 			return;
 		}
 
-		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock()) {
-			if (neu.overlay.keyboardInput(focusInv)) {
-				event.setCanceled(true);
-			}
+		if (NotificationHandler.shouldRenderOverlay(event.gui) && neu.isOnSkyblock() &&
+			neu.overlay.keyboardInput(focusInv)) {
+			event.setCanceled(true);
 		}
 		if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing &&
 			Minecraft.getMinecraft().theWorld != null && Keyboard.getEventKey() == Keyboard.KEY_N &&
