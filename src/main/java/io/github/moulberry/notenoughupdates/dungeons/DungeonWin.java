@@ -185,36 +185,35 @@ public class DungeonWin {
 		//hypixel please don't randomly add more
 
 		if (e.message.getFormattedText().startsWith(
-			EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "   ")) {
-			if (currentTime - lastDungeonFinish > 30000) {
-				Matcher matcher = TEAM_SCORE_REGEX.matcher(unformatted);
-				if (matcher.find()) {
-					lastDungeonFinish = currentTime;
-					String score = matcher.group(1);
-					switch (score.toUpperCase()) {
-						case "S+":
-							TEAM_SCORE = SPLUS;
-							break;
-						case "S":
-							TEAM_SCORE = S;
-							break;
-						case "A":
-							TEAM_SCORE = A;
-							break;
-						case "B":
-							TEAM_SCORE = B;
-							break;
-						case "C":
-							TEAM_SCORE = C;
-							break;
-						default:
-							TEAM_SCORE = D;
-							break;
-					}
-
-					SES.schedule(() -> NotEnoughUpdates.INSTANCE.sendChatMessage("/showextrastats"), 100L, TimeUnit.MILLISECONDS);
-					seenDungeonWinOverlayThisRun = false;
+			EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "" + EnumChatFormatting.RESET + "   ") &&
+			currentTime - lastDungeonFinish > 30000) {
+			Matcher matcher = TEAM_SCORE_REGEX.matcher(unformatted);
+			if (matcher.find()) {
+				lastDungeonFinish = currentTime;
+				String score = matcher.group(1);
+				switch (score.toUpperCase()) {
+					case "S+":
+						TEAM_SCORE = SPLUS;
+						break;
+					case "S":
+						TEAM_SCORE = S;
+						break;
+					case "A":
+						TEAM_SCORE = A;
+						break;
+					case "B":
+						TEAM_SCORE = B;
+						break;
+					case "C":
+						TEAM_SCORE = C;
+						break;
+					default:
+						TEAM_SCORE = D;
+						break;
 				}
+
+				SES.schedule(() -> NotEnoughUpdates.INSTANCE.sendChatMessage("/showextrastats"), 100L, TimeUnit.MILLISECONDS);
+				seenDungeonWinOverlayThisRun = false;
 			}
 		}
 		if (currentTime - lastDungeonFinish > 100 && currentTime - lastDungeonFinish < 10000) {
