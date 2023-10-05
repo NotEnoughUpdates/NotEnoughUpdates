@@ -587,20 +587,19 @@ public class TradeWindow {
 				col = 0x80ff8080;
 			}
 
-			if (mouseX > guiLeft + x - 1 && mouseX < guiLeft + x + 18) {
-				if (mouseY > guiTop + y - 1 && mouseY < guiTop + y + 18) {
-					if (stack != null) stackToRender = stack;
+			if (mouseX > guiLeft + x - 1 && mouseX < guiLeft + x + 18 && mouseY > guiTop + y - 1 &&
+				mouseY < guiTop + y + 18) {
+				if (stack != null) stackToRender = stack;
 
-					GlStateManager.disableLighting();
-					GlStateManager.disableDepth();
-					GlStateManager.colorMask(true, true, true, false);
-					Utils.drawGradientRect(guiLeft + x, guiTop + y,
-						guiLeft + x + 16, guiTop + y + 16, col, col
-					);
-					GlStateManager.colorMask(true, true, true, true);
-					GlStateManager.enableLighting();
-					GlStateManager.enableDepth();
-				}
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
+				GlStateManager.colorMask(true, true, true, false);
+				Utils.drawGradientRect(guiLeft + x, guiTop + y,
+					guiLeft + x + 16, guiTop + y + 16, col, col
+				);
+				GlStateManager.colorMask(true, true, true, true);
+				GlStateManager.enableLighting();
+				GlStateManager.enableDepth();
 			}
 
 			index++;
@@ -618,33 +617,31 @@ public class TradeWindow {
 				Utils.drawItemStack(stack, guiLeft + 10 + x * 18, guiTop + 15 + y * 18);
 			}
 
-			if (mouseX > guiLeft + 10 + x * 18 - 1 && mouseX < guiLeft + 10 + x * 18 + 18) {
-				if (mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {
-					if (stack != null) stackToRender = stack;
+			if (mouseX > guiLeft + 10 + x * 18 - 1 && mouseX < guiLeft + 10 + x * 18 + 18 &&
+				mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {
+				if (stack != null) stackToRender = stack;
 
-					GlStateManager.disableLighting();
-					GlStateManager.disableDepth();
-					GlStateManager.colorMask(true, true, true, false);
-					Utils.drawGradientRect(guiLeft + 10 + x * 18, guiTop + 15 + y * 18,
-						guiLeft + 10 + x * 18 + 16, guiTop + 15 + y * 18 + 16, -2130706433, -2130706433
-					);
-					GlStateManager.colorMask(true, true, true, true);
-					GlStateManager.enableLighting();
-					GlStateManager.enableDepth();
-				}
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
+				GlStateManager.colorMask(true, true, true, false);
+				Utils.drawGradientRect(guiLeft + 10 + x * 18, guiTop + 15 + y * 18,
+					guiLeft + 10 + x * 18 + 16, guiTop + 15 + y * 18 + 16, -2130706433, -2130706433
+				);
+				GlStateManager.colorMask(true, true, true, true);
+				GlStateManager.enableLighting();
+				GlStateManager.enableDepth();
 			}
 		}
 
 		ItemStack bidStack = chest.inventorySlots.getInventory().get(36);
 		if (bidStack != null) {
 			Utils.drawItemStack(bidStack, guiLeft + 10, guiTop + 90);
-			if (mouseX > guiLeft + 10 - 1 && mouseX < guiLeft + 10 + 18) {
-				if (mouseY > guiTop + 90 - 1 && mouseY < guiTop + 90 + 18) {
-					tooltipToDisplay = bidStack.getTooltip(
-						Minecraft.getMinecraft().thePlayer,
-						Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-					);
-				}
+			if (mouseX > guiLeft + 10 - 1 && mouseX < guiLeft + 10 + 18 && mouseY > guiTop + 90 - 1 &&
+				mouseY < guiTop + 90 + 18) {
+				tooltipToDisplay = bidStack.getTooltip(
+					Minecraft.getMinecraft().thePlayer,
+					Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+				);
 			}
 		}
 
@@ -652,13 +649,11 @@ public class TradeWindow {
 		if (confirmStack != null) {
 			String confirmDisplay = confirmStack.getDisplayName();
 			if (!confirmDisplay.equals(EnumChatFormatting.GREEN + "Trading!")) {
-				if (mouseX > guiLeft + 81 - 51 && mouseX < guiLeft + 81) {
-					if (mouseY > guiTop + 91 && mouseY < guiTop + 91 + 14) {
-						tooltipToDisplay = confirmStack.getTooltip(
-							Minecraft.getMinecraft().thePlayer,
-							Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-						);
-					}
+				if (mouseX > guiLeft + 81 - 51 && mouseX < guiLeft + 81 && mouseY > guiTop + 91 && mouseY < guiTop + 91 + 14) {
+					tooltipToDisplay = confirmStack.getTooltip(
+						Minecraft.getMinecraft().thePlayer,
+						Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+					);
 				}
 
 				Minecraft.getMinecraft().getTextureManager().bindTexture(location);
@@ -723,13 +718,11 @@ public class TradeWindow {
 		ItemStack theirConfirmStack = chest.inventorySlots.getInventory().get(41);
 		if (theirConfirmStack != null) {
 			String confirmDisplay = theirConfirmStack.getDisplayName();
-			if (mouseX > guiLeft + 95 && mouseX < guiLeft + 95 + 51) {
-				if (mouseY > guiTop + 91 && mouseY < guiTop + 91 + 14) {
-					tooltipToDisplay = theirConfirmStack.getTooltip(
-						Minecraft.getMinecraft().thePlayer,
-						Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-					);
-				}
+			if (mouseX > guiLeft + 95 && mouseX < guiLeft + 95 + 51 && mouseY > guiTop + 91 && mouseY < guiTop + 91 + 14) {
+				tooltipToDisplay = theirConfirmStack.getTooltip(
+					Minecraft.getMinecraft().thePlayer,
+					Minecraft.getMinecraft().gameSettings.advancedItemTooltips
+				);
 			}
 
 			GlStateManager.color(1, 1, 1, 1);
@@ -769,20 +762,19 @@ public class TradeWindow {
 				GlStateManager.translate(0, 0, -200);
 			}
 
-			if (mouseX > guiLeft + 96 + x * 18 - 1 && mouseX < guiLeft + 96 + x * 18 + 18) {
-				if (mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {
-					if (stack != null) stackToRender = stack;
+			if (mouseX > guiLeft + 96 + x * 18 - 1 && mouseX < guiLeft + 96 + x * 18 + 18 &&
+				mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {
+				if (stack != null) stackToRender = stack;
 
-					GlStateManager.disableLighting();
-					GlStateManager.disableDepth();
-					GlStateManager.colorMask(true, true, true, false);
-					Utils.drawGradientRect(guiLeft + 96 + x * 18, guiTop + 15 + y * 18,
-						guiLeft + 96 + x * 18 + 16, guiTop + 15 + y * 18 + 16, -2130706433, -2130706433
-					);
-					GlStateManager.colorMask(true, true, true, true);
-					GlStateManager.enableLighting();
-					GlStateManager.enableDepth();
-				}
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
+				GlStateManager.colorMask(true, true, true, false);
+				Utils.drawGradientRect(guiLeft + 96 + x * 18, guiTop + 15 + y * 18,
+					guiLeft + 96 + x * 18 + 16, guiTop + 15 + y * 18 + 16, -2130706433, -2130706433
+				);
+				GlStateManager.colorMask(true, true, true, true);
+				GlStateManager.enableLighting();
+				GlStateManager.enableDepth();
 			}
 		}
 
@@ -1022,18 +1014,16 @@ public class TradeWindow {
 				int y = 104 + 18 * (index / 9);
 				if (index < 9) y = 180;
 
-				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 16) {
-					if (mouseY > guiTop + y && mouseY < guiTop + y + 16) {
-						Slot slot = chest.inventorySlots.getSlotFromInventory(Minecraft.getMinecraft().thePlayer.inventory, index);
-						if (!NotEnoughUpdates.INSTANCE.config.slotLocking.lockSlotsInTrade ||
-							!SlotLocking.getInstance().isSlotLocked(slot)) {
-							Minecraft.getMinecraft().playerController.windowClick(
-								chest.inventorySlots.windowId,
-								slot.slotNumber, 0, 0, Minecraft.getMinecraft().thePlayer
-							);
-						}
-						return;
+				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 16 && mouseY > guiTop + y && mouseY < guiTop + y + 16) {
+					Slot slot = chest.inventorySlots.getSlotFromInventory(Minecraft.getMinecraft().thePlayer.inventory, index);
+					if (!NotEnoughUpdates.INSTANCE.config.slotLocking.lockSlotsInTrade ||
+						!SlotLocking.getInstance().isSlotLocked(slot)) {
+						Minecraft.getMinecraft().playerController.windowClick(
+							chest.inventorySlots.windowId,
+							slot.slotNumber, 0, 0, Minecraft.getMinecraft().thePlayer
+						);
 					}
+					return;
 				}
 
 				index++;
@@ -1046,46 +1036,42 @@ public class TradeWindow {
 				Integer containerIndex = ourTradeIndexes[i];
 				if (containerIndex == null || containerIndex < 0) continue;
 
-				if (mouseX > guiLeft + 10 + x * 18 - 1 && mouseX < guiLeft + 10 + x * 18 + 18) {
-					if (mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {
-						Minecraft.getMinecraft().playerController.windowClick(
-							chest.inventorySlots.windowId,
-							containerIndex, 2, 3, Minecraft.getMinecraft().thePlayer
-						);
-						return;
-					}
-				}
-			}
-
-			if (mouseX > guiLeft + 10 - 1 && mouseX < guiLeft + 10 + 18) {
-				if (mouseY > guiTop + 90 - 1 && mouseY < guiTop + 90 + 18) {
+				if (mouseX > guiLeft + 10 + x * 18 - 1 && mouseX < guiLeft + 10 + x * 18 + 18 &&
+					mouseY > guiTop + 15 + y * 18 - 1 && mouseY < guiTop + 15 + y * 18 + 18) {
 					Minecraft.getMinecraft().playerController.windowClick(
 						chest.inventorySlots.windowId,
-						36, 2, 3, Minecraft.getMinecraft().thePlayer
+						containerIndex, 2, 3, Minecraft.getMinecraft().thePlayer
 					);
 					return;
 				}
 			}
 
+			if (mouseX > guiLeft + 10 - 1 && mouseX < guiLeft + 10 + 18 && mouseY > guiTop + 90 - 1 &&
+				mouseY < guiTop + 90 + 18) {
+				Minecraft.getMinecraft().playerController.windowClick(
+					chest.inventorySlots.windowId,
+					36, 2, 3, Minecraft.getMinecraft().thePlayer
+				);
+				return;
+			}
+
 			ItemStack confirmStack = chest.inventorySlots.getInventory().get(39);
 			if (confirmStack != null) {
 				String confirmDisplay = confirmStack.getDisplayName();
-				if (!confirmDisplay.equals(EnumChatFormatting.GREEN + "Trading!")) {
-					if (mouseX > guiLeft + 42 && mouseX < guiLeft + 42 + 40) {
-						if (mouseY > guiTop + 92 && mouseY < guiTop + 92 + 14) {
-							if ((confirmDisplay.equals(EnumChatFormatting.YELLOW + "Warning!") ||
-								confirmDisplay.equals(EnumChatFormatting.YELLOW + "Deal!")) && lastTradeMillis < 0) {
-								lastTradeMillis = System.currentTimeMillis();
-							} else if (lastTradeMillis < 0 || System.currentTimeMillis() - lastTradeMillis > 2000) {
-								Minecraft.getMinecraft().playerController.windowClick(
-									chest.inventorySlots.windowId,
-									39, 2, 3, Minecraft.getMinecraft().thePlayer
-								);
-								return;
-							}
+				if (!confirmDisplay.equals(EnumChatFormatting.GREEN + "Trading!") && mouseX > guiLeft + 42 &&
+					mouseX < guiLeft + 42 + 40) {
+					if (mouseY > guiTop + 92 && mouseY < guiTop + 92 + 14) {
+						if ((confirmDisplay.equals(EnumChatFormatting.YELLOW + "Warning!") ||
+							confirmDisplay.equals(EnumChatFormatting.YELLOW + "Deal!")) && lastTradeMillis < 0) {
+							lastTradeMillis = System.currentTimeMillis();
+						} else if (lastTradeMillis < 0 || System.currentTimeMillis() - lastTradeMillis > 2000) {
+							Minecraft.getMinecraft().playerController.windowClick(
+								chest.inventorySlots.windowId,
+								39, 2, 3, Minecraft.getMinecraft().thePlayer
+							);
+							return;
 						}
 					}
-
 				}
 			}
 
@@ -1127,11 +1113,9 @@ public class TradeWindow {
 				int y = 104 + 18 * (index / 9);
 				if (index < 9) y = 180;
 
-				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 16) {
-					if (mouseY > guiTop + y && mouseY < guiTop + y + 16) {
-						SlotLocking.getInstance().toggleLock(index);
-						return true;
-					}
+				if (mouseX > guiLeft + x && mouseX < guiLeft + x + 16 && mouseY > guiTop + y && mouseY < guiTop + y + 16) {
+					SlotLocking.getInstance().toggleLock(index);
+					return true;
 				}
 
 				index++;
