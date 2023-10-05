@@ -58,10 +58,8 @@ public class RecipeBuilder {
 				Minion recipeMinion = manager.getMinionById(itemName);
 				if (recipeMinion.getTier() == minion.getTier() - 1) {
 					parent = recipeMinion;
-					if (parent == null) {
-						if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-							Utils.addChatMessage("Parent is null for minion " + minionInternalName);
-						}
+					if (parent == null && NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+						Utils.addChatMessage("Parent is null for minion " + minionInternalName);
 					}
 					isParent = true;
 				}
