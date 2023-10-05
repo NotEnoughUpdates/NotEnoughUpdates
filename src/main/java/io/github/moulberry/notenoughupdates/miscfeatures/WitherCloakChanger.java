@@ -72,14 +72,12 @@ public class WitherCloakChanger {
 
 	@SubscribeEvent
 	public void onRenderLast(RenderWorldLastEvent event) {
-		if (isCloakActive) {
-			//last creeper rendered over 2 seconds ago -> Creeper Veil de activated without a message. Happens for example when picking up the item in the inventory
-			if (System.currentTimeMillis() - lastCreeperRender >= 2000) {
-				isCloakActive = false;
-				lastDeactivate = System.currentTimeMillis();
-				lastCreeperRender = 0;
-				return;
-			}
+		//last creeper rendered over 2 seconds ago -> Creeper Veil de activated without a message. Happens for example when picking up the item in the inventory
+		if (isCloakActive && System.currentTimeMillis() - lastCreeperRender >= 2000) {
+			isCloakActive = false;
+			lastDeactivate = System.currentTimeMillis();
+			lastCreeperRender = 0;
+			return;
 		}
 
 		if (!NotEnoughUpdates.INSTANCE.isOnSkyblock() || !isCloakActive ||
