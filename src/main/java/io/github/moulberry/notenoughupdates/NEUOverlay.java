@@ -510,18 +510,16 @@ public class NEUOverlay extends Gui {
 				if (!NotEnoughUpdates.INSTANCE.config.toolbar.quickCommands) return;
 				if (EnchantingSolvers.disableButtons()) return;
 
-				if ((NotEnoughUpdates.INSTANCE.config.toolbar.quickCommandsClickType != 0 && Mouse.getEventButtonState()) ||
+				if (((NotEnoughUpdates.INSTANCE.config.toolbar.quickCommandsClickType != 0 && Mouse.getEventButtonState()) ||
 					(NotEnoughUpdates.INSTANCE.config.toolbar.quickCommandsClickType == 0 && !Mouse.getEventButtonState() &&
-						Mouse.getEventButton() != -1)) {
-					if (quickCommandStr.contains(":")) {
-						String command = quickCommandStr.split(":")[0].trim();
-						if (command.startsWith("/")) {
-							NotEnoughUpdates.INSTANCE.sendChatMessage(command);
-						} else {
-							ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/" + command);
-						}
-						Utils.playPressSound();
+						Mouse.getEventButton() != -1)) && quickCommandStr.contains(":")) {
+					String command = quickCommandStr.split(":")[0].trim();
+					if (command.startsWith("/")) {
+						NotEnoughUpdates.INSTANCE.sendChatMessage(command);
+					} else {
+						ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/" + command);
 					}
+					Utils.playPressSound();
 				}
 			}
 
@@ -587,11 +585,9 @@ public class NEUOverlay extends Gui {
 					int mouseY = Utils.peekGuiScale().getScaledHeight() -
 						Mouse.getY() * Utils.peekGuiScale().getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
 
-					if (mouseX > x && mouseX < x + bigItemSize) {
-						if (mouseY > y && mouseY < y + bigItemSize) {
-							textToDisplay = new ArrayList<>();
-							textToDisplay.add(EnumChatFormatting.GRAY + quickCommandStrSplit[1]);
-						}
+					if (mouseX > x && mouseX < x + bigItemSize && mouseY > y && mouseY < y + bigItemSize) {
+						textToDisplay = new ArrayList<>();
+						textToDisplay.add(EnumChatFormatting.GRAY + quickCommandStrSplit[1]);
 					}
 
 					GlStateManager.enableDepth();
@@ -752,19 +748,18 @@ public class NEUOverlay extends Gui {
 	}
 
 	public void mouseInputInv() {
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer) {
-			if (Mouse.getEventButton() == manager.keybindItemSelect.getKeyCode() + 100 &&
-				NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
-				Slot slot = Utils.getSlotUnderMouse((GuiContainer) Minecraft.getMinecraft().currentScreen);
-				if (slot != null) {
-					ItemStack hover = slot.getStack();
-					if (hover != null) {
-						if (manager.getInternalNameForItem(hover) != null) {
-							textField.setText("id:" + manager.getInternalNameForItem(hover));
-						}
-						itemPaneOpen = true;
-						updateSearch();
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer &&
+			Mouse.getEventButton() == manager.keybindItemSelect.getKeyCode() + 100 &&
+			NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
+			Slot slot = Utils.getSlotUnderMouse((GuiContainer) Minecraft.getMinecraft().currentScreen);
+			if (slot != null) {
+				ItemStack hover = slot.getStack();
+				if (hover != null) {
+					if (manager.getInternalNameForItem(hover) != null) {
+						textField.setText("id:" + manager.getInternalNameForItem(hover));
 					}
+					itemPaneOpen = true;
+					updateSearch();
 				}
 			}
 		}
@@ -842,22 +837,20 @@ public class NEUOverlay extends Gui {
 			AtomicBoolean clickedItem = new AtomicBoolean(false);
 			iterateItemSlots(new ItemSlotConsumer() {
 				public void consume(int x, int y, int id) {
-					if (mouseX >= x - 1 && mouseX <= x + ITEM_SIZE + 1) {
-						if (mouseY >= y - 1 && mouseY <= y + ITEM_SIZE + 1) {
-							clickedItem.set(true);
+					if (mouseX >= x - 1 && mouseX <= x + ITEM_SIZE + 1 && mouseY >= y - 1 && mouseY <= y + ITEM_SIZE + 1) {
+						clickedItem.set(true);
 
-							JsonObject item = getSearchedItemPage(id);
-							if (item != null) {
-								if (Mouse.getEventButton() == 0) {
-									manager.showRecipe(item);
-								} else if (Mouse.getEventButton() == 1) {
-									showInfo(item);
-								} else if (Mouse.getEventButton() == manager.keybindItemSelect.getKeyCode() + 100 &&
-									NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
-									textField.setText("id:" + item.get("internalname").getAsString());
-									updateSearch();
-									searchMode = true;
-								}
+						JsonObject item = getSearchedItemPage(id);
+						if (item != null) {
+							if (Mouse.getEventButton() == 0) {
+								manager.showRecipe(item);
+							} else if (Mouse.getEventButton() == 1) {
+								showInfo(item);
+							} else if (Mouse.getEventButton() == manager.keybindItemSelect.getKeyCode() + 100 &&
+								NotEnoughUpdates.INSTANCE.config.toolbar.searchBar) {
+								textField.setText("id:" + item.get("internalname").getAsString());
+								updateSearch();
+								searchMode = true;
 							}
 						}
 					}
@@ -935,13 +928,12 @@ public class NEUOverlay extends Gui {
 
 		//Clicking on "close info pane" button
 		if (mouseX > width * getInfoPaneOffsetFactor() - getBoxPadding() - 8 &&
-			mouseX < width * getInfoPaneOffsetFactor() - getBoxPadding() + 8) {
-			if (mouseY > getBoxPadding() - 8 && mouseY < getBoxPadding() + 8) {
-				if (Mouse.getEventButtonState() && Mouse.getEventButton() < 2) { //Left or right click up
-					displayInformationPane(null);
-					Utils.pushGuiScale(-1);
-					return true;
-				}
+			mouseX < width * getInfoPaneOffsetFactor() - getBoxPadding() + 8 && mouseY > getBoxPadding() - 8 &&
+			mouseY < getBoxPadding() + 8) {
+			if (Mouse.getEventButtonState() && Mouse.getEventButton() < 2) { //Left or right click up
+				displayInformationPane(null);
+				Utils.pushGuiScale(-1);
+				return true;
 			}
 		}
 
@@ -1087,10 +1079,8 @@ public class NEUOverlay extends Gui {
 					}
 				}
 			} else {
-				if (activeInfoPane != null) {
-					if (activeInfoPane.keyboardInput()) {
-						return true;
-					}
+				if (activeInfoPane != null && activeInfoPane.keyboardInput()) {
+					return true;
 				}
 
 				if (keyPressed == manager.keybindClosePanes.getKeyCode()) {
@@ -1136,11 +1126,9 @@ public class NEUOverlay extends Gui {
 					} else {
 						iterateItemSlots(new ItemSlotConsumer() {
 							public void consume(int x, int y, int id) {
-								if (mouseX >= x - 1 && mouseX <= x + ITEM_SIZE + 1) {
-									if (mouseY >= y - 1 && mouseY <= y + ITEM_SIZE + 1) {
-										JsonObject json = getSearchedItemPage(id);
-										if (json != null) internalname.set(json.get("internalname").getAsString());
-									}
+								if (mouseX >= x - 1 && mouseX <= x + ITEM_SIZE + 1 && mouseY >= y - 1 && mouseY <= y + ITEM_SIZE + 1) {
+									JsonObject json = getSearchedItemPage(id);
+									if (json != null) internalname.set(json.get("internalname").getAsString());
 								}
 							}
 						});
@@ -1149,14 +1137,13 @@ public class NEUOverlay extends Gui {
 					Utils.pushGuiScale(-1);
 				}
 				if (internalname.get() != null) {
-					if (itemstack.get() != null) {
-						if (NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing && Keyboard.getEventCharacter() == 'k') {
-							Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(
-								internalname.get(),
-								manager.getJsonForItem(itemstack.get())
-							));
-							return true;
-						}
+					if (itemstack.get() != null && NotEnoughUpdates.INSTANCE.config.apiData.repositoryEditing &&
+						Keyboard.getEventCharacter() == 'k') {
+						Minecraft.getMinecraft().displayGuiScreen(new NEUItemEditor(
+							internalname.get(),
+							manager.getJsonForItem(itemstack.get())
+						));
+						return true;
 					}
 					JsonObject item = manager.getItemInformation().get(internalname.get());
 					if (item != null) {
@@ -1415,20 +1402,19 @@ public class NEUOverlay extends Gui {
 			for (String itemname : itemsMatch) {
 				JsonObject item = manager.getItemInformation().get(itemname);
 				if (checkMatchesSort(itemname, item)) {
-					if (Constants.PARENTS != null) {
-						if (Constants.PARENTS.has(itemname) && Constants.PARENTS.get(itemname).isJsonArray()) {
-							List<String> children = new ArrayList<>();
-							for (JsonElement e : Constants.PARENTS.get(itemname).getAsJsonArray()) {
-								if (e.isJsonPrimitive()) {
-									children.add(e.getAsString());
-								}
+					if (Constants.PARENTS != null && Constants.PARENTS.has(itemname) &&
+						Constants.PARENTS.get(itemname).isJsonArray()) {
+						List<String> children = new ArrayList<>();
+						for (JsonElement e : Constants.PARENTS.get(itemname).getAsJsonArray()) {
+							if (e.isJsonPrimitive()) {
+								children.add(e.getAsString());
 							}
-							children.retainAll(itemsMatch);
-							for (String child : children) {
-								removeChildItems.add(manager.getItemInformation().get(child));
-							}
-							searchedItemsSubgroup.put(itemname, children);
 						}
+						children.retainAll(itemsMatch);
+						for (String child : children) {
+							removeChildItems.add(manager.getItemInformation().get(child));
+						}
+						searchedItemsSubgroup.put(itemname, children);
 					}
 					searchedItems.add(item);
 				}
@@ -2039,17 +2025,16 @@ public class NEUOverlay extends Gui {
 				Utils.drawTexturedRect(orderIconX, iconTop, scaledITEM_SIZE, scaledITEM_SIZE, 0, 1, 0, 1, GL11.GL_NEAREST);
 				GlStateManager.bindTexture(0);
 
-				if (mouseY > iconTop && mouseY < iconTop + scaledITEM_SIZE) {
-					if (mouseX > orderIconX && mouseX < orderIconX + scaledITEM_SIZE) {
-						hoveredOverControl = true;
-						if (System.currentTimeMillis() - millisLastMouseMove > 400) {
-							String text = EnumChatFormatting.GRAY + "Order ";
-							if (i == COMPARE_MODE_ALPHABETICAL) text += "Alphabetically";
-							else if (i == COMPARE_MODE_RARITY) text += "by Rarity";
-							else if (i == COMPARE_MODE_VALUE) text += "by Item Worth";
-							else text = null;
-							if (text != null) textToDisplay = Utils.createList(text);
-						}
+				if (mouseY > iconTop && mouseY < iconTop + scaledITEM_SIZE && mouseX > orderIconX &&
+					mouseX < orderIconX + scaledITEM_SIZE) {
+					hoveredOverControl = true;
+					if (System.currentTimeMillis() - millisLastMouseMove > 400) {
+						String text = EnumChatFormatting.GRAY + "Order ";
+						if (i == COMPARE_MODE_ALPHABETICAL) text += "Alphabetically";
+						else if (i == COMPARE_MODE_RARITY) text += "by Rarity";
+						else if (i == COMPARE_MODE_VALUE) text += "by Item Worth";
+						else text = null;
+						if (text != null) textToDisplay = Utils.createList(text);
 					}
 				}
 			}
@@ -2063,20 +2048,19 @@ public class NEUOverlay extends Gui {
 				Utils.drawTexturedRect(sortIconX, iconTop, scaledITEM_SIZE, scaledITEM_SIZE, 0, 1, 0, 1, GL11.GL_NEAREST);
 				GlStateManager.bindTexture(0);
 
-				if (mouseY > iconTop && mouseY < iconTop + scaledITEM_SIZE) {
-					if (mouseX > sortIconX && mouseX < sortIconX + scaledITEM_SIZE) {
-						hoveredOverControl = true;
-						if (System.currentTimeMillis() - millisLastMouseMove > 400) {
-							String text = EnumChatFormatting.GRAY + "Filter ";
-							if (i == SORT_MODE_ALL) text = EnumChatFormatting.GRAY + "No Filter";
-							else if (i == SORT_MODE_MOB) text += "Mobs";
-							else if (i == SORT_MODE_PET) text += "Pets";
-							else if (i == SORT_MODE_TOOL) text += "Tools";
-							else if (i == SORT_MODE_ARMOR) text += "Armor";
-							else if (i == SORT_MODE_ACCESSORY) text += "Accessories";
-							else text = null;
-							if (text != null) textToDisplay = Utils.createList(text);
-						}
+				if (mouseY > iconTop && mouseY < iconTop + scaledITEM_SIZE && mouseX > sortIconX &&
+					mouseX < sortIconX + scaledITEM_SIZE) {
+					hoveredOverControl = true;
+					if (System.currentTimeMillis() - millisLastMouseMove > 400) {
+						String text = EnumChatFormatting.GRAY + "Filter ";
+						if (i == SORT_MODE_ALL) text = EnumChatFormatting.GRAY + "No Filter";
+						else if (i == SORT_MODE_MOB) text += "Mobs";
+						else if (i == SORT_MODE_PET) text += "Pets";
+						else if (i == SORT_MODE_TOOL) text += "Tools";
+						else if (i == SORT_MODE_ARMOR) text += "Armor";
+						else if (i == SORT_MODE_ACCESSORY) text += "Accessories";
+						else text = null;
+						if (text != null) textToDisplay = Utils.createList(text);
 					}
 				}
 			}
@@ -2085,15 +2069,13 @@ public class NEUOverlay extends Gui {
 				millisLastMouseMove = System.currentTimeMillis();
 			}
 
-			if (selectedItemGroup != null) {
-				if (mouseX < selectedItemGroupX - 1 || mouseX > selectedItemGroupX + 17 ||
-					mouseY < selectedItemGroupY - 1 || mouseY > selectedItemGroupY + 17) {
-					int selectedX = Math.min(selectedItemGroupX, width - getBoxPadding() - 18 * selectedItemGroup.size());
-					if (mouseX < selectedX - 1 || mouseX > selectedX - 1 + 18 * selectedItemGroup.size() ||
-						mouseY < selectedItemGroupY + 17 || mouseY > selectedItemGroupY + 35) {
-						selectedItemGroup = null;
-						selectedItemMillis = -1;
-					}
+			if (selectedItemGroup != null && (mouseX < selectedItemGroupX - 1 || mouseX > selectedItemGroupX + 17 ||
+				mouseY < selectedItemGroupY - 1 || mouseY > selectedItemGroupY + 17)) {
+				int selectedX = Math.min(selectedItemGroupX, width - getBoxPadding() - 18 * selectedItemGroup.size());
+				if (mouseX < selectedX - 1 || mouseX > selectedX - 1 + 18 * selectedItemGroup.size() ||
+					mouseY < selectedItemGroupY + 17 || mouseY > selectedItemGroupY + 35) {
+					selectedItemGroup = null;
+					selectedItemMillis = -1;
 				}
 			}
 
@@ -2104,27 +2086,25 @@ public class NEUOverlay extends Gui {
 						if (json == null) {
 							return;
 						}
-						if (mouseX > x - 1 && mouseX < x + ITEM_SIZE + 1) {
-							if (mouseY > y - 1 && mouseY < y + ITEM_SIZE + 1) {
-								String internalname = json.get("internalname").getAsString();
-								if (searchedItemsSubgroup.containsKey(internalname)) {
-									if (selectedItemMillis == -1) selectedItemMillis = System.currentTimeMillis();
-									if (System.currentTimeMillis() - selectedItemMillis > 200 &&
-										(selectedItemGroup == null || selectedItemGroup.isEmpty())) {
+						if (mouseX > x - 1 && mouseX < x + ITEM_SIZE + 1 && mouseY > y - 1 && mouseY < y + ITEM_SIZE + 1) {
+							String internalname = json.get("internalname").getAsString();
+							if (searchedItemsSubgroup.containsKey(internalname)) {
+								if (selectedItemMillis == -1) selectedItemMillis = System.currentTimeMillis();
+								if (System.currentTimeMillis() - selectedItemMillis > 200 &&
+									(selectedItemGroup == null || selectedItemGroup.isEmpty())) {
 
-										ArrayList<JsonObject> children = new ArrayList<>();
-										children.add(json);
-										for (String itemname : searchedItemsSubgroup.get(internalname)) {
-											children.add(manager.getItemInformation().get(itemname));
-										}
-
-										selectedItemGroup = children;
-										selectedItemGroupX = x;
-										selectedItemGroupY = y;
+									ArrayList<JsonObject> children = new ArrayList<>();
+									children.add(json);
+									for (String itemname : searchedItemsSubgroup.get(internalname)) {
+										children.add(manager.getItemInformation().get(itemname));
 									}
-								} else {
-									tooltipToDisplay.set(json);
+
+									selectedItemGroup = children;
+									selectedItemGroupX = x;
+									selectedItemGroupY = y;
 								}
+							} else {
+								tooltipToDisplay.set(json);
 							}
 						}
 					}
