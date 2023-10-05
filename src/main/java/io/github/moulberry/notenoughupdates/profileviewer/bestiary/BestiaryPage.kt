@@ -279,21 +279,19 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
             val kills = mob.kills
             val deaths = mob.deaths
 
-            if (mouseX > guiLeft + x.toInt() + 2 && mouseX < guiLeft + x.toInt() + 18) {
-                if (mouseY > guiTop + y.toInt() + 2 && mouseY < guiTop + y.toInt() + 18) {
-                    tooltipToDisplay = ArrayList()
-                    tooltipToDisplay.add(
-                        "${mob.name} ${mob.mobLevelData.level}"
-                    )
-                    tooltipToDisplay.add(
-                        EnumChatFormatting.GRAY.toString() + "Kills: " + EnumChatFormatting.GREEN +
-                                StringUtils.formatNumber(kills)
-                    )
-                    tooltipToDisplay.add(
-                        EnumChatFormatting.GRAY.toString() + "Deaths: " + EnumChatFormatting.GREEN +
-                                StringUtils.formatNumber(deaths)
-                    )
-                }
+            if (mouseX > guiLeft + x.toInt() + 2 && mouseX < guiLeft + x.toInt() + 18 && mouseY > guiTop + y.toInt() + 2 && mouseY < guiTop + y.toInt() + 18) {
+                tooltipToDisplay = ArrayList()
+                tooltipToDisplay.add(
+                    "${mob.name} ${mob.mobLevelData.level}"
+                )
+                tooltipToDisplay.add(
+                    EnumChatFormatting.GRAY.toString() + "Kills: " + EnumChatFormatting.GREEN +
+                            StringUtils.formatNumber(kills)
+                )
+                tooltipToDisplay.add(
+                    EnumChatFormatting.GRAY.toString() + "Deaths: " + EnumChatFormatting.GREEN +
+                            StringUtils.formatNumber(deaths)
+                )
             }
             GlStateManager.color(1f, 1f, 1f, 1f)
             Utils.drawStringCentered(
