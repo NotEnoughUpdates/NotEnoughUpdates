@@ -211,12 +211,10 @@ public class CalendarOverlay {
 		} else if (jingleIndex < -1) {
 			jingleIndex++;
 		}
-		if (jingleIndex == -20 * 6 - 10) {
-			if (NotEnoughUpdates.INSTANCE.config.calendar.eventNotificationSounds) {
-				Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.create(
-					new ResourceLocation("notenoughupdates:calendar_notif_out")
-				));
-			}
+		if (jingleIndex == -20 * 6 - 10 && NotEnoughUpdates.INSTANCE.config.calendar.eventNotificationSounds) {
+			Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.create(
+				new ResourceLocation("notenoughupdates:calendar_notif_out")
+			));
 		}
 	}
 
@@ -673,10 +671,9 @@ public class CalendarOverlay {
 				int x = guiLeft + 29 + 17 * (index % 3);
 				int y = guiTop + 44 + 17 * (index / 3);
 
-				if (sbEvent.id.equals("spooky_festival")) {
-					if (sbEvents.getKey() > currentTime - HOUR && (sbEvents.getKey() < spookyStart || spookyStart == 0)) {
-						spookyStart = sbEvents.getKey();
-					}
+				if (sbEvent.id.equals("spooky_festival") && sbEvents.getKey() > currentTime - HOUR &&
+					(sbEvents.getKey() < spookyStart || spookyStart == 0)) {
+					spookyStart = sbEvents.getKey();
 				}
 
 				if (index >= 21) {
@@ -724,24 +721,22 @@ public class CalendarOverlay {
 
 				Utils.drawItemStackWithText(sbEvent.stack, x, y, "" + (index + 1));
 
-				if (mouseX >= x && mouseX <= x + 16) {
-					if (mouseY >= y && mouseY <= y + 16) {
-						tooltipToDisplay = Utils.createList(
-							sbEvent.display,
-							EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilMillis, false)
-						);
-						if (sbEvent.lastsFor >= 0) {
-							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-								prettyTime(sbEvent.lastsFor, true));
-							if (timeUntilMillis < 0) {
-								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
-									prettyTime(sbEvent.lastsFor + timeUntilMillis, true));
-							}
+				if (mouseX >= x && mouseX <= x + 16 && mouseY >= y && mouseY <= y + 16) {
+					tooltipToDisplay = Utils.createList(
+						sbEvent.display,
+						EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilMillis, false)
+					);
+					if (sbEvent.lastsFor >= 0) {
+						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
+							prettyTime(sbEvent.lastsFor, true));
+						if (timeUntilMillis < 0) {
+							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
+								prettyTime(sbEvent.lastsFor + timeUntilMillis, true));
 						}
-						if (sbEvent.desc != null) {
-							tooltipToDisplay.add("");
-							tooltipToDisplay.addAll(sbEvent.desc);
-						}
+					}
+					if (sbEvent.desc != null) {
+						tooltipToDisplay.add("");
+						tooltipToDisplay.addAll(sbEvent.desc);
 					}
 				}
 
@@ -779,14 +774,12 @@ public class CalendarOverlay {
 
 			Utils.drawItemStackWithText(stack, x, y, "" + (i + 1));
 
-			if (mouseX >= x && mouseX <= x + 16) {
-				if (mouseY >= y && mouseY <= y + 16) {
-					tooltipToDisplay = new ArrayList<>(sbEvent.desc);
-					tooltipToDisplay.add(Utils.prettyTime(Duration.between(
-						Instant.now(),
-						Instant.ofEpochMilli(pair.getFirst())
-					)));
-				}
+			if (mouseX >= x && mouseX <= x + 16 && mouseY >= y && mouseY <= y + 16) {
+				tooltipToDisplay = new ArrayList<>(sbEvent.desc);
+				tooltipToDisplay.add(Utils.prettyTime(Duration.between(
+					Instant.now(),
+					Instant.ofEpochMilli(pair.getFirst())
+				)));
 			}
 		}
 
@@ -824,25 +817,23 @@ public class CalendarOverlay {
 				fr.drawString(nextEvent.display, guiLeft + 8 + nextSLen, guiTop + 6, -1, false);
 			}
 
-			if (mouseX > guiLeft && mouseX < guiLeft + 168) {
-				if (mouseY > guiTop && mouseY < guiTop + 20) {
-					tooltipToDisplay = Utils.createList(
-						nextEvent.display,
-						EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilNext, false)
-					);
-					if (nextEvent.lastsFor >= 0) {
-						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-							prettyTime(nextEvent.lastsFor, true));
-						if (timeUntilNext < 0) {
-							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
-								prettyTime(nextEvent.lastsFor + timeUntilNext, true));
-						}
+			if (mouseX > guiLeft && mouseX < guiLeft + 168 && mouseY > guiTop && mouseY < guiTop + 20) {
+				tooltipToDisplay = Utils.createList(
+					nextEvent.display,
+					EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilNext, false)
+				);
+				if (nextEvent.lastsFor >= 0) {
+					tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
+						prettyTime(nextEvent.lastsFor, true));
+					if (timeUntilNext < 0) {
+						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
+							prettyTime(nextEvent.lastsFor + timeUntilNext, true));
+					}
 
-					}
-					if (nextEvent.desc != null) {
-						tooltipToDisplay.add("");
-						tooltipToDisplay.addAll(nextEvent.desc);
-					}
+				}
+				if (nextEvent.desc != null) {
+					tooltipToDisplay.add("");
+					tooltipToDisplay.addAll(nextEvent.desc);
 				}
 			}
 		}
@@ -851,27 +842,26 @@ public class CalendarOverlay {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(help);
 		Utils.drawTexturedRect(guiLeft + xSize - 18, guiTop + ySize + 2, 16, 16, GL11.GL_LINEAR);
 
-		if (mouseX >= guiLeft + xSize - 18 && mouseX < guiLeft + xSize - 2) {
-			if (mouseY >= guiTop + ySize + 2 && mouseY <= guiTop + ySize + 18) {
-				tooltipToDisplay = new ArrayList<>();
-				tooltipToDisplay.add(EnumChatFormatting.AQUA + "NEU Calendar Help");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "This calendar displays various SkyBlock events");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "'Daily' events are events that happen frequently");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "'Special' events are events that happen infrequently");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "The eventbar at the top will also show in your inventory");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "Press 'F' on an event to mark it as a favourite");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "Favourited events will show over normal events");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "Favourited events will also give a notification when it");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "is about to start and when it does start");
-				tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
-				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "In order to show crop types for Jacob's Farming");
-				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "contest, visit the full SkyBlock calendar and go all");
-				tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "the way to the end of the SkyBlock year");
-				Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
-				tooltipToDisplay = null;
-			}
+		if (mouseX >= guiLeft + xSize - 18 && mouseX < guiLeft + xSize - 2 && mouseY >= guiTop + ySize + 2 &&
+			mouseY <= guiTop + ySize + 18) {
+			tooltipToDisplay = new ArrayList<>();
+			tooltipToDisplay.add(EnumChatFormatting.AQUA + "NEU Calendar Help");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "This calendar displays various SkyBlock events");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "'Daily' events are events that happen frequently");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "'Special' events are events that happen infrequently");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "The eventbar at the top will also show in your inventory");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "Press 'F' on an event to mark it as a favourite");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "Favourited events will show over normal events");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "Favourited events will also give a notification when it");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "is about to start and when it does start");
+			tooltipToDisplay.add(EnumChatFormatting.YELLOW + "");
+			tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "In order to show crop types for Jacob's Farming");
+			tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "contest, visit the full SkyBlock calendar and go all");
+			tooltipToDisplay.add(EnumChatFormatting.DARK_GRAY + "the way to the end of the SkyBlock year");
+			Utils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1);
+			tooltipToDisplay = null;
 		}
 
 		if (jfFavouriteSelect != null) {
@@ -970,10 +960,9 @@ public class CalendarOverlay {
 
 				guiLeft = (width - xSize) / 2;
 				guiTop = 5;
-				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize && ableToClickCalendar) {
-					if (mouseY >= guiTop && mouseY <= guiTop + ySize) {
-						ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neucalendar");
-					}
+				if (mouseX >= guiLeft && mouseX <= guiLeft + xSize && ableToClickCalendar && mouseY >= guiTop &&
+					mouseY <= guiTop + ySize) {
+					ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/neucalendar");
 				}
 			}
 
@@ -1037,17 +1026,16 @@ public class CalendarOverlay {
 					jfFavouriteSelect = null;
 				}
 			}
-			if (mouseY >= guiTop + 26 && mouseY <= guiTop + 26 + 141) {
-				if (mouseX >= guiLeft + 151 && mouseX <= guiLeft + 151 + 14) {
-					if (mouseY <= guiTop + 26 + 70) {
-						Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
-							41, 2, 3, Minecraft.getMinecraft().thePlayer
-						);
-					} else {
-						Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
-							36, 2, 3, Minecraft.getMinecraft().thePlayer
-						);
-					}
+			if (mouseY >= guiTop + 26 && mouseY <= guiTop + 26 + 141 && mouseX >= guiLeft + 151 &&
+				mouseX <= guiLeft + 151 + 14) {
+				if (mouseY <= guiTop + 26 + 70) {
+					Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
+						41, 2, 3, Minecraft.getMinecraft().thePlayer
+					);
+				} else {
+					Minecraft.getMinecraft().playerController.windowClick(cc.windowId,
+						36, 2, 3, Minecraft.getMinecraft().thePlayer
+					);
 				}
 			}
 		}
@@ -1128,10 +1116,8 @@ public class CalendarOverlay {
 							int x = guiLeft + 29 + 17 * (index % 3);
 							int y = guiTop + 44 + 17 * (index / 3);
 
-							if (mouseX >= x && mouseX <= x + 16) {
-								if (mouseY >= y && mouseY <= y + 16) {
-									id = sbEvent.id;
-								}
+							if (mouseX >= x && mouseX <= x + 16 && mouseY >= y && mouseY <= y + 16) {
+								id = sbEvent.id;
 							}
 
 							if (++index >= 21) break out;
@@ -1144,10 +1130,8 @@ public class CalendarOverlay {
 						int x = guiLeft + 89 + 17 * (i % 3);
 						int y = guiTop + 44 + 17 * (i / 3);
 
-						if (mouseX >= x && mouseX <= x + 16) {
-							if (mouseY >= y && mouseY <= y + 16) {
-								id = specialEventsLocal.get(i).getSecond().id;
-							}
+						if (mouseX >= x && mouseX <= x + 16 && mouseY >= y && mouseY <= y + 16) {
+							id = specialEventsLocal.get(i).getSecond().id;
 						}
 					}
 
@@ -1369,10 +1353,9 @@ public class CalendarOverlay {
 						continue;
 					}
 
-					if (sbEvent.id.equals("spooky_festival")) {
-						if (sbEvents.getKey() > currentTime - HOUR && (sbEvents.getKey() < spookyStart || spookyStart == 0)) {
-							spookyStart = sbEvents.getKey();
-						}
+					if (sbEvent.id.equals("spooky_festival") && sbEvents.getKey() > currentTime - HOUR &&
+						(sbEvents.getKey() < spookyStart || spookyStart == 0)) {
+						spookyStart = sbEvents.getKey();
 					}
 
 					if (nextMayorEvent == null && !sbEvent.id.split(":")[0].equals("jacob_farming") &&
@@ -1461,43 +1444,41 @@ public class CalendarOverlay {
 						}
 					}
 
-					if (mouseX > guiLeft && mouseX < guiLeft + 168) {
-						if (mouseY > guiTop && mouseY < guiTop + 20) {
-							tooltipToDisplay = new ArrayList<>();
-							for (int i = 0; i < nextFavourites.size(); i++) {
-								SBEvent sbEvent = nextFavourites.get(i);
-								long timeUntil = nextFavouritesTime.get(i);
+					if (mouseX > guiLeft && mouseX < guiLeft + 168 && mouseY > guiTop && mouseY < guiTop + 20) {
+						tooltipToDisplay = new ArrayList<>();
+						for (int i = 0; i < nextFavourites.size(); i++) {
+							SBEvent sbEvent = nextFavourites.get(i);
+							long timeUntil = nextFavouritesTime.get(i);
 
-								tooltipToDisplay.add(sbEvent.display);
-								tooltipToDisplay.add(
-									EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntil, false));
-								if (sbEvent.lastsFor >= 0) {
-									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-										prettyTime(sbEvent.lastsFor, true));
-									if (timeUntil < 0) {
-										tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
-											prettyTime(sbEvent.lastsFor + timeUntil, true));
-									}
-								}
-								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
-									tooltipToDisplay.addAll(sbEvent.desc);
-								}
-								if (nextMayorEvent != null || i < nextFavourites.size() - 1) {
-									tooltipToDisplay.add("");
+							tooltipToDisplay.add(sbEvent.display);
+							tooltipToDisplay.add(
+								EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntil, false));
+							if (sbEvent.lastsFor >= 0) {
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
+									prettyTime(sbEvent.lastsFor, true));
+								if (timeUntil < 0) {
+									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
+										prettyTime(sbEvent.lastsFor + timeUntil, true));
 								}
 							}
-							if (nextMayorEvent != null) {
-								tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Mayor:");
-								tooltipToDisplay.add(nextMayorEvent.display);
-								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
-									prettyTime(timeUntilMayor, false));
-								if (nextMayorEvent.lastsFor >= 0) {
-									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
-										prettyTime(nextMayorEvent.lastsFor, true));
-								}
+							if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
+								tooltipToDisplay.addAll(sbEvent.desc);
 							}
-
+							if (nextMayorEvent != null || i < nextFavourites.size() - 1) {
+								tooltipToDisplay.add("");
+							}
 						}
+						if (nextMayorEvent != null) {
+							tooltipToDisplay.add(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "Next Mayor:");
+							tooltipToDisplay.add(nextMayorEvent.display);
+							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
+								prettyTime(timeUntilMayor, false));
+							if (nextMayorEvent.lastsFor >= 0) {
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
+									prettyTime(nextMayorEvent.lastsFor, true));
+							}
+						}
+
 					}
 
 					drawTimerForeground = false;
