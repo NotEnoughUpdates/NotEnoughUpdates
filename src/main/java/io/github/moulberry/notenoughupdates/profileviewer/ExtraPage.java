@@ -468,14 +468,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			topKills = new TreeMap<>();
 			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
 			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-				if (entry.getKey().startsWith("kills_")) {
-					if (entry.getValue().isJsonPrimitive()) {
-						JsonPrimitive prim = (JsonPrimitive) entry.getValue();
-						if (prim.isNumber()) {
-							String name = WordUtils.capitalizeFully(entry.getKey().substring("kills_".length()).replace("_", " "));
-							Set<String> kills = topKills.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
-							kills.add(name);
-						}
+				if (entry.getKey().startsWith("kills_") && entry.getValue().isJsonPrimitive()) {
+					JsonPrimitive prim = (JsonPrimitive) entry.getValue();
+					if (prim.isNumber()) {
+						String name = WordUtils.capitalizeFully(entry.getKey().substring("kills_".length()).replace("_", " "));
+						Set<String> kills = topKills.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
+						kills.add(name);
 					}
 				}
 			}
@@ -484,14 +482,12 @@ public class ExtraPage extends GuiProfileViewerPage {
 			topDeaths = new TreeMap<>();
 			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
 			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-				if (entry.getKey().startsWith("deaths_")) {
-					if (entry.getValue().isJsonPrimitive()) {
-						JsonPrimitive prim = (JsonPrimitive) entry.getValue();
-						if (prim.isNumber()) {
-							String name = WordUtils.capitalizeFully(entry.getKey().substring("deaths_".length()).replace("_", " "));
-							Set<String> deaths = topDeaths.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
-							deaths.add(name);
-						}
+				if (entry.getKey().startsWith("deaths_") && entry.getValue().isJsonPrimitive()) {
+					JsonPrimitive prim = (JsonPrimitive) entry.getValue();
+					if (prim.isNumber()) {
+						String name = WordUtils.capitalizeFully(entry.getKey().substring("deaths_".length()).replace("_", " "));
+						Set<String> deaths = topDeaths.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
+						deaths.add(name);
 					}
 				}
 			}
