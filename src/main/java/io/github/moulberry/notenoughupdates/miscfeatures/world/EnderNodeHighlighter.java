@@ -57,21 +57,11 @@ public class EnderNodeHighlighter extends GenericBlockHighlighter {
 			boolean yZero = basicallyEqual((y - 0.5) % 1, 0, 0.2);
 			boolean zZero = basicallyEqual((z - 0.5) % 1, 0, 0.2);
 
-			if (Math.abs(y % 1) == 0.25 && xZero && zZero) {
-				if (tryRegisterInterest(x, y - 1, z)) return;
-			}
-			if (Math.abs(y % 1) == 0.75 && xZero && zZero) {
-				if (tryRegisterInterest(x, y + 1, z)) return;
-			}
-			if (Math.abs(x % 1) == 0.25 && yZero && zZero) {
-				if (tryRegisterInterest(x + 1, y, z)) return;
-			}
-			if (Math.abs(x % 1) == 0.75 && yZero && zZero) {
-				if (tryRegisterInterest(x - 1, y, z)) return;
-			}
-			if (Math.abs(z % 1) == 0.25 && yZero && xZero) {
-				if (tryRegisterInterest(x, y, z + 1)) return;
-			}
+			if (Math.abs(y % 1) == 0.25 && xZero && zZero && tryRegisterInterest(x, y - 1, z)) return;
+			if (Math.abs(y % 1) == 0.75 && xZero && zZero && tryRegisterInterest(x, y + 1, z)) return;
+			if (Math.abs(x % 1) == 0.25 && yZero && zZero && tryRegisterInterest(x + 1, y, z)) return;
+			if (Math.abs(x % 1) == 0.75 && yZero && zZero && tryRegisterInterest(x - 1, y, z)) return;
+			if (Math.abs(z % 1) == 0.25 && yZero && xZero && tryRegisterInterest(x, y, z + 1)) return;
 			if (Math.abs(z % 1) == 0.75 && yZero && xZero) {
 				tryRegisterInterest(x, y, z - 1);
 			}
