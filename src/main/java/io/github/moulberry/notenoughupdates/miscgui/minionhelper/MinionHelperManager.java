@@ -108,10 +108,8 @@ public class MinionHelperManager {
 
 	public Minion getMinionByName(String displayName, int tier) {
 		for (Minion minion : minions.values()) {
-			if (displayName.equals(minion.getDisplayName())) {
-				if (minion.getTier() == tier) {
-					return minion;
-				}
+			if (displayName.equals(minion.getDisplayName()) && minion.getTier() == tier) {
+				return minion;
 			}
 		}
 		System.err.println("Cannot get minion for display name '" + displayName + "'!");
@@ -183,12 +181,10 @@ public class MinionHelperManager {
 			String parameter = args[1];
 
 			if (parameter.equals("debugplayer")) {
-				if (args.length == 3) {
-					if (args[2].equals("reset")) {
-						Utils.addChatMessage("§e[NEU] Minion debug player reset.");
-						setDebugPlayer(null, null, -1);
-						return;
-					}
+				if (args.length == 3 && args[2].equals("reset")) {
+					Utils.addChatMessage("§e[NEU] Minion debug player reset.");
+					setDebugPlayer(null, null, -1);
+					return;
 				}
 				if (args.length < 4) {
 					Utils.addChatMessage("§c[NEU] Usage: /neudevtest minion " +
@@ -227,24 +223,20 @@ public class MinionHelperManager {
 				}
 			}
 
-			if (args.length == 3) {
-				if (parameter.equals("maxperpage")) {
-					api.resetData();
-					int maxPerPage = Integer.parseInt(args[2]);
-					Utils.addChatMessage("set max per page to " + maxPerPage);
-					overlay.setMaxPerPage(maxPerPage);
-					return;
-				}
+			if (args.length == 3 && parameter.equals("maxperpage")) {
+				api.resetData();
+				int maxPerPage = Integer.parseInt(args[2]);
+				Utils.addChatMessage("set max per page to " + maxPerPage);
+				overlay.setMaxPerPage(maxPerPage);
+				return;
 			}
 
-			if (args.length == 4) {
-				if (parameter.equals("arrowpos")) {
-					int x = Integer.parseInt(args[2]);
-					int y = Integer.parseInt(args[3]);
-					Utils.addChatMessage("set page pos to " + x + ";" + y);
-					overlay.setTopLeft(new int[]{x, y});
-					return;
-				}
+			if (args.length == 4 && parameter.equals("arrowpos")) {
+				int x = Integer.parseInt(args[2]);
+				int y = Integer.parseInt(args[3]);
+				Utils.addChatMessage("set page pos to " + x + ";" + y);
+				overlay.setTopLeft(new int[]{x, y});
+				return;
 			}
 		}
 
