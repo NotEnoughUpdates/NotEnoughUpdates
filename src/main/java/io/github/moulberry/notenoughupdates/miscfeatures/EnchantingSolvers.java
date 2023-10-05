@@ -120,46 +120,58 @@ public class EnchantingSolvers {
 			return null;
 		}
 
-		if (stack != null && stack.getDisplayName() != null) {
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-				GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-				ContainerChest container = (ContainerChest) chest.inventorySlots;
-				IInventory lower = container.getLowerChestInventory();
+		if (stack != null && stack.getDisplayName() != null && Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest container = (ContainerChest) chest.inventorySlots;
+			IInventory lower = container.getLowerChestInventory();
 
-				if (lower != inventory) {
+			if (lower != inventory) {
+				return null;
+			}
+
+			String displayName = stack.getDisplayName();
+
+			if (currentSolver == SolverType.CHRONOMATRON) {
+				ItemStack timerStack = lower.getStackInSlot(lower.getSizeInventory() - 5);
+				if (timerStack == null) {
 					return null;
 				}
 
-				String displayName = stack.getDisplayName();
+				boolean yepClock = timerStack.getItem() == Items.clock;
+				if (yepClock && (addToChronomatron && chronomatronOrder.size() >= lastChronomatronSize + 1)) {
+					if (chronomatronReplayIndex < chronomatronOrder.size()) {
+						String chronomatronCurrent = chronomatronOrder.get(chronomatronReplayIndex);
+						if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass) ||
+							stack.getItem() == Item.getItemFromBlock(Blocks.stained_hardened_clay)) {
+							long currentTime = System.currentTimeMillis();
 
-				if (currentSolver == SolverType.CHRONOMATRON) {
-					ItemStack timerStack = lower.getStackInSlot(lower.getSizeInventory() - 5);
-					if (timerStack == null) {
-						return null;
-					}
+							boolean lastSame = chronomatronReplayIndex > 0 &&
+								chronomatronCurrent.equals(chronomatronOrder.get(chronomatronReplayIndex - 1));
 
-					boolean yepClock = timerStack.getItem() == Items.clock;
-					if (yepClock && (addToChronomatron && chronomatronOrder.size() >= lastChronomatronSize + 1)) {
-						if (chronomatronReplayIndex < chronomatronOrder.size()) {
-							String chronomatronCurrent = chronomatronOrder.get(chronomatronReplayIndex);
-							if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass) ||
-								stack.getItem() == Item.getItemFromBlock(Blocks.stained_hardened_clay)) {
-								long currentTime = System.currentTimeMillis();
-
-								boolean lastSame = chronomatronReplayIndex > 0 &&
-									chronomatronCurrent.equals(chronomatronOrder.get(chronomatronReplayIndex - 1));
-
-								if (chronomatronCurrent.equals(displayName)) {
-									if (!lastSame || currentTime - millisLastClick > 300) {
-										ItemStack retStack = new ItemStack(
-											Item.getItemFromBlock(Blocks.stained_hardened_clay),
-											1,
-											stack.getItemDamage()
-										);
-										retStack.setTagCompound(enchTag);
-										retStack.setStackDisplayName(stack.getDisplayName());
-										return retStack;
-									} else {
+							if (chronomatronCurrent.equals(displayName)) {
+								if (!lastSame || currentTime - millisLastClick > 300) {
+									ItemStack retStack = new ItemStack(
+										Item.getItemFromBlock(Blocks.stained_hardened_clay),
+										1,
+										stack.getItemDamage()
+									);
+									retStack.setTagCompound(enchTag);
+									retStack.setStackDisplayName(stack.getDisplayName());
+									return retStack;
+								} else {
+									ItemStack retStack = new ItemStack(
+										Item.getItemFromBlock(Blocks.stained_glass),
+										1,
+										stack.getItemDamage()
+									);
+									retStack.setStackDisplayName(stack.getDisplayName());
+									return retStack;
+								}
+							} else {
+								if (chronomatronReplayIndex + 1 < chronomatronOrder.size() &&
+									NotEnoughUpdates.INSTANCE.config.enchantingSolvers.showNextClick) {
+									String chronomatronNext = chronomatronOrder.get(chronomatronReplayIndex + 1);
+									if (chronomatronNext.equals(displayName)) {
 										ItemStack retStack = new ItemStack(
 											Item.getItemFromBlock(Blocks.stained_glass),
 											1,
@@ -168,59 +180,45 @@ public class EnchantingSolvers {
 										retStack.setStackDisplayName(stack.getDisplayName());
 										return retStack;
 									}
+								}
+								ItemStack retStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, 8);
+								retStack.setStackDisplayName(stack.getDisplayName());
+								return retStack;
+							}
+						}
+
+					}
+				}
+			} else if (currentSolver == SolverType.ULTRASEQUENCER) {
+				ItemStack timerStack = lower.getStackInSlot(lower.getSizeInventory() - 5);
+				if (timerStack == null) {
+					return null;
+				}
+
+				boolean yepClock = timerStack.getItem() == Items.clock;
+				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) && stack.getItemDamage() != 15) {
+					if (yepClock) {
+						for (int solveIndex : ultraSequencerOrder.keySet()) {
+							UltrasequencerItem item = ultraSequencerOrder.get(solveIndex);
+							if (item.containerIndex == slotIndex) {
+								ItemStack newStack = item.stack;
+								if (solveIndex == ultrasequencerReplayIndex) {
+									newStack.setTagCompound(enchTag);
 								} else {
-									if (chronomatronReplayIndex + 1 < chronomatronOrder.size() &&
-										NotEnoughUpdates.INSTANCE.config.enchantingSolvers.showNextClick) {
-										String chronomatronNext = chronomatronOrder.get(chronomatronReplayIndex + 1);
-										if (chronomatronNext.equals(displayName)) {
-											ItemStack retStack = new ItemStack(
-												Item.getItemFromBlock(Blocks.stained_glass),
-												1,
-												stack.getItemDamage()
-											);
-											retStack.setStackDisplayName(stack.getDisplayName());
-											return retStack;
-										}
-									}
-									ItemStack retStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, 8);
-									retStack.setStackDisplayName(stack.getDisplayName());
-									return retStack;
+									newStack.setTagCompound(null);
 								}
+								return newStack;
 							}
-
 						}
+						ItemStack retStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
+						retStack.setStackDisplayName(stack.getDisplayName());
+						return retStack;
 					}
-				} else if (currentSolver == SolverType.ULTRASEQUENCER) {
-					ItemStack timerStack = lower.getStackInSlot(lower.getSizeInventory() - 5);
-					if (timerStack == null) {
-						return null;
-					}
-
-					boolean yepClock = timerStack.getItem() == Items.clock;
-					if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) && stack.getItemDamage() != 15) {
-						if (yepClock) {
-							for (int solveIndex : ultraSequencerOrder.keySet()) {
-								UltrasequencerItem item = ultraSequencerOrder.get(solveIndex);
-								if (item.containerIndex == slotIndex) {
-									ItemStack newStack = item.stack;
-									if (solveIndex == ultrasequencerReplayIndex) {
-										newStack.setTagCompound(enchTag);
-									} else {
-										newStack.setTagCompound(null);
-									}
-									return newStack;
-								}
-							}
-							ItemStack retStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 15);
-							retStack.setStackDisplayName(stack.getDisplayName());
-							return retStack;
-						}
-					}
-				} else if (currentSolver == SolverType.SUPERPAIRS) {
-					if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass) &&
-						superpairStacks.containsKey(slotIndex)) {
-						return superpairStacks.get(slotIndex);
-					}
+				}
+			} else if (currentSolver == SolverType.SUPERPAIRS) {
+				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass) &&
+					superpairStacks.containsKey(slotIndex)) {
+					return superpairStacks.get(slotIndex);
 				}
 			}
 		}
@@ -236,75 +234,73 @@ public class EnchantingSolvers {
 			return false;
 		}
 
-		if (stack != null && stack.getDisplayName() != null) {
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-				GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-				ContainerChest container = (ContainerChest) chest.inventorySlots;
-				IInventory lower = container.getLowerChestInventory();
+		if (stack != null && stack.getDisplayName() != null && Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+			GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
+			ContainerChest container = (ContainerChest) chest.inventorySlots;
+			IInventory lower = container.getLowerChestInventory();
 
-				if (lower != inventory) {
+			if (lower != inventory) {
+				return false;
+			}
+
+			if (currentSolver == SolverType.ULTRASEQUENCER) {
+				ItemStack timerStack = lower.getStackInSlot(lower.getSizeInventory() - 5);
+				if (timerStack == null) {
 					return false;
 				}
 
-				if (currentSolver == SolverType.ULTRASEQUENCER) {
-					ItemStack timerStack = lower.getStackInSlot(lower.getSizeInventory() - 5);
-					if (timerStack == null) {
-						return false;
-					}
-
-					boolean yepClock = timerStack.getItem() == Items.clock;
-					if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) && stack.getItemDamage() != 15) {
-						if (yepClock) {
-							for (int solveIndex : ultraSequencerOrder.keySet()) {
-								UltrasequencerItem item = ultraSequencerOrder.get(solveIndex);
-								if (item.containerIndex == slotIndex) {
-									int meta = 0;
-									if (solveIndex == ultrasequencerReplayIndex) {
-										meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.seqNext;
-									} else if (solveIndex == ultrasequencerReplayIndex + 1) {
-										meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.seqUpcoming;
-									}
-									if (meta > 0) {
-										Utils.drawItemStack(
-											new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, meta - 1),
-											x,
-											y
-										);
-									}
-									if (NotEnoughUpdates.INSTANCE.config.enchantingSolvers.seqNumbers &&
-										solveIndex >= ultrasequencerReplayIndex) {
-										int w = Minecraft.getMinecraft().fontRendererObj.getStringWidth((solveIndex + 1) + "");
-										GlStateManager.disableDepth();
-										GlStateManager.enableBlend();
-										GlStateManager.disableLighting();
-										Utils.drawStringScaled((solveIndex + 1) + "",
-											x + 8.5f - w / 2f, y + 8.5f - 4, true, 0xffc0c0c0, 1f
-										);
-										return true;
-									}
+				boolean yepClock = timerStack.getItem() == Items.clock;
+				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) && stack.getItemDamage() != 15) {
+					if (yepClock) {
+						for (int solveIndex : ultraSequencerOrder.keySet()) {
+							UltrasequencerItem item = ultraSequencerOrder.get(solveIndex);
+							if (item.containerIndex == slotIndex) {
+								int meta = 0;
+								if (solveIndex == ultrasequencerReplayIndex) {
+									meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.seqNext;
+								} else if (solveIndex == ultrasequencerReplayIndex + 1) {
+									meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.seqUpcoming;
+								}
+								if (meta > 0) {
+									Utils.drawItemStack(
+										new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, meta - 1),
+										x,
+										y
+									);
+								}
+								if (NotEnoughUpdates.INSTANCE.config.enchantingSolvers.seqNumbers &&
+									solveIndex >= ultrasequencerReplayIndex) {
+									int w = Minecraft.getMinecraft().fontRendererObj.getStringWidth((solveIndex + 1) + "");
+									GlStateManager.disableDepth();
+									GlStateManager.enableBlend();
+									GlStateManager.disableLighting();
+									Utils.drawStringScaled((solveIndex + 1) + "",
+										x + 8.5f - w / 2f, y + 8.5f - 4, true, 0xffc0c0c0, 1f
+									);
+									return true;
 								}
 							}
 						}
 					}
-				} else if (currentSolver == SolverType.SUPERPAIRS) {
-					int meta = 0;
-					if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass) &&
-						superpairStacks.containsKey(slotIndex)) {
-						if (possibleMatches.contains(slotIndex)) {
-							meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supPossible;
-						} else {
-							meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supUnmatched;
-						}
+				}
+			} else if (currentSolver == SolverType.SUPERPAIRS) {
+				int meta = 0;
+				if (stack.getItem() == Item.getItemFromBlock(Blocks.stained_glass) &&
+					superpairStacks.containsKey(slotIndex)) {
+					if (possibleMatches.contains(slotIndex)) {
+						meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supPossible;
 					} else {
-						if (powerupMatches.contains(slotIndex)) {
-							meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supPower;
-						} else if (successfulMatches.contains(slotIndex)) {
-							meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supMatched;
-						}
+						meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supUnmatched;
 					}
-					if (meta > 0) {
-						Utils.drawItemStack(new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, meta - 1), x, y);
+				} else {
+					if (powerupMatches.contains(slotIndex)) {
+						meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supPower;
+					} else if (successfulMatches.contains(slotIndex)) {
+						meta = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.supMatched;
 					}
+				}
+				if (meta > 0) {
+					Utils.drawItemStack(new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, meta - 1), x, y);
 				}
 			}
 		}
@@ -420,13 +416,12 @@ public class EnchantingSolvers {
 				String stainedHardenedClayName = null;
 				for (int index = 0; index < lower.getSizeInventory(); index++) {
 					ItemStack stack = lower.getStackInSlot(index);
-					if (stack != null && stack.getItem() == Item.getItemFromBlock(Blocks.stained_hardened_clay)) {
-						if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("ench")) {
-							if (stainedHardenedClayName != null && !stack.getDisplayName().equals(stainedHardenedClayName)) {
-								return;
-							}
-							stainedHardenedClayName = stack.getDisplayName();
+					if (stack != null && stack.getItem() == Item.getItemFromBlock(Blocks.stained_hardened_clay) &&
+						stack.getTagCompound() != null && stack.getTagCompound().hasKey("ench")) {
+						if (stainedHardenedClayName != null && !stack.getDisplayName().equals(stainedHardenedClayName)) {
+							return;
 						}
+						stainedHardenedClayName = stack.getDisplayName();
 					}
 				}
 
