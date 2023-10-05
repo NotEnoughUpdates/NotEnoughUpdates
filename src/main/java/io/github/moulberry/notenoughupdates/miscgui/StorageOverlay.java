@@ -551,9 +551,7 @@ public class StorageOverlay extends GuiElement {
 				int storageX = coords.x;
 				int storageY = coords.y;
 
-				if (!doRenderFramebuffer) {
-					if (coords.y - 11 > 3 + storageViewSize || coords.y + 90 < 3) continue;
-				}
+				if (!doRenderFramebuffer && (coords.y - 11 > 3 + storageViewSize || coords.y + 90 < 3)) continue;
 
 				StorageManager.StoragePage page = StorageManager.getInstance().getPage(storageId, false);
 				if (page != null && page.rows > 0) {
@@ -1018,12 +1016,13 @@ public class StorageOverlay extends GuiElement {
 					int itemX = storageX + 1 + 18 * (k % 9);
 					int itemY = storageY + 1 + 18 * (k / 9);
 
-					if (!searchBar.getText().isEmpty()) {
-						if (stack == null || !manager.doesStackMatchSearch(stack, searchBar.getText())) {
-							GlStateManager.disableDepth();
-							Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
-							GlStateManager.enableDepth();
-						}
+					if (!searchBar.getText().isEmpty() && (stack == null || !manager.doesStackMatchSearch(
+						stack,
+						searchBar.getText()
+					))) {
+						GlStateManager.disableDepth();
+						Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
+						GlStateManager.enableDepth();
 					}
 
 					GlStateManager.disableLighting();
@@ -1222,15 +1221,13 @@ public class StorageOverlay extends GuiElement {
 			((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + i));
 			GlStateManager.popMatrix();
 
-			if (!searchBar.getText().isEmpty()) {
-				if (playerItems[i] == null || !manager.doesStackMatchSearch(
-					playerItems[i],
-					searchBar.getText()
-				)) {
-					GlStateManager.disableDepth();
-					Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
-					GlStateManager.enableDepth();
-				}
+			if (!searchBar.getText().isEmpty() && (playerItems[i] == null || !manager.doesStackMatchSearch(
+				playerItems[i],
+				searchBar.getText()
+			))) {
+				GlStateManager.disableDepth();
+				Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
+				GlStateManager.enableDepth();
 			}
 
 			if (mouseX >= guiLeft + itemX && mouseX < guiLeft + itemX + 18 && mouseY >= guiTop + itemY &&
@@ -1256,15 +1253,13 @@ public class StorageOverlay extends GuiElement {
 			((AccessorGuiContainer) guiChest).doDrawSlot(containerChest.inventorySlots.get(inventoryStartIndex + 9 + i));
 			GlStateManager.popMatrix();
 
-			if (!searchBar.getText().isEmpty()) {
-				if (playerItems[i + 9] == null || !manager.doesStackMatchSearch(
-					playerItems[i + 9],
-					searchBar.getText()
-				)) {
-					GlStateManager.disableDepth();
-					Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
-					GlStateManager.enableDepth();
-				}
+			if (!searchBar.getText().isEmpty() && (playerItems[i + 9] == null || !manager.doesStackMatchSearch(
+				playerItems[i + 9],
+				searchBar.getText()
+			))) {
+				GlStateManager.disableDepth();
+				Gui.drawRect(itemX, itemY, itemX + 16, itemY + 16, 0x80000000);
+				GlStateManager.enableDepth();
 			}
 
 			if (mouseX >= guiLeft + itemX && mouseX < guiLeft + itemX + 18 && mouseY >= guiTop + itemY &&
@@ -1737,13 +1732,12 @@ public class StorageOverlay extends GuiElement {
 		guiLeft = width / 2 - (sizeX - searchNobX) / 2;
 		guiTop = height / 2 - sizeY / 2;
 
-		if (Mouse.getEventButtonState() && !StorageManager.getInstance().onStorageMenu) {
-			if (mouseX > guiLeft + 171 - 36 && mouseX < guiLeft + 171 &&
-				mouseY > guiTop + 41 + storageViewSize && mouseY < guiTop + 41 + storageViewSize + 14) {
-				NotEnoughUpdates.INSTANCE.sendChatMessage("/storage");
-				searchBar.setFocus(false);
-				return true;
-			}
+		if (Mouse.getEventButtonState() && !StorageManager.getInstance().onStorageMenu && mouseX > guiLeft + 171 - 36 &&
+			mouseX < guiLeft + 171 &&
+			mouseY > guiTop + 41 + storageViewSize && mouseY < guiTop + 41 + storageViewSize + 14) {
+			NotEnoughUpdates.INSTANCE.sendChatMessage("/storage");
+			searchBar.setFocus(false);
+			return true;
 		}
 
 		if (Mouse.getEventButtonState()) {
@@ -2033,11 +2027,9 @@ public class StorageOverlay extends GuiElement {
 					int yClicked = yN / 18;
 
 					if (xClicked >= 0 && xClicked <= 8 &&
-						yClicked >= 0 && yClicked <= 2) {
-						if (xClicked + yClicked * 9 + 9 == slotId) {
-							cir.setReturnValue(true);
-							return;
-						}
+						yClicked >= 0 && yClicked <= 2 && xClicked + yClicked * 9 + 9 == slotId) {
+						cir.setReturnValue(true);
+						return;
 					}
 				}
 			} else {
@@ -2079,16 +2071,14 @@ public class StorageOverlay extends GuiElement {
 						int yClicked = yN / 18;
 
 						if (xClicked >= 0 && xClicked <= 8 &&
-							yClicked >= 0 && yClicked <= 5) {
-							if (xClicked + yClicked * 9 + 9 == slotId) {
-								if (NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 1 && slot.getHasStack() &&
-									getPaneType(slot.getStack(), -1, null) > 0) {
-									cir.setReturnValue(false);
-									return;
-								}
-								cir.setReturnValue(true);
+							yClicked >= 0 && yClicked <= 5 && xClicked + yClicked * 9 + 9 == slotId) {
+							if (NotEnoughUpdates.INSTANCE.config.storageGUI.fancyPanes == 1 && slot.getHasStack() &&
+								getPaneType(slot.getStack(), -1, null) > 0) {
+								cir.setReturnValue(false);
 								return;
 							}
+							cir.setReturnValue(true);
+							return;
 						}
 					}
 				}
