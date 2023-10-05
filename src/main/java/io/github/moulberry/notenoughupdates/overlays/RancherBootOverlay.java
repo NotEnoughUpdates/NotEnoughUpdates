@@ -156,11 +156,10 @@ public class RancherBootOverlay {
 			textFieldClicked = false;
 		}
 
-		if (mouseX > width / 2 + 52 && mouseX < width / 2 + 100 && mouseY > topY && mouseY < topY + 20) {
-			if (Mouse.getEventButtonState()) {
-				textField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
-				textFieldClicked = true;
-			}
+		if (mouseX > width / 2 + 52 && mouseX < width / 2 + 100 && mouseY > topY && mouseY < topY + 20 &&
+			Mouse.getEventButtonState()) {
+			textField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+			textFieldClicked = true;
 		}
 
 		if (Mouse.getEventButtonState()) {
