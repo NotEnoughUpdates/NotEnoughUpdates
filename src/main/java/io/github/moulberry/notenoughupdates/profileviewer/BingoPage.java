@@ -130,10 +130,8 @@ public class BingoPage extends GuiProfileViewerPage {
 
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
 			y = communityGoal ? y - 1 : y;
-			if (mouseX >= x && mouseX < x + 24) {
-				if (mouseY >= y && mouseY <= y + 24) {
-					Utils.drawHoveringText(getTooltip(bingoGoal, completed, communityGoal), mouseX, mouseY, width, height, -1);
-				}
+			if (mouseX >= x && mouseX < x + 24 && mouseY >= y && mouseY <= y + 24) {
+				Utils.drawHoveringText(getTooltip(bingoGoal, completed, communityGoal), mouseX, mouseY, width, height, -1);
 			}
 			col++;
 			if (col == 5) {
