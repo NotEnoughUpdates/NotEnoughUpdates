@@ -80,11 +80,9 @@ public class SkytilsCompat {
 				}
 			}
 
-			if (!isSkytilsFullyPresent) {
-				if (exception != null) {
-					System.err.println("Failed to get Skytils class even tho Skytils mod is present. This is (probably) a NEU bug");
-					exception.printStackTrace();
-				}
+			if (!isSkytilsFullyPresent && exception != null) {
+				System.err.println("Failed to get Skytils class even tho Skytils mod is present. This is (probably) a NEU bug");
+				exception.printStackTrace();
 			}
 		}
 	}
