@@ -88,6 +88,7 @@ public class GuiInvButtonEditor extends GuiScreen {
 	public int getGuiLeft() {
 		return this.guiLeft;
 	}
+
 	public int getGuiTop() {
 		return this.guiTop;
 	}
@@ -347,15 +348,13 @@ public class GuiInvButtonEditor extends GuiScreen {
 				y += ySize;
 			}
 
-			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
-				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-					x -= 25;
-				}
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && x < guiLeft + xSize - 150 &&
+				x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+				x -= 25;
 			}
-			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
-				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-					x -= 25;
-				}
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && x < guiLeft + xSize - 150 &&
+				x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+				x -= 25;
 			}
 
 			if (button.isActive()) {
@@ -445,7 +444,13 @@ public class GuiInvButtonEditor extends GuiScreen {
 		);
 
 		if (!validShareContents()) {
-			Gui.drawRect(guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0), guiTop + 2, guiLeft - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0), guiTop + 2 + 20, 0x80000000);
+			Gui.drawRect(
+				guiLeft - 88 - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
+				guiTop + 2,
+				guiLeft - 2 - 22 - (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud ? 25 : 0),
+				guiTop + 2 + 20,
+				0x80000000
+			);
 		}
 
 		GlStateManager.color(1, 1, 1, 1);
@@ -487,15 +492,13 @@ public class GuiInvButtonEditor extends GuiScreen {
 				y += ySize;
 			}
 
-			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
-				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-					x -= 25;
-				}
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && x < guiLeft + xSize - 150 &&
+				x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+				x -= 25;
 			}
-			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
-				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-					x -= 25;
-				}
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && x < guiLeft + xSize - 150 &&
+				x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+				x -= 25;
 			}
 
 			GlStateManager.translate(0, 0, 300);
@@ -701,73 +704,71 @@ public class GuiInvButtonEditor extends GuiScreen {
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		if (editingButton != null) {
-			if (mouseX >= editorLeft && mouseX <= editorLeft + editorXSize &&
-				mouseY >= editorTop & mouseY <= editorTop + editorYSize) {
-				if (mouseX >= editorLeft + 7 && mouseX <= editorLeft + 7 + commandTextField.getWidth() &&
-					mouseY >= editorTop + 12 && mouseY <= editorTop + 12 + commandTextField.getHeight()) {
-					commandTextField.mouseClicked(mouseX, mouseY, mouseButton);
-					iconTextField.unfocus();
-					editingButton.command = commandTextField.getText();
-					return;
-				}
-				if (mouseX >= editorLeft + 7 && mouseX <= editorLeft + 7 + iconTextField.getWidth() &&
-					mouseY >= editorTop + 50 + 65 && mouseY <= editorTop + 50 + 65 + iconTextField.getHeight()) {
-					iconTextField.mouseClicked(mouseX, mouseY, mouseButton);
+		if (editingButton != null && mouseX >= editorLeft && mouseX <= editorLeft + editorXSize &&
+			mouseY >= editorTop & mouseY <= editorTop + editorYSize) {
+			if (mouseX >= editorLeft + 7 && mouseX <= editorLeft + 7 + commandTextField.getWidth() &&
+				mouseY >= editorTop + 12 && mouseY <= editorTop + 12 + commandTextField.getHeight()) {
+				commandTextField.mouseClicked(mouseX, mouseY, mouseButton);
+				iconTextField.unfocus();
+				editingButton.command = commandTextField.getText();
+				return;
+			}
+			if (mouseX >= editorLeft + 7 && mouseX <= editorLeft + 7 + iconTextField.getWidth() &&
+				mouseY >= editorTop + 50 + 65 && mouseY <= editorTop + 50 + 65 + iconTextField.getHeight()) {
+				iconTextField.mouseClicked(mouseX, mouseY, mouseButton);
 
-					if (mouseButton == 1) {
+				if (mouseButton == 1) {
+					search();
+				}
+
+				commandTextField.unfocus();
+				return;
+			}
+			if (mouseY >= editorTop + 50 && mouseY <= editorTop + 50 + 18) {
+				for (int i = 0; i < BACKGROUND_TYPES; i++) {
+					if (mouseX >= editorLeft + 7 + 20 * i && mouseX <= editorLeft + 7 + 20 * i + 18) {
+						editingButton.backgroundIndex = i;
+						return;
+					}
+				}
+			}
+			for (int i = 0; i < ICON_TYPES; i++) {
+				if (mouseX >= editorLeft + 7 + 20 * i && mouseX <= editorLeft + 7 + 20 * i + 18 &&
+					mouseY >= editorTop + 50 + 34 && mouseY <= editorTop + 50 + 34 + 18) {
+					if (iconTypeIndex != i) {
+						iconTypeIndex = i;
 						search();
 					}
-
-					commandTextField.unfocus();
 					return;
 				}
-				if (mouseY >= editorTop + 50 && mouseY <= editorTop + 50 + 18) {
-					for (int i = 0; i < BACKGROUND_TYPES; i++) {
-						if (mouseX >= editorLeft + 7 + 20 * i && mouseX <= editorLeft + 7 + 20 * i + 18) {
-							editingButton.backgroundIndex = i;
+			}
+			if (mouseX > editorLeft + 8 && mouseX < editorLeft + editorXSize - 16 && mouseY > editorTop + 136 &&
+				mouseY < editorTop + 196) {
+				synchronized (searchedIcons) {
+					int max = (searchedIcons.size() - 1) / 6 * 20 - 40;
+					int scroll = itemScroll.getValue();
+					if (scroll > max) scroll = max;
+
+					int endIndex = searchedIcons.size();
+					int startIndex = scroll / 20 * 6;
+					if (startIndex < 0) startIndex = 0;
+					if (endIndex > startIndex + 24) endIndex = startIndex + 24;
+
+					for (int i = startIndex; i < endIndex; i++) {
+						String iconS = searchedIcons.get(i);
+
+						int x = editorLeft + 12 + ((i - startIndex) % 6) * 20;
+						int y = editorTop + 137 + ((i - startIndex) / 6) * 20 - (itemScroll.getValue() % 20);
+
+						if (mouseX >= x && mouseX <= x + 18 &&
+							mouseY >= y && mouseY <= y + 18) {
+							editingButton.icon = iconS;
 							return;
 						}
 					}
 				}
-				for (int i = 0; i < ICON_TYPES; i++) {
-					if (mouseX >= editorLeft + 7 + 20 * i && mouseX <= editorLeft + 7 + 20 * i + 18 &&
-						mouseY >= editorTop + 50 + 34 && mouseY <= editorTop + 50 + 34 + 18) {
-						if (iconTypeIndex != i) {
-							iconTypeIndex = i;
-							search();
-						}
-						return;
-					}
-				}
-				if (mouseX > editorLeft + 8 && mouseX < editorLeft + editorXSize - 16 && mouseY > editorTop + 136 &&
-					mouseY < editorTop + 196) {
-					synchronized (searchedIcons) {
-						int max = (searchedIcons.size() - 1) / 6 * 20 - 40;
-						int scroll = itemScroll.getValue();
-						if (scroll > max) scroll = max;
-
-						int endIndex = searchedIcons.size();
-						int startIndex = scroll / 20 * 6;
-						if (startIndex < 0) startIndex = 0;
-						if (endIndex > startIndex + 24) endIndex = startIndex + 24;
-
-						for (int i = startIndex; i < endIndex; i++) {
-							String iconS = searchedIcons.get(i);
-
-							int x = editorLeft + 12 + ((i - startIndex) % 6) * 20;
-							int y = editorTop + 137 + ((i - startIndex) / 6) * 20 - (itemScroll.getValue() % 20);
-
-							if (mouseX >= x && mouseX <= x + 18 &&
-								mouseY >= y && mouseY <= y + 18) {
-								editingButton.icon = iconS;
-								return;
-							}
-						}
-					}
-				}
-				return;
 			}
+			return;
 		}
 
 		for (NEUConfig.InventoryButton button : NotEnoughUpdates.INSTANCE.config.hidden.inventoryButtons) {
@@ -780,15 +781,13 @@ public class GuiInvButtonEditor extends GuiScreen {
 				y += ySize;
 			}
 
-			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud) {
-				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
-					x -= 25;
-				}
+			if (NotEnoughUpdates.INSTANCE.config.customArmour.enableArmourHud && x < guiLeft + xSize - 150 &&
+				x > guiLeft + xSize - 200 && y > guiTop && y < guiTop + 84) {
+				x -= 25;
 			}
-			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
-				if (x < guiLeft + xSize - 150 && x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
-					x -= 25;
-				}
+			if (NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay && x < guiLeft + xSize - 150 &&
+				x > guiLeft + xSize - 200 && y > guiTop + 60 && y < guiTop + 120) {
+				x -= 25;
 			}
 
 			if (mouseX >= x && mouseY >= y &&
