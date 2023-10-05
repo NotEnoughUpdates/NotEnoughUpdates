@@ -89,31 +89,29 @@ public abstract class MixinGuiTextField {
 
 	@Inject(method = "textboxKeyTyped", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;isKeyComboCtrlA(I)Z"), cancellable = true)
 	public void textboxKeyTyped_stringStack(char c, int i, CallbackInfoReturnable<Boolean> cir) {
-		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled) {
-			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-				if (currentStringStackIndex == -1 && stringStack.size() > 0) {
-					currentStringStackIndex = stringStack.size() - 1;
-				}
+		if (NotEnoughUpdates.INSTANCE.config.misc.textFieldTweaksEnabled && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (currentStringStackIndex == -1 && stringStack.size() > 0) {
+				currentStringStackIndex = stringStack.size() - 1;
+			}
 
-				if (Keyboard.isKeyDown(Keyboard.KEY_Y) || (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(
-					Keyboard.KEY_Z))) {
-					//go forward in action stack
-					if (currentStringStackIndex != stringStack.size() - 1) {
-						text = stringStack.get(currentStringStackIndex + 1);
-						currentStringStackIndex += 1;
-						setCursorPositionEnd();
-					}
-					cir.setReturnValue(true);
-				} else if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-					//go back in action stack
-					if (!stringStack.isEmpty() && currentStringStackIndex > 0 && stringStack.get(currentStringStackIndex - 1) !=
-						null) {
-						text = stringStack.get(currentStringStackIndex - 1);
-						currentStringStackIndex -= 1;
-						setCursorPositionEnd();
-					}
-					cir.setReturnValue(true);
+			if (Keyboard.isKeyDown(Keyboard.KEY_Y) || (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(
+				Keyboard.KEY_Z))) {
+				//go forward in action stack
+				if (currentStringStackIndex != stringStack.size() - 1) {
+					text = stringStack.get(currentStringStackIndex + 1);
+					currentStringStackIndex += 1;
+					setCursorPositionEnd();
 				}
+				cir.setReturnValue(true);
+			} else if (Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+				//go back in action stack
+				if (!stringStack.isEmpty() && currentStringStackIndex > 0 && stringStack.get(currentStringStackIndex - 1) !=
+					null) {
+					text = stringStack.get(currentStringStackIndex - 1);
+					currentStringStackIndex -= 1;
+					setCursorPositionEnd();
+				}
+				cir.setReturnValue(true);
 			}
 		}
 	}
