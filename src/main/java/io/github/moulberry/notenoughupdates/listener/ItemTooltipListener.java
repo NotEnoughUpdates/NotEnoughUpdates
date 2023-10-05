@@ -229,10 +229,8 @@ public class ItemTooltipListener {
 							if (reforgeAbilityE.isJsonPrimitive() && reforgeAbilityE.getAsJsonPrimitive().isString()) {
 								reforgeAbility = Utils.getElementAsString(reforgeInfo.get("reforgeAbility"), "");
 
-							} else if (reforgeAbilityE.isJsonObject()) {
-								if (reforgeAbilityE.getAsJsonObject().has(rarity)) {
-									reforgeAbility = reforgeAbilityE.getAsJsonObject().get(rarity).getAsString();
-								}
+							} else if (reforgeAbilityE.isJsonObject() && reforgeAbilityE.getAsJsonObject().has(rarity)) {
+								reforgeAbility = reforgeAbilityE.getAsJsonObject().get(rarity).getAsString();
 							}
 						}
 
@@ -287,10 +285,8 @@ public class ItemTooltipListener {
 							if (reforgeCostsE.isJsonPrimitive() && reforgeCostsE.getAsJsonPrimitive().isNumber()) {
 								reforgeCost = (int) Utils.getElementAsFloat(reforgeInfo.get("reforgeAbility"), -1);
 
-							} else if (reforgeCostsE.isJsonObject()) {
-								if (reforgeCostsE.getAsJsonObject().has(rarity)) {
-									reforgeCost = (int) Utils.getElementAsFloat(reforgeCostsE.getAsJsonObject().get(rarity), -1);
-								}
+							} else if (reforgeCostsE.isJsonObject() && reforgeCostsE.getAsJsonObject().has(rarity)) {
+								reforgeCost = (int) Utils.getElementAsFloat(reforgeCostsE.getAsJsonObject().get(rarity), -1);
 							}
 						}
 
@@ -311,70 +307,67 @@ public class ItemTooltipListener {
 					"\u00A7cR\u00A76a\u00A7ei\u00A7an\u00A7bb\u00A79o\u00A7dw\u00A79 Rune",
 					Utils.chromaString("Rainbow Rune", k, false) + EnumChatFormatting.BLUE
 				);
-			} else if (hasEnchantments) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) &&
-					NotEnoughUpdates.INSTANCE.config.tooltipTweaks.missingEnchantList) {
-					boolean lineHasEnch = false;
-					for (String s : enchantIds) {
-						String enchantName = WordUtils.capitalizeFully(s.replace("_", " "));
-						if (line.contains(enchantName)) {
-							lineHasEnch = true;
-							break;
-						}
+			} else if (hasEnchantments && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) &&
+				NotEnoughUpdates.INSTANCE.config.tooltipTweaks.missingEnchantList) {
+				boolean lineHasEnch = false;
+				for (String s : enchantIds) {
+					String enchantName = WordUtils.capitalizeFully(s.replace("_", " "));
+					if (line.contains(enchantName)) {
+						lineHasEnch = true;
+						break;
 					}
-					if (lineHasEnch) {
-						gotToEnchants = true;
-					} else {
-						if (gotToEnchants && !passedEnchants && Utils.cleanColour(line).trim().length() == 0) {
-							if (enchantsConst != null && allItemEnchs != null) {
-								List<String> missing = new ArrayList<>();
-								for (JsonElement enchIdElement : allItemEnchs) {
-									String enchId = enchIdElement.getAsString();
-									if (!enchId.startsWith("ultimate_") && !ignoreFromPool.contains(enchId) &&
-										!enchantIds.contains(enchId)) {
-										missing.add(enchId);
-									}
-								}
-								if (!missing.isEmpty()) {
-									newTooltip.add("");
-									StringBuilder currentLine = new StringBuilder(
-										EnumChatFormatting.RED + "Missing: " + EnumChatFormatting.GRAY);
-									for (int i = 0; i < missing.size(); i++) {
-										String enchName = WordUtils.capitalizeFully(missing.get(i).replace("_", " "));
-										if (currentLine.length() != 0 &&
-											(Utils.cleanColour(currentLine.toString()).length() + enchName.length()) > 40) {
-											newTooltip.add(currentLine.toString());
-											currentLine = new StringBuilder();
-										}
-										if (currentLine.length() != 0 && i != 0) {
-											currentLine.append(", ").append(enchName);
-										} else {
-											currentLine.append(EnumChatFormatting.GRAY).append(enchName);
-										}
-									}
-									if (currentLine.length() != 0) {
-										newTooltip.add(currentLine.toString());
-									}
+				}
+				if (lineHasEnch) {
+					gotToEnchants = true;
+				} else {
+					if (gotToEnchants && !passedEnchants && Utils.cleanColour(line).trim().length() == 0) {
+						if (enchantsConst != null && allItemEnchs != null) {
+							List<String> missing = new ArrayList<>();
+							for (JsonElement enchIdElement : allItemEnchs) {
+								String enchId = enchIdElement.getAsString();
+								if (!enchId.startsWith("ultimate_") && !ignoreFromPool.contains(enchId) &&
+									!enchantIds.contains(enchId)) {
+									missing.add(enchId);
 								}
 							}
-							passedEnchants = true;
+							if (!missing.isEmpty()) {
+								newTooltip.add("");
+								StringBuilder currentLine = new StringBuilder(
+									EnumChatFormatting.RED + "Missing: " + EnumChatFormatting.GRAY);
+								for (int i = 0; i < missing.size(); i++) {
+									String enchName = WordUtils.capitalizeFully(missing.get(i).replace("_", " "));
+									if (currentLine.length() != 0 &&
+										(Utils.cleanColour(currentLine.toString()).length() + enchName.length()) > 40) {
+										newTooltip.add(currentLine.toString());
+										currentLine = new StringBuilder();
+									}
+									if (currentLine.length() != 0 && i != 0) {
+										currentLine.append(", ").append(enchName);
+									} else {
+										currentLine.append(EnumChatFormatting.GRAY).append(enchName);
+									}
+								}
+								if (currentLine.length() != 0) {
+									newTooltip.add(currentLine.toString());
+								}
+							}
 						}
+						passedEnchants = true;
 					}
 				}
 			}
 
 			newTooltip.add(line);
 
-			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showPriceInfoAucItem) {
-				if (line.contains(EnumChatFormatting.GRAY + "Buy it now: ") || line.contains(
-					EnumChatFormatting.GRAY + "Bidder: ") || line.contains(EnumChatFormatting.GRAY + "Starting bid: ")) {
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.showPriceInfoAucItem && (line.contains(
+				EnumChatFormatting.GRAY + "Buy it now: ") || line.contains(
+				EnumChatFormatting.GRAY + "Bidder: ") || line.contains(EnumChatFormatting.GRAY + "Starting bid: "))) {
 
-					if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-						newTooltip.add("");
-						newTooltip.add(EnumChatFormatting.GRAY + "[SHIFT for Price Info]");
-					} else {
-						ItemPriceInformation.addToTooltip(newTooltip, internalName, event.itemStack);
-					}
+				if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+					newTooltip.add("");
+					newTooltip.add(EnumChatFormatting.GRAY + "[SHIFT for Price Info]");
+				} else {
+					ItemPriceInformation.addToTooltip(newTooltip, internalName, event.itemStack);
 				}
 			}
 
