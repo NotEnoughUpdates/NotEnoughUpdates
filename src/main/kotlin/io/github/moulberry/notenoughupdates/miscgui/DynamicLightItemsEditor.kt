@@ -140,12 +140,10 @@ class DynamicLightItemsEditor() : GuiScreen() {
             val itemStack = resolveItemStack(item) ?: return
             Utils.drawItemStack(itemStack, guiLeft + 28 + i % 9 * 18, guiTop + 25 + j * 18)
 
-            if (mouseX >= guiLeft + 27 + i % 9 * 18 && mouseX <= guiLeft + 45 + i % 9 * 18) {
-                if (mouseY >= guiTop + 24 + j * 18 && mouseY <= guiTop + 42 + j * 18) {
-                    hoveredItem = item
-                    val tooltip = itemStack.getTooltip(Minecraft.getMinecraft().thePlayer, false)
-                    Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1)
-                }
+            if (mouseX >= guiLeft + 27 + i % 9 * 18 && mouseX <= guiLeft + 45 + i % 9 * 18 && mouseY >= guiTop + 24 + j * 18 && mouseY <= guiTop + 42 + j * 18) {
+                hoveredItem = item
+                val tooltip = itemStack.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+                Utils.drawHoveringText(tooltip, mouseX, mouseY, width, height, -1)
             }
 
             if (itemSelected != null && itemSelected.equals(item)) {
