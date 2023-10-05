@@ -151,11 +151,9 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		int extraRotation = 0;
 		if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) {
-			if (backgroundClickedX == -1) {
-				if (mouseX > guiLeft + 23 && mouseX < guiLeft + 23 + 81) {
-					if (mouseY > guiTop + 44 && mouseY < guiTop + 44 + 108) {
-						backgroundClickedX = mouseX;
-					}
+			if (backgroundClickedX == -1 && mouseX > guiLeft + 23 && mouseX < guiLeft + 23 + 81) {
+				if (mouseY > guiTop + 44 && mouseY < guiTop + 44 + 108) {
+					backgroundClickedX = mouseX;
 				}
 			}
 		} else {
@@ -172,11 +170,9 @@ public class BasicPage extends GuiProfileViewerPage {
 		getInstance().backgroundRotation %= 360;
 
 		String panoramaIdentifier = "day";
-		if (SBInfo.getInstance().currentTimeDate != null) {
-			if (SBInfo.getInstance().currentTimeDate.getHours() <= 6 ||
-				SBInfo.getInstance().currentTimeDate.getHours() >= 20) {
-				panoramaIdentifier = "night";
-			}
+		if (SBInfo.getInstance().currentTimeDate != null && (SBInfo.getInstance().currentTimeDate.getHours() <= 6 ||
+			SBInfo.getInstance().currentTimeDate.getHours() >= 20)) {
+			panoramaIdentifier = "night";
 		}
 
 		Panorama.drawPanorama(
@@ -237,42 +233,40 @@ public class BasicPage extends GuiProfileViewerPage {
 				}
 
 				JsonObject misc = Constants.MISC;
-				if (misc != null) {
-					if (misc.has("ranks")) {
-						String rankName = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".tag"), null);
-						String rankColor = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".color"), "7");
-						String rankPlus = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".plus"), "");
-						String rankTagColor = Utils.getElementAsString(
-							Utils.getElement(misc, "ranks." + rank + ".tagColor"),
-							rankColor
-						);
+				if (misc != null && misc.has("ranks")) {
+					String rankName = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".tag"), null);
+					String rankColor = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".color"), "7");
+					String rankPlus = Utils.getElementAsString(Utils.getElement(misc, "ranks." + rank + ".plus"), "");
+					String rankTagColor = Utils.getElementAsString(
+						Utils.getElement(misc, "ranks." + rank + ".tagColor"),
+						rankColor
+					);
 
-						String name = entityPlayer.getName();
+					String name = entityPlayer.getName();
 
-						if (misc.has("special_bois")) {
-							JsonArray special_bois = misc.get("special_bois").getAsJsonArray();
-							for (int i = 0; i < special_bois.size(); i++) {
-								if (special_bois.get(i).getAsString().equals(profile.getUuid())) {
-									name = Utils.chromaString(name);
-									break;
-								}
+					if (misc.has("special_bois")) {
+						JsonArray special_bois = misc.get("special_bois").getAsJsonArray();
+						for (int i = 0; i < special_bois.size(); i++) {
+							if (special_bois.get(i).getAsString().equals(profile.getUuid())) {
+								name = Utils.chromaString(name);
+								break;
 							}
 						}
+					}
 
-						playerName = EnumChatFormatting.GRAY + name;
-						if (rankName != null) {
-							String icon = selectedProfile.getGamemode() == null ? "" : getIcon(selectedProfile.getGamemode());
-							playerName = MessageFormat.format(
-								"§{0}[§{1}{2}{3}{4}§{5}] {6}",
-								rankColor,
-								rankTagColor,
-								rankName,
-								rankPlusColor,
-								rankPlus,
-								rankColor,
-								name
-							) + (icon.equals("") ? "" : " " + icon);
-						}
+					playerName = EnumChatFormatting.GRAY + name;
+					if (rankName != null) {
+						String icon = selectedProfile.getGamemode() == null ? "" : getIcon(selectedProfile.getGamemode());
+						playerName = MessageFormat.format(
+							"§{0}[§{1}{2}{3}{4}§{5}] {6}",
+							rankColor,
+							rankTagColor,
+							rankName,
+							rankPlusColor,
+							rankPlus,
+							rankColor,
+							name
+						) + (icon.equals("") ? "" : " " + icon);
 					}
 				}
 			}
@@ -350,48 +344,47 @@ public class BasicPage extends GuiProfileViewerPage {
 				String networthIRLMoney = StringUtils.formatNumber(Math.round(
 					((networthInCookies * 325) / 675) * 4.99));
 
-				if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2) {
-					if (mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
-						getInstance().tooltipToDisplay = new ArrayList<>();
-						getInstance()
-							.tooltipToDisplay.add(
-								EnumChatFormatting.GREEN +
-									"Net worth in IRL money: " +
-									EnumChatFormatting.DARK_GREEN +
-									"$" +
-									EnumChatFormatting.GOLD +
-									networthIRLMoney
-							);
+				if (mouseX > guiLeft + offset - fontWidth / 2 && mouseX < guiLeft + offset + fontWidth / 2 &&
+					mouseY > guiTop + 32 && mouseY < guiTop + 38 + fr.FONT_HEIGHT) {
+					getInstance().tooltipToDisplay = new ArrayList<>();
+					getInstance()
+						.tooltipToDisplay.add(
+							EnumChatFormatting.GREEN +
+								"Net worth in IRL money: " +
+								EnumChatFormatting.DARK_GREEN +
+								"$" +
+								EnumChatFormatting.GOLD +
+								networthIRLMoney
+						);
 
-						if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
-							&& profile.getSoopyNetworthLeaderboardPosition() >= 0
-							&& profile.isProfileMaxSoopyWeight(profileName)) {
-							getInstance().tooltipToDisplay.add("");
-							String lbPosStr =
-								EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
-									profile.getSoopyNetworthLeaderboardPosition());
-							getInstance().tooltipToDisplay.add(
-								lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
-						}
+					if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+						&& profile.getSoopyNetworthLeaderboardPosition() >= 0
+						&& profile.isProfileMaxSoopyWeight(profileName)) {
+						getInstance().tooltipToDisplay.add("");
+						String lbPosStr =
+							EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
+								profile.getSoopyNetworthLeaderboardPosition());
+						getInstance().tooltipToDisplay.add(
+							lbPosStr + EnumChatFormatting.GREEN + " on soopy's networth leaderboard!");
+					}
 
-						if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-							getInstance().tooltipToDisplay.addAll(nwCategoryHover);
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "This is calculated using the current");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "for cookies using gems, then the price of gems");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "is where we get the amount of IRL money you");
-							getInstance().tooltipToDisplay.add(
-								EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
-						} else {
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
-						}
-						if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
-							getInstance().tooltipToDisplay.add("");
-							getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "THIS IS IN NO WAY ENDORSING IRL TRADING!");
-						}
+					if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+						getInstance().tooltipToDisplay.addAll(nwCategoryHover);
+						getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "This is calculated using the current");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "price of booster cookies on bazaar and the price");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "for cookies using gems, then the price of gems");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "is where we get the amount of IRL money you");
+						getInstance().tooltipToDisplay.add(
+							EnumChatFormatting.RED + "theoretically have on SkyBlock in net worth.");
+					} else {
+						getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "[SHIFT for Info]");
+					}
+					if (!NotEnoughUpdates.INSTANCE.config.hidden.dev) {
+						getInstance().tooltipToDisplay.add("");
+						getInstance().tooltipToDisplay.add(EnumChatFormatting.RED + "THIS IS IN NO WAY ENDORSING IRL TRADING!");
 					}
 				}
 			}
@@ -634,10 +627,8 @@ public class BasicPage extends GuiProfileViewerPage {
 			sbLevelX - 30, sbLevelY + 20, true, 0, 0.9f
 		);
 
-		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216) {
-			if (mouseY >= guiTop + 49 && mouseY <= guiTop + 113) {
-				if (Mouse.isButtonDown(0)) onSecondPage = true;
-			}
+		if (mouseX >= guiLeft + 128 && mouseX <= guiLeft + 216 && mouseY >= guiTop + 49 && mouseY <= guiTop + 113) {
+			if (Mouse.isButtonDown(0)) onSecondPage = true;
 		}
 
 		if (skyblockInfo != null && selectedProfile.skillsApiEnabled()) {
@@ -673,76 +664,85 @@ public class BasicPage extends GuiProfileViewerPage {
 					getInstance().renderBar(x, y + 6, 80, level.level % 1);
 				}
 
-				if (mouseX > x && mouseX < x + 80) {
-					if (mouseY > y - 4 && mouseY < y + 13) {
-						getInstance().tooltipToDisplay = new ArrayList<>();
-						List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
-						tooltipToDisplay.add(skillName);
-						if (level.maxed) {
-							tooltipToDisplay.add(
-								EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
-						} else {
-							int maxXp = (int) level.maxXpForLevel;
-							getInstance()
-								.tooltipToDisplay.add(
-									EnumChatFormatting.GRAY +
-										"Progress: " +
-										EnumChatFormatting.DARK_PURPLE +
-										StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
-										"/" +
-										StringUtils.shortNumberFormat(maxXp));
-						}
-						String totalXpS = StringUtils.formatNumber((long) level.totalXp);
-						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
-							EnumChatFormatting.DARK_GRAY + " (" +
-							StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
-							"% to " + level.maxLevel + ")");
-						if (entry.getKey().equals("farming")) {
-							// double drops + pelts
-							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacob2.perks.double_drops"), 0);
-							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "trapper_quest.pelt_count"), 0);
+				if (mouseX > x && mouseX < x + 80 && mouseY > y - 4 && mouseY < y + 13) {
+					getInstance().tooltipToDisplay = new ArrayList<>();
+					List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
+					tooltipToDisplay.add(skillName);
+					if (level.maxed) {
+						tooltipToDisplay.add(
+							EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
+					} else {
+						int maxXp = (int) level.maxXpForLevel;
+						getInstance()
+							.tooltipToDisplay.add(
+								EnumChatFormatting.GRAY +
+									"Progress: " +
+									EnumChatFormatting.DARK_PURPLE +
+									StringUtils.shortNumberFormat(Math.round((level.level % 1) * maxXp)) +
+									"/" +
+									StringUtils.shortNumberFormat(maxXp));
+					}
+					String totalXpS = StringUtils.formatNumber((long) level.totalXp);
+					tooltipToDisplay.add(EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE + totalXpS +
+						EnumChatFormatting.DARK_GRAY + " (" +
+						StringUtils.formatToTenths(guiProfileViewer.getPercentage(entry.getKey().toLowerCase(), level)) +
+						"% to " + level.maxLevel + ")");
+					if (entry.getKey().equals("farming")) {
+						// double drops + pelts
+						int doubleDrops = Utils.getElementAsInt(Utils.getElement(
+							selectedProfile.getProfileJson(),
+							"jacob2.perks.double_drops"
+						), 0);
+						int peltCount = Utils.getElementAsInt(Utils.getElement(
+							selectedProfile.getProfileJson(),
+							"trapper_quest.pelt_count"
+						), 0);
 
-							if (doubleDrops == 15) {
-								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
-							} else tooltipToDisplay.add("§7Double Drops: §5" + (doubleDrops * 2) + "%");
+						if (doubleDrops == 15) {
+							tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
+						} else tooltipToDisplay.add("§7Double Drops: §5" + (doubleDrops * 2) + "%");
 
-							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
+						tooltipToDisplay.add("§7Pelts: §e" + peltCount);
 
-							// medals
-							JsonObject medals_inv = Utils.getElement(selectedProfile.getProfileJson(), "jacob2.medals_inv").getAsJsonObject();
-							tooltipToDisplay.add(" ");
-							for (String medalName : medalNames) {
-								String textWithoutFormattingCodes =
-									EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
-								if (medals_inv.has(textWithoutFormattingCodes)) {
-									int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
-									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
-										EnumChatFormatting.WHITE + medalAmount);
-								} else {
-									tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
-										EnumChatFormatting.WHITE + "0");
-								}
+						// medals
+						JsonObject medals_inv = Utils
+							.getElement(selectedProfile.getProfileJson(), "jacob2.medals_inv")
+							.getAsJsonObject();
+						tooltipToDisplay.add(" ");
+						for (String medalName : medalNames) {
+							String textWithoutFormattingCodes =
+								EnumChatFormatting.getTextWithoutFormattingCodes(medalName.toLowerCase());
+							if (medals_inv.has(textWithoutFormattingCodes)) {
+								int medalAmount = medals_inv.get(textWithoutFormattingCodes).getAsInt();
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
+									EnumChatFormatting.WHITE + medalAmount);
+							} else {
+								tooltipToDisplay.add(EnumChatFormatting.GRAY + WordUtils.capitalize(medalName) + ": " +
+									EnumChatFormatting.WHITE + "0");
 							}
 						}
+					}
 
-						String slayerNameLower = entry.getKey().toLowerCase();
-						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
-							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
-							if (slayerToTier == null) {
-								Utils.showOutdatedRepoNotification();
-								return;
-							}
+					String slayerNameLower = entry.getKey().toLowerCase();
+					if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
+						JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
+						if (slayerToTier == null) {
+							Utils.showOutdatedRepoNotification();
+							return;
+						}
 
-							int maxLevel = slayerToTier.get(slayerNameLower).getAsInt();
-							for (int i = 0; i < 5; i++) {
-								if (i >= maxLevel) break;
-								float tier = Utils.getElementAsFloat(
-									Utils.getElement(selectedProfile.getProfileJson(), "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
-									0
-								);
-								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
-									EnumChatFormatting.RED + (int) tier);
-							}
+						int maxLevel = slayerToTier.get(slayerNameLower).getAsInt();
+						for (int i = 0; i < 5; i++) {
+							if (i >= maxLevel) break;
+							float tier = Utils.getElementAsFloat(
+								Utils.getElement(
+									selectedProfile.getProfileJson(),
+									"slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i
+								),
+								0
+							);
+							tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
+								EnumChatFormatting.RED + (int) tier);
 						}
 					}
 				}
@@ -855,55 +855,54 @@ public class BasicPage extends GuiProfileViewerPage {
 			"Senither Weight: " +
 				StringUtils.formatNumber(roundToNearestInt(senitherWeight.getTotalWeight().getRaw()))
 		);
-		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2) {
-			if (mouseY > guiTop + 12 && mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
-				getInstance().tooltipToDisplay = new ArrayList<>();
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Skills: " +
-							EnumChatFormatting.GOLD +
-							StringUtils.formatNumber(roundToNearestInt(senitherWeight
-								.getSkillsWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Slayer: " +
-							EnumChatFormatting.GOLD +
-							StringUtils.formatNumber(roundToNearestInt(senitherWeight
-								.getSlayerWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Dungeons: " +
-							EnumChatFormatting.GOLD +
-							StringUtils.formatNumber(
-								roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
-							)
-					);
+		if (mouseX > guiLeft + 63 - textWidth / 2 && mouseX < guiLeft + 63 + textWidth / 2 && mouseY > guiTop + 12 &&
+			mouseY < guiTop + 12 + fr.FONT_HEIGHT) {
+			getInstance().tooltipToDisplay = new ArrayList<>();
+			getInstance()
+				.tooltipToDisplay.add(
+					EnumChatFormatting.GREEN +
+						"Skills: " +
+						EnumChatFormatting.GOLD +
+						StringUtils.formatNumber(roundToNearestInt(senitherWeight
+							.getSkillsWeight()
+							.getWeightStruct()
+							.getRaw()))
+				);
+			getInstance()
+				.tooltipToDisplay.add(
+					EnumChatFormatting.GREEN +
+						"Slayer: " +
+						EnumChatFormatting.GOLD +
+						StringUtils.formatNumber(roundToNearestInt(senitherWeight
+							.getSlayerWeight()
+							.getWeightStruct()
+							.getRaw()))
+				);
+			getInstance()
+				.tooltipToDisplay.add(
+					EnumChatFormatting.GREEN +
+						"Dungeons: " +
+						EnumChatFormatting.GOLD +
+						StringUtils.formatNumber(
+							roundToNearestInt(senitherWeight.getDungeonsWeight().getWeightStruct().getRaw())
+						)
+				);
 
-				if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
-					&& profile.isProfileMaxSoopyWeight(profileName)) {
+			if (NotEnoughUpdates.INSTANCE.config.profileViewer.useSoopyNetworth
+				&& profile.isProfileMaxSoopyWeight(profileName)) {
 
-					String lbPosStr =
-						EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
-							profile.getSoopyWeightLeaderboardPosition());
-					getInstance().tooltipToDisplay.add("");
-					String stateStr = EnumChatFormatting.RED + "An error occurred";
-					if (weight == -2) {
-						stateStr = EnumChatFormatting.YELLOW + "Loading";
-					}
-					if (weight > 0)
-						getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's weight leaderboard!");
-					else
-						getInstance().tooltipToDisplay.add(stateStr + " on soopy's weight leaderboard");
+				String lbPosStr =
+					EnumChatFormatting.DARK_GREEN + "#" + EnumChatFormatting.GOLD + StringUtils.formatNumber(
+						profile.getSoopyWeightLeaderboardPosition());
+				getInstance().tooltipToDisplay.add("");
+				String stateStr = EnumChatFormatting.RED + "An error occurred";
+				if (weight == -2) {
+					stateStr = EnumChatFormatting.YELLOW + "Loading";
 				}
+				if (weight > 0)
+					getInstance().tooltipToDisplay.add(lbPosStr + EnumChatFormatting.GREEN + " on soopy's weight leaderboard!");
+				else
+					getInstance().tooltipToDisplay.add(stateStr + " on soopy's weight leaderboard");
 			}
 		}
 
@@ -917,40 +916,39 @@ public class BasicPage extends GuiProfileViewerPage {
 		int fontWidth = fr.getStringWidth(
 			"Lily Weight: " + StringUtils.formatNumber(roundToNearestInt(lilyWeight.getTotalWeight().getRaw()))
 		);
-		if (mouseX > guiLeft + 63 - fontWidth / 2 && mouseX < guiLeft + 63 + fontWidth / 2) {
-			if (mouseY > guiTop + 22 && mouseY < guiTop + 22 + fr.FONT_HEIGHT) {
-				getInstance().tooltipToDisplay = new ArrayList<>();
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Skills: " +
-							EnumChatFormatting.GOLD +
-							StringUtils.formatNumber(roundToNearestInt(lilyWeight
-								.getSkillsWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Slayer: " +
-							EnumChatFormatting.GOLD +
-							StringUtils.formatNumber(roundToNearestInt(lilyWeight
-								.getSlayerWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-				getInstance()
-					.tooltipToDisplay.add(
-						EnumChatFormatting.GREEN +
-							"Dungeons: " +
-							EnumChatFormatting.GOLD +
-							StringUtils.formatNumber(roundToNearestInt(lilyWeight
-								.getDungeonsWeight()
-								.getWeightStruct()
-								.getRaw()))
-					);
-			}
+		if (mouseX > guiLeft + 63 - fontWidth / 2 && mouseX < guiLeft + 63 + fontWidth / 2 && mouseY > guiTop + 22 &&
+			mouseY < guiTop + 22 + fr.FONT_HEIGHT) {
+			getInstance().tooltipToDisplay = new ArrayList<>();
+			getInstance()
+				.tooltipToDisplay.add(
+					EnumChatFormatting.GREEN +
+						"Skills: " +
+						EnumChatFormatting.GOLD +
+						StringUtils.formatNumber(roundToNearestInt(lilyWeight
+							.getSkillsWeight()
+							.getWeightStruct()
+							.getRaw()))
+				);
+			getInstance()
+				.tooltipToDisplay.add(
+					EnumChatFormatting.GREEN +
+						"Slayer: " +
+						EnumChatFormatting.GOLD +
+						StringUtils.formatNumber(roundToNearestInt(lilyWeight
+							.getSlayerWeight()
+							.getWeightStruct()
+							.getRaw()))
+				);
+			getInstance()
+				.tooltipToDisplay.add(
+					EnumChatFormatting.GREEN +
+						"Dungeons: " +
+						EnumChatFormatting.GOLD +
+						StringUtils.formatNumber(roundToNearestInt(lilyWeight
+							.getDungeonsWeight()
+							.getWeightStruct()
+							.getRaw()))
+				);
 		}
 	}
 
