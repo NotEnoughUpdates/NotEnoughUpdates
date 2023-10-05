@@ -129,13 +129,13 @@ public class GuiCosmetics extends GuiScreen {
 				break;
 		}
 		int helpX = guiLeft + sizeX - 20;
-		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= guiTop - 20 && mouseY <= guiTop) {
-			if (cosmeticsInfoTooltip != null) {
-				List<String> grayTooltip = new ArrayList<>(cosmeticsInfoTooltip.size());
-				for (String line : cosmeticsInfoTooltip) {
-					grayTooltip.add(EnumChatFormatting.GRAY + line);
-				}
-				Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1);}
+		if (mouseX >= helpX && mouseX <= helpX + 20 && mouseY >= guiTop - 20 && mouseY <= guiTop &&
+			cosmeticsInfoTooltip != null) {
+			List<String> grayTooltip = new ArrayList<>(cosmeticsInfoTooltip.size());
+			for (String line : cosmeticsInfoTooltip) {
+				grayTooltip.add(EnumChatFormatting.GRAY + line);
+			}
+			Utils.drawHoveringText(grayTooltip, mouseX, mouseY, width, height, -1);
 		}
 
 		StringBuilder statusMsg = new StringBuilder("Last Sync: ");
@@ -287,19 +287,16 @@ public class GuiCosmetics extends GuiScreen {
 			int x = guiLeft + i * 28;
 			int y = guiTop - 28;
 
-			if (mouseX > x && mouseX < x + 28) {
-				if (mouseY > y && mouseY < y + 32) {
-					if (currentPage != page) Utils.playPressSound();
-					currentPage = page;
-					return;
-				}
-			}
-		}
-		if (mouseY > guiTop + 177 && mouseY < guiTop + 177 + 12) {
-			if (mouseX > guiLeft + 15 + 371 * scroll && mouseX < guiLeft + 15 + 371 * scroll + 32) {
-				scrollClickedX = mouseX - (int) (guiLeft + 15 + 371 * scroll);
+			if (mouseX > x && mouseX < x + 28 && mouseY > y && mouseY < y + 32) {
+				if (currentPage != page) Utils.playPressSound();
+				currentPage = page;
 				return;
 			}
+		}
+		if (mouseY > guiTop + 177 && mouseY < guiTop + 177 + 12 && mouseX > guiLeft + 15 + 371 * scroll &&
+			mouseX < guiLeft + 15 + 371 * scroll + 32) {
+			scrollClickedX = mouseX - (int) (guiLeft + 15 + 371 * scroll);
+			return;
 		}
 
 		int displayingCapes = 0;
@@ -368,43 +365,42 @@ public class GuiCosmetics extends GuiScreen {
 				GL11.GL_NEAREST
 			);
 
-			if (mouseX > guiLeft + sizeX / 2f - 50 && mouseX < guiLeft + sizeX / 2f + 50) {
-				if (mouseY > guiTop + sizeY + 5 && mouseY < guiTop + sizeY + 25) {
-					if (System.currentTimeMillis() - lastCapeEquip > 20 * 1000) {
-						CapeManager.INSTANCE.setCape(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""),
-							wantToEquipCape, true
-						);
+			if (mouseX > guiLeft + sizeX / 2f - 50 && mouseX < guiLeft + sizeX / 2f + 50 && mouseY > guiTop + sizeY + 5 &&
+				mouseY < guiTop + sizeY + 25) {
+				if (System.currentTimeMillis() - lastCapeEquip > 20 * 1000) {
+					CapeManager.INSTANCE.setCape(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""),
+						wantToEquipCape, true
+					);
 
-						lastCapeEquip = System.currentTimeMillis();
+					lastCapeEquip = System.currentTimeMillis();
 
-						try {
-							String userName = Minecraft.getMinecraft().thePlayer.getName();
-							String accessToken = Minecraft.getMinecraft().getSession().getToken();
-							Random r1 = new Random();
-							Random r2 = new Random(System.identityHashCode(new Object()));
-							BigInteger random1Bi = new BigInteger(128, r1);
-							BigInteger random2Bi = new BigInteger(128, r2);
-							BigInteger serverBi = random1Bi.xor(random2Bi);
-							String serverId = serverBi.toString(16);
-							Minecraft.getMinecraft().getSessionService().joinServer(Minecraft
-								.getMinecraft()
-								.getSession()
-								.getProfile(), accessToken, serverId);
+					try {
+						String userName = Minecraft.getMinecraft().thePlayer.getName();
+						String accessToken = Minecraft.getMinecraft().getSession().getToken();
+						Random r1 = new Random();
+						Random r2 = new Random(System.identityHashCode(new Object()));
+						BigInteger random1Bi = new BigInteger(128, r1);
+						BigInteger random2Bi = new BigInteger(128, r2);
+						BigInteger serverBi = random1Bi.xor(random2Bi);
+						String serverId = serverBi.toString(16);
+						Minecraft.getMinecraft().getSessionService().joinServer(Minecraft
+							.getMinecraft()
+							.getSession()
+							.getProfile(), accessToken, serverId);
 
-							String toEquipName = wantToEquipCape == null ? "null" : wantToEquipCape;
-							NotEnoughUpdates.INSTANCE.manager.apiUtils
-								.newMoulberryRequest("cgi-bin/changecape.py")
-								.queryArgument("capeType", toEquipName)
-								.queryArgument("serverId", serverId)
-								.queryArgument("username", userName)
-								.requestString()
-								.thenAccept(System.out::println);
-						} catch (Exception e) {
-							System.out.println("Exception while generating mojang shared secret");
-							e.printStackTrace();
-						}
-
+						String toEquipName = wantToEquipCape == null ? "null" : wantToEquipCape;
+						NotEnoughUpdates.INSTANCE.manager.apiUtils
+							.newMoulberryRequest("cgi-bin/changecape.py")
+							.queryArgument("capeType", toEquipName)
+							.queryArgument("serverId", serverId)
+							.queryArgument("username", userName)
+							.requestString()
+							.thenAccept(System.out::println);
+					} catch (Exception e) {
+						System.out.println("Exception while generating mojang shared secret");
+						e.printStackTrace();
 					}
+
 				}
 			}
 		}
