@@ -131,22 +131,20 @@ public class LevelPage extends GuiProfileViewerPage {
 			getInstance().renderBar(x, y + 6, xSize, (float) experienceRequired);
 		}
 		String levelStr;
-		if (mouseX > x && mouseX < x + 120) {
-			if (mouseY > y - 4 && mouseY < y + 13) {
-				String xpFormatted = StringUtils.formatNumber((int) xp);
-				String maxFormatted = StringUtils.formatNumber((int) max);
+		if (mouseX > x && mouseX < x + 120 && mouseY > y - 4 && mouseY < y + 13) {
+			String xpFormatted = StringUtils.formatNumber((int) xp);
+			String maxFormatted = StringUtils.formatNumber((int) max);
 
-				levelStr =
-					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
-						"%" +
-						" §8(" + xpFormatted + "/" + maxFormatted + " XP)";
-				if (tooltip != null && !tooltip.isEmpty()) {
-					tooltip.add("");
-					tooltip.add(levelStr);
-					getInstance().tooltipToDisplay = tooltip;
-				} else {
-					getInstance().tooltipToDisplay = Utils.createList(levelStr);
-				}
+			levelStr =
+				EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.DARK_PURPLE + (int) (experienceRequired * 100) +
+					"%" +
+					" §8(" + xpFormatted + "/" + maxFormatted + " XP)";
+			if (tooltip != null && !tooltip.isEmpty()) {
+				tooltip.add("");
+				tooltip.add(levelStr);
+				getInstance().tooltipToDisplay = tooltip;
+			} else {
+				getInstance().tooltipToDisplay = Utils.createList(levelStr);
 			}
 		}
 
