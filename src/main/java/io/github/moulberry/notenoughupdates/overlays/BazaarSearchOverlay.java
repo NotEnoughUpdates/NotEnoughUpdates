@@ -431,20 +431,18 @@ public class BazaarSearchOverlay {
 			searchStringExtra = "";
 			close();
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_TAB) {
+		} else if (Keyboard.getEventKey() == Keyboard.KEY_TAB && !tabCompleted) {
 			//autocomplete to first item in the list
-			if (!tabCompleted) {
-				tabCompleted = true;
-				ignoreKey = true;
-				String id = getItemIdAtIndex(0);
-				if (id == null) {
-					tabCompleted = false;
-					textField.setFocus(true);
-					textField.setText(searchString);
-				} else {
-					tabCompletionIndex = 0;
-					searchString = id;
-				}
+			tabCompleted = true;
+			ignoreKey = true;
+			String id = getItemIdAtIndex(0);
+			if (id == null) {
+				tabCompleted = false;
+				textField.setFocus(true);
+				textField.setText(searchString);
+			} else {
+				tabCompletionIndex = 0;
+				searchString = id;
 			}
 		}
 
