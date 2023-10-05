@@ -97,35 +97,34 @@ public abstract class MixinGuiContainer extends GuiScreen {
 			GuiChest eventGui = (GuiChest) $this;
 			ContainerChest cc = (ContainerChest) eventGui.inventorySlots;
 			String containerName = cc.getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (containerName.contains(" Profile") && cc.inventorySlots.size() >= 54) {
-				if (cc.inventorySlots.get(22).getStack() != null &&
-					cc.inventorySlots.get(22).getStack().getTagCompound() != null) {
-					NBTTagCompound tag = eventGui.inventorySlots.inventorySlots.get(22).getStack().getTagCompound();
-					if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
-						String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
-						String displayName = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
-						if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(
-							displayName.length() - tagName.length()))) {
-							ci.cancel();
+			if (containerName.contains(" Profile") && cc.inventorySlots.size() >= 54 &&
+				cc.inventorySlots.get(22).getStack() != null &&
+				cc.inventorySlots.get(22).getStack().getTagCompound() != null) {
+				NBTTagCompound tag = eventGui.inventorySlots.inventorySlots.get(22).getStack().getTagCompound();
+				if (tag.hasKey("SkullOwner") && tag.getCompoundTag("SkullOwner").hasKey("Name")) {
+					String tagName = tag.getCompoundTag("SkullOwner").getString("Name");
+					String displayName = Utils.cleanColour(cc.inventorySlots.get(22).getStack().getDisplayName());
+					if (displayName.length() - tagName.length() >= 0 && tagName.equals(displayName.substring(
+						displayName.length() - tagName.length()))) {
+						ci.cancel();
 
-							this.zLevel = 100.0F;
-							this.itemRender.zLevel = 100.0F;
+						this.zLevel = 100.0F;
+						this.itemRender.zLevel = 100.0F;
 
-							GlStateManager.enableDepth();
-							this.itemRender.renderItemAndEffectIntoGUI(
-								profileViewerStack,
-								slot.xDisplayPosition,
-								slot.yDisplayPosition
-							);
-							this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, profileViewerStack,
-								slot.xDisplayPosition, slot.yDisplayPosition, ""
-							);
+						GlStateManager.enableDepth();
+						this.itemRender.renderItemAndEffectIntoGUI(
+							profileViewerStack,
+							slot.xDisplayPosition,
+							slot.yDisplayPosition
+						);
+						this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, profileViewerStack,
+							slot.xDisplayPosition, slot.yDisplayPosition, ""
+						);
 
-							this.itemRender.zLevel = 0.0F;
-							this.zLevel = 0.0F;
+						this.itemRender.zLevel = 0.0F;
+						this.zLevel = 0.0F;
 
-							BetterContainers.profileViewerStackIndex = slot.getSlotIndex();
-						}
+						BetterContainers.profileViewerStackIndex = slot.getSlotIndex();
 					}
 				}
 			}
