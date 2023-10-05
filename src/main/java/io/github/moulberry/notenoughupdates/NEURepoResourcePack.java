@@ -55,10 +55,7 @@ public class NEURepoResourcePack implements IResourcePack {
 	}
 
 	public File getFileForResource(ResourceLocation loc) {
-		if (repoLocation == null) {
-			if (!loadRepoLocation())
-				return null;
-		}
+		if (repoLocation == null && !loadRepoLocation()) return null;
 		if (!"neurepo".equals(loc.getResourceDomain())) {
 			return null;
 		}
