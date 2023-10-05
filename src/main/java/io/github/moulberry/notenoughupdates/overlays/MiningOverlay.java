@@ -384,11 +384,9 @@ public class MiningOverlay extends TextTabOverlay {
 					String tips = getTipPart(entry.getKey());
 					boolean newLine = NotEnoughUpdates.INSTANCE.config.mining.commissionTaskTipNewLine;
 					String newLineTip = null;
-					if (newLine) {
-						if (!tips.isEmpty()) {
-							newLineTip = "  " + tips;
-							tips = "";
-						}
+					if (newLine && !tips.isEmpty()) {
+						newLineTip = "  " + tips;
+						tips = "";
 					}
 					NEUConfig.HiddenLocationSpecific locationSpecific = NotEnoughUpdates.INSTANCE.config.getLocationSpecific();
 					int max;
@@ -762,10 +760,8 @@ public class MiningOverlay extends TextTabOverlay {
 				}
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
-			} else if (beforeColon.contains("Sky Mall")) {
-				if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
-					icon = SkyMallDisplay.Companion.getDisplayItem();
-				}
+			} else if (beforeColon.contains("Sky Mall") && Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
+				icon = SkyMallDisplay.Companion.getDisplayItem();
 			}
 		}
 
