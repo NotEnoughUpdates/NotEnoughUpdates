@@ -293,13 +293,12 @@ public class GuiElementColour extends GuiElement {
 		float mouseYF = (float) (scaledResolution.getScaledHeight_double() - Mouse.getY() *
 			scaledResolution.getScaledHeight_double() / Minecraft.getMinecraft().displayHeight - 1);
 
-		if ((Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1) && Mouse.getEventButtonState()) {
-			if (mouseX > x + 5 + 8 && mouseX < x + 5 + 8 + 48) {
-				if (mouseY > y + 5 + 64 + 5 && mouseY < y + 5 + 64 + 5 + 10) {
-					hexField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
-					clickedComponent = -1;
-					return true;
-				}
+		if ((Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1) && Mouse.getEventButtonState() &&
+			mouseX > x + 5 + 8 && mouseX < x + 5 + 8 + 48) {
+			if (mouseY > y + 5 + 64 + 5 && mouseY < y + 5 + 64 + 5 + 10) {
+				hexField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+				clickedComponent = -1;
+				return true;
 			}
 		}
 		if (!Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
@@ -313,10 +312,8 @@ public class GuiElementColour extends GuiElement {
 				int xWheel = mouseX - x - 5;
 				int yWheel = mouseY - y - 5;
 
-				if (xWheel > 0 && xWheel < 64) {
-					if (yWheel > 0 && yWheel < 64) {
-						clickedComponent = 0;
-					}
+				if (xWheel > 0 && xWheel < 64 && yWheel > 0 && yWheel < 64) {
+					clickedComponent = 0;
 				}
 
 				int xValue = mouseX - (x + 5 + 64 + 5);
@@ -326,10 +323,8 @@ public class GuiElementColour extends GuiElement {
 				int valueOffset = valueSlider ? 15 : 0;
 
 				if (y > -5 && y <= 69) {
-					if (valueSlider) {
-						if (xValue > 0 && xValue < 10) {
-							clickedComponent = 1;
-						}
+					if (valueSlider && xValue > 0 && xValue < 10) {
+						clickedComponent = 1;
 					}
 
 					if (opacitySlider) {
