@@ -484,13 +484,12 @@ public class AuctionSearchOverlay {
 				Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow(Minecraft.getMinecraft().thePlayer.openContainer.windowId));
 			}
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+		} else //autocomplete to first item in the list
+			if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
 			searchStringExtra = "";
 			close();
 			return;
-		} else if (Keyboard.getEventKey() == Keyboard.KEY_TAB) {
-			//autocomplete to first item in the list
-			if (!tabCompleted) {
+		} else if (Keyboard.getEventKey() == Keyboard.KEY_TAB && !tabCompleted) {
 				tabCompleted = true;
 				ignoreKey = true;
 				String id = getItemIdAtIndex(0);
@@ -503,7 +502,6 @@ public class AuctionSearchOverlay {
 					searchString = id;
 				}
 			}
-		}
 
 		if (Keyboard.getEventKeyState()) {
 			if (tabCompleted) {
