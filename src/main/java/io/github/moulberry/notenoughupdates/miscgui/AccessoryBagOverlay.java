@@ -177,14 +177,12 @@ public class AccessoryBagOverlay {
 				int x = guiLeft + xSize + 3;
 				int y = guiTop;
 
-				if (mouseY > y + 92 && mouseY < y + 103) {
-					if (mouseX > x + 5 && mouseX < x + 75) {
-						mainWeapon = (int) Math.floor((mouseX - x - 5) / 70f * 9);
-						if (mainWeapon < 1) {
-							mainWeapon = 1;
-						} else if (mainWeapon > 9) {
-							mainWeapon = 9;
-						}
+				if (mouseY > y + 92 && mouseY < y + 103 && mouseX > x + 5 && mouseX < x + 75) {
+					mainWeapon = (int) Math.floor((mouseX - x - 5) / 70f * 9);
+					if (mainWeapon < 1) {
+						mainWeapon = 1;
+					} else if (mainWeapon > 9) {
+						mainWeapon = 9;
 					}
 				}
 
@@ -438,15 +436,13 @@ public class AccessoryBagOverlay {
 
 			for (Map.Entry<String, JsonObject> entry : NotEnoughUpdates.INSTANCE.manager.getItemInformation().entrySet()) {
 				if (ignoredTalisman.contains(entry.getValue().get("internalname").getAsString())) continue;
-				if (entry.getValue().has("lore")) {
-					if (checkItemType(
-						entry.getValue().get("lore").getAsJsonArray(),
-						"ACCESSORY",
-						"HATCCESSORY",
-						"DUNGEON ACCESSORY"
-					) >= 0) {
-						missingInternal.add(entry.getKey());
-					}
+				if (entry.getValue().has("lore") && checkItemType(
+					entry.getValue().get("lore").getAsJsonArray(),
+					"ACCESSORY",
+					"HATCCESSORY",
+					"DUNGEON ACCESSORY"
+				) >= 0) {
+					missingInternal.add(entry.getKey());
 				}
 			}
 
