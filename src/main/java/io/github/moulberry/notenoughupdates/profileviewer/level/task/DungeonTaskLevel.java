@@ -88,10 +88,8 @@ public class DungeonTaskLevel extends GuiTaskLevel {
 			for (int i = 0; i <= 7; i++) {
 				JsonElement masterCompletions = Utils
 					.getElementOrDefault(object, "dungeons.dungeon_types.master_catacombs.tier_completions", null);
-				if (masterCompletions != null) {
-					if (masterCompletions.getAsJsonObject().has("" + i)) {
-						sbLevelGainedFloor += masterCatacombs;
-					}
+				if (masterCompletions != null && masterCompletions.getAsJsonObject().has("" + i)) {
+					sbLevelGainedFloor += masterCatacombs;
 				}
 			}
 		}
