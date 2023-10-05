@@ -357,17 +357,13 @@ public class CapeNode {
 		}
 
 		if ((mask & DRAW_MASK_SIDES) != 0) {
-			if (nodeLeft == null || nodeRight == null) {
-				//Render left/right edge
-				if (nodeDown != null) {
-					renderEdge(nodeDown, true);
-				}
+			//Render left/right edge
+			if ((nodeLeft == null || nodeRight == null) && nodeDown != null) {
+				renderEdge(nodeDown, true);
 			}
-			if (nodeUp == null || nodeDown == null) {
-				//Render up/down edge
-				if (nodeRight != null) {
-					renderEdge(nodeRight, false);
-				}
+			//Render up/down edge
+			if ((nodeUp == null || nodeDown == null) && nodeRight != null) {
+				renderEdge(nodeRight, false);
 			}
 		}
 	}
