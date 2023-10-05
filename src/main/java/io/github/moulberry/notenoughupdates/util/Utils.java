@@ -174,11 +174,9 @@ public class Utils {
 	}
 
 	public static ScaledResolution pushGuiScale(int scale) {
-		if (guiScales.isEmpty()) {
-			if (Loader.isModLoaded("labymod")) {
-				GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionMatrixOld);
-				GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrixOld);
-			}
+		if (guiScales.isEmpty() && Loader.isModLoaded("labymod")) {
+			GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionMatrixOld);
+			GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrixOld);
 		}
 
 		if (scale < 0) {
@@ -449,22 +447,20 @@ public class Utils {
 
 		list.add(s);
 
-		if (stack.hasTagCompound()) {
-			if (stack.getTagCompound().hasKey("display", 10)) {
-				NBTTagCompound nbttagcompound = stack.getTagCompound().getCompoundTag("display");
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("display", 10)) {
+			NBTTagCompound nbttagcompound = stack.getTagCompound().getCompoundTag("display");
 
-				if (nbttagcompound.hasKey("color", 3)) {
-					list.add(EnumChatFormatting.ITALIC + StatCollector.translateToLocal("item.dyed"));
-				}
+			if (nbttagcompound.hasKey("color", 3)) {
+				list.add(EnumChatFormatting.ITALIC + StatCollector.translateToLocal("item.dyed"));
+			}
 
-				if (nbttagcompound.getTagId("Lore") == 9) {
-					NBTTagList nbttaglist1 = nbttagcompound.getTagList("Lore", 8);
+			if (nbttagcompound.getTagId("Lore") == 9) {
+				NBTTagList nbttaglist1 = nbttagcompound.getTagList("Lore", 8);
 
-					if (nbttaglist1.tagCount() > 0) {
-						for (int j1 = 0; j1 < nbttaglist1.tagCount(); ++j1) {
-							list.add(
-								EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.ITALIC + nbttaglist1.getStringTagAt(j1));
-						}
+				if (nbttaglist1.tagCount() > 0) {
+					for (int j1 = 0; j1 < nbttaglist1.tagCount(); ++j1) {
+						list.add(
+							EnumChatFormatting.DARK_PURPLE + "" + EnumChatFormatting.ITALIC + nbttaglist1.getStringTagAt(j1));
 					}
 				}
 			}
@@ -1649,10 +1645,8 @@ public class Utils {
 				lastColourCode = i;
 			} else if (lastColourCode == i - 1) {
 				currentColour = Math.max(0, "0123456789abcdef".indexOf(c));
-			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0) {
-				if (currentColour > 0) {
-					mostCommon[currentColour]++;
-				}
+			} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0 && currentColour > 0) {
+				mostCommon[currentColour]++;
 			}
 		}
 		int mostCommonCount = 0;
@@ -1688,12 +1682,10 @@ public class Utils {
 	) {
 		if (!textLines.isEmpty()) {
 			int borderColorStart = 0x505000FF;
-			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours) {
-				if (!textLines.isEmpty()) {
-					String first = textLines.get(0);
-					borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
-						((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
-				}
+			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderColours && !textLines.isEmpty()) {
+				String first = textLines.get(0);
+				borderColorStart = getPrimaryColour(first).getRGB() & 0x00FFFFFF |
+					((NotEnoughUpdates.INSTANCE.config.tooltipTweaks.tooltipBorderOpacity) << 24);
 			}
 			textLines = TooltipTextScrolling.handleTextLineRendering(textLines);
 			if (NotEnoughUpdates.INSTANCE.config.tooltipTweaks.guiScale != 0) {
