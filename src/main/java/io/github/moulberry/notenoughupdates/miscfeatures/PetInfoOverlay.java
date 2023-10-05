@@ -1012,51 +1012,50 @@ public class PetInfoOverlay extends TextOverlay {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onChatReceived(ClientChatReceivedEvent event) {
 		NEUConfig config = NotEnoughUpdates.INSTANCE.config;
-		if (config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay) {
-			if (event.type == 0) {
-				String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
+		if ((config.petOverlay.enablePetInfo || config.itemOverlays.enableMonkeyCheck || config.petOverlay.petInvDisplay) &&
+			event.type == 0) {
+			String chatMessage = Utils.cleanColour(event.message.getUnformattedText());
 
-				Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
-				if (autopetMatcher.matches()) {
-					try {
-						lastLevelHovered = Integer.parseInt(autopetMatcher.group(1));
-					} catch (NumberFormatException ignored) {
-					}
-
-					String petStringMatch = autopetMatcher.group(2);
-					char colChar = petStringMatch.charAt(0);
-					EnumChatFormatting col = EnumChatFormatting.RESET;
-					for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
-						if (formatting.toString().equals("\u00a7" + colChar)) {
-							col = formatting;
-							break;
-						}
-
-					}
-					Rarity rarity = Rarity.COMMON;
-					if (col != EnumChatFormatting.RESET) {
-						rarity = Rarity.getRarityFromColor(col);
-					}
-
-					String pet = Utils.cleanColour(petStringMatch.substring(1))
-														.replaceAll("[^\\w ]", "").trim()
-														.replace(" ", "_").toUpperCase();
-
-					setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
-					if (PetInfoOverlay.config.selectedPet == -1) {
-						setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
-						if (getCurrentPet() != null && !"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
-							PetInfoOverlay.config.selectedPet = -1;
-							Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-								EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
-									EnumChatFormatting.RED + " try revisiting all pages of /pets."));
-						}
-					}
-				} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
-					"switching to profile"))
-					|| (chatMessage.toLowerCase().contains("transferring you to a new island..."))) {
-					clearPet();
+			Matcher autopetMatcher = AUTOPET_EQUIP.matcher(event.message.getFormattedText());
+			if (autopetMatcher.matches()) {
+				try {
+					lastLevelHovered = Integer.parseInt(autopetMatcher.group(1));
+				} catch (NumberFormatException ignored) {
 				}
+
+				String petStringMatch = autopetMatcher.group(2);
+				char colChar = petStringMatch.charAt(0);
+				EnumChatFormatting col = EnumChatFormatting.RESET;
+				for (EnumChatFormatting formatting : EnumChatFormatting.values()) {
+					if (formatting.toString().equals("\u00a7" + colChar)) {
+						col = formatting;
+						break;
+					}
+
+				}
+				Rarity rarity = Rarity.COMMON;
+				if (col != EnumChatFormatting.RESET) {
+					rarity = Rarity.getRarityFromColor(col);
+				}
+
+				String pet = Utils.cleanColour(petStringMatch.substring(1))
+													.replaceAll("[^\\w ]", "").trim()
+													.replace(" ", "_").toUpperCase();
+
+				setCurrentPet(getClosestPetIndex(pet, rarity.petId, "", lastLevelHovered));
+				if (PetInfoOverlay.config.selectedPet == -1) {
+					setCurrentPet(getClosestPetIndex(pet, rarity.petId - 1, "", lastLevelHovered));
+					if (getCurrentPet() != null && !"PET_ITEM_TIER_BOOST".equals(getCurrentPet().petItem)) {
+						PetInfoOverlay.config.selectedPet = -1;
+						Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+							EnumChatFormatting.RED + "[NEU] Can't find pet \u00a7" + petStringMatch +
+								EnumChatFormatting.RED + " try revisiting all pages of /pets."));
+					}
+				}
+			} else if ((chatMessage.toLowerCase().startsWith("you despawned your")) || (chatMessage.toLowerCase().contains(
+				"switching to profile"))
+				|| (chatMessage.toLowerCase().contains("transferring you to a new island..."))) {
+				clearPet();
 			}
 		}
 	}
