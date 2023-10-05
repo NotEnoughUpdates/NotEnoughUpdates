@@ -253,11 +253,8 @@ public class GuiProfileViewer extends GuiScreen {
 			page = ProfileViewerPage.NO_SKYBLOCK;
 		}
 
-		if (profile != null) {
-			if (profileName == null && profile.getLatestProfileName() != null) {
-				profileName = profile.getLatestProfileName();
-			}
-
+		if (profile != null && profileName == null && profile.getLatestProfileName() != null) {
+			profileName = profile.getLatestProfileName();
 		}
 
 		this.sizeX = 431;
@@ -545,15 +542,13 @@ public class GuiProfileViewer extends GuiScreen {
 				int x = guiLeft + i2 * 28;
 				int y = guiTop - 28;
 
-				if (mouseX > x && mouseX < x + 28) {
-					if (mouseY > y && mouseY < y + 32) {
-						if (!iPage.stack
+				if (mouseX > x && mouseX < x + 28 && mouseY > y && mouseY < y + 32) {
+					if (!iPage.stack
+						.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+						.isEmpty()) {
+						tooltipToDisplay = Collections.singletonList(iPage.stack
 							.getTooltip(Minecraft.getMinecraft().thePlayer, false)
-							.isEmpty()) {
-							tooltipToDisplay = Collections.singletonList(iPage.stack
-								.getTooltip(Minecraft.getMinecraft().thePlayer, false)
-								.get(0));
-						}
+							.get(0));
 					}
 				}
 			}
@@ -562,19 +557,15 @@ public class GuiProfileViewer extends GuiScreen {
 		int y = guiTop;
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
 
-		if (mouseX > x && mouseX < x + 29) {
-			if (mouseY > y && mouseY < y + 28) {
-				tooltipToDisplay = new ArrayList<>();
-				tooltipToDisplay.add(Minecraft.getMinecraft().thePlayer.getName());
-			}
+		if (mouseX > x && mouseX < x + 29 && mouseY > y && mouseY < y + 28) {
+			tooltipToDisplay = new ArrayList<>();
+			tooltipToDisplay.add(Minecraft.getMinecraft().thePlayer.getName());
 		}
 
 		for (int i = 0; i < previousProfileSearches.size(); i++) {
-			if (mouseX > x && mouseX < x + 28) {
-				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
-					tooltipToDisplay = new ArrayList<>();
-					tooltipToDisplay.add(previousProfileSearches.get(i));
-				}
+			if (mouseX > x && mouseX < x + 28 && mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.add(previousProfileSearches.get(i));
 			}
 		}
 
@@ -728,23 +719,19 @@ public class GuiProfileViewer extends GuiScreen {
 				int x = guiLeft + i2 * 28;
 				int y = guiTop - 28;
 
-				if (mouseX > x && mouseX < x + 28) {
-					if (mouseY > y && mouseY < y + 32) {
-						if (currentPage != page) Utils.playPressSound();
-						currentPage = page;
-						inventoryTextField.otherComponentClick();
-						playerNameTextField.otherComponentClick();
-						killDeathSearchTextField.otherComponentClick();
-						return;
-					}
+				if (mouseX > x && mouseX < x + 28 && mouseY > y && mouseY < y + 32) {
+					if (currentPage != page) Utils.playPressSound();
+					currentPage = page;
+					inventoryTextField.otherComponentClick();
+					playerNameTextField.otherComponentClick();
+					killDeathSearchTextField.otherComponentClick();
+					return;
 				}
 			}
 		}
 
-		if (pages.containsKey(currentPage)) {
-			if (pages.get(currentPage).mouseClicked(mouseX, mouseY, mouseButton)) {
-				return;
-			}
+		if (pages.containsKey(currentPage) && pages.get(currentPage).mouseClicked(mouseX, mouseY, mouseButton)) {
+			return;
 		}
 
 		String playerName = "";
@@ -755,10 +742,19 @@ public class GuiProfileViewer extends GuiScreen {
 		int y = guiTop;
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
 
-		if (mouseX > x && mouseX < x + 29) {
-			if (mouseY > y && mouseY < y + 28) {
-				if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
-					NotEnoughUpdates.profileViewer.loadPlayerByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
+		if (mouseX > x && mouseX < x + 29 && mouseY > y && mouseY < y + 28) {
+			if (!playerName.equals(Minecraft.getMinecraft().thePlayer.getName().toLowerCase())) {
+				NotEnoughUpdates.profileViewer.loadPlayerByName(Minecraft.getMinecraft().thePlayer.getName(), profile -> {
+					profile.resetCache();
+					NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
+				});
+			}
+		}
+
+		for (int i = 0; i < previousProfileSearches.size(); i++) {
+			if (mouseX > x && mouseX < x + 28 && mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
+				if (!playerName.equals(previousProfileSearches.get(i))) {
+					NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i), profile -> {
 						profile.resetCache();
 						NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
 					});
@@ -766,42 +762,24 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
-		for (int i = 0; i < previousProfileSearches.size(); i++) {
-			if (mouseX > x && mouseX < x + 28) {
-				if (mouseY > y + 28 * (i + 1) && mouseY < y + 28 * (i + 2)) {
-					if (!playerName.equals(previousProfileSearches.get(i))) {
-						NotEnoughUpdates.profileViewer.loadPlayerByName(previousProfileSearches.get(i), profile -> {
-							profile.resetCache();
-							NotEnoughUpdates.INSTANCE.openGui = new GuiProfileViewer(profile);
-						});
-					}
-				}
-			}
+		if (mouseX > guiLeft + sizeX - 100 && mouseX < guiLeft + sizeX && mouseY > guiTop + sizeY + 5 &&
+			mouseY < guiTop + sizeY + 25) {
+			playerNameTextField.mouseClicked(mouseX, mouseY, mouseButton);
+			inventoryTextField.otherComponentClick();
+			killDeathSearchTextField.otherComponentClick();
+			return;
 		}
-
-		if (mouseX > guiLeft + sizeX - 100 && mouseX < guiLeft + sizeX) {
-			if (mouseY > guiTop + sizeY + 5 && mouseY < guiTop + sizeY + 25) {
-				playerNameTextField.mouseClicked(mouseX, mouseY, mouseButton);
-				inventoryTextField.otherComponentClick();
-				killDeathSearchTextField.otherComponentClick();
-				return;
-			}
-		}
-		if (
-			mouseX > guiLeft + 106 &&
-				mouseX < guiLeft + 106 + 100 &&
-				profile != null &&
-				!profile.getProfileNames().isEmpty() &&
-				profileName != null
-		) {
-			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
-				String url =
-					"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
-						profileName;
-				Utils.openUrl(url);
-				Utils.playPressSound();
-				return;
-			}
+		if (mouseX > guiLeft + 106 &&
+			mouseX < guiLeft + 106 + 100 &&
+			profile != null &&
+			!profile.getProfileNames().isEmpty() &&
+			profileName != null && mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
+			String url =
+				"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+					profileName;
+			Utils.openUrl(url);
+			Utils.playPressSound();
+			return;
 		}
 
 		if (mouseX > guiLeft && mouseX < guiLeft + 100 && profile != null && !profile.getProfileNames().isEmpty()) {
@@ -915,45 +893,43 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
-		if (mouseX > x && mouseX < x + 120) {
-			if (mouseY > y - 4 && mouseY < y + 13) {
-				String levelStr;
-				String totalXpStr = null;
-				if (skillName.contains("Catacombs")) {
-					totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
-						StringUtils.formatNumber(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
-						StringUtils.formatToTenths(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
-				}
-				// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
-				if (levelObj.maxed) {
-					levelStr = levelObj.maxLevel != 7 ?
-						EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
-							"%.2f",
-							levelObj.level
-						) + ")" :
-						EnumChatFormatting.GOLD + "MAXED!";
+		if (mouseX > x && mouseX < x + 120 && mouseY > y - 4 && mouseY < y + 13) {
+			String levelStr;
+			String totalXpStr = null;
+			if (skillName.contains("Catacombs")) {
+				totalXpStr = EnumChatFormatting.GRAY + "Total XP: " + EnumChatFormatting.DARK_PURPLE +
+					StringUtils.formatNumber(levelObj.totalXp) + EnumChatFormatting.DARK_GRAY + " (" +
+					StringUtils.formatToTenths(getPercentage(skillName.toLowerCase(), levelObj)) + "% to 50)";
+			}
+			// Adds overflow level to each level object that is maxed, avoids hotm level as there is no overflow xp for it
+			if (levelObj.maxed) {
+				levelStr = levelObj.maxLevel != 7 ?
+					EnumChatFormatting.GOLD + "MAXED!" + EnumChatFormatting.GRAY + " (Overflow level: " + String.format(
+						"%.2f",
+						levelObj.level
+					) + ")" :
+					EnumChatFormatting.GOLD + "MAXED!";
+			} else {
+				if (skillName.contains("Class Average")) {
+					levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
+					totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
 				} else {
-					if (skillName.contains("Class Average")) {
-						levelStr = "Progress: " + EnumChatFormatting.DARK_PURPLE + String.format("%.1f", (level % 1 * 100)) + "%";
-						totalXpStr = "Exact Class Average: " + EnumChatFormatting.WHITE + String.format("%.2f", levelObj.level);
-					} else {
-						int maxXp = (int) levelObj.maxXpForLevel;
-						levelStr =
-							EnumChatFormatting.DARK_PURPLE +
-								StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
-								"/" +
-								StringUtils.shortNumberFormat(maxXp) +
-								// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
-								// a conditional here to add the overflow level rather than above
-								(skillName.contains("Catacombs") && levelObj.level >= 50 ?
-									EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
-					}
+					int maxXp = (int) levelObj.maxXpForLevel;
+					levelStr =
+						EnumChatFormatting.DARK_PURPLE +
+							StringUtils.shortNumberFormat(Math.round((level % 1) * maxXp)) +
+							"/" +
+							StringUtils.shortNumberFormat(maxXp) +
+							// Since catacombs isn't considered 'maxed' at level 50 (since the cap is '99'), we can add
+							// a conditional here to add the overflow level rather than above
+							(skillName.contains("Catacombs") && levelObj.level >= 50 ?
+								EnumChatFormatting.GRAY + " (Overflow level: " + String.format("%.2f", levelObj.level) + ")" : "");
 				}
-				if (totalXpStr != null) {
-					tooltipToDisplay = Utils.createList(levelStr, totalXpStr);
-				} else {
-					tooltipToDisplay = Utils.createList(levelStr);
-				}
+			}
+			if (totalXpStr != null) {
+				tooltipToDisplay = Utils.createList(levelStr, totalXpStr);
+			} else {
+				tooltipToDisplay = Utils.createList(levelStr);
 			}
 		}
 
