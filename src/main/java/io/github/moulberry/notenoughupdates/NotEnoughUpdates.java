@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -228,11 +228,6 @@ public class NotEnoughUpdates {
 			config = new NEUConfig();
 			saveConfig();
 		} else {
-			if (config.apiKey != null && config.apiKey.apiKey != null) {
-				config.apiData.apiKey = config.apiKey.apiKey;
-				config.apiKey = null;
-			}
-
 			//add the trophy fishing tab to the config
 			if (config.profileViewer.pageLayout.size() == 8) {
 				config.profileViewer.pageLayout.add(8);

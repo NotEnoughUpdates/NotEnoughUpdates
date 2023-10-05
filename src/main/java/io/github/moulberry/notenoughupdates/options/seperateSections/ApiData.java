@@ -37,14 +37,6 @@ public class ApiData {
 	@ConfigEditorBoolean
 	public boolean apiDataUnlocked = false;
 
-	@Expose
-	@ConfigOption(
-		name = "Api Key",
-		desc = "Hypixel API key."
-	)
-	@ConfigEditorText
-	public String apiKey = "";
-
 	@ConfigEditorAccordion(id = 0)
 	@ConfigOption(name = "Repository", desc = "")
 	public boolean repository = false;

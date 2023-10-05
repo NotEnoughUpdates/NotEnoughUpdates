@@ -23,9 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
-import io.github.moulberry.notenoughupdates.events.ProfileDataLoadedEvent;
 import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
-import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -102,25 +100,6 @@ public class ApiUtil {
 			e.printStackTrace();
 			ctx = null;
 		}
-	}
-
-	public void updateProfileData() {
-		updateProfileData(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""));
-	}
-
-	public void updateProfileData(String playerUuid) {
-		if (true) return;
-		if (!updateTasks.getOrDefault(playerUuid, CompletableFuture.completedFuture(null)).isDone()) return;
-
-		String uuid = Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", "");
-		updateTasks.put(playerUuid, newHypixelApiRequest("skyblock/profiles")
-			.queryArgument("uuid", uuid)
-			.requestJson()
-			.handle((jsonObject, throwable) -> {
-				new ProfileDataLoadedEvent(uuid, jsonObject).post();
-				return null;
-			}));
-
 	}
 
 	public static class Request {
@@ -291,7 +270,7 @@ public class ApiUtil {
 				}
 			}, executorService).handle((obj, t) -> {
 				if (t != null) {
-					System.err.println(ErrorUtil.printStackTraceWithoutApiKey(t));
+					t.printStackTrace();
 				}
 				return obj;
 			});
@@ -318,12 +297,6 @@ public class ApiUtil {
 
 	public Request request() {
 		return new Request();
-	}
-
-	@Deprecated
-	public Request newHypixelApiRequest(String apiPath) {
-		return newAnonymousHypixelApiRequest(apiPath)
-			.queryArgument("key", NotEnoughUpdates.INSTANCE.config.apiData.apiKey);
 	}
 
 	public Request newAnonymousHypixelApiRequest(String apiPath) {
