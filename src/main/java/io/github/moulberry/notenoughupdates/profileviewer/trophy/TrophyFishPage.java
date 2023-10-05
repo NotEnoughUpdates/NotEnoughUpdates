@@ -230,11 +230,9 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			GlStateManager.color(1, 1, 1, 1);
 			Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(getItem(value.getName(), highestRarity), x, y);
 
-			if (mouseX >= x && mouseX < x + 24) {
-				if (mouseY >= y && mouseY <= y + 24) {
-					tooltipToDisplay = new ArrayList<>();
-					tooltipToDisplay.addAll(getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()));
-				}
+			if (mouseX >= x && mouseX < x + 24 && mouseY >= y && mouseY <= y + 24) {
+				tooltipToDisplay = new ArrayList<>();
+				tooltipToDisplay.addAll(getTooltip(value.getName(), value.getTrophyFishRarityIntegerMap()));
 			}
 		}
 
@@ -248,12 +246,10 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 				y = guiTop + slotLocations.get(clonedList.indexOf(difference) + (trophyFishList.keySet().size())).getRight();
 				ItemStack itemStack = new ItemStack(Items.dye, 1, 8);
 				Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
-				if (mouseX >= x && mouseX < x + 24) {
-					if (mouseY >= y && mouseY <= y + 24) {
-						tooltipToDisplay = new ArrayList<>();
-						tooltipToDisplay.addAll(getTooltip(difference, null));
-						GlStateManager.color(1, 1, 1, 1);
-					}
+				if (mouseX >= x && mouseX < x + 24 && mouseY >= y && mouseY <= y + 24) {
+					tooltipToDisplay = new ArrayList<>();
+					tooltipToDisplay.addAll(getTooltip(difference, null));
+					GlStateManager.color(1, 1, 1, 1);
 				}
 				Minecraft.getMinecraft().getTextureManager().bindTexture(pv_elements);
 				Utils.drawTexturedRect(x - 2, y - 2, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
