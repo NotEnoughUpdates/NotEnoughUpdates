@@ -1276,46 +1276,45 @@ public class GuiCustomEnchant extends Gui {
 
 	public boolean mouseInput(int mouseX, int mouseY) {
 		if (Mouse.getEventButtonState() &&
-			(currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT)) {
-			if (mouseY > guiTop + 6 && mouseY < guiTop + 6 + 15) {
-				String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
-				int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
+			(currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) && mouseY > guiTop + 6 &&
+			mouseY < guiTop + 6 + 15) {
+			String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
+			int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
 
-				int click = -1;
-				if (mouseX > guiLeft + X_SIZE / 2 - pageStrLen / 2 - 2 - 15 &&
-					mouseX <= guiLeft + X_SIZE / 2 - pageStrLen / 2 - 2) {
-					click = 17;
-				} else if (mouseX > guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2 &&
-					mouseX <= guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2 + 15) {
-					click = 35;
-				}
+			int click = -1;
+			if (mouseX > guiLeft + X_SIZE / 2 - pageStrLen / 2 - 2 - 15 &&
+				mouseX <= guiLeft + X_SIZE / 2 - pageStrLen / 2 - 2) {
+				click = 17;
+			} else if (mouseX > guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2 &&
+				mouseX <= guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2 + 15) {
+				click = 35;
+			}
 
-				if (click >= 0) {
-					if (currentState == EnchantState.ADDING_ENCHANT) {
-						if (Mouse.getEventButtonState()) {
-							if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-							GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
-
-							EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
-							short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-							ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-							Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-								chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
-
-							cancelButtonAnimTime = System.currentTimeMillis();
-						}
-					} else {
+			if (click >= 0) {
+				if (currentState == EnchantState.ADDING_ENCHANT) {
+					if (Mouse.getEventButtonState()) {
 						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
 						GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
 						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
 						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(click);
+						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
 						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-							chest.inventorySlots.windowId, click, 0, 0, stack, transactionID));
+							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+
+						cancelButtonAnimTime = System.currentTimeMillis();
 					}
-					return true;
+				} else {
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(click);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId, click, 0, 0, stack, transactionID));
 				}
+				return true;
 			}
 		}
 
@@ -1331,104 +1330,103 @@ public class GuiCustomEnchant extends Gui {
 			} else if (Mouse.getEventButton() < 0 && searchField.getFocus() && Mouse.isButtonDown(0)) {
 				searchField.mouseClickMove(mouseX, mouseY, 0, 0);
 			}
-		} else if (currentState == EnchantState.ADDING_ENCHANT && !enchanterEnchLevels.isEmpty()) {
-			if (Mouse.getEventButtonState()) {
-				int left = guiLeft + X_SIZE / 2 - 56;
-				int top = guiTop + 83;
+		} else if (currentState == EnchantState.ADDING_ENCHANT && !enchanterEnchLevels.isEmpty() &&
+			Mouse.getEventButtonState()) {
+			int left = guiLeft + X_SIZE / 2 - 56;
+			int top = guiTop + 83;
 
-				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, 48, 14,
-					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
-				);
-				Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
-					0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
-				);
+			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 - 1 - 48, top + 18, 48, 14,
+				0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+			);
+			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + 1, top + 18, 48, 14,
+				0, 48 / 512f, 328 / 512f, (328 + 14) / 512f, GL11.GL_NEAREST
+			);
 
-				if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
-					mouseY > top + 18 && mouseY <= top + 18 + 14) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+			if (!isChangingEnchLevel && mouseX > guiLeft + X_SIZE / 2 + 1 && mouseX <= guiLeft + X_SIZE / 2 + 1 + 48 &&
+				mouseY > top + 18 && mouseY <= top + 18 + 14) {
+				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+				GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
-					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
-					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+				EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+				short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+				ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
+				Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
-					cancelButtonAnimTime = System.currentTimeMillis();
-				} else if (!isChangingEnchLevel && enchanterCurrentEnch != null &&
-					(mouseX > left + 16 && mouseX <= left + 96 &&
-						mouseY > top && mouseY <= top + 16) ||
-					(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
-						mouseY > top + 18 && mouseY <= top + 18 + 14)) {
-					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+				cancelButtonAnimTime = System.currentTimeMillis();
+			} else if (!isChangingEnchLevel && enchanterCurrentEnch != null &&
+				(mouseX > left + 16 && mouseX <= left + 96 &&
+					mouseY > top && mouseY <= top + 16) ||
+				(mouseX > guiLeft + X_SIZE / 2 - 1 - 48 && mouseX <= guiLeft + X_SIZE / 2 - 1 &&
+					mouseY > top + 18 && mouseY <= top + 18 + 14)) {
+				if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+				GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
-					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
-					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
-						enchanterCurrentEnch.slotIndex);
-					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-						chest.inventorySlots.windowId,
-						enchanterCurrentEnch.slotIndex, 0, 0, stack, transactionID
-					));
+				EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+				short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+				ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(
+					enchanterCurrentEnch.slotIndex);
+				Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+					chest.inventorySlots.windowId,
+					enchanterCurrentEnch.slotIndex, 0, 0, stack, transactionID
+				));
 
-					int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
-					if (playerXpLevel >= enchanterCurrentEnch.xpCost) {
-						if (removingEnchantPlayerLevel >= 0 && enchanterCurrentEnch.level == removingEnchantPlayerLevel) {
-							orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
-						} else {
-							orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
+				int playerXpLevel = Minecraft.getMinecraft().thePlayer.experienceLevel;
+				if (playerXpLevel >= enchanterCurrentEnch.xpCost) {
+					if (removingEnchantPlayerLevel >= 0 && enchanterCurrentEnch.level == removingEnchantPlayerLevel) {
+						orbDisplay.spawnExperienceOrbs(X_SIZE / 2, 66, X_SIZE / 2, 36, 3);
+					} else {
+						orbDisplay.spawnExperienceOrbs(mouseX - guiLeft, mouseY - guiTop, X_SIZE / 2, 66, 0);
+					}
+				}
+
+				confirmButtonAnimTime = System.currentTimeMillis();
+			} else if (mouseX > left + 96 && mouseX <= left + 96 + 16) {
+				if (!isChangingEnchLevel) {
+					if (mouseY > top && mouseY < top + 16) {
+						isChangingEnchLevel = true;
+						return true;
+					}
+				} else {
+					List<Enchantment> before = new ArrayList<>();
+					List<Enchantment> after = new ArrayList<>();
+
+					for (Enchantment ench : enchanterEnchLevels.values()) {
+						if (ench.level < enchanterCurrentEnch.level) {
+							before.add(ench);
+						} else if (ench.level > enchanterCurrentEnch.level) {
+							after.add(ench);
 						}
 					}
 
-					confirmButtonAnimTime = System.currentTimeMillis();
-				} else if (mouseX > left + 96 && mouseX <= left + 96 + 16) {
-					if (!isChangingEnchLevel) {
-						if (mouseY > top && mouseY < top + 16) {
-							isChangingEnchLevel = true;
+					before.sort(Comparator.comparingInt(o -> -o.level));
+					after.sort(Comparator.comparingInt(o -> o.level));
+
+					int bSize = before.size();
+					int aSize = after.size();
+					for (int i = 0; i < bSize + aSize; i++) {
+						Enchantment ench;
+						int yIndex;
+						if (i < bSize) {
+							yIndex = -i - 1;
+							ench = before.get(i);
+						} else {
+							yIndex = i - bSize + 1;
+							ench = after.get(i - bSize);
+						}
+
+						if (mouseY > top + 16 * yIndex && mouseY <= top + 16 * yIndex + 16) {
+							enchanterCurrentEnch = ench;
+							isChangingEnchLevel = false;
 							return true;
 						}
-					} else {
-						List<Enchantment> before = new ArrayList<>();
-						List<Enchantment> after = new ArrayList<>();
-
-						for (Enchantment ench : enchanterEnchLevels.values()) {
-							if (ench.level < enchanterCurrentEnch.level) {
-								before.add(ench);
-							} else if (ench.level > enchanterCurrentEnch.level) {
-								after.add(ench);
-							}
-						}
-
-						before.sort(Comparator.comparingInt(o -> -o.level));
-						after.sort(Comparator.comparingInt(o -> o.level));
-
-						int bSize = before.size();
-						int aSize = after.size();
-						for (int i = 0; i < bSize + aSize; i++) {
-							Enchantment ench;
-							int yIndex;
-							if (i < bSize) {
-								yIndex = -i - 1;
-								ench = before.get(i);
-							} else {
-								yIndex = i - bSize + 1;
-								ench = after.get(i - bSize);
-							}
-
-							if (mouseY > top + 16 * yIndex && mouseY <= top + 16 * yIndex + 16) {
-								enchanterCurrentEnch = ench;
-								isChangingEnchLevel = false;
-								return true;
-							}
-						}
 					}
 				}
+			}
 
-				if (isChangingEnchLevel) {
-					isChangingEnchLevel = false;
-					return true;
-				}
+			if (isChangingEnchLevel) {
+				isChangingEnchLevel = false;
+				return true;
 			}
 		}
 
@@ -1450,18 +1448,17 @@ public class GuiCustomEnchant extends Gui {
 		}
 
 		//Config options
-		if (Mouse.getEventButtonState()) {
-			if (mouseX >= guiLeft + 294 && mouseX < guiLeft + 294 + 36 &&
-				mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
-				int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
+		if (Mouse.getEventButtonState() && mouseX >= guiLeft + 294 && mouseX < guiLeft + 294 + 36 &&
+			mouseY >= guiTop + 146 && mouseY < guiTop + 146 + 36) {
+			int index = (mouseX - (guiLeft + 295)) / 18 + (mouseY - (guiTop + 147)) / 18 * 2;
 
-				int direction = Mouse.getEventButton() == 0 ? 1 : -1;
+			int direction = Mouse.getEventButton() == 0 ? 1 : -1;
 
-				switch (index) {
-					case 0: {
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = false;
-						break;
-					}
+			switch (index) {
+				case 0: {
+					NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enableTableGUI = false;
+					break;
+				}
                    /*case 1: {
                         int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants;
                         val += direction;
@@ -1470,22 +1467,21 @@ public class GuiCustomEnchant extends Gui {
                         NotEnoughUpdates.INSTANCE.config.enchantingSolvers.incompatibleEnchants = val;
                         break;
                     }*/
-					case 2: {
-						int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting;
-						val += direction;
-						if (val < 0) val = 1;
-						if (val > 1) val = 0;
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting = val;
-						break;
-					}
-					case 3: {
-						int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering;
-						val += direction;
-						if (val < 0) val = 1;
-						if (val > 1) val = 0;
-						NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering = val;
-						break;
-					}
+				case 2: {
+					int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting;
+					val += direction;
+					if (val < 0) val = 1;
+					if (val > 1) val = 0;
+					NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantSorting = val;
+					break;
+				}
+				case 3: {
+					int val = NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering;
+					val += direction;
+					if (val < 0) val = 1;
+					if (val > 1) val = 0;
+					NotEnoughUpdates.INSTANCE.config.enchantingSolvers.enchantOrdering = val;
+					break;
 				}
 			}
 		}
@@ -1625,26 +1621,25 @@ public class GuiCustomEnchant extends Gui {
 			}
 		}
 
-		if (mouseX > guiLeft + 102 && mouseX < guiLeft + 102 + 160) {
-			if ((mouseY > guiTop + 133 && mouseY < guiTop + 133 + 54) ||
-				(mouseY > guiTop + 133 + 54 + 4 && mouseY < guiTop + 133 + 54 + 4 + 18)) {
-				if (currentState == EnchantState.ADDING_ENCHANT) {
-					if (Mouse.getEventButtonState()) {
-						if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
-						GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
+		if (mouseX > guiLeft + 102 && mouseX < guiLeft + 102 + 160 &&
+			((mouseY > guiTop + 133 && mouseY < guiTop + 133 + 54) ||
+				(mouseY > guiTop + 133 + 54 + 4 && mouseY < guiTop + 133 + 54 + 4 + 18))) {
+			if (currentState == EnchantState.ADDING_ENCHANT) {
+				if (Mouse.getEventButtonState()) {
+					if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) return true;
+					GuiContainer chest = ((GuiContainer) Minecraft.getMinecraft().currentScreen);
 
-						EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
-						short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
-						ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
-						Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
-							chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
+					EntityPlayerSP playerIn = Minecraft.getMinecraft().thePlayer;
+					short transactionID = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
+					ItemStack stack = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getStackInSlot(45);
+					Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C0EPacketClickWindow(
+						chest.inventorySlots.windowId, 45, 0, 0, stack, transactionID));
 
-						cancelButtonAnimTime = System.currentTimeMillis();
-					}
-					return true;
-				} else {
-					return false;
+					cancelButtonAnimTime = System.currentTimeMillis();
 				}
+				return true;
+			} else {
+				return false;
 			}
 		}
 		if (mouseX >= guiLeft + 173 && mouseX < guiLeft + 173 + 18 &&
