@@ -216,15 +216,12 @@ public class MuseumPage extends GuiProfileViewerPage {
 
 		boolean leftHovered = false;
 		boolean rightHovered = false;
-		if (Mouse.isButtonDown(0)) {
-			if (mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16) {
-				if (mouseX > guiLeft + 251 - 12 && mouseX < guiLeft + 251 + 12) {
-					if (mouseX < guiLeft + 251) {
-						leftHovered = true;
-					} else {
-						rightHovered = true;
-					}
-				}
+		if (Mouse.isButtonDown(0) && mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16 &&
+			mouseX > guiLeft + 251 - 12 && mouseX < guiLeft + 251 + 12) {
+			if (mouseX < guiLeft + 251) {
+				leftHovered = true;
+			} else {
+				rightHovered = true;
 			}
 		}
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.resource_packs);
@@ -455,10 +452,8 @@ public class MuseumPage extends GuiProfileViewerPage {
 				Utils.drawItemStack(stack, x, y);
 
 				if ((mouseX >= x && mouseX <= x + 16) &&
-					(mouseY >= y && mouseY <= y + 16)) {
-					if (!is_five || i < 5) {
-						getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-					}
+					(mouseY >= y && mouseY <= y + 16) && (!is_five || i < 5)) {
+					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
 				row++;
 			}
@@ -481,23 +476,21 @@ public class MuseumPage extends GuiProfileViewerPage {
 		int guiTop = GuiProfileViewer.getGuiTop();
 		int xIndex = 0;
 		for (Map.Entry<String, ItemStack> entry : museumCategories.entrySet()) {
-			if (mouseX > guiLeft + 16 + 34 * xIndex && mouseX < guiLeft + 16 + 34 * xIndex + 20) {
-				if (mouseY > guiTop + 172 && mouseY < guiTop + 172 + 20) {
-					setPage(entry.getKey());
-					Utils.playPressSound();
-					return;
-				}
+			if (mouseX > guiLeft + 16 + 34 * xIndex && mouseX < guiLeft + 16 + 34 * xIndex + 20 && mouseY > guiTop + 172 &&
+				mouseY < guiTop + 172 + 20) {
+				setPage(entry.getKey());
+				Utils.playPressSound();
+				return;
 			}
 			xIndex++;
 		}
 
-		if (mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16) {
-			if (mouseX > guiLeft + 251 - 12 && mouseX < guiLeft + 251 + 12) {
-				if (mouseX < guiLeft + 251) {
-					if (onPage > 0) onPage--;
-				} else {
-					if (onPage < pages) onPage++;
-				}
+		if (mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16 && mouseX > guiLeft + 251 - 12 &&
+			mouseX < guiLeft + 251 + 12) {
+			if (mouseX < guiLeft + 251) {
+				if (onPage > 0) onPage--;
+			} else {
+				if (onPage < pages) onPage++;
 			}
 		}
 	}
