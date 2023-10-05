@@ -241,25 +241,23 @@ public class RiftPage extends GuiProfileViewerPage {
 			getInstance().renderBar(guiLeft + 320, guiTop + 69, 90, vampire.level % 1);
 		}
 
-		if (mouseX > guiLeft + 300 && mouseX < guiLeft + 410) {
-			if (mouseY > guiTop + 58 && mouseY < guiTop + 80) {
-				getInstance().tooltipToDisplay = new ArrayList<>();
-				List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
-				tooltipToDisplay.add("§6Vampire Slayer");
-				if (vampire.maxed) {
-					tooltipToDisplay.add(
-						EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
-				} else {
-					int maxXp = (int) vampire.maxXpForLevel;
-					getInstance()
-						.tooltipToDisplay.add(
-							EnumChatFormatting.GRAY +
-								"Progress: " +
-								EnumChatFormatting.DARK_PURPLE +
-								StringUtils.shortNumberFormat(Math.round((vampire.level % 1) * maxXp)) +
-								"/" +
-								StringUtils.shortNumberFormat(maxXp));
-				}
+		if (mouseX > guiLeft + 300 && mouseX < guiLeft + 410 && mouseY > guiTop + 58 && mouseY < guiTop + 80) {
+			getInstance().tooltipToDisplay = new ArrayList<>();
+			List<String> tooltipToDisplay = getInstance().tooltipToDisplay;
+			tooltipToDisplay.add("§6Vampire Slayer");
+			if (vampire.maxed) {
+				tooltipToDisplay.add(
+					EnumChatFormatting.GRAY + "Progress: " + EnumChatFormatting.GOLD + "MAXED!");
+			} else {
+				int maxXp = (int) vampire.maxXpForLevel;
+				getInstance()
+					.tooltipToDisplay.add(
+						EnumChatFormatting.GRAY +
+							"Progress: " +
+							EnumChatFormatting.DARK_PURPLE +
+							StringUtils.shortNumberFormat(Math.round((vampire.level % 1) * maxXp)) +
+							"/" +
+							StringUtils.shortNumberFormat(maxXp));
 			}
 		}
 
