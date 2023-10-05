@@ -125,14 +125,12 @@ public class MinionHelperInventoryLoader {
 	private void loadMinionData(Container openContainer) {
 		Slot firstSlot = openContainer.inventorySlots.get(10);
 		boolean shouldLoad = false;
-		if (firstSlot != null) {
-			if (firstSlot.getHasStack()) {
-				ItemStack stack = firstSlot.getStack();
-				String displayName = stack.getDisplayName();
-				if (!pagesSeenAlready.contains(displayName)) {
-					pagesSeenAlready.add(displayName);
-					shouldLoad = true;
-				}
+		if (firstSlot != null && firstSlot.getHasStack()) {
+			ItemStack stack = firstSlot.getStack();
+			String displayName = stack.getDisplayName();
+			if (!pagesSeenAlready.contains(displayName)) {
+				pagesSeenAlready.add(displayName);
+				shouldLoad = true;
 			}
 		}
 
