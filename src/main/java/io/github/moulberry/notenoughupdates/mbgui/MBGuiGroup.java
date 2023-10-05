@@ -55,10 +55,9 @@ public abstract class MBGuiGroup extends MBGuiElement {
 
 		for (MBGuiElement child : getChildren()) {
 			Vector2f childPos = childrenPos.get(child);
-			if (mouseX > x + childPos.x && mouseX < x + childPos.x + child.getWidth()) {
-				if (mouseY > y + childPos.y && mouseY < y + childPos.y + child.getHeight()) {
-					child.mouseClick(x + childPos.x, y + childPos.y, mouseX, mouseY);
-				}
+			if (mouseX > x + childPos.x && mouseX < x + childPos.x + child.getWidth() && mouseY > y + childPos.y &&
+				mouseY < y + childPos.y + child.getHeight()) {
+				child.mouseClick(x + childPos.x, y + childPos.y, mouseX, mouseY);
 			}
 		}
 	}
