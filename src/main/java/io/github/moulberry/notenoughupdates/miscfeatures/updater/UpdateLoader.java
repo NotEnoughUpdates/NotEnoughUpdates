@@ -108,11 +108,9 @@ abstract class UpdateLoader {
 			return;
 		}
 		for (File sus : modFiles) {
-			if (sus.getName().endsWith(".jar")) {
-				if (updater.isNeuJar(sus)) {
-					updater.logProgress("Found old NEU file: " + sus + ". Deleting later.");
-					toDelete.add(sus);
-				}
+			if (sus.getName().endsWith(".jar") && updater.isNeuJar(sus)) {
+				updater.logProgress("Found old NEU file: " + sus + ". Deleting later.");
+				toDelete.add(sus);
 			}
 		}
 		File dest = new File(mcDataDir, file.getName());
