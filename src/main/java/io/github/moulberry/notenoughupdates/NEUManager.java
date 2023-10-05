@@ -211,10 +211,9 @@ public class NEUManager {
 					return false;
 				}
 
-				if (new File(configLocation, "repo").exists() && new File(configLocation, "repo/items").exists()) {
-					if (currentCommitJSON != null && currentCommitJSON.get("sha").getAsString().equals(latestRepoCommit)) {
-						return false;
-					}
+				if (new File(configLocation, "repo").exists() && new File(configLocation, "repo/items").exists() &&
+					currentCommitJSON != null && currentCommitJSON.get("sha").getAsString().equals(latestRepoCommit)) {
+					return false;
 				}
 
 				repoLocation.mkdirs();
@@ -1025,10 +1024,9 @@ public class NEUManager {
 	 * unlocked. See NotEnoughUpdates#onGuiChat for where this method is called.
 	 */
 	public boolean failViewItem(String text) {
-		if (viewItemAttemptID != null && !viewItemAttemptID.isEmpty()) {
-			if (System.currentTimeMillis() - viewItemAttemptTime < 500) {
-				return displayGuiItemRecipe(viewItemAttemptID);
-			}
+		if (viewItemAttemptID != null && !viewItemAttemptID.isEmpty() &&
+			System.currentTimeMillis() - viewItemAttemptTime < 500) {
+			return displayGuiItemRecipe(viewItemAttemptID);
 		}
 		return false;
 	}
@@ -1329,101 +1327,99 @@ public class NEUManager {
 			replacements.put("LVL", "" + level);
 		}
 
-		if (petnums != null) {
-			if (petnums.has(petname)) {
-				JsonObject petInfo = petnums.get(petname).getAsJsonObject();
-				if (petInfo.has(tier)) {
-					JsonObject petInfoTier = petInfo.get(tier).getAsJsonObject();
-					if (petInfoTier == null || !petInfoTier.has("1") || !petInfoTier.has("100")) {
-						return replacements;
+		if (petnums != null && petnums.has(petname)) {
+			JsonObject petInfo = petnums.get(petname).getAsJsonObject();
+			if (petInfo.has(tier)) {
+				JsonObject petInfoTier = petInfo.get(tier).getAsJsonObject();
+				if (petInfoTier == null || !petInfoTier.has("1") || !petInfoTier.has("100")) {
+					return replacements;
+				}
+
+				JsonObject min = petInfoTier.get("1").getAsJsonObject();
+				JsonObject max = petInfoTier.get("100").getAsJsonObject();
+
+				if (level < 1) {
+					JsonArray otherNumsMin = min.get("otherNums").getAsJsonArray();
+					JsonArray otherNumsMax = max.get("otherNums").getAsJsonArray();
+					boolean addZero = false;
+					if (petInfoTier.has("stats_levelling_curve")) {
+						String[] stringArray = petInfoTier.get("stats_levelling_curve").getAsString().split(":");
+						if (stringArray.length == 3) {
+							int type = Integer.parseInt(stringArray[2]);
+							if (type == 1) {
+								addZero = true;
+							}
+						}
+					}
+					for (int i = 0; i < otherNumsMax.size(); i++) {
+						replacements.put(
+							"" + i,
+							(addZero ? "0\u27A1" : "") +
+								removeUnusedDecimal(Math.floor(otherNumsMin.get(i).getAsFloat() * 10) / 10f) +
+								"\u27A1" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
+						);
 					}
 
-					JsonObject min = petInfoTier.get("1").getAsJsonObject();
-					JsonObject max = petInfoTier.get("100").getAsJsonObject();
+					for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
+						int statMax = (int) Math.floor(entry.getValue().getAsFloat());
+						int statMin = (int) Math.floor(min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat());
+						String statStr = (statMin > 0 ? "+" : "") + statMin + "\u27A1" + statMax;
+						statStr = (addZero ? "0\u27A1" : "") + statStr;
+						replacements.put(entry.getKey(), statStr);
+					}
+				} else {
 
-					if (level < 1) {
-						JsonArray otherNumsMin = min.get("otherNums").getAsJsonArray();
-						JsonArray otherNumsMax = max.get("otherNums").getAsJsonArray();
-						boolean addZero = false;
-						if (petInfoTier.has("stats_levelling_curve")) {
-							String[] stringArray = petInfoTier.get("stats_levelling_curve").getAsString().split(":");
-							if (stringArray.length == 3) {
-								int type = Integer.parseInt(stringArray[2]);
-								if (type == 1) {
-									addZero = true;
-								}
+					int minStatsLevel = 0;
+					int maxStatsLevel = 100;
+					int statsLevelingType = -1;
+
+					int statsLevel = level;
+
+					if (petInfoTier.has("stats_levelling_curve")) {
+						String[] stringArray = petInfoTier.get("stats_levelling_curve").getAsString().split(":");
+						if (stringArray.length == 3) {
+							minStatsLevel = Integer.parseInt(stringArray[0]);
+							maxStatsLevel = Integer.parseInt(stringArray[1]);
+							statsLevelingType = Integer.parseInt(stringArray[2]);
+							switch (statsLevelingType) {
+								//Case for maybe a pet that might exist
+								case 0:
+								case 1:
+									if (level < minStatsLevel) {
+										statsLevel = 1;
+									} else if (level < maxStatsLevel) {
+										statsLevel = level - minStatsLevel + 1;
+									} else {
+										statsLevel = maxStatsLevel - minStatsLevel + 1;
+									}
+									break;
+
 							}
 						}
-						for (int i = 0; i < otherNumsMax.size(); i++) {
-							replacements.put(
-								"" + i,
-								(addZero ? "0\u27A1" : "") +
-									removeUnusedDecimal(Math.floor(otherNumsMin.get(i).getAsFloat() * 10) / 10f) +
-									"\u27A1" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
-							);
-						}
+					}
+					float minMix = (maxStatsLevel - (minStatsLevel - (statsLevelingType == -1 ? 0 : 1)) - statsLevel) / 99f;
+					float maxMix = (statsLevel - 1) / 99f;
 
-						for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
-							int statMax = (int) Math.floor(entry.getValue().getAsFloat());
-							int statMin = (int) Math.floor(min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat());
-							String statStr = (statMin > 0 ? "+" : "") + statMin + "\u27A1" + statMax;
-							statStr = (addZero ? "0\u27A1" : "") + statStr;
+					JsonArray otherNumsMin = min.get("otherNums").getAsJsonArray();
+					JsonArray otherNumsMax = max.get("otherNums").getAsJsonArray();
+					for (int i = 0; i < otherNumsMax.size(); i++) {
+						float val = otherNumsMin.get(i).getAsFloat() * minMix + otherNumsMax.get(i).getAsFloat() * maxMix;
+						if (statsLevelingType == 1 && level < minStatsLevel) {
+							replacements.put("" + i, "0");
+						} else {
+							replacements.put("" + i, removeUnusedDecimal(Math.floor(val * 10) / 10f));
+						}
+					}
+
+					for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
+						if (statsLevelingType == 1 && level < minStatsLevel) {
+							replacements.put(entry.getKey(), "0");
+						} else {
+							float statMax = entry.getValue().getAsFloat();
+							float statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat();
+							float val = statMin * minMix + statMax * maxMix;
+							String statStr = (statMin > 0 ? "+" : "") + removeUnusedDecimal(Math.floor(val * 10) / 10);
 							replacements.put(entry.getKey(), statStr);
-						}
-					} else {
-
-						int minStatsLevel = 0;
-						int maxStatsLevel = 100;
-						int statsLevelingType = -1;
-
-						int statsLevel = level;
-
-						if (petInfoTier.has("stats_levelling_curve")) {
-							String[] stringArray = petInfoTier.get("stats_levelling_curve").getAsString().split(":");
-							if (stringArray.length == 3) {
-								minStatsLevel = Integer.parseInt(stringArray[0]);
-								maxStatsLevel = Integer.parseInt(stringArray[1]);
-								statsLevelingType = Integer.parseInt(stringArray[2]);
-								switch (statsLevelingType) {
-									//Case for maybe a pet that might exist
-									case 0:
-									case 1:
-										if (level < minStatsLevel) {
-											statsLevel = 1;
-										} else if (level < maxStatsLevel) {
-											statsLevel = level - minStatsLevel + 1;
-										} else {
-											statsLevel = maxStatsLevel - minStatsLevel + 1;
-										}
-										break;
-
-								}
-							}
-						}
-						float minMix = (maxStatsLevel - (minStatsLevel - (statsLevelingType == -1 ? 0 : 1)) - statsLevel) / 99f;
-						float maxMix = (statsLevel - 1) / 99f;
-
-						JsonArray otherNumsMin = min.get("otherNums").getAsJsonArray();
-						JsonArray otherNumsMax = max.get("otherNums").getAsJsonArray();
-						for (int i = 0; i < otherNumsMax.size(); i++) {
-							float val = otherNumsMin.get(i).getAsFloat() * minMix + otherNumsMax.get(i).getAsFloat() * maxMix;
-							if (statsLevelingType == 1 && level < minStatsLevel) {
-								replacements.put("" + i, "0");
-							} else {
-								replacements.put("" + i, removeUnusedDecimal(Math.floor(val * 10) / 10f));
-							}
-						}
-
-						for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
-							if (statsLevelingType == 1 && level < minStatsLevel) {
-								replacements.put(entry.getKey(), "0");
-							} else {
-								float statMax = entry.getValue().getAsFloat();
-								float statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat();
-								float val = statMin * minMix + statMax * maxMix;
-								String statStr = (statMin > 0 ? "+" : "") + removeUnusedDecimal(Math.floor(val * 10) / 10);
-								replacements.put(entry.getKey(), statStr);
-							}
 						}
 					}
 				}
