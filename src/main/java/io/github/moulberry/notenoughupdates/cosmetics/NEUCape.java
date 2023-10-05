@@ -102,13 +102,10 @@ public class NEUCape {
 		startTime = System.currentTimeMillis();
 		boolean defaultBehaviour = true;
 
-		if (NotEnoughUpdates.INSTANCE.config.hidden.disableBrokenCapes) {
-			if (capeName.equals("negative")) {
-				defaultBehaviour = false;
-				this.capeName = "fade";
-				this.shaderName = "fade_cape";
-			}
-
+		if (NotEnoughUpdates.INSTANCE.config.hidden.disableBrokenCapes && capeName.equals("negative")) {
+			defaultBehaviour = false;
+			this.capeName = "fade";
+			this.shaderName = "fade_cape";
 		}
 		if (defaultBehaviour) {
 			this.capeName = capeName;
