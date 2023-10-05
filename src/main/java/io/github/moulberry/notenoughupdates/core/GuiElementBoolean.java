@@ -71,11 +71,9 @@ public class GuiElementBoolean extends GuiElement {
 		long deltaMillis = currentMillis - lastMillis;
 		lastMillis = currentMillis;
 		boolean passedLimit = false;
-		if (previewValue != value.get()) {
-			if ((previewValue && animation > 12) ||
-				(!previewValue && animation < 24)) {
-				passedLimit = true;
-			}
+		if (previewValue != value.get() && ((previewValue && animation > 12) ||
+			(!previewValue && animation < 24))) {
+			passedLimit = true;
 		}
 		if (previewValue != passedLimit) {
 			animation += deltaMillis / 10;
