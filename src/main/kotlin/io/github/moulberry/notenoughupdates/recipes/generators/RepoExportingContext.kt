@@ -39,10 +39,7 @@ class RepoExportingContext(
     val nameToItemCache = mutableMapOf<String, String>()
 
     suspend fun writeFile(file: File, json: JsonObject) {
-        if (file.exists()) {
-            if (!askYesNo("Overwrite file?", "The file $file already exists."))
-                return
-        }
+        if (file.exists() && !askYesNo("Overwrite file?", "The file $file already exists.")) return
         manager.writeJson(json, file)
     }
 
