@@ -229,18 +229,16 @@ public class FishingHelper {
 
 			if (NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning ||
 				NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarningR) {
-				if (Minecraft.getMinecraft().thePlayer.fishEntity != null) {
-					if (!pingDelayList.isEmpty()) {
-						while (pingDelayList.size() > 5) pingDelayList.remove(pingDelayList.size() - 1);
+				if (Minecraft.getMinecraft().thePlayer.fishEntity != null && !pingDelayList.isEmpty()) {
+					while (pingDelayList.size() > 5) pingDelayList.remove(pingDelayList.size() - 1);
 
-						int totalMS = 0;
-						for (int delay : pingDelayList) {
-							totalMS += delay;
-						}
-
-						int averageMS = totalMS / pingDelayList.size();
-						pingDelayTicks = (int) Math.floor(averageMS / 50f);
+					int totalMS = 0;
+					for (int delay : pingDelayList) {
+						totalMS += delay;
 					}
+
+					int averageMS = totalMS / pingDelayList.size();
+					pingDelayTicks = (int) Math.floor(averageMS / 50f);
 				}
 
 				if (hookedWarningStateTicks > 0) {
@@ -500,28 +498,27 @@ public class FishingHelper {
 
 												hookedWarningStateTicks = 12;
 											} else if (newDistance >= 0.4f + 0.1f * pingDelayTicks &&
-												NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning) {
-												if (NotEnoughUpdates.INSTANCE.config.fishing.incomingFishIncSounds &&
-													buildupSoundDelay <= 0) {
-													float vol = NotEnoughUpdates.INSTANCE.config.fishing.incomingFishIncSoundsVol / 100f;
-													if (vol > 0) {
-														if (vol > 1) vol = 1;
-														final float volF = vol;
+												NotEnoughUpdates.INSTANCE.config.fishing.incomingFishWarning &&
+												NotEnoughUpdates.INSTANCE.config.fishing.incomingFishIncSounds &&
+												buildupSoundDelay <= 0) {
+												float vol = NotEnoughUpdates.INSTANCE.config.fishing.incomingFishIncSoundsVol / 100f;
+												if (vol > 0) {
+													if (vol > 1) vol = 1;
+													final float volF = vol;
 
-														ISound sound = new PositionedSound(new ResourceLocation("note.pling")) {{
-															volume = volF;
-															pitch = calculatePitchFromDistance((float) newDistance - (0.3f + 0.1f * pingDelayTicks));
-															repeat = false;
-															repeatDelay = 0;
-															attenuationType = ISound.AttenuationType.NONE;
-														}};
+													ISound sound = new PositionedSound(new ResourceLocation("note.pling")) {{
+														volume = volF;
+														pitch = calculatePitchFromDistance((float) newDistance - (0.3f + 0.1f * pingDelayTicks));
+														repeat = false;
+														repeatDelay = 0;
+														attenuationType = AttenuationType.NONE;
+													}};
 
-														float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
-														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
-														Minecraft.getMinecraft().getSoundHandler().playSound(sound);
-														Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
-														buildupSoundDelay = 4;
-													}
+													float oldLevel = Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
+													Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, 1);
+													Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+													Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.RECORDS, oldLevel);
+													buildupSoundDelay = 4;
 												}
 											}
 										}
