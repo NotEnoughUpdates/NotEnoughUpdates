@@ -82,10 +82,8 @@ public class RecipeGenerator {
 		IInventory menu = container.getLowerChestInventory();
 		String uiTitle = menu.getDisplayName().getUnformattedText();
 		EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-		if (uiTitle.startsWith("Item Casting") || uiTitle.startsWith("Refine")) {
-			if (durationDebouncer.trigger())
-				parseAllForgeItemMetadata(menu);
-		}
+		if ((uiTitle.startsWith("Item Casting") || uiTitle.startsWith("Refine")) && durationDebouncer.trigger())
+			parseAllForgeItemMetadata(menu);
 		boolean saveRecipe = shouldSaveRecipe();
 		if (uiTitle.equals("Confirm Process") && saveRecipe) {
 			ForgeRecipe recipe = parseSingleForgeRecipe(menu);
