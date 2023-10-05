@@ -335,9 +335,9 @@ public class SBInfo {
 					setCurrentProfile(newProfile);
 					if (!Objects.equals(currentProfile, newProfile)) {
 						currentProfile = newProfile;
-						if (NotEnoughUpdates.INSTANCE.config != null)
-							if (NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
-								OverlayManager.powderGrindingOverlay.load();
+						if (NotEnoughUpdates.INSTANCE.config != null &&
+							NotEnoughUpdates.INSTANCE.config.mining.powderGrindingTrackerResetMode == 2)
+							OverlayManager.powderGrindingOverlay.load();
 					}
 					hasNewTab = true;
 				} else if (name.startsWith(skillsPrefix)) {
