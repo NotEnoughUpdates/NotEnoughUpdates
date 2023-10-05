@@ -250,11 +250,10 @@ public class SkyblockProfiles {
 
 		long currentTime = System.currentTimeMillis();
 		if (ProfileViewerUtils.lastSoopyRequestTime.containsKey(uuid)) {
-			if (currentTime - ProfileViewerUtils.lastSoopyRequestTime.get(uuid) < 5 * 1000 * 60) {
-				if (ProfileViewerUtils.soopyDataCache.containsKey(uuid)) {
-					updateSoopyNetworth(ProfileViewerUtils.soopyDataCache.get(uuid));
-					callback.run();
-				}
+			if (currentTime - ProfileViewerUtils.lastSoopyRequestTime.get(uuid) < 5 * 1000 * 60 &&
+				ProfileViewerUtils.soopyDataCache.containsKey(uuid)) {
+				updateSoopyNetworth(ProfileViewerUtils.soopyDataCache.get(uuid));
+				callback.run();
 			}
 		} else {
 			ProfileViewerUtils.lastSoopyRequestTime.put(uuid, currentTime);
@@ -352,10 +351,9 @@ public class SkyblockProfiles {
 						JsonObject members = profile.getAsJsonObject("members");
 						if (members.has(uuid)) {
 							JsonObject member = members.getAsJsonObject(uuid);
-							if (member.has("coop_invitation")) {
-								if (!member.getAsJsonObject("coop_invitation").get("confirmed").getAsBoolean()) {
-									continue;
-								}
+							if (member.has("coop_invitation") &&
+								!member.getAsJsonObject("coop_invitation").get("confirmed").getAsBoolean()) {
+								continue;
 							}
 
 							String profileName = profile.get("cute_name").getAsString();
@@ -1107,24 +1105,22 @@ public class SkyblockProfiles {
 			networth = (int) (networth * 1.3f);
 
 			JsonObject petsInfo = getPetsInfo();
-			if (petsInfo != null && petsInfo.has("pets")) {
-				if (petsInfo.get("pets").isJsonArray()) {
-					JsonArray pets = petsInfo.get("pets").getAsJsonArray();
-					for (JsonElement element : pets) {
-						if (element.isJsonObject()) {
-							JsonObject pet = element.getAsJsonObject();
+			if (petsInfo != null && petsInfo.has("pets") && petsInfo.get("pets").isJsonArray()) {
+				JsonArray pets = petsInfo.get("pets").getAsJsonArray();
+				for (JsonElement element : pets) {
+					if (element.isJsonObject()) {
+						JsonObject pet = element.getAsJsonObject();
 
-							String petname = pet.get("type").getAsString();
-							String tier = pet.get("tier").getAsString();
-							String tierNum = GuiProfileViewer.RARITY_TO_NUM.get(tier);
-							if (tierNum != null) {
-								String internalname2 = petname + ";" + tierNum;
-								JsonObject info2 = profileViewer.getManager().auctionManager.getItemAuctionInfo(internalname2);
-								if (info2 == null || !info2.has("price") || !info2.has("count")) continue;
-								int auctionPrice2 = (int) (info2.get("price").getAsFloat() / info2.get("count").getAsFloat());
+						String petname = pet.get("type").getAsString();
+						String tier = pet.get("tier").getAsString();
+						String tierNum = GuiProfileViewer.RARITY_TO_NUM.get(tier);
+						if (tierNum != null) {
+							String internalname2 = petname + ";" + tierNum;
+							JsonObject info2 = profileViewer.getManager().auctionManager.getItemAuctionInfo(internalname2);
+							if (info2 == null || !info2.has("price") || !info2.has("count")) continue;
+							int auctionPrice2 = (int) (info2.get("price").getAsFloat() / info2.get("count").getAsFloat());
 
-								networth += auctionPrice2;
-							}
+							networth += auctionPrice2;
 						}
 					}
 				}
