@@ -332,11 +332,7 @@ public class APIManager {
 		if (recipes != null)
 			RECIPE_ITER:
 				for (NeuRecipe recipe : recipes) {
-					if (recipe instanceof ItemShopRecipe) {
-						if (vanillaItem) {
-							continue;
-						}
-					}
+					if (recipe instanceof ItemShopRecipe && vanillaItem) continue;
 					if (recipe.hasVariableCost() || !recipe.shouldUseForCraftCost()) continue;
 					float craftPrice = 0;
 					for (Ingredient i : recipe.getIngredients()) {
