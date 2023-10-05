@@ -332,15 +332,13 @@ public class CustomItemEffects {
 					}
 				}
 
-				if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay) {
-					if (denyTpReason != null) {
-						ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-						Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
-							Minecraft.getMinecraft().fontRendererObj,
-							scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
-						);
-						GlStateManager.color(1, 1, 1, 1);
-					}
+				if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableEtherwarpHelperOverlay && denyTpReason != null) {
+					ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+					Utils.drawStringCentered(EnumChatFormatting.RED + "Can't TP: " + denyTpReason,
+						Minecraft.getMinecraft().fontRendererObj,
+						scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 2f + 10, true, 0
+					);
+					GlStateManager.color(1, 1, 1, 1);
 				}
 			}
 
@@ -655,11 +653,9 @@ public class CustomItemEffects {
 		NBTTagList items = contents_nbt.getTagList("i", 10);
 		for (int j = 0; j < items.tagCount(); j++) {
 			NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-			if (buildersItem.getKeySet().size() > 0) {
-				if (buildersItem.getInteger("id") == Item.getIdFromItem(match.getItem()) &&
-					buildersItem.getInteger("Damage") == match.getItemDamage()) {
-					count += items.getCompoundTagAt(j).getByte("Count");
-				}
+			if (buildersItem.getKeySet().size() > 0 && buildersItem.getInteger("id") == Item.getIdFromItem(match.getItem()) &&
+				buildersItem.getInteger("Damage") == match.getItemDamage()) {
+				count += items.getCompoundTagAt(j).getByte("Count");
 			}
 		}
 
@@ -707,31 +703,30 @@ public class CustomItemEffects {
 		ItemStack held = Minecraft.getMinecraft().thePlayer.getHeldItem();
 		String heldInternal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 		boolean isWand = heldInternal != null && heldInternal.equals("BUILDERS_WAND");
-		if (heldInternal != null && heldInternal.equals(isWand ? "BUILDERS_WAND" : "BUILDERS_RULER")) {
-			if (held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
-				held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(isWand
-					? "builder's_wand_data"
-					: "builder's_ruler_data", 7)) {
-				byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray(isWand
-					? "builder's_wand_data"
-					: "builder's_ruler_data");
-				try {
-					NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
-					NBTTagList items = contents_nbt.getTagList("i", 10);
-					for (int j = 0; j < items.tagCount(); j++) {
-						NBTTagCompound buildersItem = items.getCompoundTagAt(j);
-						if (buildersItem.getKeySet().size() > 0) {
-							String internalname =
-								NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
-																								 .withItemNBT(buildersItem.getCompoundTag("tag"))
-																								 .resolveInternalName();
-							if (internalname != null && internalname.equals("INFINIDIRT_WAND")) {
-								return true;
-							}
+		if (heldInternal != null && heldInternal.equals(isWand ? "BUILDERS_WAND" : "BUILDERS_RULER") &&
+			held.hasTagCompound() && held.getTagCompound().hasKey("ExtraAttributes", 10) &&
+			held.getTagCompound().getCompoundTag("ExtraAttributes").hasKey(isWand
+				? "builder's_wand_data"
+				: "builder's_ruler_data", 7)) {
+			byte[] bytes = held.getTagCompound().getCompoundTag("ExtraAttributes").getByteArray(isWand
+				? "builder's_wand_data"
+				: "builder's_ruler_data");
+			try {
+				NBTTagCompound contents_nbt = CompressedStreamTools.readCompressed(new ByteArrayInputStream(bytes));
+				NBTTagList items = contents_nbt.getTagList("i", 10);
+				for (int j = 0; j < items.tagCount(); j++) {
+					NBTTagCompound buildersItem = items.getCompoundTagAt(j);
+					if (buildersItem.getKeySet().size() > 0) {
+						String internalname =
+							NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery()
+																							 .withItemNBT(buildersItem.getCompoundTag("tag"))
+																							 .resolveInternalName();
+						if (internalname != null && internalname.equals("INFINIDIRT_WAND")) {
+							return true;
 						}
 					}
-				} catch (Exception ignored) {
 				}
+			} catch (Exception ignored) {
 			}
 		}
 
@@ -1500,22 +1495,20 @@ public class CustomItemEffects {
 				for (int x = -1; x <= 1; x++) {
 					for (int y = -1; y <= 1; y++) {
 						for (int z = -1; z <= 1; z++) {
-							if (x * x + y * y + z * z == 1) {
-								if (((x == 0) && (target.sideHit.getAxis() == EnumFacing.Axis.X)) ||
-									((y == 0) && (target.sideHit.getAxis() == EnumFacing.Axis.Y)) ||
-									((z == 0) && (target.sideHit.getAxis() == EnumFacing.Axis.Z))) {
-									if (Minecraft.getMinecraft().theWorld.getBlockState(candidate.add(
-										x + target.sideHit.getFrontOffsetX(),
-										y + target.sideHit.getFrontOffsetY(),
-										z + target.sideHit.getFrontOffsetZ()
-									)).getBlock() == Blocks.air) {
-										BlockPos posNew = candidate.add(x, y, z);
-										if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(
-											posNew)) {
-											IBlockState blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew);
-											if (blockNew == match) {
-												candidatesNew.add(posNew);
-											}
+							if (x * x + y * y + z * z == 1 && (((x == 0) && (target.sideHit.getAxis() == EnumFacing.Axis.X)) ||
+								((y == 0) && (target.sideHit.getAxis() == EnumFacing.Axis.Y)) ||
+								((z == 0) && (target.sideHit.getAxis() == EnumFacing.Axis.Z)))) {
+								if (Minecraft.getMinecraft().theWorld.getBlockState(candidate.add(
+									x + target.sideHit.getFrontOffsetX(),
+									y + target.sideHit.getFrontOffsetY(),
+									z + target.sideHit.getFrontOffsetZ()
+								)).getBlock() == Blocks.air) {
+									BlockPos posNew = candidate.add(x, y, z);
+									if (!candidatesOld.contains(posNew) && !candidates.contains(posNew) && !candidatesNew.contains(
+										posNew)) {
+										IBlockState blockNew = Minecraft.getMinecraft().theWorld.getBlockState(posNew);
+										if (blockNew == match) {
+											candidatesNew.add(posNew);
 										}
 									}
 								}
