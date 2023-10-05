@@ -234,8 +234,9 @@ public class DwarvenMinesWaypoints {
 				} else {
 					String commissionLocation = entry.getKey().toLowerCase();
 					for (String commissionName : MiningOverlay.commissionProgress.keySet()) {
-						if (NotEnoughUpdates.INSTANCE.config.mining.hideWaypointIfAtLocation)
-							if (commissionLocation.replace("'", "").equals(skyblockLocation)) continue;
+						if (NotEnoughUpdates.INSTANCE.config.mining.hideWaypointIfAtLocation && commissionLocation
+							.replace("'", "")
+							.equals(skyblockLocation)) continue;
 						if (commissionName.toLowerCase().contains(commissionLocation)) {
 							if (commissionName.contains("Titanium")) {
 								RenderUtils.renderWayPoint(
@@ -272,22 +273,20 @@ public class DwarvenMinesWaypoints {
 			for (Emissary emissary : Emissary.values()) {
 
 				NEUConfig.HiddenProfileSpecific hidden = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
-				if (hidden != null) {
-					if (hidden.commissionMilestone >= emissary.minMilestone) {
+				if (hidden != null && hidden.commissionMilestone >= emissary.minMilestone) {
 
-						EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-						double dX = emissary.loc.x + 0.5f - p.posX;
-						double dY = emissary.loc.y + 0.188f - p.posY;
-						double dZ = emissary.loc.z + 0.5f - p.posZ;
+					EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+					double dX = emissary.loc.x + 0.5f - p.posX;
+					double dY = emissary.loc.y + 0.188f - p.posY;
+					double dZ = emissary.loc.z + 0.5f - p.posZ;
 
-						double distSq = dX * dX + dY * dY + dZ * dZ;
-						if (distSq >= 12 * 12) {
-							RenderUtils.renderWayPoint(
-								EnumChatFormatting.GOLD + emissary.name,
-								new Vector3f(emissary.loc).translate(0.5f, 2.488f, 0.5f),
-								event.partialTicks
-							);
-						}
+					double distSq = dX * dX + dY * dY + dZ * dZ;
+					if (distSq >= 12 * 12) {
+						RenderUtils.renderWayPoint(
+							EnumChatFormatting.GOLD + emissary.name,
+							new Vector3f(emissary.loc).translate(0.5f, 2.488f, 0.5f),
+							event.partialTicks
+						);
 					}
 				}
 			}
