@@ -69,10 +69,8 @@ public class MinionHelperPriceCalculation {
 			}
 		}
 
-		if (upgradeOnly) {
-			if (minion.getCustomSource() != null) {
-				return (minion.getCustomSource()).getSourceName();
-			}
+		if (upgradeOnly && minion.getCustomSource() != null) {
+			return (minion.getCustomSource()).getSourceName();
 		}
 
 		double costs = calculateUpgradeCosts(minion, upgradeOnly);
@@ -103,10 +101,8 @@ public class MinionHelperPriceCalculation {
 	public double calculateUpgradeCosts(Minion minion, boolean upgradeOnly) {
 		MinionSource source = minion.getMinionSource();
 
-		if (upgradeOnly) {
-			if (minion.getCustomSource() != null) {
-				return 0;
-			}
+		if (upgradeOnly && minion.getCustomSource() != null) {
+			return 0;
 		}
 
 		if (source instanceof CraftingSource) {
