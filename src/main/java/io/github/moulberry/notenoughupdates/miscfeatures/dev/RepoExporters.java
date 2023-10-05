@@ -86,96 +86,94 @@ public class RepoExporters {
 			for (int i = 0; i < 54; i++) {
 				ItemStack stack = lower.getStackInSlot(i);
 				if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
-					stack.getItem() != Items.arrow) {
-					if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
-						int stars = Utils.getNumberOfStars(stack);
-						if (stars == 0) continue;
+					stack.getItem() != Items.arrow && stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
+					int stars = Utils.getNumberOfStars(stack);
+					if (stars == 0) continue;
 
-						NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
-						int costIndex = 10000;
-						id = NotEnoughUpdates.INSTANCE.manager
-							.createItemResolutionQuery()
-							.withItemStack(stack)
-							.resolveInternalName();
-						if (jsonObject.has(id)) {
-							jsonObject.remove(id);
+					NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+					int costIndex = 10000;
+					id = NotEnoughUpdates.INSTANCE.manager
+						.createItemResolutionQuery()
+						.withItemStack(stack)
+						.resolveInternalName();
+					if (jsonObject.has(id)) {
+						jsonObject.remove(id);
+					}
+					for (int j = 0; j < lore.tagCount(); j++) {
+						String entry = lore.getStringTagAt(j);
+						if (entry.equals("§7Cost")) {
+							costIndex = j;
 						}
-						for (int j = 0; j < lore.tagCount(); j++) {
-							String entry = lore.getStringTagAt(j);
-							if (entry.equals("§7Cost")) {
-								costIndex = j;
+						if (j > costIndex) {
+							entry = entry.trim();
+							int index = entry.lastIndexOf('x');
+							String item, amountString;
+							if (index < 0) {
+								item = entry.trim() + " x1";
+								amountString = "x1";
+							} else {
+								amountString = entry.substring(index);
+								item = entry.substring(0, index).trim();
 							}
-							if (j > costIndex) {
-								entry = entry.trim();
-								int index = entry.lastIndexOf('x');
-								String item, amountString;
-								if (index < 0) {
-									item = entry.trim() + " x1";
-									amountString = "x1";
+							item = item.substring(0, item.length() - 3);
+							int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
+							if (item.endsWith("Essence")) {
+								int index2 = entry.indexOf("Essence");
+								String typeAndAmount = item.substring(0, index2).trim().substring(2);
+								int whitespaceIndex = typeAndAmount.indexOf(' ');
+								int essenceAmount = Integer.parseInt(typeAndAmount
+									.substring(0, whitespaceIndex)
+									.replace(",", ""));
+								newEntry.add("type", new JsonPrimitive(typeAndAmount.substring(whitespaceIndex + 1)));
+								if (stars == -1) {
+									newEntry.add("dungeonize", new JsonPrimitive(essenceAmount));
 								} else {
-									amountString = entry.substring(index);
-									item = entry.substring(0, index).trim();
+									newEntry.add(String.valueOf(stars), new JsonPrimitive(essenceAmount));
 								}
-								item = item.substring(0, item.length() - 3);
-								int amount = Integer.parseInt(amountString.trim().replace("x", "").replace(",", ""));
-								if (item.endsWith("Essence")) {
-									int index2 = entry.indexOf("Essence");
-									String typeAndAmount = item.substring(0, index2).trim().substring(2);
-									int whitespaceIndex = typeAndAmount.indexOf(' ');
-									int essenceAmount = Integer.parseInt(typeAndAmount
-										.substring(0, whitespaceIndex)
-										.replace(",", ""));
-									newEntry.add("type", new JsonPrimitive(typeAndAmount.substring(whitespaceIndex + 1)));
-									if (stars == -1) {
-										newEntry.add("dungeonize", new JsonPrimitive(essenceAmount));
-									} else {
-										newEntry.add(String.valueOf(stars), new JsonPrimitive(essenceAmount));
-									}
-								} else if (item.endsWith("Coins")) {
-									int index2 = entry.indexOf("Coins");
-									String coinsAmount = item.substring(0, index2).trim().substring(2);
-									if (!newEntry.has("items")) {
-										newEntry.add("items", new JsonObject());
-									}
-									if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
-										newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
-									}
-									newEntry
-										.get("items")
-										.getAsJsonObject()
-										.get(String.valueOf(stars))
-										.getAsJsonArray()
-										.add(new JsonPrimitive("SKYBLOCK_COIN:" + coinsAmount.replace(",", "")));
-								} else {
-									String itemString = "_";
-									for (Map.Entry<String, JsonObject> itemEntry : NotEnoughUpdates.INSTANCE.manager
-										.getItemInformation()
-										.entrySet()) {
+							} else if (item.endsWith("Coins")) {
+								int index2 = entry.indexOf("Coins");
+								String coinsAmount = item.substring(0, index2).trim().substring(2);
+								if (!newEntry.has("items")) {
+									newEntry.add("items", new JsonObject());
+								}
+								if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
+									newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
+								}
+								newEntry
+									.get("items")
+									.getAsJsonObject()
+									.get(String.valueOf(stars))
+									.getAsJsonArray()
+									.add(new JsonPrimitive("SKYBLOCK_COIN:" + coinsAmount.replace(",", "")));
+							} else {
+								String itemString = "_";
+								for (Map.Entry<String, JsonObject> itemEntry : NotEnoughUpdates.INSTANCE.manager
+									.getItemInformation()
+									.entrySet()) {
 
-										if (itemEntry.getValue().has("displayname")) {
-											String name = itemEntry.getValue().get("displayname").getAsString();
-											if (name.equals(item)) {
-												itemString = itemEntry.getKey() + ":" + amount;
-											}
+									if (itemEntry.getValue().has("displayname")) {
+										String name = itemEntry.getValue().get("displayname").getAsString();
+										if (name.equals(item)) {
+											itemString = itemEntry.getKey() + ":" + amount;
 										}
 									}
-									if (!newEntry.has("items")) {
-										newEntry.add("items", new JsonObject());
-									}
-									if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
-										newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
-									}
-									newEntry
-										.get("items")
-										.getAsJsonObject()
-										.get(String.valueOf(stars))
-										.getAsJsonArray()
-										.add(new JsonPrimitive(itemString));
 								}
+								if (!newEntry.has("items")) {
+									newEntry.add("items", new JsonObject());
+								}
+								if (!newEntry.get("items").getAsJsonObject().has(String.valueOf(stars))) {
+									newEntry.get("items").getAsJsonObject().add(String.valueOf(stars), new JsonArray());
+								}
+								newEntry
+									.get("items")
+									.getAsJsonObject()
+									.get(String.valueOf(stars))
+									.getAsJsonArray()
+									.add(new JsonPrimitive(itemString));
 							}
 						}
-						jsonObject.add(id, newEntry);
 					}
+					jsonObject.add(id, newEntry);
 				}
 			}
 			if (jsonObject.get(id).getAsJsonObject().has("items")) {
@@ -218,56 +216,54 @@ public class RepoExporters {
 				ItemStack stack = lower.getStackInSlot(i);
 				if (stack == null) continue;
 				if (!stack.getDisplayName().isEmpty() && stack.getItem() != Item.getItemFromBlock(Blocks.barrier) &&
-					stack.getItem() != Items.arrow) {
-					if (stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
+					stack.getItem() != Items.arrow && stack.getTagCompound().getCompoundTag("display").hasKey("Lore", 9)) {
 
-						NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
-						int costIndex = 10000;
-						id = StringUtils.stripControlCodes(stack.getDisplayName().replace(" ", "_").toUpperCase(Locale.US));
-						id = ItemUtils.fixDraconicId(id);
-						if (!NotEnoughUpdates.INSTANCE.manager.isValidInternalName(id)) continue;
+					NBTTagList lore = stack.getTagCompound().getCompoundTag("display").getTagList("Lore", 8);
+					int costIndex = 10000;
+					id = StringUtils.stripControlCodes(stack.getDisplayName().replace(" ", "_").toUpperCase(Locale.US));
+					id = ItemUtils.fixDraconicId(id);
+					if (!NotEnoughUpdates.INSTANCE.manager.isValidInternalName(id)) continue;
 
-						file = new File(
-							Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
-							"config/notenoughupdates/repo/items/" + id + ".json"
-						);
-						fileContent = new BufferedReader(new InputStreamReader(
-							Files.newInputStream(file.toPath()),
-							StandardCharsets.UTF_8
-						))
-							.lines()
-							.collect(Collectors.joining(System.lineSeparator()));
-						jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+					file = new File(
+						Minecraft.getMinecraft().mcDataDir.getAbsolutePath(),
+						"config/notenoughupdates/repo/items/" + id + ".json"
+					);
+					fileContent = new BufferedReader(new InputStreamReader(
+						Files.newInputStream(file.toPath()),
+						StandardCharsets.UTF_8
+					))
+						.lines()
+						.collect(Collectors.joining(System.lineSeparator()));
+					jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
 
-						int essence = -1;
-						boolean funny = true;
-						for (int j = 0; j < lore.tagCount(); j++) {
-							String entry = lore.getStringTagAt(j);
-							if (entry.equals("§8§m-----------------")) {
-								costIndex = j;
-							}
-							if (j > costIndex) {
-								if (j == costIndex + 1) {
-									if (entry.startsWith("§7Dragon Essence: §d")) {
-										essence = Integer.parseInt(entry.substring("§7Dragon Essence: §d".length()));
-									} else {
-										funny = false;
-									}
-									continue;
-								} else if (j == costIndex + 2 && funny) continue;
-								entry = entry.trim();
-								if (!newEntry.has("dragon_items")) {
-									newEntry.add("dragon_items", new JsonArray());
-								}
-								newEntry
-									.get("dragon_items")
-									.getAsJsonArray()
-									.add(new JsonPrimitive(entry.trim()));
-							}
+					int essence = -1;
+					boolean funny = true;
+					for (int j = 0; j < lore.tagCount(); j++) {
+						String entry = lore.getStringTagAt(j);
+						if (entry.equals("§8§m-----------------")) {
+							costIndex = j;
 						}
-						if (essence != -1) jsonObject.add("dragon_essence", new JsonPrimitive(essence));
-						jsonObject.add("dragon_items", newEntry.get("dragon_items"));
+						if (j > costIndex) {
+							if (j == costIndex + 1) {
+								if (entry.startsWith("§7Dragon Essence: §d")) {
+									essence = Integer.parseInt(entry.substring("§7Dragon Essence: §d".length()));
+								} else {
+									funny = false;
+								}
+								continue;
+							} else if (j == costIndex + 2 && funny) continue;
+							entry = entry.trim();
+							if (!newEntry.has("dragon_items")) {
+								newEntry.add("dragon_items", new JsonArray());
+							}
+							newEntry
+								.get("dragon_items")
+								.getAsJsonArray()
+								.add(new JsonPrimitive(entry.trim()));
+						}
 					}
+					if (essence != -1) jsonObject.add("dragon_essence", new JsonPrimitive(essence));
+					jsonObject.add("dragon_items", newEntry.get("dragon_items"));
 				}
 				if (jsonObject == null) continue;
 				if (jsonObject.has("dragon_items")) {
