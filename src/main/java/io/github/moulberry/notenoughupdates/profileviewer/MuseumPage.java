@@ -242,7 +242,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 				GL11.GL_NEAREST
 			);
 		}
-		if (onPage < pages && pages > 1) {
+		if (onPage < pages && pages >= 1) {
 			Utils.drawTexturedRect(
 				guiLeft + 251,
 				guiTop + pageArrowsHeight,
