@@ -197,9 +197,15 @@ public class RiftPage extends GuiProfileViewerPage {
 				List<String> displayNames = new ArrayList<>();
 				for (JsonElement jsonElement : timecharm) {
 					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
-					String displayName = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
-						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack().getDisplayName();
-					displayNames.add(displayName + "§7: §a✔");
+					ItemStack timecharmItem = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack();
+					if(timecharmItem != null) {
+						displayNames.add(timecharmItem.getDisplayName() + "§7: §a✔");
+					} else {
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "ERROR LOADING TIMECHARM!");
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "PLEASE REPORT THIS AT " + EnumChatFormatting.GOLD + "discord.gg/moulberry");
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "WITH THE FOLLOWING TEXT: " + EnumChatFormatting.AQUA + timecharmType.toUpperCase());
+					}
 				}
 				getInstance().tooltipToDisplay = displayNames;
 			}
