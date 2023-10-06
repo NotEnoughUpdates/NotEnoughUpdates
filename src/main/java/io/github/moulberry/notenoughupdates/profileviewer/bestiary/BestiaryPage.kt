@@ -120,7 +120,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                 mouseX < guiLeft + 30 + bestiaryXSize * categoryXIndex + 20
                 && mouseY > guiTop + 10 && mouseY < guiTop + 10 + 20
             ) {
-                tooltipToDisplay = category.icon.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+                tooltipToDisplay.add(EnumChatFormatting.GRAY.toString() + category.name)
                 if (Mouse.getEventButtonState() && selectedCategory != category.id) {
                     selectedCategory = category.id
                     Utils.playPressSound()
