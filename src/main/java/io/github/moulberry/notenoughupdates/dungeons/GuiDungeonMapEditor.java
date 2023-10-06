@@ -29,7 +29,7 @@ import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditorButForT
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
-import io.github.moulberry.notenoughupdates.options.seperateSections.DungeonMapConfig;
+import io.github.moulberry.notenoughupdates.options.separatesections.DungeonMapConfig;
 import io.github.moulberry.notenoughupdates.util.SpecialColour;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;

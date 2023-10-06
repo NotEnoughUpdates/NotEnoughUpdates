@@ -17,12 +17,29 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates;
+package io.github.moulberry.notenoughupdates.options.separatesections;
 
-public class NEUApi {
-	public static boolean disableInventoryButtons = false;
+import com.google.gson.annotations.Expose;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
-	public static void setInventoryButtonsToDisabled() {
-		disableInventoryButtons = true;
-	}
+//TODO jani rename message format
+public class MinionHelper {
+	@Expose
+	@ConfigOption(
+		name = "Enable gui",
+		desc =
+			"Shows a list in the crafted minions inventory of every available to craft or all missing minion, in multiple pages " +
+				"that you need to get the next minion slot, sorted by upgrade cost"
+	)
+
+	@ConfigEditorBoolean
+	public boolean gui = true;
+	@Expose
+	@ConfigOption(
+		name = "Enable tooltip",
+		desc = "Shows the price per minion at the crafted minions "
+	)
+	@ConfigEditorBoolean
+	public boolean tooltip = true;
 }

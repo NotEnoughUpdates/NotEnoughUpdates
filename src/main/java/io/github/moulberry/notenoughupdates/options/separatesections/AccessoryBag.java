@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 NotEnoughUpdates contributors
+ * Copyright (C) 2022 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -17,8 +17,18 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.events
+package io.github.moulberry.notenoughupdates.options.separatesections;
 
-import net.minecraft.inventory.Slot
+import com.google.gson.annotations.Expose;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.moulberry.moulconfig.annotations.ConfigOption;
 
-data class DrawSlotReturnEvent(val slot: Slot) : NEUEvent()
+public class AccessoryBag {
+	@Expose
+	@ConfigOption(
+		name = "Enable Accessory Bag Overlay",
+		desc = "Show an overlay on the accessory bag screen which gives useful information about your accessories"
+	)
+	@ConfigEditorBoolean
+	public boolean enableOverlay = true;
+}

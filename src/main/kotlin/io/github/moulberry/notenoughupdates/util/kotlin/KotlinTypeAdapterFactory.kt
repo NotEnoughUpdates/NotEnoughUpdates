@@ -20,7 +20,6 @@
 package io.github.moulberry.notenoughupdates.util.kotlin
 
 import com.google.gson.*
-import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
