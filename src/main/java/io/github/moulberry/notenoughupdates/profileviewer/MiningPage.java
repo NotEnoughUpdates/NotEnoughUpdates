@@ -128,6 +128,7 @@ public class MiningPage extends GuiProfileViewerPage {
 		int professionalStat = professional * 5 + 50;
 		int greatExplorer = Utils.getElementAsInt(Utils.getElement(nodes, "great_explorer"), 0);
 		int greatExplorerStat = greatExplorer * 4 + 16;
+		int greatExplorerStat2 = greatExplorer / 5 + 1;
 		int fortunate = Utils.getElementAsInt(Utils.getElement(nodes, "fortunate"), 0);
 		int fortunateStat = fortunate * 4 + 20;
 		int lonesomeMiner = ((Utils.getElementAsInt(Utils.getElement(nodes, "lonesome_miner"), 0)));
@@ -999,9 +1000,12 @@ public class MiningPage extends GuiProfileViewerPage {
 					"Great Explorer",
 					"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
 					"",
-					"§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY +
-						"chance to",
-					"§7find treasure.",
+					"§7Boosts the chance to find",
+					"§7treasure chests while mining in",
+					"§7the §5Crystal Hollows §7by",
+					EnumChatFormatting.GREEN + "+" + greatExplorerStat + "%" + " §7and reduces the",
+					"§7amount of locks on the chests by",
+					EnumChatFormatting.GREEN.toString() + greatExplorerStat2 + "§7.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
@@ -1012,9 +1016,12 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Great Explorer",
 						"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
 						"",
-						"§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY +
-							"chance to",
-						"§7find treasure."
+						"§7Boosts the chance to find",
+						"§7treasure chests while mining in",
+						"§7the §5Crystal Hollows §7by",
+						EnumChatFormatting.GREEN + "+" + greatExplorerStat + "%" + " §7and reduces the",
+						"§7amount of locks on the chests by",
+						EnumChatFormatting.GREEN.toString() + greatExplorerStat2 + "§7."
 					),
 			20
 		);
