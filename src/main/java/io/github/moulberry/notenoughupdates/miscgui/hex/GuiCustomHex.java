@@ -718,6 +718,38 @@ public class GuiCustomHex extends Gui {
 			}
 		}
 
+		if (currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
+			ItemStack pageUpStack = cc.getLowerChestInventory().getStackInSlot(17);
+			ItemStack pageDownStack = cc.getLowerChestInventory().getStackInSlot(35);
+			if (pageUpStack != null && pageDownStack != null) {
+				currentPage = 0;
+				boolean upIsGlass = pageUpStack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane);
+				boolean downIsGlass = pageDownStack.getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane);
+				int page = -1;
+
+				expectedMaxPage = 1;
+				if (!downIsGlass) {
+					try {
+						page = Integer.parseInt(Utils.getRawTooltip(pageDownStack).get(1).substring(11)) - 1;
+						expectedMaxPage = page + 1;
+					} catch (Exception ignored) {
+					}
+				}
+				if (page == -1 && !upIsGlass) {
+					try {
+						page = Integer.parseInt(Utils.getRawTooltip(pageUpStack).get(1).substring(11)) + 1;
+						expectedMaxPage = page;
+					} catch (Exception ignored) {
+					}
+				}
+				if (page == -1) {
+					currentPage = 1;
+				} else {
+					currentPage = page;
+				}
+			}
+		}
+
 		isChangingEnchLevel = false;
 
 		searchRemovedFromRemovable = false;
@@ -1822,7 +1854,7 @@ public class GuiCustomHex extends Gui {
 		fr.drawString("Applied", guiLeft + 247, guiTop + 7, 0x404040, false);
 
 		//Page Text
-		/*if (currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT) {
+		if (currentState == EnchantState.HAS_ITEM_IN_BOOKS) {
 			String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
 			int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
 			Utils.drawStringCentered(pageStr,
@@ -1838,7 +1870,7 @@ public class GuiCustomHex extends Gui {
 			Utils.drawTexturedRect(guiLeft + X_SIZE / 2 + pageStrLen / 2 + 2, guiTop + 6, 15, 15,
 				15 / 512f, 30 / 512f, 372 / 512f, 387 / 512f, GL11.GL_NEAREST
 			);
-		}*/
+		}
 
 		tooltipToDisplay = renderSettings(mouseX, mouseY, tooltipToDisplay);
 
@@ -3321,7 +3353,8 @@ public class GuiCustomHex extends Gui {
 		if (Mouse.getEventButtonState() &&
 			(currentState == EnchantState.HAS_ITEM || currentState == EnchantState.ADDING_ENCHANT ||
 				currentState == EnchantState.HAS_ITEM_IN_HEX || currentState == EnchantState.ADDING_BOOK ||
-				currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE)) {
+				currentState == EnchantState.ADDING_GEMSTONE || currentState == EnchantState.APPLYING_GEMSTONE ||
+				currentState == EnchantState.HAS_ITEM_IN_BOOKS)) {
 			if (mouseY > guiTop + 6 && mouseY < guiTop + 6 + 15) {
 				String pageStr = "Page: " + currentPage + "/" + expectedMaxPage;
 				int pageStrLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(pageStr);
