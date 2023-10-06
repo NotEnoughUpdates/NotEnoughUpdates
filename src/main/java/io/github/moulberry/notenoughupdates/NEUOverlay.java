@@ -25,7 +25,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.infopanes.DevInfoPane;
 import io.github.moulberry.notenoughupdates.infopanes.InfoPane;
@@ -1212,6 +1211,13 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
+							String cleanName = Utils.cleanColour(item.get("displayname").getAsString());
+							if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
+								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
+							} else {
+								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
+							}
 						}
 					}
 				}

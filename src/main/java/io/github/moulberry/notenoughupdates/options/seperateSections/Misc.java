@@ -325,4 +325,12 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean defaultArmorColour = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Search AH/BZ for current item",
+		desc = "Search AH/BZ for the item you are hovering over"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_M)
+	public int openAHKeybind = Keyboard.KEY_M;
 }
