@@ -100,15 +100,13 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 				HashMap.class
 			);
 
-			for (int i = 0; i < 2; i++) {
-				masterCompMap.forEach((floor, value) -> {
-					if (allComps.containsKey(floor)) {
-						allComps.put(floor, allComps.get(floor) + value);
-					} else {
-						allComps.put(floor, value);
-					}
-				});
-			}
+			masterCompMap.forEach((floor, value) -> {
+				if (allComps.containsKey(floor)) {
+					allComps.put(floor, allComps.get(floor) + value * 2);
+				} else {
+					allComps.put(floor, value);
+				}
+			});
 		}
 		// THIS SERVER IS AWESOME I LOVE CONSISTENCY!!!!!!!
 
