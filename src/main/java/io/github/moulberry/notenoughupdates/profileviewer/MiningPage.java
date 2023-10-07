@@ -123,7 +123,8 @@ public class MiningPage extends GuiProfileViewerPage {
 		int orbit = Utils.getElementAsInt(Utils.getElement(nodes, "experience_orbs"), 0);
 		float orbitStat = (float) (orbit * .01 + 0.2);
 		int crystallized = Utils.getElementAsInt(Utils.getElement(nodes, "fallen_star_bonus"), 0);
-		int crystallizedStat = crystallized * 6 + 14;
+		int crystallizedStat = (crystallized - 1) * 6 + 20;
+		int crystallizedStat2 = (crystallized - 1) * 5 + 20;
 		int professional = Utils.getElementAsInt(Utils.getElement(nodes, "professional"), 0);
 		int professionalStat = professional * 5 + 50;
 		int greatExplorer = Utils.getElementAsInt(Utils.getElement(nodes, "great_explorer"), 0);
@@ -1149,10 +1150,9 @@ public class MiningPage extends GuiProfileViewerPage {
 					"Crystallized",
 					"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
 					"",
-					"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining",
-					"§6Speed §7and a §a" + crystallizedStat + "%§7 §7chance",
-					"§7to deal §a+1 §7extra damage near",
-					"§7§5Fallen Stars§7.",
+					"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining Speed",
+					"§7and §a+" + crystallizedStat + "§7 §6☘ Mining Fortune",
+					"§7near §5Fallen Stars§7.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
@@ -1163,10 +1163,9 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Crystallized",
 						"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
 						"",
-						"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining",
-						"§6Speed §7and a §a" + crystallizedStat + "%§7 §7chance",
-						"§7to deal §a+1 §7extra damage near",
-						"§7§5Fallen Stars§7."
+						"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining Speed",
+						"§7and §a+" + crystallizedStat + "§7 §6☘ Mining Fortune",
+						"§7near §5Fallen Stars§7."
 					),
 			30
 		);
