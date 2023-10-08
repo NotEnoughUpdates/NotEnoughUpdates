@@ -43,6 +43,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -109,6 +110,27 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private int greenCandyCount = -1;
 	private int purpleCandyCount = -1;
 
+	public static final HashMap<String, String> apiStatNames = new HashMap<String, String>() {{
+			put("health","§c❤ Health");
+			put("defense","§a❈ Defense");
+			put("walk_speed","§f✦ Speed");
+			put("strength","§c❁ Strength");
+			put("critical_damage","§9☠ Crit Damage");
+			put("critical_chance","§9☣ Crit Chance");
+			put("attack_speed","§e⚔ Bonus Attack Speed");
+			put("intelligence","§b✎ Intelligence");
+	}};
+	public static final HashMap<String, Float> tuningCoefficients = new HashMap<String, Float>() {{
+		put("health",5f);
+		put("defense",1f);
+		put("walk_speed",1.5f);
+		put("strength",1f);
+		put("critical_damage",1f);
+		put("critical_chance",0.2f);
+		put("attack_speed",0.3f);
+		put("intelligence",2f);
+	}};
+
 	public InventoriesPage(GuiProfileViewer instance) {
 		super(instance);
 	}
@@ -172,6 +194,21 @@ public class InventoriesPage extends GuiProfileViewerPage {
 									? selectedPowerString.append(EnumChatFormatting.RED).append("None!").toString()
 									: selectedPowerString.append(EnumChatFormatting.GREEN).append(selectedPower).toString()
 							);
+
+						LinkedHashMap<String, Integer> tuningInfo = getSelectedProfile().getTuningInfo();
+						if(tuningInfo != null && tuningInfo.size() > 0) {
+							getInstance().tooltipToDisplay.add("");
+							getInstance().tooltipToDisplay.add(EnumChatFormatting.GRAY + "Tuning:");
+							tuningInfo.forEach((statName, statPoints) -> {
+								if(statPoints != 0) {
+									getInstance().tooltipToDisplay.add(
+										"  " + apiStatNames.get(statName) + ": +" +
+											new DecimalFormat("#.#").format(statPoints * tuningCoefficients.get(statName)) +
+											EnumChatFormatting.DARK_GRAY + " (" + EnumChatFormatting.YELLOW + statPoints +
+											EnumChatFormatting.DARK_GRAY + " points)");
+								}
+							});
+						}
 					}
 				}
 			}
