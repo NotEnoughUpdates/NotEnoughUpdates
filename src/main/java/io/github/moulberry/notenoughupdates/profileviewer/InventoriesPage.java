@@ -203,7 +203,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 								if(statPoints != 0) {
 									getInstance().tooltipToDisplay.add(
 										"  " + apiStatNames.get(statName) + ": +" +
-											new DecimalFormat("#.#").format(statPoints * tuningCoefficients.get(statName)) +
+											new DecimalFormat("#.#").format(statPoints * tuningCoefficients.getOrDefault(statName, 1.0f)) +
 											EnumChatFormatting.DARK_GRAY + " (" + EnumChatFormatting.YELLOW + statPoints +
 											EnumChatFormatting.DARK_GRAY + " points)");
 								}
