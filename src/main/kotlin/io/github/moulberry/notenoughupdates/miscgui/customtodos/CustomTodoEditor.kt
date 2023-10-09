@@ -187,7 +187,7 @@ class CustomTodoEditor(
     }
 
     fun changeTimer(value: Int) {
-        timer = (timer.toInt() + value).coerceAtLeast(0).toString()
+        timer = ((timer.toIntOrNull() ?: 0) + value).coerceAtLeast(0).toString()
     }
 
     @Bind
