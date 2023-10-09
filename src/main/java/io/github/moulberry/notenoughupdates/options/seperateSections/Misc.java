@@ -327,4 +327,15 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean defaultArmorColour = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Countdown Calculations",
+		desc = "Shows a timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r.",
+		searchTags = {"Countdown", "Calculator"}
+	)
+	@ConfigEditorDropdown(
+		values = {"Off", "AM/PM [11AM -> 1PM]", "24hr [11:00 -> 13:00]"}
+	)
+	public int showWhenCountdownEnds = 1;
 }
