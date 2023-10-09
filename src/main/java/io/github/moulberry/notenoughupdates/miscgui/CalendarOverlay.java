@@ -27,7 +27,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
-import io.github.moulberry.notenoughupdates.miscfeatures.CountdownCalculator;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.JsonUtils;
 import io.github.moulberry.notenoughupdates.util.SkyBlockTime;
@@ -65,8 +64,8 @@ import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -143,8 +142,7 @@ public class CalendarOverlay {
 		"NEU Calendar Item"
 	); // Star Cult Stack
 
-	private int countdownCalcConfig = NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds;
-	private boolean canAddcountdownCalc = (countdownCalcConfig == 1 || countdownCalcConfig == 2);
+	private boolean canAddcountdownCalc = (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2);
 
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -1659,9 +1657,10 @@ public class CalendarOverlay {
 	}
 
 	private String prettyTimeForCountdownCalculator(long millis) {
-		if (!canAddcountdownCalc) return "";
-		String formatString = "EEEE, MMM d h:mm:ss a z";
-		if (countdownCalcConfig == 2) { formatString = "EEEE, MMM d HH:mm:ss z"; }
-		return DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000) % 60)));
+		if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
+			String formatString = "EEEE, MMM d h:mm:ss a";
+			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) { formatString = "EEEE, MMM d HH:mm:ss"; }
+			return DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000) % 60)));
+		} else { return ""; }
 	}
 }
