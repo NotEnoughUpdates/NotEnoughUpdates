@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -38,6 +39,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -69,11 +71,14 @@ public class MuseumPage extends GuiProfileViewerPage {
 		new ResourceLocation("textures/gui/container/generic_54.png");
 	private static String selectedMuseumCategory = "weapons";
 	JsonObject museum = Constants.MUSEUM;
-	int pageArrowsHeight = 164;
+	int pageArrowsHeight = 34;
 	int pages = 0;
 	int onPage = 1;
 	String currentItemSelected = null;
 	JsonArray selectedItem = null;
+	int overlay = new Color(0, 0, 0, 100).getRGB();
+	private static final int searchBarSizeX = 120;
+	private static final int searchBarSizeY = 20;
 
 	public MuseumPage(GuiProfileViewer instance) {super(instance);}
 
@@ -81,6 +86,8 @@ public class MuseumPage extends GuiProfileViewerPage {
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
+
+		getInstance().museumTextField.setSize(searchBarSizeX, searchBarSizeY);
 
 		SkyblockProfiles.SkyblockProfile selectedProfile = getSelectedProfile();
 		if (selectedProfile == null) {
@@ -108,6 +115,8 @@ public class MuseumPage extends GuiProfileViewerPage {
 			Utils.drawStringCentered(message, guiLeft + 250, guiTop + 101, true, 0);
 			return;
 		}
+
+		getInstance().museumTextField.render(guiLeft + 251-searchBarSizeX/2, guiTop + getInstance().sizeY - 26 - 20);
 
 		int xIndex = 0;
 		for (Map.Entry<String, ItemStack> entry : museumCategories.entrySet()) {
@@ -317,6 +326,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 						}
 					}
 					Utils.drawItemStack(stack, x, y);
+					highlightMatchingItem(stack, x, y);
 				}
 				break;
 			default:
@@ -368,6 +378,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 					getInstance().tooltipToDisplay = stack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 				}
 				Utils.drawItemStack(stack, x, y);
+				highlightMatchingItem(stack, x, y);
 			}
 		}
 
@@ -523,9 +534,11 @@ public class MuseumPage extends GuiProfileViewerPage {
 				setPage("special");
 				break;
 			default:
+				getInstance().museumTextField.keyTyped(typedChar, keyCode);
 				return;
 		}
 		Utils.playPressSound();
+		getInstance().museumTextField.keyTyped(typedChar, keyCode);
 	}
 
 	private void setPage(String pageName) {
@@ -542,5 +555,45 @@ public class MuseumPage extends GuiProfileViewerPage {
 			}
 		}
 		return 1;
+	}
+
+	@Override
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+
+		getInstance().museumTextField.setSize(searchBarSizeX, searchBarSizeY);
+		if (mouseX > guiLeft + 251 - searchBarSizeX/2 && mouseX < guiLeft + 251 + searchBarSizeX/2) {
+			if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
+				getInstance().museumTextField.mouseClicked(mouseX, mouseY, mouseButton);
+				getInstance().playerNameTextField.otherComponentClick();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void highlightMatchingItem(ItemStack stack, int x, int y) {
+		if (
+			getInstance().museumTextField.getText() != null &&
+				!getInstance().museumTextField.getText().isEmpty() &&
+				(
+					stack == null ||
+						!NotEnoughUpdates.INSTANCE.manager.doesStackMatchSearch(
+							stack,
+							getInstance().museumTextField.getText()
+						)
+				)
+		) {
+			GlStateManager.translate(0, 0, 50);
+			GuiScreen.drawRect(
+				x,
+				y,
+				x + 16,
+				y + 16,
+				overlay
+			);
+			GlStateManager.translate(0, 0, -50);
+		}
 	}
 }

@@ -314,27 +314,27 @@ public class ExtraPage extends GuiProfileViewerPage {
 			float avgSlayerLVL = totalSlayerLVL / totalSlayerCount;
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "AVG Skill Level",
+				EnumChatFormatting.RED + "AVG Skill LVL",
 				selectedProfile.skillsApiEnabled() ?
 					EnumChatFormatting.WHITE.toString() + Math.floor(avgSkillLVL * 10) / 10 :
-					EnumChatFormatting.RED + "Skills API not enabled!",
+					EnumChatFormatting.RED + "API OFF!",
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset,
 				76
 			);
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "True AVG Skill Level",
+				EnumChatFormatting.RED + "True AVG Skill LVL",
 				selectedProfile.skillsApiEnabled() ?
 					EnumChatFormatting.WHITE.toString() + Math.floor(avgTrueSkillLVL * 10) / 10 :
-					EnumChatFormatting.RED + "Skills API not enabled!",
+					EnumChatFormatting.RED + "API OFF!",
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 2,
 				76
 			);
 
 			Utils.renderAlignedString(
-				EnumChatFormatting.RED + "AVG Slayer Level",
+				EnumChatFormatting.RED + "AVG Slayer LVL",
 				EnumChatFormatting.WHITE.toString() + Math.floor(avgSlayerLVL * 10) / 10,
 				guiLeft + xStart,
 				guiTop + yStartBottom + yOffset * 3,
