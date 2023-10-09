@@ -183,13 +183,12 @@ public class RiftPage extends GuiProfileViewerPage {
 		// 346, 16
 
 		if (timecharm != null) {
-			Utils.drawStringScaled(
-				EnumChatFormatting.RED + "Timecharms: §f" + timecharm.size() + "/7",
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "Timecharms:",
+				EnumChatFormatting.WHITE.toString() + timecharm.size() + "/7",
 				guiLeft + 336,
 				guiTop + 39,
-				true,
-				0,
-				1f
+				83
 			);
 
 			if ((mouseX > guiLeft + 336 && mouseX < guiLeft + 336 + 80) &&
@@ -198,9 +197,15 @@ public class RiftPage extends GuiProfileViewerPage {
 				List<String> displayNames = new ArrayList<>();
 				for (JsonElement jsonElement : timecharm) {
 					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
-					String displayName = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
-						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack().getDisplayName();
-					displayNames.add(displayName + "§7: §a✔");
+					ItemStack timecharmItem = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
+						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack();
+					if(timecharmItem != null) {
+						displayNames.add(timecharmItem.getDisplayName() + "§7: §a✔");
+					} else {
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "ERROR LOADING TIMECHARM!");
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "PLEASE REPORT THIS AT " + EnumChatFormatting.GOLD + "discord.gg/moulberry");
+						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "WITH THE FOLLOWING TEXT: " + EnumChatFormatting.AQUA + timecharmType.toUpperCase());
+					}
 				}
 				getInstance().tooltipToDisplay = displayNames;
 			}
@@ -215,13 +220,12 @@ public class RiftPage extends GuiProfileViewerPage {
 			grubberStacks = castleData.get("grubber_stacks").getAsInt();
 		}
 
-		Utils.drawStringScaled(
-			EnumChatFormatting.GOLD + "Burger: §f" + grubberStacks + "/5",
+		Utils.renderAlignedString(
+			EnumChatFormatting.GOLD + "Burger:",
+			EnumChatFormatting.WHITE.toString() + grubberStacks + "/5",
 			guiLeft + 331,
 			guiTop + 87,
-			true,
-			0,
-			1f
+			83
 		);
 		renderItem("MCGRUBBER_BURGER", 314, +84, guiLeft, guiTop);
 
@@ -236,9 +240,9 @@ public class RiftPage extends GuiProfileViewerPage {
 		);
 
 		if (vampire.maxed) {
-			getInstance().renderGoldBar(guiLeft + 320, guiTop + 69, 90);
+			getInstance().renderGoldBar(guiLeft + 320, guiTop + 71, 90);
 		} else {
-			getInstance().renderBar(guiLeft + 320, guiTop + 69, 90, vampire.level % 1);
+			getInstance().renderBar(guiLeft + 320, guiTop + 71, 90, vampire.level % 1);
 		}
 
 		if (mouseX > guiLeft + 300 && mouseX < guiLeft + 410) {
@@ -269,13 +273,12 @@ public class RiftPage extends GuiProfileViewerPage {
 			foundSouls = enigma.getAsJsonArray("found_souls").size();
 		}
 
-		Utils.drawStringScaled(
-			EnumChatFormatting.DARK_PURPLE + "Enigma Souls: §f" + foundSouls + "/42",
+		Utils.renderAlignedString(
+			EnumChatFormatting.DARK_PURPLE + "Enigma Souls:",
+			EnumChatFormatting.WHITE.toString() + foundSouls + "/42",
 			guiLeft + 331,
 			guiTop + 110,
-			true,
-			0,
-			0.9f
+			83
 		);
 
 		renderItem("SKYBLOCK_ENIGMA_SOUL", 314, 106, guiLeft, guiTop);
@@ -558,6 +561,6 @@ public class RiftPage extends GuiProfileViewerPage {
 
 	public void drawErrorMessage() {
 		String message = EnumChatFormatting.RED + "No Rift data available!";
-		Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 101, true, 0);
+		Utils.drawStringCentered(message, guiLeft + 431 / 2f, guiTop + 61, true, 0);
 	}
 }

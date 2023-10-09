@@ -139,6 +139,7 @@ public class PetsPage extends GuiProfileViewerPage {
 				pet.addProperty("level", parsedPet.petLevel.getCurrentLevel());
 				pet.addProperty("currentLevelRequirement", parsedPet.petLevel.getExpRequiredForNextLevel());
 				pet.addProperty("maxXP", parsedPet.petLevel.getExpRequiredForMaxLevel());
+				pet.addProperty("percentageToNextLevel", parsedPet.petLevel.getPercentageToNextLevel());
 			}
 		}
 
@@ -280,6 +281,7 @@ public class PetsPage extends GuiProfileViewerPage {
 
 			float level = pet.get("level").getAsFloat();
 			float currentLevelRequirement = pet.get("currentLevelRequirement").getAsFloat();
+			float percentageToNextLevel = pet.get("percentageToNextLevel").getAsFloat();
 			float exp = pet.get("exp").getAsFloat();
 			float maxXP = pet.get("maxXP").getAsFloat();
 
@@ -300,12 +302,12 @@ public class PetsPage extends GuiProfileViewerPage {
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "To Next LVL",
-				EnumChatFormatting.WHITE.toString() + (int) (level % 1 * 100) + "%",
+				EnumChatFormatting.WHITE.toString() + (int) (percentageToNextLevel * 100) + "%",
 				guiLeft + 319,
 				guiTop + 46,
 				98
 			);
-			getInstance().renderBar(guiLeft + 319, guiTop + 56, 98, level % 1);
+			getInstance().renderBar(guiLeft + 319, guiTop + 56, 98, percentageToNextLevel);
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "To Max LVL",
@@ -325,7 +327,7 @@ public class PetsPage extends GuiProfileViewerPage {
 			);
 			Utils.renderAlignedString(
 				EnumChatFormatting.YELLOW + "Current LVL XP",
-				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat((level % 1) * currentLevelRequirement),
+				EnumChatFormatting.WHITE + StringUtils.shortNumberFormat(percentageToNextLevel * currentLevelRequirement),
 				guiLeft + 319,
 				guiTop + 143,
 				98
