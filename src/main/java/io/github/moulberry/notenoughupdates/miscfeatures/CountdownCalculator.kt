@@ -20,7 +20,6 @@ package io.github.moulberry.notenoughupdates.miscfeatures
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -46,8 +45,8 @@ class CountdownCalculator {
 
     val regex =
         "(?:(?<days>\\d+)d)? ?(?:(?<hours>\\d+)h)? ?(?:(?<minutes>\\d+)m)? ?(?:(?<seconds>\\d+)s)?\\b".toRegex()
-    val formatter12h = DateTimeFormatter.ofPattern("EEEE, MMM d h:mm:ss a z")!!
-    val formatter24h = DateTimeFormatter.ofPattern("EEEE, MMM d HH:mm:ss z")!!
+    val formatter12h = DateTimeFormatter.ofPattern("EEEE, MMM d h:mm:ss a")!!
+    val formatter24h = DateTimeFormatter.ofPattern("EEEE, MMM d HH:mm:ss")!!
 
     @Suppress("unused")
     private enum class CountdownTypes(
