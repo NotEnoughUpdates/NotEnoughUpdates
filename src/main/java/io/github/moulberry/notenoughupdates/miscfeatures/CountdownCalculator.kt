@@ -70,8 +70,8 @@ class CountdownCalculator {
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
         val useFormatter = when (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds) {
-            1 -> formatter24h
-            2 -> formatter12h
+            1 -> formatter12h
+            2 -> formatter24h
             else -> return
         }
         if (event.itemStack != null && Minecraft.getMinecraft().thePlayer?.openContainer != null) {
