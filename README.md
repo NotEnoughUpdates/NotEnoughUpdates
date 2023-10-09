@@ -8,7 +8,7 @@
     </a>
     <!-- lines -->
     <a href="https://github.com/NotEnoughUpdates/NotEnoughUpdates/graphs/code-frequency" target="_blank">
-        <img src="https://img.shields.io/tokei/lines/github/NotEnoughUpdates/NotEnoughUpdates?label=lines&color=informational&logo=GitHub" alt="lines">
+        <img src="https://tokei.rs/b1/github/NotEnoughUpdates/NotEnoughUpdates" alt="lines">
     </a>
     <!-- license -->
     <a href="./COPYING.LESSER" target="_blank">

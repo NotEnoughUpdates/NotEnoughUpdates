@@ -23,8 +23,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.infopanes.DevInfoPane;
 import io.github.moulberry.notenoughupdates.infopanes.InfoPane;
@@ -38,7 +38,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.SunTzu;
 import io.github.moulberry.notenoughupdates.miscgui.NeuSearchCalculator;
 import io.github.moulberry.notenoughupdates.miscgui.pricegraph.GuiPriceGraph;
-import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
 import io.github.moulberry.notenoughupdates.util.Calculator;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.GuiTextures;
@@ -402,7 +401,7 @@ public class NEUOverlay extends Gui {
 					return;
 				}
 				if (Mouse.getEventButtonState()) {
-					NotEnoughUpdates.INSTANCE.openGui = new GuiScreenElementWrapper(NEUConfigEditor.editor);
+					NotEnoughUpdates.INSTANCE.openGui = SettingsCommand.INSTANCE.createConfigScreen("");
 				}
 			}
 
@@ -1212,6 +1211,13 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
+							String cleanName = Utils.cleanColour(item.get("displayname").getAsString());
+							if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
+								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
+							} else {
+								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
+							}
 						}
 					}
 				}

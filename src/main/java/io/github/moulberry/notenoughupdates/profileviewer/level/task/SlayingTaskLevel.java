@@ -102,7 +102,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 
 			masterCompMap.forEach((floor, value) -> {
 				if (allComps.containsKey(floor)) {
-					allComps.put(floor, allComps.get(floor) + value);
+					allComps.put(floor, allComps.get(floor) + value * 2);
 				} else {
 					allComps.put(floor, value);
 				}

@@ -23,7 +23,6 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
-import io.github.moulberry.notenoughupdates.listener.ScoreboardLocationChangeListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.customblockzones.LocationChangeEvent;
 import io.github.moulberry.notenoughupdates.miscgui.minionhelper.MinionHelperManager;
@@ -434,7 +433,6 @@ public class SBInfo {
 					if (line.contains("⏣")) {
 						String l = Utils.cleanColour(line).replaceAll("[^A-Za-z0-9() ]", "").trim();
 						if (!l.equals(location)) {
-							new ScoreboardLocationChangeListener(location, l);
 							lastLocation = location;
 							location = l;
 						}

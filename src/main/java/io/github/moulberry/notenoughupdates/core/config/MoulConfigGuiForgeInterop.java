@@ -19,8 +19,8 @@
 
 package io.github.moulberry.notenoughupdates.core.config;
 
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
-import io.github.moulberry.notenoughupdates.options.NEUConfigEditor;
+import io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper;
+import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
@@ -53,7 +53,7 @@ public class MoulConfigGuiForgeInterop implements IModGuiFactory {
 		private final GuiScreen parent;
 
 		public WrappedMoulConfig(GuiScreen parent) {
-			super(NEUConfigEditor.editor);
+			super(SettingsCommand.INSTANCE.createConfigElement(""));
 			this.parent = parent;
 		}
 

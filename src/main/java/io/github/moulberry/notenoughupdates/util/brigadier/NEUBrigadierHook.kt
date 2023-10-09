@@ -27,7 +27,6 @@ import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.EnumChatFormatting.RED
 import net.minecraft.util.EnumChatFormatting.YELLOW
 import java.util.concurrent.CompletableFuture
 import java.util.function.Predicate

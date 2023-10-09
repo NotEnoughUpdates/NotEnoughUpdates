@@ -167,7 +167,6 @@ class NEUStatsCommand {
         builder.append("Forge", ForgeVersion.getVersion())
         builder.append("Optifine", if (FMLClientHandler.instance().hasOptifine()) "TRUE" else "FALSE")
         builder.category("Neu Settings")
-        builder.append("API Key", if (NotEnoughUpdates.INSTANCE.config.apiData.apiKey.isEmpty()) "FALSE" else "TRUE")
         builder.append("On SkyBlock", if (NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) "TRUE" else "FALSE")
         builder.append(
             "Mod Version",

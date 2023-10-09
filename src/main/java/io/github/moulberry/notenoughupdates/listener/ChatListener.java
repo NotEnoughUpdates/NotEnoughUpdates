@@ -193,7 +193,6 @@ public class ChatListener {
 	public void onGuiChat(ClientChatReceivedEvent e) {
 		if (e.type == 2) {
 			CrystalMetalDetectorSolver.process(e.message);
-			TimersOverlay.processActionBar(e.message.getUnformattedText());
 			e.message = processChatComponent(e.message);
 			return;
 		} else if (e.type == 0) {

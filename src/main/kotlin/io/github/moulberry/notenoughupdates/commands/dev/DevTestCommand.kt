@@ -23,7 +23,6 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.moulberry.notenoughupdates.BuildFlags
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
-import io.github.moulberry.notenoughupdates.core.config.GuiPositionEditor
 import io.github.moulberry.notenoughupdates.core.util.MiscUtils
 import io.github.moulberry.notenoughupdates.events.RegisterBrigadierCommandEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.FishingHelper
@@ -190,9 +189,6 @@ class DevTestCommand {
                     )
                 )
             }.withHelp("Display information about the special block zone at your cursor (Custom Texture Regions)")
-            thenLiteralExecute("positiontest") {
-                NotEnoughUpdates.INSTANCE.openGui = GuiPositionEditor()
-            }.withHelp("Open the gui position editor")
             thenLiteral("pt") {
                 thenArgument("particle", EnumArgumentType.enum<EnumParticleTypes>()) { particle ->
                     thenExecute {
@@ -269,6 +265,16 @@ class DevTestCommand {
                     NotEnoughUpdates.INSTANCE.config.hidden.customUserAgent = null
                 }
             }.withHelp("Reset the custom user agent")
+            thenLiteral("crash") {
+                thenExecute {
+                    throw object : Error("L") {
+                        @Override
+                        fun printStackTrace() {
+                            throw Error("L")
+                        }
+                    }
+                }
+            }.withHelp("Crash the game")
         }
         hook.beforeCommand = Predicate {
             if (!canPlayerExecute(it.context.source)) {

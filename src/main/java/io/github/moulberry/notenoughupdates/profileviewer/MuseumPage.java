@@ -71,7 +71,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 	JsonObject museum = Constants.MUSEUM;
 	int pageArrowsHeight = 164;
 	int pages = 0;
-	int onPage = 0;
+	int onPage = 1;
 	String currentItemSelected = null;
 	JsonArray selectedItem = null;
 
@@ -229,7 +229,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		}
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.resource_packs);
 
-		if (onPage > 0) {
+		if (onPage > 1) {
 			Utils.drawTexturedRect(
 				guiLeft + 251 - 12,
 				guiTop + pageArrowsHeight,
@@ -242,7 +242,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 				GL11.GL_NEAREST
 			);
 		}
-		if (onPage < pages && pages > 1) {
+		if (onPage < pages && pages != 1) {
 			Utils.drawTexturedRect(
 				guiLeft + 251,
 				guiTop + pageArrowsHeight,
@@ -283,11 +283,12 @@ public class MuseumPage extends GuiProfileViewerPage {
 				categoryDonated = museumData.getRaritiesItems();
 				break;
 			case "special":
-				pages = (int) Math.floor(donated / 28.0);
+				pages = (int) Math.ceil(donated / 28.0);
+				if (pages == 0) pages = 1;
 
 				List<JsonArray> specialItems = museumData.getSpecialItems();
 
-				int startIndex = onPage * 28;
+				int startIndex = (onPage - 1) * 28;
 				int endIndex = Math.min(startIndex + 28, specialItems.size());
 
 				int row = 0;
@@ -324,7 +325,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		if (categoryItems != null) {
 			int row = 0;
 			int slot = 0;
-			int startIndex = onPage * 28;
+			int startIndex = (onPage - 1) * 28;
 			int endIndex = Math.min(startIndex + 28, categoryItems.size());
 			for (int i = startIndex; i < endIndex; i++) {
 				boolean actualItem = false;
@@ -494,7 +495,7 @@ public class MuseumPage extends GuiProfileViewerPage {
 		if (mouseY > guiTop + pageArrowsHeight && mouseY < guiTop + pageArrowsHeight + 16) {
 			if (mouseX > guiLeft + 251 - 12 && mouseX < guiLeft + 251 + 12) {
 				if (mouseX < guiLeft + 251) {
-					if (onPage > 0) onPage--;
+					if (onPage > 1) onPage--;
 				} else {
 					if (onPage < pages) onPage++;
 				}
@@ -529,8 +530,8 @@ public class MuseumPage extends GuiProfileViewerPage {
 
 	private void setPage(String pageName) {
 		selectedMuseumCategory = pageName;
-		onPage = 0;
-		pages = (int) Math.floor(getMaximum(pageName) / 28.0);
+		onPage = 1;
+		pages = (int) Math.ceil(getMaximum(pageName) / 28.0);
 	}
 
 	private int getMaximum(String name) {
@@ -540,6 +541,6 @@ public class MuseumPage extends GuiProfileViewerPage {
 				return maxValues.get(name).getAsInt();
 			}
 		}
-		return 0;
+		return 1;
 	}
 }

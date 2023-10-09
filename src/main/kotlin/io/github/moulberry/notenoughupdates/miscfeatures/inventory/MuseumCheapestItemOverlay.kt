@@ -24,7 +24,7 @@ import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.core.util.render.TextRenderUtils
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent
 import io.github.moulberry.notenoughupdates.mixins.AccessorGuiContainer
-import io.github.moulberry.notenoughupdates.options.seperateSections.Museum
+import io.github.moulberry.notenoughupdates.options.separatesections.Museum
 import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.MuseumUtil.DonationState.MISSING
 import net.minecraft.client.Minecraft

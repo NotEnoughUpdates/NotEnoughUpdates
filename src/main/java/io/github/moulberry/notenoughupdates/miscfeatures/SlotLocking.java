@@ -72,6 +72,7 @@ public class SlotLocking {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	private static final LockedSlot DEFAULT_LOCKED_SLOT = new LockedSlot();
+
 	private final ResourceLocation LOCK = new ResourceLocation("notenoughupdates:slotlocking/lock.png");
 	private final ResourceLocation BOUND = new ResourceLocation("notenoughupdates:slotlocking/bound.png");
 
@@ -82,16 +83,17 @@ public class SlotLocking {
 	public static class LockedSlot {
 		public boolean locked = false;
 		public int boundTo = -1;
+
 	}
 
 	public static class SlotLockData {
 		public LockedSlot[] lockedSlots = new LockedSlot[40];
+		public LockedSlot[] riftLockedSlots = new LockedSlot[40];
 	}
 
 	public static class SlotLockProfile {
-		int currentProfile = 0;
 
-		public SlotLockData[] slotLockData = new SlotLockData[9];
+		public SlotLockData[] slotLockData = new SlotLockData[1];
 	}
 
 	public static class SlotLockingConfig {
@@ -189,20 +191,24 @@ public class SlotLocking {
 			k -> new SlotLockProfile()
 		);
 
-		if (profile.currentProfile < 0) profile.currentProfile = 0;
-		if (profile.currentProfile >= 9) profile.currentProfile = 8;
 
-		if (profile.slotLockData[profile.currentProfile] == null) {
-			profile.slotLockData[profile.currentProfile] = new SlotLockData();
+		if (profile.slotLockData[0] == null) {
+			profile.slotLockData[0] = new SlotLockData();
 		}
 
-		return profile.slotLockData[profile.currentProfile].lockedSlots;
+
+		if (!"rift".equals(SBInfo.getInstance().getLocation())) {
+			return profile.slotLockData[0].lockedSlots;
+		} else {
+			return profile.slotLockData[0].riftLockedSlots;
+		}
 	}
 
 	private LockedSlot getLockedSlot(LockedSlot[] lockedSlots, int index) {
 		if (lockedSlots == null) {
 			return DEFAULT_LOCKED_SLOT;
 		}
+
 
 		LockedSlot slot = lockedSlots[index];
 

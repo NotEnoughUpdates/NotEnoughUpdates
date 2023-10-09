@@ -19,7 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.oneconfig;
 
-import io.github.moulberry.notenoughupdates.core.config.Config;
+import io.github.moulberry.moulconfig.Config;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.Optional;
@@ -47,6 +47,6 @@ public abstract class IOneConfigCompat {
 		return Optional.ofNullable((IOneConfigCompat) INSTANCE);
 	}
 
-	public abstract void initConfig(Config moulConfig, Runnable saveCallback);
+	public abstract void initConfig(Config moulConfig);
 
 }

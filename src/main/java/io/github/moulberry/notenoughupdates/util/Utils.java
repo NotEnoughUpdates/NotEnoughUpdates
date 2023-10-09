@@ -2240,6 +2240,8 @@ public class Utils {
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
 					EnumChatFormatting.RED +
 						"Data used for many NEU features is not up to date, this should normally not be the case.",
+					EnumChatFormatting.RED +
+						"Please make sure you are on the latest version of NEU.",
 					EnumChatFormatting.RED + "You can try " + EnumChatFormatting.BOLD + "/neuresetrepo" + EnumChatFormatting.RESET +
 						EnumChatFormatting.RED + " and restart your game" +
 						" to see if that fixes the issue.",
@@ -2248,7 +2250,7 @@ public class Utils {
 						EnumChatFormatting.RESET + EnumChatFormatting.RED + " and message in " + EnumChatFormatting.BOLD +
 						"#neu-support" + EnumChatFormatting.RESET + EnumChatFormatting.RED + " to get support"
 				),
-				true, true
+				false, true
 			);
 		}
 	}
