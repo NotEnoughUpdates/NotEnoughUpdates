@@ -45,8 +45,8 @@ class CountdownCalculator {
 
     val regex =
         "(?:(?<days>\\d+)d)? ?(?:(?<hours>\\d+)h)? ?(?:(?<minutes>\\d+)m)? ?(?:(?<seconds>\\d+)s)?\\b".toRegex()
-    val formatter12h = DateTimeFormatter.ofPattern("EEEE, MMM d h:mm:ss a")!!
-    val formatter24h = DateTimeFormatter.ofPattern("EEEE, MMM d HH:mm:ss")!!
+    val formatter12h = DateTimeFormatter.ofPattern("EEEE, MMM d h:mm a")!!
+    val formatter24h = DateTimeFormatter.ofPattern("EEEE, MMM d HH:mm")!!
 
     @Suppress("unused")
     private enum class CountdownTypes(

@@ -849,7 +849,7 @@ public class CalendarOverlay {
 						if (timeUntilNext < 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 								prettyTime(nextEvent.lastsFor + timeUntilNext, true));
-							addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
+							addCountdownCalculatorToTooltip(timeUntilNext + nextEvent.lastsFor, tooltipToDisplay);
 						}
 
 					}
@@ -1512,7 +1512,7 @@ public class CalendarOverlay {
 								if (nextMayorEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(nextMayorEvent.lastsFor, true));
-									addCountdownCalculatorToTooltip(nextMayorEvent.lastsFor, tooltipToDisplay);
+									addCountdownCalculatorToTooltip(timeUntilMayor + nextMayorEvent.lastsFor, tooltipToDisplay);
 								}
 							}
 
@@ -1658,9 +1658,9 @@ public class CalendarOverlay {
 
 	private List<String> addCountdownCalculatorToTooltip(long millis, List<String> tooltipToModify) {
 		if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
-			String formatString = "EEEE, MMM d h:mm:ss a";
-			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) { formatString = "EEEE, MMM d HH:mm:ss"; }
-			tooltipToModify.add("§b" + DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000) % 60))));
+			String formatString = "EEEE, MMM d h:mm";
+			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) { formatString = "EEEE, MMM d HH:mm"; }
+			tooltipToModify.add("§b" + DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000)))));
 
 		}
 		return tooltipToModify;
