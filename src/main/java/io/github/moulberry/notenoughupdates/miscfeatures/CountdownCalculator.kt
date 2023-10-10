@@ -74,7 +74,7 @@ class CountdownCalculator {
             2 -> formatter24h
             else -> return
         }
-        if (event.itemStack != null && Minecraft.getMinecraft().thePlayer?.openContainer != null && !(event.toolTip.any { it.contains("Left-click to summon!") })) {
+        if (event.itemStack != null && Minecraft.getMinecraft().thePlayer?.openContainer != null) {
             var i = -1
             var lastTimer: ZonedDateTime? = null
             while (++i < event.toolTip.size) {
