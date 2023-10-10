@@ -849,7 +849,7 @@ public class CalendarOverlay {
 						if (timeUntilNext < 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 								prettyTime(nextEvent.lastsFor + timeUntilNext, true));
-							addCountdownCalculatorToTooltip(timeUntilNext + nextEvent.lastsFor, tooltipToDisplay);
+							addCountdownCalculatorToTooltip(timeUntilNext + (nextEvent.lastsFor * 60 * 1000), tooltipToDisplay);
 						}
 
 					}
@@ -1493,7 +1493,7 @@ public class CalendarOverlay {
 									if (timeUntil < 0) {
 										tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 											prettyTime(sbEvent.lastsFor + timeUntil, true));
-										addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
+										addCountdownCalculatorToTooltip(sbEvent.lastsFor + (timeUntil * 60 * 1000), tooltipToDisplay);
 									}
 								}
 								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
@@ -1512,7 +1512,7 @@ public class CalendarOverlay {
 								if (nextMayorEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(nextMayorEvent.lastsFor, true));
-									addCountdownCalculatorToTooltip(timeUntilMayor + nextMayorEvent.lastsFor, tooltipToDisplay);
+									addCountdownCalculatorToTooltip(timeUntilMayor + (nextMayorEvent.lastsFor * 60 * 1000), tooltipToDisplay);
 								}
 							}
 
