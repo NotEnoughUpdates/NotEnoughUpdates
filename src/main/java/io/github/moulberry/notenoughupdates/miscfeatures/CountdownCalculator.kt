@@ -63,6 +63,7 @@ class CountdownCalculator {
         DURATION("Duration:", "Finishes at"),
         TIMELEFT("Time left:", "Ends at"),
         EVENTTIMELEFT("Event lasts for", "Ends at", isRelative = true),
+        SHENSUCKS("Auction ends in:", "Auction ends at"),
         CALENDARDETAILS("(§e", "Starts at"); // Calendar details
     }
 
