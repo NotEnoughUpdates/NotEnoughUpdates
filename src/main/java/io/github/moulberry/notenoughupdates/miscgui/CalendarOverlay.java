@@ -738,7 +738,8 @@ public class CalendarOverlay {
 						if (sbEvent.lastsFor >= 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 								prettyTime(sbEvent.lastsFor, true));
-							addCountdownCalculatorToTooltip((sbEvent.lastsFor * 1000), tooltipToDisplay);
+							addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntilMillis, tooltipToDisplay);
+							tooltipToDisplay.add("is this thing (" + sbEvent.lastsFor + ") in ms");
 							if (timeUntilMillis < 0) {
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 									prettyTime(sbEvent.lastsFor + timeUntilMillis, true));
@@ -845,6 +846,7 @@ public class CalendarOverlay {
 					if (nextEvent.lastsFor >= 0) {
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 							prettyTime(nextEvent.lastsFor, true));
+						tooltipToDisplay.add("is this thing (" + nextEvent.lastsFor + ") in ms");
 						addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
 						if (timeUntilNext < 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
@@ -1489,6 +1491,7 @@ public class CalendarOverlay {
 								if (sbEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(sbEvent.lastsFor, true));
+									tooltipToDisplay.add("is this thing (" + sbEvent.lastsFor + ") in ms");
 									addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
 									if (timeUntil < 0) {
 										tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
