@@ -1658,7 +1658,7 @@ public class CalendarOverlay {
 
 	private List<String> addCountdownCalculatorToTooltip(long millis, List<String> tooltipToModify) {
 		if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
-			String formatString = "EEEE, MMM d h:mm";
+			String formatString = "EEEE, MMM d h:mm z";
 			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) { formatString = "EEEE, MMM d HH:mm"; }
 			tooltipToModify.add("§b" + DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000)))));
 
