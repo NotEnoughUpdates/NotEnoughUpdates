@@ -37,6 +37,7 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.EnumChatFormatting.DARK_RED
 import net.minecraft.util.EnumChatFormatting.GREEN
+import net.minecraft.util.EnumChatFormatting.YELLOW
 import net.minecraftforge.common.ForgeVersion
 import net.minecraftforge.fml.client.FMLClientHandler
 import net.minecraftforge.fml.common.Loader
@@ -234,6 +235,7 @@ class NEUStatsCommand {
             val clipboard = StringSelection(data)
             Toolkit.getDefaultToolkit().systemClipboard.setContents(clipboard, null)
             reply("${GREEN}Dev info copied to clipboard.")
+            if (data.length > 2000) reply("${YELLOW}Dev info is over 2000 characters. Without Discord Nitro, Discord will auto-convert it into a file.")
         } catch (ignored: Exception) {
             reply("${DARK_RED}Could not copy to clipboard.")
         }
