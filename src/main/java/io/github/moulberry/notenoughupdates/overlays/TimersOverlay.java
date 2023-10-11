@@ -203,7 +203,7 @@ public class TimersOverlay extends TextTabOverlay {
 							.get("SUPERBOOM_TNT")),
 						new ItemStack(Blocks.pumpkin, 1, 0),
 						new ItemStack(Items.flint_and_steel, 1, 0),
-						new ItemStack(Blocks.quartz_ore, 50, 0),
+						new ItemStack(Items.emerald, 50, 0),
 						//new ItemStack(Items.ender_pearl, 16, 0)
 					};
 				}
