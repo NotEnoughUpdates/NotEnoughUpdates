@@ -41,7 +41,7 @@ public class EnchantMatcher {
 	private final static String romanNumerals =
 		"(I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX)";
 	private final static Supplier<String> validColors = Suppliers.memoize(() ->
-		"0123456789abcdefz" + ( Loader.isModLoaded("skyhanni") ? "Z" : ""));
+		"0123456789abcdefzZ");
 
 	public static LRUCache<String, Optional<EnchantMatcher>> fromSaveFormatMemoized =
 		LRUCache.memoize(
