@@ -245,7 +245,6 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
             val yIndex = i / mobListXCount
             val x = 23 + mobListXPadding + (mobListXPadding + 20) * xIndex
             val y = 30 + mobListYPadding + (mobListYPadding + 20) * yIndex
-            val completedness = 0f
 
             GlStateManager.disableLighting()
             RenderHelper.enableGUIStandardItemLighting()
@@ -255,24 +254,11 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                 guiLeft + x,
                 guiTop + y,
                 20f,
-                20 * (1 - completedness),
-                0f,
-                20 / 256f,
-                0f,
-                20 * (1 - completedness) / 256f,
-                GL11.GL_NEAREST
-            )
-            //GlStateManager.color(1, 185 / 255f, 0, 1);
-            Minecraft.getMinecraft().textureManager.bindTexture(GuiProfileViewer.pv_elements)
-            Utils.drawTexturedRect(
-                guiLeft + x,
-                guiTop + y + 20 * (1 - completedness),
                 20f,
-                20 * completedness,
                 0f,
                 20 / 256f,
-                20 * (1 - completedness) / 256f,
-                20 / 256f,
+                0f,
+                20f / 256f,
                 GL11.GL_NEAREST
             )
             Utils.drawItemStack(stack, guiLeft + x.toInt() + 2, guiTop + y.toInt() + 2)
