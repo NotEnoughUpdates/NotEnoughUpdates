@@ -1212,7 +1212,7 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
-							String cleanName = Utils.cleanColour(item.get("displayname").getAsString());
+							String cleanName = Utils.cleanColour(item.get("displayname").getAsString()).replace("[Lvl {LVL}]", "").trim();
 							if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
 								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
 							} else {
