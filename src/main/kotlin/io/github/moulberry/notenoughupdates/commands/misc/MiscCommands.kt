@@ -40,7 +40,6 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -53,7 +52,7 @@ class MiscCommands {
                 val calculation = this[calculation]
                 try {
                     val calculate = Calculator.calculate(calculation, NeuSearchCalculator.PROVIDE_LOWEST_BIN)
-                    val formatter = DecimalFormat("#,##0.##")
+                    val formatter = Calculator.getDecimalFormat()
                     val formatted = formatter.format(calculate)
                     reply("$WHITE$calculation $YELLOW= $GREEN$formatted")
                 } catch (e: CalculatorException) {

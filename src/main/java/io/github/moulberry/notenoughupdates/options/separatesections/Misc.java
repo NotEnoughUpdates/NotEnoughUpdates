@@ -259,6 +259,18 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+		name = "Calculator Precision",
+		desc = "Digits after the , to display in the calculator"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 100,
+		minStep = 1
+	)
+	public int calculationPrecision = 5;
+
+	@Expose
+	@ConfigOption(
 		name = "Enable Abiphone Warning",
 		desc = "Asks for confirmation when removing a contact in the abiphone"
 	)

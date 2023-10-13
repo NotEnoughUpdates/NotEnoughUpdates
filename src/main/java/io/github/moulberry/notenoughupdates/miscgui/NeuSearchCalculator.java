@@ -48,7 +48,7 @@ public class NeuSearchCalculator {
 			lastInput = input;
 			try {
 				BigDecimal calculate = Calculator.calculate(input, PROVIDE_LOWEST_BIN);
-				lastResult = new DecimalFormat("#,##0.##").format(calculate);
+				lastResult = Calculator.getDecimalFormat().format(calculate);
 			} catch (Calculator.CalculatorException ignored) {
 				lastResult = null;
 			}
