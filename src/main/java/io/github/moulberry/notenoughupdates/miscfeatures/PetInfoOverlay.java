@@ -26,6 +26,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
@@ -55,13 +56,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,33 +164,14 @@ public class PetInfoOverlay extends TextOverlay {
 	private int xpAddTimer = 0;
 
 	public static void loadConfig(File file) {
-		try (
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Files.newInputStream(file.toPath()),
-				StandardCharsets.UTF_8
-			))
-		) {
-			config = GSON.fromJson(reader, PetConfig.class);
-		} catch (Exception ignored) {
-		}
+		config = ConfigUtil.loadConfig(PetConfig.class, file, GSON);
 		if (config == null) {
 			config = new PetConfig();
 		}
 	}
 
 	public static void saveConfig(File file) {
-		try {
-			file.createNewFile();
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					Files.newOutputStream(file.toPath()),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(GSON.toJson(config));
-			}
-		} catch (Exception ignored) {
-		}
+		ConfigUtil.saveConfig(config, file, GSON);
 	}
 
 	public static void clearPet() {
