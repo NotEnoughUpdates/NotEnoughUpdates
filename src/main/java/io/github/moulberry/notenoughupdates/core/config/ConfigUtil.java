@@ -40,6 +40,16 @@ public class ConfigUtil {
 	}
 
 	public static <T> @Nullable T loadConfig(Class<T> configClass, File file, Gson gson, boolean useGzip) {
+		return loadConfig(configClass, file, gson, useGzip, true);
+	}
+
+	public static <T> @Nullable T loadConfig(
+		Class<T> configClass,
+		File file,
+		Gson gson,
+		boolean useGzip,
+		boolean handleError
+	) {
 		if (!file.exists()) return null;
 		try (
 			BufferedReader reader = useGzip ?
@@ -51,6 +61,7 @@ public class ConfigUtil {
 		) {
 			return gson.fromJson(reader, configClass);
 		} catch (Exception e) {
+			if (!handleError) return null;
 			new RuntimeException(
 				"Invalid config file '" + file + "'. This will reset the config to default",
 				e
@@ -85,6 +96,12 @@ public class ConfigUtil {
 					new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(tempFile.toPath()), StandardCharsets.UTF_8))
 			) {
 				writer.write(gson.toJson(config));
+			}
+
+			if (loadConfig(config.getClass(), tempFile, gson, useGzip, false) == null) {
+				System.out.println("Config verification failed for " + tempFile + ", could not save config properly.");
+				tempFile.delete();
+				return;
 			}
 
 			try {
