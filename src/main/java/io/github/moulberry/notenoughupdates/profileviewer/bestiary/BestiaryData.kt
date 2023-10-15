@@ -23,6 +23,7 @@ import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.roundToDecimals
 import kotlin.math.min
 
 object BestiaryData {
@@ -214,6 +215,9 @@ object BestiaryData {
         val bracketData =
             Constants.BESTIARY["brackets"].asJsonObject[bracket.toString()].asJsonArray.map { it.asDouble }
         var maxLevel = false
+        var progress = 0.0
+        var effKills = 0.0
+        var effReq = 0.0
 
         val effectiveKills = if (kills >= cap) {
             maxLevel = true
@@ -222,14 +226,20 @@ object BestiaryData {
             kills
         }
 
+        val totalProgress = (effectiveKills/cap*100).roundToDecimals(1)
+
         var level = 0
         for (requiredKills in bracketData) {
             if (effectiveKills >= requiredKills) {
                 level++
             } else {
+                val prevTierKills = if (level != 0) bracketData[(level - 1).coerceAtLeast(0)].toInt() else 0
+                effKills = kills - prevTierKills
+                effReq = requiredKills - prevTierKills
+                progress = (effKills / effReq * 100).roundToDecimals(1)
                 break
             }
         }
-        return MobLevelData(level, maxLevel)
+        return MobLevelData(level, maxLevel, progress, totalProgress, MobKillData(effKills, effReq, effectiveKills, cap))
     }
 }

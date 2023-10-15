@@ -54,7 +54,16 @@ data class Category(
 /**
  * Level data for one specific mob
  */
-data class MobLevelData(val level: Int, val maxLevel: Boolean)
+data class MobLevelData(
+    val level: Int, val maxLevel: Boolean, val progress: Double, val totalProgress: Double, val mobKillData: MobKillData
+)
+
+/**
+ * Kills data for one specific mob
+ */
+data class MobKillData(
+    val tierKills: Double, val tierReq: Double, val cappedKills: Double, val cap: Double
+)
 
 class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance) {
     private var selectedCategory = "dynamic"
@@ -279,6 +288,35 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                         EnumChatFormatting.GRAY.toString() + "Deaths: " + EnumChatFormatting.GREEN +
                                 StringUtils.formatNumber(deaths)
                     )
+                    tooltipToDisplay.add("")
+
+                    if(!mob.mobLevelData.maxLevel) {
+                        tooltipToDisplay.add(
+                            EnumChatFormatting.GRAY.toString() + "Progress to Tier ${mob.mobLevelData.level + 1}: " +
+                                    EnumChatFormatting.AQUA + "${mob.mobLevelData.progress}%"
+                        )
+
+                        var bar = "§3§l§m"
+                        for (j in 1..14) {
+                            var col = ""
+                            if (mob.mobLevelData.progress < j * (100 / 14)) col = "§f§l§m"
+                            bar += "$col "
+                        }
+                        tooltipToDisplay.add("${bar}§r§b ${StringUtils.formatNumber(mob.mobLevelData.mobKillData.tierKills)}/${StringUtils.formatNumber(mob.mobLevelData.mobKillData.tierReq)}")
+                        tooltipToDisplay.add("")
+                    }
+
+                    tooltipToDisplay.add(
+                        EnumChatFormatting.GRAY.toString() + "Overall Progress: " + EnumChatFormatting.AQUA + "${mob.mobLevelData.totalProgress}%" +
+                                if (mob.mobLevelData.maxLevel) " §7(§c§lMAX!§r§7)" else ""
+                    )
+                    var bar = "§3§l§m"
+                    for (j in 1..14) {
+                        var col = ""
+                        if (mob.mobLevelData.totalProgress < j * (100 / 14)) col = "§f§l§m"
+                        bar += "$col "
+                    }
+                    tooltipToDisplay.add("${bar}§r§b ${StringUtils.formatNumber(mob.mobLevelData.mobKillData.cappedKills)}/${StringUtils.formatNumber(mob.mobLevelData.mobKillData.cap)}")
                 }
             }
             GlStateManager.color(1f, 1f, 1f, 1f)
