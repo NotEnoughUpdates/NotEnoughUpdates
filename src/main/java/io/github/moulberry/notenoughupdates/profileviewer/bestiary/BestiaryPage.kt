@@ -48,7 +48,7 @@ data class Mob(
  * A Bestiary category as defined in `constants/bestiary.json`
  */
 data class Category(
-    val id: String, val name: String, val icon: ItemStack, val mobs: List<Mob>, val subCategories: List<Category>
+    val id: String, val name: String, val icon: ItemStack, val mobs: List<Mob>, val subCategories: List<Category>, val familyData: FamilyData
 )
 
 /**
@@ -63,6 +63,13 @@ data class MobLevelData(
  */
 data class MobKillData(
     val tierKills: Double, val tierReq: Double, val cappedKills: Double, val cap: Double
+)
+
+/**
+ * Family data for one specific category
+ */
+data class FamilyData(
+    val found: Int, val completed: Int, val total: Int
 )
 
 class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance) {
@@ -238,6 +245,64 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
             }
         } else {
             selectedSubCategory = ""
+        }
+
+        // Render family information
+        var catData = selectedCategory.familyData
+        Utils.renderAlignedString(
+            EnumChatFormatting.RED.toString() + "Families Found:",
+            (if(catData.found == catData.total) "§6" else "§7") + "${catData.found}/${catData.total}",
+            guiLeft + 280F,
+            guiTop + 70F,
+            110
+        )
+        if(catData.found == catData.total) {
+            instance.renderGoldBar(guiLeft + 280F, guiTop + 80F, 112F)
+        } else {
+            instance.renderBar(guiLeft + 280F, guiTop + 80F, 112F, catData.found/catData.total.toFloat())
+        }
+
+        Utils.renderAlignedString(
+            EnumChatFormatting.RED.toString() + "Families Completed:",
+            (if(catData.completed == catData.total) "§6" else "§7") + "${catData.completed}/${catData.total}",
+            guiLeft + 280F,
+            guiTop + 90F,
+            110
+        )
+        if(catData.completed == catData.total) {
+            instance.renderGoldBar(guiLeft + 280F, guiTop + 100F, 112F)
+        } else {
+            instance.renderBar(guiLeft + 280F, guiTop + 100F, 112F, catData.completed/catData.total.toFloat())
+        }
+
+        // Render subcategory family information, if possible
+        if(selectedSubCategory != "") {
+            catData = selectedCategory.subCategories.find { it.id == selectedSubCategory }!!.familyData
+            Utils.renderAlignedString(
+                EnumChatFormatting.RED.toString() + "Families Found:",
+                (if(catData.found == catData.total) "§6" else "§7") + "${catData.found}/${catData.total}",
+                guiLeft + 280F,
+                guiTop + 120F,
+                110
+            )
+            if(catData.found == catData.total) {
+                instance.renderGoldBar(guiLeft + 280F, guiTop + 130F, 112F)
+            } else {
+                instance.renderBar(guiLeft + 280F, guiTop + 130F, 112F, catData.found/catData.total.toFloat())
+            }
+
+            Utils.renderAlignedString(
+                EnumChatFormatting.RED.toString() + "Families Completed:",
+                (if(catData.completed == catData.total) "§6" else "§7") + "${catData.completed}/${catData.total}",
+                guiLeft + 280F,
+                guiTop + 140F,
+                110
+            )
+            if(catData.completed == catData.total) {
+                instance.renderGoldBar(guiLeft + 280F, guiTop + 150F, 112F)
+            } else {
+                instance.renderBar(guiLeft + 280F, guiTop + 150F, 112F, catData.completed/catData.total.toFloat())
+            }
         }
 
         // Determine which mobs should be displayed

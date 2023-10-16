@@ -170,7 +170,7 @@ object BestiaryData {
                     )
                 }
             }
-            return Category(categoryId, categoryName, categoryIcon, emptyList(), subCategories)
+            return Category(categoryId, categoryName, categoryIcon, emptyList(), subCategories, calculateFamilyDataOfSubcategories(subCategories))
         } else {
             val categoryMobs = categoryData["mobs"].asJsonArray.map { it.asJsonObject }
 
@@ -200,7 +200,7 @@ object BestiaryData {
                 val levelData = calculateLevel(bracket, kills, cap)
                 computedMobs.add(Mob(mobName, mobIcon, kills, deaths, levelData))
             }
-            return Category(categoryId, categoryName, categoryIcon, computedMobs, emptyList())
+            return Category(categoryId, categoryName, categoryIcon, computedMobs, emptyList(), calculateFamilyData(computedMobs))
         }
     }
 
@@ -241,5 +241,32 @@ object BestiaryData {
             }
         }
         return MobLevelData(level, maxLevel, progress, totalProgress, MobKillData(effKills, effReq, effectiveKills, cap))
+    }
+
+    private fun calculateFamilyData(mobs: List<Mob>): FamilyData {
+        var found = 0
+        var completed = 0
+
+        for (mob in mobs) {
+            if(mob.kills > 0) found++
+            if(mob.mobLevelData.maxLevel) completed++
+        }
+
+        return FamilyData(found, completed, mobs.size)
+    }
+
+    private fun calculateFamilyDataOfSubcategories(subCategories: List<Category>): FamilyData {
+        var found = 0
+        var completed = 0
+        var total = 0
+
+        for (category in subCategories) {
+            val data = category.familyData
+            found += data.found
+            completed += data.completed
+            total += data.total
+        }
+
+        return FamilyData(found, completed, total)
     }
 }
