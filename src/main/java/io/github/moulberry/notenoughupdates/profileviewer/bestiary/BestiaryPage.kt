@@ -48,7 +48,12 @@ data class Mob(
  * A Bestiary category as defined in `constants/bestiary.json`
  */
 data class Category(
-    val id: String, val name: String, val icon: ItemStack, val mobs: List<Mob>, val subCategories: List<Category>, val familyData: FamilyData
+    val id: String,
+    val name: String,
+    val icon: ItemStack,
+    val mobs: List<Mob>,
+    val subCategories: List<Category>,
+    val familyData: FamilyData
 )
 
 /**
@@ -251,57 +256,57 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
         var catData = selectedCategory.familyData
         Utils.renderAlignedString(
             EnumChatFormatting.RED.toString() + "Families Found:",
-            (if(catData.found == catData.total) "§6" else "§7") + "${catData.found}/${catData.total}",
+            (if (catData.found == catData.total) "§6" else "§7") + "${catData.found}/${catData.total}",
             guiLeft + 280F,
             guiTop + 70F,
             110
         )
-        if(catData.found == catData.total) {
+        if (catData.found == catData.total) {
             instance.renderGoldBar(guiLeft + 280F, guiTop + 80F, 112F)
         } else {
-            instance.renderBar(guiLeft + 280F, guiTop + 80F, 112F, catData.found/catData.total.toFloat())
+            instance.renderBar(guiLeft + 280F, guiTop + 80F, 112F, catData.found / catData.total.toFloat())
         }
 
         Utils.renderAlignedString(
             EnumChatFormatting.RED.toString() + "Families Completed:",
-            (if(catData.completed == catData.total) "§6" else "§7") + "${catData.completed}/${catData.total}",
+            (if (catData.completed == catData.total) "§6" else "§7") + "${catData.completed}/${catData.total}",
             guiLeft + 280F,
             guiTop + 90F,
             110
         )
-        if(catData.completed == catData.total) {
+        if (catData.completed == catData.total) {
             instance.renderGoldBar(guiLeft + 280F, guiTop + 100F, 112F)
         } else {
-            instance.renderBar(guiLeft + 280F, guiTop + 100F, 112F, catData.completed/catData.total.toFloat())
+            instance.renderBar(guiLeft + 280F, guiTop + 100F, 112F, catData.completed / catData.total.toFloat())
         }
 
         // Render subcategory family information, if possible
-        if(selectedSubCategory != "") {
+        if (selectedSubCategory != "") {
             catData = selectedCategory.subCategories.find { it.id == selectedSubCategory }!!.familyData
             Utils.renderAlignedString(
                 EnumChatFormatting.RED.toString() + "Families Found:",
-                (if(catData.found == catData.total) "§6" else "§7") + "${catData.found}/${catData.total}",
+                (if (catData.found == catData.total) "§6" else "§7") + "${catData.found}/${catData.total}",
                 guiLeft + 280F,
                 guiTop + 120F,
                 110
             )
-            if(catData.found == catData.total) {
+            if (catData.found == catData.total) {
                 instance.renderGoldBar(guiLeft + 280F, guiTop + 130F, 112F)
             } else {
-                instance.renderBar(guiLeft + 280F, guiTop + 130F, 112F, catData.found/catData.total.toFloat())
+                instance.renderBar(guiLeft + 280F, guiTop + 130F, 112F, catData.found / catData.total.toFloat())
             }
 
             Utils.renderAlignedString(
                 EnumChatFormatting.RED.toString() + "Families Completed:",
-                (if(catData.completed == catData.total) "§6" else "§7") + "${catData.completed}/${catData.total}",
+                (if (catData.completed == catData.total) "§6" else "§7") + "${catData.completed}/${catData.total}",
                 guiLeft + 280F,
                 guiTop + 140F,
                 110
             )
-            if(catData.completed == catData.total) {
+            if (catData.completed == catData.total) {
                 instance.renderGoldBar(guiLeft + 280F, guiTop + 150F, 112F)
             } else {
-                instance.renderBar(guiLeft + 280F, guiTop + 150F, 112F, catData.completed/catData.total.toFloat())
+                instance.renderBar(guiLeft + 280F, guiTop + 150F, 112F, catData.completed / catData.total.toFloat())
             }
         }
 
@@ -355,7 +360,7 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                     )
                     tooltipToDisplay.add("")
 
-                    if(!mob.mobLevelData.maxLevel) {
+                    if (!mob.mobLevelData.maxLevel) {
                         tooltipToDisplay.add(
                             EnumChatFormatting.GRAY.toString() + "Progress to Tier ${mob.mobLevelData.level + 1}: " +
                                     EnumChatFormatting.AQUA + "${mob.mobLevelData.progress}%"
@@ -367,7 +372,13 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                             if (mob.mobLevelData.progress < j * (100 / 14)) col = "§f§l§m"
                             bar += "$col "
                         }
-                        tooltipToDisplay.add("${bar}§r§b ${StringUtils.formatNumber(mob.mobLevelData.mobKillData.tierKills)}/${StringUtils.formatNumber(mob.mobLevelData.mobKillData.tierReq)}")
+                        tooltipToDisplay.add(
+                            "${bar}§r§b ${StringUtils.formatNumber(mob.mobLevelData.mobKillData.tierKills)}/${
+                                StringUtils.formatNumber(
+                                    mob.mobLevelData.mobKillData.tierReq
+                                )
+                            }"
+                        )
                         tooltipToDisplay.add("")
                     }
 
@@ -381,7 +392,13 @@ class BestiaryPage(instance: GuiProfileViewer?) : GuiProfileViewerPage(instance)
                         if (mob.mobLevelData.totalProgress < j * (100 / 14)) col = "§f§l§m"
                         bar += "$col "
                     }
-                    tooltipToDisplay.add("${bar}§r§b ${StringUtils.formatNumber(mob.mobLevelData.mobKillData.cappedKills)}/${StringUtils.formatNumber(mob.mobLevelData.mobKillData.cap)}")
+                    tooltipToDisplay.add(
+                        "${bar}§r§b ${StringUtils.formatNumber(mob.mobLevelData.mobKillData.cappedKills)}/${
+                            StringUtils.formatNumber(
+                                mob.mobLevelData.mobKillData.cap
+                            )
+                        }"
+                    )
                 }
             }
             GlStateManager.color(1f, 1f, 1f, 1f)
