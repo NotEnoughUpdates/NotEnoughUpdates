@@ -1213,7 +1213,13 @@ public class NEUOverlay extends Gui {
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
 							String cleanName = Utils.cleanColour(item.get("displayname").getAsString()).replace("[Lvl {LVL}]", "").trim();
-							if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
+
+							if (item.get("itemid").getAsString().equals("minecraft:enchanted_book")) {
+								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
+								int lastWhiteSpace = loreName.lastIndexOf(' ');
+								String bookName = loreName.substring(0, lastWhiteSpace);
+								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + bookName);
+							} else if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
 								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
 							} else {
 								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
