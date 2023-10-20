@@ -1358,9 +1358,8 @@ public class NEUManager {
 						for (int i = 0; i < otherNumsMax.size(); i++) {
 							replacements.put(
 								"" + i,
-								(addZero ? "0\u27A1" : "") +
-									removeUnusedDecimal(Math.floor(otherNumsMin.get(i).getAsFloat() * 10) / 10f) +
-									"\u27A1" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
+								(addZero ? "0\u27A1" : "") + StringUtils.formatNumber(otherNumsMin.get(i).getAsDouble()) +
+									"\u27A1" + StringUtils.formatNumber(otherNumsMax.get(i).getAsDouble())
 							);
 						}
 
