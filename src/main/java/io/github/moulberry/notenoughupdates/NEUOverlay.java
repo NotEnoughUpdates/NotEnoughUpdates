@@ -1212,12 +1212,14 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
-							String cleanName = Utils.cleanColour(item.get("displayname").getAsString()).replace("[Lvl {LVL}]", "").trim();
+							String displayname = item.get("displayname").getAsString();
 
-							if (item.get("itemid").getAsString().equals("minecraft:enchanted_book")) {
+							String cleanName = Utils.cleanColour(displayname).replace("[Lvl {LVL}]", "").trim();
+
+							if (displayname.equals("§fEnchanted Book")) {
 								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
-								int lastWhiteSpace = loreName.lastIndexOf(' ');
-								String bookName = loreName.substring(0, lastWhiteSpace);
+
+								String bookName = loreName.substring(0, loreName.lastIndexOf(' '));
 								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + bookName);
 							} else if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
 								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
