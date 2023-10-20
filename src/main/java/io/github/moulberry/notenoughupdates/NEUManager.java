@@ -26,6 +26,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
@@ -1364,9 +1365,12 @@ public class NEUManager {
 						}
 
 						for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
-							int statMax = (int) Math.floor(entry.getValue().getAsFloat());
-							int statMin = (int) Math.floor(min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat());
-							String statStr = (statMin > 0 ? "+" : "") + statMin + "\u27A1" + statMax;
+							double statMax = entry.getValue().getAsDouble();
+							double statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsDouble();
+
+							String statStr =
+								(statMin > 0 ? "+" : "") + StringUtils.formatNumber(statMin) + "\u27A1" + StringUtils.formatNumber(
+									statMax);
 							statStr = (addZero ? "0\u27A1" : "") + statStr;
 							replacements.put(entry.getKey(), statStr);
 						}
