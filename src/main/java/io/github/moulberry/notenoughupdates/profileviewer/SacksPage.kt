@@ -484,13 +484,17 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private fun JsonObject.getInt(key: String): Int {
         return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
             get(key).asInt
-        } else 0
+        } else {
+            0
+        }
     }
 
     private fun JsonObject.getDouble(key: String): Double {
         return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
             get(key).asDouble
-        } else 0.0
+        } else {
+            0.0
+        }
     }
 
     private inline fun <T> Pattern.matchMatcher(text: String, consumer: Matcher.() -> T) =
