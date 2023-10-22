@@ -64,7 +64,13 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         guiTop = GuiProfileViewer.getGuiTop()
 
         MC.textureManager.bindTexture(pv_sacks)
-        Utils.drawTexturedRect(guiLeft.toFloat(), guiTop.toFloat(), instance.sizeX.toFloat(), instance.sizeY.toFloat(), GL11.GL_NEAREST)
+        Utils.drawTexturedRect(
+            guiLeft.toFloat(),
+            guiTop.toFloat(),
+            instance.sizeX.toFloat(),
+            instance.sizeY.toFloat(),
+            GL11.GL_NEAREST
+        )
 
         val newProfile = selectedProfile
         if (newProfile == null) {
@@ -130,7 +136,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val itemStack = manager.createItem(sackItemName)
 
                 val x = guiLeft + 168 + xIndex * 37
-                val y =guiTop + 20 + yIndex * 41
+                val y = guiTop + 20 + yIndex * 41
 
                 MC.textureManager.bindTexture(GuiProfileViewer.pv_elements)
                 Utils.drawTexturedRect(
@@ -146,8 +152,20 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 )
 
                 val sackInfo = sackContents[sackName] ?: SackInfo(0, 0.0)
-                Utils.drawStringCentered("§6${StringUtils.shortNumberFormat(sackInfo.sackValue.roundToDecimals(0))}", x + 10, y - 4, true, 0)
-                Utils.drawStringCentered("§2${StringUtils.shortNumberFormat(sackInfo.itemCount)}", x + 10, y + 26, true, 0)
+                Utils.drawStringCentered(
+                    "§6${StringUtils.shortNumberFormat(sackInfo.sackValue.roundToDecimals(0))}",
+                    x + 10,
+                    y - 4,
+                    true,
+                    0
+                )
+                Utils.drawStringCentered(
+                    "§2${StringUtils.shortNumberFormat(sackInfo.itemCount)}",
+                    x + 10,
+                    y + 26,
+                    true,
+                    0
+                )
                 GlStateManager.color(1f, 1f, 1f, 1f)
 
                 if (itemStack != null) {
@@ -185,7 +203,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val itemStack = manager.createItem(itemName)
 
                 val x = guiLeft + 168 + xIndex * 37
-                val y =guiTop + 20 + yIndex * 41
+                val y = guiTop + 20 + yIndex * 41
 
                 MC.textureManager.bindTexture(GuiProfileViewer.pv_elements)
                 Utils.drawTexturedRect(
@@ -201,7 +219,13 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 )
 
                 val itemInfo = sackItems[itemName] ?: SackItem(0, 0.0)
-                Utils.drawStringCentered("§6${StringUtils.shortNumberFormat(itemInfo.value.roundToDecimals(0))}", x + 10, y - 4, true, 0)
+                Utils.drawStringCentered(
+                    "§6${StringUtils.shortNumberFormat(itemInfo.value.roundToDecimals(0))}",
+                    x + 10,
+                    y - 4,
+                    true,
+                    0
+                )
                 Utils.drawStringCentered("§2${StringUtils.shortNumberFormat(itemInfo.amount)}", x + 10, y + 26, true, 0)
                 GlStateManager.color(1f, 1f, 1f, 1f)
 
@@ -225,8 +249,15 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 }
             }
             val buttonRect = Rectangle(guiLeft + 250, guiTop + 180, 80, 15)
-            RenderUtils.drawFloatingRectWithAlpha(buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, 100, true)
-            Utils.renderShadowedString("§2Back",(guiLeft + 290).toFloat(), (guiTop + 183).toFloat(), 79)
+            RenderUtils.drawFloatingRectWithAlpha(
+                buttonRect.x,
+                buttonRect.y,
+                buttonRect.width,
+                buttonRect.height,
+                100,
+                true
+            )
+            Utils.renderShadowedString("§2Back", (guiLeft + 290).toFloat(), (guiTop + 183).toFloat(), 79)
 
             if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
                 currentSack = "All"
@@ -297,7 +328,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
                 if (yIndex == rows) continue
                 val x = guiLeft + 168 + xIndex * 37
-                val y =guiTop + 20 + yIndex * 41
+                val y = guiTop + 20 + yIndex * 41
 
                 if (mouseX > x && mouseX < x + 20) {
                     if (mouseY > y && mouseY < y + 20) {
@@ -345,7 +376,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
             "§2$name",
             "Items Stored: ${StringUtils.formatNumber(amount)}",
             "Total Value: ${StringUtils.formatNumber(value.toLong())}"
-            )
+        )
     }
 
     private fun getPages(pageName: String, sackTypes: JsonObject): Int {
@@ -353,9 +384,11 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
             "All" -> {
                 sackTypes.entrySet().size / pageSize
             }
+
             "Rune" -> {
                 playerRunes.size / pageSize
             }
+
             else -> {
                 val sackData = sackTypes.get(currentSack).asJsonObject
                 val sackContents = sackData.getAsJsonArray("contents")
