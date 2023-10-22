@@ -46,6 +46,7 @@ public class StringUtils {
 		return Integer.parseInt(str);
 	}
 
+	public static String shortNumberFormat(int n) {return shortNumberFormat(n, 0);}
 	public static String shortNumberFormat(double n) {
 		return shortNumberFormat(n, 0);
 	}

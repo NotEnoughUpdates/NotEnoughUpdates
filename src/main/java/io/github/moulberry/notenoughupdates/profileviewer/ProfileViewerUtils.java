@@ -294,4 +294,15 @@ public class ProfileViewerUtils {
 			}
 		});
 	}
+
+	public static int onSlotToChangePage(int mouseX, int mouseY, int guiLeft, int guiTop) {
+		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
+			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
+				return 1;
+			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
+				return 2;
+			}
+		}
+		return 0;
+	}
 }

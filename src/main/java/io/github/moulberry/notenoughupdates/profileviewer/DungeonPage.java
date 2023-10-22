@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -74,7 +74,7 @@ public class DungeonPage extends GuiProfileViewerPage {
 		"fa06cb0c471c1c9bc169af270cd466ea701946776056e472ecdaeb49f0f4a4dc",
 		"a435164c05cea299a3f016bbbed05706ebb720dac912ce4351c2296626aecd9a",
 	};
-	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
 		{
 			put(
 				"catacombs",
@@ -650,17 +650,17 @@ public class DungeonPage extends GuiProfileViewerPage {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onMasterMode) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("master_catacombs"), true, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), true, getInstance());
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("catacombs"), true, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), true, getInstance());
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onMasterMode) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("master_catacombs"), false, getInstance());
+			Utils.drawPvSideButton(1, pageModeIcon.get("master_catacombs"), false, getInstance());
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("catacombs"), false, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("catacombs"), false, getInstance());
 		}
 		GlStateManager.disableDepth();
 	}

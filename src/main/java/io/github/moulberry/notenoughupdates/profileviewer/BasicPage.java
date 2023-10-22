@@ -83,7 +83,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMzJiNDQ4YjgwMzQ2MiJ9fX0="
 	);
 
-	private static final LinkedHashMap<String, ItemStack> dungeonsModeIcons = new LinkedHashMap<String, ItemStack>() {
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
 		{
 			put(
 				"first_page",
@@ -1001,7 +1001,7 @@ public class BasicPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		int i = onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
 		switch (i) {
 			case 1:
 				onSecondPage = false;
@@ -1017,32 +1017,21 @@ public class BasicPage extends GuiProfileViewerPage {
 		return false;
 	}
 
-	public int onSlotToChangePage(int mouseX, int mouseY, int guiLeft, int guiTop) {
-		if (mouseX >= guiLeft - 29 && mouseX <= guiLeft) {
-			if (mouseY >= guiTop && mouseY <= guiTop + 28) {
-				return 1;
-			} else if (mouseY + 28 >= guiTop && mouseY <= guiTop + 28 * 2) {
-				return 2;
-			}
-		}
-		return 0;
-	}
-
 	public void drawSideButtons() {
 		GlStateManager.enableDepth();
 		GlStateManager.translate(0, 0, 5);
 		if (onSecondPage) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("second_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), true, guiProfileViewer);
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("first_page"), true, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), true, guiProfileViewer);
 		}
 		GlStateManager.translate(0, 0, -3);
 
 		GlStateManager.translate(0, 0, -2);
 		if (!onSecondPage) {
-			Utils.drawPvSideButton(1, dungeonsModeIcons.get("second_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(1, pageModeIcon.get("second_page"), false, guiProfileViewer);
 		} else {
-			Utils.drawPvSideButton(0, dungeonsModeIcons.get("first_page"), false, guiProfileViewer);
+			Utils.drawPvSideButton(0, pageModeIcon.get("first_page"), false, guiProfileViewer);
 		}
 		GlStateManager.disableDepth();
 	}

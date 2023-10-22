@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer.pv_elements;
@@ -76,13 +78,47 @@ public class CollectionsPage extends GuiProfileViewerPage {
 	private int page = 0;
 	private int maxPage = 0;
 
+	private boolean onSacksPage;
+	private final SacksPage sacksPage;
+
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
+		{
+			put(
+				"collections",
+				Utils.editItemStackInfo(
+					new ItemStack(Items.painting),
+					EnumChatFormatting.GRAY + "Collections",
+					true
+				)
+			);
+			put(
+				"sacks",
+				Utils.editItemStackInfo(
+					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LARGE_ENCHANTED_MINING_SACK")
+					),
+					EnumChatFormatting.GRAY + "Sacks",
+					true
+				)
+			);
+		}
+	};
+
 	public CollectionsPage(GuiProfileViewer instance) {
 		super(instance);
+		this.sacksPage = new SacksPage(getInstance());
 	}
 
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
+
+		drawSideButtons();
+
+		if (onSacksPage) {
+			sacksPage.drawPage(mouseX, mouseY, partialTicks);
+			return;
+		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_cols);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
@@ -463,5 +499,46 @@ public class CollectionsPage extends GuiProfileViewerPage {
 			}
 			yIndex++;
 		}
+	}
+
+	@Override
+	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		int guiLeft = GuiProfileViewer.getGuiLeft();
+		int guiTop = GuiProfileViewer.getGuiTop();
+
+		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		switch (i) {
+			case 1:
+				onSacksPage = false;
+				break;
+			case 2:
+				onSacksPage = true;
+				break;
+
+			default:
+				break;
+		}
+
+		return sacksPage.mouseClick(mouseX, mouseY, mouseButton);
+	}
+
+	private void drawSideButtons() {
+		GlStateManager.enableDepth();
+		GlStateManager.translate(0, 0, 5);
+		if (onSacksPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), true, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("collections"), true, getInstance());
+		}
+		GlStateManager.translate(0, 0, -3);
+
+		GlStateManager.translate(0, 0, -2);
+		if (!onSacksPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), false, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("collections"), false, getInstance());
+		}
+		GlStateManager.disableDepth();
 	}
 }

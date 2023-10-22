@@ -1171,6 +1171,10 @@ public class Utils {
 		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
 	}
 
+	public static void drawStringCentered(String str, int x, int y, boolean shadow, int colour) {
+		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
+	}
+
 	@Deprecated
 	public static void drawStringCentered(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
 		int strLen = fr.getStringWidth(str);
