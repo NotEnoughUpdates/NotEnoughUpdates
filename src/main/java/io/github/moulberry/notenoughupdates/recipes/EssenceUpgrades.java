@@ -19,8 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.recipes;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import io.github.moulberry.notenoughupdates.ItemPriceInformation;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
@@ -29,17 +32,20 @@ import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import scala.actors.threadpool.Arrays;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,14 +99,20 @@ public class EssenceUpgrades implements NeuRecipe {
 	private final Map<Integer, TierUpgrade> tierUpgradeMap;
 	private final int amountOfTiers;
 	private int selectedTier;
+	private final List<ItemRequirement> catacombsItemRequirements;
 	private static final int outputX = 124;
 	private static final int outputY = 66;
 	private List<RecipeSlot> slots;
 	private GuiItemRecipe guiItemRecipe;
 
-	public EssenceUpgrades(Ingredient output, Map<Integer, TierUpgrade> tierUpgradeMap) {
+	public EssenceUpgrades(
+		Ingredient output,
+		Map<Integer, TierUpgrade> tierUpgradeMap,
+		List<ItemRequirement> catacombsItemRequirements
+	) {
 		this.output = output;
 		this.tierUpgradeMap = tierUpgradeMap;
+		this.catacombsItemRequirements = catacombsItemRequirements;
 
 		initialItemStack = output.getItemStack().copy();
 		amountOfTiers = tierUpgradeMap.keySet().size();
@@ -124,6 +136,7 @@ public class EssenceUpgrades implements NeuRecipe {
 
 		String internalName = entry.getKey();
 		JsonObject jsonObject = entry.getValue().getAsJsonObject();
+		Gson gson = new Gson();
 
 		Ingredient output = new Ingredient(manager, internalName);
 
@@ -162,8 +175,18 @@ public class EssenceUpgrades implements NeuRecipe {
 				}
 			}
 		}
-		return new EssenceUpgrades(output, upgradeMap);
+		List<ItemRequirement> catacombsItemRequirements = new ArrayList<>(1);
+		if (jsonObject.has("catacombs_requirements")) {
+			JsonArray requirements = jsonObject.getAsJsonArray("catacombs_requirements");
+
+			for (JsonElement requirement : requirements) {
+				catacombsItemRequirements.add(gson.fromJson(requirement, ItemRequirement.class));
+			}
+		}
+
+		return new EssenceUpgrades(output, upgradeMap, catacombsItemRequirements);
 	}
+
 
 	/**
 	 * Builds a list containing all the RecipeSlots that should be rendered right now:
@@ -210,6 +233,15 @@ public class EssenceUpgrades implements NeuRecipe {
 				newLore.add(loreEntry);
 			}
 		}
+
+		for (ItemRequirement requirement : catacombsItemRequirements) {
+			String loreEntry = requirement.buildLoreLine();
+			List<String> lines = Arrays.asList(loreEntry.split("\n"));
+
+			// Append the requirement before the rarity line, but under any already existing requirements
+			newLore.addAll(newLore.size() - 2, lines);
+		}
+
 		ItemUtils.setLore(output.getItemStack(), newLore);
 		output.getItemStack().setStackDisplayName(
 			initialItemStack.getDisplayName() + " " + Utils.getStarsString(selectedTier));
@@ -445,9 +477,42 @@ public class EssenceUpgrades implements NeuRecipe {
 		return BACKGROUND;
 	}
 
+	@Getter
+	@Setter
+	public static class ItemRequirement {
+		private String type;
+		@SerializedName("dungeon_type")
+		private String dungeonType;
+
+		private int level;
+
+		/**
+		 * Build the line of item lore associated with this requirement
+		 * <p>
+		 * Example: "Requires Catacombs Skill 10 while in The Catacombs"
+		 *
+		 * @return lore line for this requirement
+		 */
+		public String buildLoreLine() {
+			String line;
+			if (type.equals("DUNGEON_SKILL")) {
+				String readableDungeonType = WordUtils.capitalizeFully(dungeonType);
+				line =
+					"§7§4❣ §cRequires " + readableDungeonType + " Skill " + EnumChatFormatting.GREEN + level +
+						"\n" + EnumChatFormatting.RED + "while in The " + readableDungeonType +
+						".";
+			} else {
+				line = "Unexpected Requirement: " + type;
+			}
+
+			return line;
+		}
+	}
+
 	/**
 	 * Simple dataclass holding an x and y value to be used when describing the location of something to be rendered
 	 */
+	@Getter
 	private static class RenderLocation {
 		private final int x;
 		private final int y;
@@ -457,18 +522,12 @@ public class EssenceUpgrades implements NeuRecipe {
 			this.y = y;
 		}
 
-		public int getX() {
-			return x;
-		}
-
-		public int getY() {
-			return y;
-		}
 	}
 
 	/**
 	 * Dataclass holding information about the items and essence required to upgrade an item to a specific tier
 	 */
+	@Getter
 	public static class TierUpgrade {
 		private final int tier;
 		private final String essenceType;
@@ -482,20 +541,5 @@ public class EssenceUpgrades implements NeuRecipe {
 			this.itemsRequired = itemsRequired;
 		}
 
-		public int getTier() {
-			return tier;
-		}
-
-		public String getEssenceType() {
-			return essenceType;
-		}
-
-		public int getEssenceRequired() {
-			return essenceRequired;
-		}
-
-		public Map<String, Integer> getItemsRequired() {
-			return itemsRequired;
-		}
 	}
 }
