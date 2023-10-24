@@ -424,9 +424,9 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
 					"",
 					EnumChatFormatting.GRAY  + "Rare occurences include:",
-					EnumChatFormatting.GRAY  + "•" + EnumChatFormatting.GOLD + "Golden Goblins",
-					EnumChatFormatting.GRAY  + "•" + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
-					EnumChatFormatting.GRAY  + "•" + EnumChatFormatting.GOLD + "Powder Ghasts",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Golden Goblins",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Powder Ghasts",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
@@ -442,9 +442,9 @@ public class MiningPage extends GuiProfileViewerPage {
 						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
 						"",
 						EnumChatFormatting.GRAY  + "Rare occurrences include:",
-						EnumChatFormatting.GRAY  + "• " + EnumChatFormatting.GOLD + "Golden Goblins",
-						EnumChatFormatting.GRAY  + "• " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
-						EnumChatFormatting.GRAY  + "• " + EnumChatFormatting.GOLD + "Powder Ghasts"
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Golden Goblins",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Powder Ghasts"
 					),
 			45
 		);
