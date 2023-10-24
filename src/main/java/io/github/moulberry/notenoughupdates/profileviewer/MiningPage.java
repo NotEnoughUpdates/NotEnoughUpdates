@@ -423,6 +423,11 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§7trigger rare occurrences in",
 					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
 					"",
+					EnumChatFormatting.GRAY  + "Rare occurences include:",
+					EnumChatFormatting.GRAY  + "•" + EnumChatFormatting.GOLD + "Golden Goblins",
+					EnumChatFormatting.GRAY  + "•" + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+					EnumChatFormatting.GRAY  + "•" + EnumChatFormatting.GOLD + "Powder Ghasts",
+					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
 						StringUtils.formatNumber((int) Math.pow(luckOfCave + 2, 3.07)) +
@@ -431,10 +436,14 @@ public class MiningPage extends GuiProfileViewerPage {
 					: Lists.newArrayList(
 						"Luck of the Cave",
 						"§7Level " + luckOfCave + EnumChatFormatting.DARK_GRAY + "/45",
-						"",
 						"§7Increases the chance for you to",
 						"§7trigger rare occurrences in",
-						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7."
+						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
+						"",
+						EnumChatFormatting.GRAY  + "Rare occurrences include:",
+						EnumChatFormatting.GRAY  + "• " + EnumChatFormatting.GOLD + "Golden Goblins",
+						EnumChatFormatting.GRAY  + "• " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+						EnumChatFormatting.GRAY  + "• " + EnumChatFormatting.GOLD + "Powder Ghasts"
 					),
 			45
 		);
