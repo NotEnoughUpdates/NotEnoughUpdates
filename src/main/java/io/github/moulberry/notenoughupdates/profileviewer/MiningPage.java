@@ -436,6 +436,7 @@ public class MiningPage extends GuiProfileViewerPage {
 					: Lists.newArrayList(
 						"Luck of the Cave",
 						"§7Level " + luckOfCave + EnumChatFormatting.DARK_GRAY + "/45",
+						"",
 						"§7Increases the chance for you to",
 						"§7trigger rare occurrences in",
 						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
