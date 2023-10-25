@@ -212,7 +212,12 @@ public class EquipmentOverlay {
 
 		// Draw foregrounds
 		if (shouldRenderArmorHud) {
-			renderEquipmentGui(inventory, mouseX, mouseY, width, height);
+			if (!"rift".equals(SBInfo.getInstance().getLocation())) {
+				renderEquipmentGui(inventory, mouseX, mouseY, width, height);
+			} else {
+				renderRiftEquipmentGui(inventory, mouseX, mouseY, width, height);
+			}
+
 		}
 
 		if (shouldRenderPets) {
@@ -286,6 +291,50 @@ public class EquipmentOverlay {
 		}
 
 	}
+	public void renderRiftEquipmentGui(GuiInventory guiScreen, int mouseX, int mouseY, int width, int height) {
+		AccessorGuiContainer container = (AccessorGuiContainer) guiScreen;
+
+		int overlayLeft = container.getGuiLeft() - ARMOR_OVERLAY_OVERHAND_WIDTH;
+		int overlayTop = container.getGuiTop();
+
+		List<String> tooltipToDisplay = new ArrayList<>();
+		drawSlot(rift_slot1, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, mouseX, mouseY, tooltipToDisplay);
+		drawSlot(rift_slot2, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 18, mouseX, mouseY, tooltipToDisplay);
+		drawSlot(rift_slot3, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 36, mouseX, mouseY, tooltipToDisplay);
+		drawSlot(rift_slot4, overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y + 54, mouseX, mouseY, tooltipToDisplay);
+
+		if (rift_slot1 == null) {
+			Minecraft.getMinecraft().getTextureManager().bindTexture(QUESTION_MARK);
+			GlStateManager.color(1, 1, 1, 1);
+			Utils.drawTexturedRect(overlayLeft + 8, overlayTop + EQUIPMENT_SLOT_OFFSET_Y, 16, 16, GL11.GL_NEAREST);
+			GlStateManager.enableDepth();
+
+			tooltipToDisplay = Lists.newArrayList(
+				EnumChatFormatting.RED + "Warning",
+				EnumChatFormatting.GREEN + "You need to open /equipment",
+				EnumChatFormatting.GREEN + "to cache your armour"
+			);
+			if (Utils.isWithinRect(mouseX, mouseY, overlayLeft + 8, overlayTop + 8, 16, 16)
+				&& NotEnoughUpdates.INSTANCE.config.customArmour.sendWardrobeCommand
+				&& Mouse.getEventButtonState()
+				&& Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+				NotEnoughUpdates.INSTANCE.trySendCommand("/equipment");
+			}
+
+		}
+		if (!tooltipToDisplay.isEmpty() &&
+			Utils.isWithinRect(
+				mouseX, mouseY,
+				overlayLeft, overlayTop,
+				ARMOR_OVERLAY_OVERHAND_WIDTH, ARMOR_OVERLAY_HEIGHT
+			)) {
+			Utils.drawHoveringText(
+				tooltipToDisplay,
+				mouseX - calculateTooltipXOffset(tooltipToDisplay), mouseY, width, height, -1
+			);
+		}
+
+	}
 
 	private ItemStack getRepoPetStack() {
 		NEUManager manager = NotEnoughUpdates.INSTANCE.manager;
@@ -309,6 +358,13 @@ public class EquipmentOverlay {
 			slot3 = getWardrobeSlot(28);
 			slot4 = getWardrobeSlot(37);
 		}
+		if ("rift".equals(SBInfo.getInstance().getLocation())) {
+			rift_slot1 = getWardrobeSlot(10);
+			rift_slot2 = getWardrobeSlot(19);
+			rift_slot3 = getWardrobeSlot(28);
+			rift_slot4 = getWardrobeSlot(37);
+		}
+
 
 		if ((screen instanceof GuiChest || screen instanceof GuiInventory) &&
 			NotEnoughUpdates.INSTANCE.config.petOverlay.petInvDisplay) {
@@ -389,7 +445,13 @@ public class EquipmentOverlay {
 			slot2 = null;
 			slot3 = null;
 			slot4 = null;
+			rift_slot1 = null;
+			rift_slot2 = null;
+			rift_slot3 = null;
+			rift_slot4 = null;
+
 		}
+
 
 		NEUConfig.HiddenProfileSpecific profileSpecific = NotEnoughUpdates.INSTANCE.config.getProfileSpecific();
 		if (profileSpecific == null) return null;
@@ -514,6 +576,11 @@ public class EquipmentOverlay {
 	public ItemStack slot2 = null;
 	public ItemStack slot3 = null;
 	public ItemStack slot4 = null;
+
+	public ItemStack rift_slot1 = null;
+	public ItemStack rift_slot2 = null;
+	public ItemStack rift_slot3 = null;
+	public ItemStack rift_slot4 = null;
 	private String lastProfile;
 
 }
