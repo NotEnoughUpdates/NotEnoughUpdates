@@ -45,6 +45,10 @@ commit_hash=$(git log -1 --pretty=format:'%h')
 commit_subject=$(git log -1 --pretty=format:'%s')
 commit_body=$(git log -1 --pretty=format:'%b')
 commit_date=$(git log -1 --pretty=format:'%ct')
+footer="$REF_NAME"
+if [ "$to_upload" != "" ]; then
+  footer = "$footer - $(sha256sum "$to_upload"|cut -f 1 -d ' ')"
+fi
 
 author_avatar="https://github.com/$author_name.png"
 
@@ -61,7 +65,7 @@ read -r -d '' structure <<-"EOF"
       "title": $subject,
       "description": $body,
       "footer": {
-        "text": $ref
+        "text": $footer
       }
     }
   ],
@@ -78,7 +82,7 @@ json=$(jq -n \
   --arg avatar_url "$author_avatar" \
   --argjson color "$color" \
   --arg url "$GIT_URL" \
-  --arg ref "$REF_NAME" \
+  --arg footer "$footer" \
   "$structure")
 
 function make_request() {

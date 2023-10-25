@@ -46,7 +46,8 @@ jobs:
       - name: Set up gradle cache
         uses: gradle/gradle-build-action@v2
       - name: Build with Gradle
-        run: ./gradlew clean test remapJar --no-daemon
+        run: |
+          ./gradlew clean test remapJar --no-daemon
       - uses: actions/upload-artifact@v3
         with:
           path: build/libs/*-dep.jar

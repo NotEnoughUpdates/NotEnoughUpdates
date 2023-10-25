@@ -26,7 +26,6 @@ fun Project.setVersionFromEnvironment(baseVersion: String) {
     val buildExtra = mutableListOf<String>()
     val buildVersion = properties["BUILD_VERSION"] as? String
     if (buildVersion != null) buildExtra.add(buildVersion)
-    if (System.getenv("CI") == "true") buildExtra.add("ci")
 
     val stdout = ByteArrayOutputStream()
     val execResult = exec {

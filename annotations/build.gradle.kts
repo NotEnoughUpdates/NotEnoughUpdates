@@ -26,12 +26,13 @@ repositories {
 		mavenCentral()
 }
 
-tasks.withType<JavaCompile> {
-		if (JavaVersion.current().isJava9Compatible) {
-				options.release.set(8)
-		}
-}
 
+kotlin {
+	jvmToolchain {
+		(this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
+	}
+	//jvmToolchain(17)
+}
 dependencies {
 		implementation(kotlin("stdlib-jdk8"))
 		implementation("com.google.devtools.ksp:symbol-processing-api:1.8.0-1.0.8")
