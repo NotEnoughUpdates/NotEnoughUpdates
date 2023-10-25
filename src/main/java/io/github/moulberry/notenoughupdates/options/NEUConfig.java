@@ -660,6 +660,8 @@ public class NEUConfig extends Config {
 		@Expose
 		public HashMap<Integer, JsonObject> savedEquipment = new HashMap<>();
 		@Expose
+		public HashMap<Integer, JsonObject> savedRiftEquipment = new HashMap<>();
+		@Expose
 		public int magicalPower = 0;
 
 		@Expose

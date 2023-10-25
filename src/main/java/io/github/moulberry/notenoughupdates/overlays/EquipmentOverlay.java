@@ -396,34 +396,68 @@ public class EquipmentOverlay {
 
 		profileCache.putIfAbsent(lastProfile, new HashMap<>());
 		Map<Integer, ItemStack> cache = profileCache.get(lastProfile);
-		if (isInNamedGui("Your Equipment")) {
-			ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
-			if (itemStack != null) {
-				JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
-				if (!itemToSave.has("internalname")) {
-					//would crash without internalName when trying to construct the ItemStack again
-					itemToSave.add("internalname", new JsonPrimitive("_"));
+		if (!"rift".equals(SBInfo.getInstance().getLocation())) {
+			if (isInNamedGui("Your Equipment")) {
+				ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
+				if (itemStack != null) {
+					JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
+					if (!itemToSave.has("internalname")) {
+						//would crash without internalName when trying to construct the ItemStack again
+						itemToSave.add("internalname", new JsonPrimitive("_"));
+					}
+					profileSpecific.savedEquipment.put(armourSlot, itemToSave);
+					cache.put(armourSlot, itemStack);
+					return itemStack;
 				}
-				profileSpecific.savedEquipment.put(armourSlot, itemToSave);
-				cache.put(armourSlot, itemStack);
-				return itemStack;
+			} else {
+				if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
+					if (cache.containsKey(armourSlot)) {
+						return cache.get(armourSlot);
+					}
+					//don't use cache since the internalName is identical in most cases
+					JsonObject jsonObject = profileSpecific.savedEquipment.get(armourSlot);
+					if (jsonObject != null) {
+						ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
+						cache.put(armourSlot, result);
+						return result;
+					}
+				}
 			}
+
+
 		} else {
-			if (profileSpecific.savedEquipment.containsKey(armourSlot)) {
-				if (cache.containsKey(armourSlot)) {
-					return cache.get(armourSlot);
+			if (isInNamedGui("Your Equipment")) {
+				ItemStack itemStack = getChestSlotsAsItemStack(armourSlot);
+				if (itemStack != null) {
+					JsonObject itemToSave = NotEnoughUpdates.INSTANCE.manager.getJsonForItem(itemStack);
+					if (!itemToSave.has("internalname")) {
+						//would crash without internalName when trying to construct the ItemStack again
+						itemToSave.add("internalname", new JsonPrimitive("_"));
+					}
+					profileSpecific.savedRiftEquipment.put(armourSlot, itemToSave);
+					cache.put(armourSlot, itemStack);
+					return itemStack;
 				}
-				//don't use cache since the internalName is identical in most cases
-				JsonObject jsonObject = profileSpecific.savedEquipment.get(armourSlot);
-				if (jsonObject != null) {
-					ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
-					cache.put(armourSlot, result);
-					return result;
+			} else {
+				if (profileSpecific.savedRiftEquipment.containsKey(armourSlot)) {
+					if (cache.containsKey(armourSlot)) {
+						return cache.get(armourSlot);
+					}
+					//don't use cache since the internalName is identical in most cases
+					JsonObject jsonObject = profileSpecific.savedRiftEquipment.get(armourSlot);
+					if (jsonObject != null) {
+						ItemStack result = NotEnoughUpdates.INSTANCE.manager.jsonToStack(jsonObject.getAsJsonObject(), false);
+						cache.put(armourSlot, result);
+						return result;
+					}
 				}
+
+
 			}
 		}
 		return null;
 	}
+
 
 	private boolean wardrobeOpen = false;
 
