@@ -797,11 +797,11 @@ public class MiningPage extends GuiProfileViewerPage {
 			() ->
 				Lists.newArrayList(
 					"Goblin Killer",
-					"§7Killing a §6Golden Goblin",
-					"§6§7gives §2200 §7extra §2Mithril",
-					"§2Powder§7, while killing other",
-					"§7Goblins gives some based on",
-					"§7their wits."
+					"§7Killing a §6Golden Goblin §7or",
+					"§7§bDiamond Goblin §7gives §2200",
+					"§7extra §2Mithril Powder§7,",
+					"§7while killing other Goblins",
+					"§7gives some based on their wits."
 				),
 			new ItemStack(goblinKiller > 0 ? Items.diamond : Items.coal)
 		);
