@@ -34,6 +34,7 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MobLootRecipe implements NeuRecipe {
 
@@ -50,31 +52,41 @@ public class MobLootRecipe implements NeuRecipe {
 	public static class MobDrop {
 		public final Ingredient drop;
 		public final String chance;
+		public final List<MobDrop> alternatives;
 		public final List<String> extra;
 
 		private ItemStack itemStack;
 
-		public MobDrop(Ingredient drop, String chance, List<String> extra) {
+		private int lastHoveredIndex = 0;
+
+		public MobDrop(Ingredient drop, String chance, List<String> extra, List<MobDrop> alternatives) {
 			this.drop = drop;
 			this.chance = chance;
 			this.extra = extra;
+			this.alternatives = alternatives;
 		}
 
 		public ItemStack getItemStack() {
-			if (itemStack == null) {
-				itemStack = drop.getItemStack().copy();
-				List<String> arrayList = new ArrayList<>(extra);
-				arrayList.add("§r§e§lDrop Chance: §6" + formatDropChance());
-				ItemUtils.appendLore(itemStack, arrayList);
+			if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+				lastHoveredIndex = (int) ((System.currentTimeMillis() / 2000) % (alternatives.size() + 1));
 			}
-			return itemStack;
+			if (lastHoveredIndex == alternatives.size()) {
+				if (itemStack == null) {
+					itemStack = drop.getItemStack().copy();
+					List<String> arrayList = new ArrayList<>(extra);
+					arrayList.add("§r§e§lDrop Chance: §6" + formatDropChance());
+					ItemUtils.appendLore(itemStack, arrayList);
+				}
+				return itemStack;
+			}
+			return alternatives.get(lastHoveredIndex).getItemStack();
 		}
 
 		private String formatDropChance() {
 			if (chance == null) {
 				return "";
 			}
-			
+
 			if (!chance.endsWith("%")) {
 				return chance;
 			}
@@ -187,7 +199,10 @@ public class MobLootRecipe implements NeuRecipe {
 
 	@Override
 	public Set<Ingredient> getOutputs() {
-		return drops.stream().map(it -> it.drop).collect(Collectors.toSet());
+		return drops
+			.stream()
+			.flatMap(it -> Stream.concat(Stream.of(it.drop), it.alternatives.stream().map(that -> that.drop)))
+			.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -311,25 +326,31 @@ public class MobLootRecipe implements NeuRecipe {
 		return BACKGROUND;
 	}
 
-	public static MobLootRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject outputItemJson) {
-		List<MobDrop> drops = new ArrayList<>();
-		for (JsonElement jsonElement : recipe.getAsJsonArray("drops")) {
-			if (jsonElement.isJsonPrimitive()) {
-				drops.add(new MobDrop(new Ingredient(manager, jsonElement.getAsString()), null, Collections.emptyList()));
-			} else {
-				JsonObject jsonObject = jsonElement.getAsJsonObject();
-				drops.add(
-					new MobDrop(
-						new Ingredient(manager, jsonObject.get("id").getAsString()),
-						jsonObject.has("chance") ? jsonObject.get("chance").getAsString() : null,
-						JsonUtils.getJsonArrayOrEmpty(jsonObject, "extra", JsonElement::getAsString)
-					));
-			}
+	private static MobDrop parseMobDrop(NEUManager manager, JsonElement jsonElement) {
+		if (jsonElement.isJsonPrimitive()) {
+			return (new MobDrop(
+				new Ingredient(manager, jsonElement.getAsString()),
+				null,
+				Collections.emptyList(),
+				Collections.emptyList()
+			));
+		} else {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			return (
+				new MobDrop(
+					new Ingredient(manager, jsonObject.get("id").getAsString()),
+					jsonObject.has("chance") ? jsonObject.get("chance").getAsString() : null,
+					JsonUtils.getJsonArrayOrEmpty(jsonObject, "extra", JsonElement::getAsString),
+					JsonUtils.getJsonArrayOrEmpty(jsonObject, "alternatives", element -> parseMobDrop(manager, element))
+				));
 		}
+	}
+
+	public static MobLootRecipe parseRecipe(NEUManager manager, JsonObject recipe, JsonObject outputItemJson) {
 
 		return new MobLootRecipe(
 			new Ingredient(manager, outputItemJson.get("internalname").getAsString(), 1),
-			drops,
+			JsonUtils.getJsonArrayOrEmpty(recipe, "drops", element -> parseMobDrop(manager, element)),
 			recipe.has("level") ? recipe.get("level").getAsInt() : 0,
 			recipe.has("coins") ? recipe.get("coins").getAsInt() : 0,
 			recipe.has("xp") ? recipe.get("xp").getAsInt() : 0,
