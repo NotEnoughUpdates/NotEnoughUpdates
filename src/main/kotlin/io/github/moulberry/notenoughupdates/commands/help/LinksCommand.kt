@@ -36,14 +36,14 @@ class LinksCommand {
                 val manager = NotEnoughUpdates.INSTANCE.manager
                 val updateJsonFile = manager.repoLocation.resolve("update.json")
                 if (!updateJsonFile.exists()) {
-                    Utils.showOutdatedRepoNotification()
+                    Utils.showOutdatedRepoNotification("update.json")
                     return@thenExecute
                 }
                 try {
                     val updateJson = manager.getJsonFromFile(updateJsonFile)
                     NotEnoughUpdates.INSTANCE.displayLinks(updateJson, 0)
                 } catch (_: Exception) {
-                    Utils.showOutdatedRepoNotification()
+                    Utils.showOutdatedRepoNotification("some error with update.json")
                 }
             }
         }.withHelp("Display links for Moulberry and NEU")

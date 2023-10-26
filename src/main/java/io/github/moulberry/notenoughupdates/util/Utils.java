@@ -2234,7 +2234,8 @@ public class Utils {
 		return stringBuilder.toString();
 	}
 
-	public static void showOutdatedRepoNotification() {
+	private static long lastError = -1;
+	public static void showOutdatedRepoNotification(String missingFile) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
@@ -2252,6 +2253,10 @@ public class Utils {
 				),
 				false, true
 			);
+		}
+		if (System.currentTimeMillis() - lastError > 1000) {
+			System.err.println("[NEU] Repo issue: " + missingFile);
+			lastError = System.currentTimeMillis();
 		}
 	}
 

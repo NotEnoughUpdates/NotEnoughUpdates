@@ -95,7 +95,7 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 				.withKnownInternalName(key)
 				.resolveToItemListJson();
 			if (jsonObject == null){
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification(key);
 				continue;
 			}
 			value.name = jsonObject

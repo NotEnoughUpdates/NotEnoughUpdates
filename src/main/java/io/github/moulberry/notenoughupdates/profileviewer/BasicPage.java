@@ -729,7 +729,7 @@ public class BasicPage extends GuiProfileViewerPage {
 						if (Weight.SLAYER_NAMES.contains(slayerNameLower)) {
 							JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
 							if (slayerToTier == null) {
-								Utils.showOutdatedRepoNotification();
+								Utils.showOutdatedRepoNotification("leveling.json");
 								return;
 							}
 
@@ -827,7 +827,7 @@ public class BasicPage extends GuiProfileViewerPage {
 
 		if (Constants.WEIGHT == null || Utils.getElement(Constants.WEIGHT, "lily.skills.overall") == null ||
 			!Utils.getElement(Constants.WEIGHT, "lily.skills.overall").isJsonPrimitive()) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("weight.json");
 			return;
 		}
 

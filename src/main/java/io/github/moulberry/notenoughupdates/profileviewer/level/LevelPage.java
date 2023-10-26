@@ -76,7 +76,7 @@ public class LevelPage extends GuiProfileViewerPage {
 		basicPage.drawSideButtons();
 
 		if (constant == null) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("sblevels.json");
 			return;
 		}
 

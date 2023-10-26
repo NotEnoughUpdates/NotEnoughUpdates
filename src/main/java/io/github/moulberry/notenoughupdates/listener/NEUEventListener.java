@@ -43,11 +43,9 @@ import io.github.moulberry.notenoughupdates.overlays.TextTabOverlay;
 import io.github.moulberry.notenoughupdates.recipes.RecipeHistory;
 import io.github.moulberry.notenoughupdates.util.Constants;
 import io.github.moulberry.notenoughupdates.util.NotificationHandler;
-import io.github.moulberry.notenoughupdates.util.ProfileApiSyncer;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.TabSkillInfoParser;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import io.github.moulberry.notenoughupdates.util.XPInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.event.ClickEvent;
@@ -242,7 +240,7 @@ public class NEUEventListener {
 					if (!NotEnoughUpdates.INSTANCE.config.hidden.loadedModBefore) {
 						NotEnoughUpdates.INSTANCE.config.hidden.loadedModBefore = true;
 						if (Constants.MISC == null || !Constants.MISC.has("featureslist")) {
-							Utils.showOutdatedRepoNotification();
+							Utils.showOutdatedRepoNotification("misc.json");
 							Utils.addChatMessage(
 								"" + EnumChatFormatting.GOLD + "To view the feature list after restarting type /neufeatures");
 						} else {

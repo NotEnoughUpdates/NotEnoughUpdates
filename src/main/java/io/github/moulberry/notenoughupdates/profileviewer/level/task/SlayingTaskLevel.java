@@ -185,7 +185,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 		JsonArray defeatSlayersXp = slayingTask.get("defeat_slayers_xp").getAsJsonArray();
 		JsonObject slayerToTier = Constants.LEVELING.getAsJsonObject("slayer_to_highest_tier");
 		if (slayerToTier == null) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("slayer_to_highest_tier from leveling.json");
 			return;
 		}
 		for (Map.Entry<String, JsonElement> entry : slayerToTier.entrySet()) {
