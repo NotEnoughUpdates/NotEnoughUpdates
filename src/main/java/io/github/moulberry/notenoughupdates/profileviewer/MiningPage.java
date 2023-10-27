@@ -781,8 +781,8 @@ public class MiningPage extends GuiProfileViewerPage {
 					"    §7extra Powder while mining.",
 					"§8 ■ §7Reduce Pickaxe Ability cooldown",
 					"    §7by §a20%",
-					"§8 ■ §7§a10x §7chance to find Goblins",
-					"    §7while mining.",
+					"§8 ■ §7§a10x §7chance to find Golden",
+					"    §7and Diamond Goblins.",
 					"§8 ■ §7Gain §a5x §9Titanium §7drops."
 				),
 			new ItemStack(skyMall > 0 ? Items.diamond : Items.coal)
