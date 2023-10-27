@@ -89,7 +89,7 @@ public class BonemerangOverlay extends TextOverlay {
 
 		String internal = NotEnoughUpdates.INSTANCE.manager.getInternalNameForItem(held);
 
-		if (internal != null && internal.equals("BONE_BOOMERANG")) {
+		if (internal != null && (internal.equals("BONE_BOOMERANG") || internal.equals("STARRED_BONE_BOOMERANG"))) {
 			HashMap<Integer, String> map = new HashMap<>();
 
 			EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
