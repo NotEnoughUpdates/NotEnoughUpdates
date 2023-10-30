@@ -23,6 +23,7 @@ import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.ItemUtils
 import io.github.moulberry.notenoughupdates.util.Utils
+import io.github.moulberry.notenoughupdates.util.roundToDecimals
 import kotlin.math.min
 
 object BestiaryData {
@@ -169,7 +170,7 @@ object BestiaryData {
                     )
                 }
             }
-            return Category(categoryId, categoryName, categoryIcon, emptyList(), subCategories)
+            return Category(categoryId, categoryName, categoryIcon, emptyList(), subCategories, calculateFamilyDataOfSubcategories(subCategories))
         } else {
             val categoryMobs = categoryData["mobs"].asJsonArray.map { it.asJsonObject }
 
@@ -199,7 +200,7 @@ object BestiaryData {
                 val levelData = calculateLevel(bracket, kills, cap)
                 computedMobs.add(Mob(mobName, mobIcon, kills, deaths, levelData))
             }
-            return Category(categoryId, categoryName, categoryIcon, computedMobs, emptyList())
+            return Category(categoryId, categoryName, categoryIcon, computedMobs, emptyList(), calculateFamilyData(computedMobs))
         }
     }
 
@@ -214,6 +215,9 @@ object BestiaryData {
         val bracketData =
             Constants.BESTIARY["brackets"].asJsonObject[bracket.toString()].asJsonArray.map { it.asDouble }
         var maxLevel = false
+        var progress = 0.0
+        var effKills = 0.0
+        var effReq = 0.0
 
         val effectiveKills = if (kills >= cap) {
             maxLevel = true
@@ -222,14 +226,47 @@ object BestiaryData {
             kills
         }
 
+        val totalProgress = (effectiveKills/cap*100).roundToDecimals(1)
+
         var level = 0
         for (requiredKills in bracketData) {
             if (effectiveKills >= requiredKills) {
                 level++
             } else {
+                val prevTierKills = if (level != 0) bracketData[(level - 1).coerceAtLeast(0)].toInt() else 0
+                effKills = kills - prevTierKills
+                effReq = requiredKills - prevTierKills
+                progress = (effKills / effReq * 100).roundToDecimals(1)
                 break
             }
         }
-        return MobLevelData(level, maxLevel)
+        return MobLevelData(level, maxLevel, progress, totalProgress, MobKillData(effKills, effReq, effectiveKills, cap))
+    }
+
+    private fun calculateFamilyData(mobs: List<Mob>): FamilyData {
+        var found = 0
+        var completed = 0
+
+        for (mob in mobs) {
+            if(mob.kills > 0) found++
+            if(mob.mobLevelData.maxLevel) completed++
+        }
+
+        return FamilyData(found, completed, mobs.size)
+    }
+
+    private fun calculateFamilyDataOfSubcategories(subCategories: List<Category>): FamilyData {
+        var found = 0
+        var completed = 0
+        var total = 0
+
+        for (category in subCategories) {
+            val data = category.familyData
+            found += data.found
+            completed += data.completed
+            total += data.total
+        }
+
+        return FamilyData(found, completed, total)
     }
 }

@@ -25,7 +25,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.commands.help.SettingsCommand;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
-import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.infopanes.DevInfoPane;
 import io.github.moulberry.notenoughupdates.infopanes.InfoPane;
@@ -1212,6 +1211,21 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.config.ahGraph.graphEnabled) {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
+						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
+							String displayname = item.get("displayname").getAsString();
+
+							String cleanName = Utils.cleanColour(displayname).replace("[Lvl {LVL}]", "").trim();
+
+							if (displayname.equals("§fEnchanted Book")) {
+								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
+
+								String bookName = loreName.substring(0, loreName.lastIndexOf(' '));
+								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + bookName);
+							} else if (NotEnoughUpdates.INSTANCE.manager.auctionManager.getBazaarInfo(internalname.get()) == null) {
+								NotEnoughUpdates.INSTANCE.trySendCommand("/ahs " + cleanName);
+							} else {
+								NotEnoughUpdates.INSTANCE.trySendCommand("/bz " + cleanName);
+							}
 						}
 					}
 				}

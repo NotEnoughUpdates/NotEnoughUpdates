@@ -35,9 +35,11 @@ public class MixinThreadDownloadImageDataThread {
 		method = "run",
 		at = @At(
 			value = "INVOKE",
-			target = "Ljava/net/HttpURLConnection;setDoOutput(Z)V"
+			target = "Ljava/net/HttpURLConnection;setDoOutput(Z)V",
+			remap = false
 		),
-		locals = LocalCapture.CAPTURE_FAILSOFT
+		locals = LocalCapture.CAPTURE_FAILSOFT,
+		remap = false
 	)
 	public void patchHttpConnection(CallbackInfo ci, HttpURLConnection httpURLConnection) {
 		ThreadDownloadImageHook.hookThreadImageConnection(httpURLConnection);

@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.StreamerMode;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.EnderNodeHighlighter;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
 import io.github.moulberry.notenoughupdates.overlays.SlayerOverlay;
-import io.github.moulberry.notenoughupdates.overlays.TimersOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -150,6 +149,7 @@ public class ChatListener {
 				String username = startsWith.equals("/viewprofile") ?
 					Utils.getNameFromChatComponent(chatComponent) :
 					chatComponent.getSiblings().get(chatComponentsCount).getChatStyle().getChatClickEvent().getValue().substring(15);
+				username = username.replaceAll("[^a-zA-Z0-9_]", "");
 
 				if (NotEnoughUpdates.INSTANCE.config.misc.replaceSocialOptions1 == 1) {
 
@@ -174,6 +174,7 @@ public class ChatListener {
 	}
 
 	private static ChatStyle getPVChatStyle(String username) {
+		username = username.replaceAll("[^a-zA-Z0-9_]", "");
 		return Utils.createClickStyle(
 			ClickEvent.Action.RUN_COMMAND,
 			"/pv " + username,

@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NEUManager;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
@@ -45,14 +46,7 @@ import org.lwjgl.opengl.GL14;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -298,33 +292,14 @@ public class ItemCustomizeManager {
 	}
 
 	public static void loadCustomization(File file) {
-		try (
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file),
-				StandardCharsets.UTF_8
-			))
-		) {
-			itemDataMap = GSON.fromJson(reader, ItemDataMap.class);
-		} catch (Exception ignored) {
-		}
+		itemDataMap = ConfigUtil.loadConfig(ItemDataMap.class, file, GSON);
 		if (itemDataMap == null) {
 			itemDataMap = new ItemDataMap();
 		}
 	}
 
 	public static void saveCustomization(File file) {
-		try {
-			file.createNewFile();
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(GSON.toJson(itemDataMap));
-			}
-		} catch (Exception ignored) {
-		}
+		ConfigUtil.saveConfig(itemDataMap, file, GSON);
 	}
 
 	public static Item getCustomItem(ItemStack stack) {

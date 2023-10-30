@@ -204,7 +204,7 @@ public class CollectionsPage extends GuiProfileViewerPage {
 				}
 				ProfileCollectionInfo.CollectionInfo thisCollection = collectionInfo.getCollections().get(collection);
 				if (thisCollection == null) {
-					Utils.showOutdatedRepoNotification();
+					Utils.showOutdatedRepoNotification("hypixel api collection info");
 					continue;
 				}
 				ItemStack collectionItem = ProfileViewer.getCollectionToCollectionDisplayMap().get(collection);

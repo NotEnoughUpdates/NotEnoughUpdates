@@ -19,8 +19,11 @@
 
 package io.github.moulberry.notenoughupdates.util;
 
+import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -32,6 +35,14 @@ import java.util.Optional;
 public class Calculator {
 	public interface VariableProvider {
 		Optional<BigDecimal> provideVariable(String name) throws CalculatorException;
+	}
+
+	public static DecimalFormat getDecimalFormat() {
+		StringBuilder f = new StringBuilder("#,##0.");
+		for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.misc.calculationPrecision; i++) {
+			f.append("#");
+		}
+		return new DecimalFormat(f.toString());
 	}
 
 	public static BigDecimal calculate(String source, VariableProvider variables) throws CalculatorException {
@@ -269,6 +280,7 @@ public class Calculator {
 	///<editor-fold desc="Evaluating Time">
 	public static BigDecimal evaluate(VariableProvider provider, List<Token> rpnTokens) throws CalculatorException {
 		Deque<BigDecimal> values = new ArrayDeque<>();
+		int precision = NotEnoughUpdates.INSTANCE != null ? NotEnoughUpdates.INSTANCE.config.misc.calculationPrecision : 5;
 		try {
 			for (Token command : rpnTokens) {
 				switch (command.type) {
@@ -287,42 +299,54 @@ public class Calculator {
 						values.push(new BigDecimal(command.numericValue).scaleByPowerOfTen(command.exponent));
 						break;
 					case BINOP:
-						BigDecimal right = values.pop().setScale(2, RoundingMode.HALF_UP);
-						BigDecimal left = values.pop().setScale(2, RoundingMode.HALF_UP);
+						BigDecimal right = values.pop().setScale(precision, RoundingMode.HALF_UP);
+						BigDecimal left = values.pop().setScale(precision, RoundingMode.HALF_UP);
 						switch (command.operatorValue.intern()) {
 							case "^":
 								if (right.compareTo(new BigDecimal(1000)) >= 0) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
-									throw new CalculatorException(right + " is too large, pick a power less than 1000", rightToken.tokenStart, rightToken.tokenLength);
+									throw new CalculatorException(
+										right + " is too large, pick a power less than 1000",
+										rightToken.tokenStart,
+										rightToken.tokenLength
+									);
 								}
 
 								if (right.doubleValue() != right.intValue()) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
-									throw new CalculatorException(right + " has a decimal, pick a power that is non-decimal", rightToken.tokenStart, rightToken.tokenLength);
+									throw new CalculatorException(
+										right + " has a decimal, pick a power that is non-decimal",
+										rightToken.tokenStart,
+										rightToken.tokenLength
+									);
 								}
 
 								if (right.doubleValue() < 0) {
 									Token rightToken = rpnTokens.get(rpnTokens.indexOf(command) - 1);
-									throw new CalculatorException(right + " is a negative number, pick a power that is positive", rightToken.tokenStart, rightToken.tokenLength);
+									throw new CalculatorException(
+										right + " is a negative number, pick a power that is positive",
+										rightToken.tokenStart,
+										rightToken.tokenLength
+									);
 								}
-								values.push(left.pow(right.intValue()).setScale(2, RoundingMode.HALF_UP));
+								values.push(left.pow(right.intValue()).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "x":
 							case "*":
-								values.push(left.multiply(right).setScale(2, RoundingMode.HALF_UP));
+								values.push(left.multiply(right).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "/":
 								try {
-									values.push(left.divide(right, RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP));
+									values.push(left.divide(right, RoundingMode.HALF_UP).setScale(precision, RoundingMode.HALF_UP));
 								} catch (ArithmeticException e) {
 									throw new CalculatorException("Encountered division by 0", command.tokenStart, command.tokenLength);
 								}
 								break;
 							case "+":
-								values.push(left.add(right).setScale(2, RoundingMode.HALF_UP));
+								values.push(left.add(right).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "-":
-								values.push(left.subtract(right).setScale(2, RoundingMode.HALF_UP));
+								values.push(left.subtract(right).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							default:
 								throw new CalculatorException(
@@ -343,22 +367,25 @@ public class Calculator {
 						BigDecimal p = values.pop();
 						switch (command.operatorValue.intern()) {
 							case "s":
-								values.push(p.multiply(new BigDecimal(64)).setScale(2, RoundingMode.HALF_UP));
+								values.push(p.multiply(new BigDecimal(64)).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "k":
-								values.push(p.multiply(new BigDecimal(1_000)).setScale(2, RoundingMode.HALF_UP));
+								values.push(p.multiply(new BigDecimal(1_000)).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "m":
-								values.push(p.multiply(new BigDecimal(1_000_000)).setScale(2, RoundingMode.HALF_UP));
+								values.push(p.multiply(new BigDecimal(1_000_000)).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "b":
-								values.push(p.multiply(new BigDecimal(1_000_000_000)).setScale(2, RoundingMode.HALF_UP));
+								values.push(p.multiply(new BigDecimal(1_000_000_000)).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "t":
-								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(2, RoundingMode.HALF_UP));
+								values.push(p.multiply(new BigDecimal("1000000000000")).setScale(precision, RoundingMode.HALF_UP));
 								break;
 							case "%":
-								values.push(p.setScale(3, RoundingMode.HALF_UP).divide(new BigDecimal(100), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP));
+								values.push(p
+									.setScale(precision + 1, RoundingMode.HALF_UP)
+									.divide(new BigDecimal(100), RoundingMode.HALF_UP)
+									.setScale(precision, RoundingMode.HALF_UP));
 								break;
 							default:
 								throw new CalculatorException(

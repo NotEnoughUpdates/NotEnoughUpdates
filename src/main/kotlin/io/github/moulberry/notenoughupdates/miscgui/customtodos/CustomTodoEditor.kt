@@ -73,9 +73,9 @@ class CustomTodoEditor(
             from.enabled.toMutableMap().also { it[SBInfo.getInstance().currentProfile ?: return@also] = enabled }
         )
         if (nextCustomTodo != lastCustomTodo) {
+            lastCustomTodo = nextCustomTodo
             CustomTodoList(todos, xmlUniverse).save()
         }
-        lastCustomTodo = nextCustomTodo
         return nextCustomTodo
     }
 

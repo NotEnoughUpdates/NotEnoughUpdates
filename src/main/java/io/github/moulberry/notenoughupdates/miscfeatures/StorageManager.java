@@ -31,6 +31,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import io.github.moulberry.notenoughupdates.miscgui.StorageOverlay;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
@@ -62,22 +63,13 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraft.network.play.server.S30PacketWindowItems;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class StorageManager {
 	private static final StorageManager INSTANCE = new StorageManager();
@@ -298,34 +290,14 @@ public class StorageManager {
 	private static final Pattern ECHEST_WINDOW_REGEX = Pattern.compile("Ender Chest \\((\\d+)/(\\d+)\\)");
 
 	public void loadConfig(File file) {
-		try (
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new GZIPInputStream(new FileInputStream(file)),
-				StandardCharsets.UTF_8
-			))
-		) {
-			storageConfig = GSON.fromJson(reader, StorageConfig.class);
-		} catch (Exception ignored) {
-		}
+		storageConfig = ConfigUtil.loadConfig(StorageConfig.class, file, GSON, true);
 		if (storageConfig == null) {
 			storageConfig = new StorageConfig();
 		}
 	}
 
 	public void saveConfig(File file) {
-		try {
-			file.createNewFile();
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new GZIPOutputStream(new FileOutputStream(file)),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(GSON.toJson(storageConfig));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ConfigUtil.saveConfig(storageConfig, file, GSON, true);
 	}
 
 	public ItemStack getMissingBackpackStack(int storageId) {

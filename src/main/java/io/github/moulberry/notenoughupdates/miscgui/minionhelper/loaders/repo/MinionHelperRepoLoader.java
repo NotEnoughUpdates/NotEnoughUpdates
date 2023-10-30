@@ -95,7 +95,7 @@ public class MinionHelperRepoLoader {
 		readyToUse = true;
 
 		if (errorWhileLoading) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("what ever the minion helper wants");
 		}
 	}
 

@@ -26,6 +26,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent;
 import io.github.moulberry.notenoughupdates.miscgui.GuiItemRecipe;
 import io.github.moulberry.notenoughupdates.miscgui.KatSitterOverlay;
@@ -1357,16 +1358,18 @@ public class NEUManager {
 						for (int i = 0; i < otherNumsMax.size(); i++) {
 							replacements.put(
 								"" + i,
-								(addZero ? "0\u27A1" : "") +
-									removeUnusedDecimal(Math.floor(otherNumsMin.get(i).getAsFloat() * 10) / 10f) +
-									"\u27A1" + removeUnusedDecimal(Math.floor(otherNumsMax.get(i).getAsFloat() * 10) / 10f)
+								(addZero ? "0\u27A1" : "") + StringUtils.formatNumber(otherNumsMin.get(i).getAsDouble()) +
+									"\u27A1" + StringUtils.formatNumber(otherNumsMax.get(i).getAsDouble())
 							);
 						}
 
 						for (Map.Entry<String, JsonElement> entry : max.get("statNums").getAsJsonObject().entrySet()) {
-							int statMax = (int) Math.floor(entry.getValue().getAsFloat());
-							int statMin = (int) Math.floor(min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsFloat());
-							String statStr = (statMin > 0 ? "+" : "") + statMin + "\u27A1" + statMax;
+							double statMax = entry.getValue().getAsDouble();
+							double statMin = min.get("statNums").getAsJsonObject().get(entry.getKey()).getAsDouble();
+
+							String statStr =
+								(statMin > 0 ? "+" : "") + StringUtils.formatNumber(statMin) + "\u27A1" + StringUtils.formatNumber(
+									statMax);
 							statStr = (addZero ? "0\u27A1" : "") + statStr;
 							replacements.put(entry.getKey(), statStr);
 						}
@@ -1657,7 +1660,7 @@ public class NEUManager {
 
 		if (displayName == null) {
 			displayName = internalName;
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification(internalName);
 			if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				Utils.addChatMessage("§c[NEU] Found no display name in repo for '" + internalName + "'!");
 			}

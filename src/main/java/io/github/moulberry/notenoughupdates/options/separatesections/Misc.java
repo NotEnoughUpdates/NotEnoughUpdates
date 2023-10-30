@@ -259,6 +259,18 @@ public class Misc {
 
 	@Expose
 	@ConfigOption(
+		name = "Calculator Precision",
+		desc = "Digits after the , to display in the calculator"
+	)
+	@ConfigEditorSlider(
+		minValue = 1,
+		maxValue = 100,
+		minStep = 1
+	)
+	public int calculationPrecision = 5;
+
+	@Expose
+	@ConfigOption(
 		name = "Enable Abiphone Warning",
 		desc = "Asks for confirmation when removing a contact in the abiphone"
 	)
@@ -325,4 +337,22 @@ public class Misc {
 	)
 	@ConfigEditorBoolean
 	public boolean defaultArmorColour = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Search AH/BZ for current item",
+		desc = "Search AH/BZ for the item you are hovering over"
+	)
+	@ConfigEditorKeybind(defaultKey = Keyboard.KEY_M)
+	public int openAHKeybind = Keyboard.KEY_M;
+
+	@Expose
+	@ConfigOption(
+		name = "Countdown Calculations",
+		desc = "Shows a(n estimated) timestamp for when a countdown in an item's tooltip will end, relative to your timezone. Also applies to §e/neucalendar§r."
+	)
+	@ConfigEditorDropdown(
+		values = {"Off", "AM/PM [1PM]", "24hr [13:00]"}
+	)
+	public int showWhenCountdownEnds = 1;
 }

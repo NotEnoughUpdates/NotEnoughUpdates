@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.autosubscribe.AutoLoad;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.BackgroundBlur;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
 import io.github.moulberry.notenoughupdates.listener.ChatListener;
 import io.github.moulberry.notenoughupdates.listener.ItemTooltipEssenceShopListener;
@@ -84,14 +85,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -207,16 +201,7 @@ public class NotEnoughUpdates {
 		configFile = new File(neuDir, "configNew.json");
 
 		if (configFile.exists()) {
-			try (
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(configFile),
-					StandardCharsets.UTF_8
-				))
-			) {
-				config = gson.fromJson(reader, NEUConfig.class);
-			} catch (Exception exc) {
-				new RuntimeException("Invalid config file. This will reset the config to default", exc).printStackTrace();
-			}
+			config = ConfigUtil.loadConfig(NEUConfig.class, configFile, gson);
 		}
 
 		ItemCustomizeManager.loadCustomization(new File(neuDir, "itemCustomization.json"));
@@ -328,40 +313,13 @@ public class NotEnoughUpdates {
 		} catch (Exception ignored) {
 		}
 
-		try {
-			configFile.createNewFile();
+		ConfigUtil.saveConfig(config, configFile, gson);
 
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(configFile),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(gson.toJson(config));
-			}
-		} catch (Exception ignored) {
-		}
-
-		try {
-			ItemCustomizeManager.saveCustomization(new File(neuDir, "itemCustomization.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			StorageManager.getInstance().saveConfig(new File(neuDir, "storageItems.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			FairySouls.getInstance().saveFoundSoulsForAllProfiles(new File(neuDir, "collected_fairy_souls.json"), gson);
-		} catch (Exception ignored) {
-		}
-		try {
-			PetInfoOverlay.saveConfig(new File(neuDir, "petCache.json"));
-		} catch (Exception ignored) {
-		}
-		try {
-			SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
-		} catch (Exception ignored) {
-		}
+		ItemCustomizeManager.saveCustomization(new File(neuDir, "itemCustomization.json"));
+		StorageManager.getInstance().saveConfig(new File(neuDir, "storageItems.json"));
+		FairySouls.getInstance().saveFoundSoulsForAllProfiles(new File(neuDir, "collected_fairy_souls.json"), gson);
+		PetInfoOverlay.saveConfig(new File(neuDir, "petCache.json"));
+		SlotLocking.getInstance().saveConfig(new File(neuDir, "slotLocking.json"));
 	}
 
 	/**

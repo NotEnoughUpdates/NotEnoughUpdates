@@ -87,6 +87,17 @@ public class SkyblockProfiles {
 		"runecrafting",
 		"social"
 	);
+
+	private static final List<String> tuningStats = Arrays.asList(
+		"health",
+		"defense",
+		"walk_speed",
+		"strength",
+		"critical_damage",
+		"critical_chance",
+		"attack_speed",
+		"intelligence"
+	);
 	private final ProfileViewer profileViewer;
 	// TODO: replace with UUID type
 	private final String uuid;
@@ -488,6 +499,7 @@ public class SkyblockProfiles {
 		private final JsonObject outerProfileJson;
 		private final String gamemode;
 		private Integer magicPower = null;
+		private LinkedHashMap<String, Integer> tuningInfo = null;
 		private Double skyblockLevel = null;
 		private EnumChatFormatting skyBlockExperienceColour = null;
 		private Map<String, JsonArray> inventoryNameToInfo = null;
@@ -511,7 +523,7 @@ public class SkyblockProfiles {
 			private MuseumData(JsonObject museumJson) {
 				JsonObject museum = Constants.MUSEUM;
 				if (museum == null) {
-					Utils.showOutdatedRepoNotification();
+					Utils.showOutdatedRepoNotification("museum.json");
 					museumValue = -3;
 					return;
 				}
@@ -708,6 +720,24 @@ public class SkyblockProfiles {
 			return magicPower = ProfileViewerUtils.getMagicalPower(inventoryInfo.get("talisman_bag"), getProfileJson());
 		}
 
+		public LinkedHashMap<String, Integer> getTuningInfo() {
+			if (tuningInfo != null) {
+				return tuningInfo;
+			}
+
+			JsonObject profileJson = getProfileJson();
+			if (Utils.getElement(profileJson, "accessory_bag_storage.tuning") == null) return null;
+			JsonObject tuningData = Utils.getElement(profileJson, "accessory_bag_storage.tuning.slot_0").getAsJsonObject();
+			tuningInfo = new LinkedHashMap<>();
+
+			for (String stat : tuningStats) {
+				int statData = tuningData.get(stat).getAsInt();
+				tuningInfo.put(stat, statData);
+			}
+
+			return tuningInfo;
+		}
+
 		public Map<String, JsonArray> getInventoryInfo() {
 			if (inventoryNameToInfo != null) {
 				return inventoryNameToInfo;
@@ -781,7 +811,7 @@ public class SkyblockProfiles {
 
 		public EnumChatFormatting getSkyblockLevelColour() {
 			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("sblevels.json or missing sblevel_colours");
 				return EnumChatFormatting.WHITE;
 			}
 
@@ -836,7 +866,7 @@ public class SkyblockProfiles {
 
 			JsonObject leveling = Constants.LEVELING;
 			if (leveling == null || !leveling.has("social")) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("leveling.json or missing social");
 				return null;
 			}
 
@@ -1197,7 +1227,9 @@ public class SkyblockProfiles {
 			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
 			if (!getLatestProfile().skillsApiEnabled()) return;
 
-			PetInfoOverlay.getConfig().tamingLevel = (int) getLevelingInfo().get("taming").level;
+			if (getLevelingInfo().get("taming") != null) { //idfk what else could cause an NPE here
+				PetInfoOverlay.getConfig().tamingLevel = (int) getLevelingInfo().get("taming").level;
+			}
 		}
 	}
 }

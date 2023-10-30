@@ -41,7 +41,7 @@ internal class CalculatorTest {
         calculationShouldBe("(1)+1", 2)
         calculationShouldBe("-0", 0)
         calculationShouldBe("-10+2", -8)
-        calculationShouldBe("14k*23m/2.35+596123-9213", 137021863505.74)
+        calculationShouldBe("14k*23m/2.35+596123-9213", 137021863505.74467)
         calculationShouldBe("1+-10+2", -7)
         calculationShouldBe("2**--10", 2.0.pow(10))
     }

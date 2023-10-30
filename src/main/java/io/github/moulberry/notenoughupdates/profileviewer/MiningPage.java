@@ -123,11 +123,13 @@ public class MiningPage extends GuiProfileViewerPage {
 		int orbit = Utils.getElementAsInt(Utils.getElement(nodes, "experience_orbs"), 0);
 		float orbitStat = (float) (orbit * .01 + 0.2);
 		int crystallized = Utils.getElementAsInt(Utils.getElement(nodes, "fallen_star_bonus"), 0);
-		int crystallizedStat = crystallized * 6 + 14;
+		int crystallizedStat = (crystallized - 1) * 6 + 20;
+		int crystallizedStat2 = (crystallized - 1) * 5 + 20;
 		int professional = Utils.getElementAsInt(Utils.getElement(nodes, "professional"), 0);
 		int professionalStat = professional * 5 + 50;
 		int greatExplorer = Utils.getElementAsInt(Utils.getElement(nodes, "great_explorer"), 0);
 		int greatExplorerStat = greatExplorer * 4 + 16;
+		int greatExplorerStat2 = greatExplorer / 5 + 1;
 		int fortunate = Utils.getElementAsInt(Utils.getElement(nodes, "fortunate"), 0);
 		int fortunateStat = fortunate * 4 + 20;
 		int lonesomeMiner = ((Utils.getElementAsInt(Utils.getElement(nodes, "lonesome_miner"), 0)));
@@ -421,6 +423,11 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§7trigger rare occurrences in",
 					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
 					"",
+					EnumChatFormatting.GRAY  + "Rare occurences include:",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Golden Goblins",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Powder Ghasts",
+					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
 						StringUtils.formatNumber((int) Math.pow(luckOfCave + 2, 3.07)) +
@@ -432,7 +439,12 @@ public class MiningPage extends GuiProfileViewerPage {
 						"",
 						"§7Increases the chance for you to",
 						"§7trigger rare occurrences in",
-						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7."
+						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
+						"",
+						EnumChatFormatting.GRAY  + "Rare occurrences include:",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Golden Goblins",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Powder Ghasts"
 					),
 			45
 		);
@@ -769,8 +781,8 @@ public class MiningPage extends GuiProfileViewerPage {
 					"    §7extra Powder while mining.",
 					"§8 ■ §7Reduce Pickaxe Ability cooldown",
 					"    §7by §a20%",
-					"§8 ■ §7§a10x §7chance to find Goblins",
-					"    §7while mining.",
+					"§8 ■ §7§a10x §7chance to find Golden",
+					"    §7and Diamond Goblins.",
 					"§8 ■ §7Gain §a5x §9Titanium §7drops."
 				),
 			new ItemStack(skyMall > 0 ? Items.diamond : Items.coal)
@@ -785,11 +797,11 @@ public class MiningPage extends GuiProfileViewerPage {
 			() ->
 				Lists.newArrayList(
 					"Goblin Killer",
-					"§7Killing a §6Golden Goblin",
-					"§6§7gives §2200 §7extra §2Mithril",
-					"§2Powder§7, while killing other",
-					"§7Goblins gives some based on",
-					"§7their wits."
+					"§7Killing a §6Golden Goblin §7or",
+					"§7§bDiamond Goblin §7gives §2200",
+					"§7extra §2Mithril Powder§7,",
+					"§7while killing other Goblins",
+					"§7gives some based on their wits."
 				),
 			new ItemStack(goblinKiller > 0 ? Items.diamond : Items.coal)
 		);
@@ -999,9 +1011,12 @@ public class MiningPage extends GuiProfileViewerPage {
 					"Great Explorer",
 					"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
 					"",
-					"§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY +
-						"chance to",
-					"§7find treasure.",
+					"§7Boosts the chance to find",
+					"§7treasure chests while mining in",
+					"§7the §5Crystal Hollows §7by",
+					EnumChatFormatting.GREEN + "+" + greatExplorerStat + "%" + " §7and reduces the",
+					"§7amount of locks on the chests by",
+					EnumChatFormatting.GREEN.toString() + greatExplorerStat2 + "§7.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.LIGHT_PURPLE +
@@ -1012,9 +1027,12 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Great Explorer",
 						"§7Level " + greatExplorer + EnumChatFormatting.DARK_GRAY + "/20",
 						"",
-						"§7Grants " + EnumChatFormatting.GREEN + "+" + greatExplorerStat + "% " + EnumChatFormatting.GRAY +
-							"chance to",
-						"§7find treasure."
+						"§7Boosts the chance to find",
+						"§7treasure chests while mining in",
+						"§7the §5Crystal Hollows §7by",
+						EnumChatFormatting.GREEN + "+" + greatExplorerStat + "%" + " §7and reduces the",
+						"§7amount of locks on the chests by",
+						EnumChatFormatting.GREEN.toString() + greatExplorerStat2 + "§7."
 					),
 			20
 		);
@@ -1142,10 +1160,9 @@ public class MiningPage extends GuiProfileViewerPage {
 					"Crystallized",
 					"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
 					"",
-					"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining",
-					"§6Speed §7and a §a" + crystallizedStat + "%§7 §7chance",
-					"§7to deal §a+1 §7extra damage near",
-					"§7§5Fallen Stars§7.",
+					"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining Speed",
+					"§7and §a+" + crystallizedStat + "§7 §6☘ Mining Fortune",
+					"§7near §5Fallen Stars§7.",
 					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
@@ -1156,10 +1173,9 @@ public class MiningPage extends GuiProfileViewerPage {
 						"Crystallized",
 						"§7Level " + crystallized + EnumChatFormatting.DARK_GRAY + "/30",
 						"",
-						"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining",
-						"§6Speed §7and a §a" + crystallizedStat + "%§7 §7chance",
-						"§7to deal §a+1 §7extra damage near",
-						"§7§5Fallen Stars§7."
+						"§7Grants §a+§a" + crystallizedStat + "§7 §6⸕ Mining Speed",
+						"§7and §a+" + crystallizedStat + "§7 §6☘ Mining Fortune",
+						"§7near §5Fallen Stars§7."
 					),
 			30
 		);

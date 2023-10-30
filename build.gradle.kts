@@ -187,6 +187,8 @@ tasks.named("compileOneconfigJava", JavaCompile::class) {
 
 tasks.named<Test>("test") {
 		useJUnitPlatform()
+		systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+		this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
 tasks.named("jar", Jar::class) {

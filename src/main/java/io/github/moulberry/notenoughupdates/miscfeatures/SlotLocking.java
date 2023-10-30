@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import io.github.moulberry.notenoughupdates.core.config.KeybindHelper;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.events.ReplaceItemEvent;
@@ -55,14 +56,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 @NEUAutoSubscribe
@@ -113,15 +107,7 @@ public class SlotLocking {
 	public Slot getRealSlot() {return realSlot;}
 
 	public void loadConfig(File file) {
-		try (
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file),
-				StandardCharsets.UTF_8
-			))
-		) {
-			config = GSON.fromJson(reader, SlotLockingConfig.class);
-		} catch (Exception ignored) {
-		}
+		config = ConfigUtil.loadConfig(SlotLockingConfig.class, file, GSON);
 		if (config == null) {
 			config = new SlotLockingConfig();
 		}
@@ -163,19 +149,7 @@ public class SlotLocking {
 	private final long[] slotChanges = new long[9];
 
 	public void saveConfig(File file) {
-		try {
-			file.createNewFile();
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(GSON.toJson(config));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ConfigUtil.saveConfig(config, file, GSON);
 	}
 
 	private LockedSlot[] getDataForProfile() {
@@ -191,11 +165,9 @@ public class SlotLocking {
 			k -> new SlotLockProfile()
 		);
 
-
 		if (profile.slotLockData[0] == null) {
 			profile.slotLockData[0] = new SlotLockData();
 		}
-
 
 		if (!"rift".equals(SBInfo.getInstance().getLocation())) {
 			return profile.slotLockData[0].lockedSlots;
@@ -208,7 +180,6 @@ public class SlotLocking {
 		if (lockedSlots == null) {
 			return DEFAULT_LOCKED_SLOT;
 		}
-
 
 		LockedSlot slot = lockedSlots[index];
 
@@ -747,10 +718,14 @@ public class SlotLocking {
 	}
 
 	boolean setTopHalfBarrier = false;
+
 	@SubscribeEvent
 	public void barrierInventory(ReplaceItemEvent event) {
 		if (event.getSlotNumber() < 9 ||
-			(pairingSlot != null && (event.getSlotNumber() == pairingSlot.slotNumber || isArmourSlot(event.getSlotNumber(), pairingSlot.slotNumber))) ||
+			(pairingSlot != null && (event.getSlotNumber() == pairingSlot.slotNumber || isArmourSlot(
+				event.getSlotNumber(),
+				pairingSlot.slotNumber
+			))) ||
 			!setTopHalfBarrier ||
 			!(event.getInventory() instanceof InventoryPlayer)) return;
 		ItemStack stack = new ItemStack(Blocks.barrier);

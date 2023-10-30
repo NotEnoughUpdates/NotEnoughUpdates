@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
+import io.github.moulberry.notenoughupdates.core.config.ConfigUtil;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.util.Constants;
@@ -42,14 +43,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -349,21 +346,7 @@ public class FairySouls {
 	}
 
 	public void saveFoundSoulsForAllProfiles(File file, Gson gson) {
-		try {
-			//noinspection ResultOfMethodCallIgnored
-			file.createNewFile();
-
-			try (
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file),
-					StandardCharsets.UTF_8
-				))
-			) {
-				writer.write(gson.toJson(allProfilesFoundSouls));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		ConfigUtil.saveConfig(allProfilesFoundSouls, file, gson);
 	}
 
 	public void tick() {

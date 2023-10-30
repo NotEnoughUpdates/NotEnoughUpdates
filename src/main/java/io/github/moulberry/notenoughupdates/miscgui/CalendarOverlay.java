@@ -63,6 +63,8 @@ import org.lwjgl.opengl.GL11;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,6 +141,8 @@ public class CalendarOverlay {
 		"Cult of the Fallen Star",
 		"NEU Calendar Item"
 	); // Star Cult Stack
+
+	private boolean canAddcountdownCalc = (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2);
 
 	static {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -730,12 +734,15 @@ public class CalendarOverlay {
 							sbEvent.display,
 							EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilMillis, false)
 						);
+						addCountdownCalculatorToTooltip(timeUntilMillis, tooltipToDisplay);
 						if (sbEvent.lastsFor >= 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 								prettyTime(sbEvent.lastsFor, true));
+							addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntilMillis, tooltipToDisplay);
 							if (timeUntilMillis < 0) {
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 									prettyTime(sbEvent.lastsFor + timeUntilMillis, true));
+								addCountdownCalculatorToTooltip(timeUntilMillis, tooltipToDisplay);
 							}
 						}
 						if (sbEvent.desc != null) {
@@ -786,6 +793,10 @@ public class CalendarOverlay {
 						Instant.now(),
 						Instant.ofEpochMilli(pair.getFirst())
 					)));
+					addCountdownCalculatorToTooltip(Duration.between(
+						Instant.now(),
+						Instant.ofEpochMilli(pair.getFirst())
+					).toMillis(), tooltipToDisplay);
 				}
 			}
 		}
@@ -830,12 +841,15 @@ public class CalendarOverlay {
 						nextEvent.display,
 						EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilNext, false)
 					);
+					addCountdownCalculatorToTooltip(timeUntilNext, tooltipToDisplay);
 					if (nextEvent.lastsFor >= 0) {
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 							prettyTime(nextEvent.lastsFor, true));
+						addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
 						if (timeUntilNext < 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 								prettyTime(nextEvent.lastsFor + timeUntilNext, true));
+							addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
 						}
 
 					}
@@ -1471,12 +1485,15 @@ public class CalendarOverlay {
 								tooltipToDisplay.add(sbEvent.display);
 								tooltipToDisplay.add(
 									EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntil, false));
+								addCountdownCalculatorToTooltip(timeUntil, tooltipToDisplay);
 								if (sbEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(sbEvent.lastsFor, true));
+									addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
 									if (timeUntil < 0) {
 										tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 											prettyTime(sbEvent.lastsFor + timeUntil, true));
+										addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
 									}
 								}
 								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
@@ -1491,9 +1508,11 @@ public class CalendarOverlay {
 								tooltipToDisplay.add(nextMayorEvent.display);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW +
 									prettyTime(timeUntilMayor, false));
+								addCountdownCalculatorToTooltip(timeUntilMayor, tooltipToDisplay);
 								if (nextMayorEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(nextMayorEvent.lastsFor, true));
+									addCountdownCalculatorToTooltip(nextMayorEvent.lastsFor + timeUntilMayor, tooltipToDisplay);
 								}
 							}
 
@@ -1635,5 +1654,15 @@ public class CalendarOverlay {
 		}
 
 		return endsIn;
+	}
+
+	private List<String> addCountdownCalculatorToTooltip(long millis, List<String> tooltipToModify) {
+		if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 1 || NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) {
+			String formatString = "EEEE, MMM d h:mm a";
+			if (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds == 2) { formatString = "EEEE, MMM d HH:mm"; }
+			tooltipToModify.add("§b" + DateTimeFormatter.ofPattern(formatString).format(ZonedDateTime.now().plusSeconds(((millis / 1000)))));
+
+		}
+		return tooltipToModify;
 	}
 }
