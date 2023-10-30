@@ -59,10 +59,10 @@ class CustomTodoEditor(
 
     var target = from.triggerTarget
     var matchMode = from.triggerMatcher
-
+    var lastCustomTodo: CustomTodo? = null
 
     fun into(): CustomTodo {
-        return CustomTodo(
+        val nextCustomTodo = CustomTodo(
             label,
             timer.toIntOrNull() ?: 0,
             trigger,
@@ -70,8 +70,13 @@ class CustomTodoEditor(
             isResetOffset,
             target, matchMode,
             from.readyAt,
-            from.enabled.toMutableMap().also { it[SBInfo.getInstance().currentProfile] = enabled }
+            from.enabled.toMutableMap().also { it[SBInfo.getInstance().currentProfile ?: return@also] = enabled }
         )
+        if (nextCustomTodo != lastCustomTodo) {
+            CustomTodoList(todos, xmlUniverse).save()
+        }
+        lastCustomTodo = nextCustomTodo
+        return nextCustomTodo
     }
 
     @Bind
@@ -83,10 +88,12 @@ class CustomTodoEditor(
     fun setActionbar() {
         target = CustomTodo.TriggerTarget.ACTIONBAR
     }
+
     @Bind
     fun setSidebar() {
         target = CustomTodo.TriggerTarget.SIDEBAR
     }
+
     @Bind
     fun setTablist() {
         target = CustomTodo.TriggerTarget.TAB_LIST
@@ -105,6 +112,7 @@ class CustomTodoEditor(
     fun getActionbar(): String {
         return colorFromBool(target == CustomTodo.TriggerTarget.ACTIONBAR) + "Actionbar"
     }
+
     @Bind
     fun getSidebar(): String {
         return colorFromBool(target == CustomTodo.TriggerTarget.SIDEBAR) + "Sidebar"
@@ -227,7 +235,7 @@ class CustomTodoEditor(
 
     @Bind
     fun getTitle(): String {
-        return "Editing $label"
+        return "Editing ${into().label}"
     }
 
     @Bind

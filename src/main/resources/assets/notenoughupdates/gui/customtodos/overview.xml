@@ -48,10 +48,6 @@
                 <Button onClick="@pasteTodo">
                     <Text text="Paste TODO from Clipboard"/>
                 </Button>
-                <Spacer width="30"/>
-                <Button onClick="@save">
-                    <Text text="§aSave Changes"/>
-                </Button>
             </Row>
         </Column>
     </Gui>

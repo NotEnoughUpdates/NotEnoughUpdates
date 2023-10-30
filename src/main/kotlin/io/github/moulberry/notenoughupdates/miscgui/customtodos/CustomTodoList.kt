@@ -71,9 +71,9 @@ class CustomTodoList(
         val customTodo = CustomTodo.fromTemplate(ClipboardUtils.getClipboardContent())
             ?: return
         todos.add(CustomTodoEditor(customTodo, todos, xmlUniverse))
+        save()
     }
 
-    @Bind
     fun save() {
         NotEnoughUpdates.INSTANCE.config.hidden.customTodos = todos.map { it.into() }.toMutableList()
         NotEnoughUpdates.INSTANCE.saveConfig()
@@ -94,5 +94,6 @@ class CustomTodoList(
                 xmlUniverse,
             )
         )
+        save()
     }
 }
