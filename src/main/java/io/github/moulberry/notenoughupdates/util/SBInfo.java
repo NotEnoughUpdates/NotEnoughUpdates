@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.util;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.miscfeatures.CookieWarning;
@@ -226,6 +227,8 @@ public class SBInfo {
 			);
 			areGamemodesLoaded = true;
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
 		}
 	}
