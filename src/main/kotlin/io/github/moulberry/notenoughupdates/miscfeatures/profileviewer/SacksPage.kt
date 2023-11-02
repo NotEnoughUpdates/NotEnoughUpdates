@@ -334,10 +334,10 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private fun createTooltip(name: String, value: Double, amount: Int, isSack: Boolean): List<String> {
         val baseList = mutableListOf(
             "§2$name",
-            "Items Stored: ${StringUtils.formatNumber(amount)}",
-            "Total Value: ${StringUtils.formatNumber(value.toLong())}"
+            "Items Stored: §a${StringUtils.formatNumber(amount)}",
+            "Total Value: §6${StringUtils.formatNumber(value.toLong())}"
         )
-        if (isSack) baseList.add("Click for more details")
+        if (isSack) baseList.add("§eClick for more details")
         return baseList
     }
 
