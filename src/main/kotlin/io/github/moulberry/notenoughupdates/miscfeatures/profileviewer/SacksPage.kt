@@ -174,7 +174,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                     true,
                     0
                 )
-                GlStateManager.color(1f, 1f, 1f, 1f)
+                GlStateManager.color(0f, 0f, 0f, 0f)
 
                 if (itemStack != null) {
                     Utils.drawItemStack(itemStack, x + 2, y + 2)
