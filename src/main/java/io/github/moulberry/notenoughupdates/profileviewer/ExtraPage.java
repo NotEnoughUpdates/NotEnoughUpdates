@@ -110,7 +110,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float mouseY
 	) {
 		if (Constants.PARENTS == null || !Constants.PARENTS.has("ESSENCE_WITHER")) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("parents.json or missing ESSENCE_WITHER");
 			return;
 		}
 
@@ -129,7 +129,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 			TreeMap<String, JsonObject> itemInformation = NotEnoughUpdates.INSTANCE.manager.getItemInformation();
 			if (!itemInformation.containsKey(essenceName)) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification(essenceName);
 				return;
 			}
 			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();

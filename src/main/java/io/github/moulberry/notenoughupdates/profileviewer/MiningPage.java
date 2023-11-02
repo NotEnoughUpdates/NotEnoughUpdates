@@ -423,6 +423,11 @@ public class MiningPage extends GuiProfileViewerPage {
 					"§7trigger rare occurrences in",
 					"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
 					"",
+					EnumChatFormatting.GRAY  + "Rare occurences include:",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Golden Goblins",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+					EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Powder Ghasts",
+					"",
 					EnumChatFormatting.GRAY + "Cost",
 					EnumChatFormatting.DARK_GREEN +
 						StringUtils.formatNumber((int) Math.pow(luckOfCave + 2, 3.07)) +
@@ -434,7 +439,12 @@ public class MiningPage extends GuiProfileViewerPage {
 						"",
 						"§7Increases the chance for you to",
 						"§7trigger rare occurrences in",
-						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7."
+						"§2Dwarven Mines " + EnumChatFormatting.GRAY + "by " + EnumChatFormatting.GREEN + luckOfCave + "%§7.",
+						"",
+						EnumChatFormatting.GRAY  + "Rare occurrences include:",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Golden Goblins",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.DARK_PURPLE + "Fallen Stars",
+						EnumChatFormatting.GRAY  + " • " + EnumChatFormatting.GOLD + "Powder Ghasts"
 					),
 			45
 		);
@@ -771,8 +781,8 @@ public class MiningPage extends GuiProfileViewerPage {
 					"    §7extra Powder while mining.",
 					"§8 ■ §7Reduce Pickaxe Ability cooldown",
 					"    §7by §a20%",
-					"§8 ■ §7§a10x §7chance to find Goblins",
-					"    §7while mining.",
+					"§8 ■ §7§a10x §7chance to find Golden",
+					"    §7and Diamond Goblins.",
 					"§8 ■ §7Gain §a5x §9Titanium §7drops."
 				),
 			new ItemStack(skyMall > 0 ? Items.diamond : Items.coal)
@@ -787,11 +797,11 @@ public class MiningPage extends GuiProfileViewerPage {
 			() ->
 				Lists.newArrayList(
 					"Goblin Killer",
-					"§7Killing a §6Golden Goblin",
-					"§6§7gives §2200 §7extra §2Mithril",
-					"§2Powder§7, while killing other",
-					"§7Goblins gives some based on",
-					"§7their wits."
+					"§7Killing a §6Golden Goblin §7or",
+					"§7§bDiamond Goblin §7gives §2200",
+					"§7extra §2Mithril Powder§7,",
+					"§7while killing other Goblins",
+					"§7gives some based on their wits."
 				),
 			new ItemStack(goblinKiller > 0 ? Items.diamond : Items.coal)
 		);

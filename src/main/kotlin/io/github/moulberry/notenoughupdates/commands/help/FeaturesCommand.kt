@@ -40,7 +40,7 @@ class FeaturesCommand {
                 reply("")
                 val url = Constants.MISC?.get("featureslist")?.asString
                 if (url == null) {
-                    Utils.showOutdatedRepoNotification()
+                    Utils.showOutdatedRepoNotification("misc.json or missing featureslist")
                     return@thenExecute
                 }
 

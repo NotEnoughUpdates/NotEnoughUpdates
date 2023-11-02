@@ -270,7 +270,7 @@ public class PetInfoOverlay extends TextOverlay {
 	public static Pet getPetFromStack(NBTTagCompound tag) {
 		if (Constants.PETS == null || Constants.PETS.get("pet_levels") == null ||
 			Constants.PETS.get("pet_levels") instanceof JsonNull) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("pets.json");
 			return null;
 		}
 

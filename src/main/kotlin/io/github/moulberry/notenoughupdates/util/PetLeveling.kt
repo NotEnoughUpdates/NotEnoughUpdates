@@ -20,10 +20,10 @@
 package io.github.moulberry.notenoughupdates.util
 
 import com.google.gson.JsonObject
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.events.RepositoryReloadEvent
 import io.github.moulberry.notenoughupdates.miscfeatures.PetInfoOverlay.Rarity
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 
 @NEUAutoSubscribe
 object PetLeveling {
@@ -94,7 +94,7 @@ object PetLeveling {
     }
 
     val stubExpLadder by lazy {
-        Utils.showOutdatedRepoNotification()
+        Utils.showOutdatedRepoNotification("pets.json")
         ExpLadder(listOf(1, 1))
     }
 

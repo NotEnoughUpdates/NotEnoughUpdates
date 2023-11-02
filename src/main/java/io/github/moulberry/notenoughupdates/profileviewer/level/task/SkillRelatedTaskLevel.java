@@ -176,7 +176,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 			int nucleusRuns = leveling.getAsJsonObject("completions").get("NUCLEUS_RUNS").getAsInt();
 			JsonElement nucleusXp = miningObj.get("crystal_nucleus_xp");
 			if (nucleusXp == null) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("crystal_nucleus_xp from sblevels.json");
 			} else {
 				sbXpNucleus += nucleusRuns * nucleusXp.getAsInt();
 			}
