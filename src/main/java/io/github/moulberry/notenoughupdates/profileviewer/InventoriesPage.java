@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.SacksPage;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -137,10 +138,10 @@ public class InventoriesPage extends GuiProfileViewerPage {
 	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
 		{
 			put(
-				"collections",
+				"inventories",
 				Utils.editItemStackInfo(
 					new ItemStack(Items.painting),
-					EnumChatFormatting.GRAY + "Collections",
+					EnumChatFormatting.GRAY + "Inventories",
 					true
 				)
 			);
@@ -901,7 +902,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		if (onSacksPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), true, getInstance());
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("collections"), true, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), true, getInstance());
 		}
 		GlStateManager.translate(0, 0, -3);
 
@@ -909,7 +910,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		if (!onSacksPage) {
 			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), false, getInstance());
 		} else {
-			Utils.drawPvSideButton(0, pageModeIcon.get("collections"), false, getInstance());
+			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), false, getInstance());
 		}
 		GlStateManager.disableDepth();
 	}

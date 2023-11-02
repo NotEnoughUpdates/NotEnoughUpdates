@@ -17,20 +17,22 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer
+package io.github.moulberry.notenoughupdates.miscfeatures.profileviewer
 
 import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.core.util.ArrowPagesUtils
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
+import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
+import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles
 import io.github.moulberry.notenoughupdates.util.*
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 
 class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance) {
@@ -44,7 +46,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
     private var page = 0
     private var maxPage = 0
-    private val arrowsHeight = 162
+    private val arrowsHeight = 180
 
     private val columns = 7
     private val rows = 4
@@ -52,6 +54,11 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
     private var guiLeft = GuiProfileViewer.getGuiLeft()
     private var guiTop = GuiProfileViewer.getGuiTop()
+    private val sackArrayLeft = 168
+    private val sackArrayTop = 20
+    private val sackGridXSize = 37
+    private val sackGridYSize = 41
+    private val itemIconSize = 20
 
     private val sackContents = mutableMapOf<String, SackInfo>()
     private val sackItems = mutableMapOf<String, SackItem>()
@@ -115,28 +122,29 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
         GlStateManager.enableDepth()
 
-        var xIndex = 0
-        var yIndex = 0
-
         val sackTypes = sacksJson.getAsJsonObject("sacks")
 
         val startIndex = page * pageSize
         val endIndex = (page + 1) * pageSize
-        var itemCount = -1
         if (currentSack == "All") {
-            for ((sackName, sackData) in sackTypes.entrySet()) {
-                itemCount++
-                if (itemCount < startIndex || itemCount >= endIndex) continue
+            for ((index, entrySet) in sackTypes.entrySet().withIndex()) {
+                val (sackName, sackData) = entrySet
 
-                if (yIndex == rows) continue
+                if (index < startIndex || index >= endIndex) continue
+                val adjustedIndex = index - startIndex
+
+                val xIndex = adjustedIndex % columns
+                val yIndex = adjustedIndex / columns
+                if (yIndex >= rows) continue
+
                 val data = sackData.asJsonObject
 
                 if (!data.has("item") || !data.get("item").isJsonPrimitive || !data.get("item").asJsonPrimitive.isString) continue
                 val sackItemName = data.get("item").asString
                 val itemStack = manager.createItem(sackItemName)
 
-                val x = guiLeft + 168 + xIndex * 37
-                val y = guiTop + 20 + yIndex * 41
+                val x = guiLeft + sackArrayLeft + xIndex * sackGridXSize
+                val y = guiTop + sackArrayTop + yIndex * sackGridYSize
 
                 MC.textureManager.bindTexture(GuiProfileViewer.pv_elements)
                 Utils.drawTexturedRect(
@@ -160,7 +168,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                     0
                 )
                 Utils.drawStringCentered(
-                    "§2${StringUtils.shortNumberFormat(sackInfo.itemCount)}",
+                    "§7${StringUtils.shortNumberFormat(sackInfo.itemCount)}",
                     x + 10,
                     y + 26,
                     true,
@@ -171,19 +179,18 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 if (itemStack != null) {
                     Utils.drawItemStack(itemStack, x + 2, y + 2)
 
-                    if (mouseX > x && mouseX < x + 20) {
-                        if (mouseY > y && mouseY < y + 20) {
-                            tooltipToDisplay = createTooltip("$sackName Sack", sackInfo.sackValue, sackInfo.itemCount)
+                    if (mouseX > x && mouseX < x + itemIconSize) {
+                        if (mouseY > y && mouseY < y + itemIconSize) {
+                            tooltipToDisplay = createTooltip(
+                                "$sackName Sack",
+                                sackInfo.sackValue,
+                                sackInfo.itemCount,
+                                true
+                            )
                         }
                     }
                 } else {
                     println("$sackItemName missing in neu repo")
-                }
-
-                xIndex++
-                if (xIndex == columns) {
-                    xIndex = 0
-                    yIndex++
                 }
             }
         } else {
@@ -195,15 +202,18 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 sackItemNames = playerRunes
             }
 
-            for (itemName in sackItemNames) {
-                itemCount++
-                if (itemCount < startIndex || itemCount >= endIndex) continue
+            for ((index, itemName) in sackItemNames.withIndex()) {
+                if (index < startIndex || index >= endIndex) continue
+                val adjustedIndex = index - startIndex
 
-                if (yIndex == rows) continue
+                val xIndex = adjustedIndex % columns
+                val yIndex = adjustedIndex / columns
+                if (yIndex >= rows) continue
+
                 val itemStack = manager.createItem(itemName)
 
-                val x = guiLeft + 168 + xIndex * 37
-                val y = guiTop + 20 + yIndex * 41
+                val x = guiLeft + sackArrayLeft + xIndex * sackGridXSize
+                val y = guiTop + sackArrayTop + yIndex * sackGridYSize
 
                 MC.textureManager.bindTexture(GuiProfileViewer.pv_elements)
                 Utils.drawTexturedRect(
@@ -226,29 +236,23 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                     true,
                     0
                 )
-                Utils.drawStringCentered("§2${StringUtils.shortNumberFormat(itemInfo.amount)}", x + 10, y + 26, true, 0)
+                Utils.drawStringCentered("§7${StringUtils.shortNumberFormat(itemInfo.amount)}", x + 10, y + 26, true, 0)
                 GlStateManager.color(1f, 1f, 1f, 1f)
 
                 if (itemStack != null) {
                     val stackName = itemStack.displayName
                     Utils.drawItemStack(itemStack, x + 2, y + 2)
 
-                    if (mouseX > x && mouseX < x + 20) {
-                        if (mouseY > y && mouseY < y + 20) {
-                            tooltipToDisplay = createTooltip(stackName, itemInfo.value, itemInfo.amount)
+                    if (mouseX > x && mouseX < x + itemIconSize) {
+                        if (mouseY > y && mouseY < y + itemIconSize) {
+                            tooltipToDisplay = createTooltip(stackName, itemInfo.value, itemInfo.amount, false)
                         }
                     }
                 } else {
                     println("$itemName missing in neu repo")
                 }
-
-                xIndex++
-                if (xIndex == columns) {
-                    xIndex = 0
-                    yIndex++
-                }
             }
-            val buttonRect = Rectangle(guiLeft + 250, guiTop + 180, 80, 15)
+            val buttonRect = Rectangle(guiLeft + sackArrayLeft, guiTop + arrowsHeight, 80, 15)
             RenderUtils.drawFloatingRectWithAlpha(
                 buttonRect.x,
                 buttonRect.y,
@@ -257,7 +261,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 100,
                 true
             )
-            Utils.renderShadowedString("§2Back", (guiLeft + 290).toFloat(), (guiTop + 183).toFloat(), 79)
+            Utils.renderShadowedString("§2Back", (guiLeft + sackArrayLeft + 40).toFloat(), (guiTop + arrowsHeight + 3).toFloat(), 79)
 
             if (Mouse.getEventButtonState() && Utils.isWithinRect(mouseX, mouseY, buttonRect)) {
                 currentSack = "All"
@@ -268,35 +272,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         }
 
         GlStateManager.color(1f, 1f, 1f, 1f)
-        MC.textureManager.bindTexture(GuiProfileViewer.resource_packs)
-
-        if (page > 0) {
-            Utils.drawTexturedRect(
-                (guiLeft + 290 - 20).toFloat(),
-                (guiTop + arrowsHeight).toFloat(),
-                12f,
-                16f,
-                29 / 256f,
-                53 / 256f,
-                0f,
-                32 / 256f,
-                GL11.GL_NEAREST
-            )
-        }
-        if (page < maxPage) {
-            Utils.drawTexturedRect(
-                (guiLeft + 290 + 8).toFloat(),
-                (guiTop + arrowsHeight).toFloat(),
-                12f,
-                16f,
-                5 / 256f,
-                29 / 256f,
-                0f,
-                32 / 256f,
-                GL11.GL_NEAREST
-            )
-        }
-
+        ArrowPagesUtils.onDraw(guiLeft, guiTop, intArrayOf(290 - 12, arrowsHeight), page, maxPage + 1)
 
         if (tooltipToDisplay.isNotEmpty()) {
             tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
@@ -315,23 +291,25 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
 
         if (currentSack == "All") {
             val sackTypes = sacksJson.getAsJsonObject("sacks")
-            var xIndex = 0
-            var yIndex = 0
 
             val startIndex = page * pageSize
             val endIndex = (page + 1) * pageSize
-            var itemCount = -1
 
-            for ((sackName, _) in sackTypes.entrySet()) {
-                itemCount++
-                if (itemCount < startIndex || itemCount >= endIndex) continue
+            for ((index, sackData) in sackTypes.entrySet().withIndex()) {
+                val sackName = sackData.key
 
-                if (yIndex == rows) continue
-                val x = guiLeft + 168 + xIndex * 37
-                val y = guiTop + 20 + yIndex * 41
+                if (index < startIndex || index >= endIndex) continue
+                val adjustedIndex = index - startIndex
 
-                if (mouseX > x && mouseX < x + 20) {
-                    if (mouseY > y && mouseY < y + 20) {
+                val xIndex = adjustedIndex % columns
+                val yIndex = adjustedIndex / columns
+                if (yIndex >= rows) continue
+
+                val x = guiLeft + sackArrayLeft + xIndex * sackGridXSize
+                val y = guiTop + sackArrayTop + yIndex * sackGridYSize
+
+                if (mouseX > x && mouseX < x + itemIconSize) {
+                    if (mouseY > y && mouseY < y + itemIconSize) {
                         currentSack = sackName
                         Utils.playPressSound()
                         page = 0
@@ -339,44 +317,28 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                         return true
                     }
                 }
-
-                xIndex++
-                if (xIndex == columns) {
-                    xIndex = 0
-                    yIndex++
-                }
             }
         }
 
-        if (Mouse.isButtonDown(0)) {
-            if (mouseY > guiTop + arrowsHeight && mouseY < guiTop + arrowsHeight + 16) {
-                if (mouseX > guiLeft + 290 - 20 && mouseX < guiLeft + 290 + 20) {
-                    if (mouseX > guiLeft + 290) {
-                        if (page < maxPage) {
-                            page++
-                            Utils.playPressSound()
-                            return true
-                        }
-                    } else {
-                        if (page > 0) {
-                            page--
-                            Utils.playPressSound()
-                            return true
-                        }
-                    }
-                }
-            }
-        }
+        ArrowPagesUtils.onPageSwitchMouse(
+            guiLeft,
+            guiTop,
+            intArrayOf(290 - 12, arrowsHeight),
+            page,
+            maxPage + 1
+        ) { pageChange -> page = pageChange }
 
         return false
     }
 
-    private fun createTooltip(name: String, value: Double, amount: Int): List<String> {
-        return listOf(
+    private fun createTooltip(name: String, value: Double, amount: Int, isSack: Boolean): List<String> {
+        val baseList = mutableListOf(
             "§2$name",
             "Items Stored: ${StringUtils.formatNumber(amount)}",
             "Total Value: ${StringUtils.formatNumber(value.toLong())}"
         )
+        if (isSack) baseList.add("Click for more details")
+        return baseList
     }
 
     private fun getPages(pageName: String, sackTypes: JsonObject): Int {
@@ -430,7 +392,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val sackItem = item.asString
 
                 val adjustedName = sackItem.replace("-", ":")
-                val itemCount = sacksInfo.getInt(adjustedName)
+                val itemCount = sacksInfo.getIntOrValue(adjustedName, 0)
                 val itemValue = itemCount * getPrice(sackItem)
 
                 if (sackItem !in sackItems) {
@@ -458,8 +420,8 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private fun getPrice(itemName: String): Double {
         val npcPrice = HypixelItemAPI.getNPCSellPrice(itemName) ?: 0.0
         val bazaarInfo = manager.auctionManager.getBazaarInfo(itemName) ?: return npcPrice
-        val buyPrice = bazaarInfo.getDouble("curr_buy")
-        val sellPrice = bazaarInfo.getDouble("curr_sell")
+        val buyPrice = bazaarInfo.getDoubleOrValue("curr_buy", 0.0)
+        val sellPrice = bazaarInfo.getDoubleOrValue("curr_sell", 0.0)
         return maxOf(npcPrice, buyPrice, sellPrice)
     }
 
@@ -473,32 +435,13 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val tier = group("tier")
                 val neuInternalName = "${name}_RUNE;$tier"
                 sackItemCount += itemAmount
-                sackItems[neuInternalName] = SackItem(itemAmount, 0.0)
+                sackItems[neuInternalName] = SackItem(itemAmount, 1.0 * itemAmount)
                 playerRunes.add(neuInternalName)
             }
         }
-        sackContents["Rune"] = SackInfo(sackItemCount, 0.0)
+        sackContents["Rune"] = SackInfo(sackItemCount, 1.0 * sackItemCount)
         return sackItemCount
     }
-
-    private fun JsonObject.getInt(key: String): Int {
-        return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
-            get(key).asInt
-        } else {
-            0
-        }
-    }
-
-    private fun JsonObject.getDouble(key: String): Double {
-        return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
-            get(key).asDouble
-        } else {
-            0.0
-        }
-    }
-
-    private inline fun <T> Pattern.matchMatcher(text: String, consumer: Matcher.() -> T) =
-        matcher(text).let { if (it.matches()) consumer(it) else null }
 
     data class SackInfo(val itemCount: Int, val sackValue: Double)
     data class SackItem(val amount: Int, val value: Double)
