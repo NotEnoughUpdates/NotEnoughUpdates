@@ -47,6 +47,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
     private var page = 0
     private var maxPage = 0
     private val arrowsHeight = 180
+    private val arrowsXPos = 110
 
     private val columns = 7
     private val rows = 4
@@ -162,14 +163,14 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val sackInfo = sackContents[sackName] ?: SackInfo(0, 0.0)
                 Utils.drawStringCentered(
                     "§6${StringUtils.shortNumberFormat(sackInfo.sackValue.roundToDecimals(0))}",
-                    x + 10,
+                    x + itemIconSize / 2,
                     y - 4,
                     true,
                     0
                 )
                 Utils.drawStringCentered(
                     "§7${StringUtils.shortNumberFormat(sackInfo.itemCount)}",
-                    x + 10,
+                    x + itemIconSize / 2,
                     y + 26,
                     true,
                     0
@@ -231,7 +232,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
                 val itemInfo = sackItems[itemName] ?: SackItem(0, 0.0)
                 Utils.drawStringCentered(
                     "§6${StringUtils.shortNumberFormat(itemInfo.value.roundToDecimals(0))}",
-                    x + 10,
+                    x + itemIconSize / 2,
                     y - 4,
                     true,
                     0
@@ -272,7 +273,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         }
 
         GlStateManager.color(1f, 1f, 1f, 1f)
-        ArrowPagesUtils.onDraw(guiLeft, guiTop, intArrayOf(290 - 12, arrowsHeight), page, maxPage + 1)
+        ArrowPagesUtils.onDraw(guiLeft, guiTop, intArrayOf(sackArrayLeft + arrowsXPos, arrowsHeight), page, maxPage + 1)
 
         if (tooltipToDisplay.isNotEmpty()) {
             tooltipToDisplay = tooltipToDisplay.map { "§7$it" }
@@ -323,7 +324,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         ArrowPagesUtils.onPageSwitchMouse(
             guiLeft,
             guiTop,
-            intArrayOf(290 - 12, arrowsHeight),
+            intArrayOf(sackArrayLeft + arrowsXPos, arrowsHeight),
             page,
             maxPage + 1
         ) { pageChange -> page = pageChange }
