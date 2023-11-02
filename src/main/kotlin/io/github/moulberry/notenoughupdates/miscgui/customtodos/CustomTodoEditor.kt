@@ -231,6 +231,7 @@ class CustomTodoEditor(
     @Bind
     fun delete() {
         todos.remove(this)
+        CustomTodoList(todos, xmlUniverse).save()
     }
 
     @Bind
