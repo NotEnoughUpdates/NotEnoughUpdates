@@ -19,6 +19,7 @@
 
 
 import neubs.NEUBuildFlags
+import neubs.RefmapFilterPlugin
 import neubs.applyPublishingInformation
 import neubs.setVersionFromEnvironment
 import java.net.URL
@@ -38,6 +39,7 @@ plugins {
 
 
 apply<NEUBuildFlags>()
+apply<RefmapFilterPlugin>()
 
 // Build metadata
 
