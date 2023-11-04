@@ -189,7 +189,7 @@ public class RecipeGenerator {
 					String chance = loreMatcher.group("dropChances") != null
 						? loreMatcher.group("dropChances")
 						: loreMatcher.group("dropCount");
-					drops.add(new MobLootRecipe.MobDrop(item, chance, new ArrayList<>()));
+					drops.add(new MobLootRecipe.MobDrop(item, chance, new ArrayList<>(), Collections.emptyList()));
 				}
 				if (loreMatcher.group("missing") != null) {
 					Utils.addChatMessage("[WARNING] You are missing Bestiary levels for drop: " + loreLine);

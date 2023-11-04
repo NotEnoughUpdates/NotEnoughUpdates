@@ -20,18 +20,28 @@
 package io.github.moulberry.notenoughupdates.miscgui
 
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.registry.GameRegistry
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.io.File
 import kotlin.math.ceil
 
 class DynamicLightItemsEditor() : GuiScreen() {
+
+    val isOfLightsEnabled = run {
+        val ofDynamicLights = File("optionsof.txt").takeIf { it.exists() }?.readLines()
+            ?.find { it.startsWith("ofDynamicLights:") }
+        ofDynamicLights != null && !ofDynamicLights.endsWith(":3")
+    }
 
     val background = ResourceLocation("notenoughupdates:dynamic_light_items_editor.png")
     val enabledButton = ResourceLocation("notenoughupdates:enabled_button.png")
@@ -96,6 +106,12 @@ class DynamicLightItemsEditor() : GuiScreen() {
             fontRendererObj.drawString("Could not find OptiFine!", guiLeft + 50, guiTop + 22, Color.RED.rgb)
             fontRendererObj.drawString("Go to #neu-support in", guiLeft + 50, guiTop + 32, Color.RED.rgb)
             fontRendererObj.drawString("the discord for help", guiLeft + 52, guiTop + 42, Color.RED.rgb)
+            return
+        }
+        if (!isOfLightsEnabled) {
+            fontRendererObj.drawString("Dynamic lights have", guiLeft + 50, guiTop + 22, Color.RED.rgb)
+            fontRendererObj.drawString("been disabled in OptiFine.", guiLeft + 50, guiTop + 32, Color.RED.rgb)
+            fontRendererObj.drawString("Enable in Video Settings.", guiLeft + 52, guiTop + 42, Color.RED.rgb)
             return
         }
 
@@ -204,7 +220,26 @@ class DynamicLightItemsEditor() : GuiScreen() {
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
+    @NEUAutoSubscribe
     companion object {
+        var hasAttemptedToLoadOptifine = false
+
+        @SubscribeEvent
+        fun autoloadOptifine(event: TickEvent) {
+            if (Minecraft.getMinecraft().thePlayer == null || hasAttemptedToLoadOptifine) return
+            try {
+                Class.forName("net.optifine.DynamicLights")
+                println("Loaded dynamic lights successfully.")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            hasAttemptedToLoadOptifine = true
+            if (!didApplyMixin) {
+                println("Loaded optifine dynamic lights class without applying mixin!")
+            }
+        }
+
+
         @JvmStatic
         var didApplyMixin = false
 
@@ -228,7 +263,8 @@ class DynamicLightItemsEditor() : GuiScreen() {
         @JvmStatic
         fun resolveInternalName(itemStack: ItemStack): String? {
             var internalName =
-                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(itemStack).resolveInternalName()
+                NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withItemStack(itemStack)
+                    .resolveInternalName()
             if (internalName == null) {
                 // If resolving internal name failed, the item may be a minecraft item
                 internalName = itemStack.item.registryName

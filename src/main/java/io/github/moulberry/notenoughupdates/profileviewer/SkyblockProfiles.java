@@ -523,7 +523,7 @@ public class SkyblockProfiles {
 			private MuseumData(JsonObject museumJson) {
 				JsonObject museum = Constants.MUSEUM;
 				if (museum == null) {
-					Utils.showOutdatedRepoNotification();
+					Utils.showOutdatedRepoNotification("museum.json");
 					museumValue = -3;
 					return;
 				}
@@ -811,7 +811,7 @@ public class SkyblockProfiles {
 
 		public EnumChatFormatting getSkyblockLevelColour() {
 			if (Constants.SBLEVELS == null || !Constants.SBLEVELS.has("sblevel_colours")) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("sblevels.json or missing sblevel_colours");
 				return EnumChatFormatting.WHITE;
 			}
 
@@ -866,7 +866,7 @@ public class SkyblockProfiles {
 
 			JsonObject leveling = Constants.LEVELING;
 			if (leveling == null || !leveling.has("social")) {
-				Utils.showOutdatedRepoNotification();
+				Utils.showOutdatedRepoNotification("leveling.json or missing social");
 				return null;
 			}
 

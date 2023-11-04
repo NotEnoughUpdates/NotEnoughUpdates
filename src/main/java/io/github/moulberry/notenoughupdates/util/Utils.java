@@ -1171,6 +1171,10 @@ public class Utils {
 		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
 	}
 
+	public static void drawStringCentered(String str, int x, int y, boolean shadow, int colour) {
+		drawStringCentered(str, Minecraft.getMinecraft().fontRendererObj, x, y, shadow, colour);
+	}
+
 	@Deprecated
 	public static void drawStringCentered(String str, FontRenderer fr, float x, float y, boolean shadow, int colour) {
 		int strLen = fr.getStringWidth(str);
@@ -2234,7 +2238,8 @@ public class Utils {
 		return stringBuilder.toString();
 	}
 
-	public static void showOutdatedRepoNotification() {
+	private static long lastError = -1;
+	public static void showOutdatedRepoNotification(String missingFile) {
 		if (NotEnoughUpdates.INSTANCE.config.notifications.outdatedRepo) {
 			NotificationHandler.displayNotification(Lists.newArrayList(
 					EnumChatFormatting.RED + EnumChatFormatting.BOLD.toString() + "Missing repo data",
@@ -2252,6 +2257,10 @@ public class Utils {
 				),
 				false, true
 			);
+		}
+		if (System.currentTimeMillis() - lastError > 1000) {
+			System.err.println("[NEU] Repo issue: " + missingFile);
+			lastError = System.currentTimeMillis();
 		}
 	}
 

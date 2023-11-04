@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.commands.help
 
 import io.github.moulberry.moulconfig.GuiTextures
 import io.github.moulberry.moulconfig.annotations.ConfigOption
+import io.github.moulberry.moulconfig.common.MyResourceLocation
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor
 import io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper
 import io.github.moulberry.moulconfig.gui.MoulConfigEditor
@@ -34,7 +35,6 @@ import io.github.moulberry.notenoughupdates.miscfeatures.IQTest
 import io.github.moulberry.notenoughupdates.options.NEUConfig
 import io.github.moulberry.notenoughupdates.util.brigadier.*
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.lang.reflect.Field
 
@@ -118,6 +118,7 @@ object SettingsCommand {
         return object : GuiScreenElementWrapper(createConfigElement(search)) {
         }
     }
+
     fun createConfigElement(search: String): MoulConfigEditor<NEUConfig> {
         val processor = BlockingMoulConfigProcessor()
         BuiltinMoulConfigGuis.addProcessors(processor)
@@ -131,7 +132,8 @@ object SettingsCommand {
         lastEditor = editor
         return editor
     }
+
     init {
-        GuiTextures.setTextureRoot(ResourceLocation("notenoughupdates:core"))
+        GuiTextures.setTextureRoot(MyResourceLocation("notenoughupdates", "core"))
     }
 }

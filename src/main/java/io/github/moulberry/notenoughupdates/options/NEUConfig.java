@@ -35,6 +35,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.IQTest;
 import io.github.moulberry.notenoughupdates.miscgui.GuiEnchantColour;
 import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor;
 import io.github.moulberry.notenoughupdates.miscgui.NEUOverlayPlacements;
+import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodo;
 import io.github.moulberry.notenoughupdates.options.customtypes.NEUDebugFlag;
 import io.github.moulberry.notenoughupdates.options.separatesections.AHGraph;
 import io.github.moulberry.notenoughupdates.options.separatesections.AHTweaks;
@@ -492,6 +493,8 @@ public class NEUConfig extends Config {
 	public DungeonMapConfig dungeonMap = new DungeonMapConfig();
 
 	public static class Hidden {
+		@Expose
+		public List<CustomTodo> customTodos = new ArrayList<>();
 		@Expose
 		public HashMap<String, NEUConfig.HiddenProfileSpecific> profileSpecific = new HashMap<>();
 		@Expose

@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.util
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 
 
 fun Iterable<JsonElement>.toJsonArray(): JsonArray = JsonArray().also {
@@ -29,3 +30,18 @@ fun Iterable<JsonElement>.toJsonArray(): JsonArray = JsonArray().also {
     }
 }
 
+fun JsonObject.getIntOrValue(key: String, alternative: Int): Int {
+    return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
+        get(key).asInt
+    } else {
+        alternative
+    }
+}
+
+fun JsonObject.getDoubleOrValue(key: String, alternative: Double): Double {
+    return if (has(key) && get(key).isJsonPrimitive && get(key).asJsonPrimitive.isNumber) {
+        get(key).asDouble
+    } else {
+        alternative
+    }
+}

@@ -46,6 +46,10 @@ public class StringUtils {
 		return Integer.parseInt(str);
 	}
 
+	public static String shortNumberFormat(int n) {
+		return shortNumberFormat(n, 0);
+	}
+
 	public static String shortNumberFormat(double n) {
 		return shortNumberFormat(n, 0);
 	}
@@ -74,7 +78,9 @@ public class StringUtils {
 
 		double d = ((long) n / 100) / 10.0;
 		boolean isRound = (d * 10) % 10 == 0;
-		return d < 1000 ? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + sizeSuffix[iteration] : shortNumberFormat(d, iteration + 1);
+		return d < 1000
+			? (isRound || d > 9.99 ? (int) d * 10 / 10 : d + "") + "" + sizeSuffix[iteration]
+			: shortNumberFormat(d, iteration + 1);
 	}
 
 	public static String removeLastWord(String string, String splitString) {
