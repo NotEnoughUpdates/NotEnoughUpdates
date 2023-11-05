@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.auction.APIManager;
+import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
@@ -68,6 +69,7 @@ import java.util.regex.Pattern;
 
 import static io.github.moulberry.notenoughupdates.util.GuiTextures.accessory_bag_overlay;
 
+@NEUAutoSubscribe
 public class AccessoryBagOverlay {
 	private static final int TAB_BASIC = 0;
 	private static final int TAB_TOTAL = 1;
