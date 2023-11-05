@@ -30,7 +30,6 @@ import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.Utils;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -96,11 +95,11 @@ public class AbiphoneFavourites {
 		}
 
 		if (isAbiphoneShowOnlyFavourites()) {
-			list.removeIf(s -> s.contains("§eRight-click to remove contact!"));
+			list.removeIf(s -> s.contains("§8Right-click to remove!"));
 			return;
 		}
 
-		int index = list.indexOf("§5§o") + 1;
+		int index = list.size() - 1;
 		if (getFavouriteContacts().contains(name)) {
 			list.set(0, rawName + " §f- §6Favourite");
 			list.add(index, "§eShift-click to remove from the favourites!");

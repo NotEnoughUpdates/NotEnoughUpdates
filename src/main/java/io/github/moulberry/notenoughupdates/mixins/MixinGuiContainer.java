@@ -26,11 +26,9 @@ import io.github.moulberry.notenoughupdates.events.GuiContainerBackgroundDrawnEv
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneFavourites;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionSortModeWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
-import io.github.moulberry.notenoughupdates.miscfeatures.DungeonNpcProfitOverlay;
 import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
 import io.github.moulberry.notenoughupdates.miscfeatures.PresetWarning;
@@ -204,7 +202,6 @@ public abstract class MixinGuiContainer extends GuiScreen {
 		GuiCustomEnchant.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		GuiCustomHex.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		AuctionBINWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
-		AbiphoneWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 		PresetWarning.getInstance().overrideIsMouseOverSlot(slotIn, mouseX, mouseY, cir);
 	}
 

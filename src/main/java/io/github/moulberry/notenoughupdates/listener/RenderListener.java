@@ -28,7 +28,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.GuiScreenElementWrapper;
 import io.github.moulberry.notenoughupdates.dungeons.DungeonWin;
 import io.github.moulberry.notenoughupdates.events.ButtonExclusionZoneEvent;
-import io.github.moulberry.notenoughupdates.miscfeatures.AbiphoneWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.AuctionBINWarning;
 import io.github.moulberry.notenoughupdates.miscfeatures.BetterContainers;
 import io.github.moulberry.notenoughupdates.miscfeatures.CrystalMetalDetectorSolver;
@@ -605,10 +604,6 @@ public class RenderListener {
 			AuctionBINWarning.getInstance().render();
 		}
 
-		if (AbiphoneWarning.getInstance().shouldShow()) {
-			AbiphoneWarning.getInstance().render();
-		}
-
 		if (PresetWarning.getInstance().shouldShow()) {
 			PresetWarning.getInstance().render();
 		}
@@ -887,11 +882,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-		if (AbiphoneWarning.getInstance().shouldShow()) {
-			AbiphoneWarning.getInstance().mouseInput(mouseX, mouseY);
-			event.setCanceled(true);
-			return;
-		}
 		if (PresetWarning.getInstance().shouldShow()) {
 			PresetWarning.getInstance().mouseInput(mouseX, mouseY);
 			event.setCanceled(true);
@@ -1060,11 +1050,6 @@ public class RenderListener {
 
 		if (AuctionBINWarning.getInstance().shouldShow()) {
 			AuctionBINWarning.getInstance().keyboardInput();
-			event.setCanceled(true);
-			return;
-		}
-		if (AbiphoneWarning.getInstance().shouldShow()) {
-			AbiphoneWarning.getInstance().keyboardInput();
 			event.setCanceled(true);
 			return;
 		}
