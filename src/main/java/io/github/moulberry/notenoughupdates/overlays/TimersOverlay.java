@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
@@ -69,7 +70,7 @@ public class TimersOverlay extends TextTabOverlay {
 	private static final Pattern PATTERN_ACTIVE_EFFECTS = Pattern.compile(
 		"\u00a7r\u00a7r\u00a77You have a \u00a7r\u00a7cGod Potion \u00a7r\u00a77active! \u00a7r\u00a7d([1-5][0-9]|[0-9])[\\s|^\\S]?(Seconds|Second|Minutes|Minute|Hours|Hour|Day|Days|h|m|s) ?([1-5][0-9]|[0-9])?([ms])?\u00a7r");
 	private static final Pattern CAKE_PATTERN = Pattern.compile(
-		"\u00a7r\u00a7d\u00a7lYum! \u00a7r\u00a7eYou gain .+ \u00a7r\u00a7efor \u00a7r\u00a7a48 \u00a7r\u00a7ehours!\u00a7r");
+		"§r§d§l(?:Big )?Yum! §r§eYou (?:refresh|gain) §r§.+ §r§efor §r§a48 §r§ehours!§r");
 	private static final Pattern PUZZLER_PATTERN =
 		Pattern.compile("\u00a7r\u00a7dPuzzler\u00a7r\u00a76 gave you .+ \u00a7r\u00a76for solving the puzzle!\u00a7r");
 	private static final Pattern FETCHUR_PATTERN =
@@ -168,91 +169,97 @@ public class TimersOverlay extends TextTabOverlay {
 			return;
 		}
 		GlStateManager.enableDepth();
-
 		ItemStack icon = null;
 
 		String clean = Utils.cleanColour(line);
 		String beforeColon = clean.split(":")[0];
-		switch (beforeColon) {
-			case "Cakes":
-				icon = CAKES_ICON;
-				break;
-			case "Puzzler":
-				icon = PUZZLER_ICON;
-				break;
-			case "Godpot":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("GOD_POTION"));
-				break;
-			case "Fetchur": {
-				if (FETCHUR_ICONS == null) {
-					FETCHUR_ICONS = new ItemStack[]{
-						new ItemStack(Blocks.wool, 50, 14),
-						new ItemStack(Blocks.stained_glass, 20, 4),
-						new ItemStack(Items.compass, 1, 0),
-						new ItemStack(Items.prismarine_crystals, 20, 0),
-						new ItemStack(Items.fireworks, 1, 0),
-						NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-							.getItemInformation()
-							.get("CHEAP_COFFEE")),
-						new ItemStack(Items.oak_door, 1, 0),
-						new ItemStack(Items.rabbit_foot, 3, 0),
-						NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-							.getItemInformation()
-							.get("SUPERBOOM_TNT")),
-						new ItemStack(Blocks.pumpkin, 1, 0),
-						new ItemStack(Items.flint_and_steel, 1, 0),
-						new ItemStack(Items.emerald, 50, 0),
-						//new ItemStack(Items.ender_pearl, 16, 0)
-					};
-				}
-
-				ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
-
-				long fetchurIndex = ((currentTimeEST.getDayOfMonth() + 1) % 12) - 1;
-				//Added because disabled fetchur and enabled it again but it was showing the wrong item
-				//Lets see if this stays correct
-
-				if (fetchurIndex < 0) fetchurIndex += 12;
-
-				icon = FETCHUR_ICONS[(int) fetchurIndex];
-				break;
+		if (beforeColon.startsWith("CUSTOM")) {
+			var item = Item.getByNameOrId(beforeColon.substring(6));
+			if (item == null) {
+				item = Items.paper;
 			}
-			case "Commissions":
-				icon = COMMISSIONS_ICON;
-				break;
-			case "Experiments":
-				icon = EXPERIMENTS_ICON;
-				break;
-			case "Cookie Buff":
-				icon = COOKIE_ICON;
-				break;
-			case "Mithril Powder":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("MITHRIL_ORE"));
-				break;
-			case "Gemstone Powder":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("PERFECT_AMETHYST_GEM"));
-				break;
-			case "Heavy Pearls":
-				icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("HEAVY_PEARL"));
-				break;
-			case "Free Rift Infusion":
-				icon = new ItemStack(Blocks.double_plant, 1, 1);
-				break;
-			case "Crimson Isle Quests":
-				icon = QUEST_ICON;
-				break;
-			case "NPC Buy Daily Limit":
-				icon = SHOP_ICON;
-				break;
-		}
+			icon = new ItemStack(item);
+		} else
+			switch (beforeColon) {
+				case "Cakes":
+					icon = CAKES_ICON;
+					break;
+				case "Puzzler":
+					icon = PUZZLER_ICON;
+					break;
+				case "Godpot":
+					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("GOD_POTION"));
+					break;
+				case "Fetchur": {
+					if (FETCHUR_ICONS == null) {
+						FETCHUR_ICONS = new ItemStack[]{
+							new ItemStack(Blocks.wool, 50, 14),
+							new ItemStack(Blocks.stained_glass, 20, 4),
+							new ItemStack(Items.compass, 1, 0),
+							new ItemStack(Items.prismarine_crystals, 20, 0),
+							new ItemStack(Items.fireworks, 1, 0),
+							NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+								.getItemInformation()
+								.get("CHEAP_COFFEE")),
+							new ItemStack(Items.oak_door, 1, 0),
+							new ItemStack(Items.rabbit_foot, 3, 0),
+							NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+								.getItemInformation()
+								.get("SUPERBOOM_TNT")),
+							new ItemStack(Blocks.pumpkin, 1, 0),
+							new ItemStack(Items.flint_and_steel, 1, 0),
+							new ItemStack(Blocks.emerald_ore, 50, 0),
+							//new ItemStack(Items.ender_pearl, 16, 0)
+						};
+					}
+
+					ZonedDateTime currentTimeEST = ZonedDateTime.now(ZoneId.of("America/Atikokan"));
+
+					long fetchurIndex = ((currentTimeEST.getDayOfMonth() + 1) % 12) - 1;
+					//Added because disabled fetchur and enabled it again but it was showing the wrong item
+					//Lets see if this stays correct
+
+					if (fetchurIndex < 0) fetchurIndex += 12;
+
+					icon = FETCHUR_ICONS[(int) fetchurIndex];
+					break;
+				}
+				case "Commissions":
+					icon = COMMISSIONS_ICON;
+					break;
+				case "Experiments":
+					icon = EXPERIMENTS_ICON;
+					break;
+				case "Cookie Buff":
+					icon = COOKIE_ICON;
+					break;
+				case "Mithril Powder":
+					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("MITHRIL_ORE"));
+					break;
+				case "Gemstone Powder":
+					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("PERFECT_AMETHYST_GEM"));
+					break;
+				case "Heavy Pearls":
+					icon = NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
+						.getItemInformation()
+						.get("HEAVY_PEARL"));
+					break;
+				case "Free Rift Infusion":
+					icon = new ItemStack(Blocks.double_plant, 1, 1);
+					break;
+				case "Crimson Isle Quests":
+					icon = QUEST_ICON;
+					break;
+				case "NPC Buy Daily Limit":
+					icon = SHOP_ICON;
+					break;
+			}
 
 		if (icon != null) {
 			GlStateManager.pushMatrix();
@@ -1047,6 +1054,9 @@ public class TimersOverlay extends TextTabOverlay {
 				overlayStrings.add(text);
 			}
 		}
+
+		CustomTodoHud.processInto(overlayStrings);
+
 		if (overlayStrings.isEmpty()) overlayStrings = null;
 	}
 

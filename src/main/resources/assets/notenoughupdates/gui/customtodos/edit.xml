@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (C) 2023 NotEnoughUpdates contributors
+  ~
+  ~ This file is part of NotEnoughUpdates.
+  ~
+  ~ NotEnoughUpdates is free software: you can redistribute it
+  ~ and/or modify it under the terms of the GNU Lesser General Public
+  ~ License as published by the Free Software Foundation, either
+  ~ version 3 of the License, or (at your option) any later version.
+  ~
+  ~ NotEnoughUpdates is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<Root xmlns="http://notenoughupdates.org/moulconfig">
+    <Gui>
+        <Column>
+
+            <Row>
+                <Button onClick="@close">
+                    <Text text="←"/>
+                </Button>
+                <Text text="@getTitle"/>
+            </Row>
+            <Row>
+                <Text text="Enabled: " width="150"/>
+                <Switch value="@enabled"/>
+            </Row>
+            <Row>
+                <Text text="Label: " width="150"/>
+                <TextField width="300" value="@label" suggestion="Label"/>
+            </Row>
+            <Row>
+                <Text text="Icon: " width="132"/>
+                <ItemStack value="@getItemStack"/>
+                <TextField width="300" value="@icon" suggestion="Item ID"/>
+            </Row>
+            <Row>
+                <Text text="Reset after (seconds): " width="150"/>
+                <TextField width="300" value="@timer"/>
+            </Row>
+            <Row>
+                <Text text="Rest at fixed time: " width="150"/>
+                <Switch value="@isResetOffset"/>
+            </Row>
+            <Row>
+                <Text text="@getFancyTime" width="300"/>
+            </Row>
+            <Row>
+                <Button onClick="@minusDay">
+                    <Text text="-Day"/>
+                </Button>
+                <Button onClick="@minusHour">
+                    <Text text="-Hour"/>
+                </Button>
+                <Button onClick="@minusMinute">
+                    <Text text="-Minute"/>
+                </Button>
+                <Button onClick="@plusMinute">
+                    <Text text="+Minute"/>
+                </Button>
+                <Button onClick="@plusHour">
+                    <Text text="+Hour"/>
+                </Button>
+                <Button onClick="@plusDay">
+                    <Text text="+Day"/>
+                </Button>
+            </Row>
+            <Row>
+                <Text text="Trigger: " width="150"/>
+                <TextField value="@trigger" width="300" suggestion="Trigger"/>
+            </Row>
+            <Row>
+                <Button onClick="@setChat">
+                    <Text text="@getChat"/>
+                </Button>
+                <Button onClick="@setActionbar">
+                    <Text text="@getActionbar"/>
+                </Button>
+
+                <Button onClick="@setSidebar">
+                    <Text text="@getSidebar"/>
+                </Button>
+
+                <Button onClick="@setTablist">
+                    <Text text="@getTablist"/>
+                </Button>
+            </Row>
+            <Row>
+                <Button onClick="@setRegex">
+                    <Text text="@getRegex"/>
+                </Button>
+                <Button onClick="@setStartsWith">
+                    <Text text="@getStartsWith"/>
+                </Button>
+                <Button onClick="@setContains">
+                    <Text text="@getContains"/>
+                </Button>
+                <Button onClick="@setEquals">
+                    <Text text="@getEquals"/>
+                </Button>
+            </Row>
+            <Row>
+                <Button onClick="@copyTemplate">
+                    <Text text="Copy Preset"/>
+                </Button>
+                <Button onClick="@markAsReady">
+                    <Text text="Mark as Ready"/>
+                </Button>
+                <Button onClick="@markAsCompleted">
+                    <Text text="Mark as Done"/>
+                </Button>
+            </Row>
+        </Column>
+    </Gui>
+</Root>

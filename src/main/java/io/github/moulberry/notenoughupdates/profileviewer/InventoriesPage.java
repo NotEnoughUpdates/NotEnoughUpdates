@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.SacksPage;
 import io.github.moulberry.notenoughupdates.profileviewer.info.QuiverInfo;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -131,14 +132,48 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		put("intelligence",2f);
 	}};
 
+	private boolean onSacksPage;
+	private final SacksPage sacksPage;
+
+	private static final LinkedHashMap<String, ItemStack> pageModeIcon = new LinkedHashMap<String, ItemStack>() {
+		{
+			put(
+				"inventories",
+				Utils.editItemStackInfo(
+					new ItemStack(Items.painting),
+					EnumChatFormatting.GRAY + "Inventories",
+					true
+				)
+			);
+			put(
+				"sacks",
+				Utils.editItemStackInfo(
+					NotEnoughUpdates.INSTANCE.manager.jsonToStack(
+						NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LARGE_ENCHANTED_MINING_SACK")
+					),
+					EnumChatFormatting.GRAY + "Sacks",
+					true
+				)
+			);
+		}
+	};
+
 	public InventoriesPage(GuiProfileViewer instance) {
 		super(instance);
+		this.sacksPage = new SacksPage(getInstance());
 	}
 
 	@Override
 	public void drawPage(int mouseX, int mouseY, float partialTicks) {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
+
+		drawSideButtons();
+
+		if (onSacksPage) {
+			sacksPage.drawPage(mouseX, mouseY, partialTicks);
+			return;
+		}
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(pv_invs);
 		Utils.drawTexturedRect(guiLeft, guiTop, getInstance().sizeX, getInstance().sizeY, GL11.GL_NEAREST);
@@ -512,15 +547,31 @@ public class InventoriesPage extends GuiProfileViewerPage {
 		int guiLeft = GuiProfileViewer.getGuiLeft();
 		int guiTop = GuiProfileViewer.getGuiTop();
 
-		getInstance().inventoryTextField.setSize(88, 20);
-		if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
-			if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
-				getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
-				getInstance().playerNameTextField.otherComponentClick();
-				return true;
+		if (!onSacksPage) {
+			getInstance().inventoryTextField.setSize(88, 20);
+			if (mouseX > guiLeft + 19 && mouseX < guiLeft + 19 + 88) {
+				if (mouseY > guiTop + getInstance().sizeY - 26 - 20 && mouseY < guiTop + getInstance().sizeY - 26) {
+					getInstance().inventoryTextField.mouseClicked(mouseX, mouseY, mouseButton);
+					getInstance().playerNameTextField.otherComponentClick();
+					return true;
+				}
 			}
 		}
-		return false;
+
+		int i = ProfileViewerUtils.onSlotToChangePage(mouseX, mouseY, guiLeft, guiTop);
+		switch (i) {
+			case 1:
+				onSacksPage = false;
+				break;
+			case 2:
+				onSacksPage = true;
+				break;
+
+			default:
+				break;
+		}
+
+		return sacksPage.mouseClick(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
@@ -843,5 +894,24 @@ public class InventoriesPage extends GuiProfileViewerPage {
 			default:
 				return 6;
 		}
+	}
+
+	private void drawSideButtons() {
+		GlStateManager.enableDepth();
+		GlStateManager.translate(0, 0, 5);
+		if (onSacksPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), true, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), true, getInstance());
+		}
+		GlStateManager.translate(0, 0, -3);
+
+		GlStateManager.translate(0, 0, -2);
+		if (!onSacksPage) {
+			Utils.drawPvSideButton(1, pageModeIcon.get("sacks"), false, getInstance());
+		} else {
+			Utils.drawPvSideButton(0, pageModeIcon.get("inventories"), false, getInstance());
+		}
+		GlStateManager.disableDepth();
 	}
 }

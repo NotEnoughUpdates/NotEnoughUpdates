@@ -1660,7 +1660,7 @@ public class NEUManager {
 
 		if (displayName == null) {
 			displayName = internalName;
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification(internalName);
 			if (NotEnoughUpdates.INSTANCE.config.hidden.dev) {
 				Utils.addChatMessage("§c[NEU] Found no display name in repo for '" + internalName + "'!");
 			}

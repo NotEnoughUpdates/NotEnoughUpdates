@@ -56,6 +56,7 @@ import io.github.moulberry.notenoughupdates.recipes.RecipeGenerator;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.brigadier.BrigadierRoot;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
+import io.github.moulberry.notenoughupdates.util.kotlin.KotlinTypeAdapterFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -150,7 +151,8 @@ public class NotEnoughUpdates {
 		put("MYTHIC", EnumChatFormatting.LIGHT_PURPLE.toString());
 	}};
 	public static ProfileViewer profileViewer;
-	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+	private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation()
+																						 .registerTypeAdapterFactory(KotlinTypeAdapterFactory.INSTANCE).create();
 	public NEUManager manager;
 	public NEUOverlay overlay;
 	public NEUConfig config;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 NotEnoughUpdates contributors
+ * Copyright (C) 2023 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
  *
@@ -19,15 +19,21 @@
 
 package io.github.moulberry.notenoughupdates.util
 
-import net.minecraft.util.StringUtils
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import io.github.moulberry.moulconfig.gui.GuiContext
+import io.github.moulberry.moulconfig.gui.GuiScreenElementWrapperNew
+import io.github.moulberry.moulconfig.xml.XMLUniverse
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.util.ResourceLocation
 
-fun String.stripControlCodes(): String = StringUtils.stripControlCodes(this)
 
-fun String.copyToClipboard() = Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(this), null)
-
-inline fun <T> Pattern.matchMatcher(text: String, consumer: Matcher.() -> T) =
-    matcher(text).let { if (it.matches()) consumer(it) else null }
+fun XMLUniverse.loadResourceLocation(obj: Any, resourceLocation: ResourceLocation): GuiScreen {
+    return GuiScreenElementWrapperNew(
+        GuiContext(
+            load(
+                obj,
+                Minecraft.getMinecraft().resourceManager.getResource(resourceLocation).inputStream
+            )
+        )
+    )
+}

@@ -25,10 +25,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import info.bliki.api.Template;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.lerp.LerpingInteger;
 import io.github.moulberry.notenoughupdates.itemeditor.GuiElementTextField;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.util.TemplateUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -51,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -527,16 +530,7 @@ public class GuiEnchantColour extends GuiScreen {
 	private boolean validShareContents() {
 		try {
 			String base64 = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-
-			if (base64.length() <= sharePrefix.length()) return false;
-
-			base64 = base64.trim();
-
-			try {
-				return new String(Base64.getDecoder().decode(base64)).startsWith(sharePrefix);
-			} catch (IllegalArgumentException e) {
-				return false;
-			}
+			return Objects.equals(TemplateUtil.getTemplatePrefix(base64), sharePrefix);
 		} catch (HeadlessException | IOException | UnsupportedFlavorException | IllegalStateException e) {
 			return false;
 		}
@@ -647,26 +641,7 @@ public class GuiEnchantColour extends GuiScreen {
 				} catch (HeadlessException | IOException | UnsupportedFlavorException e) {
 					return;
 				}
-
-				if (base64.length() <= sharePrefix.length()) return;
-
-				base64 = base64.trim();
-
-				String jsonString;
-				try {
-					jsonString = new String(Base64.getDecoder().decode(base64));
-					if (!jsonString.startsWith(sharePrefix)) return;
-					jsonString = jsonString.substring(sharePrefix.length());
-				} catch (IllegalArgumentException e) {
-					return;
-				}
-
-				JsonArray presetArray;
-				try {
-					presetArray = new JsonParser().parse(jsonString).getAsJsonArray();
-				} catch (IllegalStateException | JsonParseException e) {
-					return;
-				}
+				JsonArray presetArray = TemplateUtil.maybeDecodeTemplate(sharePrefix, base64, JsonArray.class);
 				ArrayList<String> presetList = new ArrayList<>();
 
 				for (int i = 0; i < presetArray.size(); i++) {
@@ -690,8 +665,8 @@ public class GuiEnchantColour extends GuiScreen {
 				for (String s : result) {
 					jsonArray.add(new JsonPrimitive(s));
 				}
-				String base64String = Base64.getEncoder().encodeToString((sharePrefix +
-					jsonArray).getBytes(StandardCharsets.UTF_8));
+
+				String base64String = TemplateUtil.encodeTemplate(sharePrefix, jsonArray);
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(base64String), null);
 			} else if (mouseY > guiTopSidebar + 2 + (24 * 2) && mouseY < guiTopSidebar + 20 + 2 + 24 * 2) {
 				NotEnoughUpdates.INSTANCE.config.hidden.enchantColours = NEUConfig.createDefaultEnchantColours();

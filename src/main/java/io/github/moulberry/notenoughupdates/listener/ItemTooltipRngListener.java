@@ -214,14 +214,16 @@ public class ItemTooltipRngListener {
 		dungeonData.clear();
 
 		JsonObject leveling = Constants.LEVELING;
-		if (leveling == null ||
-			!leveling.has("slayer_boss_xp") ||
+		if (leveling == null) {
+			Utils.showOutdatedRepoNotification("leveling.json");
+			return;
+		} else if (!leveling.has("slayer_boss_xp") ||
 			!leveling.has("slayer_highest_tier") ||
 			!leveling.has("slayer_tier_colors") ||
 			!leveling.has("rng_meter_dungeon_score") ||
 			!leveling.has("fancy_name_to_slayer") ||
 			!leveling.has("slayer_boss_xp_type")) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("leveling.json (outdated)");
 			return;
 		}
 
@@ -377,7 +379,7 @@ public class ItemTooltipRngListener {
 
 		JsonObject jsonObject = Constants.RNGSCORE;
 		if (jsonObject == null) {
-			Utils.showOutdatedRepoNotification();
+			Utils.showOutdatedRepoNotification("rngscore.json");
 			return -1;
 		}
 
