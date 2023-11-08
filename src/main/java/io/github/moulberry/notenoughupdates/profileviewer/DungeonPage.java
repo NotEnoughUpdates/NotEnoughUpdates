@@ -543,12 +543,22 @@ public class DungeonPage extends GuiProfileViewerPage {
 			}
 
 			float classLevelSum = 0;
+			float classLevelSumOverflow = 0;
+			int numMaxed = 0;
 			for (int i = 0; i < Weight.DUNGEON_CLASS_NAMES.size(); i++) {
 				String className = Weight.DUNGEON_CLASS_NAMES.get(i);
 
 				String colour = className.equalsIgnoreCase(activeClass) ? EnumChatFormatting.GREEN.toString() : EnumChatFormatting.WHITE.toString();
 				ProfileViewer.Level levelObj = levelingInfo.get("cosmetic_" + className);
-				classLevelSum += levelObj.level;
+				// If the class is maxed but not all are, we need to calculate the average level differently.
+				if (levelObj.level >= 50) {
+					levelObj.maxed = true;
+					numMaxed++;
+					classLevelSum += 50;
+					classLevelSumOverflow += levelObj.level;
+				} else {
+					classLevelSum += levelObj.level;
+				}
 
 				getInstance()
 					.renderXpBar(
@@ -564,9 +574,12 @@ public class DungeonPage extends GuiProfileViewerPage {
 			}
 
 			ProfileViewer.Level classAverage = new ProfileViewer.Level();
-			classAverage.level = classLevelSum / Weight.DUNGEON_CLASS_NAMES.size();
-			if (classAverage.level >= 50) {
+			// If all classes maxed, calculate including overflow, otherwise, calculate with cap at 50.
+			if (numMaxed == Weight.DUNGEON_CLASS_NAMES.size()) {
 				classAverage.maxed = true;
+				classAverage.level = classLevelSumOverflow / Weight.DUNGEON_CLASS_NAMES.size();
+			} else {
+				classAverage.level = classLevelSum / Weight.DUNGEON_CLASS_NAMES.size();
 			}
 
 			getInstance().renderXpBar(
