@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2022-2023 NotEnoughUpdates contributors
+   Copyright (C) 2022-2023 NotEnoughUpdates contributors
  *
- * This file is part of NotEnoughUpdates.
+   This file is part of NotEnoughUpdates.
  *
- * NotEnoughUpdates is free software: you can redistribute it
- * and/or modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
+   NotEnoughUpdates is free software: you can redistribute it
+   and/or modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation, either
+   version 3 of the License, or (at your option) any later version.
  *
- * NotEnoughUpdates is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+   NotEnoughUpdates is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+   Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU Lesser General Public License
+   along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 package io.github.moulberry.notenoughupdates.miscfeatures
 
@@ -27,26 +27,24 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 /*
- * CountdownCalculator.kt
- * A Kotlin class by:
- * — Erymanthus / RayDeeUx (code base, math, timestamp wrangling, adaptation into overall NEU codebase)
- * — nea89 (enum, regex wrangling, ItemTooltipEvent integration, cleanup)
- * 
- * Intended to detect countdowns within item tooltips, converting the time remaining into
- * units of seconds, and then adding that result to the user's current system time
- * in Unix epoch form converted into a human readable timestamp, timezones included.
- * 
- * Formerly a feature from SkyBlockCatia, then later attempted to be ported into Skytils.
- * Now has a comfy home in the NotEnoughUpdates codebase.
+   CountdownCalculator.kt
+   A Kotlin class by:
+   — Erymanthus / RayDeeUx (code base, math, timestamp wrangling, adaptation into overall NEU codebase)
+   — nea89 (enum, regex wrangling, ItemTooltipEvent integration, cleanup)
+   
+   Intended to detect countdowns within item tooltips, converting the time remaining into
+   units of seconds, and then adding that result to the user's current system time
+   in Unix epoch form converted into a human-readable timestamp, timezones included.
+   
+   Formerly a feature from SkyBlockCatia, then later attempted to be ported into Skytils.
+   Now has a comfy home in the NotEnoughUpdates codebase.
  */
 
 @NEUAutoSubscribe
 class CountdownCalculator {
 
-    val regex =
-        "(?:(?<days>\\d+)d)? ?(?:(?<hours>\\d+)h)? ?(?:(?<minutes>\\d+)m)? ?(?:(?<seconds>\\d+)s)?\\b".toRegex()
-    val formatter12h = DateTimeFormatter.ofPattern("EEEE, MMM d h:mm a")!!
-    val formatter24h = DateTimeFormatter.ofPattern("EEEE, MMM d HH:mm")!!
+    private val regex =
+        "(?:(?<years>\\d+)y )?(?:(?<days>\\d+)d)? ?(?:(?<hours>\\d+)h)? ?(?:(?<minutes>\\d+)m)? ?(?:(?<seconds>\\d+)s)?\\b".toRegex()
 
     @Suppress("unused")
     private enum class CountdownTypes(
@@ -64,14 +62,14 @@ class CountdownCalculator {
         TIMELEFT("Time left:", "Ends at"),
         EVENTTIMELEFT("Event lasts for", "Ends at", isRelative = true),
         SHENSUCKS("Auction ends in:", "Auction ends at"),
-        CALENDARDETAILS("(§e", "Starts at"); // Calendar details
+        CALENDARDETAILS(" (§e", "Starts at"); // Calendar details
     }
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        val useFormatter = when (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds) {
-            1 -> formatter12h
-            2 -> formatter24h
+        var formatterAsString = when (NotEnoughUpdates.INSTANCE.config.misc.showWhenCountdownEnds) {
+            1 -> "EEEE, MMM d h:mm a"
+            2 -> "EEEE, MMM d HH:mm"
             else -> return
         }
         if (event.itemStack != null && Minecraft.getMinecraft().thePlayer?.openContainer != null) {
@@ -82,12 +80,15 @@ class CountdownCalculator {
                 val countdownKind = CountdownTypes.values().find { it.match in tooltipLine } ?: continue
                 val match = regex.findAll(tooltipLine).maxByOrNull { it.value.length } ?: continue
 
+                val years = match.groups["years"]?.value?.toInt() ?: 0
                 val days = match.groups["days"]?.value?.toInt() ?: 0
                 val hours = match.groups["hours"]?.value?.toInt() ?: 0
                 val minutes = match.groups["minutes"]?.value?.toInt() ?: 0
                 val seconds = match.groups["seconds"]?.value?.toInt() ?: 0
-                val totalSeconds = days * 86400L + hours * 3600L + minutes * 60L + seconds
+                val totalSeconds = (years * 31_536_000L) + (days * 86_400L) + (hours * 3_600L) + (minutes * 60L) + seconds
                 if (totalSeconds == 0L) continue
+                if (years != 0) formatterAsString = "${formatterAsString} YYYY"
+                val useFormatter = DateTimeFormatter.ofPattern(formatterAsString)!!
                 val countdownTarget = if (countdownKind.isRelative) {
                     if (lastTimer == null) {
                         event.toolTip.add(

@@ -311,8 +311,8 @@ public class CalendarOverlay {
 					STAR_CULT_STACK,
 					Arrays.asList(
 						"§3The Cult of the Fallen Star meets then.",
-						"§3Attending may give a reward",
-						"§3You can find them near the Star in the Dwarven Mines"
+						"§3Attending may give a reward.",
+						"§3You can find them near the Star in the Dwarven Mines."
 					),
 					STAR_CULT_DURATION,
 					true
@@ -352,7 +352,6 @@ public class CalendarOverlay {
 					)
 				);
 			}
-
 		}
 	}
 
@@ -456,11 +455,11 @@ public class CalendarOverlay {
 					"§dScorpius",
 					true,
 					Utils.createSkull(
-						"Scorpius",
+						"Scorpius' Candidacy",
 						"ba2cd37d-a0e4-4dc5-b15c-d79ee1051aae",
 						"ewogICJ0aW1lc3RhbXAiIDogMTU5Nzc4MTc1NzIxOSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYyNmZhMGM0NzUzNmU3OGUzMzcyNTdkODk4YWY4YjFlYmM4N2MwODk0NTAzMzc1MjM0MDM1ZmYyYzdlZjhmMCIKICAgIH0KICB9Cn0"
 					),
-					Arrays.asList("§eScorpius is a special Mayor candidate"), -1, true
+					Arrays.asList("§eScorpius becomes a special Mayor candidate"), -1, true
 				)
 			);
 			addEvent(
@@ -470,11 +469,11 @@ public class CalendarOverlay {
 					"§dDerpy",
 					true,
 					Utils.createSkull(
-						"Derpy",
+						"Derpy's Candidacy",
 						"ab36a707-96d3-3db1-ab36-a70796d3adb1",
 						"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ1MGQxMjY5Mjg4NmM0N2IwNzhhMzhmNGQ0OTJhY2ZlNjEyMTZlMmQwMjM3YWI4MjQzMzQwOWIzMDQ2YjQ2NCJ9fX0"
 					),
-					Arrays.asList("§eDerpy is a special Mayor candidate"), -1, true
+					Arrays.asList("§eDerpy becomes a special Mayor candidate"), -1, true
 				)
 			);
 			addEvent(
@@ -484,11 +483,11 @@ public class CalendarOverlay {
 					"§dJerry",
 					true,
 					Utils.createSkull(
-						"Jerry",
+						"Jerry's Candidacy",
 						"0a9e8efb-9191-4c81-80f5-e27ca5433156",
 						"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODIyZDhlNzUxYzhmMmZkNGM4OTQyYzQ0YmRiMmY1Y2E0ZDhhZThlNTc1ZWQzZWIzNGMxOGE4NmU5M2IifX19"
 					),
-					Arrays.asList("§eJerry is a special Mayor candidate"), -1, true
+					Arrays.asList("§eJerry becomes a special Mayor candidate"), -1, true
 				)
 			);
 		}
@@ -734,15 +733,21 @@ public class CalendarOverlay {
 							sbEvent.display,
 							EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilMillis, false)
 						);
-						addCountdownCalculatorToTooltip(timeUntilMillis, tooltipToDisplay);
+						if (!(prettyTime(timeUntilMillis, false).equals("Now!"))) {
+							addCountdownCalculatorToTooltip(timeUntilMillis, tooltipToDisplay);
+						}
 						if (sbEvent.lastsFor >= 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 								prettyTime(sbEvent.lastsFor, true));
-							addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntilMillis, tooltipToDisplay);
+							if (!(prettyTime(timeUntilMillis, false).equals("Now!"))) {
+								addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntilMillis, tooltipToDisplay);
+							}
 							if (timeUntilMillis < 0) {
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 									prettyTime(sbEvent.lastsFor + timeUntilMillis, true));
-								addCountdownCalculatorToTooltip(timeUntilMillis, tooltipToDisplay);
+								if ((prettyTime(timeUntilMillis, false).equals("Now!"))) {
+									addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntilMillis, tooltipToDisplay);
+								}
 							}
 						}
 						if (sbEvent.desc != null) {
@@ -788,7 +793,9 @@ public class CalendarOverlay {
 
 			if (mouseX >= x && mouseX <= x + 16) {
 				if (mouseY >= y && mouseY <= y + 16) {
-					tooltipToDisplay = new ArrayList<>(sbEvent.desc);
+					tooltipToDisplay = new ArrayList<>();
+					tooltipToDisplay.add(sbEvent.display);
+					tooltipToDisplay.addAll(sbEvent.desc);
 					tooltipToDisplay.add(Utils.prettyTime(Duration.between(
 						Instant.now(),
 						Instant.ofEpochMilli(pair.getFirst())
@@ -841,15 +848,21 @@ public class CalendarOverlay {
 						nextEvent.display,
 						EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntilNext, false)
 					);
-					addCountdownCalculatorToTooltip(timeUntilNext, tooltipToDisplay);
+					if (!(prettyTime(timeUntilNext, false).equals("Now!"))) {
+						addCountdownCalculatorToTooltip(timeUntilNext, tooltipToDisplay);
+					}
 					if (nextEvent.lastsFor >= 0) {
 						tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 							prettyTime(nextEvent.lastsFor, true));
-						addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
+						if (!(prettyTime(timeUntilNext, false).equals("Now!"))) {
+							addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
+						}
 						if (timeUntilNext < 0) {
 							tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 								prettyTime(nextEvent.lastsFor + timeUntilNext, true));
-							addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
+							if ((prettyTime(timeUntilNext, false).equals("Now!"))) {
+								addCountdownCalculatorToTooltip(nextEvent.lastsFor + timeUntilNext, tooltipToDisplay);
+							}
 						}
 
 					}
@@ -1485,15 +1498,21 @@ public class CalendarOverlay {
 								tooltipToDisplay.add(sbEvent.display);
 								tooltipToDisplay.add(
 									EnumChatFormatting.GRAY + "Starts in: " + EnumChatFormatting.YELLOW + prettyTime(timeUntil, false));
-								addCountdownCalculatorToTooltip(timeUntil, tooltipToDisplay);
+								if (!(prettyTime(timeUntil, false).equals("Now!"))) {
+									addCountdownCalculatorToTooltip(timeUntil, tooltipToDisplay);
+								}
 								if (sbEvent.lastsFor >= 0) {
 									tooltipToDisplay.add(EnumChatFormatting.GRAY + "Lasts for: " + EnumChatFormatting.YELLOW +
 										prettyTime(sbEvent.lastsFor, true));
-									addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
+									if (!(prettyTime(timeUntilNext, false).equals("Now!"))) {
+										addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
+									}
 									if (timeUntil < 0) {
 										tooltipToDisplay.add(EnumChatFormatting.GRAY + "Time left: " + EnumChatFormatting.YELLOW +
 											prettyTime(sbEvent.lastsFor + timeUntil, true));
-										addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
+										if ((prettyTime(timeUntil, false).equals("Now!"))) {
+											addCountdownCalculatorToTooltip(sbEvent.lastsFor + timeUntil, tooltipToDisplay);
+										}
 									}
 								}
 								if (sbEvent.id.split(":")[0].equals("jacob_farming") && sbEvent.desc != null) {
