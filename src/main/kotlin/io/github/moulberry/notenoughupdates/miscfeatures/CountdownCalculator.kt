@@ -87,7 +87,7 @@ class CountdownCalculator {
                 val seconds = match.groups["seconds"]?.value?.toInt() ?: 0
                 val totalSeconds = (years * 31_536_000L) + (days * 86_400L) + (hours * 3_600L) + (minutes * 60L) + seconds
                 if (totalSeconds == 0L) continue
-                if (years != 0) formatterAsString = "${formatterAsString} YYYY"
+                if (years != 0) formatterAsString = "${formatterAsString} yyyy"
                 val useFormatter = DateTimeFormatter.ofPattern(formatterAsString)!!
                 val countdownTarget = if (countdownKind.isRelative) {
                     if (lastTimer == null) {
