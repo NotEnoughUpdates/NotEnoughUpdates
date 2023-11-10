@@ -452,10 +452,10 @@ public class CalendarOverlay {
 			addEvent(
 				new SkyBlockTime(thisBaseYear + scorpiusOffset, 3, 27, 0, 0, 0),
 				new SBEvent("special_mayor:scorpius",
-					"§dScorpius",
+					"§dScorpius' Candidacy",
 					true,
 					Utils.createSkull(
-						"Scorpius' Candidacy",
+						"Scorpius",
 						"ba2cd37d-a0e4-4dc5-b15c-d79ee1051aae",
 						"ewogICJ0aW1lc3RhbXAiIDogMTU5Nzc4MTc1NzIxOSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYyNmZhMGM0NzUzNmU3OGUzMzcyNTdkODk4YWY4YjFlYmM4N2MwODk0NTAzMzc1MjM0MDM1ZmYyYzdlZjhmMCIKICAgIH0KICB9Cn0"
 					),
@@ -466,10 +466,10 @@ public class CalendarOverlay {
 				new SkyBlockTime(thisBaseYear + derpyOffset, 3, 27, 0, 0, 0),
 				new SBEvent(
 					"special_mayor:derpy",
-					"§dDerpy",
+					"§dDerpy's Candidacy",
 					true,
 					Utils.createSkull(
-						"Derpy's Candidacy",
+						"Derpy",
 						"ab36a707-96d3-3db1-ab36-a70796d3adb1",
 						"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ1MGQxMjY5Mjg4NmM0N2IwNzhhMzhmNGQ0OTJhY2ZlNjEyMTZlMmQwMjM3YWI4MjQzMzQwOWIzMDQ2YjQ2NCJ9fX0"
 					),
@@ -480,10 +480,10 @@ public class CalendarOverlay {
 				new SkyBlockTime(thisBaseYear + jerryOffset, 3, 27, 0, 0, 0),
 				new SBEvent(
 					"special_mayor:jerry",
-					"§dJerry",
+					"§dJerry's Candidacy",
 					true,
 					Utils.createSkull(
-						"Jerry's Candidacy",
+						"Jerry",
 						"0a9e8efb-9191-4c81-80f5-e27ca5433156",
 						"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODIyZDhlNzUxYzhmMmZkNGM4OTQyYzQ0YmRiMmY1Y2E0ZDhhZThlNTc1ZWQzZWIzNGMxOGE4NmU5M2IifX19"
 					),
