@@ -106,7 +106,7 @@ public abstract class GenericBlockHighlighter {
 	}
 
 	@SubscribeEvent
-	public void onWorldChange(WorldEvent.Load event) {
+	public void onWorldChange(WorldEvent.Unload event) {
 		highlightedBlocks.clear();
 	}
 

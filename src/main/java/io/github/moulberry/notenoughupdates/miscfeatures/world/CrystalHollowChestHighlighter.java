@@ -90,6 +90,7 @@ public class CrystalHollowChestHighlighter extends GenericBlockHighlighter {
 		});
 
 		blockToRemove.forEach(highlightedBlocks::remove);
+		blockToRemove.forEach(markedBlocks::remove);
 	}
 
 	@SubscribeEvent
