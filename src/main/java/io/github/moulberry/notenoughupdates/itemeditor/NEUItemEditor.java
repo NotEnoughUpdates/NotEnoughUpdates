@@ -143,9 +143,10 @@ public class NEUItemEditor extends GuiScreen {
 		for (int i = 0; i < info.size(); i++) infoA[i] = info.get(i).getAsString();
 		this.info = addTextFieldWithSupplier(String.join("\n", infoA), COLOUR | MULTILINE);
 
+		String hasViewPotion = internalName.contains("POTION") ? "viewpotion" : "";
 		options.add(new GuiElementText("Click-command (viewrecipe or viewpotion): ", Color.WHITE.getRGB()));
 		JsonElement clickCommandElement = getItemInfo("clickcommand");
-		String clickCommand = clickCommandElement != null ? clickCommandElement.getAsString() : "";
+		String clickCommand = clickCommandElement != null ? clickCommandElement.getAsString() : hasViewPotion;
 		this.clickCommand = addTextFieldWithSupplier(clickCommand, NO_SPACE);
 
 		options.add(new GuiElementText("Damage: ", Color.WHITE.getRGB()));

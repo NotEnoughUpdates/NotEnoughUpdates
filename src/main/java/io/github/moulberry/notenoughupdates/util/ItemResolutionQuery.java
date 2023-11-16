@@ -126,6 +126,9 @@ public class ItemResolutionQuery {
 				case "PARTY_HAT_SLOTH":
 					resolvedName = resolveSlothHatName();
 					break;
+				case "POTION":
+					resolvedName = resolvePotionName();
+					break;
 			}
 		}
 
@@ -335,6 +338,15 @@ public class ItemResolutionQuery {
 			ex.printStackTrace();
 			return null;
 		}
+	}
+
+	private String resolvePotionName() {
+		String potion = getExtraAttributes().getString("potion");
+		int potionLvl = getExtraAttributes().getInteger("potion_level");
+		boolean splash = getExtraAttributes().getBoolean("splash");
+		String potionType = ";";
+		if (splash) potionType = ";SPLASH_";
+		return potion.toUpperCase(Locale.ROOT) + potionType + "POTION;" + potionLvl;
 	}
 
 	private NBTTagCompound getExtraAttributes() {
