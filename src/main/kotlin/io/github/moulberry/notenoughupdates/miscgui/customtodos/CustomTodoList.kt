@@ -74,6 +74,11 @@ class CustomTodoList(
         save()
     }
 
+    @Bind
+    fun afterClose() {
+        save()
+    }
+
     fun save() {
         NotEnoughUpdates.INSTANCE.config.hidden.customTodos = todos.map { it.into() }.toMutableList()
         NotEnoughUpdates.INSTANCE.saveConfig()

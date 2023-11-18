@@ -1,5 +1,5 @@
 [versions]
-moulconfig = "2.2.0"
+moulconfig = "2.4.3"
 
 [libraries]
 moulconfig = { module = "org.notenoughupdates.moulconfig:legacy", version.ref = "moulconfig" }
