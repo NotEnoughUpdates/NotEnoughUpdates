@@ -106,10 +106,10 @@ public class RiftPage extends GuiProfileViewerPage {
 			drawArmorAndEquipment(armorData, guiLeft, guiTop, 27, 64, mouseX, mouseY, true);
 		}
 
-		if (riftInventory.has("equippment_contents") &&
-			riftInventory.getAsJsonObject("equippment_contents").has("data")) {
+		if (riftInventory.has("equipment_contents") &&
+			riftInventory.getAsJsonObject("equipment_contents").has("data")) {
 			List<JsonObject> equipmentData = readBase64(riftInventory
-				.getAsJsonObject("equippment_contents")
+				.getAsJsonObject("equipment_contents")
 				.get("data")
 				.getAsString());
 			drawArmorAndEquipment(equipmentData, guiLeft, guiTop, 46, 64, mouseX, mouseY, false);
@@ -154,10 +154,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		}
 
-		int motesPurse = 0;
-		if (profileInfo.has("motes_purse")) {
-			motesPurse = profileInfo.get("motes_purse").getAsInt();
-		}
+		float motesPurse = Utils.getElementAsFloat(Utils.getElement(profileInfo, "currencies.motes_purse"), 0);
 		Utils.drawStringCenteredScaledMaxWidth(
 			"§dMotes: §f" + Utils.shortNumberFormat(motesPurse, 0),
 			guiLeft + 45,
@@ -169,11 +166,12 @@ public class RiftPage extends GuiProfileViewerPage {
 
 		if ((mouseX > guiLeft + 3 && mouseX < guiLeft + 90) &&
 			(mouseY > guiTop + 3 && mouseY < guiTop + 25)) {
-			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
-			if (stats.has("rift_lifetime_motes_earned")) {
-				getInstance().tooltipToDisplay = Collections.singletonList(
-					"§dLifetime Motes: §f" + Utils.shortNumberFormat(stats.get("rift_lifetime_motes_earned").getAsInt(), 0));
-			}
+			int stats = Utils.getElementAsInt(Utils.getElement(
+				selectedProfile.getProfileJson(),
+				"player_stats.rift.lifetime_motes_earned"
+			), 0);
+			getInstance().tooltipToDisplay = Collections.singletonList(
+				"§dLifetime Motes: §f" + Utils.shortNumberFormat(stats, 0));
 		}
 
 		// Timecharms
