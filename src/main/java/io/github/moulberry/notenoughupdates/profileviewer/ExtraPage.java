@@ -190,8 +190,11 @@ public class ExtraPage extends GuiProfileViewerPage {
 		float yStartBottom = 105;
 		float yOffset = 10;
 
-		float bankBalance = Utils.getElementAsFloat(Utils.getElement(selectedProfile.getOuterProfileJson(), "banking.balance"), 0);
-		float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
+		float bankBalance = Utils.getElementAsFloat(Utils.getElement(
+			selectedProfile.getOuterProfileJson(),
+			"banking.balance"
+		), 0);
+		float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "currencies.coin_purse"), 0);
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.GOLD + "Bank Balance",
@@ -209,7 +212,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		);
 
 		{
-			String first_join = getTimeSinceString(profileInfo, "first_join");
+			String first_join = getTimeSinceString(profileInfo, "profile.first_join");
 			if (first_join != null) {
 				Utils.renderAlignedString(
 					EnumChatFormatting.AQUA + "Joined",
@@ -275,7 +278,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 			76
 		));
 
-		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_souls_collected"), 0);
+		float fairySouls = Utils.getElementAsFloat(Utils.getElement(profileInfo, "fairy_soul.total_collected"), 0);
 
 		int fairySoulMax = 227;
 		if (Constants.FAIRYSOULS != null && Constants.FAIRYSOULS.has("Max Souls")) {
@@ -350,16 +353,19 @@ public class ExtraPage extends GuiProfileViewerPage {
 			);
 		}
 
-		float auctions_bids = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_bids"), 0);
+		float auctions_bids = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.auctions.bids"), 0);
 		float auctions_highest_bid = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.auctions_highest_bid"),
+			Utils.getElement(profileInfo, "player_stats.auctions.highest_bid"),
 			0
 		);
-		float auctions_won = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_won"), 0);
-		float auctions_created = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_created"), 0);
-		float auctions_gold_spent = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.auctions_gold_spent"), 0);
+		float auctions_won = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.auctions.won"), 0);
+		float auctions_created = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.auctions.created"), 0);
+		float auctions_gold_spent = Utils.getElementAsFloat(Utils.getElement(
+			profileInfo,
+			"player_stats.auctions.gold_spent"
+		), 0);
 		float auctions_gold_earned = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.auctions_gold_earned"),
+			Utils.getElement(profileInfo, "player_stats.auctions.gold_earned"),
 			0
 		);
 
@@ -408,21 +414,21 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
 			profileInfo,
-			"stats.pet_milestone_ores_mined"
+			"player_stats.pets.milestone.ores_mined"
 		), 0);
 		float pet_milestone_sea_creatures_killed = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.pet_milestone_sea_creatures_killed"),
+			Utils.getElement(profileInfo, "player_stats.pets.milestone.sea_creatures_killed"),
 			0
 		);
 
-		float items_fished = Utils.getElementAsFloat(Utils.getElement(profileInfo, "stats.items_fished"), 0);
+		float items_fished = Utils.getElementAsFloat(Utils.getElement(profileInfo, "player_stats.items_fished.total"), 0);
 		float items_fished_treasure = Utils.getElementAsFloat(
-			Utils.getElement(profileInfo, "stats.items_fished_treasure"),
+			Utils.getElement(profileInfo, "player_stats.items_fished.treasure"),
 			0
 		);
 		float items_fished_large_treasure = Utils.getElementAsFloat(Utils.getElement(
 			profileInfo,
-			"stats.items_fished_large_treasure"
+			"player_stats.items_fished.large_treasure"
 		), 0);
 
 		Utils.renderAlignedString(
