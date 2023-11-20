@@ -181,7 +181,7 @@ class UrsaClient(val apiUtil: ApiUtil) {
 
     companion object {
         @JvmStatic
-        fun profiles(uuid: UUID) = KnownRequest("v1/hypixel/profiles/${uuid}", JsonObject::class.java)
+        fun profiles(uuid: UUID) = KnownRequest("v1/hypixel/v2/profiles/${uuid}", JsonObject::class.java)
 
         @JvmStatic
         fun player(uuid: UUID) = KnownRequest("v1/hypixel/player/${uuid}", JsonObject::class.java)
