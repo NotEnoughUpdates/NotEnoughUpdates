@@ -164,12 +164,10 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		GlStateManager.disableLighting();
 		RenderHelper.enableGUIStandardItemLighting();
 
-		JsonObject stats = profileInformation.getAsJsonObject("stats");
-
-		int thunderKills = 0;
-		if (stats.has("kills_thunder")) {
-			thunderKills = stats.getAsJsonObject().get("kills_thunder").getAsInt();
-		}
+		int thunderKills = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"player_stats.kills.thunder"
+		), 0);
 		ItemStack thunder_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
 			NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("THUNDER_SC")
 		);
@@ -184,10 +182,10 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("LORD_JAWBUS_SC")
 		);
 		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(lord_jawbus_sc, guiLeft + 16, guiTop + 120);
-		int jawbusKills = 0;
-		if (stats.has("kills_lord_jawbus")) {
-			jawbusKills = stats.getAsJsonObject().get("kills_lord_jawbus").getAsInt();
-		}
+		int jawbusKills = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"player_stats.kills.lord_jawbus"
+		), 0);
 
 		Utils.drawStringF(
 			EnumChatFormatting.AQUA + "Lord Jawbus Kills: §f" + jawbusKills,
