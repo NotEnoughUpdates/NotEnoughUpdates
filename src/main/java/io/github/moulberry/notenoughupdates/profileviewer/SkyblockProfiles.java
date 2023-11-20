@@ -728,6 +728,7 @@ public class SkyblockProfiles {
 			JsonObject profileJson = getProfileJson();
 			if (Utils.getElement(profileJson, "accessory_bag_storage.tuning") == null) return null;
 			JsonObject tuningData = Utils.getElement(profileJson, "accessory_bag_storage.tuning.slot_0").getAsJsonObject();
+			if (tuningData.entrySet().isEmpty()) return null;
 			tuningInfo = new LinkedHashMap<>();
 
 			for (String stat : tuningStats) {

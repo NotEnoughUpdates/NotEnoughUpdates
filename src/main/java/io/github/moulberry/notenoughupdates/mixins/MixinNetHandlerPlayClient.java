@@ -26,6 +26,7 @@ import io.github.moulberry.notenoughupdates.miscfeatures.EnchantingSolvers;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.MiningStuff;
 import io.github.moulberry.notenoughupdates.miscfeatures.StorageManager;
+import io.github.moulberry.notenoughupdates.miscfeatures.WarpDessert;
 import io.github.moulberry.notenoughupdates.miscfeatures.world.CrystalHollowChestHighlighter;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -136,6 +137,9 @@ public class MixinNetHandlerPlayClient {
 		}
 		if (packet instanceof C01PacketChatMessage) {
 			if (AntiCoopAdd.getInstance().onPacketChatMessage((C01PacketChatMessage) packet)) {
+				ci.cancel();
+			}
+			if (WarpDessert.onPacketChatMessage((C01PacketChatMessage) packet)) {
 				ci.cancel();
 			}
 		}
