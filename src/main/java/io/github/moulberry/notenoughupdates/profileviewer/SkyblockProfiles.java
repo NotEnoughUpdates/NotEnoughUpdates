@@ -889,7 +889,7 @@ public class SkyblockProfiles {
 					}
 				} else {
 					skillExperience += Utils.getElementAsFloat(
-						Utils.getElement(profileJson, "player.data.experience.SKILL_" + skillName.toUpperCase()),
+						Utils.getElement(profileJson, "player_data.experience.SKILL_" + skillName.toUpperCase()),
 						0
 					);
 				}
