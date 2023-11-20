@@ -72,7 +72,7 @@ public class SkyblockProfiles {
 		"inv_contents",
 		"talisman_bag",
 		"candy_inventory_contents",
-		"equippment_contents"
+		"equipment_contents"
 	);
 	private static final List<String> skills = Arrays.asList(
 		"taming",
@@ -750,12 +750,12 @@ public class SkyblockProfiles {
 				JsonArray contents = new JsonArray();
 
 				if (invName.equals("backpack_contents")) {
-					JsonObject backpackData = getBackpackData(Utils.getElement(profileJson, "backpack_contents"));
+					JsonObject backpackData = getBackpackData(Utils.getElement(profileJson, "inventory.backpack_contents"));
 					inventoryNameToInfo.put("backpack_sizes", backpackData.getAsJsonArray("backpack_sizes"));
 					contents = backpackData.getAsJsonArray("contents");
 				} else {
 					String contentBytes = Utils.getElementAsString(
-						Utils.getElement(profileJson, invName + ".data"),
+						Utils.getElement(profileJson, "inventory." + invName + ".data"),
 						defaultNbtData
 					);
 
@@ -850,7 +850,7 @@ public class SkyblockProfiles {
 		}
 
 		public boolean skillsApiEnabled() {
-			return getProfileJson().has("experience_skill_combat");
+			return getProfileJson().has("player_data.experience.SKILL_COMBAT");
 		}
 
 		/**
@@ -882,13 +882,13 @@ public class SkyblockProfiles {
 						.getAsJsonObject()
 						.entrySet()) {
 						skillExperience += Utils.getElementAsFloat(
-							Utils.getElement(memberProfileJson.getValue(), "experience_skill_social2"),
+							Utils.getElement(memberProfileJson.getValue(), "player_data.experience.SKILL_SOCIAL"),
 							0
 						);
 					}
 				} else {
 					skillExperience += Utils.getElementAsFloat(
-						Utils.getElement(profileJson, "experience_skill_" + skillName),
+						Utils.getElement(profileJson, "player.data.experience.SKILL_" + skillName.toUpperCase()),
 						0
 					);
 				}
@@ -902,7 +902,7 @@ public class SkyblockProfiles {
 
 				int maxLevel = ProfileViewerUtils.getLevelingCap(leveling, skillName);
 				if (skillName.equals("farming")) {
-					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacob2.perks.farming_level_cap"), 0);
+					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacob_contest.perks.farming_level_cap"), 0);
 				}
 				out.put(skillName, ProfileViewerUtils.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
@@ -964,7 +964,7 @@ public class SkyblockProfiles {
 			for (String slayerName : Weight.SLAYER_NAMES) {
 				float slayerExperience = Utils.getElementAsFloat(Utils.getElement(
 					profileJson,
-					"slayer_bosses." + slayerName + ".xp"
+					"slayer.slayer_bosses." + slayerName + ".xp"
 				), 0);
 				out.put(
 					slayerName,
@@ -994,7 +994,7 @@ public class SkyblockProfiles {
 				return petsInfo;
 			}
 
-			JsonElement petsEle = getProfileJson().get("pets");
+			JsonElement petsEle = getProfileJson().get("pets_data.pets");
 			if (petsEle != null && petsEle.isJsonArray()) {
 				JsonArray petsArr = petsEle.getAsJsonArray();
 				JsonObject activePet = null;
@@ -1161,7 +1161,7 @@ public class SkyblockProfiles {
 			}
 
 			float bankBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "banking.balance"), 0);
-			float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "coin_purse"), 0);
+			float purseBalance = Utils.getElementAsFloat(Utils.getElement(profileInfo, "currencies.coin_purse"), 0);
 			networth += bankBalance + purseBalance;
 
 			return this.networth = networth;

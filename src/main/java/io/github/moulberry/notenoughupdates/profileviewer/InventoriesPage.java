@@ -283,7 +283,7 @@ public class InventoriesPage extends GuiProfileViewerPage {
 
 		if (equipmentItems == null) {
 			equipmentItems = new ItemStack[4];
-			JsonArray equippment = inventoryInfo.get("equippment_contents");
+			JsonArray equippment = inventoryInfo.get("equipment_contents");
 			for (int i = 0; i < equippment.size(); i++) {
 				if (equippment.get(i) != null && equippment.get(i).isJsonObject()) {
 					equipmentItems[i] = NotEnoughUpdates.INSTANCE.manager.jsonToStack(equippment.get(i).getAsJsonObject(), false);
