@@ -92,7 +92,7 @@ public class LilyDungeonsWeight extends DungeonsWeight {
 				.getElement(profileJson, "dungeons.dungeon_types.catacombs.tier_completions")
 				.getAsJsonObject()
 				.entrySet()) {
-				if (dungeonsCompletionWorth.has("catacombs_" + masterFloor.getKey())) {
+				if (dungeonsCompletionWorth.has("catacombs_" + normalFloor.getKey())) {
 					int amount = normalFloor.getValue().getAsInt();
 					double excess = 0;
 					if (amount > 1000) {
