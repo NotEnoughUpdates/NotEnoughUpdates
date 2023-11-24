@@ -46,9 +46,9 @@ public class StoryTaskLevel extends GuiTaskLevel {
 		int sbXpStory = 0;
 		for (JsonElement storyTaskName : storyTaskNames) {
 			String value = storyTaskName.getAsString();
-			if (objectives.has(value)) {
+			if (objectives != null && objectives.has(value)) {
 				JsonObject jsonObject = objectives.get(value).getAsJsonObject();
-				if (jsonObject.has("status") && jsonObject.get("status").getAsString().equals("COMPLETE")) {
+				if (jsonObject != null && jsonObject.has("status") && jsonObject.get("status").getAsString().equals("COMPLETE")) {
 					sbXpStory += storyTaskXp;
 				}
 			}
