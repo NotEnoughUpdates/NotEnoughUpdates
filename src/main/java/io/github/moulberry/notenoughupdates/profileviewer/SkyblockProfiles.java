@@ -755,7 +755,7 @@ public class SkyblockProfiles {
 					inventoryNameToInfo.put("backpack_sizes", backpackData.getAsJsonArray("backpack_sizes"));
 					contents = backpackData.getAsJsonArray("contents");
 				} else {
-					String path = "inventory." + (invName.endsWith("_bag") ? "bag_contents." + invName + ".data" : invName);
+					String path = "inventory." + (invName.endsWith("_bag") || invName.equals("quiver") ? "bag_contents." + invName + ".data" : invName);
 					String contentBytes = Utils.getElementAsString(
 						Utils.getElement(
 							profileJson,
@@ -999,7 +999,7 @@ public class SkyblockProfiles {
 				return petsInfo;
 			}
 
-			JsonElement petsEle = getProfileJson().get("pets_data.pets");
+			JsonElement petsEle = getProfileJson().getAsJsonObject("pets_data").get("pets");
 			if (petsEle != null && petsEle.isJsonArray()) {
 				JsonArray petsArr = petsEle.getAsJsonArray();
 				JsonObject activePet = null;
