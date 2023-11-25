@@ -98,9 +98,11 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 			sbXpPotmTier += potmXpArray.get(i - 1).getAsInt();
 		}
 
+
+    /* TODO FIX ME
 		int sbXpCommissionMilestone = 0;
-		JsonArray tutorialArray = object.get("tutorial").getAsJsonArray();
-		JsonArray commissionMilestoneXpArray = miningObj.get("commission_milestone_xp").getAsJsonArray();
+		JsonArray tutorialArray = object.get("objectives.tutorial").getAsJsonArray();
+			JsonArray commissionMilestoneXpArray = miningObj.get("commission_milestone_xp").getAsJsonArray();
 		for (JsonElement jsonElement : tutorialArray) {
 			if (jsonElement.getAsJsonPrimitive().isString() && jsonElement.getAsString().startsWith(
 				"commission_milestone_reward_skyblock_xp_tier"))
@@ -111,11 +113,12 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 					}
 				}
 		}
+		 */
 
 		// rock mines
 		float pet_milestone_ores_mined = Utils.getElementAsFloat(Utils.getElement(
 			object,
-			"stats.pet_milestone_ores_mined"
+			"player_stats.pets.milestone.ores_mined"
 		), 0);
 
 		int sbXpRockPet = 0;
@@ -131,8 +134,8 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		// farming
 		JsonObject farmingObj = skillRelatedTask.get("farming").getAsJsonObject();
 		int anitaShopUpgradesXp = farmingObj.get("anita_shop_upgrades_xp").getAsInt();
-		int doubleDrops = Utils.getElementAsInt(Utils.getElement(object, "jacob2.perks.double_drops"), 0);
-		int farmingLevelCap = Utils.getElementAsInt(Utils.getElement(object, "jacob2.perks.farming_level_cap"), 0);
+		int doubleDrops = Utils.getElementAsInt(Utils.getElement(object, "jacobs_contest.perks.double_drops"), 0);
+		int farmingLevelCap = Utils.getElementAsInt(Utils.getElement(object, "jacobs_contest.perks.farming_level_cap"), 0);
 
 		int sbXpGainedByAnita = (doubleDrops + farmingLevelCap) * anitaShopUpgradesXp;
 
@@ -156,7 +159,7 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 
 		}
 		float petMilestoneKilled = Utils.getElementAsFloat(
-			Utils.getElement(object, "stats.pet_milestone_sea_creatures_killed"),
+			Utils.getElement(object, "player_stats.pets.milestone.sea_creatures_killed"),
 			0
 		);
 
@@ -184,12 +187,15 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 
 		List<String> lore = new ArrayList<>();
 		lore.add(levelPage.buildLore("Heart of the Mountain", sbXpHotmTier, miningObj.get("hotm").getAsInt(), false));
+
+		/* TODO FIX ME
 		lore.add(levelPage.buildLore(
 			"Commission Milestones",
 			sbXpCommissionMilestone,
 			miningObj.get("commission_milestone").getAsInt(),
 			false
 		));
+		 */
 		lore.add(levelPage.buildLore("Crystal Nucleus", sbXpNucleus, miningObj.get("crystal_nucleus").getAsInt(), false));
 		lore.add(levelPage.buildLore(
 			"Anita's Shop Upgrade",
@@ -203,8 +209,8 @@ public class SkillRelatedTaskLevel extends GuiTaskLevel{
 		lore.add(levelPage.buildLore("Dolphin Milestone", sbXpDolphinPet, fishingObj.get("dolphin_milestone").getAsInt(), false));
 
 		int totalXp =
-			(int) (sbXpHotmTier + sbXpCommissionMilestone + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
-				sbXpDolphinPet + sbXpNucleus);
+			(int) (sbXpHotmTier + sbXpGainedByAnita + sbXpPotmTier + sbXpTrophyFish + sbXpRockPet +
+				sbXpDolphinPet + sbXpNucleus); // TODO add sbXpCommissionMilestone back
 		levelPage.renderLevelBar(
 			"Skill Related Task",
 			new ItemStack(Items.diamond_sword),
