@@ -118,7 +118,7 @@ data class ProfileCollectionInfo(
             }
             val generators = members.entrySet().mapNotNull { (uuid, data) ->
                 if (data !is JsonObject) return null
-                data["crafted_generators"] as? JsonArray
+                data.getAsJsonObject("player_data")?.get("crafted_generators") as? JsonArray
             }.flatMap { it.toList() }
             return ProfileCollectionInfo(
                 collectionData.allCollections.mapValues { (name, collection) ->
