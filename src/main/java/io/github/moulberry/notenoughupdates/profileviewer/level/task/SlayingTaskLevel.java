@@ -139,9 +139,12 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 
 		int kuudraBossCollection = 0;
 		if (object.has("nether_island_player_data")) {
-			JsonObject jsonObject = object.getAsJsonObject("nether_island_player_data").getAsJsonObject(
-				"kuudra_completed_tiers");
-			for (Map.Entry<String, JsonElement> stringJsonElementEntry : jsonObject.entrySet()) {
+			JsonObject kuudraCompletedTiers = Utils.getElementOrDefault(
+				selectedProfile.getProfileJson(),
+				"nether_island_player_data.kuudra_completed_tiers",
+				new JsonObject()
+			).getAsJsonObject();
+			for (Map.Entry<String, JsonElement> stringJsonElementEntry : kuudraCompletedTiers.entrySet()) {
 				String key = stringJsonElementEntry.getKey();
 				int value = stringJsonElementEntry.getValue().getAsInt();
 
