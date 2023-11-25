@@ -157,12 +157,13 @@ public class MiscTaskLevel extends GuiTaskLevel {
 
 		// personal bank
 		int sbXpPersonalBank = 0;
-		if (object.has("personal_bank_upgrade")) {
-			int personalBankUpgrade = object.get("personal_bank_upgrade").getAsInt();
-			JsonArray personalBankUpgradesXpArr = miscellaneousTask.getAsJsonArray("personal_bank_upgrades_xp");
-			for (int i = 1; i <= personalBankUpgrade; i++) {
-				sbXpPersonalBank += personalBankUpgradesXpArr.get(i - 1).getAsInt();
-			}
+		int personalBankUpgrade = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"profile.personal_bank_upgrade"
+		), 0);
+		JsonArray personalBankUpgradesXp = miscellaneousTask.getAsJsonArray("personal_bank_upgrades_xp");
+		for (int i = 1; i <= personalBankUpgrade; i++) {
+			sbXpPersonalBank += personalBankUpgradesXp.get(i - 1).getAsInt();
 		}
 
 		int sbXpTimeCharm = 0;
