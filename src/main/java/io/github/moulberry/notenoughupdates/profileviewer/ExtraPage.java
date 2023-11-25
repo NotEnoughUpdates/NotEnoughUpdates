@@ -468,38 +468,39 @@ public class ExtraPage extends GuiProfileViewerPage {
 		drawEssence(profileInfo, xStart, yStartTop, xOffset, yOffset, mouseX, mouseY);
 
 		//FIXME deaths/kills
-//		if (topKills == null) {
-//			topKills = new TreeMap<>();
-//			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
-//			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-//				if (entry.getKey().startsWith("kills_")) {
-//					if (entry.getValue().isJsonPrimitive()) {
-//						JsonPrimitive prim = (JsonPrimitive) entry.getValue();
-//						if (prim.isNumber()) {
-//							String name = WordUtils.capitalizeFully(entry.getKey().substring("kills_".length()).replace("_", " "));
-//							Set<String> kills = topKills.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
-//							kills.add(name);
-//						}
-//					}
-//				}
-//			}
-//		}
-//		if (topDeaths == null) {
-//			topDeaths = new TreeMap<>();
-//			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
-//			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
-//				if (entry.getKey().startsWith("deaths_")) {
-//					if (entry.getValue().isJsonPrimitive()) {
-//						JsonPrimitive prim = (JsonPrimitive) entry.getValue();
-//						if (prim.isNumber()) {
-//							String name = WordUtils.capitalizeFully(entry.getKey().substring("deaths_".length()).replace("_", " "));
-//							Set<String> deaths = topDeaths.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
-//							deaths.add(name);
-//						}
-//					}
-//				}
-//			}
-//		}
+		if (topKills == null) {
+			topKills = new TreeMap<>();
+			//JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			JsonObject stats = Utils
+				.getElementOrDefault(profileInfo, "player_stats.kills", new JsonObject())
+				.getAsJsonObject();
+			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
+				if (entry.getValue().isJsonPrimitive()) {
+					JsonPrimitive prim = (JsonPrimitive) entry.getValue();
+					if (prim.isNumber()) {
+						String name = WordUtils.capitalizeFully(entry.getKey().replace("_", " "));
+						Set<String> kills = topKills.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
+						kills.add(name);
+					}
+				}
+			}
+		}
+		if (topDeaths == null) {
+			topDeaths = new TreeMap<>();
+			JsonObject stats = Utils
+				.getElementOrDefault(profileInfo, "player_stats.deaths", new JsonObject())
+				.getAsJsonObject();
+			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
+				if (entry.getValue().isJsonPrimitive()) {
+					JsonPrimitive prim = (JsonPrimitive) entry.getValue();
+					if (prim.isNumber()) {
+						String name = WordUtils.capitalizeFully(entry.getKey().replace("_", " "));
+						Set<String> deaths = topDeaths.computeIfAbsent(prim.getAsInt(), k -> new HashSet<>());
+						deaths.add(name);
+					}
+				}
+			}
+		}
 
 		getInstance().killDeathSearchTextField.render(
 			(int) (guiLeft + xStart + xOffset * 3),
@@ -511,8 +512,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 		int index = 0;
 		int skipCount = 0;
 		int renderedKills = 0;
-		//TODO kills
-		topKills = new TreeMap<>();
 		for (int killCount : topKills.descendingKeySet()) {
 			Set<String> kills = topKills.get(killCount);
 			for (String killType : kills) {
@@ -539,8 +538,6 @@ public class ExtraPage extends GuiProfileViewerPage {
 		index = 0;
 		skipCount = 0;
 		int renderedDeaths = 0;
-		//TODO deaths
-		topDeaths = new TreeMap<>();
 		for (int deathCount : topDeaths.descendingKeySet()) {
 			Set<String> deaths = topDeaths.get(deathCount);
 			for (String deathType : deaths) {
