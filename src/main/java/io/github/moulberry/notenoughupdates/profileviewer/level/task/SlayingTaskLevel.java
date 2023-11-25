@@ -196,7 +196,7 @@ public class SlayingTaskLevel extends GuiTaskLevel {
 			for (int i = 0; i < 5; i++) {
 				if (i >= maxLevel) break;
 				float tier = Utils.getElementAsFloat(
-					Utils.getElement(object, "slayer_bosses." + entry.getKey() + ".boss_kills_tier_" + i),
+					Utils.getElement(object, "slayer.slayer_bosses." + entry.getKey() + ".boss_kills_tier_" + i),
 					0
 				);
 				if (tier != 0) {

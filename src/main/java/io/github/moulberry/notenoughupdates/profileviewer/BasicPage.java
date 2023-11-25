@@ -737,7 +737,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							for (int i = 0; i < 5; i++) {
 								if (i >= maxLevel) break;
 								float tier = Utils.getElementAsFloat(
-									Utils.getElement(selectedProfile.getProfileJson(), "slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
+									Utils.getElement(selectedProfile.getProfileJson(), "slayer.slayer_bosses." + slayerNameLower + ".boss_kills_tier_" + i),
 									0
 								);
 								tooltipToDisplay.add(EnumChatFormatting.GRAY + "T" + (i + 1) + " Kills: " +
