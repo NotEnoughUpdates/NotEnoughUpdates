@@ -234,7 +234,7 @@ public class PlayerStats {
 	public static Stats getPassiveBonuses(Map<String, ProfileViewer.Level> skyblockInfo, JsonObject profile) {
 		Stats passiveBonuses = new Stats();
 
-		Stats fairyBonus = getFairyBonus((int) Utils.getElementAsFloat(Utils.getElement(profile, "fairy_exchanges"), 0));
+		Stats fairyBonus = getFairyBonus((int) Utils.getElementAsFloat(Utils.getElement(profile, "fairy_soul.fairy_exchanges"), 0));
 		Stats skillBonus = getSkillBonus(skyblockInfo);
 		Stats petBonus = getTamingBonus(profile);
 
@@ -691,9 +691,7 @@ public class PlayerStats {
 			quiverInfo.arrows.putIfAbsent(internalName, count);
 		}
 
-		if (profileInfo.has("favorite_arrow")) {
-			quiverInfo.selectedArrow = profileInfo.get("favorite_arrow").getAsString();
-		}
+		quiverInfo.selectedArrow = Utils.getElementAsString(Utils.getElement(profileInfo, "item_data.favorite_arrow"), null);
 
 		return quiverInfo;
 	}
