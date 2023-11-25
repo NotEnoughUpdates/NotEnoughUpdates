@@ -133,8 +133,10 @@ public class ExtraPage extends GuiProfileViewerPage {
 				return;
 			}
 			String displayName = itemInformation.get(essenceName).getAsJsonObject().get("displayname").getAsString();
-			int essenceNumber =
-				profileInfo.has(essenceName.toLowerCase()) ? profileInfo.get(essenceName.toLowerCase()).getAsInt() : 0;
+			int essenceNumber = Utils.getElementAsInt(Utils.getElement(
+				getSelectedProfile().getProfileJson(),
+				"currencies.essence." + essenceName.replace("ESSENCE_", "") + ".current"
+			), 0);
 
 			Utils.renderAlignedString(
 				EnumChatFormatting.GOLD + displayName,
@@ -153,12 +155,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 				if (essenceShops.get(essenceName) == null) continue;
 
 				for (Map.Entry<String, JsonElement> entry : essenceShops.get(essenceName).getAsJsonObject().entrySet()) {
-					int perkTier =
-						(profileInfo.has("perks") && profileInfo.get("perks").getAsJsonObject().has(entry.getKey()) ? profileInfo
-							.get("perks")
-							.getAsJsonObject()
-							.get(entry.getKey())
-							.getAsInt() : 0);
+					int perkTier = Utils.getElementAsInt(Utils.getElement(getSelectedProfile().getProfileJson(), "player_data.perks." + entry.getKey()), 0);
 					int max = entry.getValue().getAsJsonObject().get("costs").getAsJsonArray().size();
 					EnumChatFormatting formatting = perkTier == max ? EnumChatFormatting.GREEN : EnumChatFormatting.AQUA;
 					String name = entry.getValue().getAsJsonObject().get("name").getAsString();

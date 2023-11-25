@@ -53,12 +53,10 @@ public class EssenceTaskLevel extends GuiTaskLevel {
 			String name = stringJsonElementEntry.getKey();
 			JsonObject individualObjects = stringJsonElementEntry.getValue().getAsJsonObject();
 			for (Map.Entry<String, JsonElement> jsonElementEntry : individualObjects.entrySet()) {
-				String key = jsonElementEntry.getKey();
-				if (!essencePerks.has(key)) {
-					continue;
-				}
-
-				int essenceAmount = essencePerks.get(key).getAsInt();
+				int essenceAmount = Utils.getElementAsInt(Utils.getElement(
+					object,
+					"player_data.perks." + jsonElementEntry.getKey()
+				), 0);
 
 				int amountReceivedForEach = 0;
 				for (int i = essenceAmount - 1; i >= 0; i--) {
