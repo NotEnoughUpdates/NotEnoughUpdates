@@ -699,8 +699,8 @@ public class BasicPage extends GuiProfileViewerPage {
 							"% to " + level.maxLevel + ")");
 						if (entry.getKey().equals("farming")) {
 							// double drops + pelts
-							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacob2.perks.double_drops"), 0);
-							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "trapper_quest.pelt_count"), 0);
+							int doubleDrops = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "jacobs_contest.perks.double_drops"), 0);
+							int peltCount = Utils.getElementAsInt(Utils.getElement(selectedProfile.getProfileJson(), "quests.trapper_quest.pelt_count"), 0);
 
 							if (doubleDrops == 15) {
 								tooltipToDisplay.add("§7Double Drops: §6" + (doubleDrops * 2) + "%");
@@ -709,7 +709,7 @@ public class BasicPage extends GuiProfileViewerPage {
 							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
 
 							// medals
-							JsonObject medals_inv = Utils.getElement(selectedProfile.getProfileJson(), "jacob2.medals_inv").getAsJsonObject();
+							JsonObject medals_inv = Utils.getElement(selectedProfile.getProfileJson(), "jacobs_contest.medals_inv").getAsJsonObject();
 							tooltipToDisplay.add(" ");
 							for (String medalName : medalNames) {
 								String textWithoutFormattingCodes =

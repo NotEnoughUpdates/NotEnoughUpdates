@@ -755,8 +755,12 @@ public class SkyblockProfiles {
 					inventoryNameToInfo.put("backpack_sizes", backpackData.getAsJsonArray("backpack_sizes"));
 					contents = backpackData.getAsJsonArray("contents");
 				} else {
+					String path = "inventory." + (invName.endsWith("_bag") ? "bag_contents." + invName + ".data" : invName);
 					String contentBytes = Utils.getElementAsString(
-						Utils.getElement(profileJson, "inventory." + invName + ".data"),
+						Utils.getElement(
+							profileJson,
+							path
+						),
 						defaultNbtData
 					);
 
@@ -851,7 +855,7 @@ public class SkyblockProfiles {
 		}
 
 		public boolean skillsApiEnabled() {
-			return getProfileJson().has("player_data.experience.SKILL_COMBAT");
+			return Utils.getElementAsLong(Utils.getElement(getProfileJson(), "player_data.experience.SKILL_COMBAT"), -1 ) != -1;
 		}
 
 		/**
@@ -1188,7 +1192,6 @@ public class SkyblockProfiles {
 
 		public void updateBeastMasterMultiplier() {
 			if (!getUuid().equals(Minecraft.getMinecraft().thePlayer.getUniqueID().toString().replace("-", ""))) return;
-			JsonObject stats = getProfileJson().get("stats").getAsJsonObject();
 			boolean hasBeastmasterCrest = false;
 			PetInfoOverlay.Rarity currentBeastRarity = PetInfoOverlay.Rarity.COMMON;
 			for (JsonElement talisman : getInventoryInfo().get("talisman_bag")) {
@@ -1205,6 +1208,7 @@ public class SkyblockProfiles {
 				}
 			}
 			if (hasBeastmasterCrest) {
+				JsonObject stats = getProfileJson().get("player_stats").getAsJsonObject();
 				if (stats.has("mythos_kills")) {
 					int mk = stats.get("mythos_kills").getAsInt();
 					float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
