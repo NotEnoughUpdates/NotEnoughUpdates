@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.miscgui.customtodos
 
 import io.github.moulberry.moulconfig.common.IItemStack
 import io.github.moulberry.moulconfig.forge.ForgeItemStack
+import io.github.moulberry.moulconfig.gui.CloseEventListener
 import io.github.moulberry.moulconfig.internal.ClipboardUtils
 import io.github.moulberry.moulconfig.observer.ObservableList
 import io.github.moulberry.moulconfig.xml.Bind
@@ -59,10 +60,9 @@ class CustomTodoEditor(
 
     var target = from.triggerTarget
     var matchMode = from.triggerMatcher
-    var lastCustomTodo: CustomTodo? = null
 
     fun into(): CustomTodo {
-        val nextCustomTodo = CustomTodo(
+        return CustomTodo(
             label,
             timer.toIntOrNull() ?: 0,
             trigger,
@@ -72,11 +72,6 @@ class CustomTodoEditor(
             from.readyAt,
             from.enabled.toMutableMap().also { it[SBInfo.getInstance().currentProfile ?: return@also] = enabled }
         )
-        if (nextCustomTodo != lastCustomTodo) {
-            lastCustomTodo = nextCustomTodo
-            CustomTodoList(todos, xmlUniverse).save()
-        }
-        return nextCustomTodo
     }
 
     @Bind
@@ -236,7 +231,12 @@ class CustomTodoEditor(
 
     @Bind
     fun getTitle(): String {
-        return "Editing ${into().label}"
+        return "Editing $label"
+    }
+
+    @Bind
+    fun afterClose() {
+        CustomTodoList(todos, xmlUniverse).save()
     }
 
     @Bind

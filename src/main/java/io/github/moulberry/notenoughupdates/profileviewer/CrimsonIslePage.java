@@ -160,6 +160,17 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		JsonObject kuudraCompletedTiers = data.getAsJsonObject("kuudra_completed_tiers");
 
+		if (kuudraCompletedTiers == null) {
+			Utils.renderAlignedString(
+				EnumChatFormatting.RED + "No kuudra stats found!",
+				" ",
+				guiLeft + 15,
+				guiTop + 101,
+				130
+			);
+			return;
+		}
+
 		RenderHelper.enableGUIStandardItemLighting();
 
 		for (int i = 0; i < 5; i++) {
@@ -301,7 +312,7 @@ public class CrimsonIslePage extends GuiProfileViewerPage {
 
 		JsonObject lastMatriarchAttempt = data.getAsJsonObject("matriarch");
 
-		if (!lastMatriarchAttempt.entrySet().isEmpty()) {
+		if (lastMatriarchAttempt != null && !lastMatriarchAttempt.entrySet().isEmpty()) {
 			Utils.renderAlignedString(
 				EnumChatFormatting.GOLD + "Heavy Pearls Acquired: ",
 				EnumChatFormatting.WHITE + lastMatriarchAttempt.get("pearls_collected").getAsString(),

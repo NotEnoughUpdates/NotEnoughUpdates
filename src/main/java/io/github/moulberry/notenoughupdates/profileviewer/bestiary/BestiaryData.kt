@@ -31,6 +31,7 @@ object BestiaryData {
         "dynamic",
         "hub",
         "farming_1",
+        "garden",
         "combat_1",
         "combat_3",
         "crimson_isle",

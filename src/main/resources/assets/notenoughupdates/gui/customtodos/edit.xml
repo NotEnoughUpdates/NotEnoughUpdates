@@ -18,10 +18,12 @@
   ~ along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<Root xmlns="http://notenoughupdates.org/moulconfig">
+<Root xmlns="http://notenoughupdates.org/moulconfig"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://notenoughupdates.org/moulconfig https://raw.githubusercontent.com/NotEnoughUpdates/MoulConfig/master/MoulConfig.xsd">
     <Gui>
         <Column>
-
+            <Meta afterClose="@afterClose"/>
             <Row>
                 <Button onClick="@close">
                     <Text text="←"/>

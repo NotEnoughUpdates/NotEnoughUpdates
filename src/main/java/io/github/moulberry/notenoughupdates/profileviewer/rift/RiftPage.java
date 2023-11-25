@@ -211,15 +211,9 @@ public class RiftPage extends GuiProfileViewerPage {
 			renderItem("GLASS", 316, 36, guiLeft, guiTop);
 		}
 
-		JsonObject castleData = riftData.getAsJsonObject("castle");
+		int grubberStacks = Utils.getElementAsInt(Utils.getElement(profileInfo, "rift.castle.grubber_stacks"), 0);
 
-		int grubberStacks = 0;
-		if (castleData.has("grubber_stacks")) {
-			grubberStacks = castleData.get("grubber_stacks").getAsInt();
-		}
-
-		Utils.renderAlignedString(
-			EnumChatFormatting.GOLD + "Burger:",
+		Utils.renderAlignedString(EnumChatFormatting.GOLD + "Burger:",
 			EnumChatFormatting.WHITE.toString() + grubberStacks + "/5",
 			guiLeft + 331,
 			guiTop + 87,

@@ -260,6 +260,8 @@ tasks.shadowJar {
 	dependsOn(kotlinDependencyCollectionJar)
 	fun relocate(name: String) = relocate(name, "io.github.moulberry.notenoughupdates.deps.$name")
 	relocate("com.mojang.brigadier")
+	relocate("io.github.moulberry.moulconfig")
+	mergeServiceFiles()
 }
 
 tasks.assemble.get().dependsOn(remapJar)
