@@ -369,8 +369,7 @@ class SacksPage(pvInstance: GuiProfileViewer) : GuiProfileViewerPage(pvInstance)
         val sackTypes = sacksJson.getAsJsonObject("sacks")
         val selectedProfile = selectedProfile?.profileJson ?: return
 
-        if (!selectedProfile.has("sacks_counts") || !selectedProfile.get("sacks_counts").isJsonObject) return
-        val sacksInfo = selectedProfile.get("sacks_counts").asJsonObject
+        val sacksInfo = Utils.getElementOrDefault(selectedProfile, "inventory.sacks_counts", JsonObject()).asJsonObject
 
         var totalValue = 0.0
         var totalItems = 0
