@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.SkyblockProfiles;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
 import io.github.moulberry.notenoughupdates.util.Constants;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.ProfileCollectionInfo;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -107,8 +108,10 @@ public class CoreTaskLevel extends GuiTaskLevel {
 		// museum is not possible
 
 		// fairy soul
-		int fairySoulsCollected = object.get("fairy_souls_collected").getAsInt();
-		int sbXpGainedFairy = ((fairySoulsCollected / 5)) * coreTask.get("fairy_souls_xp").getAsInt();
+		int sbXpGainedFairy = Utils.getElementAsInt(Utils.getElement(
+			selectedProfile.getProfileJson(),
+			"fairy_soul.total_collected"
+		), 0) / 5 * coreTask.get("fairy_souls_xp").getAsInt();
 
 		int sbXpCollection = -1;
 		int sbXpMinionTier = -1; // keeping at -1 here because cobblestone 1 minion XP isn't included for some reason?
