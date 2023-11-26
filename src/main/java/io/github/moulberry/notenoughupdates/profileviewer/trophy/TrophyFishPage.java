@@ -276,7 +276,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 			int hasValue = trophiesPerTier[integer - 1];
 			int neededValue = integer == 1 ? 15 : 18;
-			String neededText = "§c" + hasValue + "/" + neededValue;
+			String neededText = (hasValue == neededValue ? "§a" : "§c") + hasValue + "/" + neededValue;
 
 			try {
 				JsonElement jsonElement = rewards.get(integer - 1);
@@ -308,7 +308,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 	}
 
 	private int[] getTrophiesPerTier(JsonObject trophyFish) {
-		int[] trophiesPerTier = new int[] { 0, 0, 0, 0 };
+		int[] trophiesPerTier = new int[]{0, 0, 0, 0};
 		for (String fishType : internalTrophyFish.keySet()) {
 			int highestTier = 0;
 			if (trophyFish.has((fishType + "_bronze"))) highestTier = 1;
@@ -326,7 +326,8 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 	private List<String> getTooltip(String name, Map<TrophyFish.TrophyFishRarity, Integer> trophyFishRarityIntegerMap) {
 		List<String> tooltip = new ArrayList<>();
-		tooltip.add(internalTrophyFish.get(name.toLowerCase(Locale.US).replace(" ", "_")) + WordUtils.capitalize(name.replace("_", " ")));
+		tooltip.add(internalTrophyFish.get(name.toLowerCase(Locale.US).replace(" ", "_")) +
+			WordUtils.capitalize(name.replace("_", " ")));
 
 		List<String> lore = readLoreFromRepo(name.toUpperCase(Locale.US));
 		List<String> description = readDescriptionFromLore(lore);
