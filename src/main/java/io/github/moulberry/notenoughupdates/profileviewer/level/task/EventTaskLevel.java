@@ -23,9 +23,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.moulberry.notenoughupdates.profileviewer.level.LevelPage;
+import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
+import javax.rmi.CORBA.Util;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,11 +71,10 @@ public class EventTaskLevel extends GuiTaskLevel {
 			}
 		}
 
-		int sbXpUniqueMedals = 0;
-		if(object.has("jacob2") && object.getAsJsonObject("jacob2").has("unique_golds2")) {
-			int size = object.getAsJsonObject("jacob2").getAsJsonArray("unique_golds2").size();
-			sbXpUniqueMedals = size * eventTask.get("jacob_farming_contest_xp").getAsInt();
-		}
+		int sbXpUniqueMedals = Utils
+			.getElementOrDefault(object, "jacobs_contest.unique_brackets.gold", new JsonArray())
+			.getAsJsonArray()
+			.size() * eventTask.get("jacob_farming_contest_xp").getAsInt();
 
 		lore.add(levelPage.buildLore("Mining Fiesta", sbXpMiningFiesta, eventTask.get("mining_fiesta").getAsInt(), false));
 		lore.add(levelPage.buildLore(
