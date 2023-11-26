@@ -166,7 +166,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 
 		int thunderKills = Utils.getElementAsInt(Utils.getElement(
 			selectedProfile.getProfileJson(),
-			"player_stats.kills.thunder"
+			"bestiary.kills.thunder_400"
 		), 0);
 		ItemStack thunder_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
 			NotEnoughUpdates.INSTANCE.manager.getItemInformation().get("THUNDER_SC")
@@ -184,7 +184,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(lord_jawbus_sc, guiLeft + 16, guiTop + 120);
 		int jawbusKills = Utils.getElementAsInt(Utils.getElement(
 			selectedProfile.getProfileJson(),
-			"player_stats.kills.lord_jawbus"
+			"bestiary.kills.lord_jawbus_600"
 		), 0);
 
 		Utils.drawStringF(
