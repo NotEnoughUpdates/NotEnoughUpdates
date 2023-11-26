@@ -755,7 +755,13 @@ public class SkyblockProfiles {
 					inventoryNameToInfo.put("backpack_sizes", backpackData.getAsJsonArray("backpack_sizes"));
 					contents = backpackData.getAsJsonArray("contents");
 				} else {
-					String path = "inventory." + (invName.endsWith("_bag") || invName.equals("quiver") ? "bag_contents." + invName + ".data" : invName);
+					String path = "inventory." + invName + ".data";
+					if (invName.endsWith("bag") || invName.equals("quiver")) {
+						path = "inventory.bag_contents." + invName + ".data";
+					} else if (invName.equals("candy_inventory_contents")) {
+						path = "shared_inventory.candy_inventory_contents"; //the mappings said that this is the new path but i cant verify that because the data doesnt exist.
+					}
+
 					String contentBytes = Utils.getElementAsString(
 						Utils.getElement(
 							profileJson,
