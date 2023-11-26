@@ -144,8 +144,7 @@ public class RiftPage extends GuiProfileViewerPage {
 					List<String> tooltip = petItemstackFromPetInfo.getTooltip(Minecraft.getMinecraft().thePlayer, false);
 					tooltip.set(3, "§7Found: §9" + size + "/9 Soul Pieces");
 					tooltip.set(5, "§7Rift Time: §a+" + riftTime + "s");
-					tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
-
+					if (pet.rarity == PetInfoOverlay.Rarity.EPIC) tooltip.set(6, "§7Mana Regen: §a+" + manaRegen + "%");
 					getInstance().tooltipToDisplay = tooltip;
 				}
 			} else if (size > 0) {
