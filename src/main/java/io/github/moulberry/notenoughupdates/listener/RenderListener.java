@@ -48,7 +48,6 @@ import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.overlays.AuctionSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.BazaarSearchOverlay;
 import io.github.moulberry.notenoughupdates.overlays.OverlayManager;
-import io.github.moulberry.notenoughupdates.overlays.RancherBootOverlay;
 import io.github.moulberry.notenoughupdates.overlays.TextOverlay;
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer;
 import io.github.moulberry.notenoughupdates.profileviewer.ProfileViewerUtils;
@@ -389,11 +388,6 @@ public class RenderListener {
 		}
 		if (BazaarSearchOverlay.shouldReplace()) {
 			BazaarSearchOverlay.render();
-			event.setCanceled(true);
-			return;
-		}
-		if (RancherBootOverlay.shouldReplace()) {
-			RancherBootOverlay.render();
 			event.setCanceled(true);
 			return;
 		}
@@ -901,11 +895,6 @@ public class RenderListener {
 			event.setCanceled(true);
 			return;
 		}
-		if (RancherBootOverlay.shouldReplace()) {
-			RancherBootOverlay.mouseEvent();
-			event.setCanceled(true);
-			return;
-		}
 
 		String containerName = null;
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
@@ -1066,11 +1055,6 @@ public class RenderListener {
 		}
 		if (BazaarSearchOverlay.shouldReplace()) {
 			BazaarSearchOverlay.keyEvent();
-			event.setCanceled(true);
-			return;
-		}
-		if (RancherBootOverlay.shouldReplace()) {
-			RancherBootOverlay.keyEvent();
 			event.setCanceled(true);
 			return;
 		}
