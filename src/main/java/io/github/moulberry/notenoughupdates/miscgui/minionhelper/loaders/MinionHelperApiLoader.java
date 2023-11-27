@@ -126,14 +126,7 @@ public class MinionHelperApiLoader {
 		int localPelts = manager.getLocalPelts();
 		if (localPelts != -1) return localPelts;
 
-		int peltCount = 0;
-		if (player.has("trapper_quest")) {
-			JsonObject jsonObject = player.getAsJsonObject("trapper_quest");
-			if (jsonObject.has("pelt_count")) {
-				peltCount = jsonObject.get("pelt_count").getAsInt();
-			}
-		}
-		return peltCount;
+		return Utils.getElementAsInt(Utils.getElement(player, "quests.trapper_quest.pelt_count"), 0);
 	}
 
 	private Map<String, Integer> getSlayers(JsonObject player) {
@@ -141,7 +134,7 @@ public class MinionHelperApiLoader {
 
 		Map<String, Integer> slayerTier = new HashMap<>();
 		if (player.has("slayer_bosses")) {
-			JsonObject slayerBosses = player.getAsJsonObject("slayer_bosses");
+			JsonObject slayerBosses = player.getAsJsonObject("slayer.slayer_bosses");
 			for (Map.Entry<String, JsonElement> entry : slayerBosses.entrySet()) {
 				String name = entry.getKey();
 				JsonObject slayerEntry = entry.getValue().getAsJsonObject();
@@ -166,8 +159,8 @@ public class MinionHelperApiLoader {
 
 	private Map<String, Integer> getCollections(JsonObject player) {
 		Map<String, Integer> highestCollectionTier = new HashMap<>();
-		if (player.has("unlocked_coll_tiers")) {
-			for (JsonElement element : player.get("unlocked_coll_tiers").getAsJsonArray()) {
+		if (player.has("player_data.unlocked_coll_tiers")) {
+			for (JsonElement element : player.get("player_data.unlocked_coll_tiers").getAsJsonArray()) {
 				String text = element.getAsString();
 				String[] split = text.split("_");
 				int level = Integer.parseInt(split[split.length - 1]);
@@ -206,8 +199,8 @@ public class MinionHelperApiLoader {
 		List<String> craftedMinions = new ArrayList<>();
 		for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
 			JsonObject value = entry.getValue().getAsJsonObject();
-			if (value.has("crafted_generators")) {
-				for (JsonElement e : value.get("crafted_generators").getAsJsonArray()) {
+			if (value.has("player_data.crafted_generators")) {
+				for (JsonElement e : value.get("player_data.crafted_generators").getAsJsonArray()) {
 					String rawGenerator = e.getAsString();
 					String[] split = rawGenerator.split("_");
 					String tier = split[split.length - 1];

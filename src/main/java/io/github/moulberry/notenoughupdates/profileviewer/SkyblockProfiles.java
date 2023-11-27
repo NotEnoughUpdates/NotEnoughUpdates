@@ -1215,8 +1215,8 @@ public class SkyblockProfiles {
 			}
 			if (hasBeastmasterCrest) {
 				JsonObject stats = getProfileJson().get("player_stats").getAsJsonObject();
-				if (stats.has("mythos_kills")) {
-					int mk = stats.get("mythos_kills").getAsInt();
+
+				int mk = Utils.getElementAsInt(Utils.getElement(stats, "mythos.kills"), 0);
 					float petXpBoost = mk > 10000 ? 1f : mk > 7500 ? 0.9f : mk > 5000 ? 0.8f : mk > 2500 ? 0.7f :
 						mk > 1000
 							? 0.6f
@@ -1227,10 +1227,8 @@ public class SkyblockProfiles {
 									: mk > 100
 										? 0.3f
 										: mk > 25 ? 0.2f : 0.1f;
-					PetInfoOverlay.getConfig().beastMultiplier = petXpBoost * currentBeastRarity.beastcreatMultiplyer;
-				} else {
-					PetInfoOverlay.getConfig().beastMultiplier = 0.1f * currentBeastRarity.beastcreatMultiplyer;
-				}
+				PetInfoOverlay.getConfig().beastMultiplier =
+					(petXpBoost == 0 ? 0.1f : petXpBoost) * currentBeastRarity.beastcreatMultiplyer;
 			}
 		}
 
