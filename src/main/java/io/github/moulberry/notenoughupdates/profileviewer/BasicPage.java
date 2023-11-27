@@ -709,7 +709,9 @@ public class BasicPage extends GuiProfileViewerPage {
 							tooltipToDisplay.add("§7Pelts: §e" + peltCount);
 
 							// medals
-							JsonObject medals_inv = Utils.getElement(selectedProfile.getProfileJson(), "jacobs_contest.medals_inv").getAsJsonObject();
+							JsonObject medals_inv = Utils
+								.getElementOrDefault(selectedProfile.getProfileJson(), "jacobs_contest.medals_inv", new JsonObject())
+								.getAsJsonObject();
 							tooltipToDisplay.add(" ");
 							for (String medalName : medalNames) {
 								String textWithoutFormattingCodes =
