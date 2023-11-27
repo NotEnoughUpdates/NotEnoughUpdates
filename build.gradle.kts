@@ -310,6 +310,10 @@ allprojects {
 			isReproducibleFileOrder = true
 			archiveVersion.set("${this@allprojects.version}${if (System.getenv("CI") == "true") ".ci" else ""}")
 		}
+		tasks.withType<net.fabricmc.loom.task.RemapJarTask>().configureEach {
+			isPreserveFileTimestamps = false
+			isReproducibleFileOrder= true
+		}
 	}
 }
 
