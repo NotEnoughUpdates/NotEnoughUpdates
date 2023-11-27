@@ -21,7 +21,6 @@ package io.github.moulberry.notenoughupdates.miscgui.customtodos
 
 import io.github.moulberry.moulconfig.common.IItemStack
 import io.github.moulberry.moulconfig.forge.ForgeItemStack
-import io.github.moulberry.moulconfig.gui.CloseEventListener
 import io.github.moulberry.moulconfig.internal.ClipboardUtils
 import io.github.moulberry.moulconfig.observer.ObservableList
 import io.github.moulberry.moulconfig.xml.Bind
@@ -30,9 +29,6 @@ import io.github.moulberry.notenoughupdates.util.SBInfo
 import io.github.moulberry.notenoughupdates.util.Utils
 import io.github.moulberry.notenoughupdates.util.loadResourceLocation
 import net.minecraft.client.Minecraft
-import net.minecraft.init.Items
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 
 class CustomTodoEditor(
@@ -160,8 +156,8 @@ class CustomTodoEditor(
 
     @Bind
     fun getItemStack(): IItemStack {
-        val item = Item.getByNameOrId(icon) ?: (Items.paper)
-        return ForgeItemStack.of(ItemStack(item))
+        val item = CustomTodoHud.parseItem(icon)
+        return ForgeItemStack.of(item)
     }
 
     @Bind

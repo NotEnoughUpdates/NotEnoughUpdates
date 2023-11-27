@@ -22,6 +22,7 @@ package io.github.moulberry.notenoughupdates.overlays;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.notenoughupdates.events.SlotClickEvent;
+import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodo;
 import io.github.moulberry.notenoughupdates.miscgui.customtodos.CustomTodoHud;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
 import io.github.moulberry.notenoughupdates.util.ItemUtils;
@@ -174,11 +175,7 @@ public class TimersOverlay extends TextTabOverlay {
 		String clean = Utils.cleanColour(line);
 		String beforeColon = clean.split(":")[0];
 		if (beforeColon.startsWith("CUSTOM")) {
-			var item = Item.getByNameOrId(beforeColon.substring(6));
-			if (item == null) {
-				item = Items.paper;
-			}
-			icon = new ItemStack(item);
+			icon = CustomTodoHud.INSTANCE.parseItem(CustomTodoHud.INSTANCE.decodeCustomItem(beforeColon));
 		} else
 			switch (beforeColon) {
 				case "Cakes":
