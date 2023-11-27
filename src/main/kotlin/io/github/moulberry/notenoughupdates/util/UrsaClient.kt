@@ -184,18 +184,18 @@ class UrsaClient(val apiUtil: ApiUtil) {
         fun profiles(uuid: UUID) = KnownRequest("v1/hypixel/v2/profiles/${uuid}", JsonObject::class.java)
 
         @JvmStatic
-        fun player(uuid: UUID) = KnownRequest("v1/hypixel/player/${uuid}", JsonObject::class.java)
+        fun player(uuid: UUID) = KnownRequest("v1/hypixel/v2/player/${uuid}", JsonObject::class.java)
 
         @JvmStatic
-        fun guild(uuid: UUID) = KnownRequest("v1/hypixel/guild/${uuid}", JsonObject::class.java)
+        fun guild(uuid: UUID) = KnownRequest("v1/hypixel/v2/guild/${uuid}", JsonObject::class.java)
 
         @JvmStatic
-        fun bingo(uuid: UUID) = KnownRequest("v1/hypixel/bingo/${uuid}", JsonObject::class.java)
+        fun bingo(uuid: UUID) = KnownRequest("v1/hypixel/v2/bingo/${uuid}", JsonObject::class.java)
 
         @JvmStatic
-        fun museumForProfile(profileUuid: String) = KnownRequest("v1/hypixel/museum/${profileUuid}", JsonObject::class.java)
+        fun museumForProfile(profileUuid: String) = KnownRequest("v1/hypixel/v2/museum/${profileUuid}", JsonObject::class.java)
 
         @JvmStatic
-        fun status(uuid: UUID) = KnownRequest("v1/hypixel/status/${uuid}", JsonObject::class.java)
+        fun status(uuid: UUID) = KnownRequest("v1/hypixel/v2/status/${uuid}", JsonObject::class.java)
     }
 }
