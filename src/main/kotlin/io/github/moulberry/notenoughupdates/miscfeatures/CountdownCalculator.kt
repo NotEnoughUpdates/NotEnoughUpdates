@@ -97,8 +97,8 @@ class CountdownCalculator {
                             "§r§cThe above countdown is relative, but I can't find another countdown. [NEU]"
                         )
                         continue
-                    } else lastTimer.plusSeconds(totalSeconds)
-                } else ZonedDateTime.now().plusSeconds(totalSeconds)
+                    } else lastTimer.plusYears(years.toLong()).plusDays(days.toLong()).plusHours(hours.toLong()).plusMinutes(minutes.toLong()).plusSeconds(seconds.toLong())
+                } else ZonedDateTime.now().plusYears(years.toLong()).plusDays(days.toLong()).plusHours(hours.toLong()).plusMinutes(minutes.toLong()).plusSeconds(seconds.toLong())
                 val countdownTargetFormatted = useFormatter.format(countdownTarget)
                 event.toolTip.add(
                     ++i,
