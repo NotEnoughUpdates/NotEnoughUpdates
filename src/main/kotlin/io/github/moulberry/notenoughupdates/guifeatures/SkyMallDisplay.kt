@@ -40,7 +40,7 @@ class SkyMallDisplay {
     @SubscribeEvent(receiveCanceled = true)
     fun onChatReceive(event: ClientChatReceivedEvent) {
         if (!NotEnoughUpdates.INSTANCE.hasSkyblockScoreboard()) return
-        if (SBInfo.getInstance().getLocation() != "mining_3") return
+        if (SBInfo.getInstance().getLocation() != "mining_3" && SBInfo.getInstance().getLocation() != "crystal_hollows") return
 
         val matcher = pattern.matcher(event.message.formattedText)
         if (!matcher.matches()) return
