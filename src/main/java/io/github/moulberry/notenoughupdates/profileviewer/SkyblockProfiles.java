@@ -216,6 +216,17 @@ public class SkyblockProfiles {
 		return highestProfileName.equals(profileName);
 	}
 
+	private long handleSoopyApiResponse(JsonObject response) {
+		if (response == null
+			|| !response.has("success")
+			|| !response.get("success").getAsBoolean()
+			|| !response.has("data")) {
+			return -3; // Error
+		} else {
+			return response.get("data").getAsLong();
+		}
+	}
+
 	private void loadSoopyData(Runnable callback) {
 		if (updatingSoopyData.get()) {
 			return;
@@ -226,36 +237,20 @@ public class SkyblockProfiles {
 		soopyNetworthLeaderboardPosition = -2; // Loading
 		profileViewer.getManager().apiUtils
 			.request()
-			.url("https://soopy.dev/api/v2/leaderboard/networth/user/" + this.uuid)
+			.url("https://api.soopy.dev/lb/lbpos/networth/" + this.uuid)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
-				if (jsonObject == null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
-					|| !jsonObject.has("data")
-					|| !jsonObject.getAsJsonObject("data").has("data")
-					|| !jsonObject.getAsJsonObject("data").getAsJsonObject("data").has("position")) {
-					soopyNetworthLeaderboardPosition = -3; // Error
-				} else {
-					soopyNetworthLeaderboardPosition = jsonObject.getAsJsonObject("data").getAsJsonObject("data").get(
-						"position").getAsLong();
-				}
+				soopyNetworthLeaderboardPosition = handleSoopyApiResponse(jsonObject);
 				return null;
 			});
 
 		soopyWeightLeaderboardPosition = -2; // Loading
 		profileViewer.getManager().apiUtils
 			.request()
-			.url("https://soopy.dev/api/v2/leaderboard/weight/user/" + this.uuid)
+			.url("https://api.soopy.dev/lb/lbpos/weight/" + this.uuid)
 			.requestJson()
 			.handle((jsonObject, throwable) -> {
-				if (jsonObject == null || !jsonObject.has("success") || !jsonObject.get("success").getAsBoolean()
-					|| !jsonObject.has("data")
-					|| !jsonObject.getAsJsonObject("data").has("data")
-					|| !jsonObject.getAsJsonObject("data").getAsJsonObject("data").has("position")) {
-					soopyWeightLeaderboardPosition = -3; // Error
-				} else {
-					soopyWeightLeaderboardPosition = jsonObject.getAsJsonObject("data").getAsJsonObject("data").get(
-						"position").getAsLong();
-				}
+				soopyWeightLeaderboardPosition = handleSoopyApiResponse(jsonObject);
 				return null;
 			});
 
@@ -271,7 +266,7 @@ public class SkyblockProfiles {
 			ProfileViewerUtils.lastSoopyRequestTime.put(uuid, currentTime);
 			profileViewer.getManager().apiUtils
 				.request()
-				.url("https://soopy.dev/api/v2/player_networth/" + this.uuid)
+				.url("https://soopy.dev/api/v2/player_networth2/" + this.uuid)
 				.method("POST")
 				.postData("application/json", profilesArray.toString())
 				.requestJson()

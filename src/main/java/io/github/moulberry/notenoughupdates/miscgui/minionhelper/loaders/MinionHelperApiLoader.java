@@ -159,8 +159,10 @@ public class MinionHelperApiLoader {
 
 	private Map<String, Integer> getCollections(JsonObject player) {
 		Map<String, Integer> highestCollectionTier = new HashMap<>();
-		if (player.has("player_data.unlocked_coll_tiers")) {
-			for (JsonElement element : player.get("player_data.unlocked_coll_tiers").getAsJsonArray()) {
+
+		JsonElement collectionTiers = Utils.getElement(player, "player_data.unlocked_coll_tiers");
+		if (collectionTiers != null) {
+			for (JsonElement element : collectionTiers.getAsJsonArray()) {
 				String text = element.getAsString();
 				String[] split = text.split("_");
 				int level = Integer.parseInt(split[split.length - 1]);
@@ -183,7 +185,7 @@ public class MinionHelperApiLoader {
 				highestCollectionTier.put(name, level);
 			}
 			if (!collectionApiEnabled) {
-				Utils.addChatMessage("§e[NEU] Collection API detected!");
+				Utils.addChatMessage("§e[NEU Minion Helper] Collection API detected!");
 			}
 			collectionApiEnabled = true;
 		} else {
