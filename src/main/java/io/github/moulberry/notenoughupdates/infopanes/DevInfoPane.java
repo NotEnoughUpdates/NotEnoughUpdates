@@ -62,7 +62,7 @@ public class DevInfoPane extends TextInfoPane {
 			if (internalname.matches("^.*-[0-9]{1,3}$")) continue;
 			if (!manager.isValidInternalName(internalname)) {
 				if (internalname.equals("RUNE") || internalname.contains("PARTY_HAT_CRAB") || internalname.equals("ABICASE") ||
-					internalname.equals("PARTY_HAT_SLOTH"))
+					internalname.equals("PARTY_HAT_SLOTH") || internalname.equals("UNIQUE_RUNE"))
 					continue;
 				text.append(internalname).append("\n");
 			}
