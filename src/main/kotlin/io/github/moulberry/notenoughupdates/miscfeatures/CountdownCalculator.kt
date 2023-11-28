@@ -73,6 +73,7 @@ class CountdownCalculator {
             else -> return
         }
         if (event.itemStack != null && Minecraft.getMinecraft().thePlayer?.openContainer != null) {
+            if (event.itemStack.displayName.endsWith("'s Party")) return //TODO: why does this event falsely activate in party finder? -ery
             var i = -1
             var lastTimer: ZonedDateTime? = null
             while (++i < event.toolTip.size) {
