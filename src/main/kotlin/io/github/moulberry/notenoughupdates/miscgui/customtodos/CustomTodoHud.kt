@@ -24,10 +24,14 @@ import io.github.moulberry.notenoughupdates.autosubscribe.NEUAutoSubscribe
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.events.SidebarChangeEvent
 import io.github.moulberry.notenoughupdates.events.TabListChangeEvent
+import io.github.moulberry.notenoughupdates.miscgui.GuiInvButtonEditor
 import io.github.moulberry.notenoughupdates.util.Utils
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 
 @NEUAutoSubscribe
 object CustomTodoHud {
@@ -86,6 +90,13 @@ object CustomTodoHud {
             }
     }
 
+    fun encodeCustomItem(icon: String) = "CUSTOM" + Base64.getEncoder().encodeToString(icon.encodeToByteArray())
+
+    fun decodeCustomItem(customString: String): String {
+        require(customString.startsWith("CUSTOM"))
+        return Base64.getDecoder().decode(customString.substring(6)).decodeToString()
+    }
+
     @JvmStatic
     fun processInto(strings: MutableList<String>) {
         NotEnoughUpdates.INSTANCE.config.hidden.customTodos
@@ -94,7 +105,7 @@ object CustomTodoHud {
                 val readyAt = it.readyAtOnCurrentProfile ?: (System.currentTimeMillis() - 1000L)
                 val until = readyAt - System.currentTimeMillis()
                 strings.add(
-                    "CUSTOM" + it.icon + ":§3" + it.label + ": " +
+                    encodeCustomItem(it.icon) + ":§3" + it.label + ": " +
                             if (until <= 0)
                                 EnumChatFormatting.values()[NotEnoughUpdates.INSTANCE.config.miscOverlays.readyColour].toString() + "Ready"
                             else if (until < 60 * 30 * 1000L)
@@ -113,4 +124,9 @@ object CustomTodoHud {
             }
     }
 
+    fun parseItem(icon: String): ItemStack {
+        val stack = GuiInvButtonEditor.getStack(icon.uppercase())
+        if (stack.metadata == 255 || (stack.item == Items.painting && stack.metadata != 0)) return ItemStack(Items.paper)
+        return stack
+    }
 }
