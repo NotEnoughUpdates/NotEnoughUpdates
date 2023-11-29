@@ -39,4 +39,12 @@ public class Garden {
 	)
 	@ConfigEditorBoolean
 	public boolean presetDeleteWarning = true;
+
+	@Expose
+	@ConfigOption(
+		name = "Sprayonator Cooldown",
+		desc = "Show the cooldown duration of the sprayonator as the durability."
+	)
+	@ConfigEditorBoolean
+	public boolean sprayonatorCooldown = false;
 }
