@@ -219,25 +219,25 @@ public class ItemCooldowns {
 
 	@SubscribeEvent
 	public void onChatMessage(ClientChatReceivedEvent event) {
-		if (PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() && pickaxeCooldown != 0) {
+		if (pickaxeCooldown != 0 && PICKAXE_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.PICKAXES);
 			pickaxeUseCooldownMillisRemaining = pickaxeCooldown * 1000;
 		}
 
-		if (BONZO_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-				NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility && bonzoMaskCooldown != 0) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility && bonzoMaskCooldown != 0 &&
+			BONZO_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.BONZO_MASK);
 			bonzomaskCooldownMillisRemaining = bonzoMaskCooldown * 1000;
 		}
 
-		if (SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-				NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && spiritMaskCooldown != 0) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && spiritMaskCooldown != 0 &&
+			SPIRIT_ABILITY_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.SPIRIT_MASK);
 			spiritMaskCooldownMillisRemaining = spiritMaskCooldown * 1000;
 		}
 
-		if (SPRAYONATOR_ACTIVATION.matcher(event.message.getFormattedText()).matches() &&
-			NotEnoughUpdates.INSTANCE.config.garden.sprayonatorCooldown && sprayonatorCooldown != 0) {
+		if (NotEnoughUpdates.INSTANCE.config.garden.sprayonatorCooldown && sprayonatorCooldown != 0 &&
+			SPRAYONATOR_ACTIVATION.matcher(event.message.getFormattedText()).matches()) {
 			findCooldownInTooltip(Item.SPIRIT_MASK);
 			sprayonatorCooldownMillisRemaining = sprayonatorCooldown * 1000;
 		}
@@ -329,19 +329,20 @@ public class ItemCooldowns {
 			return durability;
 		}
 		// Bonzo Mask
-		if ((internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK")) && NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.bonzoAbility &&
+			(internalname.equals("BONZO_MASK") || internalname.equals("STARRED_BONZO_MASK"))) {
 			findCooldownInTooltip(Item.BONZO_MASK);
 
 			return durabilityOverride(bonzomaskCooldownMillisRemaining, bonzoMaskCooldown, stack);
 		}
 		// Spirit Mask
-		if (internalname.equals("SPIRIT_MASK") && NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility) {
+		if (NotEnoughUpdates.INSTANCE.config.itemOverlays.spiritAbility && internalname.equals("SPIRIT_MASK")) {
 			findCooldownInTooltip(Item.SPIRIT_MASK);
 
 			return durabilityOverride(spiritMaskCooldownMillisRemaining, spiritMaskCooldown, stack);
 		}
 
-		if (internalname.equals("SPRAYONATOR") && NotEnoughUpdates.INSTANCE.config.garden.sprayonatorCooldown) {
+		if (NotEnoughUpdates.INSTANCE.config.garden.sprayonatorCooldown && internalname.equals("SPRAYONATOR")) {
 			findCooldownInTooltip(Item.SPRAYONATOR);
 
 			return durabilityOverride(sprayonatorCooldownMillisRemaining, sprayonatorCooldown, stack);

@@ -43,7 +43,7 @@ public class Garden {
 	@Expose
 	@ConfigOption(
 		name = "Sprayonator Cooldown",
-		desc = "Show the cooldown duration of the sprayonator as the durability."
+		desc = "Show the cooldown duration of the sprayonator."
 	)
 	@ConfigEditorBoolean
 	public boolean sprayonatorCooldown = false;
