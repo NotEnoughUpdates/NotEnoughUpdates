@@ -22,7 +22,6 @@ package io.github.moulberry.notenoughupdates.mixins;
 import io.github.moulberry.notenoughupdates.NEUOverlay;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.ChromaColour;
-import io.github.moulberry.notenoughupdates.core.util.render.RenderUtils;
 import io.github.moulberry.notenoughupdates.listener.RenderListener;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
@@ -41,8 +40,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -243,10 +240,24 @@ public abstract class MixinRenderItem {
 		if (damageOverride >= 0) {
 			GlStateManager.disableLighting();
 			GlStateManager.disableDepth();
-			GlStateManager.enableAlpha();
+			if (NotEnoughUpdates.INSTANCE.config.itemOverlays.oldCooldowns) {
+				float barX = 13.0f - damageOverride * 13.0f;
+				int col = (int) Math.round(255.0D - damageOverride * 255.0D);
+				GlStateManager.disableTexture2D();
+				GlStateManager.disableAlpha();
+				GlStateManager.disableBlend();
+				Tessellator tessellator = Tessellator.getInstance();
+				WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+				func_181565_a(worldrenderer, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
+				func_181565_a(worldrenderer, xPosition + 2, yPosition + 13, 12, 1, (255 - col) / 4, 64, 0, 255);
+				func_181565_a(worldrenderer, xPosition + 2, yPosition + 13, barX, 1, 255 - col, col, 0, 255);
+				GlStateManager.enableAlpha();
+				GlStateManager.enableTexture2D();
+			} else {
+				GlStateManager.enableAlpha();
 
-			Utils.drawRect(xPosition, yPosition + 16.0f * (1.0f - damageOverride), xPosition + 16, yPosition + 16, Integer.MAX_VALUE);
-
+				Utils.drawRect(xPosition, yPosition + 16.0f * (1.0f - damageOverride), xPosition + 16, yPosition + 16, Integer.MAX_VALUE);
+			}
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepth();
 		}

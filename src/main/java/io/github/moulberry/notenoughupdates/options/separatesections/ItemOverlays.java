@@ -20,16 +20,16 @@
 package io.github.moulberry.notenoughupdates.options.separatesections;
 
 import com.google.gson.annotations.Expose;
-import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
-import io.github.moulberry.notenoughupdates.core.config.Position;
 import io.github.moulberry.moulconfig.annotations.ConfigAccordionId;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorColour;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDraggableList;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.moulberry.moulconfig.annotations.ConfigEditorInfoText;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.notenoughupdates.core.config.Position;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -461,6 +461,14 @@ public class ItemOverlays {
 	)
 	@ConfigEditorInfoText()
 	public boolean customWitherCloakCredit = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Use Durability for Cooldowns",
+		desc = "Show the cooldown durations as the durability."
+	)
+	@ConfigEditorBoolean
+	public boolean oldCooldowns = false;
 
 	@Expose
 	@ConfigOption(
