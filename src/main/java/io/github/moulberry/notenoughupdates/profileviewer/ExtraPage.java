@@ -466,7 +466,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 
 		if (topKills == null) {
 			topKills = new TreeMap<>();
-			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			JsonObject stats = Utils.getElementOrDefault(profileInfo, "stats", new JsonObject()).getAsJsonObject();
 			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
 				if (entry.getKey().startsWith("kills_")) {
 					if (entry.getValue().isJsonPrimitive()) {
@@ -482,7 +482,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		}
 		if (topDeaths == null) {
 			topDeaths = new TreeMap<>();
-			JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			JsonObject stats = Utils.getElementOrDefault(profileInfo, "stats", new JsonObject()).getAsJsonObject();
 			for (Map.Entry<String, JsonElement> entry : stats.entrySet()) {
 				if (entry.getKey().startsWith("deaths_")) {
 					if (entry.getValue().isJsonPrimitive()) {
