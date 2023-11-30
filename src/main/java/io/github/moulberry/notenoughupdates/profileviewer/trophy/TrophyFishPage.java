@@ -167,7 +167,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		JsonObject stats = profileInformation.getAsJsonObject("stats");
 
 		int thunderKills = 0;
-		if (stats.has("kills_thunder")) {
+		if (stats != null && stats.has("kills_thunder")) {
 			thunderKills = stats.getAsJsonObject().get("kills_thunder").getAsInt();
 		}
 		ItemStack thunder_sc = NotEnoughUpdates.INSTANCE.manager.jsonToStack(
@@ -185,7 +185,7 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 		);
 		Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(lord_jawbus_sc, guiLeft + 16, guiTop + 120);
 		int jawbusKills = 0;
-		if (stats.has("kills_lord_jawbus")) {
+		if (stats != null && stats.has("kills_lord_jawbus")) {
 			jawbusKills = stats.getAsJsonObject().get("kills_lord_jawbus").getAsInt();
 		}
 
