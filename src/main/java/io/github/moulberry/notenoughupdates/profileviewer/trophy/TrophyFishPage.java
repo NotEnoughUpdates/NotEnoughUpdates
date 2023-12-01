@@ -260,10 +260,9 @@ public class TrophyFishPage extends GuiProfileViewerPage {
 			}
 		}
 
-		if (!trophyObject.has("rewards")) return;
 
 		int[] trophiesPerTier = getTrophiesPerTier(trophyObject);
-		JsonArray rewards = trophyObject.get("rewards").getAsJsonArray();
+		JsonArray rewards = Utils.getElementOrDefault(selectedProfile.getProfileJson(), "trophy_fish.rewards", new JsonArray()).getAsJsonArray();
 		int i = 0;
 		for (ItemStack itemStack : armorHelmets.keySet()) {
 			RenderHelper.enableGUIStandardItemLighting();
