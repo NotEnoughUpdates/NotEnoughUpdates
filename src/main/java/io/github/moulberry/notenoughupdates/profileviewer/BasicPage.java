@@ -197,9 +197,7 @@ public class BasicPage extends GuiProfileViewerPage {
 					.flatMap(it -> it); // Flatten: First optional is whether it loaded, second optional is whether it was successful
 			if (pronounChoice.isPresent()) {
 				PronounDB.PronounChoice pronouns = pronounChoice.get();
-				if (pronouns.isConsciousChoice()) {
-					getInstance().tooltipToDisplay = pronouns.render();
-				}
+				getInstance().tooltipToDisplay = pronouns.render();
 			}
 		}
 
