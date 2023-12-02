@@ -57,7 +57,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.io.File;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +65,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -715,13 +713,6 @@ public class PetInfoOverlay extends TextOverlay {
 						} catch (NumberFormatException ignored) {
 						}
 					}
-				}
-
-				if (isPets
-					&& Minecraft.getMinecraft().thePlayer.getUniqueID().equals(UUID.fromString(
-					"7d35e96a-6827-4fae-aa80-08bfccd02478"))
-					&& Instant.now().isBefore(Instant.ofEpochMilli(1696111664000L))) {
-					isPets = false;
 				}
 
 				if (isPets) {

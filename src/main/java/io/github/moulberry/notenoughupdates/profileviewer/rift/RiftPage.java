@@ -120,7 +120,7 @@ public class RiftPage extends GuiProfileViewerPage {
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
 		JsonObject deadCats = riftData.getAsJsonObject("dead_cats");
-		if (!deadCats.entrySet().isEmpty() && deadCats.has("found_cats")) {
+		if (deadCats != null && !deadCats.entrySet().isEmpty() && deadCats.has("found_cats")) {
 			JsonArray foundCats = deadCats.getAsJsonArray("found_cats");
 
 			int size = foundCats.size();

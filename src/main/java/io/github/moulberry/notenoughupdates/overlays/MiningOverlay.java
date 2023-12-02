@@ -443,14 +443,10 @@ public class MiningOverlay extends TextTabOverlay {
 						break;
 					case 5:
 						overlayStrings.add(
-							DARK_AQUA + "Star Cult: " + GREEN +
-								StarCultCalculator.getNextStarCult());
+							DARK_AQUA + "Star Cult: " + GREEN + StarCultCalculator.getNextStarCult());
 						break;
 					case 6:
-
-						if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
 							overlayStrings.add("§3Sky Mall: §a" + SkyMallDisplay.Companion.getDisplayText());
-						}
 						break;
 				}
 			}
@@ -763,9 +759,7 @@ public class MiningOverlay extends TextTabOverlay {
 			} else if (beforeColon.contains("Titanium")) {
 				icon = miningOverlayCommissionItems.get("Titanium");
 			} else if (beforeColon.contains("Sky Mall")) {
-				if (Objects.equals(SBInfo.getInstance().getLocation(), "mining_3")) {
 					icon = SkyMallDisplay.Companion.getDisplayItem();
-				}
 			}
 		}
 

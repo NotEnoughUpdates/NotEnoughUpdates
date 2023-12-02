@@ -470,7 +470,7 @@ public class ExtraPage extends GuiProfileViewerPage {
 		//FIXME deaths/kills
 		if (topKills == null) {
 			topKills = new TreeMap<>();
-			//JsonObject stats = profileInfo.get("stats").getAsJsonObject();
+			//JsonObject stats = Utils.getElementOrDefault(profileInfo, "stats", new JsonObject()).getAsJsonObject();
 			JsonObject stats = Utils
 				.getElementOrDefault(profileInfo, "player_stats.kills", new JsonObject())
 				.getAsJsonObject();
