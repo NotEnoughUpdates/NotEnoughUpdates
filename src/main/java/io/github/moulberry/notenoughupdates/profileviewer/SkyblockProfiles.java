@@ -908,7 +908,7 @@ public class SkyblockProfiles {
 
 				int maxLevel = ProfileViewerUtils.getLevelingCap(leveling, skillName);
 				if (skillName.equals("farming")) {
-					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacob_contest.perks.farming_level_cap"), 0);
+					maxLevel += Utils.getElementAsInt(Utils.getElement(profileJson, "jacobs_contest.perks.farming_level_cap"), 0);
 				}
 				out.put(skillName, ProfileViewerUtils.getLevel(levelingArray, skillExperience, maxLevel, false));
 			}
