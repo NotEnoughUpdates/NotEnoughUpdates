@@ -240,6 +240,27 @@ public class Mining {
 
 	@Expose
 	@ConfigOption(
+		name = "Sky Mall Location",
+		desc = "Change when the Sky Mall timer gets shown"
+	)
+	@ConfigEditorDropdown(
+		values = {"Dwarven Mines+Crystal Hollows", "Everywhere except dungeons", "Everywhere"}
+	)
+	@ConfigAccordionId(id = 2)
+	public int skyMallDisplayEnabledLocations = 0;
+
+	@Expose
+	@ConfigOption(
+		name = "Sky Mall Tab",
+		desc = "Only show the star cult timer when tab list is open\n" +
+			"§cThis only works outside of Dwarven Caves!"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 2)
+	public boolean skyMallDisplayOnlyShowTab = false;
+
+	@Expose
+	@ConfigOption(
 		name = "Commission Task Tips",
 		desc = "Show tips to help complete commission tasks"
 	)
