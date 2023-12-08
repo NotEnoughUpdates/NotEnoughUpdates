@@ -204,7 +204,8 @@ public class ItemCooldowns {
 		} else if (internalname.contains("_DRILL_")) {
 			char lastChar = internalname.charAt(internalname.length() - 1);
 			return lastChar >= '0' && lastChar <= '9';
-		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") || internalname.equals("DIVAN_DRILL");
+		} else return internalname.equals("GEMSTONE_GAUNTLET") || internalname.equals("PICKONIMBUS") ||
+			internalname.equals("DIVAN_DRILL") || internalname.equals("BINGONIMBUS_2000");
 	}
 
 	@SubscribeEvent
