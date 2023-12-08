@@ -301,7 +301,7 @@ public class ApiUtil {
 
 	public Request newAnonymousHypixelApiRequest(String apiPath) {
 		return new Request()
-			.url("https://api.hypixel.net/" + apiPath);
+			.url("https://api.hypixel.net/v2/" + apiPath);
 	}
 
 	public Request newMoulberryRequest(String path) {
