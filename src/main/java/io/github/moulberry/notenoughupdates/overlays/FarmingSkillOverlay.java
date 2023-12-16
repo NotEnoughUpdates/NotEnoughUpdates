@@ -140,7 +140,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 			int cropsFarmed = -1;
 			for (String line : SidebarUtil.readSidebarLines()) {
 				if (line.contains("Collected") || line.contains("BRONZE") || line.contains("SILVER") ||
-					line.contains("GOLD")) {
+					line.contains("GOLD") || line.contains("PLATINUM") || line.contains("DIAMOND")) {
 					inJacobContest = true;
 					String l = line.replaceAll("[^A-Za-z0-9() ]", "");
 					cropsFarmed = Integer.parseInt(l.substring(l.lastIndexOf(" ") + 1).replace(",", ""));
