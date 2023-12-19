@@ -119,15 +119,27 @@ public class RiftPage extends GuiProfileViewerPage {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiProfileViewer.pv_elements);
 		Utils.drawTexturedRect(guiLeft + 35, guiTop + 156, 20, 20, 0, 20 / 256f, 0, 20 / 256f, GL11.GL_NEAREST);
 
-		JsonObject deadCats = riftData.getAsJsonObject("dead_cats");
+		JsonObject deadCats = Utils.getElementOrDefault(
+			selectedProfile.getProfileJson(),
+			"rift.dead_cats",
+			new JsonObject()
+		).getAsJsonObject();
 		if (deadCats != null && !deadCats.entrySet().isEmpty() && deadCats.has("found_cats")) {
-			JsonArray foundCats = deadCats.getAsJsonArray("found_cats");
+			JsonArray foundCats = Utils.getElementOrDefault(
+				selectedProfile.getProfileJson(),
+				"rift.dead_cats.found_cats",
+				new JsonArray()
+			).getAsJsonArray();
 
 			int size = foundCats.size();
 			int riftTime = size * 15;
 			int manaRegen = size * 2;
 
-			JsonObject montezuma = deadCats.getAsJsonObject("montezuma");
+			JsonObject montezuma = Utils.getElementOrDefault(
+				selectedProfile.getProfileJson(),
+				"rift.dead_cats.montezuma",
+				new JsonObject()
+			).getAsJsonObject();
 			if (montezuma != null) {
 				String montezumaType = montezuma.get("type").getAsString();
 
@@ -261,11 +273,11 @@ public class RiftPage extends GuiProfileViewerPage {
 			}
 		}
 
-		JsonObject enigma = riftData.getAsJsonObject("enigma");
-		int foundSouls = 0;
-		if (enigma.has("found_souls")) {
-			foundSouls = enigma.getAsJsonArray("found_souls").size();
-		}
+		int foundSouls = Utils.getElementOrDefault(
+			selectedProfile.getProfileJson(),
+			"rift.enigma.found_souls",
+			new JsonArray()
+		).getAsJsonArray().size();
 
 		Utils.renderAlignedString(
 			EnumChatFormatting.DARK_PURPLE + "Enigma Souls:",

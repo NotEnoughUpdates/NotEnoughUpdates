@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -456,12 +455,16 @@ public class MiningOverlay extends TextTabOverlay {
 			}
 			boolean forgeDisplay = false;
 			boolean starCultDisplay = false;
+			boolean skyMallDisplay = false;
 			for (int i = 0; i < NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.size(); i++) {
 				if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.get(i) == 3) {
 					forgeDisplay = true;
 				}
 				if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.get(i) == 5) {
 					starCultDisplay = true;
+				}
+				if (NotEnoughUpdates.INSTANCE.config.mining.dwarvenText2.get(i) == 6) {
+					skyMallDisplay = true;
 				}
 			}
 
@@ -493,6 +496,24 @@ public class MiningOverlay extends TextTabOverlay {
 						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
 					} else if (NotEnoughUpdates.INSTANCE.config.mining.forgeDisplayEnabledLocations == 2) {
 						overlayStrings.addAll(getForgeStrings(profileConfig.forgeItems));
+					}
+				}
+			}
+
+			if (skyMallDisplay) {
+				if (overlayStrings == null) overlayStrings = new ArrayList<>();
+
+				if (!NotEnoughUpdates.INSTANCE.config.mining.skyMallDisplayOnlyShowTab ||
+					lastTabState) {
+					if (NotEnoughUpdates.INSTANCE.config.mining.skyMallDisplayEnabledLocations == 1 &&
+						!SBInfo.getInstance().isInDungeon) {
+						overlayStrings.add(
+							DARK_AQUA + "Sky Mall: " + GREEN +
+								SkyMallDisplay.Companion.getDisplayText());
+					} else if (NotEnoughUpdates.INSTANCE.config.mining.skyMallDisplayEnabledLocations == 2) {
+						overlayStrings.add(
+							DARK_AQUA + "Sky Mall: " + GREEN +
+								SkyMallDisplay.Companion.getDisplayText());
 					}
 				}
 			}
