@@ -225,7 +225,7 @@ class DevTestCommand {
                 reply(AQUA.toString() + "I would never search")
             }.withHelp("Reset your search data to redisplay the search tutorial")
             thenLiteralExecute("bluehair") {
-                PronounDB.test()
+                PronounDB.test(MC.thePlayer.uniqueID)
             }.withHelp("Test the pronoundb integration")
             thenLiteral("opengui") {
                 thenArgumentExecute("class", StringArgumentType.string()) { className ->

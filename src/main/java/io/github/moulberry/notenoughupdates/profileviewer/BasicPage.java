@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,7 +198,7 @@ public class BasicPage extends GuiProfileViewerPage {
 					.flatMap(it -> it); // Flatten: First optional is whether it loaded, second optional is whether it was successful
 			if (pronounChoice.isPresent()) {
 				PronounDB.PronounChoice pronouns = pronounChoice.get();
-				getInstance().tooltipToDisplay = pronouns.render();
+				getInstance().tooltipToDisplay = Collections.singletonList(pronouns.render());
 			}
 		}
 

@@ -26,7 +26,6 @@ import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,45 +33,48 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * pronoundb.org integration
+ */
 public class PronounDB {
 	/**
 	 * Returns an Optional, since JVMs can be *very* funky with KeyStore loading
 	 */
 	public static CompletableFuture<Optional<JsonObject>> performPronouning(String platform, String id) {
-		if (isDisabled()) return CompletableFuture.completedFuture(Optional.empty());
+		if (isDisabledByRepo()) return CompletableFuture.completedFuture(Optional.empty());
 		return NotEnoughUpdates.INSTANCE.manager.apiUtils
-			.request().url("https://pronoundb.org/api/v2/lookup")
-			.queryArgument("platform", platform).queryArgument("ids", id)
+			.request()
+			.url("https://pronoundb.org/api/v2/lookup")
+			.queryArgument("platform", platform)
+			.queryArgument("ids", id)
 			.requestJson()
 			.handle((result, ex) -> Optional.ofNullable(result));
 	}
 
-	private static boolean isDisabled() {
+	private static boolean isDisabledByRepo() {
 		JsonObject disabled = Constants.DISABLE;
 		return disabled != null && disabled.has("pronoundb");
 	}
 
+	/**
+	 * Get the preferred pronouns from the pronoundb.org api for the specified platform
+	 */
 	public static CompletableFuture<Optional<PronounChoice>> getPronounsFor(String platform, String name) {
 		return performPronouning(platform, name).thenApply(it -> it.flatMap(jsonObject -> parsePronouns(jsonObject, name)));
 	}
 
-	public static Optional<PronounChoice> parsePronouns(JsonObject pronounObject, String name) {
+	private static Optional<PronounChoice> parsePronouns(JsonObject pronounObject, String name) {
 		if (pronounObject.has(name)) {
 
-			List<String> set = JsonUtils
-				.transformJsonArrayToList(Utils
-					.getElementOrDefault(pronounObject, name + ".sets.en", new JsonArray())
-					.getAsJsonArray(), JsonElement::getAsString);
+			List<String> set = JsonUtils.transformJsonArrayToList(Utils
+				.getElementOrDefault(pronounObject, name + ".sets.en", new JsonArray())
+				.getAsJsonArray(), JsonElement::getAsString);
 
-			List<Pronoun> pronouns = set
-				.stream()
-				.map(pronounId -> Arrays
-					.stream(Pronoun.values())
-					.filter(pronoun -> pronoun.id.equals(pronounId))
-					.findFirst()
-					.orElse(null))
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+			List<Pronoun> pronouns = set.stream().map(pronounId -> Arrays
+				.stream(Pronoun.values())
+				.filter(pronoun -> pronoun.id.equals(pronounId))
+				.findFirst()
+				.orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
 
 			if (pronouns.isEmpty()) {
 				return Optional.empty();
@@ -88,6 +90,22 @@ public class PronounDB {
 		return Optional.empty();
 	}
 
+	/**
+	 * Get the preferred pronouns from the pronoundb.org api for the minecraft platform
+	 */
+	public static CompletableFuture<Optional<PronounChoice>> getPronounsFor(UUID minecraftPlayer) {
+		return getPronounsFor("minecraft", minecraftPlayer.toString() /* dashed UUID */);
+	}
+
+	public static void test(UUID uuid) {
+		System.out.println("Pronouning...");
+		getPronounsFor(uuid).thenAccept(it -> {
+			PronounChoice pronounsFor = it.get();
+			System.out.println(pronounsFor.render());
+			Utils.addChatMessage(pronounsFor.render());
+		});
+	}
+
 	@Getter
 	public enum Pronoun {
 		HE("he", "him", "his"),
@@ -95,9 +113,9 @@ public class PronounDB {
 		SHE("she", "her", "hers"),
 		THEY("they", "them", "theirs"),
 		ANY("any", "Any pronouns"),
-		OTHER("other", "Other pronouns"),
-		ASK("ask", "Ask me my pronouns"),
-		AVOID("avoid", "Avoid pronouns, use my name");
+		OTHER("other", "Other"),
+		ASK("ask", "Ask for pronouns"),
+		AVOID("avoid", "Avoid pronouns");
 
 		private final String id;
 		private final String object;
@@ -129,28 +147,22 @@ public class PronounDB {
 			this.secondPronoun = secondPronoun;
 		}
 
-		public List<String> render() {
-			if (firstPronoun.override != null)
-				return Collections.singletonList(firstPronoun.override);
+		/**
+		 * Convert the pronoun choice into a readable String for the user
+		 *
+		 * @see Pronoun
+		 */
+		public String render() {
+			if (firstPronoun.override != null) {
+				return firstPronoun.override;
+			}
 
 			if (secondPronoun == null) {
-				return Collections.singletonList(firstPronoun.id + "/" + firstPronoun.object);
+				return firstPronoun.id + "/" + firstPronoun.object;
 			} else {
-				return Collections.singletonList(firstPronoun.id + "/" + secondPronoun.id);
+				return firstPronoun.id + "/" + secondPronoun.id;
 			}
 		}
-	}
-
-	public static CompletableFuture<Optional<PronounChoice>> getPronounsFor(UUID minecraftPlayer) {
-		return getPronounsFor("minecraft", minecraftPlayer.toString() /* dashed UUID */);
-	}
-
-	public static void test() {
-		System.out.println("Pronouning...");
-		getPronounsFor(UUID.fromString("842204e6-6880-487b-ae5a-0595394f9948")).thenAccept(it -> {
-			PronounChoice pronounsFor = it.get();
-			pronounsFor.render().forEach(System.out::println);
-		});
 	}
 
 }
