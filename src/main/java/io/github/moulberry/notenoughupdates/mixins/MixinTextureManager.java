@@ -50,7 +50,8 @@ public class MixinTextureManager {
 		}
 	}
 
-	// Fixes ConcurrentModificationException in TextureManager#tick (with 5zig but probably other mods too)
+	// Fixes ConcurrentModificationException in TextureManager#tick
+	// This is not a NEU bug, rather an incompatibility with 5zig and possibly other mods
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void constructor(CallbackInfo ci) {
 		listTickables = Collections.synchronizedList(Lists.newArrayList());
