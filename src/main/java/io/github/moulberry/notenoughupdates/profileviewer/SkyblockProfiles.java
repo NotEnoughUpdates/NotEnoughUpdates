@@ -1000,12 +1000,13 @@ public class SkyblockProfiles {
 				return petsInfo;
 			}
 
-			JsonElement petsEle = getProfileJson().getAsJsonObject("pets_data").get("pets");
-			if (petsEle != null && petsEle.isJsonArray()) {
-				JsonArray petsArr = petsEle.getAsJsonArray();
+			JsonArray petsArray = Utils
+				.getElementOrDefault(getProfileJson(), "pets_data.pets", new JsonArray())
+				.getAsJsonArray();
+			if (petsArray.size() > 0) {
 				JsonObject activePet = null;
 
-				for (JsonElement petEle : petsEle.getAsJsonArray()) {
+				for (JsonElement petEle : petsArray.getAsJsonArray()) {
 					JsonObject petObj = petEle.getAsJsonObject();
 					if (petObj.has("active") && petObj.get("active").getAsBoolean()) {
 						activePet = petObj;
@@ -1016,7 +1017,7 @@ public class SkyblockProfiles {
 				// TODO: STOP DOING THIS AAAAA
 				petsInfo = new JsonObject();
 				petsInfo.add("active_pet", activePet);
-				petsInfo.add("pets", petsArr);
+				petsInfo.add("pets", petsArray);
 				return petsInfo;
 			}
 
