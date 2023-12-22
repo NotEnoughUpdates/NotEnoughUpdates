@@ -21,6 +21,7 @@ package io.github.moulberry.notenoughupdates.mixins;
 
 import com.google.common.collect.Lists;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCustomizeManager;
+import io.github.moulberry.notenoughupdates.profileviewer.BasicPage;
 import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
@@ -50,8 +51,11 @@ public class MixinTextureManager {
 		}
 	}
 
-	// Fixes ConcurrentModificationException in TextureManager#tick
-	// This is not a NEU bug, rather an incompatibility with 5zig and possibly other mods
+	/**
+	 Fixes ConcurrentModificationException in TextureManager#tick
+	 This is caused by NEU loading a player asynchronously which can cause issues with other mods (5zig in this case)
+	 @see BasicPage#drawPage at profileLoader.submit()
+	 */
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void constructor(CallbackInfo ci) {
 		listTickables = Collections.synchronizedList(Lists.newArrayList());

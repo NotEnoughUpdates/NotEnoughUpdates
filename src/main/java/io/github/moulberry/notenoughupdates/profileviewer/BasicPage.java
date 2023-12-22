@@ -471,6 +471,7 @@ public class BasicPage extends GuiProfileViewerPage {
 				loadingProfile = true;
 				UUID playerUUID = UUID.fromString(niceUuid(profile.getUuid()));
 
+				// Loads the player asynchronously
 				profileLoader.submit(() -> {
 					GameProfile fakeProfile = Minecraft
 						.getMinecraft()
