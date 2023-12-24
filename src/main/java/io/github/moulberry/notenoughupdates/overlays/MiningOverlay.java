@@ -27,6 +27,7 @@ import io.github.moulberry.notenoughupdates.core.util.lerp.LerpUtils;
 import io.github.moulberry.notenoughupdates.guifeatures.SkyMallDisplay;
 import io.github.moulberry.notenoughupdates.miscfeatures.ItemCooldowns;
 import io.github.moulberry.notenoughupdates.options.NEUConfig;
+import io.github.moulberry.notenoughupdates.util.ItemResolutionQuery;
 import io.github.moulberry.notenoughupdates.util.SBInfo;
 import io.github.moulberry.notenoughupdates.util.StarCultCalculator;
 import io.github.moulberry.notenoughupdates.util.TabListUtils;
@@ -34,7 +35,6 @@ import io.github.moulberry.notenoughupdates.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -50,6 +50,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.github.moulberry.notenoughupdates.util.Utils.showOutdatedRepoNotification;
 import static net.minecraft.util.EnumChatFormatting.BLUE;
 import static net.minecraft.util.EnumChatFormatting.BOLD;
 import static net.minecraft.util.EnumChatFormatting.DARK_AQUA;
@@ -803,147 +804,44 @@ public class MiningOverlay extends TextTabOverlay {
 	private static HashMap<String, ItemStack> miningOverlayCommissionItems;
 
 	private static void setupMiningOverlayCommissionItems() {
-		miningOverlayCommissionItems = new HashMap<String, ItemStack>() {{
-			put(
-				"Mithril Powder",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("INK_SACK-10"))
-			);
-			put(
-				"Gemstone Powder",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("INK_SACK-9"))
-			);
-			put(
-				"Lucky Raffle",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("MINING_RAFFLE_TICKET"))
-			);
-			put(
-				"Raffle",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("MINING_RAFFLE_TICKET"))
-			);
-			put(
-				"Pickaxe CD",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("DIAMOND_PICKAXE"))
-			);
-			put(
-				"Star Cult",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("FALLEN_STAR_HAT"))
-			);
-			put(
-				"Thyst Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("THYST_MONSTER"))
-			);
-			put(
-				"Hard Stone Miner",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("HARD_STONE"))
-			);
-			put(
-				"Ice Walker Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("ENCHANTED_ICE"))
-			);
-			put(
-				"Goblin Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("GOBLIN_MONSTER"))
-			);
-			put(
-				"Star Sentry Puncher",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("NETHER_STAR"))
-			);
-			put(
-				"Goblin Raid",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("ENCHANTED_GOLD"))
-			);
-			put(
-				"Goblin Raid Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("ENCHANTED_GOLD"))
-			);
-			put("Golden Goblin Slayer", new ItemStack(Items.golden_helmet, 1, 0));
-			put(
-				"2x Mithril Powder Collector",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("ENCHANTED_GLOWSTONE_DUST"))
-			);
-			put(
-				"Automaton Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("AUTOMATON_MONSTER"))
-			);
-			put(
-				"Sludge Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("SLUDGE_MONSTER"))
-			);
-			put(
-				"Team Treasurite Member Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("EXECUTIVE_WENDY_MONSTER"))
-			);
-			put(
-				"Yog Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("YOG_MONSTER"))
-			);
-			put(
-				"Boss Corleone Slayer",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("BOSS_CORLEONE_BOSS"))
-			);
-			put(
-				"Chest Looter",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("CHEST"))
-			);
-			put(
-				"Titanium",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("TITANIUM_ORE"))
-			);
-			put(
-				"Mithril",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("MITHRIL_ORE"))
-			);
-			put(
-				"Forge",
-				NotEnoughUpdates.INSTANCE.manager.jsonToStack(NotEnoughUpdates.INSTANCE.manager
-					.getItemInformation()
-					.get("ANVIL"))
-			);
-			put("First Event", new ItemStack(Items.fireworks, 1, 0));
-		}};
+		miningOverlayCommissionItems = new HashMap<String, ItemStack>() {
+			{
+				addItem("Mithril Powder", "INK_SACK-10");
+				addItem("Gemstone Powder", "INK_SACK-9");
+				addItem("Lucky Raffle", "MINING_RAFFLE_TICKET");
+				addItem("Raffle", "MINING_RAFFLE_TICKET");
+				addItem("Pickaxe CD", "DIAMOND_PICKAXE");
+				addItem("Star Cult", "FALLEN_STAR_HAT");
+				addItem("Thyst Slayer", "THYST_MONSTER");
+				addItem("Hard Stone Miner", "HARD_STONE");
+				addItem("Ice Walker Slayer", "ENCHANTED_ICE");
+				addItem("Goblin Slayer", "GOBLIN_MONSTER");
+				addItem("Star Sentry Puncher", "NETHER_STAR");
+				addItem("Goblin Raid", "ENCHANTED_GOLD");
+				addItem("Goblin Raid Slayer", "ENCHANTED_GOLD");
+				addItem("Golden Goblin Slayer", "GOLD_HELMET");
+				addItem("2x Mithril Powder Collector", "ENCHANTED_GLOWSTONE_DUST");
+				addItem("Automaton Slayer", "AUTOMATON_MONSTER");
+				addItem("Sludge Slayer", "SLUDGE_MONSTER");
+				addItem("Team Treasurite Member Slayer", "EXECUTIVE_WENDY_MONSTER");
+				addItem("Yog Slayer", "YOG_MONSTER");
+				addItem("Boss Corleone Slayer", "BOSS_CORLEONE_BOSS");
+				addItem("Chest Looter", "CHEST");
+				addItem("Titanium", "TITANIUM_ORE");
+				addItem("Mithril", "MITHRIL_ORE");
+				addItem("Forge", "ANVIL");
+				addItem("First Event", "FIREWORK");
+			}
+
+			private void addItem(String eventName, String internalName) {
+				ItemStack itemStack = new ItemResolutionQuery(NotEnoughUpdates.INSTANCE.manager)
+					.withKnownInternalName(internalName).resolveToItemStack();
+				if (itemStack == null) {
+					showOutdatedRepoNotification(internalName);
+					return;
+				}
+				put(eventName, itemStack.copy());
+			}
+		};
 	}
 }
