@@ -150,7 +150,18 @@ public class FishingHelper {
 		int ticksExisted = hook.ticksExisted;
 		float seconds = ticksExisted / 20F;
 		int color;
-		if (seconds >= 20) {
+		float maxSlugTime = 20;
+		PetInfoOverlay.Pet pet = PetInfoOverlay.getCurrentPet();
+		if (NotEnoughUpdates.INSTANCE.config.fishing.enableSlugCheck && pet != null) {
+			if (pet.petLevel != null &&
+				pet.petType.equalsIgnoreCase("slug")
+			) {
+				double slugFactor = 0.005 * pet.petLevel.getCurrentLevel();
+				maxSlugTime = (float) (maxSlugTime * (1 - slugFactor));
+			}
+		}
+
+		if (seconds >= maxSlugTime) {
 			color = ChromaColour.specialToChromaRGB(NotEnoughUpdates.INSTANCE.config.fishing.fishingTimerColor30SecPlus);
 			if (NotEnoughUpdates.INSTANCE.config.fishing.fishingSound30Sec && !playedSound) {
 				ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{

@@ -273,6 +273,15 @@ public class Fishing {
 	@ConfigAccordionId(id = 6)
 	public boolean fishingSound30Sec = true;
 
+	@Expose
+	@ConfigOption(
+		name = "Enable Slug Pet Check",
+		desc = "Check what pet you're using to determine the cooldown for the fishing timer colour/ping"
+	)
+	@ConfigEditorBoolean
+	@ConfigAccordionId(id = 6)
+	public boolean enableSlugCheck = true;
+
 	@ConfigOption(
 		name = "Trophy Reward",
 		desc = ""
