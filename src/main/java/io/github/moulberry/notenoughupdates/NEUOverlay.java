@@ -1214,7 +1214,7 @@ public class NEUOverlay extends Gui {
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
 							String displayname = item.get("displayname").getAsString();
 
-							String cleanName = Utils.cleanColour(displayname).replace("[Lvl {LVL}]", "").trim();
+							String cleanName = Utils.cleanColour(displayname).replace("[Lvl {LVL}]", "]").trim();
 
 							if (displayname.equals("§fEnchanted Book")) {
 								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
