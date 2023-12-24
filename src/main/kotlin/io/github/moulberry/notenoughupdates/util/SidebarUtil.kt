@@ -29,7 +29,7 @@ object SidebarUtil {
     fun readSidebarLines(cleanColor: Boolean = true, cleanSpecialCharacters: Boolean = true): List<String> {
         var result = readRawSidebarLines()
         if (cleanColor) result = result.map { Utils.cleanColour(it) }
-        if (cleanSpecialCharacters) result.map { cleanTeamName(it) }
+        if (cleanSpecialCharacters) result = result.map { cleanTeamName(it) }
         return result
     }
 
