@@ -29,6 +29,8 @@ import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
+import kotlin.text.Regex;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,6 +42,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 public class FarmingSkillOverlay extends TextOverlay {
 	private static final NumberFormat format = NumberFormat.getIntegerInstance();
@@ -136,14 +139,20 @@ public class FarmingSkillOverlay extends TextOverlay {
 		inJacobContest = false;
 		if (isJacobTime()) {
 			int timeLeftInContest = (20 * 60) - ((int) ((System.currentTimeMillis() % 3600000 - 900000) / 1000));
+			Pattern pattern = Pattern.compile(Utils.cleanColour(
+				" (Collected|§.§l(BRONZE|SILVER|GOLD|PLATINUM|DIAMOND) §fwith) §e(?<amount>.*)"));
 
 			int cropsFarmed = -1;
 			for (String line : SidebarUtil.readSidebarLines()) {
-				if (line.contains("Collected") || line.contains("BRONZE") || line.contains("SILVER") ||
-					line.contains("GOLD") || line.contains("PLATINUM") || line.contains("DIAMOND")) {
-					inJacobContest = true;
-					String l = line.replaceAll("[^A-Za-z0-9() ]", "");
-					cropsFarmed = Integer.parseInt(l.substring(l.lastIndexOf(" ") + 1).replace(",", ""));
+				val matcher = pattern.matcher(line);
+				if (matcher.matches()) {
+					String amount = matcher.group("amount").replace(",", "");
+					try {
+						inJacobContest = true;
+						cropsFarmed = Integer.parseInt(amount);
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
 				}
 				jacobPrediction = (int) (cropsFarmed + (cropsPerSecond * timeLeftInContest));
 			}
