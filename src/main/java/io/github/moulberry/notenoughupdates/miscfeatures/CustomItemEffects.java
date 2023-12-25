@@ -807,7 +807,8 @@ public class CustomItemEffects {
 		if (heldInternal.equals("BLOCK_ZAPPER")) {
 			onRenderBlockBlockZapper(event, onPrivateIsland, d0, d1, d2);
 		} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableTreecapOverlay &&
-			(heldInternal.equals("JUNGLE_AXE") || heldInternal.equals("TREECAPITATOR_AXE"))) {
+			(heldInternal.equals("JUNGLE_AXE") || heldInternal.equals("TREECAPITATOR_AXE")) &&
+			ItemCooldowns.getDurabilityOverride(held) < 0) {
 			onRenderBlockTreecap(event, heldInternal, d0, d1, d2);
 		} else if (NotEnoughUpdates.INSTANCE.config.itemOverlays.enableWandOverlay) {
 			onRenderBlockWandOverlay(
