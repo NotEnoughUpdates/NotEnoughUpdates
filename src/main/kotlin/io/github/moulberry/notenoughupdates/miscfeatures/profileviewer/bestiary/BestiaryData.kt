@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.notenoughupdates.profileviewer.bestiary
+package io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary
 
 import com.google.gson.JsonObject
 import io.github.moulberry.notenoughupdates.util.Constants

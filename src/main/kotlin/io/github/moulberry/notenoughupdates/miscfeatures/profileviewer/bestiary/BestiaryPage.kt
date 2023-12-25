@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.moulberry.notenoughupdates.profileviewer.bestiary
+package io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary
 
 import io.github.moulberry.notenoughupdates.core.util.StringUtils
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewer
 import io.github.moulberry.notenoughupdates.profileviewer.GuiProfileViewerPage
-import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.calculateTotalBestiaryTiers
-import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.hasMigrated
-import io.github.moulberry.notenoughupdates.profileviewer.bestiary.BestiaryData.parseBestiaryData
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData.calculateTotalBestiaryTiers
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData.hasMigrated
+import io.github.moulberry.notenoughupdates.miscfeatures.profileviewer.bestiary.BestiaryData.parseBestiaryData
 import io.github.moulberry.notenoughupdates.util.Constants
 import io.github.moulberry.notenoughupdates.util.Utils
 import net.minecraft.client.Minecraft
