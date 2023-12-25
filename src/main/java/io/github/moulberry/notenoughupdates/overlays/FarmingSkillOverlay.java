@@ -29,7 +29,6 @@ import io.github.moulberry.notenoughupdates.util.SidebarUtil;
 import io.github.moulberry.notenoughupdates.util.Utils;
 import io.github.moulberry.notenoughupdates.util.XPInformation;
 import io.github.moulberry.notenoughupdates.util.hypixelapi.HypixelItemAPI;
-import kotlin.text.Regex;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
