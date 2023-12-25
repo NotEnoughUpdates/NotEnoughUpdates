@@ -35,6 +35,12 @@ import java.time.format.DateTimeFormatter
    Intended to detect countdowns within item tooltips, converting the time remaining into
    units of seconds, and then adding that result to the user's current system time
    in Unix epoch form converted into a human-readable timestamp, timezones included.
+
+   Since its original implementation, a change as been made to add the units of time directly
+   without converting them into units of seconds first. This is an (untested) attempt to fix
+   the weird bug hannibal002 has been having where countdowns slowly desync from the
+   system time. The original logic has been preserved in a comment block in case this (untested)
+   attempt goes terribly wrong.
    
    Formerly a feature from SkyBlockCatia, then later attempted to be ported into Skytils.
    Now has a comfy home in the NotEnoughUpdates codebase.
@@ -62,7 +68,7 @@ class CountdownCalculator {
         TIMELEFT("Time left:", "Ends at"),
         EVENTTIMELEFT("Event lasts for", "Ends at", isRelative = true),
         SHENSUCKS("Auction ends in:", "Auction ends at"),
-        TAMINGSIXTYWASAMISTAKE("Ends:", "Finishes at"),
+        TAMINGSIXTYWASAMISTAKE("Ends:", "Finishes at"), // There would be a more specific message here seeing as this is for pet XP, but knowing Hypixel it's probably safer to leave it like this in case they use the "Ends:" prefix elsewhere besides the pet training menus.
         CALENDARDETAILS(" (§e", "Starts at"); // Calendar details
     }
 
@@ -98,6 +104,12 @@ class CountdownCalculator {
                             "§r§cThe above countdown is relative, but I can't find another countdown. [NEU]"
                         )
                         continue
+                /*
+                --- ORIGINAL TIME ADDING LOGIC PRESERVED BELOW IN CASE NEW METHOD BREAKS ---
+                    } else lastTimer.plusSeconds(totalSeconds)
+                } else ZonedDateTime.now().plusSeconds(totalSeconds)
+                --- ORIGINAL TIME ADDING LOGIC PRESERVED ABOVE IN CASE NEW METHOD BREAKS ---
+                */
                     } else lastTimer.plusYears(years.toLong()).plusDays(days.toLong()).plusHours(hours.toLong()).plusMinutes(minutes.toLong()).plusSeconds(seconds.toLong())
                 } else ZonedDateTime.now().plusYears(years.toLong()).plusDays(days.toLong()).plusHours(hours.toLong()).plusMinutes(minutes.toLong()).plusSeconds(seconds.toLong())
                 val countdownTargetFormatted = useFormatter.format(countdownTarget)
