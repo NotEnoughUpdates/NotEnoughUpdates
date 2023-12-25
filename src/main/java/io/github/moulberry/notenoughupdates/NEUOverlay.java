@@ -1212,11 +1212,11 @@ public class NEUOverlay extends Gui {
 							NotEnoughUpdates.INSTANCE.openGui = new GuiPriceGraph(internalname.get());
 							return true;
 						} else if (keyPressed == NotEnoughUpdates.INSTANCE.config.misc.openAHKeybind) {
-							String displayname = item.get("displayname").getAsString();
+							String displayName = item.get("displayname").getAsString();
 
-							String cleanName = Utils.cleanColour(displayname).replace("[Lvl {LVL}]", "]").trim();
+							String cleanName = Utils.cleanColour(displayName).replace("[Lvl {LVL}]", "]").trim();
 
-							if (displayname.equals("§fEnchanted Book")) {
+							if (displayName.endsWith("Enchanted Book")) {
 								String loreName = Utils.cleanColour(item.getAsJsonArray("lore").get(0).getAsString());
 
 								String bookName = loreName.substring(0, loreName.lastIndexOf(' '));
