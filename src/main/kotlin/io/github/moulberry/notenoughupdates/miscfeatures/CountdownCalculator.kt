@@ -32,15 +32,9 @@ import java.time.format.DateTimeFormatter
    — Erymanthus / RayDeeUx (code base, math, timestamp wrangling, adaptation into overall NEU codebase)
    — nea89 (enum, regex wrangling, ItemTooltipEvent integration, cleanup)
    
-   Intended to detect countdowns within item tooltips, converting the time remaining into
-   units of seconds, and then adding that result to the user's current system time
-   in Unix epoch form converted into a human-readable timestamp, timezones included.
-
-   Since its original implementation, a change as been made to add the units of time directly
-   without converting them into units of seconds first. This is an (untested) attempt to fix
-   the weird bug hannibal002 has been having where countdowns slowly desync from the
-   system time. The original logic has been preserved in a comment block in case this (untested)
-   attempt goes terribly wrong.
+   Intended to detect countdowns within item tooltips and then adding that result
+   to the user's current system time in Unix epoch form converted into a
+   human-readable timestamp relative to the system timezone.
    
    Formerly a feature from SkyBlockCatia, then later attempted to be ported into Skytils.
    Now has a comfy home in the NotEnoughUpdates codebase.
@@ -80,22 +74,21 @@ class CountdownCalculator {
             else -> return
         }
         if (event.itemStack != null && Minecraft.getMinecraft().thePlayer?.openContainer != null) {
-            if (event.itemStack.displayName.endsWith("'s Party")) return //TODO: why does this event falsely activate in party finder? -ery
             var i = -1
             var lastTimer: ZonedDateTime? = null
             while (++i < event.toolTip.size) {
                 val tooltipLine = event.toolTip[i]
                 val countdownKind = CountdownTypes.values().find { it.match in tooltipLine } ?: continue
                 val match = regex.findAll(tooltipLine).maxByOrNull { it.value.length } ?: continue
-
-                val years = match.groups["years"]?.value?.toInt() ?: 0
-                val days = match.groups["days"]?.value?.toInt() ?: 0
-                val hours = match.groups["hours"]?.value?.toInt() ?: 0
-                val minutes = match.groups["minutes"]?.value?.toInt() ?: 0
-                val seconds = match.groups["seconds"]?.value?.toInt() ?: 0
+                if (countdownKind == CountdownTypes.CALENDARDETAILS && !event.itemStack.displayName.startsWith("§aDay ")) return
+                val years = match.groups["years"]?.value?.toLong() ?: 0L
+                val days = match.groups["days"]?.value?.toLong() ?: 0L
+                val hours = match.groups["hours"]?.value?.toLong() ?: 0L
+                val minutes = match.groups["minutes"]?.value?.toLong() ?: 0L
+                val seconds = match.groups["seconds"]?.value?.toLong() ?: 0L
                 val totalSeconds = (years * 31_536_000L) + (days * 86_400L) + (hours * 3_600L) + (minutes * 60L) + seconds
                 if (totalSeconds == 0L) continue
-                if (years != 0) formatterAsString = "${formatterAsString} yyyy"
+                if (years != 0L) formatterAsString = "${formatterAsString} yyyy"
                 val useFormatter = DateTimeFormatter.ofPattern(formatterAsString)!!
                 val countdownTarget = if (countdownKind.isRelative) {
                     if (lastTimer == null) {
@@ -104,14 +97,8 @@ class CountdownCalculator {
                             "§r§cThe above countdown is relative, but I can't find another countdown. [NEU]"
                         )
                         continue
-                /*
-                --- ORIGINAL TIME ADDING LOGIC PRESERVED BELOW IN CASE NEW METHOD BREAKS ---
-                    } else lastTimer.plusSeconds(totalSeconds)
-                } else ZonedDateTime.now().plusSeconds(totalSeconds)
-                --- ORIGINAL TIME ADDING LOGIC PRESERVED ABOVE IN CASE NEW METHOD BREAKS ---
-                */
-                    } else lastTimer.plusYears(years.toLong()).plusDays(days.toLong()).plusHours(hours.toLong()).plusMinutes(minutes.toLong()).plusSeconds(seconds.toLong())
-                } else ZonedDateTime.now().plusYears(years.toLong()).plusDays(days.toLong()).plusHours(hours.toLong()).plusMinutes(minutes.toLong()).plusSeconds(seconds.toLong())
+                    } else lastTimer.addTime(years, days, hours, minutes, seconds)
+                } else ZonedDateTime.now().addTime(years, days, hours, minutes, seconds)
                 val countdownTargetFormatted = useFormatter.format(countdownTarget)
                 event.toolTip.add(
                     ++i,
@@ -122,4 +109,8 @@ class CountdownCalculator {
         }
     }
 
+    private fun ZonedDateTime.addTime(years: Long, days: Long, hours: Long, minutes: Long, seconds: Long): ZonedDateTime {
+        return this.plusYears(years).plusDays(days).plusHours(hours).plusMinutes(minutes).plusSeconds(seconds)
+    }
 }
+
