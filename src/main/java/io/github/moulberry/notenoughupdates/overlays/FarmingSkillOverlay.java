@@ -90,6 +90,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 
 	private String skillType = "Farming";
 
+	private static final Pattern CONTEST_AMOUNT_PATTERN = Pattern.compile(
+		" (Collected|(BRONZE|SILVER|GOLD|PLATINUM|DIAMOND) with) (?<amount>.*)");
+
 	public FarmingSkillOverlay(
 		Position position,
 		Supplier<List<String>> dummyStrings,
@@ -138,12 +141,9 @@ public class FarmingSkillOverlay extends TextOverlay {
 		inJacobContest = false;
 		if (isJacobTime()) {
 			int timeLeftInContest = (20 * 60) - ((int) ((System.currentTimeMillis() % 3600000 - 900000) / 1000));
-			Pattern pattern = Pattern.compile(Utils.cleanColour(
-				" (Collected|§.§l(BRONZE|SILVER|GOLD|PLATINUM|DIAMOND) §fwith) §e(?<amount>.*)"));
-
 			int cropsFarmed = -1;
 			for (String line : SidebarUtil.readSidebarLines()) {
-				val matcher = pattern.matcher(line);
+				val matcher = CONTEST_AMOUNT_PATTERN.matcher(line);
 				if (matcher.matches()) {
 					String amount = matcher.group("amount").replace(",", "");
 					try {
