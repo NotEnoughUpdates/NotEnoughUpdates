@@ -201,8 +201,9 @@ public class MinionHelperApiLoader {
 		List<String> craftedMinions = new ArrayList<>();
 		for (Map.Entry<String, JsonElement> entry : members.entrySet()) {
 			JsonObject value = entry.getValue().getAsJsonObject();
-			if (value.has("player_data.crafted_generators")) {
-				for (JsonElement e : value.get("player_data.crafted_generators").getAsJsonArray()) {
+			for (JsonElement e : Utils
+				.getElementOrDefault(value, "player_data.crafted_generators", new JsonArray())
+				.getAsJsonArray()) {
 					String rawGenerator = e.getAsString();
 					String[] split = rawGenerator.split("_");
 					String tier = split[split.length - 1];
@@ -210,7 +211,6 @@ public class MinionHelperApiLoader {
 					String internalName = name + "_GENERATOR_" + tier;
 					craftedMinions.add(internalName);
 				}
-			}
 		}
 
 		return craftedMinions;
