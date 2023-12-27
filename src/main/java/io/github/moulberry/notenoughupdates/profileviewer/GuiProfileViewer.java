@@ -19,6 +19,7 @@
 
 package io.github.moulberry.notenoughupdates.profileviewer;
 
+import com.google.gson.JsonPrimitive;
 import io.github.moulberry.notenoughupdates.NotEnoughUpdates;
 import io.github.moulberry.notenoughupdates.core.util.StringUtils;
 import io.github.moulberry.notenoughupdates.cosmetics.ShaderManager;
@@ -191,11 +192,7 @@ public class GuiProfileViewer extends GuiScreen {
 		GuiProfileViewer.profile = profile;
 		GuiProfileViewer.profileName = profile.getLatestProfileName();
 
-		String playerName = "";
-		if (profile.getHypixelProfile() != null) {
-			playerName = profile.getHypixelProfile().get("displayname").getAsString();
-		}
-		playerNameTextField = new GuiElementTextField(playerName, GuiElementTextField.SCALE_TEXT);
+		playerNameTextField = new GuiElementTextField(getDisplayName(), GuiElementTextField.SCALE_TEXT);
 		playerNameTextField.setSize(100, 20);
 
 		if (currentPage == ProfileViewerPage.LOADING) {
@@ -647,11 +644,16 @@ public class GuiProfileViewer extends GuiScreen {
 		Utils.drawItemStack(stack, x + 6, y + 9);
 	}
 
+	private static String getDisplayName() {
+		return Utils.getElementOrDefault(
+			profile.getHypixelProfile(),
+			"displayname",
+			new JsonPrimitive(EnumChatFormatting.RED + "ERROR")
+		).getAsString();
+	}
+
 	private void renderRecentPlayers(boolean renderCurrent) {
-		String playerName = "";
-		if (profile.getHypixelProfile() != null) {
-			playerName = profile.getHypixelProfile().get("displayname").getAsString();
-		}
+		String playerName = getDisplayName();
 
 		boolean selected = Objects.equals(Minecraft.getMinecraft().thePlayer.getName(), playerName);
 		if (selected == renderCurrent) {
@@ -749,10 +751,8 @@ public class GuiProfileViewer extends GuiScreen {
 			}
 		}
 
-		String playerName = "";
-		if (profile.getHypixelProfile() != null) {
-			playerName = profile.getHypixelProfile().get("displayname").getAsString().toLowerCase();
-		}
+		String playerName = getDisplayName();
+
 		int x = guiLeft + sizeX;
 		int y = guiTop;
 		List<String> previousProfileSearches = NotEnoughUpdates.INSTANCE.config.hidden.previousProfileSearches;
@@ -799,7 +799,7 @@ public class GuiProfileViewer extends GuiScreen {
 		) {
 			if (mouseY > guiTop + sizeY + 3 && mouseY < guiTop + sizeY + 23) {
 				String url =
-					"https://sky.shiiyu.moe/stats/" + profile.getHypixelProfile().get("displayname").getAsString() + "/" +
+					"https://sky.shiiyu.moe/stats/" + getDisplayName() + "/" +
 						profileName;
 				Utils.openUrl(url);
 				Utils.playPressSound();
