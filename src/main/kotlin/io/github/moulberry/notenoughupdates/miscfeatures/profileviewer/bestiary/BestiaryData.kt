@@ -99,8 +99,12 @@ object BestiaryData {
      */
     fun hasMigrated(profileInfo: JsonObject): Boolean {
         val bestiaryObject = profileInfo.getAsJsonObject("bestiary") ?: return false
-
-        return (bestiaryObject.get("migration") ?: return false).asBoolean
+        return if (bestiaryObject.has("migration")) {
+            bestiaryObject.get("migration").asBoolean
+        } else {
+            // The account is new and therefore already uses the new format
+            true
+        }
     }
 
     /**
@@ -231,7 +235,7 @@ object BestiaryData {
             kills
         }
 
-        val totalProgress = (effectiveKills/cap*100).roundToDecimals(1)
+        val totalProgress = (effectiveKills / cap * 100).roundToDecimals(1)
 
         var level = 0
         for (requiredKills in bracketData) {
@@ -253,8 +257,8 @@ object BestiaryData {
         var completed = 0
 
         for (mob in mobs) {
-            if(mob.kills > 0) found++
-            if(mob.mobLevelData.maxLevel) completed++
+            if (mob.kills > 0) found++
+            if (mob.mobLevelData.maxLevel) completed++
         }
 
         return FamilyData(found, completed, mobs.size)
