@@ -35,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Mixin(TextureManager.class)
 public class MixinTextureManager {
@@ -58,6 +59,6 @@ public class MixinTextureManager {
 	 */
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void constructor(CallbackInfo ci) {
-		listTickables = Collections.synchronizedList(Lists.newArrayList());
+		listTickables = new CopyOnWriteArrayList<>();
 	}
 }
