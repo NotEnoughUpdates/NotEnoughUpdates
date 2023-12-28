@@ -739,14 +739,20 @@ public class NEUOverlay extends Gui {
 			}
 			String internalname = item.get("internalname").getAsString();
 			String name = item.get("displayname").getAsString();
-			displayInformationPane(new TextInfoPane(
-				this,
-				manager,
-				EnumChatFormatting.GRAY + "Loading",
-				EnumChatFormatting.GRAY + "Loading your requested information about " + name + EnumChatFormatting.GRAY + "."
-			));
-			infoPaneLoadingJob = InfoPane.create(this, manager, infoType, name, internalname, infoText)
-																	 .thenAccept(this::displayInformationPane);
+			if (NotEnoughUpdates.INSTANCE.config.itemlist.wikiInBrowser) {
+				Utils.openUrl(infoText);
+				Utils.addChatMessage("§e[NEU] Opening webpage in browser.");
+			}
+				else {
+				displayInformationPane(new TextInfoPane(
+					this,
+					manager,
+					EnumChatFormatting.GRAY + "Loading",
+					EnumChatFormatting.GRAY + "Loading your requested information about " + name + EnumChatFormatting.GRAY + "."
+				));
+				infoPaneLoadingJob = InfoPane.create(this, manager, infoType, name, internalname, infoText)
+																		 .thenAccept(this::displayInformationPane);
+			}
 		}
 	}
 

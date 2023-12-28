@@ -149,4 +149,12 @@ public class Itemlist {
 		runnableId = 21
 	)
 	public boolean alwaysShowMonsters = false;
+
+	@Expose
+	@ConfigOption(
+		name = "Webpage In Browser",
+		desc = "Open wiki pages in your web browser instead of rendering in the info pane in game."
+	)
+	@ConfigEditorBoolean
+	public boolean wikiInBrowser = false;
 }
