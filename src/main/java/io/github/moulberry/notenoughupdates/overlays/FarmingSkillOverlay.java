@@ -91,7 +91,7 @@ public class FarmingSkillOverlay extends TextOverlay {
 	private String skillType = "Farming";
 
 	private static final Pattern CONTEST_AMOUNT_PATTERN = Pattern.compile(
-		" (Collected|(BRONZE|SILVER|GOLD|PLATINUM|DIAMOND) with) (?<amount>.*)");
+		" (Collected|(BRONZE|SILVER|GOLD|PLATINUM|DIAMOND) with) (?<amount>[\\d,]+)");
 
 	public FarmingSkillOverlay(
 		Position position,
