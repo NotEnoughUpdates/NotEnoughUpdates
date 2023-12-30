@@ -124,6 +124,7 @@ public class RiftPage extends GuiProfileViewerPage {
 			"rift.dead_cats",
 			new JsonObject()
 		).getAsJsonObject();
+
 		if (deadCats != null && !deadCats.entrySet().isEmpty() && deadCats.has("found_cats")) {
 			JsonArray foundCats = Utils.getElementOrDefault(
 				selectedProfile.getProfileJson(),
@@ -186,10 +187,11 @@ public class RiftPage extends GuiProfileViewerPage {
 		}
 
 		// Timecharms
-
-		JsonObject gallery = riftData.getAsJsonObject("gallery");
-		JsonArray timecharm = gallery.getAsJsonArray("secured_trophies");
-		// 346, 16
+		JsonArray timecharm = Utils.getElementOrDefault(
+			selectedProfile.getProfileJson(),
+			"rift.gallery.secured_trophies",
+			new JsonArray()
+		).getAsJsonArray();
 
 		if (timecharm != null) {
 			Utils.renderAlignedString(
@@ -208,7 +210,7 @@ public class RiftPage extends GuiProfileViewerPage {
 					String timecharmType = jsonElement.getAsJsonObject().get("type").getAsString();
 					ItemStack timecharmItem = NotEnoughUpdates.INSTANCE.manager.createItemResolutionQuery().withKnownInternalName(
 						"RIFT_TROPHY_" + timecharmType.toUpperCase()).resolveToItemStack();
-					if(timecharmItem != null) {
+					if (timecharmItem != null) {
 						displayNames.add(timecharmItem.getDisplayName() + "§7: §a✔");
 					} else {
 						displayNames.add(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD + "ERROR LOADING TIMECHARM!");
